@@ -12,7 +12,7 @@ import { filter, flatten, groupBy, keys, length, map, split, sum, toPairs } from
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import CategorySelector from '../components/common/CategorySelector'
-import types from '../types'
+import hasura from '../hasura'
 
 type AssignedMemberProps = {
   id: string
@@ -60,7 +60,7 @@ export default function SalesMemberCategoryPage() {
     if (isAuthenticated && assignedMemberCollectionState.error) {
       message.error('載入錯誤')
     }
-  }, [assignedMemberCollectionState.error])
+  }, [assignedMemberCollectionState.error, isAuthenticated])
 
   const sales = groupBy<AssignedMemberProps>(({ manager: sale }) => `${sale.id}_${sale.name}`)(assignedMemberCollection)
 
@@ -333,7 +333,7 @@ const useAssignedMemberCollection = (filter: {
   endedAt: Date | null
   category: string | null
 }) => {
-  const { loading, error, data } = useQuery<types.GET_ASSIGNED_MEMBER, types.GET_ASSIGNED_MEMBERVariables>(
+  const { loading, error, data } = useQuery<hasura.GET_ASSIGNED_MEMBER, hasura.GET_ASSIGNED_MEMBERVariables>(
     gql`
       query GET_ASSIGNED_MEMBER($startedAt: timestamptz!, $endedAt: timestamptz!, $category: String) {
         member(
@@ -390,7 +390,7 @@ const useAssignedMemberCollection = (filter: {
       ? []
       : data.member.map(v => ({
           id: v.id,
-          manager: v.manager as types.GET_ASSIGNED_MEMBER_member_manager,
+          manager: v.manager as hasura.GET_ASSIGNED_MEMBER_member_manager,
           notes: v.member_notes.map(w => ({
             id: w.id,
             authorId: w.author_id,

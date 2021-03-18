@@ -1,11 +1,20 @@
 {
   "cSpell.words": [
     "antd",
+    "audiobuffer",
+    "braft",
+    "codegen",
+    "hasura",
     "ilike",
     "jitsi",
     "jsonb",
+    "nowrap",
+    "recordfile",
     "shajs",
-    "timestamptz"
+    "starttime",
+    "timestamptz",
+    "typegen",
+    "wavesurfer"
   ],
   "typescript.tsdk": "node_modules/typescript/lib"
 }

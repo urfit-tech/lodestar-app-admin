@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { product } from 'ramda'
 import { useEffect, useMemo } from 'react'
 import { memberPropertyFields } from './helpers'
-import * as types from './types.d'
+import hasura from './hasura'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 
 export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
@@ -132,14 +132,14 @@ export const useMemberContractCollection = ({
     startedAt: SortOrder
   }
 }) => {
-  const dateRangeCondition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['dateRangeCondition'] = {
+  const dateRangeCondition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['dateRangeCondition'] = {
     [dateRangeType]: {
       _gt: startedAt,
       _lte: endedAt,
     },
   }
 
-  const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
     agreed_at: { _is_null: false },
     revoked_at: { _is_null: !isRevoked },
     ...dateRangeCondition,
@@ -152,19 +152,15 @@ export const useMemberContractCollection = ({
     ],
   }
 
-  const orderBy: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
-    { agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? types.order_by.desc : types.order_by.asc) },
-    {
-      revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? types.order_by.desc : types.order_by.asc),
-    },
-    {
-      started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? types.order_by.desc : types.order_by.asc),
-    },
+  const orderBy: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
+    { agreed_at: (sortOrder.agreedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by },
+    { revoked_at: (sortOrder.revokedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by },
+    { started_at: (sortOrder.startedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by },
   ]
 
   const { loading, data, error, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
-    types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
+    hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
+    hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
   >(GET_MEMBER_PRIVATE_TEACH_CONTRACT, {
     variables: {
       condition,
@@ -316,7 +312,7 @@ export const useMutateMemberContract = () => {
 }
 
 export const useXuemiSales = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_SALE_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_SALE_COLLECTION>(
     gql`
       query GET_SALE_COLLECTION {
         xuemi_sales {
@@ -378,7 +374,7 @@ export type CurrentLeadProps = {
 
 export const useSalesCallMember = ({ salesId, status }: { salesId: string; status: 'contacted' | 'transacted' }) => {
   const [hasContacted, hasTransacted] = [status === 'contacted', status === 'transacted']
-  const condition: types.GET_SALES_CALL_MEMBERVariables['condition'] = hasContacted
+  const condition: hasura.GET_SALES_CALL_MEMBERVariables['condition'] = hasContacted
     ? {
       manager_id: { _eq: salesId },
       member_notes: {
@@ -403,27 +399,30 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       }
       : {}
 
-  const orderBy: types.GET_SALES_CALL_MEMBERVariables['orderBy'] = hasContacted
+  const orderBy: hasura.GET_SALES_CALL_MEMBERVariables['orderBy'] = hasContacted
     ? [
-      {
-        member_notes_aggregate: {
-          max: {
-            created_at: types.order_by.desc,
-          },
-        },
-      },
+        {
+          member_notes_aggregate: {
+            max: {
+              created_at: 'desc' as hasura.order_by,
+           },
+         },
+       },
     ]
     : [
-      {
-        member_contracts_aggregate: {
-          max: {
-            agreed_at: types.order_by.desc,
+        {
+          member_contracts_aggregate: {
+            max: {
+              agreed_at: 'desc' as hasura.order_by,
           },
         },
       },
     ]
 
-  const { loading, data, error, refetch } = useQuery<types.GET_SALES_CALL_MEMBER, types.GET_SALES_CALL_MEMBERVariables>(
+  const { loading, data, error, refetch } = useQuery<
+    hasura.GET_SALES_CALL_MEMBER,
+    hasura.GET_SALES_CALL_MEMBERVariables
+  >(
     gql`
       query GET_SALES_CALL_MEMBER(
         $condition: member_bool_exp!
@@ -465,8 +464,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
             ended_at
             agreed_at
           }
-          member_tasks(limit: 1, order_by: {created_at: desc}) 
-          @include(if: $hasContacted){
+          member_tasks(limit: 1, order_by: { created_at: desc }) @include(if: $hasContacted) {
             id
             category {
               id
@@ -517,8 +515,8 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
 export const useLead = (salesId: string) => {
   const apolloClient = useApolloClient()
   const { loading, error, data, refetch } = useQuery<
-    types.GET_FIRST_ASSIGNED_MEMBER,
-    types.GET_FIRST_ASSIGNED_MEMBERVariables
+    hasura.GET_FIRST_ASSIGNED_MEMBER,
+    hasura.GET_FIRST_ASSIGNED_MEMBERVariables
   >(
     gql`
       query GET_FIRST_ASSIGNED_MEMBER($salesId: String!, $selectedProperties: [String!]!) {
@@ -616,18 +614,20 @@ export const useLead = (salesId: string) => {
   )
   const withDurationInput = !sales?.telephone.startsWith('8')
 
-  const [markUnresponsiveMember] = useMutation<types.MARK_UNRESPONSIVE_MEMBER, types.MARK_UNRESPONSIVE_MEMBERVariables>(
-    MARK_UNRESPONSIVE_MEMBER,
-  )
-  const [updateMemberPhones] = useMutation<types.UPDATE_MEMBER_PHONE, types.UPDATE_MEMBER_PHONEVariables>(
+  const [markUnresponsiveMember] = useMutation<
+    hasura.MARK_UNRESPONSIVE_MEMBER,
+    hasura.MARK_UNRESPONSIVE_MEMBERVariables
+  >(MARK_UNRESPONSIVE_MEMBER)
+  const [updateMemberPhones] = useMutation<hasura.UPDATE_MEMBER_PHONE, hasura.UPDATE_MEMBER_PHONEVariables>(
     UPDATE_MEMBER_PHONE,
   )
-  const [insertMemberNote] = useMutation<types.INSERT_MEMBER_NOTE, types.INSERT_MEMBER_NOTEVariables>(
+  const [insertMemberNote] = useMutation<hasura.INSERT_MEMBER_NOTE, hasura.INSERT_MEMBER_NOTEVariables>(
     INSERT_MEMBER_NOTE,
   )
-  const [updateMemberProperties] = useMutation<types.UPDATE_MEMBER_PROPERTIES, types.UPDATE_MEMBER_PROPERTIESVariables>(
-    UPDATE_MEMBER_PROPERTIES,
-  )
+  const [updateMemberProperties] = useMutation<
+    hasura.UPDATE_MEMBER_PROPERTIES,
+    hasura.UPDATE_MEMBER_PROPERTIESVariables
+  >(UPDATE_MEMBER_PROPERTIES)
 
   useEffect(() => {
     // request new lead if there is no current lead
@@ -644,7 +644,7 @@ export const useLead = (salesId: string) => {
         where: { member_note_count: { _gt: 0 } },
         orderBy: { lead_score: 'asc' },
       }
-      const { data } = await apolloClient.query<types.GET_LEADS>({
+      const { data } = await apolloClient.query<hasura.GET_LEADS>({
         query: gql`
           query GET_LEADS($where: xuemi_lead_bool_exp, $orderBy: [xuemi_lead_order_by!]) {
             xuemi_lead(where: $where, order_by: $orderBy) {
@@ -679,25 +679,26 @@ export const useLead = (salesId: string) => {
     const assignLeads = async (leads: { memberId: string; rate: number }[]) => {
       for (const lead of leads) {
         if (lead.rate >= Math.random()) {
-          const { data } = await apolloClient.mutate<types.UPDATE_MEMBER_MANAGER, types.UPDATE_MEMBER_MANAGERVariables>(
-            {
-              mutation: gql`
-                mutation UPDATE_MEMBER_MANAGER($memberId: String!, $managerId: String!, $assignedAt: timestamptz!) {
-                  update_member(
-                    where: { id: { _eq: $memberId }, manager_id: { _is_null: true } }
-                    _set: { manager_id: $managerId, assigned_at: $assignedAt }
-                  ) {
-                    affected_rows
-                  }
+          const { data } = await apolloClient.mutate<
+            hasura.UPDATE_MEMBER_MANAGER,
+            hasura.UPDATE_MEMBER_MANAGERVariables
+          >({
+            mutation: gql`
+              mutation UPDATE_MEMBER_MANAGER($memberId: String!, $managerId: String!, $assignedAt: timestamptz!) {
+                update_member(
+                  where: { id: { _eq: $memberId }, manager_id: { _is_null: true } }
+                  _set: { manager_id: $managerId, assigned_at: $assignedAt }
+                ) {
+                  affected_rows
                 }
-              `,
-              variables: {
-                memberId: lead.memberId,
-                managerId: salesId,
-                assignedAt: new Date(),
-              },
+              }
+            `,
+            variables: {
+              memberId: lead.memberId,
+              managerId: salesId,
+              assignedAt: new Date(),
             },
-          )
+          })
           if (data?.update_member?.affected_rows || 0) {
             break
           }

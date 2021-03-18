@@ -3,14 +3,14 @@ import { Spin } from 'antd'
 import gql from 'graphql-tag'
 import MemberSelector from 'lodestar-app-admin/src/components/form/MemberSelector'
 import React from 'react'
-import types from '../../types'
+import hasura from '../../hasura'
 
 const SalesMemberInput: React.FC<{
   value?: string
   onChange?: (value: string) => void
   disabled?: boolean
 }> = ({ value, onChange, disabled }) => {
-  const { loading, error, data } = useQuery<types.GET_SALES_MEMBERS>(GET_SALES_MEMBERS)
+  const { loading, error, data } = useQuery<hasura.GET_SALES_MEMBERS>(GET_SALES_MEMBERS)
 
   if (loading) {
     return <Spin />

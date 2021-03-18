@@ -1,10 +1,10 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import types from '../../types'
+import hasura from '../../hasura'
 
 const MemberNameLabel: React.FC<{ memberId: string }> = ({ memberId }) => {
-  const { data } = useQuery<types.GET_MEMBER_NAME, types.GET_MEMBER_NAMEVariables>(
+  const { data } = useQuery<hasura.GET_MEMBER_NAME, hasura.GET_MEMBER_NAMEVariables>(
     gql`
       query GET_MEMBER_NAME($memberId: String!) {
         member_by_pk(id: $memberId) {

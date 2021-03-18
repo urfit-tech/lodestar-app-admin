@@ -780,8 +780,235 @@ export interface GET_SALES_NAMESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
+// ====================================================
+
+export interface GET_MEMBER_NOTES_ADMIN_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_tag {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_properties_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_properties {
+  __typename: "member_property";
+  id: any;
+  /**
+   * An object relationship
+   */
+  property: GET_MEMBER_NOTES_ADMIN_member_note_member_member_properties_property;
+  value: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs {
+  __typename: "order_log";
+  id: string;
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_NOTES_ADMIN_member_note_member_manager | null;
+  /**
+   * An array relationship
+   */
+  member_categories: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
+  /**
+   * An array relationship
+   */
+  member_properties: GET_MEMBER_NOTES_ADMIN_member_note_member_member_properties[];
+  /**
+   * An array relationship
+   */
+  order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments {
+  __typename: "member_note_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note {
+  __typename: "member_note";
+  id: string;
+  created_at: any;
+  /**
+   * NULL | inbound | outbound
+   */
+  type: string | null;
+  /**
+   * NULL | answered | missed
+   */
+  status: string | null;
+  /**
+   * An object relationship
+   */
+  author: GET_MEMBER_NOTES_ADMIN_member_note_author;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
+  duration: number;
+  description: string | null;
+  metadata: any | null;
+  note: string | null;
+  /**
+   * An array relationship
+   */
+  member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
+}
+
+export interface GET_MEMBER_NOTES_ADMIN {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_MEMBER_NOTES_ADMIN_category[];
+  /**
+   * fetch data from the table: "member_tag"
+   */
+  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
+  /**
+   * fetch data from the table: "member_note"
+   */
+  member_note: GET_MEMBER_NOTES_ADMIN_member_note[];
+}
+
+export interface GET_MEMBER_NOTES_ADMINVariables {
+  orderBy: member_note_order_by;
+  condition?: member_note_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_SUMMARY
 // ====================================================
+
+export interface GET_SALES_SUMMARY_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  value: string;
+}
+
+export interface GET_SALES_SUMMARY_member_by_pk_attends {
+  __typename: "attend";
+  id: any;
+  started_at: any;
+  ended_at: any | null;
+}
 
 export interface GET_SALES_SUMMARY_member_by_pk {
   __typename: "member";
@@ -791,13 +1018,14 @@ export interface GET_SALES_SUMMARY_member_by_pk {
   username: string;
   email: string;
   metadata: any;
-}
-
-export interface GET_SALES_SUMMARY_xuemi_sales {
-  __typename: "xuemi_sales";
-  member_id: string | null;
-  sales_phone: string | null;
-  odds: string | null;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_SALES_SUMMARY_member_by_pk_member_properties[];
+  /**
+   * An array relationship
+   */
+  attends: GET_SALES_SUMMARY_member_by_pk_attends[];
 }
 
 export interface GET_SALES_SUMMARY_order_executor_sharing {
@@ -805,26 +1033,6 @@ export interface GET_SALES_SUMMARY_order_executor_sharing {
   order_executor_id: any | null;
   total_price: any | null;
   ratio: any | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_this_month_aggregate {
-  __typename: "member_contract_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_this_month {
-  __typename: "member_contract_aggregate";
-  aggregate: GET_SALES_SUMMARY_contracts_this_month_aggregate | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_last_month_aggregate {
-  __typename: "member_contract_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_last_month {
-  __typename: "member_contract_aggregate";
-  aggregate: GET_SALES_SUMMARY_contracts_last_month_aggregate | null;
 }
 
 export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum {
@@ -843,52 +1051,72 @@ export interface GET_SALES_SUMMARY_member_note_aggregate {
   aggregate: GET_SALES_SUMMARY_member_note_aggregate_aggregate | null;
 }
 
-export interface GET_SALES_SUMMARY_assigned_members_today_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_assigned_members_today {
-  __typename: "member_aggregate";
-  aggregate: GET_SALES_SUMMARY_assigned_members_today_aggregate | null;
-}
-
 export interface GET_SALES_SUMMARY {
   /**
    * fetch data from the table: "member" using primary key columns
    */
   member_by_pk: GET_SALES_SUMMARY_member_by_pk | null;
   /**
-   * fetch data from the table: "xuemi.sales"
-   */
-  xuemi_sales: GET_SALES_SUMMARY_xuemi_sales[];
-  /**
    * fetch data from the table: "order_executor_sharing"
    */
   order_executor_sharing: GET_SALES_SUMMARY_order_executor_sharing[];
   /**
-   * fetch aggregated fields from the table: "member_contract"
-   */
-  contracts_this_month: GET_SALES_SUMMARY_contracts_this_month;
-  /**
-   * fetch aggregated fields from the table: "member_contract"
-   */
-  contracts_last_month: GET_SALES_SUMMARY_contracts_last_month;
-  /**
    * fetch aggregated fields from the table: "member_note"
    */
   member_note_aggregate: GET_SALES_SUMMARY_member_note_aggregate;
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  assigned_members_today: GET_SALES_SUMMARY_assigned_members_today;
 }
 
 export interface GET_SALES_SUMMARYVariables {
   salesId: string;
   startOfToday: any;
   startOfMonth: any;
-  startOfLastMonth: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_ODDS_ADDITION
+// ====================================================
+
+export interface GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate {
+  __typename: "member_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate {
+  __typename: "member_contract_aggregate";
+  aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION {
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate;
+  /**
+   * fetch aggregated fields from the table: "member_contract"
+   */
+  member_contract_aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate;
+}
+
+export interface GET_SALES_ODDS_ADDITIONVariables {
+  salesId: string;
+  startedAt: any;
+  endedAt: any;
+  startOfLastWeek: any;
 }
 
 /* tslint:disable */
@@ -3875,25 +4103,6 @@ export enum xuemi_assign_rule_update_column {
   target_member_id = "target_member_id",
   total_limit = "total_limit",
   trigger_id = "trigger_id",
-}
-
-/**
- * unique or primary key constraints on table "xuemi.attend"
- */
-export enum xuemi_attend_constraint {
-  attend_pkey = "attend_pkey",
-}
-
-/**
- * update columns of table "xuemi.attend"
- */
-export enum xuemi_attend_update_column {
-  created_at = "created_at",
-  ended_at = "ended_at",
-  id = "id",
-  member_id = "member_id",
-  started_at = "started_at",
-  updated_at = "updated_at",
 }
 
 /**
@@ -7714,8 +7923,7 @@ export interface member_bool_exp {
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
   assign_rules?: xuemi_assign_rule_bool_exp | null;
   assigned_at?: timestamptz_comparison_exp | null;
-  attends?: xuemi_attend_bool_exp | null;
-  attendsByMemberId?: attend_bool_exp | null;
+  attends?: attend_bool_exp | null;
   coin_logs?: coin_log_bool_exp | null;
   coin_status?: coin_status_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
@@ -8117,8 +8325,7 @@ export interface member_insert_input {
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assign_rules?: xuemi_assign_rule_arr_rel_insert_input | null;
   assigned_at?: any | null;
-  attends?: xuemi_attend_arr_rel_insert_input | null;
-  attendsByMemberId?: attend_arr_rel_insert_input | null;
+  attends?: attend_arr_rel_insert_input | null;
   coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
@@ -8268,6 +8475,15 @@ export interface member_note_arr_rel_insert_input {
 }
 
 /**
+ * order by aggregate values of table "member_note_attachment"
+ */
+export interface member_note_attachment_aggregate_order_by {
+  count?: order_by | null;
+  max?: member_note_attachment_max_order_by | null;
+  min?: member_note_attachment_min_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "member_note_attachment"
  */
 export interface member_note_attachment_arr_rel_insert_input {
@@ -8305,6 +8521,28 @@ export interface member_note_attachment_insert_input {
   member_note_id?: string | null;
   options?: any | null;
   updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "member_note_attachment"
+ */
+export interface member_note_attachment_max_order_by {
+  app_id?: order_by | null;
+  attachment_id?: order_by | null;
+  created_at?: order_by | null;
+  member_note_id?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "member_note_attachment"
+ */
+export interface member_note_attachment_min_order_by {
+  app_id?: order_by | null;
+  attachment_id?: order_by | null;
+  created_at?: order_by | null;
+  member_note_id?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -8413,6 +8651,28 @@ export interface member_note_on_conflict {
 }
 
 /**
+ * ordering options when selecting data from "member_note"
+ */
+export interface member_note_order_by {
+  author?: member_order_by | null;
+  author_id?: order_by | null;
+  created_at?: order_by | null;
+  description?: order_by | null;
+  duration?: order_by | null;
+  id?: order_by | null;
+  member?: member_order_by | null;
+  memberByAuthorId?: member_order_by | null;
+  member_id?: order_by | null;
+  member_note_attachments_aggregate?: member_note_attachment_aggregate_order_by | null;
+  metadata?: order_by | null;
+  note?: order_by | null;
+  rejected_at?: order_by | null;
+  status?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
  * order by stddev() on columns of table "member_note"
  */
 export interface member_note_stddev_order_by {
@@ -8491,8 +8751,7 @@ export interface member_order_by {
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assign_rules_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assigned_at?: order_by | null;
-  attendsByMemberId_aggregate?: attend_aggregate_order_by | null;
-  attends_aggregate?: xuemi_attend_aggregate_order_by | null;
+  attends_aggregate?: attend_aggregate_order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
   coin_status?: coin_status_order_by | null;
   comment_reactions_aggregate?: comment_reaction_aggregate_order_by | null;
@@ -16099,85 +16358,6 @@ export interface xuemi_assign_rule_variance_order_by {
   limit?: order_by | null;
   position?: order_by | null;
   total_limit?: order_by | null;
-}
-
-/**
- * order by aggregate values of table "xuemi.attend"
- */
-export interface xuemi_attend_aggregate_order_by {
-  count?: order_by | null;
-  max?: xuemi_attend_max_order_by | null;
-  min?: xuemi_attend_min_order_by | null;
-}
-
-/**
- * input type for inserting array relation for remote table "xuemi.attend"
- */
-export interface xuemi_attend_arr_rel_insert_input {
-  data: xuemi_attend_insert_input[];
-  on_conflict?: xuemi_attend_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "xuemi.attend". All fields are combined with a logical 'AND'.
- */
-export interface xuemi_attend_bool_exp {
-  _and?: (xuemi_attend_bool_exp | null)[] | null;
-  _not?: xuemi_attend_bool_exp | null;
-  _or?: (xuemi_attend_bool_exp | null)[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  ended_at?: timestamptz_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
-  member_id?: String_comparison_exp | null;
-  started_at?: timestamptz_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "xuemi.attend"
- */
-export interface xuemi_attend_insert_input {
-  created_at?: any | null;
-  ended_at?: any | null;
-  id?: any | null;
-  member?: member_obj_rel_insert_input | null;
-  member_id?: string | null;
-  started_at?: any | null;
-  updated_at?: any | null;
-}
-
-/**
- * order by max() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_max_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * order by min() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_min_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * on conflict condition type for table "xuemi.attend"
- */
-export interface xuemi_attend_on_conflict {
-  constraint: xuemi_attend_constraint;
-  update_columns: xuemi_attend_update_column[];
-  where?: xuemi_attend_bool_exp | null;
 }
 
 /**
