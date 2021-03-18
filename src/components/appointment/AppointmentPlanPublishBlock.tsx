@@ -6,13 +6,13 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import { AdminBlock } from '../admin'
 
@@ -23,9 +23,10 @@ const AppointmentPlanPublishBlock: React.FC<{
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublished))
-  const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
-    PUBLISH_APPOINTMENT_PLAN,
-  )
+  const [publishAppointmentPlan] = useMutation<
+    hasura.PUBLISH_APPOINTMENT_PLAN,
+    hasura.PUBLISH_APPOINTMENT_PLANVariables
+  >(PUBLISH_APPOINTMENT_PLAN)
 
   if (!appointmentPlanAdmin) {
     return <Skeleton active />

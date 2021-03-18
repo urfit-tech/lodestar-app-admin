@@ -8,10 +8,10 @@ import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
-import types from '../../types'
 import { MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -52,8 +52,8 @@ const MemberTaskAdminModal: React.FC<
 > = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [insertTask] = useMutation<types.INSERT_TASK, types.INSERT_TASKVariables>(INSERT_TASK)
-  const [deleteTask] = useMutation<types.DELETE_TASK, types.DELETE_TASKVariables>(DELETE_TASK)
+  const [insertTask] = useMutation<hasura.INSERT_TASK, hasura.INSERT_TASKVariables>(INSERT_TASK)
+  const [deleteTask] = useMutation<hasura.DELETE_TASK, hasura.DELETE_TASKVariables>(DELETE_TASK)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (onSuccess?: () => void) => {

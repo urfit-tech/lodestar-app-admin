@@ -3,8 +3,8 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
@@ -30,7 +30,7 @@ const BlogPostPublishBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [publishPost] = useMutation<types.PUBLISH_POST, types.PUBLISH_POSTVariables>(PUBLISH_POST)
+  const [publishPost] = useMutation<hasura.PUBLISH_POST, hasura.PUBLISH_POSTVariables>(PUBLISH_POST)
 
   if (!post) {
     return <Skeleton active />

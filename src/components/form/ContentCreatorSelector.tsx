@@ -3,8 +3,8 @@ import { Spin } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberOptionProps } from '../../types/member'
 import MemberSelector from './MemberSelector'
 
@@ -15,7 +15,7 @@ const ContentCreatorSelector: React.FC<{
 }> = ({ value, onChange, allowedPermission }) => {
   const { formatMessage } = useIntl()
 
-  const condition: types.GET_CONTENT_CREATOR_COLLECTIONVariables['condition'] = allowedPermission
+  const condition: hasura.GET_CONTENT_CREATOR_COLLECTIONVariables['condition'] = allowedPermission
     ? {
         _or: [
           { role: { _in: ['content-creator', 'app-owner'] } },
@@ -43,10 +43,10 @@ const ContentCreatorSelector: React.FC<{
   )
 }
 
-const useContentCreatorCollection = (condition: types.GET_CONTENT_CREATOR_COLLECTIONVariables['condition']) => {
+const useContentCreatorCollection = (condition: hasura.GET_CONTENT_CREATOR_COLLECTIONVariables['condition']) => {
   const { data, loading, error } = useQuery<
-    types.GET_CONTENT_CREATOR_COLLECTION,
-    types.GET_CONTENT_CREATOR_COLLECTIONVariables
+    hasura.GET_CONTENT_CREATOR_COLLECTION,
+    hasura.GET_CONTENT_CREATOR_COLLECTIONVariables
   >(
     gql`
       query GET_CONTENT_CREATOR_COLLECTION($condition: member_bool_exp!) {

@@ -10,9 +10,9 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PeriodType } from '../../types/general'
 import { ProjectPlanProps } from '../../types/project'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -66,13 +66,13 @@ const ProjectPlanAdminModal: React.FC<
   const { id: appId } = useApp()
   const { authToken, apiHost } = useAuth()
   const uploadCanceler = useRef<Canceler>()
-  const [upsertProjectPlan] = useMutation<types.UPSERT_PROJECT_PLAN, types.UPSERT_PROJECT_PLANVariables>(
+  const [upsertProjectPlan] = useMutation<hasura.UPSERT_PROJECT_PLAN, hasura.UPSERT_PROJECT_PLANVariables>(
     UPSERT_PROJECT_PLAN,
   )
 
   const [updateProjectPlanCoverUrl] = useMutation<
-    types.UPDATE_PROJECT_PLAN_COVER_URL,
-    types.UPDATE_PROJECT_PLAN_COVER_URLVariables
+    hasura.UPDATE_PROJECT_PLAN_COVER_URL,
+    hasura.UPDATE_PROJECT_PLAN_COVER_URLVariables
   >(UPDATE_PROJECT_PLAN_COVER_URL)
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!projectPlan?.discountDownPrice)

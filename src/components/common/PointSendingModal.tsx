@@ -6,10 +6,10 @@ import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMemberSummaryCollection } from '../../hooks/member'
-import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import MemberSelector from '../form/MemberSelector'
 
@@ -41,8 +41,8 @@ const PointSendingModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { members } = useMemberSummaryCollection()
   const [insertPointLogCollection] = useMutation<
-    types.INSERT_POINT_LOG_COLLECTION,
-    types.INSERT_POINT_LOG_COLLECTIONVariables
+    hasura.INSERT_POINT_LOG_COLLECTION,
+    hasura.INSERT_POINT_LOG_COLLECTIONVariables
   >(INSERT_POINT_LOG_COLLECTION)
   const [loading, setLoading] = useState(false)
 

@@ -5,7 +5,7 @@ import { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useAuth } from '../contexts/AuthContext'
 import { commonMessages } from '../helpers/translation'
-import types from '../types'
+import hasura from '../hasura'
 import { CouponPlanProps } from '../types/checkout'
 import {
   MemberAdminProps,
@@ -18,7 +18,7 @@ import {
 } from '../types/member'
 
 export const useMember = (memberId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
     gql`
       query GET_MEMBER($memberId: String!) {
         member_by_pk(id: $memberId) {
@@ -78,7 +78,7 @@ export const useMember = (memberId: string) => {
 }
 
 export const useMemberAdmin = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_ADMIN, types.GET_MEMBER_ADMINVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_ADMIN, hasura.GET_MEMBER_ADMINVariables>(
     gql`
       query GET_MEMBER_ADMIN($memberId: String!) {
         member_by_pk(id: $memberId) {
@@ -268,7 +268,7 @@ export const useMemberAdmin = (memberId: string) => {
 }
 
 export const useMemberNotesAdmin = (
-  orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'],
+  orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy'],
   filters?: {
     range?: [Moment, Moment]
     author?: string
@@ -279,7 +279,7 @@ export const useMemberNotesAdmin = (
   },
 ) => {
   const { permissions, currentMemberId } = useAuth()
-  const condition: types.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -337,8 +337,8 @@ export const useMemberNotesAdmin = (
     },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_NOTES_ADMIN,
-    types.GET_MEMBER_NOTES_ADMINVariables
+    hasura.GET_MEMBER_NOTES_ADMIN,
+    hasura.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
@@ -516,7 +516,7 @@ export const useMemberNotesAdmin = (
 }
 
 export const useMutateMemberNote = () => {
-  const [insertMemberNote] = useMutation<types.INSERT_MEMBER_NOTE, types.INSERT_MEMBER_NOTEVariables>(gql`
+  const [insertMemberNote] = useMutation<hasura.INSERT_MEMBER_NOTE, hasura.INSERT_MEMBER_NOTEVariables>(gql`
     mutation INSERT_MEMBER_NOTE(
       $memberId: String!
       $authorId: String!
@@ -542,7 +542,7 @@ export const useMutateMemberNote = () => {
     }
   `)
 
-  const [updateMemberNote] = useMutation<types.UPDATE_MEMBER_NOTE, types.UPDATE_MEMBER_NOTEVariables>(gql`
+  const [updateMemberNote] = useMutation<hasura.UPDATE_MEMBER_NOTE, hasura.UPDATE_MEMBER_NOTEVariables>(gql`
     mutation UPDATE_MEMBER_NOTE($memberNoteId: String!, $data: member_note_set_input!) {
       update_member_note_by_pk(pk_columns: { id: $memberNoteId }, _set: $data) {
         id
@@ -566,7 +566,7 @@ export const useMutateMemberNote = () => {
 }
 
 export const usePublicMember = (memberId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_PUBLIC_MEMBER, types.GET_PUBLIC_MEMBERVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_PUBLIC_MEMBER, hasura.GET_PUBLIC_MEMBERVariables>(
     gql`
       query GET_PUBLIC_MEMBER($memberId: String!) {
         member_public(where: { id: { _eq: $memberId } }) {
@@ -609,7 +609,7 @@ export const usePublicMember = (memberId: string) => {
 }
 
 export const useMemberRoleCount = (appId: string, filter?: { name?: string; email?: string }) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_ROLE_COUNT, types.GET_MEMBER_ROLE_COUNTVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_ROLE_COUNT, hasura.GET_MEMBER_ROLE_COUNTVariables>(
     gql`
       query GET_MEMBER_ROLE_COUNT($appId: String, $email: String, $name: String) {
         all: member_aggregate(
@@ -730,7 +730,7 @@ export const useMemberCollection = (filter?: {
     value?: string
   }[]
 }) => {
-  const condition: types.GET_PAGE_MEMBER_COLLECTIONVariables['condition'] = {
+  const condition: hasura.GET_PAGE_MEMBER_COLLECTIONVariables['condition'] = {
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
@@ -774,8 +774,8 @@ export const useMemberCollection = (filter?: {
   }
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_PAGE_MEMBER_COLLECTION,
-    types.GET_PAGE_MEMBER_COLLECTIONVariables
+    hasura.GET_PAGE_MEMBER_COLLECTION,
+    hasura.GET_PAGE_MEMBER_COLLECTIONVariables
   >(
     gql`
       query GET_PAGE_MEMBER_COLLECTION($condition: member_bool_exp, $limit: Int!) {
@@ -914,7 +914,7 @@ export const useMemberAllCollection = (filter?: {
     value?: string
   }[]
 }) => {
-  const condition: types.GET_MEMBER_COLLECTIONVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_COLLECTIONVariables['condition'] = {
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
@@ -957,7 +957,7 @@ export const useMemberAllCollection = (filter?: {
       : undefined,
   }
 
-  const { loading, error, data } = useQuery<types.GET_MEMBER_COLLECTION, types.GET_MEMBER_COLLECTIONVariables>(
+  const { loading, error, data } = useQuery<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>(
     gql`
       query GET_MEMBER_COLLECTION($condition: member_bool_exp) {
         member_aggregate(where: $condition) {
@@ -1059,7 +1059,7 @@ export const useMemberAllCollection = (filter?: {
 }
 
 export const useMemberSummaryCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_SUMMARY_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_SUMMARY_COLLECTION>(
     gql`
       query GET_MEMBER_SUMMARY_COLLECTION {
         member {
@@ -1093,7 +1093,7 @@ export const useMemberSummaryCollection = () => {
 }
 
 export const useProperty = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROPERTY, types.GET_PROPERTYVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROPERTY, hasura.GET_PROPERTYVariables>(
     gql`
       query GET_PROPERTY($type: String!) {
         property(where: { type: { _eq: $type } }, order_by: { position: asc }) {

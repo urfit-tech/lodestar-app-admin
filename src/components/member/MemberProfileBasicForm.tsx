@@ -8,9 +8,9 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
 import AllMemberSelector from '../form/AllMemberSelector'
 import CategorySelector from '../form/CategorySelector'
@@ -33,8 +33,8 @@ const MemberProfileBasicForm: React.FC<{
   const { currentUserRole, permissions } = useAuth()
   const { enabledModules } = useApp()
   const [updateMemberProfileBasic] = useMutation<
-    types.UPDATE_MEMBER_PROFILE_BASIC,
-    types.UPDATE_MEMBER_PROFILE_BASICVariables
+    hasura.UPDATE_MEMBER_PROFILE_BASIC,
+    hasura.UPDATE_MEMBER_PROFILE_BASICVariables
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
 

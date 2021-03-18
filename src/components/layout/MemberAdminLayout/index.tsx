@@ -10,13 +10,13 @@ import styled from 'styled-components'
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useCustomRenderer } from '../../../contexts/CustomRendererContext'
+import hasura from '../../../hasura'
 import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages, memberMessages, promotionMessages } from '../../../helpers/translation'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../../images/icon/phone.svg'
 import { routesProps } from '../../../Routes'
-import types from '../../../types'
 import { AppProps } from '../../../types/app'
 import { CouponPlanProps } from '../../../types/checkout'
 import { MemberAdminProps, UserRole } from '../../../types/member'
@@ -83,8 +83,8 @@ const MemberAdminLayout: React.FC<{
   const { formatMessage } = useIntl()
   const { renderMemberAdminLayout } = useCustomRenderer()
   const [insertMemberNoteRejectedAt] = useMutation<
-    types.INSERT_MEMBER_NOTE_REJECTED_AT,
-    types.INSERT_MEMBER_NOTE_REJECTED_ATVariables
+    hasura.INSERT_MEMBER_NOTE_REJECTED_AT,
+    hasura.INSERT_MEMBER_NOTE_REJECTED_ATVariables
   >(gql`
     mutation INSERT_MEMBER_NOTE_REJECTED_AT(
       $memberId: String!

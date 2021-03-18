@@ -6,13 +6,13 @@ import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { dateRangeFormatter } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as MapOIcon } from '../../images/icon/map-o.svg'
 import { ReactComponent as TicketOIcon } from '../../images/icon/ticket-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
-import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import ActivitySessionAdminModal from './ActivitySessionAdminModal'
 
@@ -49,10 +49,10 @@ const ActivitySessionsAdminBlock: React.FC<{
   onChangeTab?: () => void
 }> = ({ activityAdmin, onRefetch, onChangeTab }) => {
   const { formatMessage } = useIntl()
-  const [insertActivitySession] = useMutation<types.INSERT_ACTIVITY_SESSION, types.INSERT_ACTIVITY_SESSIONVariables>(
+  const [insertActivitySession] = useMutation<hasura.INSERT_ACTIVITY_SESSION, hasura.INSERT_ACTIVITY_SESSIONVariables>(
     INSERT_ACTIVITY_SESSION,
   )
-  const [updateActivitySession] = useMutation<types.UPDATE_ACTIVITY_SESSION, types.UPDATE_ACTIVITY_SESSIONVariables>(
+  const [updateActivitySession] = useMutation<hasura.UPDATE_ACTIVITY_SESSION, hasura.UPDATE_ACTIVITY_SESSIONVariables>(
     UPDATE_ACTIVITY_SESSION,
   )
 

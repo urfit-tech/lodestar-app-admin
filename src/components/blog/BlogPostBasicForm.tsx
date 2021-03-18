@@ -7,9 +7,9 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
@@ -36,7 +36,7 @@ const BlogPostBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { settings } = useApp()
-  const [updatePostBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
+  const [updatePostBasic] = useMutation<hasura.UPDATE_POST_BASIC, hasura.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
   const [codeName, setCodeName] = useState('')
   const [loading, setLoading] = useState(false)
 

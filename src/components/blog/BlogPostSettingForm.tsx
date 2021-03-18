@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import ImageInput from '../form/ImageInput'
@@ -25,10 +25,10 @@ const BlogPostSettingForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
-  const [updatePostCover] = useMutation<types.UPDATE_POST_COVER, types.UPDATE_POST_COVERVariables>(UPDATE_POST_COVER)
+  const [updatePostCover] = useMutation<hasura.UPDATE_POST_COVER, hasura.UPDATE_POST_COVERVariables>(UPDATE_POST_COVER)
   const [updatePostMerchandises] = useMutation<
-    types.UPDATE_POST_MERCHANDISE_COLLECTION,
-    types.UPDATE_POST_MERCHANDISE_COLLECTIONVariables
+    hasura.UPDATE_POST_MERCHANDISE_COLLECTION,
+    hasura.UPDATE_POST_MERCHANDISE_COLLECTIONVariables
   >(UPDATE_POST_MERCHANDISE_COLLECTION)
   const [loading, setLoading] = useState(false)
 

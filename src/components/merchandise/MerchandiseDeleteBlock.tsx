@@ -5,9 +5,9 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import types from '../../types'
 
 const StyledModal = styled(Modal)`
   .ant-modal-body {
@@ -48,7 +48,7 @@ const MerchandiseDeleteBlock: React.FC<{
 }> = ({ merchandiseId, memberShopId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [deleteMerchandise] = useMutation<types.DELETE_MERCHANDISE, types.DELETE_MERCHANDISEVariables>(
+  const [deleteMerchandise] = useMutation<hasura.DELETE_MERCHANDISE, hasura.DELETE_MERCHANDISEVariables>(
     DELETE_MERCHANDISE,
   )
   const [visible, setVisible] = useState(false)

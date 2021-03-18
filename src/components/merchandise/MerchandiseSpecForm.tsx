@@ -9,11 +9,11 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError, notEmpty, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
-import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
 import CurrencyInput from '../form/CurrencyInput'
@@ -59,8 +59,8 @@ const MerchandiseSpecForm: React.FC<{
   const { authToken, apiHost } = useAuth()
   const { id: appId } = useApp()
   const [insertMerchandiseSpecCollection] = useMutation<
-    types.INSERT_MERCHANDISE_SPEC_COLLECTION,
-    types.INSERT_MERCHANDISE_SPEC_COLLECTIONVariables
+    hasura.INSERT_MERCHANDISE_SPEC_COLLECTION,
+    hasura.INSERT_MERCHANDISE_SPEC_COLLECTIONVariables
   >(INSERT_MERCHANDISE_SPEC_COLLECTION)
 
   const uploadCanceler = useRef<Canceler>()

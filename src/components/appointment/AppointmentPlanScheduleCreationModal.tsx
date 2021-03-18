@@ -8,9 +8,9 @@ import momentTz from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import { PeriodType } from '../../types/general'
 import { StyledSelect } from '../admin'
@@ -41,8 +41,8 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [createAppointmentSchedule] = useMutation<
-    types.CREATE_APPOINTMENT_SCHEDULE,
-    types.CREATE_APPOINTMENT_SCHEDULEVariables
+    hasura.CREATE_APPOINTMENT_SCHEDULE,
+    hasura.CREATE_APPOINTMENT_SCHEDULEVariables
   >(CREATE_APPOINTMENT_SCHEDULE)
   const [withRepeat, setWithRepeat] = useState(false)
   const [loading, setLoading] = useState(false)

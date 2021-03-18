@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin/index'
 import ImageInput from '../form/ImageInput'
@@ -27,13 +27,13 @@ const PodcastProgramIntroForm: React.FC<{
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramCover] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_COVER,
-    types.UPDATE_PODCAST_PROGRAM_COVERVariables
+    hasura.UPDATE_PODCAST_PROGRAM_COVER,
+    hasura.UPDATE_PODCAST_PROGRAM_COVERVariables
   >(UPDATE_PODCAST_PROGRAM_COVER)
 
   const [updatePodcastProgramIntro] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_INTRO,
-    types.UPDATE_PODCAST_PROGRAM_INTROVariables
+    hasura.UPDATE_PODCAST_PROGRAM_INTRO,
+    hasura.UPDATE_PODCAST_PROGRAM_INTROVariables
   >(UPDATE_PODCAST_PROGRAM_INTRO)
 
   if (!podcastProgramAdmin) {

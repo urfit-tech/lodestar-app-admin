@@ -9,9 +9,9 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import PracticeCard from '../../components/practice/PracticeCard'
 import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { commonMessages, errorMessages, practiceMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
-import types from '../../types'
 
 const PracticeCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -116,8 +116,8 @@ const usePracticePreviewCollection = (
   options?: { programRoleMemberId?: string | null },
 ) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PRACTICE_PREVIEW_COLLECTION,
-    types.GET_PRACTICE_PREVIEW_COLLECTIONVariables
+    hasura.GET_PRACTICE_PREVIEW_COLLECTION,
+    hasura.GET_PRACTICE_PREVIEW_COLLECTIONVariables
   >(GET_PRACTICE_PREVIEW_COLLECTION, {
     variables: {
       searchText: searchText ? `%${searchText}%` : undefined,

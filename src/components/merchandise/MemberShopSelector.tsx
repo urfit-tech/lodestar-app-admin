@@ -3,8 +3,8 @@ import { Select, Spin } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { merchandiseMessages } from '../../helpers/translation'
-import types from '../../types'
 
 const MemberShopSelector: React.FC<{
   allText?: string
@@ -12,7 +12,7 @@ const MemberShopSelector: React.FC<{
   onChange?: (value: string) => void
 }> = ({ allText, value, onChange }) => {
   const { formatMessage } = useIntl()
-  const { loading, data } = useQuery<types.GET_MEMBER_SHOP_TITLE_COLLECTION>(GET_MEMBER_SHOP_TITLE_COLLECTION)
+  const { loading, data } = useQuery<hasura.GET_MEMBER_SHOP_TITLE_COLLECTION>(GET_MEMBER_SHOP_TITLE_COLLECTION)
 
   if (loading) {
     return <Spin />

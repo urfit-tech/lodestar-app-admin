@@ -14,11 +14,11 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import MemberNoteAdminModal from '../../components/member/MemberNoteAdminModal'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, downloadFile, getFileDownloadableLink, handleError } from '../../helpers'
 import { commonMessages, memberMessages, podcastMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMemberNotesAdmin, useMutateMemberNote } from '../../hooks/member'
-import types from '../../types'
 import { NoteAdminProps } from '../../types/member'
 
 const messages = defineMessages({
@@ -76,8 +76,8 @@ const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken, apiHost } = useAuth()
 
-  const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
-    created_at: types.order_by.desc,
+  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
+    created_at: 'desc' as hasura.order_by,
   })
   const [filters, setFilters] = useState<FiltersProps>({
     range: [moment().startOf('month'), moment().endOf('month')],
@@ -359,7 +359,7 @@ const NoteCollectionPage: React.FC = () => {
                   const newSorter = sorter as SorterResult<NoteAdminProps>
                   setOrderBy({
                     [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
-                      newSorter.order === 'ascend' ? types.order_by.asc : types.order_by.desc,
+                      newSorter.order === 'ascend' ? 'asc' : 'desc',
                   })
                 }}
                 onRow={note => ({

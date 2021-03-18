@@ -3,8 +3,8 @@ import { Spin, TreeSelect } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProductType } from '../../types/general'
 
 const productTypeLabel = (productType: string) => {
@@ -89,7 +89,7 @@ const ProductSelector: React.FC<{
 }
 
 const useProductSelections = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PRODUCT_SELECTION_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SELECTION_COLLECTION>(
     gql`
       query GET_PRODUCT_SELECTION_COLLECTION {
         program(

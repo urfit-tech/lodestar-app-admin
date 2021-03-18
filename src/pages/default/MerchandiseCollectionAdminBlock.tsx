@@ -11,10 +11,10 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
-import types from '../../types'
 import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
 
@@ -48,7 +48,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
   const { currentMemberId } = useAuth()
   const { loading, id: appId, enabledModules } = useApp()
 
-  const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(
+  const [insertMerchandise] = useMutation<hasura.INSERT_MERCHANDISE, hasura.INSERT_MERCHANDISEVariables>(
     INSERT_MERCHANDISE,
   )
   const [searchText, setSearchText] = useState('')

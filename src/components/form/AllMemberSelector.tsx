@@ -4,8 +4,8 @@ import { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberOptionProps } from '../../types/member'
 import MemberSelector from './MemberSelector'
 
@@ -38,7 +38,7 @@ const AllMemberSelector: React.FC<{
 }
 
 const useAllMemberCollection = () => {
-  const { data, loading, error } = useQuery<types.GET_ALL_MEMBER_COLLECTION>(
+  const { data, loading, error } = useQuery<hasura.GET_ALL_MEMBER_COLLECTION>(
     gql`
       query GET_ALL_MEMBER_COLLECTION {
         member {

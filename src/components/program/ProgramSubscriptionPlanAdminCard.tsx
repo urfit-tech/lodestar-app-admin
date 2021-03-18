@@ -5,8 +5,8 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
@@ -82,8 +82,8 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
 
 const useProgramPlanEnrollmentCount = (programPlanId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT,
-    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables
+    hasura.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT,
+    hasura.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables
   >(
     gql`
       query GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT($programPlanId: uuid!) {

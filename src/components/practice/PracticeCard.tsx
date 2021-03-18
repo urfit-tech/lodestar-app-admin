@@ -9,11 +9,11 @@ import styled from 'styled-components'
 import Responsive from '../../components/common/Responsive'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { dateFormatter } from '../../helpers'
 import { practiceMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as CommentAltLinesIcon } from '../../images/icon/comment-alt-lines-o.svg'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import MemberAvatar from '../common/MemberAvatar'
 import { BREAK_POINT } from '../common/Responsive'
@@ -118,15 +118,17 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   const [reviewed, setReviewed] = useState(isReviewed)
   const [reacted, setReacted] = useState(false)
   const { currentMemberId, currentUserRole } = useAuth()
-  const [updatedPracticeStatus] = useMutation<types.UPDATE_PRACTICE_STATUS, types.UPDATE_PRACTICE_STATUSVariables>(
+  const [updatedPracticeStatus] = useMutation<hasura.UPDATE_PRACTICE_STATUS, hasura.UPDATE_PRACTICE_STATUSVariables>(
     UPDATE_PRACTICE_STATUS,
   )
-  const [insertPracticeReaction] = useMutation<types.INSERT_PRACTICE_REACTION, types.INSERT_PRACTICE_REACTIONVariables>(
-    INSERT_PRACTICE_REACTION,
-  )
-  const [deletePracticeReaction] = useMutation<types.DELETE_PRACTICE_REACTION, types.DELETE_PRACTICE_REACTIONVariables>(
-    DELETE_PRACTICE_REACTION,
-  )
+  const [insertPracticeReaction] = useMutation<
+    hasura.INSERT_PRACTICE_REACTION,
+    hasura.INSERT_PRACTICE_REACTIONVariables
+  >(INSERT_PRACTICE_REACTION)
+  const [deletePracticeReaction] = useMutation<
+    hasura.DELETE_PRACTICE_REACTION,
+    hasura.DELETE_PRACTICE_REACTIONVariables
+  >(DELETE_PRACTICE_REACTION)
   const { practiceAmount } = usePracticeIssueAmount(id)
 
   const practiceUrl = `https://${settings['host']}/practices/${id}`
@@ -315,8 +317,8 @@ const DELETE_PRACTICE_REACTION = gql`
 `
 const usePracticeIssueAmount = (practiceId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PRACTICE_ISSUE_AMOUNT,
-    types.GET_PRACTICE_ISSUE_AMOUNTVariables
+    hasura.GET_PRACTICE_ISSUE_AMOUNT,
+    hasura.GET_PRACTICE_ISSUE_AMOUNTVariables
   >(GET_PRACTICE_ISSUE_AMOUNT, { variables: { threadIdLike: `/practices/${practiceId}` } })
   return {
     loading,

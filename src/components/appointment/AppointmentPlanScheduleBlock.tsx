@@ -5,8 +5,8 @@ import moment from 'moment'
 import { groupBy } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import { EmptyBlock } from '../admin'
 import AppointmentPeriodCollection from './AppointmentPeriodCollection'
@@ -22,12 +22,12 @@ const AppointmentPlanScheduleBlock: React.FC<{
   const { formatMessage } = useIntl()
 
   const [updateAppointmentSchedule] = useMutation<
-    types.UPDATE_APPOINTMENT_SCHEDULE,
-    types.UPDATE_APPOINTMENT_SCHEDULEVariables
+    hasura.UPDATE_APPOINTMENT_SCHEDULE,
+    hasura.UPDATE_APPOINTMENT_SCHEDULEVariables
   >(UPDATE_APPOINTMENT_SCHEDULE)
   const [deleteAppointmentSchedule] = useMutation<
-    types.DELETE_APPOINTMENT_SCHEDULE,
-    types.DELETE_APPOINTMENT_SCHEDULEVariables
+    hasura.DELETE_APPOINTMENT_SCHEDULE,
+    hasura.DELETE_APPOINTMENT_SCHEDULEVariables
   >(DELETE_APPOINTMENT_SCHEDULE)
 
   if (!appointmentPlanAdmin) {

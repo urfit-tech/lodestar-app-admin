@@ -7,8 +7,8 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { memberMessages } from '../../helpers/translation'
-import types from '../../types'
 
 const StyledTitle = styled(Typography.Title)`
   && {
@@ -108,7 +108,7 @@ const useMemberContract = (memberContractId: string) => {
       }
     }
   `
-  const { data, ...result } = useQuery<types.GET_MEMBER_CONTRACT, types.GET_MEMBER_CONTRACTVariables>(
+  const { data, ...result } = useQuery<hasura.GET_MEMBER_CONTRACT, hasura.GET_MEMBER_CONTRACTVariables>(
     GET_MEMBER_CONTRACT,
     {
       variables: { memberContractId },

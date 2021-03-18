@@ -8,9 +8,9 @@ import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
+import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { OrderLogProps } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import ProductTypeLabel from '../common/ProductTypeLabel'
@@ -330,7 +330,7 @@ const useOrderLog = (filters?: {
   memberNameAndEmail?: string | null
   memberId?: string
 }) => {
-  const condition: types.GET_ORDERSVariables['condition'] = {
+  const condition: hasura.GET_ORDERSVariables['condition'] = {
     status: filters?.statuses
       ? {
           _in: filters.statuses,
@@ -356,7 +356,7 @@ const useOrderLog = (filters?: {
     },
   }
 
-  const { loading, error, data, refetch, fetchMore } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(
+  const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDERS, hasura.GET_ORDERSVariables>(
     GET_ORDERS,
     {
       variables: {

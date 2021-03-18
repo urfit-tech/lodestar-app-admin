@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { reverse, times } from 'ramda'
 import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
 import { useApp } from '../contexts/AppContext'
-import types from '../types'
+import hasura from '../hasura'
 import {
   CouponCodeProps,
   CouponPlanProps,
@@ -27,8 +27,8 @@ export const useCouponPlanCollection = () => {
   const app = useApp()
 
   const { loading, error, data, refetch } = useQuery<
-    types.GET_COUPON_PLAN_COLLECTION,
-    types.GET_COUPON_PLAN_COLLECTIONVariables
+    hasura.GET_COUPON_PLAN_COLLECTION,
+    hasura.GET_COUPON_PLAN_COLLECTIONVariables
   >(
     gql`
       query GET_COUPON_PLAN_COLLECTION($appId: String!) {
@@ -116,8 +116,8 @@ export const useCouponPlanCollection = () => {
 
 export const useCouponCodeCollection = (couponPlanId: string) => {
   const { loading, data, error, refetch } = useQuery<
-    types.GET_COUPON__CODE_COLLECTION,
-    types.GET_COUPON__CODE_COLLECTIONVariables
+    hasura.GET_COUPON__CODE_COLLECTION,
+    hasura.GET_COUPON__CODE_COLLECTIONVariables
   >(
     gql`
       query GET_COUPON__CODE_COLLECTION($couponPlanId: uuid!) {
@@ -181,7 +181,7 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
 }
 
 export const useVoucherPlanCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_PLAN_COLLECTION>(GET_VOUCHER_PLAN_COLLECTION)
+  const { loading, error, data, refetch } = useQuery<hasura.GET_VOUCHER_PLAN_COLLECTION>(GET_VOUCHER_PLAN_COLLECTION)
   const voucherPlanCollection: VoucherPlanProps[] =
     loading || error || !data
       ? []
@@ -217,7 +217,7 @@ export const useVoucherPlanCollection = () => {
 }
 
 export const useVoucherCode = (voucherPlanId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_CODE, types.GET_VOUCHER_CODEVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_VOUCHER_CODE, hasura.GET_VOUCHER_CODEVariables>(
     GET_VOUCHER_CODE,
     {
       variables: {
@@ -250,7 +250,7 @@ export const useVoucherCode = (voucherPlanId: string) => {
 export const useMutateVoucherPlan = () => {
   const { id: appId } = useApp()
 
-  const [insertVoucherPlanHandler] = useMutation<types.INSERT_VOUCHER_PLAN, types.INSERT_VOUCHER_PLANVariables>(
+  const [insertVoucherPlanHandler] = useMutation<hasura.INSERT_VOUCHER_PLAN, hasura.INSERT_VOUCHER_PLANVariables>(
     gql`
       mutation INSERT_VOUCHER_PLAN(
         $title: String!
@@ -308,7 +308,7 @@ export const useMutateVoucherPlan = () => {
     })
   }
 
-  const [updateVoucherPlanHandler] = useMutation<types.UPDATE_VOUCHER_PLAN, types.UPDATE_VOUCHER_PLANVariables>(
+  const [updateVoucherPlanHandler] = useMutation<hasura.UPDATE_VOUCHER_PLAN, hasura.UPDATE_VOUCHER_PLANVariables>(
     gql`
       mutation UPDATE_VOUCHER_PLAN(
         $voucherPlanId: uuid!

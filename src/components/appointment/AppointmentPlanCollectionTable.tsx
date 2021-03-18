@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
 import { appointmentMessages } from '../../helpers/translation'
-import types from '../../types'
 import { AvatarImage } from '../common/Image'
 import AppointmentPlanAppointmentModal from './AppointmentPlanAppointmentModal'
 
@@ -71,8 +71,8 @@ type AppointmentPlanProps = {
 }
 
 const AppointmentPlanCollectionTable: React.FC<{
-  condition: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
-  orderBy?: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy']
+  condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
+  orderBy?: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy']
   withAppointmentButton?: Boolean
   onReady?: (count: number) => void
 }> = ({ condition, orderBy, withAppointmentButton, onReady }) => {
@@ -203,14 +203,14 @@ const AppointmentPlanCollectionTable: React.FC<{
 }
 
 const useAppointmentPlansAdmin = (
-  condition: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition'],
-  orderBy: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy'] = [
-    { updated_at: 'desc_nulls_last' as types.order_by },
+  condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition'],
+  orderBy: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy'] = [
+    { updated_at: 'desc_nulls_last' as hasura.order_by },
   ],
 ) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
-    types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables
+    hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
+    hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables
   >(
     gql`
       query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN(

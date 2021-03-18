@@ -5,9 +5,9 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { AppointmentPlanAdminProps, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
@@ -32,8 +32,8 @@ const AppointmentPlanBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
 
   const [updateAppointmentPlanTitle] = useMutation<
-    types.UPDATE_APPOINTMENT_PLAN_TITLE,
-    types.UPDATE_APPOINTMENT_PLAN_TITLEVariables
+    hasura.UPDATE_APPOINTMENT_PLAN_TITLE,
+    hasura.UPDATE_APPOINTMENT_PLAN_TITLEVariables
   >(UPDATE_APPOINTMENT_PLAN_TITLE)
   const [loading, setLoading] = useState(false)
 

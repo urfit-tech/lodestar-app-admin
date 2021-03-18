@@ -4,9 +4,9 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import CategorySelector from '../form/CategorySelector'
 import TagSelector from '../form/TagSelector'
@@ -25,9 +25,10 @@ const MerchandiseBasicForm: React.FC<{
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updateMerchandiseBasic] = useMutation<types.UPDATE_MERCHANDISE_BASIC, types.UPDATE_MERCHANDISE_BASICVariables>(
-    UPDATE_MERCHANDISE_BASIC,
-  )
+  const [updateMerchandiseBasic] = useMutation<
+    hasura.UPDATE_MERCHANDISE_BASIC,
+    hasura.UPDATE_MERCHANDISE_BASICVariables
+  >(UPDATE_MERCHANDISE_BASIC)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {

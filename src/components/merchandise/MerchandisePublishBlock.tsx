@@ -2,8 +2,8 @@ import { useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
@@ -34,7 +34,7 @@ const MerchandisePublishBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [publishMerchandise] = useMutation<types.PUBLISH_MERCHANDISE, types.PUBLISH_MERCHANDISEVariables>(
+  const [publishMerchandise] = useMutation<hasura.PUBLISH_MERCHANDISE, hasura.PUBLISH_MERCHANDISEVariables>(
     PUBLISH_MERCHANDISE,
   )
 

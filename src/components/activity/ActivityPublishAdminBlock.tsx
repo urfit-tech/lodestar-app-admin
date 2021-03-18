@@ -3,8 +3,8 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
@@ -30,7 +30,7 @@ const ActivityPublishAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [publishActivity] = useMutation<types.PUBLISH_ACTIVITY, types.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
+  const [publishActivity] = useMutation<hasura.PUBLISH_ACTIVITY, hasura.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
 
   if (!activityAdmin) {
     return <Skeleton active />

@@ -5,9 +5,9 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 
@@ -61,7 +61,7 @@ const ProgramDeletionAdminCard: React.FC<{
 }> = ({ program }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [archiveProgram] = useMutation<types.UPDATE_PROGRAM_IS_DELETED, types.UPDATE_PROGRAM_IS_DELETEDVariables>(
+  const [archiveProgram] = useMutation<hasura.UPDATE_PROGRAM_IS_DELETED, hasura.UPDATE_PROGRAM_IS_DELETEDVariables>(
     UPDATE_PROGRAM_IS_DELETED,
   )
   if (!program) {

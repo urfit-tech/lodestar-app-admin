@@ -28,8 +28,8 @@ import { AdminBlock, AdminBlockTitle } from '../../../components/admin'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
+import hasura from '../../../hasura'
 import { currencyFormatter, handleError, notEmpty, uploadFile } from '../../../helpers'
-import types from '../../../types'
 import { PeriodType } from '../../../types/general'
 import LoadingPage from '../LoadingPage'
 
@@ -79,7 +79,7 @@ const StyledTotal = styled.div`
 const MemberContractCreationPage: React.FC = () => {
   const { memberId } = useParams<{ memberId: string }>()
 
-  const { loading: loadingMember, error: errorMember, data: dataMember } = useQuery<types.GET_CONTRACT_MEMBER>(
+  const { loading: loadingMember, error: errorMember, data: dataMember } = useQuery<hasura.GET_CONTRACT_MEMBER>(
     GET_CONTRACT_MEMBER,
     { variables: { id: memberId } },
   )
@@ -136,11 +136,11 @@ const MemberContractForm: React.FC<{
   const { xuemiSales } = useXuemiSales()
 
   const { products } = useProducts()
-  const { data: dataProperties } = useQuery<types.GET_PROPERTIES>(GET_PROPERTIES)
-  const { data: dataContracts } = useQuery<types.GET_CONTRACTS>(GET_CONTRACTS)
-  const { data: dataProjectPlans } = useQuery<types.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
-  const { data: dataCreators } = useQuery<types.GET_APPOINTMENT_PLAN_CREATORS>(GET_APPOINTMENT_PLAN_CREATORS)
-  const [addMemberContract] = useMutation<types.ADD_MEMBER_CONTRACT, types.ADD_MEMBER_CONTRACTVariables>(
+  const { data: dataProperties } = useQuery<hasura.GET_PROPERTIES>(GET_PROPERTIES)
+  const { data: dataContracts } = useQuery<hasura.GET_CONTRACTS>(GET_CONTRACTS)
+  const { data: dataProjectPlans } = useQuery<hasura.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
+  const { data: dataCreators } = useQuery<hasura.GET_APPOINTMENT_PLAN_CREATORS>(GET_APPOINTMENT_PLAN_CREATORS)
+  const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
@@ -163,8 +163,8 @@ const MemberContractForm: React.FC<{
   const [uploading, setUploading] = useState(false)
 
   const { data: dataReferralMembers } = useQuery<
-    types.GET_REFERRAL_MEMBER_COLLECTION,
-    types.GET_REFERRAL_MEMBER_COLLECTIONVariables
+    hasura.GET_REFERRAL_MEMBER_COLLECTION,
+    hasura.GET_REFERRAL_MEMBER_COLLECTIONVariables
   >(GET_REFERRAL_MEMBER_COLLECTION, {
     variables: {
       condition: referralMemberFilter
@@ -780,7 +780,7 @@ const MemberContractForm: React.FC<{
 }
 
 const useXuemiSales = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_SALE_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_SALE_COLLECTION>(
     gql`
       query GET_SALE_COLLECTION {
         xuemi_sales {
@@ -811,7 +811,7 @@ const useXuemiSales = () => {
 }
 
 const useProducts = () => {
-  const { data } = useQuery<types.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT)
+  const { data } = useQuery<hasura.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT)
   const products: ProductProps[] =
     data?.xuemi_product.map(v => ({
       id: v.id,

@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import types from '../types'
+import hasura from '../hasura'
 
 export const useOrderStatuses = () => {
-  const { loading, error, data } = useQuery<types.GET_ORDER_LOG_STATUS>(gql`
+  const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
     query GET_ORDER_LOG_STATUS {
       order_log(distinct_on: status) {
         status

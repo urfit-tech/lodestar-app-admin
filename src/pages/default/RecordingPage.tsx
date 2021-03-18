@@ -12,10 +12,10 @@ import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramAdmin } from '../../hooks/podcast'
-import types from '../../types'
 import { PodcastProgramAudio } from '../../types/podcast'
 import {
   appendPodcastProgramAudio,
@@ -90,17 +90,17 @@ const RecordingPage: React.FC = () => {
   const history = useHistory()
 
   const [updatePodcastProgramDuration] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_DURATION,
-    types.UPDATE_PODCAST_PROGRAM_DURATIONVariables
+    hasura.UPDATE_PODCAST_PROGRAM_DURATION,
+    hasura.UPDATE_PODCAST_PROGRAM_DURATIONVariables
   >(UPDATE_PODCAST_PROGRAM_DURATION)
 
   const [updatePodcastProgramAudioData] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_AUDIO_DATA,
-    types.UPDATE_PODCAST_PROGRAM_AUDIO_DATAVariables
+    hasura.UPDATE_PODCAST_PROGRAM_AUDIO_DATA,
+    hasura.UPDATE_PODCAST_PROGRAM_AUDIO_DATAVariables
   >(UPDATE_PODCAST_PROGRAM_AUDIO_DATA)
   const [updatePodcastProgramAudioPosition] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_AUDIO_POSITION,
-    types.UPDATE_PODCAST_PROGRAM_AUDIO_POSITIONVariables
+    hasura.UPDATE_PODCAST_PROGRAM_AUDIO_POSITION,
+    hasura.UPDATE_PODCAST_PROGRAM_AUDIO_POSITIONVariables
   >(UPDATE_PODCAST_PROGRAM_AUDIO_POSITION)
 
   const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)

@@ -10,9 +10,9 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError, rgba } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramRoleProps } from '../../types/program'
 import MemberAvatar from '../common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
@@ -97,12 +97,12 @@ const IssueItem: React.FC<{
   const { currentMemberId, currentUserRole } = useAuth()
   const theme = useContext(ThemeContext)
 
-  const [updateIssue] = useMutation<types.UPDATE_ISSUE, types.UPDATE_ISSUEVariables>(UPDATE_ISSUE)
-  const [deleteIssue] = useMutation<types.DELETE_ISSUE, types.DELETE_ISSUEVariables>(DELETE_ISSUE)
-  const [insertIssueReaction] = useMutation<types.INSERT_ISSUE_REACTION, types.INSERT_ISSUE_REACTIONVariables>(
+  const [updateIssue] = useMutation<hasura.UPDATE_ISSUE, hasura.UPDATE_ISSUEVariables>(UPDATE_ISSUE)
+  const [deleteIssue] = useMutation<hasura.DELETE_ISSUE, hasura.DELETE_ISSUEVariables>(DELETE_ISSUE)
+  const [insertIssueReaction] = useMutation<hasura.INSERT_ISSUE_REACTION, hasura.INSERT_ISSUE_REACTIONVariables>(
     INSERT_ISSUE_REACTION,
   )
-  const [deleteIssueReaction] = useMutation<types.DELETE_ISSUE_REACTION, types.DELETE_ISSUE_REACTIONVariables>(
+  const [deleteIssueReaction] = useMutation<hasura.DELETE_ISSUE_REACTION, hasura.DELETE_ISSUE_REACTIONVariables>(
     DELETE_ISSUE_REACTION,
   )
 

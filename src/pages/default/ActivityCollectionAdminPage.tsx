@@ -10,17 +10,17 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
-import types from '../../types'
 
 const ActivityCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
   const { id: appId } = useApp()
-  const [createActivity] = useMutation<types.INSERT_ACTIVITY, types.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
+  const [createActivity] = useMutation<hasura.INSERT_ACTIVITY, hasura.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
 
   return (
     <AdminLayout>

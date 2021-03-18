@@ -5,10 +5,10 @@ import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { usePublicMember } from '../../hooks/member'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
@@ -138,8 +138,8 @@ const ListItem: React.FC<{
 
 const useProductOwnerOrders = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<
-    types.GET_PRODUCT_OWNER_ORDERS,
-    types.GET_PRODUCT_OWNER_ORDERSVariables
+    hasura.GET_PRODUCT_OWNER_ORDERS,
+    hasura.GET_PRODUCT_OWNER_ORDERSVariables
   >(
     gql`
       query GET_PRODUCT_OWNER_ORDERS($memberId: String!) {

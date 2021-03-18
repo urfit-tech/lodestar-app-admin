@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
@@ -28,7 +28,7 @@ const ActivityBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
-  const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
+  const [updateActivityBasic] = useMutation<hasura.UPDATE_ACTIVITY_BASIC, hasura.UPDATE_ACTIVITY_BASICVariables>(
     UPDATE_ACTIVITY_BASIC,
   )
   const [loading, setLoading] = useState(false)

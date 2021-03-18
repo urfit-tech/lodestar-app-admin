@@ -8,10 +8,10 @@ import React, { useCallback, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages, orderMessages } from '../../helpers/translation'
 import { useOrderStatuses } from '../../hooks/order'
-import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessages({
@@ -59,7 +59,10 @@ const OrderExportModal: React.FC = () => {
     orderStatuses: string[],
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
-      const orderLogExportResult = await client.query<types.GET_ORDER_LOG_EXPORT, types.GET_ORDER_LOG_EXPORTVariables>({
+      const orderLogExportResult = await client.query<
+        hasura.GET_ORDER_LOG_EXPORT,
+        hasura.GET_ORDER_LOG_EXPORTVariables
+      >({
         query: GET_ORDER_LOG_EXPORT,
         variables: {
           condition: {
@@ -74,7 +77,8 @@ const OrderExportModal: React.FC = () => {
         },
       })
 
-      const orderLogs: types.GET_ORDER_LOG_EXPORT['order_log_export'] = orderLogExportResult.data.order_log_export || []
+      const orderLogs: hasura.GET_ORDER_LOG_EXPORT['order_log_export'] =
+        orderLogExportResult.data.order_log_export || []
 
       const data: string[][] = [
         [
@@ -167,8 +171,8 @@ const OrderExportModal: React.FC = () => {
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
       const orderProductExportResult = await client.query<
-        types.GET_ORDER_PRODUCT_EXPORT,
-        types.GET_ORDER_PRODUCT_EXPORTVariables
+        hasura.GET_ORDER_PRODUCT_EXPORT,
+        hasura.GET_ORDER_PRODUCT_EXPORTVariables
       >({
         query: GET_ORDER_PRODUCT_EXPORT,
         variables: {
@@ -200,7 +204,7 @@ const OrderExportModal: React.FC = () => {
         AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
       }
 
-      const orderProducts: types.GET_ORDER_PRODUCT_EXPORT['order_product_export'] =
+      const orderProducts: hasura.GET_ORDER_PRODUCT_EXPORT['order_product_export'] =
         orderProductExportResult.data?.order_product_export || []
 
       const data: string[][] = [
@@ -244,8 +248,8 @@ const OrderExportModal: React.FC = () => {
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
       const orderDiscountResult = await client.query<
-        types.GET_ORDER_DISCOUNT_COLLECTION,
-        types.GET_ORDER_DISCOUNT_COLLECTIONVariables
+        hasura.GET_ORDER_DISCOUNT_COLLECTION,
+        hasura.GET_ORDER_DISCOUNT_COLLECTIONVariables
       >({
         query: GET_ORDER_DISCOUNT_COLLECTION,
         variables: {
@@ -263,7 +267,7 @@ const OrderExportModal: React.FC = () => {
         },
       })
 
-      const orderDiscounts: types.GET_ORDER_DISCOUNT_COLLECTION['order_discount'] =
+      const orderDiscounts: hasura.GET_ORDER_DISCOUNT_COLLECTION['order_discount'] =
         orderDiscountResult.data?.order_discount || []
 
       const data: string[][] = [
@@ -293,8 +297,8 @@ const OrderExportModal: React.FC = () => {
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
       const paymentLogExportResult = await client.query<
-        types.GET_PAYMENT_LOG_EXPORT,
-        types.GET_PAYMENT_LOG_EXPORTVariables
+        hasura.GET_PAYMENT_LOG_EXPORT,
+        hasura.GET_PAYMENT_LOG_EXPORTVariables
       >({
         query: GET_PAYMENT_LOG_EXPORT,
         variables: {
@@ -312,7 +316,7 @@ const OrderExportModal: React.FC = () => {
         },
       })
 
-      const paymentLogs: types.GET_PAYMENT_LOG_EXPORT['payment_log_export'] =
+      const paymentLogs: hasura.GET_PAYMENT_LOG_EXPORT['payment_log_export'] =
         paymentLogExportResult.data?.payment_log_export || []
 
       const data: string[][] = [

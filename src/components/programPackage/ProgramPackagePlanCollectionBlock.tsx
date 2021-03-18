@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
-import types from '../../types'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import PositionAdminLayout, {
   OverlayBlock,
@@ -63,8 +63,8 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
 }> = ({ programPackageId, plans, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [updatePosition] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
-    types.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables
+    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
+    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION)
 
   return (

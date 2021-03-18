@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberShopProps } from '../../types/merchandise'
 import ImageInput from '../form/ImageInput'
 
@@ -26,12 +26,14 @@ const MemberShopBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
-  const [updateMemberShopTitle] = useMutation<types.UPDATE_MEMBER_SHOP_TITLE, types.UPDATE_MEMBER_SHOP_TITLEVariables>(
-    UPDATE_MEMBER_SHOP_TITLE,
-  )
-  const [updateMembersShopCover] = useMutation<types.UPDATE_MEMBER_SHOP_COVER, types.UPDATE_MEMBER_SHOP_COVERVariables>(
-    UPDATE_MEMBER_SHOP_COVER,
-  )
+  const [updateMemberShopTitle] = useMutation<
+    hasura.UPDATE_MEMBER_SHOP_TITLE,
+    hasura.UPDATE_MEMBER_SHOP_TITLEVariables
+  >(UPDATE_MEMBER_SHOP_TITLE)
+  const [updateMembersShopCover] = useMutation<
+    hasura.UPDATE_MEMBER_SHOP_COVER,
+    hasura.UPDATE_MEMBER_SHOP_COVERVariables
+  >(UPDATE_MEMBER_SHOP_COVER)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {

@@ -6,7 +6,7 @@ import { useApp } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
-import types from '../types'
+import hasura from '../hasura'
 import { CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
@@ -14,7 +14,7 @@ import { CouponProps } from '../types/checkout'
 
 
 export const useTags = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
     gql`
       query GET_TAGS {
         app_tag {
@@ -36,7 +36,7 @@ export const useTags = () => {
 
 export const useCategory = (classType: ClassType) => {
   const { id: appId } = useApp()
-  const { loading, data, error, refetch } = useQuery<types.GET_CATEGORIES, types.GET_CATEGORIESVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_CATEGORIES, hasura.GET_CATEGORIESVariables>(
     gql`
       query GET_CATEGORIES($appId: String!, $classType: String) {
         category(where: { app_id: { _eq: $appId }, class: { _eq: $classType } }, order_by: { position: asc }) {
@@ -78,8 +78,8 @@ export const useCategory = (classType: ClassType) => {
 
 export const useNotifications = (memberId: string, limit?: number) => {
   const { data, loading, error, refetch, startPolling } = useQuery<
-    types.GET_NOTIFICATIONS,
-    types.GET_NOTIFICATIONSVariables
+    hasura.GET_NOTIFICATIONS,
+    hasura.GET_NOTIFICATIONSVariables
   >(
     gql`
       query GET_NOTIFICATIONS($memberId: String, $limit: Int) {
@@ -131,7 +131,7 @@ export const useNotifications = (memberId: string, limit?: number) => {
 }
 
 export const useProductInventoryLog = (productId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PRODUCT_INVENTORY, types.GET_PRODUCT_INVENTORYVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_INVENTORY, hasura.GET_PRODUCT_INVENTORYVariables>(
     gql`
       query GET_PRODUCT_INVENTORY($productId: String!) {
         product_inventory(where: { product_id: { _eq: $productId } }, order_by: { created_at: desc }) {
@@ -194,8 +194,8 @@ export const useProductInventoryLog = (productId: string) => {
 
 export const useArrangeProductInventory = (productId: string) => {
   const [arrangeMerchandiseInventory] = useMutation<
-    types.ARRANGE_PRODUCT_INVENTORY,
-    types.ARRANGE_PRODUCT_INVENTORYVariables
+    hasura.ARRANGE_PRODUCT_INVENTORY,
+    hasura.ARRANGE_PRODUCT_INVENTORYVariables
   >(
     gql`
       mutation ARRANGE_PRODUCT_INVENTORY($data: product_inventory_insert_input!) {
@@ -221,7 +221,7 @@ export const useArrangeProductInventory = (productId: string) => {
 }
 
 export const useOrderPhysicalProductLog = (memberId?: string | null) => {
-  const { error, loading, data, refetch } = useQuery<types.GET_PHYSICAL_PRODUCT_ORDER_LOG>(
+  const { error, loading, data, refetch } = useQuery<hasura.GET_PHYSICAL_PRODUCT_ORDER_LOG>(
     gql`
       query GET_PHYSICAL_PRODUCT_ORDER_LOG($memberId: String) {
         order_log(
@@ -335,7 +335,7 @@ export const useSimpleProduct = (
 ) => {
   const { formatMessage } = useIntl()
 
-  const { loading, error, data } = useQuery<types.GET_PRODUCT_SIMPLE, types.GET_PRODUCT_SIMPLEVariables>(
+  const { loading, error, data } = useQuery<hasura.GET_PRODUCT_SIMPLE, hasura.GET_PRODUCT_SIMPLEVariables>(
     gql`
       query GET_PRODUCT_SIMPLE($id: uuid!, $startedAt: timestamptz) {
         program_by_pk(id: $id) {
@@ -635,7 +635,7 @@ export const useSimpleProduct = (
 export const useUploadAttachments = () => {
   const { authToken, apiHost } = useAuth()
   const { id: appId } = useApp()
-  const [insertAttachment] = useMutation<types.INSERT_ATTACHMENT, types.INSERT_ATTACHMENTVariables>(gql`
+  const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(gql`
     mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
       insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
         returning {
@@ -689,7 +689,7 @@ export const useUploadAttachments = () => {
 }
 
 export const useMutateAttachment = () => {
-  const [deleteAttachments] = useMutation<types.DELETE_ATTACHMENTS, types.DELETE_ATTACHMENTSVariables>(gql`
+  const [deleteAttachments] = useMutation<hasura.DELETE_ATTACHMENTS, hasura.DELETE_ATTACHMENTSVariables>(gql`
     mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
       update_attachment(where: { id: { _in: $attachmentIds } }, _set: { is_deleted: true }) {
         affected_rows
@@ -701,7 +701,7 @@ export const useMutateAttachment = () => {
 }
 
 export const useCouponCollection = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_COUPON_COLLECTION, types.GET_COUPON_COLLECTIONVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_COUPON_COLLECTION, hasura.GET_COUPON_COLLECTIONVariables>(
     gql`
       query GET_COUPON_COLLECTION($memberId: String!) {
         coupon(where: { member_id: { _eq: $memberId } }) {

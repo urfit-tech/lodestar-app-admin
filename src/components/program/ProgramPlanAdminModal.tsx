@@ -9,9 +9,9 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PeriodType } from '../../types/general'
 import { ProgramPlanProps } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -65,7 +65,7 @@ const ProgramPlanAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
-  const [upsertProgramPlan] = useMutation<types.UPSERT_PROGRAM_PLAN, types.UPSERT_PROGRAM_PLANVariables>(
+  const [upsertProgramPlan] = useMutation<hasura.UPSERT_PROGRAM_PLAN, hasura.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )
 

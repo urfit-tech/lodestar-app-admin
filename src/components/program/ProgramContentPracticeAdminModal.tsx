@@ -10,10 +10,10 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
-import types from '../../types'
 import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
@@ -103,8 +103,8 @@ const PracticeForm: React.FC<{
   const [isSubmitting, setIsSubmitting] = useState(false)
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
-  const [updatePractice] = useMutation<types.UPDATE_PRACTICE, types.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
-  const [deletePractice] = useMutation<types.DELETE_PRACTICE, types.DELETE_PRACTICEVariables>(DELETE_PRACTICE)
+  const [updatePractice] = useMutation<hasura.UPDATE_PRACTICE, hasura.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
+  const [deletePractice] = useMutation<hasura.DELETE_PRACTICE, hasura.DELETE_PRACTICEVariables>(DELETE_PRACTICE)
 
   const handleSubmit = (values: FieldProps) => {
     setIsSubmitting(true)

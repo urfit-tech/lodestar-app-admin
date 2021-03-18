@@ -3,8 +3,8 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import AdminPublishBlock, { ChecklistItemProps, PublishStatus } from '../admin/AdminPublishBlock'
 
@@ -31,7 +31,7 @@ const ProgramPackagePublishBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [publishProgramPackage] = useMutation<types.PUBLISH_PROGRAM_PACKAGE, types.PUBLISH_PROGRAM_PACKAGEVariables>(
+  const [publishProgramPackage] = useMutation<hasura.PUBLISH_PROGRAM_PACKAGE, hasura.PUBLISH_PROGRAM_PACKAGEVariables>(
     PUBLISH_PROGRAM_PACKAGE,
   )
 

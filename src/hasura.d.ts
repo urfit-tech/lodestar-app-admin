@@ -15079,25 +15079,6 @@ export enum xuemi_assign_rule_update_column {
 }
 
 /**
- * unique or primary key constraints on table "xuemi.attend"
- */
-export enum xuemi_attend_constraint {
-  attend_pkey = "attend_pkey",
-}
-
-/**
- * update columns of table "xuemi.attend"
- */
-export enum xuemi_attend_update_column {
-  created_at = "created_at",
-  ended_at = "ended_at",
-  id = "id",
-  member_id = "member_id",
-  started_at = "started_at",
-  updated_at = "updated_at",
-}
-
-/**
  * unique or primary key constraints on table "xuemi.member_selector"
  */
 export enum xuemi_member_selector_constraint {
@@ -19500,8 +19481,7 @@ export interface member_bool_exp {
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
   assign_rules?: xuemi_assign_rule_bool_exp | null;
   assigned_at?: timestamptz_comparison_exp | null;
-  attends?: xuemi_attend_bool_exp | null;
-  attendsByMemberId?: attend_bool_exp | null;
+  attends?: attend_bool_exp | null;
   coin_logs?: coin_log_bool_exp | null;
   coin_status?: coin_status_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
@@ -19903,8 +19883,7 @@ export interface member_insert_input {
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assign_rules?: xuemi_assign_rule_arr_rel_insert_input | null;
   assigned_at?: any | null;
-  attends?: xuemi_attend_arr_rel_insert_input | null;
-  attendsByMemberId?: attend_arr_rel_insert_input | null;
+  attends?: attend_arr_rel_insert_input | null;
   coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
@@ -20348,8 +20327,7 @@ export interface member_order_by {
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assign_rules_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assigned_at?: order_by | null;
-  attendsByMemberId_aggregate?: attend_aggregate_order_by | null;
-  attends_aggregate?: xuemi_attend_aggregate_order_by | null;
+  attends_aggregate?: attend_aggregate_order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
   coin_status?: coin_status_order_by | null;
   comment_reactions_aggregate?: comment_reaction_aggregate_order_by | null;
@@ -30005,85 +29983,6 @@ export interface xuemi_assign_rule_variance_order_by {
   limit?: order_by | null;
   position?: order_by | null;
   total_limit?: order_by | null;
-}
-
-/**
- * order by aggregate values of table "xuemi.attend"
- */
-export interface xuemi_attend_aggregate_order_by {
-  count?: order_by | null;
-  max?: xuemi_attend_max_order_by | null;
-  min?: xuemi_attend_min_order_by | null;
-}
-
-/**
- * input type for inserting array relation for remote table "xuemi.attend"
- */
-export interface xuemi_attend_arr_rel_insert_input {
-  data: xuemi_attend_insert_input[];
-  on_conflict?: xuemi_attend_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "xuemi.attend". All fields are combined with a logical 'AND'.
- */
-export interface xuemi_attend_bool_exp {
-  _and?: (xuemi_attend_bool_exp | null)[] | null;
-  _not?: xuemi_attend_bool_exp | null;
-  _or?: (xuemi_attend_bool_exp | null)[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  ended_at?: timestamptz_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
-  member_id?: String_comparison_exp | null;
-  started_at?: timestamptz_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "xuemi.attend"
- */
-export interface xuemi_attend_insert_input {
-  created_at?: any | null;
-  ended_at?: any | null;
-  id?: any | null;
-  member?: member_obj_rel_insert_input | null;
-  member_id?: string | null;
-  started_at?: any | null;
-  updated_at?: any | null;
-}
-
-/**
- * order by max() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_max_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * order by min() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_min_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * on conflict condition type for table "xuemi.attend"
- */
-export interface xuemi_attend_on_conflict {
-  constraint: xuemi_attend_constraint;
-  update_columns: xuemi_attend_update_column[];
-  where?: xuemi_attend_bool_exp | null;
 }
 
 /**

@@ -4,9 +4,9 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 
@@ -22,8 +22,8 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateProgram] = useMutation<
-    types.UPDATE_PROGRAM_PERPETUAL_PLAN,
-    types.UPDATE_PROGRAM_PERPETUAL_PLANVariables
+    hasura.UPDATE_PROGRAM_PERPETUAL_PLAN,
+    hasura.UPDATE_PROGRAM_PERPETUAL_PLANVariables
   >(UPDATE_PROGRAM_PERPETUAL_PLAN)
   const [loading, setLoading] = useState(false)
 

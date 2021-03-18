@@ -7,12 +7,12 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
 import { useMember } from '../../hooks/member'
 import DefaultAvatarImage from '../../images/default/avatar.svg'
-import types from '../../types'
 import { AdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -47,10 +47,10 @@ const ProfileBasicCard: React.FC<
   const { member, refetchMember } = useMember(memberId)
   const { categories } = useCategory('creator')
 
-  const [updateMemberAvatar] = useMutation<types.UPDATE_MEMBER_AVATAR, types.UPDATE_MEMBER_AVATARVariables>(
+  const [updateMemberAvatar] = useMutation<hasura.UPDATE_MEMBER_AVATAR, hasura.UPDATE_MEMBER_AVATARVariables>(
     UPDATE_MEMBER_AVATAR,
   )
-  const [updateMemberBasic] = useMutation<types.UPDATE_MEMBER_BASIC, types.UPDATE_MEMBER_BASICVariables>(
+  const [updateMemberBasic] = useMutation<hasura.UPDATE_MEMBER_BASIC, hasura.UPDATE_MEMBER_BASICVariables>(
     UPDATE_MEMBER_BASIC,
   )
 

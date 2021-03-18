@@ -8,16 +8,16 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
-import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
 const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [insertMemberShop] = useMutation<types.INSERT_MEMBER_SHOP, types.INSERT_MEMBER_SHOPVariables>(
+  const [insertMemberShop] = useMutation<hasura.INSERT_MEMBER_SHOP, hasura.INSERT_MEMBER_SHOPVariables>(
     INSERT_MEMBER_SHOP,
   )
   const [loading, setLoading] = useState(false)

@@ -3,8 +3,8 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
@@ -33,7 +33,7 @@ const PodcastProgramPublishBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [publishPodcastProgram] = useMutation<types.PUBLISH_PODCAST_PROGRAM, types.PUBLISH_PODCAST_PROGRAMVariables>(
+  const [publishPodcastProgram] = useMutation<hasura.PUBLISH_PODCAST_PROGRAM, hasura.PUBLISH_PODCAST_PROGRAMVariables>(
     PUBLISH_PODCAST_PROGRAM,
   )
 

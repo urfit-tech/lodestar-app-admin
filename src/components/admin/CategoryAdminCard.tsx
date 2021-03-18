@@ -6,10 +6,10 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
-import types from '../../types'
 import { ClassType } from '../../types/general'
 import DraggableItem from '../common/DraggableItem'
 import AdminCard from './AdminCard'
@@ -21,14 +21,15 @@ const CategoryAdminCard: React.FC<{
   const app = useApp()
   const { loading: loadingCategory, categories, refetch } = useCategory(classType)
 
-  const [insertCategory] = useMutation<types.INSERT_PROGRAM_CATEGORY, types.INSERT_PROGRAM_CATEGORYVariables>(
+  const [insertCategory] = useMutation<hasura.INSERT_PROGRAM_CATEGORY, hasura.INSERT_PROGRAM_CATEGORYVariables>(
     INSERT_PROGRAM_CATEGORY,
   )
-  const [updateCategory] = useMutation<types.UPDATE_CATEGORY, types.UPDATE_CATEGORYVariables>(UPDATE_CATEGORY)
-  const [updateCategoryPosition] = useMutation<types.UPDATE_CATEGORY_POSITION, types.UPDATE_CATEGORY_POSITIONVariables>(
-    UPDATE_CATEGORY_POSITION,
-  )
-  const [deleteCategory] = useMutation<types.DELETE_PROGRAM_CATEGORY, types.DELETE_PROGRAM_CATEGORYVariables>(
+  const [updateCategory] = useMutation<hasura.UPDATE_CATEGORY, hasura.UPDATE_CATEGORYVariables>(UPDATE_CATEGORY)
+  const [updateCategoryPosition] = useMutation<
+    hasura.UPDATE_CATEGORY_POSITION,
+    hasura.UPDATE_CATEGORY_POSITIONVariables
+  >(UPDATE_CATEGORY_POSITION)
+  const [deleteCategory] = useMutation<hasura.DELETE_PROGRAM_CATEGORY, hasura.DELETE_PROGRAM_CATEGORYVariables>(
     DELETE_PROGRAM_CATEGORY,
   )
 

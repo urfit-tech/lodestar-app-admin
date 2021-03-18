@@ -7,9 +7,9 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import IssueItem from './IssueItem'
 
@@ -69,7 +69,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   const { currentMemberId, currentUserRole } = useAuth()
   const { settings } = useApp()
   const { program } = useProgram(programId)
-  const [updateIssueStatus] = useMutation<types.UPDATE_ISSUE_STATUS, types.UPDATE_ISSUE_STATUSVariables>(
+  const [updateIssueStatus] = useMutation<hasura.UPDATE_ISSUE_STATUS, hasura.UPDATE_ISSUE_STATUSVariables>(
     UPDATE_ISSUE_STATUS,
   )
 

@@ -11,10 +11,10 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import { usePostCollection } from '../../hooks/blog'
-import types from '../../types'
 
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -22,7 +22,7 @@ const BlogAdminCollectionPage: React.FC = () => {
   const { currentMemberId } = useAuth()
   const { id: appId } = useApp()
   const { posts, refetchPosts } = usePostCollection()
-  const [insertPost] = useMutation<types.INSERT_POST, types.INSERT_POSTVariables>(INSERT_POST)
+  const [insertPost] = useMutation<hasura.INSERT_POST, hasura.INSERT_POSTVariables>(INSERT_POST)
 
   const tabContents = [
     {

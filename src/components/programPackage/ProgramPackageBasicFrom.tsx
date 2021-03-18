@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import CategorySelector from '../form/CategorySelector'
 import ImageInput from '../form/ImageInput'
@@ -25,12 +25,12 @@ const ProgramPackageBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const [updateProgramPackageBasic] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_BASIC,
-    types.UPDATE_PROGRAM_PACKAGE_BASICVariables
+    hasura.UPDATE_PROGRAM_PACKAGE_BASIC,
+    hasura.UPDATE_PROGRAM_PACKAGE_BASICVariables
   >(UPDATE_PROGRAM_PACKAGE_BASIC)
   const [updateProgramPackageCover] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_COVER,
-    types.UPDATE_PROGRAM_PACKAGE_COVERVariables
+    hasura.UPDATE_PROGRAM_PACKAGE_COVER,
+    hasura.UPDATE_PROGRAM_PACKAGE_COVERVariables
   >(UPDATE_PROGRAM_PACKAGE_COVER)
   const [loading, setLoading] = useState(false)
 

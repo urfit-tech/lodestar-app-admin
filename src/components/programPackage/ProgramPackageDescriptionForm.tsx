@@ -5,9 +5,9 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
@@ -22,8 +22,8 @@ const ProgramPackageDescriptionForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateProgramPackageDescription] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTION,
-    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables
+    hasura.UPDATE_PROGRAM_PACKAGE_DESCRIPTION,
+    hasura.UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables
   >(UPDATE_PROGRAM_PACKAGE_DESCRIPTION)
   const [loading, setLoading] = useState(false)
 

@@ -17,11 +17,11 @@ import {
   StyledModalTitle,
 } from '../../../components/program/ProgramDeletionAdminCard'
 import { useApp } from '../../../contexts/AppContext'
+import hasura from '../../../hasura'
 import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as CoinIcon } from '../../../images/icon/coin.svg'
 import { ReactComponent as TextIcon } from '../../../images/icon/text.svg'
-import types from '../../../types'
 import { MemberBriefProps } from '../../../types/member'
 import LoadingPage from '../LoadingPage'
 import NotFoundPage from '../NotFoundPage'
@@ -517,7 +517,7 @@ const CoinHistoryAdminPage: React.FC = () => {
 }
 
 const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }) => {
-  const condition: types.GET_COIN_RELEASE_HISTORYVariables['condition'] = {
+  const condition: hasura.GET_COIN_RELEASE_HISTORYVariables['condition'] = {
     member: filter?.nameAndEmail
       ? {
           _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
@@ -526,8 +526,8 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }
     title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_COIN_RELEASE_HISTORY,
-    types.GET_COIN_RELEASE_HISTORYVariables
+    hasura.GET_COIN_RELEASE_HISTORY,
+    hasura.GET_COIN_RELEASE_HISTORYVariables
   >(
     gql`
       query GET_COIN_RELEASE_HISTORY($condition: coin_log_bool_exp, $limit: Int!) {
@@ -609,7 +609,7 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }
 }
 
 const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }) => {
-  const condition: types.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
+  const condition: hasura.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
     member: filter?.nameAndEmail
       ? {
           name: { _like: `%${filter.nameAndEmail}%` },
@@ -620,8 +620,8 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
     started_at: { _gte: 'now()' },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_COIN_ABOUT_TO_SEND,
-    types.GET_COIN_ABOUT_TO_SENDVariables
+    hasura.GET_COIN_ABOUT_TO_SEND,
+    hasura.GET_COIN_ABOUT_TO_SENDVariables
   >(
     gql`
       query GET_COIN_ABOUT_TO_SEND($condition: coin_log_bool_exp, $limit: Int!) {
@@ -703,7 +703,7 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
 }
 
 const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndEmail?: string; title?: string }) => {
-  const condition: types.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
+  const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
     id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
     member: filter?.nameAndEmail
       ? {
@@ -719,8 +719,8 @@ const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndE
       : { type: { _eq: 'Coin' } },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_ORDER_LOG_WITH_COINS_COLLECTION,
-    types.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables
+    hasura.GET_ORDER_LOG_WITH_COINS_COLLECTION,
+    hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables
   >(
     gql`
       query GET_ORDER_LOG_WITH_COINS_COLLECTION($condition: order_log_bool_exp, $limit: Int!) {
@@ -802,7 +802,7 @@ const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndE
 }
 
 const useDeleteCoinLog = () => {
-  const [deleteCoinLogHandler] = useMutation<types.DELETE_COIN_LOG>(gql`
+  const [deleteCoinLogHandler] = useMutation<hasura.DELETE_COIN_LOG>(gql`
     mutation DELETE_COIN_LOG($coinLogId: uuid!) {
       delete_coin_log(where: { id: { _eq: $coinLogId } }) {
         affected_rows

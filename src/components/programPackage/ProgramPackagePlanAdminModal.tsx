@@ -7,9 +7,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -71,8 +71,8 @@ const ProgramPackagePlanAdminModal: React.FC<
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
   const [insertProgramPackagePlan] = useMutation<
-    types.INSERT_PROGRAM_PACKAGE_PLAN,
-    types.INSERT_PROGRAM_PACKAGE_PLANVariables
+    hasura.INSERT_PROGRAM_PACKAGE_PLAN,
+    hasura.INSERT_PROGRAM_PACKAGE_PLANVariables
   >(INSERT_PROGRAM_PACKAGE_PLAN)
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(typeof plan?.discountDownPrice === 'number')

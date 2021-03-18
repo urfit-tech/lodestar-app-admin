@@ -6,8 +6,8 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { permissionMessages } from '../../helpers/translation'
-import types from '../../types'
 
 const messages = defineMessages({
   all: { id: 'permission.label.all', defaultMessage: '所有權限' },
@@ -137,7 +137,7 @@ const PermissionGroup: React.FC<{
 }
 
 const usePermissionCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PERMISSION>(gql`
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PERMISSION>(gql`
     query GET_PERMISSION {
       permission {
         id

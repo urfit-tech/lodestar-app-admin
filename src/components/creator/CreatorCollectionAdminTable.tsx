@@ -7,9 +7,9 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
-import types from '../../types'
 import { CreatorProps } from '../../types/creator'
 import { AvatarImage } from '../common/Image'
 
@@ -69,7 +69,7 @@ const CreatorCollectionAdminTable: React.FC<{
     speciality: null,
   })
 
-  const [insertCreatorDisplay] = useMutation<types.INSERT_CREATOR_DISPLAY, types.INSERT_CREATOR_DISPLAYVariables>(gql`
+  const [insertCreatorDisplay] = useMutation<hasura.INSERT_CREATOR_DISPLAY, hasura.INSERT_CREATOR_DISPLAYVariables>(gql`
     mutation INSERT_CREATOR_DISPLAY($creatorId: String!) {
       insert_creator_display_one(object: { member_id: $creatorId }) {
         id
@@ -77,7 +77,7 @@ const CreatorCollectionAdminTable: React.FC<{
     }
   `)
 
-  const [deleteCreatorDisplay] = useMutation<types.DELETE_CREATOR_DISPLAY, types.DELETE_CREATOR_DISPLAYVariables>(gql`
+  const [deleteCreatorDisplay] = useMutation<hasura.DELETE_CREATOR_DISPLAY, hasura.DELETE_CREATOR_DISPLAYVariables>(gql`
     mutation DELETE_CREATOR_DISPLAY($creatorId: String!) {
       delete_creator_display(where: { member_id: { _eq: $creatorId }, block_id: { _eq: "default" } }) {
         affected_rows

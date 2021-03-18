@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import types from '../../types'
 import { CategoryProps } from '../../types/general'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
@@ -36,8 +36,8 @@ const PodcastProgramBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
   const [updatePodcastProgramBasic] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_BASIC,
-    types.UPDATE_PODCAST_PROGRAM_BASICVariables
+    hasura.UPDATE_PODCAST_PROGRAM_BASIC,
+    hasura.UPDATE_PODCAST_PROGRAM_BASICVariables
   >(UPDATE_PODCAST_PROGRAM_BASIC)
   const [loading, setLoading] = useState(false)
 

@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PeriodType } from '../../types/general'
 import { PodcastPlanProps } from '../../types/podcast'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -44,10 +44,10 @@ const PodcastPlanAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
   const [form] = useForm<FieldProps>()
-  const [createPodcastPlan] = useMutation<types.CREATE_PODCAST_PLAN, types.CREATE_PODCAST_PLANVariables>(
+  const [createPodcastPlan] = useMutation<hasura.CREATE_PODCAST_PLAN, hasura.CREATE_PODCAST_PLANVariables>(
     CREATE_PODCAST_PLAN,
   )
-  const [updatePodcastPlan] = useMutation<types.UPDATE_PODCAST_PLAN, types.UPDATE_PODCAST_PLANVariables>(
+  const [updatePodcastPlan] = useMutation<hasura.UPDATE_PODCAST_PLAN, hasura.UPDATE_PODCAST_PLANVariables>(
     UPDATE_PODCAST_PLAN,
   )
   const [loading, setLoading] = useState(false)

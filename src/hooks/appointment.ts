@@ -3,13 +3,13 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
-import types from '../types'
+import hasura from '../hasura'
 import { AppointmentPlanAdminProps, ReservationType, ScheduleIntervalType } from '../types/appointment'
 
 export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_APPOINTMENT_PLAN_ADMIN,
-    types.GET_APPOINTMENT_PLAN_ADMINVariables
+    hasura.GET_APPOINTMENT_PLAN_ADMIN,
+    hasura.GET_APPOINTMENT_PLAN_ADMINVariables
   >(
     gql`
       query GET_APPOINTMENT_PLAN_ADMIN($appointmentPlanId: uuid!, $now: timestamptz) {
@@ -111,7 +111,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
 }
 
 export const useAppointmentEnrollmentCreator = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_ENROLLMENT_CREATOR>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_APPOINTMENT_ENROLLMENT_CREATOR>(
     gql`
       query GET_APPOINTMENT_ENROLLMENT_CREATOR {
         member(
@@ -147,7 +147,7 @@ export const useAppointmentEnrollmentCollection = (
   isCanceled: boolean,
   isFinished?: boolean,
 ) => {
-  const condition: types.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
+  const condition: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
     appointment_plan: {
       creator_id: { _eq: selectedCreatorId || undefined },
     },
@@ -167,19 +167,19 @@ export const useAppointmentEnrollmentCollection = (
         },
   }
 
-  const sort: types.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
+  const sort: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
     !isCanceled && !isFinished
       ? {
-          started_at: 'asc' as types.order_by,
+          started_at: 'asc' as hasura.order_by,
         }
       : {
-          ended_at: 'desc' as types.order_by,
+          ended_at: 'desc' as hasura.order_by,
         },
   ]
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_APPOINTMENT_ENROLLMENTS,
-    types.GET_APPOINTMENT_ENROLLMENTSVariables
+    hasura.GET_APPOINTMENT_ENROLLMENTS,
+    hasura.GET_APPOINTMENT_ENROLLMENTSVariables
   >(
     gql`
       query GET_APPOINTMENT_ENROLLMENTS(
@@ -241,12 +241,12 @@ export const useAppointmentEnrollmentCollection = (
       ? {
           started_at: {
             _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at,
-          } as types.timestamptz_comparison_exp,
+          } as hasura.timestamptz_comparison_exp,
         }
       : {
           ended_at: {
             _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at,
-          } as types.timestamptz_comparison_exp,
+          } as hasura.timestamptz_comparison_exp,
         }
 
   const loadMoreAppointmentEnrollments =

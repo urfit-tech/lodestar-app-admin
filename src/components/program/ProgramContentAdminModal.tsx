@@ -12,10 +12,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
-import types from '../../types'
 import { ProgramContentBodyProps, ProgramContentProps, ProgramProps } from '../../types/program'
 import FileUploader from '../common/FileUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -55,13 +55,13 @@ const ProgramContentAdminModal: React.FC<{
   const { updateProgramContent, deleteProgramContent } = useMutateProgramContent()
 
   const [updateProgramContentPlan] = useMutation<
-    types.UPDATE_PROGRAM_CONTENT_PLAN,
-    types.UPDATE_PROGRAM_CONTENT_PLANVariables
+    hasura.UPDATE_PROGRAM_CONTENT_PLAN,
+    hasura.UPDATE_PROGRAM_CONTENT_PLANVariables
   >(UPDATE_PROGRAM_CONTENT_PLAN)
 
   const [updateProgramContentMaterials] = useMutation<
-    types.UPDATE_PROGRAM_CONTENT_MATERIALS,
-    types.UPDATE_PROGRAM_CONTENT_MATERIALSVariables
+    hasura.UPDATE_PROGRAM_CONTENT_MATERIALS,
+    hasura.UPDATE_PROGRAM_CONTENT_MATERIALSVariables
   >(UPDATE_PROGRAM_CONTENT_MATERIALS)
 
   const [visible, setVisible] = useState(false)

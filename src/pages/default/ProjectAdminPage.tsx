@@ -20,8 +20,8 @@ import ProjectIntroForm from '../../components/project/ProjectIntroForm'
 import ProjectPlanAdminBlock from '../../components/project/ProjectPlanAdminBlock'
 import ProjectPublishAdminBlock from '../../components/project/ProjectPublishAdminBlock'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { commonMessages, projectMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProjectAdminProps, ProjectDataType } from '../../types/project'
 
 const ProjectAdminPage: React.FC<{}> = () => {
@@ -104,7 +104,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
 }
 
 const useProjectAdmin = (projectId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROJECT_ADMIN, types.GET_PROJECT_ADMINVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROJECT_ADMIN, hasura.GET_PROJECT_ADMINVariables>(
     gql`
       query GET_PROJECT_ADMIN($projectId: uuid!) {
         project_by_pk(id: $projectId) {

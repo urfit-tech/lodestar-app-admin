@@ -6,9 +6,9 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import types from '../../types'
 
 const messages = defineMessages({
   agreed: { id: 'contract.status.agreed', defaultMessage: '已簽署' },
@@ -158,7 +158,7 @@ const MemberContractAdminBlock: React.FC<{
 }
 
 const useMemberContracts = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_CONTRACTS, types.GET_MEMBER_CONTRACTSVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_CONTRACTS, hasura.GET_MEMBER_CONTRACTSVariables>(
     gql`
       query GET_MEMBER_CONTRACTS($memberId: String!) {
         member_contract(where: { member_id: { _eq: $memberId } }) {

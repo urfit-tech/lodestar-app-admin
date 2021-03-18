@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgramContentBody } from '../../hooks/program'
@@ -12,7 +13,6 @@ import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/excla
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
-import types from '../../types'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
@@ -54,7 +54,7 @@ const ProgramContentAdminItem: React.FC<{
   onRefetch?: () => void
 }> = ({ showPlans, programContent, program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [updateProgramContent] = useMutation<types.PUBLISH_PROGRAM_CONTENT, types.PUBLISH_PROGRAM_CONTENTVariables>(
+  const [updateProgramContent] = useMutation<hasura.PUBLISH_PROGRAM_CONTENT, hasura.PUBLISH_PROGRAM_CONTENTVariables>(
     PUBLISH_PROGRAM_CONTENT,
   )
   const { loadingProgramContentBody, programContentBody, refetchProgramContentBody } = useProgramContentBody(

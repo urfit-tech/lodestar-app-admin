@@ -4,10 +4,10 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProperty } from '../../hooks/member'
-import types from '../../types'
 import { MemberPropertyProps } from '../../types/member'
 
 type FieldProps = {
@@ -21,7 +21,7 @@ const MemberPropertyAdminForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { loadingProperties, properties } = useProperty()
   const { loadingMemberProperties, memberProperties, refetchMemberProperties } = useMemberPropertyCollection(memberId)
-  const [updateMemberProperty] = useMutation<types.UPDATE_MEMBER_PROPERTY, types.UPDATE_MEMBER_PROPERTYVariables>(
+  const [updateMemberProperty] = useMutation<hasura.UPDATE_MEMBER_PROPERTY, hasura.UPDATE_MEMBER_PROPERTYVariables>(
     UPDATE_MEMBER_PROPERTY,
   )
   const [loading, setLoading] = useState(false)
@@ -99,8 +99,8 @@ const MemberPropertyAdminForm: React.FC<{
 
 const useMemberPropertyCollection = (memberId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_MEMBER_PROPERTY_COLLECTION,
-    types.GET_MEMBER_PROPERTY_COLLECTIONVariables
+    hasura.GET_MEMBER_PROPERTY_COLLECTION,
+    hasura.GET_MEMBER_PROPERTY_COLLECTIONVariables
   >(
     gql`
       query GET_MEMBER_PROPERTY_COLLECTION($memberId: String!) {

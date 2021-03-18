@@ -4,9 +4,9 @@ import { Button, Form, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import AdminModal from '../admin/AdminModal'
@@ -19,10 +19,10 @@ const ProgramRoleAdminPane: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [updateProgramRole] = useMutation<types.UPDATE_PROGRAM_ROLE, types.UPDATE_PROGRAM_ROLEVariables>(
+  const [updateProgramRole] = useMutation<hasura.UPDATE_PROGRAM_ROLE, hasura.UPDATE_PROGRAM_ROLEVariables>(
     UPDATE_PROGRAM_ROLE,
   )
-  const [deleteProgramRole] = useMutation<types.DELETE_PROGRAM_ROLE, types.DELETE_PROGRAM_ROLEVariables>(
+  const [deleteProgramRole] = useMutation<hasura.DELETE_PROGRAM_ROLE, hasura.DELETE_PROGRAM_ROLEVariables>(
     DELETE_PROGRAM_ROLE,
   )
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)

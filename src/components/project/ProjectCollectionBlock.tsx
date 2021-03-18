@@ -4,9 +4,9 @@ import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, projectMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProjectDataType, ProjectPreviewProps, ProjectSortProps } from '../../types/project'
 import { EmptyBlock } from '../admin'
 import ItemsSortingModal from '../common/ItemsSortingModal'
@@ -15,8 +15,8 @@ import ProjectAdminCard from './ProjectAdminCard'
 const ProjectCollectionBlock: React.FC<{
   appId: string
   projectType: ProjectDataType
-  condition: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
-  orderBy?: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy']
+  condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
+  orderBy?: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy']
   withSortingButton?: boolean
   onReady?: (count: number) => void
 }> = ({ appId, projectType, condition, orderBy, withSortingButton, onReady }) => {
@@ -33,8 +33,8 @@ const ProjectCollectionBlock: React.FC<{
 
   const { projectSorts, refetchProjectSorts } = useProjectSortCollection(condition)
   const [updatePositions] = useMutation<
-    types.UPDATE_PROJECT_POSITION_COLLECTION,
-    types.UPDATE_PROJECT_POSITION_COLLECTIONVariables
+    hasura.UPDATE_PROJECT_POSITION_COLLECTION,
+    hasura.UPDATE_PROJECT_POSITION_COLLECTIONVariables
   >(UPDATE_PROJECT_POSITION_COLLECTION)
 
   useEffect(() => {
@@ -103,14 +103,14 @@ const ProjectCollectionBlock: React.FC<{
 }
 
 const useProjectPreviewCollection = (
-  condition: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition'],
-  orderBy: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy'] = [
-    { created_at: 'desc_nulls_last' as types.order_by },
+  condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition'],
+  orderBy: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy'] = [
+    { created_at: 'desc_nulls_last' as hasura.order_by },
   ],
 ) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_PROJECT_PREVIEW_COLLECTION,
-    types.GET_PROJECT_PREVIEW_COLLECTIONVariables
+    hasura.GET_PROJECT_PREVIEW_COLLECTION,
+    hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables
   >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, orderBy, limit: 10 } })
 
   const projectPreview: ProjectPreviewProps[] =
@@ -165,10 +165,10 @@ const useProjectPreviewCollection = (
     loadMoreProjects,
   }
 }
-const useProjectSortCollection = (condition: types.GET_PROJECT_SORT_COLLECTIONVariables['condition']) => {
+const useProjectSortCollection = (condition: hasura.GET_PROJECT_SORT_COLLECTIONVariables['condition']) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROJECT_SORT_COLLECTION,
-    types.GET_PROJECT_SORT_COLLECTIONVariables
+    hasura.GET_PROJECT_SORT_COLLECTION,
+    hasura.GET_PROJECT_SORT_COLLECTIONVariables
   >(GET_PROJECT_SORT_COLLECTION, {
     variables: {
       condition,

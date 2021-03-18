@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { createContext, useContext, useEffect } from 'react'
-import types from '../types'
+import hasura from '../hasura'
 import { AppProps, Module } from '../types/app'
 import { useAuth } from './AuthContext'
 
@@ -28,7 +28,7 @@ export const AppProvider: React.FC<{
   appId: string
 }> = ({ appId, children }) => {
   const { refreshToken, authToken } = useAuth()
-  const { loading, error, data, refetch } = useQuery<types.GET_APPLICATION, types.GET_APPLICATIONVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_APPLICATION, hasura.GET_APPLICATIONVariables>(
     GET_APPLICATION,
     { variables: { host: window.location.host } },
   )

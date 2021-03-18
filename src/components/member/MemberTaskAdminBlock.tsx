@@ -10,7 +10,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import types from '../../types'
+import hasura from '../../hasura'
 import { MemberTaskProps } from '../../types/member'
 import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
@@ -403,7 +403,7 @@ const useMemberTaskCollection = (options?: {
   status?: string
   limit?: number
 }) => {
-  const condition: types.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
     member_id: { _eq: options?.memberId },
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
     category: options?.category ? { name: { _ilike: options.category } } : undefined,
@@ -415,8 +415,8 @@ const useMemberTaskCollection = (options?: {
   }
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_TASK_COLLECTION,
-    types.GET_MEMBER_TASK_COLLECTIONVariables
+    hasura.GET_MEMBER_TASK_COLLECTION,
+    hasura.GET_MEMBER_TASK_COLLECTIONVariables
   >(
     gql`
       query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int) {

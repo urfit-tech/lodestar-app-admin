@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import types from '../types'
+import hasura from '../hasura'
 import gql from 'graphql-tag'
 
 export const useGetAttend = (memberId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_ATTEND, types.GET_ATTENDVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_ATTEND, hasura.GET_ATTENDVariables>(
     gql`
       query GET_ATTEND($memberId: String!) {
         attend(where: { _and: [{ member_id: { _eq: $memberId } }, { ended_at: { _is_null: true } }] }) {
@@ -29,7 +29,7 @@ export const useGetAttend = (memberId: string) => {
 }
 
 export const useAttend = () => {
-  const [insertAttend] = useMutation<types.INSERT_ATTEND, types.INSERT_ATTENDVariables>(gql`
+  const [insertAttend] = useMutation<hasura.INSERT_ATTEND, hasura.INSERT_ATTENDVariables>(gql`
     mutation INSERT_ATTEND($memberId: String!) {
       insert_attend_one(object: { member_id: $memberId }) {
         id
@@ -37,7 +37,7 @@ export const useAttend = () => {
     }
   `)
 
-  const [updateAttend] = useMutation<types.UPDATE_ATTEND, types.UPDATE_ATTENDVariables>(
+  const [updateAttend] = useMutation<hasura.UPDATE_ATTEND, hasura.UPDATE_ATTENDVariables>(
     gql`
       mutation UPDATE_ATTEND($memberId: String!, $endedAt: timestamptz) {
         update_attend(

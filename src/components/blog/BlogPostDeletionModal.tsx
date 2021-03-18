@@ -3,9 +3,9 @@ import { Button, message, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../program/ProgramDeletionAdminCard'
 
@@ -25,7 +25,7 @@ const BlogPostDeletionModal: React.FC<{
   onRefetch?: () => void
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [archivePost] = useMutation<types.DELETE_POST, types.DELETE_POSTVariables>(DELETE_POST)
+  const [archivePost] = useMutation<hasura.DELETE_POST, hasura.DELETE_POSTVariables>(DELETE_POST)
   const [isVisible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
 

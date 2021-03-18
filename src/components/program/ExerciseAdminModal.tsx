@@ -9,11 +9,11 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import types from '../../types'
 import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
 import QuestionInput from '../form/QuestionInput'
 import ExerciseSortingModal from './ExerciseSortingModal'
@@ -97,10 +97,11 @@ const ExerciseAdminForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { deleteProgramContent } = useMutateProgramContent()
-  const [updateExercise] = useMutation<types.UPDATE_EXERCISE, types.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
-  const [updateExercisePosition] = useMutation<types.UPDATE_EXERCISE_POSITION, types.UPDATE_EXERCISE_POSITIONVariables>(
-    UPDATE_EXERCISE_POSITION,
-  )
+  const [updateExercise] = useMutation<hasura.UPDATE_EXERCISE, hasura.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
+  const [updateExercisePosition] = useMutation<
+    hasura.UPDATE_EXERCISE_POSITION,
+    hasura.UPDATE_EXERCISE_POSITIONVariables
+  >(UPDATE_EXERCISE_POSITION)
 
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
   const [withInvalidQuestion, setWithInvalidQuestion] = useState(!!programContent.metadata?.withInvalidQuestion)

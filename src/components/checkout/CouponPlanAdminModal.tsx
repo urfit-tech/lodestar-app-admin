@@ -8,9 +8,9 @@ import { times } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
-import types from '../../types'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ScopeSelector, { ScopeProps } from '../form/ScopeSelector'
@@ -38,10 +38,10 @@ const CouponPlanAdminModal: React.FC<
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
 
-  const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
+  const [createCouponPlan] = useMutation<hasura.INSERT_COUPON_PLAN, hasura.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,
   )
-  const [updateCouponPlan] = useMutation<types.UPDATE_COUPON_PLAN, types.UPDATE_COUPON_PLANVariables>(
+  const [updateCouponPlan] = useMutation<hasura.UPDATE_COUPON_PLAN, hasura.UPDATE_COUPON_PLANVariables>(
     UPDATE_COUPON_PLAN,
   )
   const [loading, setLoading] = useState(false)

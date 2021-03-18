@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { max, min } from 'lodash'
 import { sum } from 'ramda'
 import { notEmpty } from '../helpers'
-import types from '../types'
+import hasura from '../hasura'
 import { ProductInventoryStatusProps } from '../types/general'
 import {
   MemberShopPreviewProps,
@@ -13,7 +13,7 @@ import {
 } from '../types/merchandise'
 
 export const useMerchandiseCollection = (isNotPublished?: boolean) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MERCHANDISE_COLLECTION>(
     gql`
       query GET_MERCHANDISE_COLLECTION($isNotPublished: Boolean) {
         merchandise(
@@ -60,7 +60,7 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
 }
 
 export const useMerchandise = (id: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE, types.GET_MERCHANDISEVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MERCHANDISE, hasura.GET_MERCHANDISEVariables>(
     gql`
       query GET_MERCHANDISE($id: uuid!) {
         merchandise_by_pk(id: $id) {
@@ -160,8 +160,8 @@ export const useMerchandise = (id: string) => {
 
 export const useMemberShopCollection = (memberId?: string | null) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_MEMBER_SHOP_COLLECTION,
-    types.GET_MEMBER_SHOP_COLLECTIONVariables
+    hasura.GET_MEMBER_SHOP_COLLECTION,
+    hasura.GET_MEMBER_SHOP_COLLECTIONVariables
   >(
     gql`
       query GET_MEMBER_SHOP_COLLECTION($memberId: String) {
@@ -211,7 +211,7 @@ export const useMemberShopCollection = (memberId?: string | null) => {
 }
 
 export const useMemberShop = (shopId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_SHOP, types.GET_MEMBER_SHOPVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_SHOP, hasura.GET_MEMBER_SHOPVariables>(
     gql`
       query GET_MEMBER_SHOP($shopId: uuid!) {
         member_shop_by_pk(id: $shopId) {
@@ -319,7 +319,7 @@ export const useMerchandiseSpecCollection = (options?: {
   merchandiseId?: string
   memberId?: string
 }) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_SPEC_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MERCHANDISE_SPEC_COLLECTION>(
     gql`
       query GET_MERCHANDISE_SPEC_COLLECTION(
         $merchandiseSearchLike: String

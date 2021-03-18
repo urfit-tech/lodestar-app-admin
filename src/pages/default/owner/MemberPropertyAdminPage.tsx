@@ -10,21 +10,22 @@ import AdminCard from '../../../components/admin/AdminCard'
 import DraggableItem from '../../../components/common/DraggableItem'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import { useApp } from '../../../contexts/AppContext'
+import hasura from '../../../hasura'
 import { handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import { useProperty } from '../../../hooks/member'
-import types from '../../../types'
 
 const MemberPropertyAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const app = useApp()
   const { loadingProperties, properties, refetchProperties } = useProperty()
-  const [insertProperty] = useMutation<types.INSERT_PROPERTY, types.INSERT_PROPERTYVariables>(INSERT_PROPERTY)
-  const [updateProperty] = useMutation<types.UPDATE_PROPERTY, types.UPDATE_PROPERTYVariables>(UPDATE_PROPERTY)
-  const [updatePropertyPosition] = useMutation<types.UPDATE_PROPERTY_POSITION, types.UPDATE_PROPERTY_POSITIONVariables>(
-    UPDATE_PROPERTY_POSITION,
-  )
-  const [deleteProperty] = useMutation<types.DELETE_PROPERTY, types.DELETE_PROPERTYVariables>(DELETE_PROPERTY)
+  const [insertProperty] = useMutation<hasura.INSERT_PROPERTY, hasura.INSERT_PROPERTYVariables>(INSERT_PROPERTY)
+  const [updateProperty] = useMutation<hasura.UPDATE_PROPERTY, hasura.UPDATE_PROPERTYVariables>(UPDATE_PROPERTY)
+  const [updatePropertyPosition] = useMutation<
+    hasura.UPDATE_PROPERTY_POSITION,
+    hasura.UPDATE_PROPERTY_POSITIONVariables
+  >(UPDATE_PROPERTY_POSITION)
+  const [deleteProperty] = useMutation<hasura.DELETE_PROPERTY, hasura.DELETE_PROPERTYVariables>(DELETE_PROPERTY)
   const [loading, setLoading] = useState(false)
 
   return (

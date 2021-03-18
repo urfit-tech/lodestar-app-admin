@@ -3,8 +3,8 @@ import { Statistic } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { promotionMessages } from '../../helpers/translation'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
@@ -14,7 +14,7 @@ const messages = defineMessages({
 const SaleSummaryAdminCard: React.FC = () => {
   const { formatMessage } = useIntl()
 
-  const { loading, data } = useQuery<types.GET_TOTAL_ORDER_AMOUNT>(GET_TOTAL_ORDER_AMOUNT, {
+  const { loading, data } = useQuery<hasura.GET_TOTAL_ORDER_AMOUNT>(GET_TOTAL_ORDER_AMOUNT, {
     context: {
       important: true,
     },

@@ -3,11 +3,11 @@ import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import { useEffect, useState } from 'react'
 import { useApp } from '../contexts/AppContext'
-import types from '../types'
+import hasura from '../hasura'
 import { ProgramAdminProps, ProgramApprovalProps, ProgramContentBodyProps, ProgramRoleName } from '../types/program'
 
 export const useProgram = (programId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_PROGRAM, types.GET_PROGRAMVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_PROGRAM, hasura.GET_PROGRAMVariables>(
     gql`
       query GET_PROGRAM($programId: uuid!) {
         program_by_pk(id: $programId) {
@@ -209,8 +209,8 @@ export const useProgram = (programId: string) => {
 
 export const useProgramContentBody = (programContentId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_CONTENT_BODY,
-    types.GET_PROGRAM_CONTENT_BODYVariables
+    hasura.GET_PROGRAM_CONTENT_BODY,
+    hasura.GET_PROGRAM_CONTENT_BODYVariables
   >(
     gql`
       query GET_PROGRAM_CONTENT_BODY($programContentId: uuid!) {
@@ -261,7 +261,7 @@ export const useProgramContentBody = (programContentId: string) => {
 
 export const useOwnedPrograms = () => {
   const { id: appId } = useApp()
-  const { loading, error, data, refetch } = useQuery<types.GET_OWNED_PROGRAMS, types.GET_OWNED_PROGRAMSVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_OWNED_PROGRAMS, hasura.GET_OWNED_PROGRAMSVariables>(
     gql`
       query GET_OWNED_PROGRAMS($appId: String!) {
         program(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
@@ -293,7 +293,7 @@ export const useOwnedPrograms = () => {
 }
 
 export const useEditablePrograms = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_EDITABLE_PROGRAMS, types.GET_EDITABLE_PROGRAMSVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_EDITABLE_PROGRAMS, hasura.GET_EDITABLE_PROGRAMSVariables>(
     gql`
       query GET_EDITABLE_PROGRAMS($memberId: String!) {
         program(where: { editors: { member_id: { _eq: $memberId } } }) {
@@ -327,7 +327,7 @@ export const useEditablePrograms = (memberId: string) => {
 }
 
 export const useProgramContentEnrollment = () => {
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT, {
+  const { loading, error, data } = useQuery<hasura.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT, {
     context: {
       important: true,
     },
@@ -357,8 +357,8 @@ const GET_PROGRAM_CONTENT_ENROLLMENT = gql`
 
 export const useProgramProgressCollection = (programId?: string | null) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_PROGRAM_PROGRESS,
-    types.GET_PROGRAM_PROGRESSVariables
+    hasura.GET_PROGRAM_PROGRESS,
+    hasura.GET_PROGRAM_PROGRESSVariables
   >(GET_PROGRAM_PROGRESS, { variables: { programId }, context: { important: true } })
   const [isNoMore, setIsNoMore] = useState(false)
 
@@ -481,7 +481,7 @@ const GET_PROGRAM_PROGRESS = gql`
 `
 
 export const useMutateProgramContent = () => {
-  const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
+  const [updateProgramContent] = useMutation<hasura.UPDATE_PROGRAM_CONTENT, hasura.UPDATE_PROGRAM_CONTENTVariables>(
     gql`
       mutation UPDATE_PROGRAM_CONTENT(
         $programContentId: uuid!
@@ -520,7 +520,7 @@ export const useMutateProgramContent = () => {
     `,
   )
 
-  const [deleteProgramContent] = useMutation<types.DELETE_PROGRAM_CONTENT, types.DELETE_PROGRAM_CONTENTVariables>(
+  const [deleteProgramContent] = useMutation<hasura.DELETE_PROGRAM_CONTENT, hasura.DELETE_PROGRAM_CONTENTVariables>(
     gql`
       mutation DELETE_PROGRAM_CONTENT($programContentId: uuid!) {
         delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {

@@ -9,16 +9,16 @@ import AppointmentPlanCollectionTabs from '../../components/appointment/Appointm
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
-import types from '../../types'
 
 const AppointmentPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentUserRole, currentMemberId } = useAuth()
-  const [createAppointmentPlan] = useMutation<types.CREATE_APPOINTMENT_PLAN, types.CREATE_APPOINTMENT_PLANVariables>(
+  const [createAppointmentPlan] = useMutation<hasura.CREATE_APPOINTMENT_PLAN, hasura.CREATE_APPOINTMENT_PLANVariables>(
     CREATE_APPOINTMENT_PLAN,
   )
 

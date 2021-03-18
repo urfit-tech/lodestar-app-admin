@@ -10,9 +10,9 @@ import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramRoleProps } from '../../types/program'
 import MemberAvatar from '../common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
@@ -65,17 +65,17 @@ const IssueReplyItem: React.FC<{
   const theme = useContext(ThemeContext)
 
   const [insertIssueReplyReaction] = useMutation<
-    types.INSERT_ISSUE_REPLY_REACTION,
-    types.INSERT_ISSUE_REPLY_REACTIONVariables
+    hasura.INSERT_ISSUE_REPLY_REACTION,
+    hasura.INSERT_ISSUE_REPLY_REACTIONVariables
   >(INSERT_ISSUE_REPLY_REACTION)
   const [deleteIssueReplyReaction] = useMutation<
-    types.DELETE_ISSUE_REPLY_REACTION,
-    types.DELETE_ISSUE_REPLY_REACTIONVariables
+    hasura.DELETE_ISSUE_REPLY_REACTION,
+    hasura.DELETE_ISSUE_REPLY_REACTIONVariables
   >(DELETE_ISSUE_REPLY_REACTION)
-  const [deleteIssueReply] = useMutation<types.DELETE_ISSUE_REPLY, types.DELETE_ISSUE_REPLYVariables>(
+  const [deleteIssueReply] = useMutation<hasura.DELETE_ISSUE_REPLY, hasura.DELETE_ISSUE_REPLYVariables>(
     DELETE_ISSUE_REPLY,
   )
-  const [updateIssueReply] = useMutation<types.UPDATE_ISSUE_REPLY, types.UPDATE_ISSUE_REPLYVariables>(
+  const [updateIssueReply] = useMutation<hasura.UPDATE_ISSUE_REPLY, hasura.UPDATE_ISSUE_REPLYVariables>(
     UPDATE_ISSUE_REPLY,
   )
 

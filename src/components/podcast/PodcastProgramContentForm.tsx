@@ -13,6 +13,7 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import {
   durationFormatter,
   durationFormatToSeconds,
@@ -24,7 +25,6 @@ import {
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { appendPodcastProgramAudio, deletePodcastProgramAudio } from '../../pages/default/RecordingPageHelpers'
-import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -60,13 +60,13 @@ const PodcastProgramContentForm: React.FC<{
   const history = useHistory()
 
   const [updatePodcastProgramBody] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_BODY,
-    types.UPDATE_PODCAST_PROGRAM_BODYVariables
+    hasura.UPDATE_PODCAST_PROGRAM_BODY,
+    hasura.UPDATE_PODCAST_PROGRAM_BODYVariables
   >(UPDATE_PODCAST_PROGRAM_BODY)
 
   const [updatePodcastProgramDuration] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_DURATION,
-    types.UPDATE_PODCAST_PROGRAM_DURATIONVariables
+    hasura.UPDATE_PODCAST_PROGRAM_DURATION,
+    hasura.UPDATE_PODCAST_PROGRAM_DURATIONVariables
   >(UPDATE_PODCAST_PROGRAM_DURATION)
 
   const [loading, setLoading] = useState(false)

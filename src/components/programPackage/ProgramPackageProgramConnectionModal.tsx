@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
-import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
 type FieldProps = {
@@ -29,8 +29,8 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   const { id: appId } = useApp()
   const { availablePrograms } = useGetAvailableProgramCollection(appId)
   const [insertProgramPackageProgram] = useMutation<
-    types.INSERT_PROGRAM_PACKAGE_PROGRAM,
-    types.INSERT_PROGRAM_PACKAGE_PROGRAMVariables
+    hasura.INSERT_PROGRAM_PACKAGE_PROGRAM,
+    hasura.INSERT_PROGRAM_PACKAGE_PROGRAMVariables
   >(INSERT_PROGRAM_PACKAGE_PROGRAM)
 
   const [isLoading, setLoading] = useState<boolean>(false)
@@ -138,8 +138,8 @@ const ProgramPackageProgramConnectionModal: React.FC<{
 
 const useGetAvailableProgramCollection = (appId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_AVAILABLE_PROGRAM_COLLECTION,
-    types.GET_AVAILABLE_PROGRAM_COLLECTIONVariables
+    hasura.GET_AVAILABLE_PROGRAM_COLLECTION,
+    hasura.GET_AVAILABLE_PROGRAM_COLLECTIONVariables
   >(
     gql`
       query GET_AVAILABLE_PROGRAM_COLLECTION($appId: String!) {

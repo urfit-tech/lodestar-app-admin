@@ -7,12 +7,12 @@ import MemberAdminLayout, { StyledEmptyBlock } from '../../components/layout/Mem
 import MemberNoteAdminItem from '../../components/member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../../components/member/MemberNoteAdminModal'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMemberAdmin, useMemberNotesAdmin, useMutateMemberNote } from '../../hooks/member'
 import { ReactComponent as FilePlusIcon } from '../../images/icon/file-plus.svg'
-import * as types from '../../types.d'
 
 const MemberProfileAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -21,7 +21,7 @@ const MemberProfileAdminPage: React.FC = () => {
 
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
-    { created_at: types.order_by.desc },
+    { created_at: 'desc' as hasura.order_by },
     { member: memberId },
   )
   const { insertMemberNote } = useMutateMemberNote()

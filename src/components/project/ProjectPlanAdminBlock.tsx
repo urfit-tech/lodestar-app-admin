@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, projectMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProjectAdminProps, ProjectPlanSortProps } from '../../types/project'
 import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 import ItemsSortingModal from '../common/ItemsSortingModal'
@@ -29,8 +29,8 @@ const ProjectPlanAdminBlock: React.FC<{
 }> = ({ projectId, project, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [updatePositions] = useMutation<
-    types.UPDATE_PROJECT_PLAN_POSITION_COLLECTION,
-    types.UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables
+    hasura.UPDATE_PROJECT_PLAN_POSITION_COLLECTION,
+    hasura.UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables
   >(UPDATE_PROJECT_PLAN_POSITION_COLLECTION)
 
   const { projectPlanSorts, refetchProjectPlanSorts } = useProjectPlanSortCollection(projectId)
@@ -104,8 +104,8 @@ const ProjectPlanAdminBlock: React.FC<{
 
 const useProjectPlanSortCollection = (projectId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROJECT_PLAN_SORT_COLLECTION,
-    types.GET_PROJECT_PLAN_SORT_COLLECTIONVariables
+    hasura.GET_PROJECT_PLAN_SORT_COLLECTION,
+    hasura.GET_PROJECT_PLAN_SORT_COLLECTIONVariables
   >(
     gql`
       query GET_PROJECT_PLAN_SORT_COLLECTION($projectId: uuid) {

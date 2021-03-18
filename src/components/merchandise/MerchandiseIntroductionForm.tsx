@@ -5,9 +5,9 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
 import MerchandiseImagesUploader from './MerchandiseImagesUploader'
@@ -24,12 +24,12 @@ const MerchandiseIntroductionForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateMerchandiseImages] = useMutation<
-    types.UPDATE_MERCHANDISE_IMAGES,
-    types.UPDATE_MERCHANDISE_IMAGESVariables
+    hasura.UPDATE_MERCHANDISE_IMAGES,
+    hasura.UPDATE_MERCHANDISE_IMAGESVariables
   >(UPDATE_MERCHANDISE_IMAGES)
   const [updateMerchandiseIntroduction] = useMutation<
-    types.UPDATE_MERCHANDISE_INTRODUCTION,
-    types.UPDATE_MERCHANDISE_INTRODUCTIONVariables
+    hasura.UPDATE_MERCHANDISE_INTRODUCTION,
+    hasura.UPDATE_MERCHANDISE_INTRODUCTIONVariables
   >(UPDATE_MERCHANDISE_INTRODUCTION)
   const [loading, setLoading] = useState(false)
 

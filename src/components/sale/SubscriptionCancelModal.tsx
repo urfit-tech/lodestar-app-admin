@@ -4,9 +4,9 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessage, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessage({
@@ -56,8 +56,8 @@ const SubscriptionCancelModal: React.FC<{
 }> = ({ orderProducts, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [updateSubscriptionPlan] = useMutation<
-    types.UPDATE_SUBSCRIPTION_CANCELED,
-    types.UPDATE_SUBSCRIPTION_CANCELEDVariables
+    hasura.UPDATE_SUBSCRIPTION_CANCELED,
+    hasura.UPDATE_SUBSCRIPTION_CANCELEDVariables
   >(gql`
     mutation UPDATE_SUBSCRIPTION_CANCELED($orderProductId: uuid, $options: jsonb) {
       update_order_product(where: { id: { _eq: $orderProductId } }, _set: { auto_renewed: false, options: $options }) {

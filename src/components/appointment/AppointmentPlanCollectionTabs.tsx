@@ -4,8 +4,8 @@ import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageBlock } from '../../components/admin'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import AppointmentPlanCollectionTable from './AppointmentPlanCollectionTable'
 
 const messages = defineMessages({
@@ -21,8 +21,8 @@ const AppointmentPlanCollectionTabs: React.FC = () => {
   const tabContents: {
     key: string
     tab: string
-    condition: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
-    orderBy?: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy']
+    condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
+    orderBy?: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy']
     withAppointmentButton?: Boolean
     permissionIsAllowed: boolean
   }[] = [
@@ -33,7 +33,7 @@ const AppointmentPlanCollectionTabs: React.FC = () => {
         published_at: { _is_null: false },
         is_private: { _eq: false },
       },
-      orderBy: [{ updated_at: 'desc_nulls_last' as types.order_by }],
+      orderBy: [{ updated_at: 'desc_nulls_last' as hasura.order_by }],
       withAppointmentButton: true,
       permissionIsAllowed: true,
     },

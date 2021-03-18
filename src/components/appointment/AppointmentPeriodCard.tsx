@@ -8,11 +8,11 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { dateRangeFormatter, handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
-import types from '../../types'
 import { AvatarImage } from '../common/Image'
 import { BraftContent } from '../common/StyledBraftEditor'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -147,8 +147,8 @@ const AppointmentPeriodCard: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateAppointmentResult] = useMutation<
-    types.UPDATE_APPOINTMENT_RESULT,
-    types.UPDATE_APPOINTMENT_RESULTVariables
+    hasura.UPDATE_APPOINTMENT_RESULT,
+    hasura.UPDATE_APPOINTMENT_RESULTVariables
   >(UPDATE_APPOINTMENT_RESULT)
 
   const [visible, setVisible] = useState(false)
