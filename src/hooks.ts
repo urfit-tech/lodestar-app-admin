@@ -360,52 +360,68 @@ export type SalesCallMemberProps = {
   }[]
 }
 
+export type CurrentLeadProps = {
+  id: string;
+  email: string;
+  name: string;
+  phones: string[];
+  categories: {
+    id: string;
+    name: string;
+  }[];
+  properties: {
+    id: any;
+    name: string;
+    value: string;
+  }[];
+}
+
 export const useSalesCallMember = ({ salesId, status }: { salesId: string; status: 'contacted' | 'transacted' }) => {
   const [hasContacted, hasTransacted] = [status === 'contacted', status === 'transacted']
   const condition: types.GET_SALES_CALL_MEMBERVariables['condition'] = hasContacted
     ? {
-        manager_id: { _eq: salesId },
-        member_notes: {
-          author_id: { _eq: salesId },
-          type: { _eq: 'outbound' },
-          status: { _eq: 'answered' },
-        },
-        _not: {
-          _or: [
-            { member_notes: { rejected_at: { _is_null: false } } },
-            { member_contracts: { _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }] } },
-          ],
-        },
-      }
+      manager_id: { _eq: salesId },
+      member_notes: {
+        author_id: { _eq: salesId },
+        type: { _eq: 'outbound' },
+        status: { _eq: 'answered' },
+      },
+      _not: {
+        _or: [
+          { member_notes: { rejected_at: { _is_null: false } } },
+          { member_contracts: { _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }] } },
+        ],
+      },
+    }
     : hasTransacted
-    ? {
+      ? {
         manager_id: { _eq: salesId },
         member_contracts: {
           agreed_at: { _is_null: false },
           revoked_at: { _is_null: true },
         },
       }
-    : {}
+      : {}
 
   const orderBy: types.GET_SALES_CALL_MEMBERVariables['orderBy'] = hasContacted
     ? [
-        {
-          member_notes_aggregate: {
-            max: {
-              created_at: types.order_by.desc,
-            },
+      {
+        member_notes_aggregate: {
+          max: {
+            created_at: types.order_by.desc,
           },
         },
-      ]
+      },
+    ]
     : [
-        {
-          member_contracts_aggregate: {
-            max: {
-              agreed_at: types.order_by.desc,
-            },
+      {
+        member_contracts_aggregate: {
+          max: {
+            agreed_at: types.order_by.desc,
           },
         },
-      ]
+      },
+    ]
 
   const { loading, data, error, refetch } = useQuery<types.GET_SALES_CALL_MEMBER, types.GET_SALES_CALL_MEMBERVariables>(
     gql`
@@ -577,24 +593,24 @@ export const useLead = (salesId: string) => {
       name: property.name,
       options: property.placeholder ? property.placeholder.replace(/^\(|\)$/g, '').split('/') : null,
     })) || []
-  const currentLead = useMemo(
+  const currentLead: CurrentLeadProps | null = useMemo(
     () =>
       data?.member?.[0]
         ? {
-            id: data.member[0].id,
-            email: data.member[0].email,
-            name: data.member[0].name || data.member[0].username,
-            phones: data.member[0].member_phones.map(v => v.phone),
-            categories: data.member[0].member_categories.map(v => ({
-              id: v.category.id,
-              name: v.category.name,
-            })),
-            properties: data.member[0].member_properties.map(v => ({
-              id: v.property.id,
-              name: v.property.name,
-              value: v.value,
-            })),
-          }
+          id: data.member[0].id,
+          email: data.member[0].email,
+          name: data.member[0].name || data.member[0].username,
+          phones: data.member[0].member_phones.map(v => v.phone),
+          categories: data.member[0].member_categories.map(v => ({
+            id: v.category.id,
+            name: v.category.name,
+          })),
+          properties: data.member[0].member_properties.map(v => ({
+            id: v.property.id,
+            name: v.property.name,
+            value: v.value,
+          })),
+        }
         : null,
     [data?.member],
   )

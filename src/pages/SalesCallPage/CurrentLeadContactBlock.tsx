@@ -7,11 +7,12 @@ import { handleError, notEmpty } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, errorMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
 import moment, { Moment } from 'moment'
+import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call, memberPropertyFields } from '../../helpers'
-import { useLead } from '../../hooks'
+import { CurrentLeadProps, useLead } from '../../hooks'
 
 const CurrentLeadName = styled.div`
   color: var(--gray-darker);
@@ -48,8 +49,9 @@ type memberPropertyFieldProps = {
 
 const CurrentLeadContactBlock: React.FC<{
   salesId: string
+  onSubmit?: (status: memberNoteFieldProps['status'], value: CurrentLeadProps) => void
   onFinish?: () => void
-}> = ({ salesId, onFinish }) => {
+}> = ({ salesId, onSubmit, onFinish }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
   const { id: appId } = useApp()
@@ -170,6 +172,7 @@ const CurrentLeadContactBlock: React.FC<{
       )
       memberNoteStatus === 'not-answered' && (await markUnresponsive())
       resetForms()
+      onSubmit?.(memberNoteStatus, { ...currentLead, phones: uniq([primaryPhoneNumber, ...currentLead.phones]) })
       onFinish?.()
     } catch (error) {
       handleError(error)
