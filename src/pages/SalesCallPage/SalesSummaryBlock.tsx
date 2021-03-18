@@ -10,8 +10,8 @@ import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
-import types from '../../types'
 
 const MemberNameLabel = styled.div`
   color: var(--gray-darker);
@@ -96,7 +96,7 @@ const SalesSummaryBlock: React.FC<{
 }
 
 const useSalesSummary = (salesId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_SALES_SUMMARY, types.GET_SALES_SUMMARYVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_SALES_SUMMARY, hasura.GET_SALES_SUMMARYVariables>(
     gql`
       query GET_SALES_SUMMARY(
         $salesId: String!

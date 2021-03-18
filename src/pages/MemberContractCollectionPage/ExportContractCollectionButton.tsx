@@ -8,9 +8,9 @@ import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { memberContractMessages } from '../../helpers/translation'
 import { GET_MEMBER_PRIVATE_TEACH_CONTRACT } from '../../hooks'
-import * as types from '../../types.d'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
 
 const ExportContractCollectionButton: React.FC<{
@@ -39,7 +39,7 @@ const ExportContractCollectionButton: React.FC<{
   const handleDownload = async () => {
     setLoading(true)
 
-    const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
+    const condition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
       agreed_at: { _is_null: false },
       revoked_at: { _is_null: !isRevoked },
       author_name: { _ilike: filter.authorName && `%${filter.authorName}%` },
@@ -55,24 +55,16 @@ const ExportContractCollectionButton: React.FC<{
       ],
     }
 
-    const orderBy: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
-      {
-        agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? types.order_by.desc : types.order_by.asc),
-      },
-      {
-        revoked_at:
-          sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? types.order_by.desc : types.order_by.asc),
-      },
-      {
-        started_at:
-          sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? types.order_by.desc : types.order_by.asc),
-      },
+    const orderBy: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
+      { agreed_at: (sortOrder.agreedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by },
+      { revoked_at: (sortOrder.revokedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by },
+      { started_at: (sortOrder.startedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by },
     ]
 
     try {
       const { data } = await apolloClient.query<
-        types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
-        types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
+        hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
+        hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
       >({
         query: GET_MEMBER_PRIVATE_TEACH_CONTRACT,
         variables: {
@@ -143,7 +135,7 @@ const ExportContractCollectionButton: React.FC<{
         )
         .flat()
 
-      const { data: salesNames } = await apolloClient.query<types.GET_SALES_NAMES>({
+      const { data: salesNames } = await apolloClient.query<hasura.GET_SALES_NAMES>({
         query: GET_SALES_NAMES,
         variables: { salesIds },
       })

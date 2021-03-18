@@ -10,7 +10,7 @@ import { countBy, filter, flatten, map, pipe, split, trim, uniq } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import SalesMemberInput from '../components/common/SalesMemberInput'
-import types from '../types'
+import hasura from '../hasura'
 
 const count = pipe(
   map(
@@ -96,7 +96,7 @@ const MaterialStatisticsTable: React.FC<{
   salesId: string | null
   materialName: string
 }> = ({ startedAt, endedAt, salesId, materialName }) => {
-  const { loading, error, data } = useQuery<types.GET_SALES_MATERIALS, types.GET_SALES_MATERIALSVariables>(
+  const { loading, error, data } = useQuery<hasura.GET_SALES_MATERIALS, hasura.GET_SALES_MATERIALSVariables>(
     GET_SALES_MATERIALS,
     {
       variables: {

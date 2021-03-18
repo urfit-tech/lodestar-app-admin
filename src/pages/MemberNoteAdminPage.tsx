@@ -12,7 +12,7 @@ import { ReactComponent as FilePlusIcon } from 'lodestar-app-admin/src/images/ic
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
-import * as types from '../types.d'
+import hasura from '../hasura'
 
 const MemberProfileAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -21,7 +21,7 @@ const MemberProfileAdminPage: React.FC = () => {
 
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { loadingNotes, errorNotes, notes, refetchNotes } = useMemberNotesAdmin(
-    { created_at: types.order_by.desc },
+    { created_at: 'desc' as hasura.order_by },
     { member: memberId },
   )
   const { insertMemberNote } = useMutateMemberNote()

@@ -3,7 +3,7 @@ import { Select } from 'antd'
 import gql from 'graphql-tag'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useIntl } from 'react-intl'
-import types from '../../types'
+import hasura from '../../hasura'
 
 export default function CategorySelector({
   class: categoryClass,
@@ -13,7 +13,7 @@ export default function CategorySelector({
   onChange: (category: string | null) => void
 }) {
   const { formatMessage } = useIntl()
-  const { loading, error, data } = useQuery<types.GET_CATEGORY>(
+  const { loading, error, data } = useQuery<hasura.GET_CATEGORY>(
     gql`
       query GET_CATEGORY($class: String!) {
         category(where: { class: { _eq: $class } }) {
