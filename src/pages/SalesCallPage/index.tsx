@@ -18,7 +18,7 @@ const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const [submittedPotentials, setSubmittedPotentials] = useState<SalesCallMemberProps[]>([])
+  const [submittedPotentialMembers, setSubmittedPotentialMembers] = useState<SalesCallMemberProps[]>([])
   const {
     loadingMembers: loadingContactedMembers,
     members: contactedMembers,
@@ -52,7 +52,7 @@ const SalesCallPage: React.FC = () => {
               salesId={currentMemberId}
               onSubmit={(status, member) => {
                 if (status !== 'not-answered') {
-                  setSubmittedPotentials(prevMember => [
+                  setSubmittedPotentialMembers(prev => [
                     {
                       id: member.id,
                       name: member.name,
@@ -63,7 +63,7 @@ const SalesCallPage: React.FC = () => {
                       lastTaskCategoryName: null,
                       contracts: [],
                     },
-                    ...prevMember,
+                    ...prev,
                   ])
                 }
               }}
@@ -73,13 +73,13 @@ const SalesCallPage: React.FC = () => {
         <Tabs.TabPane
           key="keep-in-touch"
           tab={`${formatMessage(salesMessages.label.keepInTouch)} (${
-            submittedPotentials.length + totalContactedMembers
+            submittedPotentialMembers.length + totalContactedMembers
           })`}
         >
           {currentMemberId && (
             <SalesCallContactedMemberBlock
               salesId={currentMemberId}
-              members={[...submittedPotentials, ...contactedMembers]}
+              members={[...submittedPotentialMembers, ...contactedMembers]}
               loadingMembers={loadingContactedMembers}
             />
           )}
