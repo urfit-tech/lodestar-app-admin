@@ -4,11 +4,11 @@ import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { salesMessages } from '../../helpers/translation'
-import { useSalesCallMember } from '../../hooks'
+import { SalesCallMemberProps, useSalesCallMember } from '../../hooks'
 import CurrentLeadContactBlock from './CurrentLeadContactBlock'
 import SalesCallContactedMemberBlock from './SalesCallContactedMemberBlock'
 import SalesCallTransactedMemberBlock from './SalesCallTransactedMemberBlock'
@@ -18,12 +18,11 @@ const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-
+  const [submittedPotentialMembers, setSubmittedPotentialMembers] = useState<SalesCallMemberProps[]>([])
   const {
     loadingMembers: loadingContactedMembers,
     members: contactedMembers,
     totalMembers: totalContactedMembers,
-    refetchMembers: refetchContactedMembers,
   } = useSalesCallMember({
     status: 'contacted',
     salesId: currentMemberId || '',
@@ -32,7 +31,6 @@ const SalesCallPage: React.FC = () => {
     loadingMembers: loadingTransactedMembers,
     members: transactedMembers,
     totalMembers: totalTransactedMembers,
-    refetchMembers: refetchTransactedMembers,
   } = useSalesCallMember({
     status: 'transacted',
     salesId: currentMemberId || '',
@@ -52,21 +50,36 @@ const SalesCallPage: React.FC = () => {
           {currentMemberId && (
             <CurrentLeadContactBlock
               salesId={currentMemberId}
-              onFinish={() => {
-                refetchContactedMembers()
-                refetchTransactedMembers()
+              onSubmit={(status, member) => {
+                if (status !== 'not-answered') {
+                  setSubmittedPotentialMembers(prev => [
+                    {
+                      id: member.id,
+                      name: member.name,
+                      email: member.email,
+                      phones: member.phones,
+                      categoryNames: member.categories.map(category => category.name),
+                      lastContactAt: new Date(),
+                      lastTaskCategoryName: null,
+                      contracts: [],
+                    },
+                    ...prev,
+                  ])
+                }
               }}
             />
           )}
         </Tabs.TabPane>
         <Tabs.TabPane
           key="keep-in-touch"
-          tab={`${formatMessage(salesMessages.label.keepInTouch)} (${totalContactedMembers})`}
+          tab={`${formatMessage(salesMessages.label.keepInTouch)} (${
+            submittedPotentialMembers.length + totalContactedMembers
+          })`}
         >
           {currentMemberId && (
             <SalesCallContactedMemberBlock
               salesId={currentMemberId}
-              members={contactedMembers}
+              members={[...submittedPotentialMembers, ...contactedMembers]}
               loadingMembers={loadingContactedMembers}
             />
           )}
