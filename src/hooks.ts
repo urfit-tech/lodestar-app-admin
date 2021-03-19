@@ -718,7 +718,11 @@ export const useLead = (salesId: string) => {
     currentLead,
     refetchCurrentLead: refetch,
     markUnresponsive: async () => currentLead && markUnresponsiveMember({ variables: { memberId: currentLead.id } }),
-    insertNote: async (memberNote: { status: string; duration: number; description: string }) =>
+    insertNote: async (memberNote: {
+      status: 'not-answered' | 'rejected' | 'willing'
+      duration: number
+      description: string
+    }) =>
       currentLead &&
       insertMemberNote({
         variables: {
@@ -726,7 +730,7 @@ export const useLead = (salesId: string) => {
             member_id: currentLead.id,
             author_id: salesId,
             type: withDurationInput ? 'outbound' : null,
-            status: memberNote.status,
+            status: memberNote.status === 'not-answered' ? 'missed' : 'answered',
             duration: memberNote.duration,
             description: memberNote.description,
             rejected_at: memberNote.status === 'rejected' ? new Date() : undefined,

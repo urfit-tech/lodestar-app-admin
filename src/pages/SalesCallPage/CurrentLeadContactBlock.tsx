@@ -156,7 +156,7 @@ const CurrentLeadContactBlock: React.FC<{
         ].filter(notEmpty),
       )
       await insertNote({
-        status: memberNoteStatus === 'not-answered' ? 'missed' : 'answered',
+        status: memberNoteStatus,
         duration: withDurationInput
           ? noteValues.duration.hour() * 3600 + noteValues.duration.minute() * 60 + noteValues.duration.second()
           : 0,
