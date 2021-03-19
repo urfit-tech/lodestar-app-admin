@@ -94,7 +94,7 @@ type MemberContractModalProps = {
     ratio: number
   }[]
   studentCertification?: string | null
-  onRefetch: () => void
+  onSuccess?: () => void
 } & AdminModalProps
 
 const MemberContractModal: React.FC<MemberContractModalProps> = ({
@@ -108,7 +108,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   note,
   orderExecutors,
   studentCertification,
-  onRefetch,
+  onSuccess,
   ...props
 }) => {
   const { formatMessage } = useIntl()
@@ -195,7 +195,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       .then(() => {
         setCertification([])
         setVisible(false)
-        onRefetch()
+        onSuccess?.()
       })
       .catch(handleError)
       .finally(() => setIsLoading(false))

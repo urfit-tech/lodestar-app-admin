@@ -455,9 +455,7 @@ export const MemberContractCollectionBlock: React.FC<{
       <div className="d-flex align-items-center justify-content-between mb-4">
         <MemberContractFilterSelector
           dateRangeType={filter.dateRangeType}
-          onSetDateRangeType={dateRangeType => {
-            setFilter({ ...filter, dateRangeType })
-          }}
+          onSetDateRangeType={dateRangeType => setFilter({ ...filter, dateRangeType })}
           startedAt={filter.startedAt}
           endedAt={filter.endedAt}
           onSetRange={({ startedAt, endedAt }) => setFilter({ ...filter, startedAt, endedAt })}
@@ -512,24 +510,26 @@ export const MemberContractCollectionBlock: React.FC<{
           note={activeMemberContract?.note}
           orderExecutors={activeMemberContract?.orderExecutors || []}
           studentCertification={activeMemberContract?.studentCertification}
-          onRefetch={refetchMemberContracts}
+          onSuccess={() => {
+            setIsLoading(true)
+            refetchMemberContracts().finally(() => setIsLoading(false))
+          }}
           renderTrigger={({ setVisible }) => (
             <TableWrapper>
               <Table<MemberContractProps>
                 columns={columns.filter(column => visibleFields.includes(column.key as string))}
-                loading={!!(loadingMemberContracts || errorMemberContracts)}
+                loading={loadingMemberContracts || !!errorMemberContracts || isLoading}
                 dataSource={memberContracts}
                 scroll={{ x: true }}
                 rowKey={row => row.id}
-                rowClassName="cursor-pointer"
+                rowClassName={permissions.CONTRACT_VALUE_VIEW ? 'cursor-pointer' : undefined}
                 onRow={record => ({
-                  onClick: () => {
-                    if (!permissions.CONTRACT_VALUE_VIEW) {
-                      return
-                    }
-                    setActiveMemberContractId(record.id)
-                    setVisible(true)
-                  },
+                  onClick: permissions.CONTRACT_VALUE_VIEW
+                    ? () => {
+                        setActiveMemberContractId(record.id)
+                        setVisible(true)
+                      }
+                    : undefined,
                 })}
                 onChange={(pagination, filters, sorter) => {
                   const newSorter = sorter as SorterResult<MemberContractProps>

@@ -13,7 +13,7 @@ const StyledIcon = styled(Icon)`
   font-size: 24px;
 `
 
-export const MemberContractCollectionPage: React.FC = () => {
+const MemberContractCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
 
   const tabContents: {
@@ -46,3 +46,5 @@ export const MemberContractCollectionPage: React.FC = () => {
     </AdminLayout>
   )
 }
+
+export default MemberContractCollectionPage
