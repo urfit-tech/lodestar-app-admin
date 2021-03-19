@@ -56,7 +56,7 @@ const App: React.FC = () => {
                 {
                   permissionIsAllowed: true,
                   key: 'analytics_sales_member_categories',
-                  name: '領域表現',
+                  name: '業務表現',
                 },
               ],
             },

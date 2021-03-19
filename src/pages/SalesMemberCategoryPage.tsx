@@ -129,7 +129,7 @@ export default function SalesMemberCategoryPage() {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <BarChartOutlined className="mr-3" />
-        <span>領域表現</span>
+        <span>業務表現</span>
       </AdminPageTitle>
 
       <StyledFilter className="mb-4">
