@@ -8,7 +8,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
+import { copyToClipboard, handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
@@ -83,19 +83,6 @@ const ProgramSharingCodeAdminForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
-  const copyToClipboard = (str: string) => {
-    const el = document.createElement('textarea')
-    el.value = str
-    el.setAttribute('readonly', '')
-    el.style.position = 'absolute'
-    el.style.left = '-9999px'
-    document.body.appendChild(el)
-    el.select()
-    document.execCommand('copy')
-    document.body.removeChild(el)
-    message.success(formatMessage(commonMessages.text.copiedToClipboard))
-  }
-
   return (
     <Form
       form={form}
@@ -160,13 +147,14 @@ const ProgramSharingCodeAdminForm: React.FC<{
                   <Button
                     type="link"
                     size="small"
-                    onClick={() =>
+                    onClick={() => {
                       copyToClipboard(
                         `https://${settings['host']}/programs/${programId}?sharing=${
                           sharingCodeInputs[index]?.code || sharingCodes[index]?.code
                         }`,
                       )
-                    }
+                      message.success(formatMessage(commonMessages.text.copiedToClipboard))
+                    }}
                   >
                     {formatMessage(commonMessages.ui.copy)}
                   </Button>
