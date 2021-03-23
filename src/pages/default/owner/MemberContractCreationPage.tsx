@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import {
   Alert,
   Button,
+  Checkbox,
   DatePicker,
   Descriptions,
   Form,
@@ -17,9 +18,8 @@ import {
 } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import { sum } from 'lodash'
 import moment from 'moment'
-import { range, uniqBy } from 'ramda'
+import { range, sum, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -57,6 +57,16 @@ type ProductProps = {
   addonPrice: number | null
   appointments: number
   coins: number
+}
+
+type OrderItem = {
+  id: string
+  type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount'
+  name: string
+  price: number
+  appointments: number
+  coins: number
+  amount: number
 }
 
 const StyledFieldLabel = styled.div`
@@ -135,7 +145,7 @@ const MemberContractForm: React.FC<{
   const { id: appId } = useApp()
   const { xuemiSales } = useXuemiSales()
 
-  const { products } = useProducts()
+  const { products } = useProducts(appId)
   const { data: dataProperties } = useQuery<hasura.GET_PROPERTIES>(GET_PROPERTIES)
   const { data: dataContracts } = useQuery<hasura.GET_CONTRACTS>(GET_CONTRACTS)
   const { data: dataProjectPlans } = useQuery<hasura.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
@@ -161,6 +171,7 @@ const MemberContractForm: React.FC<{
   const [certificationPath, setCertificationPath] = useState('')
   const [referralMemberId, setReferralMemberId] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [hasDeposit, setHasDeposit] = useState(false)
 
   const { data: dataReferralMembers } = useQuery<
     hasura.GET_REFERRAL_MEMBER_COLLECTION,
@@ -194,15 +205,7 @@ const MemberContractForm: React.FC<{
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
     products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
-  const orderItems: {
-    id: string
-    type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount'
-    name: string
-    price: number
-    appointments: number
-    coins: number
-    amount: number
-  }[] = contractProducts
+  const orderProducts: OrderItem[] = contractProducts
     .map(contractProduct => {
       const product = products.find(product => product.id === contractProduct.id)
       if (!product) {
@@ -228,13 +231,13 @@ const MemberContractForm: React.FC<{
       }
     })
     .filter(notEmpty)
-  const mainProducts = orderItems.filter(selectedProduct => selectedProduct.type === 'mainProduct')
-  const totalAppointments = sum(orderItems.map(product => product.appointments * product.amount))
-  const totalCoins = sum(orderItems.map(product => product.coins * product.amount))
+  const mainProducts = orderProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
+  const totalAppointments = sum(orderProducts.map(product => product.appointments * product.amount))
+  const totalCoins = sum(orderProducts.map(product => product.coins * product.amount))
 
   if (withCreatorId && totalAppointments > 0) {
-    orderItems.push({
-      id: 'assignmentFee',
+    orderProducts.push({
+      id: '10c7004c-e615-4ca9-90f8-29ce674e0463',
       type: 'addonProduct',
       name: '指定業師',
       price: 1000,
@@ -244,10 +247,24 @@ const MemberContractForm: React.FC<{
     })
   }
 
+  const orderDiscounts: OrderItem[] = []
+
+  if (hasDeposit) {
+    orderDiscounts.push({
+      id: 'a2e79c69-a200-4baa-934b-7d256f129ee0',
+      type: 'depositDiscount',
+      name: '扣除訂金',
+      price: -1000,
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+
   const referralDiscountPrice = referralMemberId ? 2000 * -1 : 0
   if (referralDiscountPrice) {
-    orderItems.push({
-      id: 'referralDiscount',
+    orderDiscounts.push({
+      id: 'fe09068e-5f24-4d82-b9b3-186ee498d144',
       type: 'referralDiscount',
       name: '被介紹人折抵',
       price: referralDiscountPrice,
@@ -262,8 +279,8 @@ const MemberContractForm: React.FC<{
       ? (sum(mainProducts.map(mainProduct => mainProduct.price)) + referralDiscountPrice * mainProducts.length) * -0.1
       : 0
   if (studentDiscountPrice) {
-    orderItems.push({
-      id: 'studentDiscount',
+    orderDiscounts.push({
+      id: '5e298545-9190-44b1-aadc-b0d43b94cbe5',
       type: 'promotionDiscount',
       name: '學生方案',
       price: studentDiscountPrice,
@@ -279,8 +296,13 @@ const MemberContractForm: React.FC<{
       studentDiscountPrice) *
     (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
   if (Math.ceil(groupDiscountPrice)) {
-    orderItems.push({
-      id: 'groupDiscount',
+    orderDiscounts.push({
+      id:
+        mainProducts.length === 2
+          ? '47c21171-afd9-4510-aa5f-547c436125b7'
+          : mainProducts.length === 3
+          ? '01fa990e-ec1d-4b41-a958-5d93240a8205'
+          : 'c8cfcb04-7e31-444f-8796-5800b5741019',
       type: 'promotionDiscount',
       name: mainProducts.length === 2 ? '任選兩件折抵' : mainProducts.length === 3 ? '任選三件折抵' : '任選四件折抵',
       price: Math.ceil(groupDiscountPrice),
@@ -289,6 +311,7 @@ const MemberContractForm: React.FC<{
       amount: 1,
     })
   }
+  const orderItems = [...orderProducts, ...orderDiscounts]
   const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
 
   const handleContractAdded = async () => {
@@ -369,10 +392,6 @@ const MemberContractForm: React.FC<{
 
     let times = 0
     const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
-    const projectPlanName = orderItems
-      .filter(orderItem => orderItem.name)
-      .map(orderItem => orderItem.name)
-      .join('、')
 
     addMemberContract({
       variables: {
@@ -392,13 +411,39 @@ const MemberContractForm: React.FC<{
             phone: member.phones,
             email: member.email,
           },
-          cardName: '學米 VIP 會員卡',
-          coinName: projectPlanName,
+          coinName: `${selectedProjectPlan?.title}`,
           memberId: member.id,
           paymentNo: moment().format('YYYYMMDDHHmmss'),
           coinAmount: totalCoins,
-          projectPlanName,
-          projectPlanProductId: `ProjectPlan_${selectedProjectPlanId}`,
+          orderProducts: [
+            {
+              product_id: `ProjectPlan_${selectedProjectPlanId}`,
+              name: selectedProjectPlan?.title,
+              price: 0,
+              started_at: startedAt,
+              ended_at: endedAt,
+            },
+            ...orderProducts.map(v => ({
+              product_id: `ProjectPlan_${v.id}`,
+              name: v.name,
+              price: v.price,
+              started_at: startedAt,
+              ended_at: endedAt,
+            })),
+            {
+              product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
+              name: '學米 VIP 會員卡',
+              price: 0,
+              started_at: startedAt,
+              ended_at: endedAt,
+            },
+          ],
+          orderDiscounts: orderDiscounts.map(v => ({
+            name: v.name,
+            price: v.price,
+            type: 'Coupon',
+            target: v.id,
+          })),
           orderExecutors,
           paymentOptions: {
             paymentMethod: values.paymentMethod,
@@ -647,6 +692,11 @@ const MemberContractForm: React.FC<{
             </Select>
           </Form.Item>
         </Descriptions.Item>
+        <Descriptions.Item label="扣除訂金 $1000">
+          <Form.Item className="m-0">
+            <Checkbox value={hasDeposit} onChange={e => setHasDeposit(e.target.checked)} />
+          </Form.Item>
+        </Descriptions.Item>
       </Descriptions>
 
       <Descriptions title="付款方式" bordered className="mb-5">
@@ -810,16 +860,18 @@ const useXuemiSales = () => {
   }
 }
 
-const useProducts = () => {
-  const { data } = useQuery<hasura.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT)
+const useProducts = (appId: string) => {
+  const { data } = useQuery<hasura.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT, {
+    variables: { appId },
+  })
   const products: ProductProps[] =
-    data?.xuemi_product.map(v => ({
+    data?.project_plan.map(v => ({
       id: v.id,
-      name: v.name,
-      price: v.price,
-      addonPrice: v.addon_price,
-      appointments: v.appointments,
-      coins: v.coins,
+      name: v.title,
+      price: v.list_price,
+      addonPrice: v.options?.addonPrice || 0,
+      appointments: v.options?.appointments || 0,
+      coins: v.options?.coins || 0,
     })) || []
 
   return { products }
@@ -857,6 +909,7 @@ const GET_PROJECT_PLANS = gql`
   query GET_PROJECT_PLANS {
     project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
       id
+      title
       period_amount
       period_type
     }
@@ -872,17 +925,15 @@ const GET_PROPERTIES = gql`
   }
 `
 const GET_CONTRACT_PRODUCT = gql`
-  query GET_CONTRACT_PRODUCT {
-    xuemi_product(
-      where: { published_at: { _is_null: false } }
-      order_by: [{ position: asc_nulls_last }, { name: asc }]
+  query GET_CONTRACT_PRODUCT($appId: String!) {
+    project_plan(
+      where: { published_at: { _is_null: false }, project: { app_id: { _eq: $appId } } }
+      order_by: [{ position: asc_nulls_last }, { title: asc }]
     ) {
       id
-      name
-      price
-      addon_price
-      appointments
-      coins
+      title
+      list_price
+      options
     }
   }
 `

@@ -11310,6 +11310,7 @@ export interface GET_CONTRACTS {
 export interface GET_PROJECT_PLANS_project_plan {
   __typename: "project_plan";
   id: any;
+  title: string;
   period_amount: any | null;
   /**
    * Y / M / W / D
@@ -11356,21 +11357,23 @@ export interface GET_PROPERTIES {
 // GraphQL query operation: GET_CONTRACT_PRODUCT
 // ====================================================
 
-export interface GET_CONTRACT_PRODUCT_xuemi_product {
-  __typename: "xuemi_product";
+export interface GET_CONTRACT_PRODUCT_project_plan {
+  __typename: "project_plan";
   id: any;
-  name: string;
-  price: any;
-  addon_price: any | null;
-  appointments: number;
-  coins: number;
+  title: string;
+  list_price: any | null;
+  options: any | null;
 }
 
 export interface GET_CONTRACT_PRODUCT {
   /**
-   * fetch data from the table: "xuemi.product"
+   * fetch data from the table: "project_plan"
    */
-  xuemi_product: GET_CONTRACT_PRODUCT_xuemi_product[];
+  project_plan: GET_CONTRACT_PRODUCT_project_plan[];
+}
+
+export interface GET_CONTRACT_PRODUCTVariables {
+  appId: string;
 }
 
 /* tslint:disable */
