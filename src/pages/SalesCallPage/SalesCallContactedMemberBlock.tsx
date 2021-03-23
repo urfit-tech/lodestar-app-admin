@@ -255,11 +255,11 @@ const SalesCallContactedMemberBlock: React.FC<{
                 status: 'answered',
                 duration: duration,
                 description: '',
-                note: '',
+                note: 'jitsi demo',
               },
             })
               .then(() => {
-                message.success(commonMessages.event.successfullySaved)
+                message.success(formatMessage(commonMessages.event.successfullySaved))
                 setVisible(false)
               })
               .catch(handleError)
