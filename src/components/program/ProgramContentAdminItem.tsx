@@ -15,8 +15,8 @@ import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
+import ProgramContentPracticeAdminModal from './PracticeAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
-import ProgramContentPracticeAdminModal from './ProgramContentPracticeAdminModal'
 
 const StyledIcon = styled(Icon)`
   color: #9b9b9b;

@@ -107,6 +107,7 @@ const ProgramContentSectionAdminCard: React.FC<{
         </div>
       ))}
       <Dropdown
+        trigger={['click']}
         overlay={
           <Menu>
             <StyledMenuItem
