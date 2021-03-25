@@ -80,6 +80,7 @@ const JitsiDemoModal: React.FC<
       maskClosable={false}
       closable={false}
       centered
+      destroyOnClose
       okText="結束通話"
       okButtonProps={{
         disabled: Object.values(jitsiUsers).length === 0 || Object.values(jitsiUsers).every(user => !user.endedAt),
