@@ -295,6 +295,7 @@ export const commonMessages = {
     orderRefund: { id: 'common.status.orderRefund', defaultMessage: '已退款' },
     orderExpired: { id: 'common.status.orderExpired', defaultMessage: '已失效' },
     orderFailed: { id: 'common.status.orderFailed', defaultMessage: '付款失敗' },
+    orderDeleted: { id: 'common.status.orderDeleted', defaultMessage: '已刪除' },
     notComplete: { id: 'common.status.notComplete', defaultMessage: '尚有未完成項目' },
     unpublished: { id: 'common.status.unpublished', defaultMessage: '尚未發佈' },
     published: { id: 'common.status.published', defaultMessage: '已發佈' },
