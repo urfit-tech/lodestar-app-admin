@@ -60,7 +60,10 @@ const MemberProfileBasicForm: React.FC<{
               member_id: memberAdmin.id,
               phone,
             })),
-        managerId: values.managerId || memberAdmin.manager?.id,
+        managerId:
+          enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
+            ? values.managerId || null
+            : memberAdmin.manager?.id,
         assignedAt: values.managerId ? new Date() : null,
         tags: (values.tags || memberAdmin.tags).map(tag => ({
           name: tag,
