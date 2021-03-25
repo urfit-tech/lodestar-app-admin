@@ -357,47 +357,47 @@ export type SalesCallMemberProps = {
 }
 
 export type CurrentLeadProps = {
-  id: string;
-  email: string;
-  name: string;
-  phones: string[];
+  id: string
+  email: string
+  name: string
+  phones: string[]
   categories: {
-    id: string;
-    name: string;
-  }[];
+    id: string
+    name: string
+  }[]
   properties: {
-    id: any;
-    name: string;
-    value: string;
-  }[];
+    id: any
+    name: string
+    value: string
+  }[]
 }
 
 export const useSalesCallMember = ({ salesId, status }: { salesId: string; status: 'contacted' | 'transacted' }) => {
   const [hasContacted, hasTransacted] = [status === 'contacted', status === 'transacted']
   const condition: hasura.GET_SALES_CALL_MEMBERVariables['condition'] = hasContacted
     ? {
-      manager_id: { _eq: salesId },
-      member_notes: {
-        author_id: { _eq: salesId },
-        type: { _eq: 'outbound' },
-        status: { _eq: 'answered' },
-      },
-      _not: {
-        _or: [
-          { member_notes: { rejected_at: { _is_null: false } } },
-          { member_contracts: { _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }] } },
-        ],
-      },
-    }
+        manager_id: { _eq: salesId },
+        member_notes: {
+          author_id: { _eq: salesId },
+          type: { _eq: 'outbound' },
+          status: { _eq: 'answered' },
+        },
+        _not: {
+          _or: [
+            { member_notes: { rejected_at: { _is_null: false } } },
+            { member_contracts: { _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }] } },
+          ],
+        },
+      }
     : hasTransacted
-      ? {
+    ? {
         manager_id: { _eq: salesId },
         member_contracts: {
           agreed_at: { _is_null: false },
           revoked_at: { _is_null: true },
         },
       }
-      : {}
+    : {}
 
   const orderBy: hasura.GET_SALES_CALL_MEMBERVariables['orderBy'] = hasContacted
     ? [
@@ -405,19 +405,19 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
           member_notes_aggregate: {
             max: {
               created_at: 'desc' as hasura.order_by,
-           },
-         },
-       },
-    ]
+            },
+          },
+        },
+      ]
     : [
         {
           member_contracts_aggregate: {
             max: {
               agreed_at: 'desc' as hasura.order_by,
+            },
           },
         },
-      },
-    ]
+      ]
 
   const { loading, data, error, refetch } = useQuery<
     hasura.GET_SALES_CALL_MEMBER,
@@ -446,6 +446,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
           member_notes(
             where: { type: { _eq: "outbound" }, status: { _eq: "answered" }, rejected_at: { _is_null: true } }
             order_by: { created_at: desc }
+            limit: 1
           ) @include(if: $hasContacted) {
             id
             created_at
@@ -493,7 +494,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       name: v.name,
       email: v.email,
       phones: v.member_phones.map(w => w.phone),
-      lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes.slice(-1)[0]?.created_at) : null,
+      lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes[0]?.created_at) : null,
       lastTaskCategoryName: v.member_tasks?.[0]?.category?.name || null,
       categoryNames: v.member_categories?.map(w => w.category.name) || [],
       contracts:
@@ -595,20 +596,20 @@ export const useLead = (salesId: string) => {
     () =>
       data?.member?.[0]
         ? {
-          id: data.member[0].id,
-          email: data.member[0].email,
-          name: data.member[0].name || data.member[0].username,
-          phones: data.member[0].member_phones.map(v => v.phone),
-          categories: data.member[0].member_categories.map(v => ({
-            id: v.category.id,
-            name: v.category.name,
-          })),
-          properties: data.member[0].member_properties.map(v => ({
-            id: v.property.id,
-            name: v.property.name,
-            value: v.value,
-          })),
-        }
+            id: data.member[0].id,
+            email: data.member[0].email,
+            name: data.member[0].name || data.member[0].username,
+            phones: data.member[0].member_phones.map(v => v.phone),
+            categories: data.member[0].member_categories.map(v => ({
+              id: v.category.id,
+              name: v.category.name,
+            })),
+            properties: data.member[0].member_properties.map(v => ({
+              id: v.property.id,
+              name: v.property.name,
+              value: v.value,
+            })),
+          }
         : null,
     [data?.member],
   )
