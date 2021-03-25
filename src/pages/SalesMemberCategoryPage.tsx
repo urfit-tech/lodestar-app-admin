@@ -8,7 +8,7 @@ import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import moment from 'moment'
-import { filter, flatten, groupBy, keys, length, map, split, sum, toPairs } from 'ramda'
+import { filter, flatten, groupBy, length, map, split, sum, toPairs } from 'ramda'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import CategorySelector from '../components/common/CategorySelector'
@@ -68,11 +68,15 @@ export default function SalesMemberCategoryPage() {
     const [saleId, saleName] = split('_')(sale)
     const firstHandCount = length(
       filter(member => {
-        const noteSales = keys(groupBy(note => note.authorId, member.notes))
-
-        return 1 >= noteSales.length
+        return member.notes.length === 0
       }, memberList),
     )
+    const hasAnsweredCurrentManager = (note: {
+      authorId: string
+      type: string | null
+      status: string | null
+      duration: number
+    }) => note.authorId === saleId && note.type === 'outbound' && note.status === 'answered' && note.duration > 90
 
     return {
       saleId,
@@ -84,21 +88,21 @@ export default function SalesMemberCategoryPage() {
       },
       getThroughCount: length(
         filter(member => {
-          const saleNotes = filter(note => note.authorId === saleId, member.notes)
+          const saleNotes = filter(hasAnsweredCurrentManager, member.notes)
 
           return length(saleNotes) > 0
         }, memberList),
       ),
       notFirstRejectionCount: length(
         filter(member => {
-          const saleNotes = filter(note => note.authorId === saleId, member.notes)
+          const saleNotes = filter(hasAnsweredCurrentManager, member.notes)
 
           return length(saleNotes) > 0 && !saleNotes[0].rejectedAt
         }, memberList),
       ),
       contactingCount: length(
         filter(member => {
-          const saleNotes = filter(note => note.authorId === saleId, member.notes)
+          const saleNotes = filter(hasAnsweredCurrentManager, member.notes)
           const saleRejectedNotes = filter(note => !!note.rejectedAt, saleNotes)
 
           return length(saleNotes) >= 1 && length(saleRejectedNotes) === 0
@@ -348,10 +352,7 @@ const useAssignedMemberCollection = (filter: {
             id
             name
           }
-          member_notes(
-            where: { type: { _eq: "outbound" }, status: { _eq: "answered" }, duration: { _gt: 90 } }
-            order_by: { created_at: asc }
-          ) {
+          member_notes(order_by: { created_at: asc }) {
             id
             author_id
             type
