@@ -95,14 +95,14 @@ export default function SalesMemberCategoryPage() {
       ),
       notFirstRejectionCount: length(
         filter(member => {
-          const saleNotes = filter(hasAnsweredCurrentManager, member.notes)
+          const saleNotes = filter(note => note.authorId === saleId, member.notes)
 
           return length(saleNotes) > 0 && !saleNotes[0].rejectedAt
         }, memberList),
       ),
       contactingCount: length(
         filter(member => {
-          const saleNotes = filter(hasAnsweredCurrentManager, member.notes)
+          const saleNotes = filter(note => note.authorId === saleId, member.notes)
           const saleRejectedNotes = filter(note => !!note.rejectedAt, saleNotes)
 
           return length(saleNotes) >= 1 && length(saleRejectedNotes) === 0
