@@ -999,6 +999,146 @@ export interface GET_MEMBER_NOTES_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SALES_ACTIVE_LOG
+// ====================================================
+
+export interface GET_SALES_ACTIVE_LOG_firsthandMembers {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_secondhandMembers {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_attend {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_validSpeaking {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+  duration: number | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_validDial {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_validGetThrough {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_invalidNumber {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_rejected {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_keepInTouch {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_reserveDemo {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_performance {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+  price: any | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_revoked {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+  price: any | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG {
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  firsthandMembers: GET_SALES_ACTIVE_LOG_firsthandMembers[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  secondhandMembers: GET_SALES_ACTIVE_LOG_secondhandMembers[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  attend: GET_SALES_ACTIVE_LOG_attend[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  validSpeaking: GET_SALES_ACTIVE_LOG_validSpeaking[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  validDial: GET_SALES_ACTIVE_LOG_validDial[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  validGetThrough: GET_SALES_ACTIVE_LOG_validGetThrough[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  invalidNumber: GET_SALES_ACTIVE_LOG_invalidNumber[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  rejected: GET_SALES_ACTIVE_LOG_rejected[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  keepInTouch: GET_SALES_ACTIVE_LOG_keepInTouch[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  reserveDemo: GET_SALES_ACTIVE_LOG_reserveDemo[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  performance: GET_SALES_ACTIVE_LOG_performance[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  revoked: GET_SALES_ACTIVE_LOG_revoked[];
+}
+
+export interface GET_SALES_ACTIVE_LOGVariables {
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_SUMMARY
 // ====================================================
 
@@ -3786,6 +3926,7 @@ export enum project_plan_update_column {
   is_physical = "is_physical",
   is_subscription = "is_subscription",
   list_price = "list_price",
+  options = "options",
   period_amount = "period_amount",
   period_type = "period_type",
   position = "position",
@@ -14944,6 +15085,7 @@ export interface project_plan_bool_exp {
   is_physical?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -14986,6 +15128,7 @@ export interface project_plan_insert_input {
   is_physical?: boolean | null;
   is_subscription?: boolean | null;
   list_price?: any | null;
+  options?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
   position?: number | null;

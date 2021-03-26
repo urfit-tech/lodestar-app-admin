@@ -10,6 +10,7 @@ import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import MemberContractCollectionPage from './pages/MemberContractCollectionPage'
 import NoteCollectionPage from './pages/NoteCollectionPage'
+import SalesActivenessPage from './pages/SalesActivenessPage'
 import SalesCallPage from './pages/SalesCallPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
@@ -57,6 +58,11 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'analytics_sales_member_categories',
                   name: '業務表現',
+                },
+                {
+                  permissionIsAllowed: true,
+                  key: 'analytics_sales_activeness',
+                  name: '活動量',
                 },
               ],
             },
@@ -130,6 +136,11 @@ const App: React.FC = () => {
         analytics_sales_member_categories: {
           path: '/analytics/sales-member-categories',
           pageName: <SalesMemberCategoryPage />,
+          authenticated: true,
+        },
+        analytics_sales_activeness: {
+          path: '/analytics/sales-activeness',
+          pageName: <SalesActivenessPage />,
           authenticated: true,
         },
         terms: {
