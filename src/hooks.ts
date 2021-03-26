@@ -446,6 +446,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
           member_notes(
             where: { type: { _eq: "outbound" }, status: { _eq: "answered" }, rejected_at: { _is_null: true } }
             order_by: { created_at: desc }
+            limit: 1
           ) @include(if: $hasContacted) {
             id
             created_at
@@ -493,7 +494,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       name: v.name,
       email: v.email,
       phones: v.member_phones.map(w => w.phone),
-      lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes.slice(-1)[0]?.created_at) : null,
+      lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes[0]?.created_at) : null,
       lastTaskCategoryName: v.member_tasks?.[0]?.category?.name || null,
       categoryNames: v.member_categories?.map(w => w.category.name) || [],
       contracts:
