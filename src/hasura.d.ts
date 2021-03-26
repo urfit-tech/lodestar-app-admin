@@ -380,6 +380,7 @@ export interface GET_SALES_CALL_MEMBER_member_member_tasks_category {
 export interface GET_SALES_CALL_MEMBER_member_member_tasks {
   __typename: "member_task";
   id: string;
+  due_at: any | null;
   /**
    * An object relationship
    */
@@ -429,6 +430,7 @@ export interface GET_SALES_CALL_MEMBERVariables {
   orderBy?: member_order_by[] | null;
   hasContacted: boolean;
   hasTransacted: boolean;
+  now?: any | null;
 }
 
 /* tslint:disable */

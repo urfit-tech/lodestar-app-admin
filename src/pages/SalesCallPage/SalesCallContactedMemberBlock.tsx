@@ -21,6 +21,7 @@ import JitsiDemoModal from './JitsiDemoModal'
 
 const messages = {
   salesCallNotice: { id: 'sales.content.salesCallNotice', defaultMessage: '開發中名單勿滯留過久，否則將影響名單派發' },
+  lastTaskDueAt: { id: 'sales.label.lastTaskDueAt', defaultMessage: '代辦效期' },
 }
 
 const TableWrapper = styled.div`
@@ -171,7 +172,7 @@ const SalesCallContactedMemberBlock: React.FC<{
     },
     {
       key: 'lastTaskCategoryName',
-      dataIndex: 'lastTaskCategoryName',
+      dataIndex: ['lastTask', 'categoryName'],
       title: formatMessage(salesMessages.label.lastTask),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
@@ -179,6 +180,14 @@ const SalesCallContactedMemberBlock: React.FC<{
           lastTaskCategoryName: value,
         }),
       ),
+    },
+    {
+      key: 'lastTaskDueAt',
+      dataIndex: ['lastTask', 'dueAt'],
+      title: formatMessage(messages.lastTaskDueAt),
+      render: dueAt => dueAt && moment(dueAt).format('YYYY-MM-DD HH:mm'),
+      sorter: (a, b) => (b.lastTask?.dueAt?.getTime() || 0) - (a.lastTask?.dueAt?.getTime() || 0),
+      showSorterTooltip: false,
     },
     {
       key: 'memberId',
@@ -224,7 +233,7 @@ const SalesCallContactedMemberBlock: React.FC<{
       (!filters.email || v.email.toLowerCase().includes(filters.email.toLowerCase())) &&
       (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))) &&
       (!filters.lastTaskCategoryName ||
-        v.lastTaskCategoryName?.toLowerCase().includes(filters.lastTaskCategoryName.toLowerCase())),
+        v.lastTask?.categoryName?.toLowerCase().includes(filters.lastTaskCategoryName.toLowerCase())),
   )
 
   return (
