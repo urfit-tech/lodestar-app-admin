@@ -15,7 +15,7 @@ import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
-import ProgramContentPracticeAdminModal from './PracticeAdminModal'
+import PracticeAdminModal from './PracticeAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 
 const StyledIcon = styled(Icon)`
@@ -138,7 +138,7 @@ const ProgramContentAdminItem: React.FC<{
           />
         )}
         {loadingProgramContentBody ? null : programContent.programContentType === 'practice' ? (
-          <ProgramContentPracticeAdminModal
+          <PracticeAdminModal
             programContent={programContent}
             programContentBody={programContentBody}
             onRefetch={() => {
