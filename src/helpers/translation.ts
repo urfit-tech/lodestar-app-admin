@@ -281,12 +281,13 @@ export const commonMessages = {
     unpublishingTitle: { id: 'common.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
   }),
   event: defineMessages({
+    loading: { id: 'common.event.loading', defaultMessage: '載入中' },
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
     successfullyUpload: { id: 'common.event.successfullyUpload', defaultMessage: '上傳成功' },
-    loading: { id: 'common.event.loading', defaultMessage: '載入中' },
     successfullyCreated: { id: 'common.event.successfullyCreated', defaultMessage: '建立成功' },
     successfullyEdited: { id: 'common.event.successfullyEdited', defaultMessage: '編輯成功' },
     successfullyDeleted: { id: 'common.event.successfullyDeleted', defaultMessage: '刪除成功' },
+    failedUpload: { id: 'common.event.failedUpload', defaultMessage: '上傳失敗' },
   }),
   status: defineMessages({
     productExpired: { id: 'common.status.expired', defaultMessage: '到期' },

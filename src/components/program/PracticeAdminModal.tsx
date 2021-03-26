@@ -57,7 +57,7 @@ type FieldProps = {
   difficulty: number
 }
 
-const ProgramContentPracticeAdminModal: React.FC<{
+const PracticeAdminModal: React.FC<{
   programContent: ProgramContentProps
   programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
@@ -336,4 +336,4 @@ const DELETE_PRACTICE = gql`
   }
 `
 
-export default ProgramContentPracticeAdminModal
+export default PracticeAdminModal

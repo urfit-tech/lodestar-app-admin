@@ -293,7 +293,10 @@ export const useOwnedPrograms = () => {
 }
 
 export const useEditablePrograms = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_EDITABLE_PROGRAMS, hasura.GET_EDITABLE_PROGRAMSVariables>(
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_EDITABLE_PROGRAMS,
+    hasura.GET_EDITABLE_PROGRAMSVariables
+  >(
     gql`
       query GET_EDITABLE_PROGRAMS($memberId: String!) {
         program(where: { editors: { member_id: { _eq: $memberId } } }) {
@@ -486,9 +489,6 @@ export const useMutateProgramContent = () => {
       mutation UPDATE_PROGRAM_CONTENT(
         $programContentId: uuid!
         $title: String
-        $description: String
-        $type: String
-        $data: jsonb
         $price: numeric
         $publishedAt: timestamptz
         $duration: numeric
@@ -509,16 +509,24 @@ export const useMutateProgramContent = () => {
         ) {
           affected_rows
         }
-        update_program_content_body(
-          where: { program_contents: { id: { _eq: $programContentId } } }
-          _set: { description: $description, type: $type }
-          _append: { data: $data }
-        ) {
-          affected_rows
-        }
       }
     `,
   )
+
+  const [updateProgramContentBody] = useMutation<
+    hasura.UPDATE_PROGRAM_CONTENT_BODY,
+    hasura.UPDATE_PROGRAM_CONTENT_BODYVariables
+  >(gql`
+    mutation UPDATE_PROGRAM_CONTENT_BODY($programContentId: uuid!, $description: String, $type: String, $data: jsonb) {
+      update_program_content_body(
+        where: { program_contents: { id: { _eq: $programContentId } } }
+        _set: { description: $description, type: $type }
+        _append: { data: $data }
+      ) {
+        affected_rows
+      }
+    }
+  `)
 
   const [deleteProgramContent] = useMutation<hasura.DELETE_PROGRAM_CONTENT, hasura.DELETE_PROGRAM_CONTENTVariables>(
     gql`
@@ -535,6 +543,7 @@ export const useMutateProgramContent = () => {
 
   return {
     updateProgramContent,
+    updateProgramContentBody,
     deleteProgramContent,
   }
 }

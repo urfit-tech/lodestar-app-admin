@@ -10297,7 +10297,33 @@ export interface UPDATE_PROGRAM_CONTENT_update_program_content {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_CONTENT_update_program_content_body {
+export interface UPDATE_PROGRAM_CONTENT {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_PROGRAM_CONTENT_update_program_content | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENTVariables {
+  programContentId: any;
+  title?: string | null;
+  price?: any | null;
+  publishedAt?: any | null;
+  duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_BODY
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_BODY_update_program_content_body {
   __typename: "program_content_body_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -10305,28 +10331,18 @@ export interface UPDATE_PROGRAM_CONTENT_update_program_content_body {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: UPDATE_PROGRAM_CONTENT_update_program_content | null;
+export interface UPDATE_PROGRAM_CONTENT_BODY {
   /**
    * update data of the table: "program_content_body"
    */
-  update_program_content_body: UPDATE_PROGRAM_CONTENT_update_program_content_body | null;
+  update_program_content_body: UPDATE_PROGRAM_CONTENT_BODY_update_program_content_body | null;
 }
 
-export interface UPDATE_PROGRAM_CONTENTVariables {
+export interface UPDATE_PROGRAM_CONTENT_BODYVariables {
   programContentId: any;
-  title?: string | null;
   description?: string | null;
   type?: string | null;
   data?: any | null;
-  price?: any | null;
-  publishedAt?: any | null;
-  duration?: any | null;
-  isNotifyUpdate?: boolean | null;
-  notifiedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -13736,6 +13752,7 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  is_deleted = "is_deleted",
   last_paid_at = "last_paid_at",
   member_id = "member_id",
   message = "message",
@@ -14751,6 +14768,7 @@ export enum project_plan_update_column {
   is_physical = "is_physical",
   is_subscription = "is_subscription",
   list_price = "list_price",
+  options = "options",
   period_amount = "period_amount",
   period_type = "period_type",
   position = "position",
@@ -22352,6 +22370,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -22415,6 +22434,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  is_deleted?: boolean | null;
   last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
@@ -22508,6 +22528,7 @@ export interface order_log_order_by {
   expired_at?: order_by | null;
   id?: order_by | null;
   invoice?: order_by | null;
+  is_deleted?: order_by | null;
   last_paid_at?: order_by | null;
   member?: member_order_by | null;
   member_id?: order_by | null;
@@ -28311,6 +28332,7 @@ export interface project_plan_bool_exp {
   is_physical?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -28353,6 +28375,7 @@ export interface project_plan_insert_input {
   is_physical?: boolean | null;
   is_subscription?: boolean | null;
   list_price?: any | null;
+  options?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
   position?: number | null;
