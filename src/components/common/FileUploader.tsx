@@ -1,18 +1,9 @@
-import { CloseOutlined, UploadOutlined } from '@ant-design/icons'
+import { UploadOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import React, { useRef } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-
-const StyledFileItem = styled.div`
-  color: var(--gray-darker);
-  font-size: 14px;
-
-  :hover {
-    background-color: var(--gray-lighter);
-  }
-`
+import FileItem from './FileItem'
 
 const FileUploader: React.FC<{
   fileList: File[]
@@ -23,7 +14,8 @@ const FileUploader: React.FC<{
   renderTrigger?: React.FC<{
     onClick: () => void
   }>
-}> = ({ renderTrigger, multiple, accept, onChange, fileList, showUploadList }) => {
+  downloadableLink?: (file: File) => string
+}> = ({ renderTrigger, multiple, accept, onChange, fileList, showUploadList, downloadableLink }) => {
   const { formatMessage } = useIntl()
   const inputRef = useRef<HTMLInputElement | null>(null)
 
@@ -64,13 +56,12 @@ const FileUploader: React.FC<{
 
       {showUploadList &&
         fileList.map(v => (
-          <StyledFileItem key={v.name} className="d-flex align-items-center justify-content-between py-1 px-2">
-            <div className="flex-grow-1">{v.name}</div>
-            <CloseOutlined
-              className="flex-shrink-0 ml-2 pointer-cursor"
-              onClick={() => onChange?.(fileList.filter(w => w.name !== v.name))}
-            />
-          </StyledFileItem>
+          <FileItem
+            key={v.name}
+            file={v}
+            downloadableLink={downloadableLink?.(v)}
+            onDelete={() => onChange?.(fileList.filter(w => w.name !== v.name))}
+          />
         ))}
     </>
   )
