@@ -51,7 +51,7 @@ const SalesCallPage: React.FC = () => {
             <CurrentLeadContactBlock
               salesId={currentMemberId}
               onSubmit={(status, member) => {
-                if (status !== 'not-answered') {
+                status === 'willing' &&
                   setSubmittedPotentialMembers(prev => [
                     {
                       id: member.id,
@@ -60,12 +60,11 @@ const SalesCallPage: React.FC = () => {
                       phones: member.phones,
                       categoryNames: member.categories.map(category => category.name),
                       lastContactAt: new Date(),
-                      lastTaskCategoryName: null,
+                      lastTask: null,
                       contracts: [],
                     },
                     ...prev,
                   ])
-                }
               }}
             />
           )}
