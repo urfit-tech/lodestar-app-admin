@@ -58,7 +58,7 @@ const FileUploader: React.FC<{
         fileList.map(v => (
           <FileItem
             key={v.name}
-            file={v}
+            fileName={v.name}
             downloadableLink={downloadableLink?.(v)}
             onDelete={() => onChange?.(fileList.filter(w => w.name !== v.name))}
           />

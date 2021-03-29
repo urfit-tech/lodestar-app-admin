@@ -20,10 +20,10 @@ const StyledFileItem = styled.div`
 `
 
 const FileItem: React.FC<{
-  file: File
+  fileName: string
   downloadableLink?: string
   onDelete?: () => void
-}> = ({ file, downloadableLink, onDelete }) => {
+}> = ({ fileName, downloadableLink, onDelete }) => {
   const { formatMessage } = useIntl()
   const { authToken, apiHost } = useAuth()
   const [isHover, setIsHover] = useState(false)
@@ -35,7 +35,7 @@ const FileItem: React.FC<{
       onMouseLeave={() => setIsHover(false)}
       className="d-flex align-items-center justify-content-between py-1 px-2"
     >
-      <div className="flex-grow-1">{file.name}</div>
+      <div className="flex-grow-1">{fileName}</div>
       {loading ? (
         <LoadingOutlined className="flex-shrink-0 ml-2 " />
       ) : (
@@ -47,7 +47,7 @@ const FileItem: React.FC<{
                 onClick={async () => {
                   setLoading(true)
                   const link = await getFileDownloadableLink(downloadableLink, authToken, apiHost)
-                  downloadFile(link, file.name)
+                  downloadFile(link, fileName)
                     .catch(() => {
                       message.error(formatMessage(messages.failedDownload))
                     })
