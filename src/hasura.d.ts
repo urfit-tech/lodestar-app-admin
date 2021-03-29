@@ -1144,11 +1144,13 @@ export interface GET_SALES_MATERIALS_contactedMembers {
 export interface GET_SALES_MATERIALS_demonstratedMembers {
   __typename: "member_property";
   v: string;
+  m: string;
 }
 
 export interface GET_SALES_MATERIALS_dealtMembers {
   __typename: "member_property";
   v: string;
+  m: string;
 }
 
 export interface GET_SALES_MATERIALS_rejectedMembers {
