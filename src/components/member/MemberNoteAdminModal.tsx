@@ -130,10 +130,11 @@ const MemberNoteAdminModal: React.FC<
             <Radio value="">{formatMessage(memberMessages.status.null)}</Radio>
             <Radio value="outbound">{formatMessage(memberMessages.status.outbound)}</Radio>
             <Radio value="inbound">{formatMessage(memberMessages.status.inbound)}</Radio>
+            {note?.type === 'demo' && <Radio value="demo">{formatMessage(memberMessages.status.demo)}</Radio>}
           </Radio.Group>
         </Form.Item>
 
-        <div className={`row ${!type ? 'd-none' : ''}`}>
+        <div className={type ? 'row' : 'd-none'}>
           <div className="col-5">
             <Form.Item
               name="status"

@@ -107,7 +107,7 @@ export type MemberPropertyProps = {
 export type NoteAdminProps = {
   id: string
   createdAt: Date
-  type: 'inbound' | 'outbound' | null
+  type: 'inbound' | 'outbound' | 'demo' | null
   status: string | null
   author: {
     id: string

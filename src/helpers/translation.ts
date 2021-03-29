@@ -1058,6 +1058,7 @@ export const memberMessages = {
     outbound: { id: 'member.status.outbound', defaultMessage: '外撥' },
     answered: { id: 'member.status.answered', defaultMessage: '已接聽' },
     missed: { id: 'member.status.missed', defaultMessage: '未接聽' },
+    demo: { id: 'member.status.demo', defaultMessage: '示範' },
   },
   label: defineMessages({
     profile: { id: 'member.label.profile', defaultMessage: '個人資料' },

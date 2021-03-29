@@ -1,7 +1,6 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, message } from 'antd'
 import moment from 'moment'
-import { contains } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -12,6 +11,7 @@ import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
+import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
 import { MemberAdminProps, NoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
@@ -66,12 +66,15 @@ const MemberNoteAdminItem: React.FC<{
         <div>
           <div>
             <span>{moment(note.createdAt).format('YYYY-MM-DD HH:mm')}</span>
-            {contains(note.type, ['outbound', 'inbound']) && (
+            {note.type && (
               <StyledStatus>
                 <StyledIcon
                   variant={note.status}
                   component={() =>
-                    (note.type === 'outbound' && <CallOutIcon />) || (note.type === 'inbound' && <CallInIcon />) || null
+                    (note.type === 'outbound' && <CallOutIcon />) ||
+                    (note.type === 'inbound' && <CallInIcon />) ||
+                    (note.type === 'demo' && <DemoIcon />) ||
+                    null
                   }
                 />
                 {note.status === 'answered' && (
