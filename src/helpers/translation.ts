@@ -288,6 +288,7 @@ export const commonMessages = {
     successfullyEdited: { id: 'common.event.successfullyEdited', defaultMessage: '編輯成功' },
     successfullyDeleted: { id: 'common.event.successfullyDeleted', defaultMessage: '刪除成功' },
     failedUpload: { id: 'common.event.failedUpload', defaultMessage: '上傳失敗' },
+    failedSave: { id: 'common.event.failedSave', defaultMessage: '儲存失敗' },
   }),
   status: defineMessages({
     productExpired: { id: 'common.status.expired', defaultMessage: '到期' },
