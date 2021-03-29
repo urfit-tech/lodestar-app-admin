@@ -119,9 +119,7 @@ const MaterialStatisticsTable: React.FC<{
   const salesMaterials = {
     calledMembersCount: count(data.calledMembers.map(v => v.v)),
     contactedMembersCount: count(data.contactedMembers.map(v => v.v)),
-    demonstratedMembersCount: count(
-      unionWith(eqProps('memberId'), data.demonstratedMembers, data.dealtMembers).map(v => v.v),
-    ),
+    demonstratedMembersCount: count(unionWith(eqProps('m'), data.demonstratedMembers, data.dealtMembers).map(v => v.v)),
     dealtMembersCount: count(data.dealtMembers.map(v => v.v)),
     rejectedMembersCount: count(data.rejectedMembers.map(v => v.v)),
   }
@@ -249,7 +247,7 @@ const GET_SALES_MATERIALS = gql`
       }
     ) {
       v: value
-      memberId: member_id
+      m: member_id
     }
     dealtMembers: member_property(
       where: {
@@ -268,7 +266,7 @@ const GET_SALES_MATERIALS = gql`
       }
     ) {
       v: value
-      memberId: member_id
+      m: member_id
     }
     rejectedMembers: member_property(
       where: {
