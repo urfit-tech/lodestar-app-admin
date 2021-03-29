@@ -6,7 +6,7 @@ import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import moment, { Moment } from 'moment'
-import { countBy, filter, flatten, map, pipe, split, trim, union, uniq } from 'ramda'
+import { countBy, eqProps, filter, flatten, map, pipe, split, trim, unionWith, uniq } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import SalesMemberInput from '../components/common/SalesMemberInput'
@@ -119,7 +119,9 @@ const MaterialStatisticsTable: React.FC<{
   const salesMaterials = {
     calledMembersCount: count(data.calledMembers.map(v => v.v)),
     contactedMembersCount: count(data.contactedMembers.map(v => v.v)),
-    demonstratedMembersCount: count(union(data.demonstratedMembers, data.dealtMembers).map(v => v.v)),
+    demonstratedMembersCount: count(
+      unionWith(eqProps('memberId'), data.demonstratedMembers, data.dealtMembers).map(v => v.v),
+    ),
     dealtMembersCount: count(data.dealtMembers.map(v => v.v)),
     rejectedMembersCount: count(data.rejectedMembers.map(v => v.v)),
   }
