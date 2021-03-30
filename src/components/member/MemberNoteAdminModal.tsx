@@ -4,6 +4,7 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
@@ -40,6 +41,7 @@ const MemberNoteAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentUserRole } = useAuth()
+  const { enabledModules } = useApp()
 
   const [type, setType] = useState(note?.type || '')
   const [status, setStatus] = useState<FieldProps['status']>(note?.status || 'answered')
@@ -130,10 +132,11 @@ const MemberNoteAdminModal: React.FC<
             <Radio value="">{formatMessage(memberMessages.status.null)}</Radio>
             <Radio value="outbound">{formatMessage(memberMessages.status.outbound)}</Radio>
             <Radio value="inbound">{formatMessage(memberMessages.status.inbound)}</Radio>
+            {enabledModules.member_note_demo && <Radio value="demo">{formatMessage(memberMessages.status.demo)}</Radio>}
           </Radio.Group>
         </Form.Item>
 
-        <div className={`row ${!type ? 'd-none' : ''}`}>
+        <div className={type ? 'row' : 'd-none'}>
           <div className="col-5">
             <Form.Item
               name="status"
