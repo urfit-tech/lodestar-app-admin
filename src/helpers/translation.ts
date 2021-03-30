@@ -1181,6 +1181,7 @@ export const permissionMessages = defineMessages({
   SALES_ADMIN: { id: 'permission.SALES_ADMIN', defaultMessage: '所有銷售管理功能' },
   SALES_READ: { id: 'permission.SALES_READ', defaultMessage: '查看所有訂單' },
   SALES_EXPORT: { id: 'permission.SALES_EXPORT', defaultMessage: '匯出所有訂單' },
+  SALES_CREATOR_VIEW: {id: 'permission.SALES_CREATOR_VIEW', defaultMessage: '創作者銷售管理功能'},
 
   // program
   PROGRAM_ADMIN: { id: 'permission.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },

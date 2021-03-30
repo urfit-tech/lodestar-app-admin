@@ -53,7 +53,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(commonMessages.menu.salesAdmin),
     },
     {
-      permissionIsAllowed: permissions.SALES_ADMIN && currentUserRole === 'content-creator',
+      permissionIsAllowed: permissions.SALES_CREATOR_VIEW && currentUserRole === 'content-creator',
       icon: () => <MoneyCircleIcon />,
       key: 'creator_sales',
       name: formatMessage(commonMessages.menu.salesAdmin),
