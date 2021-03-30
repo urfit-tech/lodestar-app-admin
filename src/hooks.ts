@@ -582,6 +582,7 @@ export const useLead = (sales: SalesProps) => {
       },
     },
   )
+  const { oddsAdditions } = useSalesOddsAddition(sales.id, sales.lastAttend)
 
   const properties =
     data?.property.map(property => ({
@@ -629,9 +630,12 @@ export const useLead = (sales: SalesProps) => {
 
   useEffect(() => {
     // request new lead if there is no current lead
-    if (!sales || currentLead) return
+    if (!sales || currentLead || !oddsAdditions) return
 
-    const odds = Number(sales?.metadata?.assignment?.odds)
+    const odds =
+      Number(sales?.metadata?.assignment?.odds) +
+      (oddsAdditions.lastAttendMemberNotesCount > 40 ? 5 : 0) +
+      oddsAdditions.lastWeekAgreedContractsCount * 5
 
     const requestLeads = async (odds: number) => {
       const chance = new Chance()
@@ -708,7 +712,7 @@ export const useLead = (sales: SalesProps) => {
     requestLeads(odds)
       .then(assignLeads)
       .then(() => refetch())
-  }, [apolloClient, currentLead, refetch, sales])
+  }, [apolloClient, currentLead, oddsAdditions, refetch, sales])
 
   return {
     loadingCurrentLead: loading,
