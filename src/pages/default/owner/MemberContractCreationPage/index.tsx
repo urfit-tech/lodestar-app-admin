@@ -13,25 +13,25 @@ import {
   Radio,
   Select,
   Space,
-  Tag,
   Upload,
 } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { length, range, sum, uniqBy } from 'ramda'
+import { range, sum, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
-import { AdminBlock, AdminBlockTitle } from '../../../components/admin'
-import DefaultLayout from '../../../components/layout/DefaultLayout'
-import { useApp } from '../../../contexts/AppContext'
-import { useAuth } from '../../../contexts/AuthContext'
-import hasura from '../../../hasura'
-import { currencyFormatter, handleError, notEmpty, uploadFile } from '../../../helpers'
-import { PeriodType } from '../../../types/general'
-import LoadingPage from '../LoadingPage'
+import { AdminBlock, AdminBlockTitle } from '../../../../components/admin'
+import DefaultLayout from '../../../../components/layout/DefaultLayout'
+import { useApp } from '../../../../contexts/AppContext'
+import { useAuth } from '../../../../contexts/AuthContext'
+import hasura from '../../../../hasura'
+import { currencyFormatter, handleError, notEmpty, uploadFile } from '../../../../helpers'
+import { PeriodType } from '../../../../types/general'
+import LoadingPage from '../../LoadingPage'
+import MemberDescriptionBlock from './MemberDescriptionBlock'
 
 type FieldProps = {
   contractId: string
@@ -51,7 +51,7 @@ type FieldProps = {
   }[]
 }
 
-type ContractInfo = {
+export type ContractInfo = {
   member: {
     id: string
     name: string
@@ -194,7 +194,6 @@ const MemberContractCreationPage: React.FC = () => {
       if (!product) {
         return null
       }
-
       const productType: 'mainProduct' | 'addonProduct' =
         product.name === '業師諮詢' && isAppointmentOnly
           ? 'mainProduct'
@@ -218,9 +217,23 @@ const MemberContractCreationPage: React.FC = () => {
   const totalAppointments = sum(orderProducts.map(product => product.appointments * product.amount))
   const totalCoins = sum(orderProducts.map(product => product.coins * product.amount))
 
+  const options = {
+    product: {
+      designatedMentor: '10c7004c-e615-4ca9-90f8-29ce674e0463',
+    },
+    discount: {
+      deposit: 'a2e79c69-a200-4baa-934b-7d256f129ee0',
+      referral: 'fe09068e-5f24-4d82-b9b3-186ee498d144',
+      student: '5e298545-9190-44b1-aadc-b0d43b94cbe5',
+      tenPercentOff: '47c21171-afd9-4510-aa5f-547c436125b7',
+      fifteenPercentOff: '01fa990e-ec1d-4b41-a958-5d93240a8205',
+      twentyPercentOff: 'c8cfcb04-7e31-444f-8796-5800b5741019',
+    },
+  }
+
   if (withCreatorId && totalAppointments > 0) {
     orderProducts.push({
-      id: '10c7004c-e615-4ca9-90f8-29ce674e0463',
+      id: options.product.designatedMentor,
       type: 'addonProduct',
       name: '指定業師',
       price: 1000,
@@ -234,7 +247,7 @@ const MemberContractCreationPage: React.FC = () => {
 
   if (hasDeposit) {
     orderDiscounts.push({
-      id: 'a2e79c69-a200-4baa-934b-7d256f129ee0',
+      id: options.discount.deposit,
       type: 'depositDiscount',
       name: '扣除訂金',
       price: -1000,
@@ -248,7 +261,7 @@ const MemberContractCreationPage: React.FC = () => {
 
   if (referralDiscountPrice) {
     orderDiscounts.push({
-      id: 'fe09068e-5f24-4d82-b9b3-186ee498d144',
+      id: options.discount.referral,
       type: 'referralDiscount',
       name: '被介紹人折抵',
       price: referralDiscountPrice,
@@ -265,7 +278,7 @@ const MemberContractCreationPage: React.FC = () => {
 
   if (studentDiscountPrice) {
     orderDiscounts.push({
-      id: '5e298545-9190-44b1-aadc-b0d43b94cbe5',
+      id: options.discount.student,
       type: 'promotionDiscount',
       name: '學生方案',
       price: studentDiscountPrice,
@@ -285,10 +298,10 @@ const MemberContractCreationPage: React.FC = () => {
     orderDiscounts.push({
       id:
         mainProducts.length === 2
-          ? '47c21171-afd9-4510-aa5f-547c436125b7'
+          ? options.discount.tenPercentOff
           : mainProducts.length === 3
-          ? '01fa990e-ec1d-4b41-a958-5d93240a8205'
-          : 'c8cfcb04-7e31-444f-8796-5800b5741019',
+          ? options.discount.fifteenPercentOff
+          : options.discount.twentyPercentOff,
       type: 'promotionDiscount',
       name: mainProducts.length === 2 ? '任選兩件折抵' : mainProducts.length === 3 ? '任選三件折抵' : '任選四件折抵',
       price: Math.ceil(groupDiscountPrice),
@@ -456,6 +469,8 @@ const MemberContractCreationPage: React.FC = () => {
     <DefaultLayout>
       <div className="container py-5">
         <AdminBlock>
+          <MemberDescriptionBlock ref={memberBlockRef} member={member} properties={properties} />
+
           <Form
             form={form}
             layout="vertical"
@@ -471,39 +486,6 @@ const MemberContractCreationPage: React.FC = () => {
               setContractProducts(uniqBy(v => v.id, values.contractProducts || []))
             }}
           >
-            <div ref={memberBlockRef}>
-              <Descriptions
-                title={
-                  <>
-                    <span>學生資料</span>
-                    <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
-                      {'請去學米後台 > 會員列表 > 找到學員並將資料填寫完成'}
-                    </div>
-                  </>
-                }
-                bordered
-                className="mb-5"
-              >
-                <Descriptions.Item label="學員姓名">{member.name}</Descriptions.Item>
-                <Descriptions.Item label="學員信箱">{member.email}</Descriptions.Item>
-                <Descriptions.Item label="學員電話">
-                  {!!length(member.phones) ? (
-                    member.phones.map((v, index) => <Tag key={index}>{v}</Tag>)
-                  ) : (
-                    <Alert type="error" message="未設定" />
-                  )}
-                </Descriptions.Item>
-                {properties.map(property => (
-                  <Descriptions.Item label={property.name} key={property.id}>
-                    <div className="d-flex align-items-center">
-                      {member.properties.find(v => v.id === property.id)?.value ||
-                        (property.placeholder ? <Alert type="error" message="未設定" /> : null)}
-                    </div>
-                  </Descriptions.Item>
-                ))}
-              </Descriptions>
-            </div>
-
             <Descriptions title="合約期間" column={2} bordered className="mb-5">
               <Descriptions.Item label="合約項目">
                 <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
