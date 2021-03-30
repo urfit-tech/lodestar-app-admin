@@ -21,7 +21,7 @@ import JitsiDemoModal from './JitsiDemoModal'
 
 const messages = {
   salesCallNotice: { id: 'sales.content.salesCallNotice', defaultMessage: '開發中名單勿滯留過久，否則將影響名單派發' },
-  lastTaskDueAt: { id: 'sales.label.lastTaskDueAt', defaultMessage: '代辦效期' },
+  lastTaskDueAt: { id: 'sales.label.lastTaskDueAt', defaultMessage: '待辦效期' },
 }
 
 const TableWrapper = styled.div`
