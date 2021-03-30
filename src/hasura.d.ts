@@ -442,25 +442,6 @@ export interface GET_SALES_CALL_MEMBERVariables {
 // GraphQL query operation: GET_FIRST_ASSIGNED_MEMBER
 // ====================================================
 
-export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk_member_properties {
-  __typename: "member_property";
-  id: any;
-  value: string;
-}
-
-export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  metadata: any;
-  /**
-   * An array relationship
-   */
-  member_properties: GET_FIRST_ASSIGNED_MEMBER_member_by_pk_member_properties[];
-}
-
 export interface GET_FIRST_ASSIGNED_MEMBER_property {
   __typename: "property";
   id: any;
@@ -526,10 +507,6 @@ export interface GET_FIRST_ASSIGNED_MEMBER_member {
 }
 
 export interface GET_FIRST_ASSIGNED_MEMBER {
-  /**
-   * fetch data from the table: "member" using primary key columns
-   */
-  member_by_pk: GET_FIRST_ASSIGNED_MEMBER_member_by_pk | null;
   /**
    * fetch data from the table: "property"
    */
@@ -750,6 +727,104 @@ export interface UPDATE_MEMBER_PROPERTIES {
 
 export interface UPDATE_MEMBER_PROPERTIESVariables {
   data: member_property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES
+// ====================================================
+
+export interface GET_SALES_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  value: string;
+}
+
+export interface GET_SALES_member_by_pk_attends {
+  __typename: "attend";
+  id: any;
+  started_at: any;
+  ended_at: any | null;
+}
+
+export interface GET_SALES_member_by_pk {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  metadata: any;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_SALES_member_by_pk_member_properties[];
+  /**
+   * An array relationship
+   */
+  attends: GET_SALES_member_by_pk_attends[];
+}
+
+export interface GET_SALES {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_SALES_member_by_pk | null;
+}
+
+export interface GET_SALESVariables {
+  salesId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_ODDS_ADDITION
+// ====================================================
+
+export interface GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate {
+  __typename: "member_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate {
+  __typename: "member_contract_aggregate";
+  aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION {
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate;
+  /**
+   * fetch aggregated fields from the table: "member_contract"
+   */
+  member_contract_aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate;
+}
+
+export interface GET_SALES_ODDS_ADDITIONVariables {
+  salesId: string;
+  startedAt: any;
+  endedAt: any;
+  startOfLastWeek: any;
 }
 
 /* tslint:disable */
@@ -1002,37 +1077,6 @@ export interface GET_MEMBER_NOTES_ADMINVariables {
 // GraphQL query operation: GET_SALES_SUMMARY
 // ====================================================
 
-export interface GET_SALES_SUMMARY_member_by_pk_member_properties {
-  __typename: "member_property";
-  id: any;
-  value: string;
-}
-
-export interface GET_SALES_SUMMARY_member_by_pk_attends {
-  __typename: "attend";
-  id: any;
-  started_at: any;
-  ended_at: any | null;
-}
-
-export interface GET_SALES_SUMMARY_member_by_pk {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  metadata: any;
-  /**
-   * An array relationship
-   */
-  member_properties: GET_SALES_SUMMARY_member_by_pk_member_properties[];
-  /**
-   * An array relationship
-   */
-  attends: GET_SALES_SUMMARY_member_by_pk_attends[];
-}
-
 export interface GET_SALES_SUMMARY_order_executor_sharing {
   __typename: "order_executor_sharing";
   order_executor_id: any | null;
@@ -1058,10 +1102,6 @@ export interface GET_SALES_SUMMARY_member_note_aggregate {
 
 export interface GET_SALES_SUMMARY {
   /**
-   * fetch data from the table: "member" using primary key columns
-   */
-  member_by_pk: GET_SALES_SUMMARY_member_by_pk | null;
-  /**
    * fetch data from the table: "order_executor_sharing"
    */
   order_executor_sharing: GET_SALES_SUMMARY_order_executor_sharing[];
@@ -1075,53 +1115,6 @@ export interface GET_SALES_SUMMARYVariables {
   salesId: string;
   startOfToday: any;
   startOfMonth: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SALES_ODDS_ADDITION
-// ====================================================
-
-export interface GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate {
-  __typename: "member_note_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_ODDS_ADDITION_member_note_aggregate {
-  __typename: "member_note_aggregate";
-  aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate | null;
-}
-
-export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate {
-  __typename: "member_contract_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate {
-  __typename: "member_contract_aggregate";
-  aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate | null;
-}
-
-export interface GET_SALES_ODDS_ADDITION {
-  /**
-   * fetch aggregated fields from the table: "member_note"
-   */
-  member_note_aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate;
-  /**
-   * fetch aggregated fields from the table: "member_contract"
-   */
-  member_contract_aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate;
-}
-
-export interface GET_SALES_ODDS_ADDITIONVariables {
-  salesId: string;
-  startedAt: any;
-  endedAt: any;
-  startOfLastWeek: any;
 }
 
 /* tslint:disable */
@@ -3786,6 +3779,7 @@ export enum project_plan_update_column {
   is_physical = "is_physical",
   is_subscription = "is_subscription",
   list_price = "list_price",
+  options = "options",
   period_amount = "period_amount",
   period_type = "period_type",
   position = "position",
@@ -3918,6 +3912,7 @@ export enum role_constraint {
  */
 export enum role_permission_constraint {
   role_permission_pkey = "role_permission_pkey",
+  role_permission_role_id_permission_id_key = "role_permission_role_id_permission_id_key",
 }
 
 /**
@@ -14944,6 +14939,7 @@ export interface project_plan_bool_exp {
   is_physical?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -14986,6 +14982,7 @@ export interface project_plan_insert_input {
   is_physical?: boolean | null;
   is_subscription?: boolean | null;
   list_price?: any | null;
+  options?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
   position?: number | null;

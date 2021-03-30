@@ -13,6 +13,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call, memberPropertyFields } from '../../helpers'
 import { CurrentLeadProps, useLead } from '../../hooks'
+import { SalesProps } from '../../types/member'
 
 const CurrentLeadName = styled.div`
   color: var(--gray-darker);
@@ -48,10 +49,10 @@ type memberPropertyFieldProps = {
 }
 
 const CurrentLeadContactBlock: React.FC<{
-  salesId: string
+  sales: SalesProps
   onSubmit?: (status: memberNoteFieldProps['status'], value: CurrentLeadProps) => void
   onFinish?: () => void
-}> = ({ salesId, onSubmit, onFinish }) => {
+}> = ({ sales, onSubmit, onFinish }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
   const { id: appId } = useApp()
@@ -62,7 +63,6 @@ const CurrentLeadContactBlock: React.FC<{
   const {
     loadingCurrentLead,
     errorCurrentLead,
-    sales,
     properties,
     currentLead,
     refetchCurrentLead,
@@ -70,7 +70,7 @@ const CurrentLeadContactBlock: React.FC<{
     insertNote,
     updateProperties,
     markUnresponsive,
-  } = useLead(salesId)
+  } = useLead(sales)
 
   const [selectedPhone, setSelectedPhone] = useState('')
   const [disabledPhones, setDisabledPhones] = useState<string[]>([])
@@ -90,7 +90,7 @@ const CurrentLeadContactBlock: React.FC<{
     return <div>等待新名單中...</div>
   }
 
-  const withDurationInput = !sales?.telephone.startsWith('8')
+  const withDurationInput = !sales?.telephone?.startsWith('8')
   const primaryPhoneNumber = selectedPhone === 'custom-phone' ? customPhoneNumber : selectedPhone
 
   const resetForms = async () => {

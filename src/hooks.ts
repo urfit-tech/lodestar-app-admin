@@ -2,11 +2,12 @@ import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
 import { SortOrder } from 'antd/lib/table/interface'
 import { Chance } from 'chance'
 import gql from 'graphql-tag'
+import moment from 'moment'
 import { product } from 'ramda'
 import { useEffect, useMemo } from 'react'
-import moment from 'moment'
-import { memberPropertyFields } from './helpers'
 import hasura from './hasura'
+import { memberPropertyFields } from './helpers'
+import { SalesProps } from './types/member'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 
 export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
@@ -350,7 +351,7 @@ export type SalesCallMemberProps = {
   phones: string[]
   categoryNames: string[]
   lastContactAt: Date | null
-  lastTask: { dueAt: Date | null, categoryName: string | null } | null
+  lastTask: { dueAt: Date | null; categoryName: string | null } | null
   contracts: {
     projectPlanName: string
     endedAt: Date
@@ -467,7 +468,8 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
             ended_at
             agreed_at
           }
-          member_tasks(where: { due_at: { _gt: $now } }, limit: 1, order_by: { created_at: desc }) @include(if: $hasContacted) {
+          member_tasks(where: { due_at: { _gt: $now } }, limit: 1, order_by: { created_at: desc })
+            @include(if: $hasContacted) {
             id
             due_at
             category {
@@ -499,7 +501,12 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       email: v.email,
       phones: v.member_phones.map(w => w.phone),
       lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes[0]?.created_at) : null,
-      lastTask: v.member_tasks?.[0] ? { dueAt: v.member_tasks[0].due_at && new Date(v.member_tasks[0].due_at), categoryName: v.member_tasks[0].category?.name || null } : null,
+      lastTask: v.member_tasks?.[0]
+        ? {
+            dueAt: v.member_tasks[0].due_at && new Date(v.member_tasks[0].due_at),
+            categoryName: v.member_tasks[0].category?.name || null,
+          }
+        : null,
       categoryNames: v.member_categories?.map(w => w.category.name) || [],
       contracts:
         v.member_contracts?.map(w => ({
@@ -517,7 +524,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
   }
 }
 
-export const useLead = (salesId: string) => {
+export const useLead = (sales: SalesProps) => {
   const apolloClient = useApolloClient()
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_FIRST_ASSIGNED_MEMBER,
@@ -525,17 +532,6 @@ export const useLead = (salesId: string) => {
   >(
     gql`
       query GET_FIRST_ASSIGNED_MEMBER($salesId: String!, $selectedProperties: [String!]!) {
-        member_by_pk(id: $salesId) {
-          id
-          name
-          username
-          email
-          metadata
-          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
-            id
-            value
-          }
-        }
         property(where: { name: { _in: $selectedProperties } }) {
           id
           name
@@ -579,22 +575,14 @@ export const useLead = (salesId: string) => {
         }
       }
     `,
-    { variables: { salesId, selectedProperties: memberPropertyFields.map(field => field.name) } },
+    {
+      variables: {
+        salesId: sales.id,
+        selectedProperties: memberPropertyFields.map(field => field.name),
+      },
+    },
   )
 
-  const sales = useMemo(
-    () =>
-      data?.member_by_pk
-        ? {
-            id: data.member_by_pk.id,
-            name: data.member_by_pk.name || data.member_by_pk.username,
-            email: data.member_by_pk.email,
-            telephone: data.member_by_pk.member_properties[0]?.value || '',
-            metadata: data.member_by_pk.metadata || {},
-          }
-        : null,
-    [data?.member_by_pk],
-  )
   const properties =
     data?.property.map(property => ({
       id: property.id,
@@ -622,7 +610,7 @@ export const useLead = (salesId: string) => {
         : null,
     [data?.member],
   )
-  const withDurationInput = !sales?.telephone.startsWith('8')
+  const withDurationInput = !sales?.telephone?.startsWith('8')
 
   const [markUnresponsiveMember] = useMutation<
     hasura.MARK_UNRESPONSIVE_MEMBER,
@@ -642,7 +630,9 @@ export const useLead = (salesId: string) => {
   useEffect(() => {
     // request new lead if there is no current lead
     if (!sales || currentLead) return
-    const odds = Number(sales?.metadata?.assignment?.odds) || 10
+
+    const odds = Number(sales?.metadata?.assignment?.odds)
+
     const requestLeads = async (odds: number) => {
       const chance = new Chance()
       const categoriesRate: { [categoryName: string]: number } = sales?.metadata?.assignment?.categories || {}
@@ -705,7 +695,7 @@ export const useLead = (salesId: string) => {
             `,
             variables: {
               memberId: lead.memberId,
-              managerId: salesId,
+              managerId: sales.id,
               assignedAt: new Date(),
             },
           })
@@ -718,7 +708,7 @@ export const useLead = (salesId: string) => {
     requestLeads(odds)
       .then(assignLeads)
       .then(() => refetch())
-  }, [currentLead, sales, refetch, apolloClient, salesId])
+  }, [apolloClient, currentLead, refetch, sales])
 
   return {
     loadingCurrentLead: loading,
@@ -738,7 +728,7 @@ export const useLead = (salesId: string) => {
         variables: {
           data: {
             member_id: currentLead.id,
-            author_id: salesId,
+            author_id: sales.id,
             type: withDurationInput ? 'outbound' : null,
             status: memberNote.status === 'not-answered' ? 'missed' : 'answered',
             duration: memberNote.duration,
@@ -812,3 +802,112 @@ const UPDATE_MEMBER_PROPERTIES = gql`
     }
   }
 `
+
+export const useSales = (salesId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_SALES, hasura.GET_SALESVariables>(
+    gql`
+      query GET_SALES($salesId: String!) {
+        member_by_pk(id: $salesId) {
+          id
+          picture_url
+          name
+          username
+          email
+          metadata
+          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
+            id
+            value
+          }
+          attends(where: { ended_at: { _is_null: false } }, order_by: [{ started_at: desc }], limit: 1) {
+            id
+            started_at
+            ended_at
+          }
+        }
+      }
+    `,
+    { variables: { salesId } },
+  )
+
+  const sales: SalesProps | null = data?.member_by_pk
+    ? {
+        id: data.member_by_pk.id,
+        pictureUrl: data.member_by_pk.picture_url,
+        name: data.member_by_pk.name,
+        email: data.member_by_pk.email,
+        telephone: data.member_by_pk.member_properties[0]?.value || '',
+        metadata: data.member_by_pk.metadata,
+        baseOdds: parseFloat(data.member_by_pk.metadata?.assignment?.odds || '0'),
+        lastAttend: data.member_by_pk.attends[0]
+          ? {
+              startedAt: new Date(data.member_by_pk.attends[0].started_at),
+              endedAt: new Date(data.member_by_pk.attends[0].ended_at),
+            }
+          : null,
+      }
+    : null
+
+  return {
+    loadingSales: loading,
+    errorSales: error,
+    sales,
+    refetchSales: refetch,
+  }
+}
+
+export const useSalesOddsAddition = (
+  salesId: string,
+  lastAttend: {
+    startedAt: Date
+    endedAt: Date
+  } | null,
+) => {
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_SALES_ODDS_ADDITION,
+    hasura.GET_SALES_ODDS_ADDITIONVariables
+  >(
+    gql`
+      query GET_SALES_ODDS_ADDITION(
+        $salesId: String!
+        $startedAt: timestamptz!
+        $endedAt: timestamptz!
+        $startOfLastWeek: timestamptz!
+      ) {
+        member_note_aggregate(where: { author_id: { _eq: $salesId }, created_at: { _gt: $startedAt, _lt: $endedAt } }) {
+          aggregate {
+            count
+          }
+        }
+        member_contract_aggregate(
+          where: { author_id: { _eq: $salesId }, agreed_at: { _gt: $startOfLastWeek }, revoked_at: { _is_null: true } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        salesId,
+        startedAt: lastAttend?.startedAt || moment().subtract(12, 'hours').startOf('hour'),
+        endedAt: lastAttend?.endedAt || moment().startOf('hour'),
+        startOfLastWeek: moment().subtract(7, 'days').startOf('day').toDate(),
+      },
+    },
+  )
+
+  const oddsAdditions = data
+    ? {
+        lastAttendMemberNotesCount: data.member_note_aggregate.aggregate?.count || 0,
+        lastWeekAgreedContractsCount: data.member_contract_aggregate.aggregate?.count || 0,
+      }
+    : null
+
+  return {
+    loadingOddsAddition: loading,
+    errorOddsAddition: error,
+    oddsAdditions,
+    refetchOddsAddition: refetch,
+  }
+}

@@ -12,6 +12,8 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
+import { useSalesOddsAddition } from '../../hooks'
+import { SalesProps } from '../../types/member'
 
 const MemberNameLabel = styled.div`
   color: var(--gray-darker);
@@ -35,10 +37,10 @@ const StyledProgress = styled(Progress)`
 `
 
 const SalesSummaryBlock: React.FC<{
-  salesId: string
-}> = ({ salesId }) => {
+  sales: SalesProps
+}> = ({ sales }) => {
   const { formatMessage } = useIntl()
-  const { loadingSalesSummary, errorSalesSummary, salesSummary } = useSalesSummary(salesId)
+  const { loadingSalesSummary, errorSalesSummary, salesSummary } = useSalesSummary(sales.id)
 
   if (loadingSalesSummary) {
     return <Skeleton active />
@@ -48,7 +50,7 @@ const SalesSummaryBlock: React.FC<{
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  if (!salesSummary || !salesSummary.sales) {
+  if (!salesSummary) {
     return <div>讀取錯誤</div>
   }
 
@@ -56,12 +58,12 @@ const SalesSummaryBlock: React.FC<{
     <AdminBlock className="p-4">
       <div className="d-flex align-items-center">
         <div className="d-flex align-items-center justify-content-start flex-grow-1">
-          <AvatarImage size="44px" src={salesSummary.sales.picture_url} className="mr-2" />
+          <AvatarImage size="44px" src={sales.pictureUrl} className="mr-2" />
           <div>
-            <MemberNameLabel>{salesSummary.sales.name}</MemberNameLabel>
+            <MemberNameLabel>{sales.name}</MemberNameLabel>
             <MemberDescription>
-              <span className="mr-2">{salesSummary.sales.email}</span>
-              <span>分機號碼：{salesSummary.sales.telephone}</span>
+              <span className="mr-2">{sales.email}</span>
+              <span>分機號碼：{sales.telephone}</span>
             </MemberDescription>
           </div>
         </div>
@@ -79,11 +81,7 @@ const SalesSummaryBlock: React.FC<{
         {/* <div className="mr-3">今日名單派發：{hashedAssignedCount}</div> */}
         <div className="mr-3 flex-grow-1">
           <span className="mr-2">名單新舊佔比：</span>
-          <AssignmentRateBar
-            salesId={salesId}
-            baseOdds={salesSummary.sales.odds}
-            lastAttend={salesSummary.sales.lastAttend}
-          />
+          <AssignmentRateBar salesId={sales.id} baseOdds={sales.baseOdds} lastAttend={sales.lastAttend} />
         </div>
         <div>
           <span className="mr-2">{formatMessage(salesMessages.label.autoStartCalls)}</span>
@@ -102,9 +100,9 @@ const AssignmentRateBar: React.FC<{
     endedAt: Date
   } | null
 }> = ({ salesId, baseOdds, lastAttend }) => {
-  const { loadingOddsAddition, errorOddsAddition, oddsAdditions } = useSalesOddsAddition(salesId, lastAttend)
+  const { oddsAdditions } = useSalesOddsAddition(salesId, lastAttend)
 
-  if (loadingOddsAddition || errorOddsAddition) {
+  if (!oddsAdditions) {
     return null
   }
 
@@ -126,23 +124,6 @@ const useSalesSummary = (salesId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_SALES_SUMMARY, hasura.GET_SALES_SUMMARYVariables>(
     gql`
       query GET_SALES_SUMMARY($salesId: String!, $startOfToday: timestamptz!, $startOfMonth: timestamptz!) {
-        member_by_pk(id: $salesId) {
-          id
-          picture_url
-          name
-          username
-          email
-          metadata
-          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
-            id
-            value
-          }
-          attends(where: { ended_at: { _is_null: false } }, order_by: [{ started_at: desc }], limit: 1) {
-            id
-            started_at
-            ended_at
-          }
-        }
         order_executor_sharing(where: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfMonth } }) {
           order_executor_id
           total_price
@@ -177,22 +158,6 @@ const useSalesSummary = (salesId: string) => {
 
   const salesSummary = data
     ? {
-        sales: data.member_by_pk
-          ? {
-              id: data.member_by_pk.id,
-              picture_url: data.member_by_pk.picture_url,
-              name: data.member_by_pk.name || data.member_by_pk.username,
-              email: data.member_by_pk.email,
-              telephone: data.member_by_pk.member_properties[0]?.value || '',
-              odds: parseFloat(data.member_by_pk.metadata?.assignment?.odds || '0'),
-              lastAttend: data.member_by_pk.attends[0]
-                ? {
-                    startedAt: new Date(data.member_by_pk.attends[0].started_at),
-                    endedAt: new Date(data.member_by_pk.attends[0].ended_at),
-                  }
-                : null,
-            }
-          : null,
         sharingOfMonth: sum(
           data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
         ),
@@ -207,61 +172,6 @@ const useSalesSummary = (salesId: string) => {
     errorSalesSummary: error,
     salesSummary,
     refetchSalesSummary: refetch,
-  }
-}
-
-const useSalesOddsAddition = (
-  salesId: string,
-  lastAttend: {
-    startedAt: Date
-    endedAt: Date
-  } | null,
-) => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_SALES_ODDS_ADDITION,
-    hasura.GET_SALES_ODDS_ADDITIONVariables
-  >(
-    gql`
-      query GET_SALES_ODDS_ADDITION(
-        $salesId: String!
-        $startedAt: timestamptz!
-        $endedAt: timestamptz!
-        $startOfLastWeek: timestamptz!
-      ) {
-        member_note_aggregate(where: { author_id: { _eq: $salesId }, created_at: { _gt: $startedAt, _lt: $endedAt } }) {
-          aggregate {
-            count
-          }
-        }
-        member_contract_aggregate(
-          where: { author_id: { _eq: $salesId }, agreed_at: { _gt: $startOfLastWeek }, revoked_at: { _is_null: true } }
-        ) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        salesId,
-        startedAt: lastAttend?.startedAt || moment().subtract(12, 'hours').startOf('hour'),
-        endedAt: lastAttend?.endedAt || moment().startOf('hour'),
-        startOfLastWeek: moment().subtract(7, 'days').startOf('day').toDate(),
-      },
-    },
-  )
-
-  const oddsAdditions = {
-    lastAttendMemberNotesCount: data?.member_note_aggregate.aggregate?.count || 0,
-    lastWeekAgreedContractsCount: data?.member_contract_aggregate.aggregate?.count || 0,
-  }
-
-  return {
-    loadingOddsAddition: loading,
-    errorOddsAddition: error,
-    oddsAdditions,
-    refetchOddsAddition: refetch,
   }
 }
 
