@@ -19,7 +19,7 @@ import {
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { range, sum, uniqBy } from 'ramda'
+import { length, range, sum, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -50,13 +50,49 @@ type FieldProps = {
     amount: number
   }[]
 }
-type ProductProps = {
-  id: string
-  name: string
-  price: number
-  addonPrice: number | null
-  appointments: number
-  coins: number
+
+type ContractInfo = {
+  member: {
+    id: string
+    name: string
+    email: string
+    phones: string[]
+    properties: {
+      id: string
+      value: string
+      name: string
+    }[]
+  } | null
+  properties: { id: string; name: string; placeholder: string | null }[]
+  contracts: { id: string; name: string }[]
+  projectPlans: {
+    id: string
+    title: string
+    periodAmount: number
+    periodType: PeriodType | null
+  }[]
+  products: {
+    id: string
+    name: string
+    price: number
+    addonPrice: number | null
+    appointments: number
+    coins: number
+  }[]
+  mentors: {
+    id: string | null
+    name: string | null
+  }[]
+  referralMembers: {
+    id: string
+    name: string
+    email: string
+  }[]
+  sales: {
+    id: string
+    name: string
+    username: string
+  }[]
 }
 
 type OrderItem = {
@@ -68,6 +104,7 @@ type OrderItem = {
   coins: number
   amount: number
 }
+type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
 
 const StyledFieldLabel = styled.div`
   font-size: 14px;
@@ -88,68 +125,24 @@ const StyledTotal = styled.div`
 
 const MemberContractCreationPage: React.FC = () => {
   const { memberId } = useParams<{ memberId: string }>()
+  const { id: appId } = useApp()
+  const [referralMemberFilter, setReferralMemberFilter] = useState('')
 
-  const { loading: loadingMember, error: errorMember, data: dataMember } = useQuery<hasura.GET_CONTRACT_MEMBER>(
-    GET_CONTRACT_MEMBER,
-    { variables: { id: memberId } },
-  )
+  const {
+    member,
+    products,
+    properties,
+    contracts,
+    projectPlans,
+    mentors,
+    referralMembers,
+    sales,
+    ...contractInfoState
+  } = usePrivateTeachContractInfo(appId, memberId, referralMemberFilter)
 
-  if (loadingMember) {
-    return <LoadingPage />
-  }
-
-  if (errorMember || !dataMember?.member_by_pk) {
-    return null
-  }
-
-  return (
-    <DefaultLayout>
-      <div className="container py-5">
-        <AdminBlock>
-          <MemberContractForm
-            member={{
-              id: dataMember.member_by_pk.id,
-              name: dataMember.member_by_pk.name,
-              email: dataMember.member_by_pk.email,
-              phones: dataMember.member_by_pk.member_phones.map(v => v.phone).join(','),
-              properties: dataMember.member_by_pk.member_properties.map(v => ({
-                id: v.id,
-                value: v.value,
-                propertyId: v.property.id,
-                name: v.property.name,
-              })),
-            }}
-          />
-        </AdminBlock>
-      </div>
-    </DefaultLayout>
-  )
-}
-
-const MemberContractForm: React.FC<{
-  member: {
-    id: string
-    name: string
-    email: string
-    phones: string
-    properties: {
-      id: string
-      value: string
-      propertyId: string
-      name: string
-    }[]
-  }
-}> = ({ member }) => {
   const [form] = useForm<FieldProps>()
   const { authToken, apiHost, currentMemberId } = useAuth()
-  const { id: appId } = useApp()
-  const { xuemiSales } = useXuemiSales()
 
-  const { products } = useProducts(appId)
-  const { data: dataProperties } = useQuery<hasura.GET_PROPERTIES>(GET_PROPERTIES)
-  const { data: dataContracts } = useQuery<hasura.GET_CONTRACTS>(GET_CONTRACTS)
-  const { data: dataProjectPlans } = useQuery<hasura.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
-  const { data: dataCreators } = useQuery<hasura.GET_APPOINTMENT_PLAN_CREATORS>(GET_APPOINTMENT_PLAN_CREATORS)
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
@@ -159,7 +152,7 @@ const MemberContractForm: React.FC<{
   const [selectedProjectPlanId, setSelectedProjectPlanId] = useState('')
   const [selectedGiftDays, setSelectedGiftDays] = useState('')
   const [startedAt, setStartedAt] = useState<Date>(moment().add(1, 'day').startOf('day').toDate())
-  const [referralMemberFilter, setReferralMemberFilter] = useState('')
+
   const [contractProducts, setContractProducts] = useState<
     {
       id: string
@@ -173,27 +166,17 @@ const MemberContractForm: React.FC<{
   const [uploading, setUploading] = useState(false)
   const [hasDeposit, setHasDeposit] = useState(false)
 
-  const { data: dataReferralMembers } = useQuery<
-    hasura.GET_REFERRAL_MEMBER_COLLECTION,
-    hasura.GET_REFERRAL_MEMBER_COLLECTIONVariables
-  >(GET_REFERRAL_MEMBER_COLLECTION, {
-    variables: {
-      condition: referralMemberFilter
-        ? {
-            _or: [
-              { name: { _ilike: `%${referralMemberFilter}%` } },
-              { username: { _ilike: `%${referralMemberFilter}%` } },
-              { email: { _ilike: `%${referralMemberFilter}%` } },
-            ],
-          }
-        : undefined,
-    },
-  })
+  if (contractInfoState.loading || !!contractInfoState.error || !member) {
+    return <LoadingPage />
+  }
 
-  const selectedProjectPlan = dataProjectPlans?.project_plan.find(v => v.id === selectedProjectPlanId)
+  const selectedProjectPlan = projectPlans.find(v => v.id === selectedProjectPlanId)
   const endedAt = selectedProjectPlan
     ? moment(startedAt)
-        .add(selectedProjectPlan.period_amount, selectedProjectPlan.period_type as PeriodType)
+        .add(
+          selectedProjectPlan.periodAmount || 0,
+          selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
+        )
         .add(selectedGiftDays, 'days')
         .toDate()
     : null
@@ -262,6 +245,7 @@ const MemberContractForm: React.FC<{
   }
 
   const referralDiscountPrice = referralMemberId ? 2000 * -1 : 0
+
   if (referralDiscountPrice) {
     orderDiscounts.push({
       id: 'fe09068e-5f24-4d82-b9b3-186ee498d144',
@@ -278,6 +262,7 @@ const MemberContractForm: React.FC<{
     identity === 'student' && certificationPath
       ? (sum(mainProducts.map(mainProduct => mainProduct.price)) + referralDiscountPrice * mainProducts.length) * -0.1
       : 0
+
   if (studentDiscountPrice) {
     orderDiscounts.push({
       id: '5e298545-9190-44b1-aadc-b0d43b94cbe5',
@@ -295,6 +280,7 @@ const MemberContractForm: React.FC<{
       referralDiscountPrice * mainProducts.length +
       studentDiscountPrice) *
     (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
+
   if (Math.ceil(groupDiscountPrice)) {
     orderDiscounts.push({
       id:
@@ -314,7 +300,7 @@ const MemberContractForm: React.FC<{
   const orderItems = [...orderProducts, ...orderDiscounts]
   const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
 
-  const handleContractAdded = async () => {
+  const handleMemberContractCreate = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
     if (memberBlockRef.current?.contains(alert)) {
       message.warning('學員資料請填寫完整')
@@ -467,372 +453,469 @@ const MemberContractForm: React.FC<{
   }
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      colon={false}
-      hideRequiredMark
-      initialValues={{
-        contractId: dataContracts?.contract[0]?.id,
-        withCreatorId: false,
-        identity: 'normal',
-        orderExecutorRatio: 1,
-      }}
-      onValuesChange={(_, values) => {
-        setContractProducts(uniqBy(v => v.id, values.contractProducts || []))
-      }}
-    >
-      <div ref={memberBlockRef}>
-        <Descriptions
-          title={
-            <>
-              <span>學生資料</span>
-              <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
-                {'請去學米後台 > 會員列表 > 找到學員並將資料填寫完成'}
-              </div>
-            </>
-          }
-          bordered
-          className="mb-5"
-        >
-          <Descriptions.Item label="學員姓名">
-            {member?.name || <Alert type="error" message="未設定" />}
-          </Descriptions.Item>
-          <Descriptions.Item label="學員信箱">
-            {member?.email || <Alert type="error" message="未設定" />}
-          </Descriptions.Item>
-          <Descriptions.Item label="學員電話">
-            {(member?.phones && member?.phones.split(',').map((v, index) => <Tag key={index}>{v}</Tag>)) || (
-              <Alert type="error" message="未設定" />
-            )}
-          </Descriptions.Item>
-          {dataProperties?.property.map(property => (
-            <Descriptions.Item label={property.name} key={property.id}>
-              <div className="d-flex align-items-center">
-                {member.properties.find(v => v.propertyId === property.id)?.value ||
-                  (property.placeholder ? <Alert type="error" message="未設定" /> : null)}
-              </div>
-            </Descriptions.Item>
-          ))}
-        </Descriptions>
-      </div>
-
-      <Descriptions title="合約期間" column={2} bordered className="mb-5">
-        <Descriptions.Item label="合約項目">
-          <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
-            <Select<string> style={{ width: 150 }}>
-              {dataContracts?.contract.map(contract => (
-                <Select.Option key={contract.id} value={contract.id}>
-                  {contract.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Descriptions.Item>
-        <Descriptions.Item label="合約效期">
-          <Form.Item
-            className="mb-0"
-            name="selectedProjectPlanId"
-            rules={[{ required: true, message: '請選擇合約效期' }]}
+    <DefaultLayout>
+      <div className="container py-5">
+        <AdminBlock>
+          <Form
+            form={form}
+            layout="vertical"
+            colon={false}
+            hideRequiredMark
+            initialValues={{
+              contractId: contracts[0]?.id,
+              withCreatorId: false,
+              identity: 'normal',
+              orderExecutorRatio: 1,
+            }}
+            onValuesChange={(_, values) => {
+              setContractProducts(uniqBy(v => v.id, values.contractProducts || []))
+            }}
           >
-            <Select<string>
-              style={{ width: 150 }}
-              value={selectedProjectPlanId}
-              onChange={value => setSelectedProjectPlanId(value)}
-            >
-              {dataProjectPlans?.project_plan.map(projectPlan => (
-                <Select.Option key={projectPlan.id} value={projectPlan.id}>
-                  {projectPlan.period_amount} {projectPlan.period_type}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <div className="d-flex align-items-center mt-2">
-            <div>加贈：</div>
-            <Form.Item className="mb-0" name="selectedGiftDays">
-              <Select<string> style={{ width: 100 }} value={selectedGiftDays} onChange={setSelectedGiftDays}>
-                {[0, 7, 14].map(value => (
-                  <Select.Option key={value} value={value}>
-                    {value}天
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </div>
-        </Descriptions.Item>
-        <Descriptions.Item label="服務開始日">
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            defaultValue={moment(startedAt)}
-            onChange={value => value && setStartedAt(value.toDate())}
-          />
-        </Descriptions.Item>
-        <Descriptions.Item label="服務結束日">
-          {endedAt ? moment(endedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
-        </Descriptions.Item>
-      </Descriptions>
-
-      <div className="mb-5">
-        <AdminBlockTitle>合約內容</AdminBlockTitle>
-        <Form.List name="contractProducts">
-          {(fields, { add, remove }) => {
-            return (
-              <>
-                {fields.map((field, index) => {
-                  const contractProduct = products.find(product => product.id === contractProducts[index]?.id)
-
-                  return (
-                    <div key={field.key} className="d-flex align-items-center justify-content-start">
-                      <Form.Item
-                        name={[field.name, 'id']}
-                        fieldKey={[field.fieldKey, 'id']}
-                        label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
-                      >
-                        <Select<string> className="mr-3" style={{ width: '250px' }}>
-                          {products?.map(product => (
-                            <Select.Option key={product.id} value={product.id}>
-                              {product.name}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item label={index === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
-                        <StyledPriceField>
-                          {contractProduct?.name === '業師諮詢' && isAppointmentOnly
-                            ? contractProduct?.price
-                            : contractProduct?.addonPrice || contractProduct?.price || 0}
-                        </StyledPriceField>
-                      </Form.Item>
-                      <Form.Item
-                        name={[field.name, 'amount']}
-                        fieldKey={[field.fieldKey, 'amount']}
-                        label={index === 0 ? <StyledFieldLabel>數量</StyledFieldLabel> : undefined}
-                      >
-                        <InputNumber min={1} className="mr-3" />
-                      </Form.Item>
-                      <div className={index === 0 ? 'mt-2' : 'mb-4'}>
-                        <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
-                      </div>
+            <div ref={memberBlockRef}>
+              <Descriptions
+                title={
+                  <>
+                    <span>學生資料</span>
+                    <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
+                      {'請去學米後台 > 會員列表 > 找到學員並將資料填寫完成'}
                     </div>
-                  )
-                })}
-                <Button icon={<PlusOutlined />} onClick={() => add({ amount: 1 })}>
-                  新增項目
-                </Button>
-              </>
-            )
-          }}
-        </Form.List>
-      </div>
-
-      <Descriptions column={1} bordered className="mb-5">
-        <Descriptions.Item label="指定業師">
-          <div className="d-flex align-items-center">
-            <Form.Item noStyle>
-              <Radio.Group value={withCreatorId} onChange={e => setWithCreatorId(e.target.value)}>
-                <Radio value={false}>不指定</Radio>
-                <Radio value={true}>指定</Radio>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item name="creatorId" noStyle>
-              <Select<string> style={{ width: '150px' }}>
-                {dataCreators?.appointment_plan.map(v =>
-                  v.creator?.id ? (
-                    <Select.Option key={v.creator.id} value={v.creator.id}>
-                      {v.creator.name}
-                    </Select.Option>
-                  ) : null,
-                )}
-              </Select>
-            </Form.Item>
-          </div>
-        </Descriptions.Item>
-        <Descriptions.Item label="學員身份">
-          <Form.Item className="m-0">
-            <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
-              <Radio value="normal">一般</Radio>
-              <Radio value="student">學生</Radio>
-
-              <Upload
-                showUploadList={false}
-                customRequest={({ file }) => {
-                  setUploading(true)
-                  uploadFile(`certification/${appId}/student_${member.id}`, file, authToken, apiHost)
-                    .then(() => setCertificationPath(file.name))
-                    .catch(handleError)
-                    .finally(() => setUploading(false))
-                }}
-                className={identity === 'normal' ? 'd-none' : undefined}
+                  </>
+                }
+                bordered
+                className="mb-5"
               >
-                <Button icon={<UploadOutlined />} loading={uploading}>
-                  上傳證明
-                </Button>
-              </Upload>
-            </Radio.Group>
-            <span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>
-          </Form.Item>
-        </Descriptions.Item>
-        <Descriptions.Item label="介紹人">
-          <Form.Item className="m-0">
-            <Select<string>
-              allowClear
-              showSearch
-              filterOption={false}
-              value={referralMemberId}
-              onChange={value => setReferralMemberId(value)}
-              onSearch={v => setReferralMemberFilter(v)}
-              style={{ width: '150px' }}
-            >
-              {dataReferralMembers?.member.map(v => (
-                <Select.Option key={v.name} value={v.id}>
-                  {v.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Descriptions.Item>
-        <Descriptions.Item label="扣除訂金 $1000">
-          <Form.Item className="m-0">
-            <Checkbox value={hasDeposit} onChange={e => setHasDeposit(e.target.checked)} />
-          </Form.Item>
-        </Descriptions.Item>
-      </Descriptions>
-
-      <Descriptions title="付款方式" bordered className="mb-5">
-        <Descriptions.Item label="付款方式">
-          <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-            <Select<string> style={{ width: 120 }}>
-              {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
-                <Select.Option key={payment} value={payment}>
-                  {payment}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Descriptions.Item>
-        <Descriptions.Item label="分期期數">
-          <Form.Item className="mb-0" name="installmentPlan" rules={[{ required: true, message: '請選擇分期期數' }]}>
-            <Select<string> style={{ width: 120 }}>
-              {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
-                <Select.Option key={installmentPlan} value={installmentPlan}>
-                  {installmentPlan}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Descriptions.Item>
-        <Descriptions.Item label="金流編號">
-          <Form.Item className="mb-0" name="paymentNumber" rules={[{ required: true, message: '請填寫金流編號' }]}>
-            <Input />
-          </Form.Item>
-        </Descriptions.Item>
-        <Descriptions.Item label="承辦人 / 分潤" span={3}>
-          <Space align="center" className="d-flex mb-3">
-            <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
-              <Select<string> showSearch placeholder="承辦人" style={{ width: '150px' }} optionFilterProp="label">
-                {xuemiSales?.map(member => (
-                  <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
-                    {member.name}
-                  </Select.Option>
+                <Descriptions.Item label="學員姓名">{member.name}</Descriptions.Item>
+                <Descriptions.Item label="學員信箱">{member.email}</Descriptions.Item>
+                <Descriptions.Item label="學員電話">
+                  {!!length(member.phones) ? (
+                    member.phones.map((v, index) => <Tag key={index}>{v}</Tag>)
+                  ) : (
+                    <Alert type="error" message="未設定" />
+                  )}
+                </Descriptions.Item>
+                {properties.map(property => (
+                  <Descriptions.Item label={property.name} key={property.id}>
+                    <div className="d-flex align-items-center">
+                      {member.properties.find(v => v.id === property.id)?.value ||
+                        (property.placeholder ? <Alert type="error" message="未設定" /> : null)}
+                    </div>
+                  </Descriptions.Item>
                 ))}
-              </Select>
-            </Form.Item>
+              </Descriptions>
+            </div>
 
-            <Form.Item name="orderExecutorRatio">
-              <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
-            </Form.Item>
-          </Space>
-
-          <Form.List name="orderExecutors">
-            {(fields, { add, remove }) => (
-              <div>
-                {fields.map(field => (
-                  <Space key={field.key} align="center" className="d-flex mb-3">
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'memberId']}
-                      fieldKey={[field.fieldKey, 'memberId']}
-                      rules={[{ required: true, message: '請填寫承辦人' }]}
-                    >
-                      <Select<string>
-                        showSearch
-                        placeholder="承辦人"
-                        style={{ width: '150px' }}
-                        optionFilterProp="label"
-                      >
-                        {xuemiSales?.map(member => (
-                          <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
-                            {member.name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']}>
-                      <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
-                    </Form.Item>
-                    <MinusCircleOutlined className="mb-4" onClick={() => remove(field.name)} />
-                  </Space>
-                ))}
-
-                <Form.Item>
-                  <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
-                    <PlusOutlined /> 加入
-                  </Button>
+            <Descriptions title="合約期間" column={2} bordered className="mb-5">
+              <Descriptions.Item label="合約項目">
+                <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
+                  <Select<string> style={{ width: 150 }}>
+                    {contracts.map(v => (
+                      <Select.Option key={v.id} value={v.id}>
+                        {v.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
                 </Form.Item>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="合約效期">
+                <Form.Item
+                  className="mb-0"
+                  name="selectedProjectPlanId"
+                  rules={[{ required: true, message: '請選擇合約效期' }]}
+                >
+                  <Select<string>
+                    style={{ width: 150 }}
+                    value={selectedProjectPlanId}
+                    onChange={value => setSelectedProjectPlanId(value)}
+                  >
+                    {projectPlans.map(v => (
+                      <Select.Option key={v.id} value={v.id}>
+                        {v.periodAmount} {v.periodType}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <div className="d-flex align-items-center mt-2">
+                  <div>加贈：</div>
+                  <Form.Item className="mb-0" name="selectedGiftDays">
+                    <Select<string> style={{ width: 100 }} value={selectedGiftDays} onChange={setSelectedGiftDays}>
+                      {[0, 7, 14].map(value => (
+                        <Select.Option key={value} value={value}>
+                          {value}天
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </div>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="服務開始日">
+                <DatePicker
+                  showTime
+                  format="YYYY-MM-DD HH:mm:ss"
+                  defaultValue={moment(startedAt)}
+                  onChange={value => value && setStartedAt(value.toDate())}
+                />
+              </Descriptions.Item>
+
+              <Descriptions.Item label="服務結束日">
+                {endedAt ? moment(endedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <div className="mb-5">
+              <AdminBlockTitle>合約內容</AdminBlockTitle>
+              <Form.List name="contractProducts">
+                {(fields, { add, remove }) => {
+                  return (
+                    <>
+                      {fields.map((field, index) => {
+                        const contractProduct = products.find(product => product.id === contractProducts[index]?.id)
+
+                        return (
+                          <div key={field.key} className="d-flex align-items-center justify-content-start">
+                            <Form.Item
+                              name={[field.name, 'id']}
+                              fieldKey={[field.fieldKey, 'id']}
+                              label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
+                            >
+                              <Select<string> className="mr-3" style={{ width: '250px' }}>
+                                {products?.map(product => (
+                                  <Select.Option key={product.id} value={product.id}>
+                                    {product.name}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+
+                            <Form.Item label={index === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
+                              <StyledPriceField>
+                                {contractProduct?.name === '業師諮詢' && isAppointmentOnly
+                                  ? contractProduct?.price
+                                  : contractProduct?.addonPrice || contractProduct?.price || 0}
+                              </StyledPriceField>
+                            </Form.Item>
+
+                            <Form.Item
+                              name={[field.name, 'amount']}
+                              fieldKey={[field.fieldKey, 'amount']}
+                              label={index === 0 ? <StyledFieldLabel>數量</StyledFieldLabel> : undefined}
+                            >
+                              <InputNumber min={1} className="mr-3" />
+                            </Form.Item>
+
+                            <div className={index === 0 ? 'mt-2' : 'mb-4'}>
+                              <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
+                            </div>
+                          </div>
+                        )
+                      })}
+                      <Button icon={<PlusOutlined />} onClick={() => add({ amount: 1 })}>
+                        新增項目
+                      </Button>
+                    </>
+                  )
+                }}
+              </Form.List>
+            </div>
+
+            <Descriptions column={1} bordered className="mb-5">
+              <Descriptions.Item label="指定業師">
+                <Form.Item noStyle>
+                  <Radio.Group value={withCreatorId} onChange={e => setWithCreatorId(e.target.value)}>
+                    <Radio value={false}>不指定</Radio>
+                    <Radio value={true}>指定</Radio>
+                  </Radio.Group>
+                </Form.Item>
+
+                <Form.Item name="creatorId" noStyle>
+                  <Select<string> style={{ width: '150px' }}>
+                    {mentors.map(v =>
+                      v.id && v.name ? (
+                        <Select.Option key={v.id} value={v.id}>
+                          {v.name}
+                        </Select.Option>
+                      ) : null,
+                    )}
+                  </Select>
+                </Form.Item>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="學員身份">
+                <Form.Item className="m-0">
+                  <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
+                    <Radio value="normal">一般</Radio>
+                    <Radio value="student">學生</Radio>
+
+                    <Upload
+                      showUploadList={false}
+                      customRequest={({ file }) => {
+                        setUploading(true)
+                        uploadFile(`certification/${appId}/student_${member?.id}`, file, authToken, apiHost)
+                          .then(() => setCertificationPath(file.name))
+                          .catch(handleError)
+                          .finally(() => setUploading(false))
+                      }}
+                      className={identity === 'normal' ? 'd-none' : undefined}
+                    >
+                      <Button icon={<UploadOutlined />} loading={uploading}>
+                        上傳證明
+                      </Button>
+                    </Upload>
+                  </Radio.Group>
+
+                  <span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>
+                </Form.Item>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="介紹人">
+                <Form.Item className="m-0">
+                  <Select<string>
+                    allowClear
+                    showSearch
+                    filterOption={false}
+                    value={referralMemberId}
+                    onChange={value => setReferralMemberId(value)}
+                    onSearch={v => setReferralMemberFilter(v)}
+                    style={{ width: '150px' }}
+                  >
+                    {referralMembers.map(v => (
+                      <Select.Option key={v.name} value={v.id}>
+                        {v.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Descriptions.Item>
+              <Descriptions.Item label="扣除訂金 $1000">
+                <Form.Item className="m-0">
+                  <Checkbox value={hasDeposit} onChange={e => setHasDeposit(e.target.checked)} />
+                </Form.Item>
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Descriptions title="付款方式" bordered className="mb-5">
+              <Descriptions.Item label="付款方式">
+                <Form.Item
+                  className="mb-0"
+                  name="paymentMethod"
+                  rules={[{ required: true, message: '請選擇付款方式' }]}
+                >
+                  <Select<string> style={{ width: 120 }}>
+                    {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
+                      <Select.Option key={payment} value={payment}>
+                        {payment}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="分期期數">
+                <Form.Item
+                  className="mb-0"
+                  name="installmentPlan"
+                  rules={[{ required: true, message: '請選擇分期期數' }]}
+                >
+                  <Select<string> style={{ width: 120 }}>
+                    {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
+                      <Select.Option key={installmentPlan} value={installmentPlan}>
+                        {installmentPlan}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="金流編號">
+                <Form.Item
+                  className="mb-0"
+                  name="paymentNumber"
+                  rules={[{ required: true, message: '請填寫金流編號' }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Descriptions.Item>
+
+              <Descriptions.Item label="承辦人 / 分潤" span={3}>
+                <Space align="center" className="d-flex mb-3">
+                  <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
+                    <Select<string> showSearch placeholder="承辦人" style={{ width: '150px' }} optionFilterProp="label">
+                      {sales.map(member => (
+                        <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
+                          {member.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item name="orderExecutorRatio">
+                    <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                  </Form.Item>
+                </Space>
+
+                <Form.List name="orderExecutors">
+                  {(fields, { add, remove }) => (
+                    <div>
+                      {fields.map(field => (
+                        <Space key={field.key} align="center" className="d-flex mb-3">
+                          <Form.Item
+                            {...field}
+                            name={[field.name, 'memberId']}
+                            fieldKey={[field.fieldKey, 'memberId']}
+                            rules={[{ required: true, message: '請填寫承辦人' }]}
+                          >
+                            <Select<string>
+                              showSearch
+                              placeholder="承辦人"
+                              style={{ width: '150px' }}
+                              optionFilterProp="label"
+                            >
+                              {sales?.map(member => (
+                                <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
+                                  {member.name}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
+                          <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']}>
+                            <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                          </Form.Item>
+                          <MinusCircleOutlined className="mb-4" onClick={() => remove(field.name)} />
+                        </Space>
+                      ))}
+
+                      <Form.Item>
+                        <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
+                          <PlusOutlined /> 加入
+                        </Button>
+                      </Form.Item>
+                    </div>
+                  )}
+                </Form.List>
+              </Descriptions.Item>
+            </Descriptions>
+
+            <StyledOrder className="mb-5">
+              {orderItems.map(orderItem => (
+                <div key={orderItem.id} className="row mb-2">
+                  <div className="col-6 text-right">
+                    {orderItem.type === 'addonProduct'
+                      ? '【加購項目】'
+                      : orderItem.type === 'referralDiscount'
+                      ? '【介紹折抵】'
+                      : orderItem.type === 'promotionDiscount'
+                      ? '【促銷折抵】'
+                      : ''}
+                  </div>
+                  <div className="col-3">
+                    <span>{orderItem.name}</span>
+                    {orderItem.amount > 1 ? <span>x{orderItem.amount}</span> : ''}
+                  </div>
+                  <div className="col-3 text-right">{currencyFormatter(orderItem.price * orderItem.amount)}</div>
+                </div>
+              ))}
+
+              <div className="row mb-2">
+                <strong className="col-6 text-right">合計</strong>
+
+                <div className="col-6 text-right">
+                  <StyledTotal>{currencyFormatter(totalPrice)}</StyledTotal>
+                  <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
+                  <StyledTotal>{totalCoins} XP</StyledTotal>
+                </div>
               </div>
+            </StyledOrder>
+
+            {memberContractUrl ? (
+              <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
+            ) : (
+              <Button size="large" block type="primary" onClick={handleMemberContractCreate}>
+                產生合約
+              </Button>
             )}
-          </Form.List>
-        </Descriptions.Item>
-      </Descriptions>
-
-      <StyledOrder className="mb-5">
-        {orderItems.map(orderItem => (
-          <div key={orderItem.id} className="row mb-2">
-            <div className="col-6 text-right">
-              {orderItem.type === 'addonProduct'
-                ? '【加購項目】'
-                : orderItem.type === 'referralDiscount'
-                ? '【介紹折抵】'
-                : orderItem.type === 'promotionDiscount'
-                ? '【促銷折抵】'
-                : ''}
-            </div>
-            <div className="col-3">
-              {orderItem.name}
-              {orderItem.amount > 1 ? `x${orderItem.amount}` : ''}
-            </div>
-            <div className="col-3 text-right">{currencyFormatter(orderItem.price * orderItem.amount)}</div>
-          </div>
-        ))}
-
-        <div className="row mb-2">
-          <div className="col-6 text-right">
-            <strong>合計</strong>
-          </div>
-          <div className="col-6 text-right">
-            <StyledTotal>{currencyFormatter(totalPrice)}</StyledTotal>
-            <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
-            <StyledTotal>{totalCoins} XP</StyledTotal>
-          </div>
-        </div>
-      </StyledOrder>
-
-      {memberContractUrl ? (
-        <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
-      ) : (
-        <Button size="large" block type="primary" onClick={handleContractAdded}>
-          產生合約
-        </Button>
-      )}
-    </Form>
+          </Form>
+        </AdminBlock>
+      </div>
+    </DefaultLayout>
   )
 }
 
-const useXuemiSales = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_SALE_COLLECTION>(
+const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
+  if (['D', 'W', 'Y'].includes(type)) {
+    return type.toLowerCase() as MomentPeriodType
+  }
+
+  return type as MomentPeriodType
+}
+
+const usePrivateTeachContractInfo = (appId: string, memberId: string, referralMemberFilter: string) => {
+  const condition = referralMemberFilter
+    ? {
+        _or: [
+          { name: { _ilike: `%${referralMemberFilter}%` } },
+          { username: { _ilike: `%${referralMemberFilter}%` } },
+          { email: { _ilike: `%${referralMemberFilter}%` } },
+        ],
+      }
+    : undefined
+
+  const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
     gql`
-      query GET_SALE_COLLECTION {
+      query GET_CONTRACT_INFO($appId: String!, $memberId: String!, $condition: member_bool_exp) {
+        member_by_pk(id: $memberId) {
+          id
+          name
+          email
+          member_phones {
+            id
+            phone
+          }
+          member_properties {
+            id
+            value
+            property {
+              id
+              name
+            }
+          }
+        }
+        property(where: { name: { _in: ["學生程度", "每月學習預算", "轉職意願", "上過其他課程", "特別需求"] } }) {
+          id
+          name
+          placeholder
+        }
+        contract(where: { published_at: { _is_null: false } }) {
+          id
+          name
+        }
+        projectPrivateTeachPlan: project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
+          id
+          title
+          period_amount
+          period_type
+        }
+        products: project_plan(
+          where: { published_at: { _is_null: false }, project: { app_id: { _eq: $appId } } }
+          order_by: [{ position: asc_nulls_last }, { title: asc }]
+        ) {
+          id
+          title
+          list_price
+          options
+        }
+        appointment_plan(distinct_on: [creator_id]) {
+          id
+          creator {
+            id
+            name
+          }
+        }
+        referralMember: member(where: { _and: [{ member_contracts: {} }, $condition] }, limit: 10) {
+          id
+          name
+          email
+        }
         xuemi_sales {
           member {
             id
@@ -842,121 +925,77 @@ const useXuemiSales = () => {
         }
       }
     `,
+    {
+      variables: {
+        appId,
+        memberId,
+        condition,
+      },
+    },
   )
 
-  const xuemiSales =
-    data?.xuemi_sales
-      ?.map(v => ({
-        id: v.member?.id || '',
-        name: v.member?.name || v.member?.username || '',
-      }))
-      .filter(v => v.id && v.name) || []
-
-  return {
-    loading,
-    error,
-    xuemiSales,
-    refetch,
+  const info: ContractInfo = {
+    member: null,
+    properties: [],
+    contracts: [],
+    projectPlans: [],
+    products: [],
+    mentors: [],
+    referralMembers: [],
+    sales: [],
   }
-}
 
-const useProducts = (appId: string) => {
-  const { data } = useQuery<hasura.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT, {
-    variables: { appId },
-  })
-  const products: ProductProps[] =
-    data?.project_plan.map(v => ({
+  if (!loading && !error && data) {
+    info.member = data.member_by_pk
+      ? {
+          id: data.member_by_pk.id,
+          name: data.member_by_pk.name,
+          email: data.member_by_pk.email,
+          phones: data.member_by_pk.member_phones.map(v => v.phone),
+          properties: data.member_by_pk.member_properties.map(v => ({
+            id: v.id,
+            value: v.value,
+            name: v.property.name,
+          })),
+        }
+      : null
+    info.properties = data.property
+    info.contracts = data.contract
+    info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
+      id: v.id,
+      title: v.title,
+      periodAmount: v.period_amount,
+      periodType: v.period_type as PeriodType | null,
+    }))
+    info.products = data.products.map(v => ({
       id: v.id,
       name: v.title,
       price: v.list_price,
       addonPrice: v.options?.addonPrice || 0,
       appointments: v.options?.appointments || 0,
       coins: v.options?.coins || 0,
-    })) || []
+    }))
+    info.mentors = data.appointment_plan
+      .map(v =>
+        v.creator
+          ? {
+              id: v.creator.id,
+              name: v.creator.name,
+            }
+          : null,
+      )
+      .filter(notEmpty)
+    info.referralMembers = data.referralMember
+    info.sales = data.xuemi_sales.map(v => v.member).filter(notEmpty)
+  }
 
-  return { products }
+  return {
+    loading,
+    error,
+    ...info,
+  }
 }
 
-const GET_CONTRACT_MEMBER = gql`
-  query GET_CONTRACT_MEMBER($id: String!) {
-    member_by_pk(id: $id) {
-      id
-      name
-      email
-      member_phones {
-        phone
-      }
-      member_properties {
-        id
-        value
-        property {
-          id
-          name
-        }
-      }
-    }
-  }
-`
-const GET_CONTRACTS = gql`
-  query GET_CONTRACTS {
-    contract(where: { published_at: { _is_null: false } }) {
-      id
-      name
-    }
-  }
-`
-const GET_PROJECT_PLANS = gql`
-  query GET_PROJECT_PLANS {
-    project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
-      id
-      title
-      period_amount
-      period_type
-    }
-  }
-`
-const GET_PROPERTIES = gql`
-  query GET_PROPERTIES {
-    property(where: { name: { _in: ["學生程度", "每月學習預算", "轉職意願", "上過其他課程", "特別需求"] } }) {
-      id
-      name
-      placeholder
-    }
-  }
-`
-const GET_CONTRACT_PRODUCT = gql`
-  query GET_CONTRACT_PRODUCT($appId: String!) {
-    project_plan(
-      where: { published_at: { _is_null: false }, project: { app_id: { _eq: $appId } } }
-      order_by: [{ position: asc_nulls_last }, { title: asc }]
-    ) {
-      id
-      title
-      list_price
-      options
-    }
-  }
-`
-const GET_APPOINTMENT_PLAN_CREATORS = gql`
-  query GET_APPOINTMENT_PLAN_CREATORS {
-    appointment_plan(distinct_on: [creator_id]) {
-      id
-      creator {
-        id
-        name
-      }
-    }
-  }
-`
-const GET_REFERRAL_MEMBER_COLLECTION = gql`
-  query GET_REFERRAL_MEMBER_COLLECTION($condition: member_bool_exp) {
-    member(where: { _and: [{ member_contracts: {} }, $condition] }, limit: 10) {
-      id
-      name
-      email
-    }
-  }
-`
 const ADD_MEMBER_CONTRACT = gql`
   mutation ADD_MEMBER_CONTRACT(
     $memberId: String!
