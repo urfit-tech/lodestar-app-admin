@@ -1041,12 +1041,12 @@ export interface GET_SALES_ACTIVE_LOG_attend_sales {
 export interface GET_SALES_ACTIVE_LOG_attend {
   __typename: "sales_active_log";
   id: string | null;
+  started_at: any | null;
+  ended_at: any | null;
   /**
    * An object relationship
    */
   sales: GET_SALES_ACTIVE_LOG_attend_sales | null;
-  started_at: any | null;
-  ended_at: any | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_validSpeaking_sales {
@@ -1058,11 +1058,11 @@ export interface GET_SALES_ACTIVE_LOG_validSpeaking_sales {
 export interface GET_SALES_ACTIVE_LOG_validSpeaking {
   __typename: "sales_active_log";
   id: string | null;
+  duration: number | null;
   /**
    * An object relationship
    */
   sales: GET_SALES_ACTIVE_LOG_validSpeaking_sales | null;
-  duration: number | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_validDial_sales {
@@ -1164,11 +1164,11 @@ export interface GET_SALES_ACTIVE_LOG_performance_sales {
 export interface GET_SALES_ACTIVE_LOG_performance {
   __typename: "sales_active_log";
   id: string | null;
+  price: any | null;
   /**
    * An object relationship
    */
   sales: GET_SALES_ACTIVE_LOG_performance_sales | null;
-  price: any | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_revoked_sales {
@@ -1180,11 +1180,11 @@ export interface GET_SALES_ACTIVE_LOG_revoked_sales {
 export interface GET_SALES_ACTIVE_LOG_revoked {
   __typename: "sales_active_log";
   id: string | null;
+  price: any | null;
   /**
    * An object relationship
    */
   sales: GET_SALES_ACTIVE_LOG_revoked_sales | null;
-  price: any | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG {
@@ -4169,6 +4169,7 @@ export enum role_constraint {
  */
 export enum role_permission_constraint {
   role_permission_pkey = "role_permission_pkey",
+  role_permission_role_id_permission_id_key = "role_permission_role_id_permission_id_key",
 }
 
 /**

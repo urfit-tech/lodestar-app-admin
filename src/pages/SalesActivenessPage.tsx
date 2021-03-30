@@ -23,6 +23,7 @@ type LogsProps = {
 
 const SalesActivenessPage: React.FC = () => {
   const [range, setRange] = useState<[Moment, Moment]>([moment().startOf('month'), moment().endOf('month')])
+  const { isAuthenticated } = useAuth()
 
   return (
     <AdminLayout>
@@ -42,7 +43,7 @@ const SalesActivenessPage: React.FC = () => {
           />
         </Form.Item>
       </Form>
-      <SalesActivenessTable startedAt={range[0].toDate()} endedAt={range[1].toDate()} />
+      {isAuthenticated && <SalesActivenessTable startedAt={range[0].toDate()} endedAt={range[1].toDate()} />}
     </AdminLayout>
   )
 }
@@ -56,9 +57,7 @@ const SalesActivenessTable: React.FC<{
     endedAt,
   })
 
-  const { isAuthenticated } = useAuth()
-
-  if (error && isAuthenticated) return <div>讀取錯誤</div>
+  if (error) return <div>讀取錯誤</div>
 
   const firsthand = mapObjIndexed(
     obj => obj.length,
@@ -129,23 +128,21 @@ const SalesActivenessTable: React.FC<{
     revoked,
   )
 
-  const dataSourceCollection = map(([sale, value]) => {
-    const [salesId, salesName, field] = split('_')(sale)
-    return {
-      salesId,
-      salesName,
-      [field]: value,
-    }
-  }, toPairs(salesCollection))
-
   const dataSource = Object.values(
-    dataSourceCollection.reduce<{
+    map(([sale, value]) => {
+      const [salesId, salesName, field] = split('_')(sale)
+      return {
+        salesId,
+        salesName,
+        [field]: value,
+      }
+    }, toPairs(salesCollection)).reduce<{
       [x: string]: {
         salesId: string
         salesName: string
         firsthand: number
         secondhand: number
-        totalCount: number
+        totalAssignments: number
         attend: number
         validSpeaking: number
         validDial: number
@@ -157,17 +154,17 @@ const SalesActivenessTable: React.FC<{
         deal: number
         performance: number
         revoked: number
-        test: string
       }
     }>((r, { salesId, ...rest }) => {
       r[salesId] = r[salesId] || { salesId }
-      r[salesId] = { ...r[salesId], ...rest }
+      r[salesId] = Object.assign(r[salesId], rest)
       return r
     }, {}),
   ).map(v => {
-    const obj = Object.assign({}, v)
-    obj.totalCount = v.firsthand | (0 + v.secondhand) | 0
-    return obj
+    return {
+      ...v,
+      totalAssignments: (v.firsthand || 0) + (v.secondhand || 0),
+    }
   })
 
   type RecordType = typeof dataSource[number]
@@ -199,7 +196,7 @@ const SalesActivenessTable: React.FC<{
             key="firsthand"
             dataIndex="firsthand"
             title="一手"
-            render={firsthand => (firsthand ? <span>{firsthand}</span> : <span>0</span>)}
+            render={v => v || 0}
             sorter={(a, b) => columnSorter(a, b, 'firsthand')}
             width="6rem"
           />
@@ -208,17 +205,17 @@ const SalesActivenessTable: React.FC<{
             key="secondhand"
             title="二手"
             dataIndex="secondhand"
-            render={secondhand => (secondhand ? <span>{secondhand}</span> : <span>0</span>)}
+            render={v => v || 0}
             sorter={(a, b) => columnSorter(a, b, 'secondhand')}
             width="6rem"
           />
 
-          <Table.Column<Pick<RecordType, 'totalCount'>>
-            key="totalCount"
+          <Table.Column<Pick<RecordType, 'totalAssignments'>>
+            key="totalAssignments"
             title="總數"
-            dataIndex={'totalCount'}
-            render={totalCount => <span>{totalCount}</span>}
-            sorter={(a, b) => columnSorter(a, b, 'totalCount')}
+            dataIndex={'totalAssignments'}
+            render={v => v || 0}
+            sorter={(a, b) => columnSorter(a, b, 'totalAssignments')}
             width="6rem"
           />
         </Table.ColumnGroup>
@@ -226,7 +223,7 @@ const SalesActivenessTable: React.FC<{
           key="attend"
           title="在線時間(分)"
           dataIndex="attend"
-          render={attend => (attend ? <span>{Math.ceil(attend / 60000)}</span> : <span>0</span>)}
+          render={v => Math.ceil(v / 60000) || 0}
           sorter={(a, b) => columnSorter(a, b, 'attend')}
           width="9rem"
         />
@@ -234,7 +231,7 @@ const SalesActivenessTable: React.FC<{
           key="validSpeaking"
           title="通話時間(分)"
           dataIndex="validSpeaking"
-          render={validSpeaking => (validSpeaking ? <span>{Math.ceil(validSpeaking / 60000)}</span> : <span>0</span>)}
+          render={v => Math.ceil(v / 60000) || 0}
           sorter={(a, b) => columnSorter(a, b, 'validSpeaking')}
           width="9rem"
         />
@@ -242,7 +239,7 @@ const SalesActivenessTable: React.FC<{
           key="validDial"
           title="撥打次數"
           dataIndex="validDial"
-          render={validDial => (validDial ? <span>{validDial}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'validDial')}
           width="7.5rem"
         />
@@ -250,7 +247,7 @@ const SalesActivenessTable: React.FC<{
           key="validGetThrough"
           title="接通次數"
           dataIndex="validGetThrough"
-          render={validGetThrough => (validGetThrough ? <span>{validGetThrough}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'validGetThrough')}
           width="7.5rem"
         />
@@ -258,7 +255,7 @@ const SalesActivenessTable: React.FC<{
           key="invalidNumber"
           title="空號數"
           dataIndex="invalidNumber"
-          render={invalidNumber => (invalidNumber ? <span>{invalidNumber}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'invalidNumber')}
           width="7rem"
         />
@@ -266,7 +263,7 @@ const SalesActivenessTable: React.FC<{
           key="rejected"
           title="拒絕數"
           dataIndex="rejected"
-          render={rejected => (rejected ? <span>{rejected}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'rejected')}
           width="7rem"
         />
@@ -274,7 +271,7 @@ const SalesActivenessTable: React.FC<{
           key="keepInTouch"
           title="開發中"
           dataIndex="keepInTouch"
-          render={keepInTouch => (keepInTouch ? <span>{keepInTouch}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'keepInTouch')}
           width="7rem"
         />
@@ -282,7 +279,7 @@ const SalesActivenessTable: React.FC<{
           key="reserveDemo"
           title="預約示範次數"
           dataIndex="reserveDemo"
-          render={reserveDemo => (reserveDemo ? <span>{reserveDemo}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'reserveDemo')}
           width="9.5rem"
         />
@@ -290,7 +287,7 @@ const SalesActivenessTable: React.FC<{
           key="deal"
           title="成交數"
           dataIndex="deal"
-          render={deal => (deal ? <span>{deal}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'deal')}
           width="7rem"
         />
@@ -298,7 +295,7 @@ const SalesActivenessTable: React.FC<{
           key="performance"
           title="業績量"
           dataIndex="performance"
-          render={performance => (performance ? <span>{performance}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'performance')}
           width="7rem"
         />
@@ -306,7 +303,7 @@ const SalesActivenessTable: React.FC<{
           key="revoked"
           title="解約金額"
           dataIndex="revoked"
-          render={revoked => (revoked ? <span>{revoked}</span> : <span>0</span>)}
+          render={v => v || 0}
           sorter={(a, b) => columnSorter(a, b, 'revoked')}
           width="8rem"
         />
@@ -341,22 +338,22 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           where: { event: { _eq: "attend" }, started_at: { _lt: $endedAt }, ended_at: { _gt: $startedAt } }
         ) {
           id
+          started_at
+          ended_at
           sales {
             id
             name
           }
-          started_at
-          ended_at
         }
         validSpeaking: sales_active_log(
           where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, duration: { _gt: 90 } }
         ) {
           id
+          duration
           sales {
             id
             name
           }
-          duration
         }
         validDial: sales_active_log(
           where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, duration: { _gt: 90 } }
@@ -429,11 +426,11 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           where: { event: { _eq: "contract" }, agreed_at: { _gt: $startedAt, _lte: $endedAt } }
         ) {
           id
+          price
           sales {
             id
             name
           }
-          price
         }
         revoked: sales_active_log(
           where: {
@@ -443,11 +440,11 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           }
         ) {
           id
+          price
           sales {
             id
             name
           }
-          price
         }
       }
     `,
@@ -457,106 +454,82 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
   )
 
   const firsthandLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.firsthand.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.firsthand.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const secondhandLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.secondhand.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.secondhand.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const attendLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.attend.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-          startedAt: new Date(v.started_at),
-          endedAt: new Date(v.ended_at),
-        }))
+    data?.attend.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+      startedAt: new Date(v.started_at),
+      endedAt: new Date(v.ended_at),
+    })) || []
   const validSpeakingLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.validSpeaking.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-          duration: v.duration || 0,
-        }))
+    data?.validSpeaking.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+      duration: v.duration || 0,
+    })) || []
   const validDialLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.validDial.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.validDial.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const validGetThroughLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.validGetThrough.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.validGetThrough.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const invalidNumberLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.invalidNumber.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.invalidNumber.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const rejectedLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.rejected.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.rejected.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const keepInTouchLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.keepInTouch.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.keepInTouch.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const reserveDemoLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.reserveDemo.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-        }))
+    data?.reserveDemo.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+    })) || []
   const performanceLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.performance.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-          price: v.price,
-        }))
+    data?.performance.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+      price: v.price,
+    })) || []
   const revokedLogs: LogsProps[] =
-    loading || !!error || !data
-      ? []
-      : data?.revoked.map(v => ({
-          id: v.id,
-          salesId: v.sales?.id || '',
-          salesName: v.sales?.name || '',
-          price: v.price,
-        }))
+    data?.revoked.map(v => ({
+      id: v.id,
+      salesId: v.sales?.id || '',
+      salesName: v.sales?.name || '',
+      price: v.price,
+    })) || []
 
   return {
     loading,
