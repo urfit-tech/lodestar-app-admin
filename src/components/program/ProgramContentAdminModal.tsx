@@ -11,7 +11,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
-import { getFileDuration, handleError, uploadFile } from '../../helpers'
+import { getFileDuration, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
@@ -69,8 +69,8 @@ const ProgramContentAdminModal: React.FC<{
   const [realDuration, setRealDuration] = useState(0)
   const uploadCanceler = useRef<Canceler>()
 
-  const [video, setVideo] = useState<File | null>(programContentBody.data.video || null)
-  const [caption, setCaption] = useState<File | null>(programContentBody.data.texttrack || null)
+  const [videoFile, setVideoFile] = useState<File | null>(programContentBody.data.video || null)
+  const [captionFile, setCaptionFile] = useState<File | null>(programContentBody.data.texttrack || null)
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
   const [isUploadFailed, setIsUploadFailed] = useState<{
     video?: boolean
@@ -80,32 +80,61 @@ const ProgramContentAdminModal: React.FC<{
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    setIsUploadFailed(prev => ({ ...prev, materials: false }))
+    setIsUploadFailed({})
+    const uploadError: typeof isUploadFailed = {}
+
+    // upload video
+    if (
+      videoFile &&
+      (videoFile?.name !== programContentBody.data?.video?.name ||
+        videoFile?.lastModified !== programContentBody.data?.video?.lastModified)
+    ) {
+      try {
+        await uploadFile(`videos/${appId}/${programContentBody.id}`, videoFile, authToken, apiHost, {
+          cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+          timeout: 60000,
+        })
+      } catch (error) {
+        uploadError.video = true
+      }
+    }
+    // upload caption
+    if (
+      captionFile &&
+      (captionFile.name !== programContentBody.data?.texttrack?.name ||
+        captionFile.lastModified !== programContentBody.data?.texttrack?.lastModified)
+    ) {
+      try {
+        await uploadFile(`texttracks/${appId}/${programContentBody.id}`, captionFile, authToken, apiHost, {
+          cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+          timeout: 60000,
+        })
+      } catch (error) {
+        uploadError.caption = true
+      }
+    }
+    // upload materials
+    const pendingFiles = materialFiles.filter(
+      file =>
+        !programContentBody.materials.some(
+          material => material.data.name === file.name && material.data.lastModified === file.lastModified,
+        ),
+    )
+    if (pendingFiles.length) {
+      try {
+        for (const file of pendingFiles) {
+          await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
+            cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+            timeout: 60000,
+          })
+        }
+      } catch (error) {
+        uploadError.materials = true
+      }
+    }
+    setIsUploadFailed(uploadError)
 
     try {
-      if (
-        video &&
-        (video?.name !== programContentBody.data?.video?.name ||
-          video?.lastModified !== programContentBody.data?.video?.lastModified)
-      ) {
-        await uploadFile(`videos/${appId}/${programContentBody.id}`, video, authToken, apiHost, {
-          cancelToken: new axios.CancelToken(canceler => {
-            uploadCanceler.current = canceler
-          }),
-        }).catch(() => setIsUploadFailed(prev => ({ ...prev, video: true })))
-      }
-      if (
-        caption &&
-        (caption.name !== programContentBody.data?.caption?.name ||
-          caption.lastModified !== programContentBody.data?.caption?.lastModified)
-      ) {
-        await uploadFile(`texttracks/${appId}/${programContentBody.id}`, caption, authToken, apiHost, {
-          cancelToken: new axios.CancelToken(canceler => {
-            uploadCanceler.current = canceler
-          }),
-        }).catch(() => setIsUploadFailed(prev => ({ ...prev, caption: true })))
-      }
-
       await updateProgramContent({
         variables: {
           programContentId: programContent.id,
@@ -128,26 +157,31 @@ const ProgramContentAdminModal: React.FC<{
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
         },
       })
+
       await updateProgramContentBody({
         variables: {
           programContentId: programContent.id,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
-          type: video ? 'video' : 'text',
+          type: videoFile ? 'video' : 'text',
           data: {
-            video: video
+            video: uploadError.video
+              ? programContentBody.data?.video || null
+              : videoFile
               ? {
-                  name: video.name,
-                  type: video.type,
-                  size: video.size,
-                  lastModified: video.lastModified,
+                  name: videoFile.name,
+                  type: videoFile.type,
+                  size: videoFile.size,
+                  lastModified: videoFile.lastModified,
                 }
               : null,
-            texttrack: caption
+            texttrack: uploadError.caption
+              ? programContentBody.data?.texttrack || null
+              : captionFile
               ? {
-                  name: caption.name,
-                  type: caption.type,
-                  size: caption.size,
-                  lastModified: caption.lastModified,
+                  name: captionFile.name,
+                  type: captionFile.type,
+                  size: captionFile.size,
+                  lastModified: captionFile.lastModified,
                 }
               : null,
           },
@@ -167,22 +201,7 @@ const ProgramContentAdminModal: React.FC<{
         })
       }
 
-      // upload materials
-      const pendingFiles = materialFiles.filter(
-        file =>
-          !programContentBody.materials.some(
-            material => material.data.name === file.name && material.data.lastModified === file.lastModified,
-          ),
-      )
-      if (pendingFiles.length) {
-        for (const file of pendingFiles) {
-          await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
-            cancelToken: new axios.CancelToken(canceler => {
-              uploadCanceler.current = canceler
-            }),
-          }).catch(() => setIsUploadFailed(prev => ({ ...prev, materials: true })))
-        }
-
+      if (!uploadError.materials) {
         await updateProgramContentMaterials({
           variables: {
             programContentId: programContent.id,
@@ -199,11 +218,15 @@ const ProgramContentAdminModal: React.FC<{
         })
       }
 
-      message.success(formatMessage(commonMessages.event.successfullySaved))
+      if (Object.values(uploadError).some(v => v)) {
+        message.error(formatMessage(commonMessages.event.failedUpload))
+      } else {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        setVisible(false)
+      }
       onRefetch?.()
-      setVisible(false)
     } catch (error) {
-      handleError(error)
+      message.error(formatMessage(commonMessages.event.failedSave))
     }
 
     setLoading(false)
@@ -239,7 +262,7 @@ const ProgramContentAdminModal: React.FC<{
             description: BraftEditor.createEditorState(programContentBody.description),
           }}
           onValuesChange={(values: any) => {
-            typeof values.video !== 'undefined' && setVideo(values.video)
+            typeof values.video !== 'undefined' && setVideoFile(values.video)
           }}
           onFinish={handleSubmit}
         >
@@ -321,20 +344,20 @@ const ProgramContentAdminModal: React.FC<{
                 </>
               )}
               showUploadList
-              fileList={video ? [video] : []}
+              fileList={videoFile ? [videoFile] : []}
               accept="video/*"
               onChange={async files => {
                 const duration = files[0] ? Math.ceil(await getFileDuration(files[0])) : 0
                 form.setFields([{ name: 'duration', value: Math.ceil(duration / 60 || 0) }])
                 setRealDuration(duration)
-                setVideo(files[0] || null)
+                setVideoFile(files[0] || null)
               }}
             />
           </Form.Item>
           <Form.Item
             label={formatMessage(commonMessages.term.caption)}
             name="texttrack"
-            className={video ? undefined : 'd-none'}
+            className={videoFile ? undefined : 'd-none'}
           >
             <FileUploader
               renderTrigger={({ onClick }) => (
@@ -351,8 +374,8 @@ const ProgramContentAdminModal: React.FC<{
                 </>
               )}
               showUploadList
-              fileList={caption ? [caption] : []}
-              onChange={files => setCaption(files[0])}
+              fileList={captionFile ? [captionFile] : []}
+              onChange={files => setCaptionFile(files[0])}
             />
           </Form.Item>
           <Form.Item label={formatMessage(messages.duration)} name="duration">
