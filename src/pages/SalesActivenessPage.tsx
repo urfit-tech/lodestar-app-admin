@@ -34,10 +34,10 @@ const SalesActivenessPage: React.FC = () => {
         <Form.Item label="時間">
           <DatePicker.RangePicker
             value={range}
-            onChange={value => value?.[0] && value[1] && setRange([value[0], value[1]])}
-            format="YYYY-MM-DD HH:00:00"
+            onChange={value => value?.[0] && value[1] && setRange([value[0].startOf('hour'), value[1].endOf('hour')])}
+            format="YYYY-MM-DD HH:mm:ss"
             showTime={{
-              format: 'YYYY-MM-DD HH:00:00',
+              format: 'YYYY-MM-DD HH',
             }}
           />
         </Form.Item>
