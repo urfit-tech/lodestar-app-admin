@@ -51,7 +51,7 @@ const SalesActivenessTable: React.FC<{
   startedAt: Date
   endedAt: Date
 }> = ({ startedAt, endedAt }) => {
-  const { loading, error, data } = useSalesLogsCollection({
+  const { loading, error, data, salesMapping } = useSalesLogsCollection({
     startedAt,
     endedAt,
   })
@@ -137,6 +137,7 @@ const SalesActivenessTable: React.FC<{
     }, toPairs(salesCollection)).reduce<{
       [x: string]: {
         salesId: string
+        salesName: string
         firsthand: number
         secondhand: number
         totalAssignments: number
@@ -152,18 +153,12 @@ const SalesActivenessTable: React.FC<{
         performance: number
         revoked: number
       }
-    }>((r, { salesId, ...rest }) => {
-      r[salesId] = r[salesId] || { salesId }
-      r[salesId] = Object.assign(r[salesId], rest)
+    }>((r, value) => {
+      const salesId = value.salesId
+      r[salesId] = Object.assign({}, r[salesId], value)
       return r
     }, {}),
-  ).map(v => {
-    return {
-      ...v,
-      salesName: data.salesList?.find(w => w.id === v.salesId)?.name,
-      totalAssignments: (v.firsthand || 0) + (v.secondhand || 0),
-    }
-  })
+  )
 
   type RecordType = typeof dataSource[number]
 
@@ -188,7 +183,14 @@ const SalesActivenessTable: React.FC<{
         bordered
         pagination={false}
       >
-        <Table.Column key="salesName" title="業務名稱" dataIndex="salesName" width="8rem" fixed="left" />
+        <Table.Column<RecordType>
+          key="salesName"
+          title="業務名稱"
+          dataIndex="salesName"
+          width="8rem"
+          fixed="left"
+          render={(_, record) => salesMapping[record.salesId] || ''}
+        />
         <Table.ColumnGroup title="指派名單數">
           <Table.Column<Pick<RecordType, 'firsthand'>>
             key="firsthand"
@@ -207,13 +209,12 @@ const SalesActivenessTable: React.FC<{
             sorter={(a, b) => columnSorter(a, b, 'secondhand')}
             width="6rem"
           />
-
-          <Table.Column<Pick<RecordType, 'totalAssignments'>>
+          <Table.Column<RecordType>
             key="totalAssignments"
             title="總數"
-            dataIndex={'totalAssignments'}
-            render={v => v || 0}
-            sorter={(a, b) => columnSorter(a, b, 'totalAssignments')}
+            dataIndex="totalAssignments"
+            render={(_, record) => record.firsthand + record.secondhand || 0}
+            sorter={(a, b) => a.firsthand + a.secondhand - (b.firsthand + b.secondhand)}
             width="6rem"
           />
         </Table.ColumnGroup>
@@ -421,10 +422,12 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       variables: filter,
     },
   )
-  const salesList: { id?: string; name?: string }[] | undefined = data?.sales_active_log.map(v => ({
-    id: v.sales?.id,
-    name: v.sales?.name,
-  }))
+  const salesMapping =
+    data?.sales_active_log.reduce<{ [key: string]: string }>(
+      (accumulator, v) =>
+        v && v.sales?.id && v.sales.name ? { ...accumulator, [v.sales.id]: v.sales.name } : accumulator,
+      {},
+    ) || {}
   const firsthandLogs: LogsProps[] =
     data?.firsthand.map(v => ({
       id: v.id,
@@ -494,8 +497,8 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
   return {
     loading,
     error,
+    salesMapping,
     data: {
-      salesList,
       firsthandLogs,
       secondhandLogs,
       attendLogs,
