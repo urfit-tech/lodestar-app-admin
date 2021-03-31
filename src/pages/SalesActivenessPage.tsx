@@ -13,8 +13,7 @@ import hasura from '../hasura'
 
 type LogsProps = {
   id: string | null
-  salesId: string
-  salesName: string
+  salesId: string | null
   startedAt?: Date
   endedAt?: Date
   duration?: number
@@ -61,55 +60,55 @@ const SalesActivenessTable: React.FC<{
 
   const firsthand = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_firsthand`)(data.firsthandLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_firsthand`)(data.firsthandLogs),
   )
   const secondhand = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_secondhand`)(data.secondhandLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_secondhand`)(data.secondhandLogs),
   )
   const attend = mapObjIndexed(
     obj => sum(obj.map(v => (v.endedAt && v.startedAt && v.endedAt.getTime() - v.startedAt.getTime()) || 0)),
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_attend`)(data.attendLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_attend`)(data.attendLogs),
   )
   const validSpeaking = mapObjIndexed(
     obj => sum(obj.map(v => v.duration || 0)),
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_validSpeaking`)(data.validSpeakingLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_validSpeaking`)(data.validSpeakingLogs),
   )
   const validDial = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_validDial`)(data.validDialLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_validDial`)(data.validDialLogs),
   )
   const validGetThrough = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_validGetThrough`)(data.validGetThroughLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_validGetThrough`)(data.validGetThroughLogs),
   )
   const invalidNumber = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_invalidNumber`)(data.invalidNumberLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_invalidNumber`)(data.invalidNumberLogs),
   )
   const rejected = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_rejected`)(data.rejectedLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_rejected`)(data.rejectedLogs),
   )
   const keepInTouch = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_keepInTouch`)(data.keepInTouchLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_keepInTouch`)(data.keepInTouchLogs),
   )
   const reserveDemo = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_reserveDemo`)(data.reserveDemoLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_reserveDemo`)(data.reserveDemoLogs),
   )
   const deal = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_deal`)(data.performanceLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_deal`)(data.performanceLogs),
   )
   const performance = mapObjIndexed(
     obj => sum(obj.map(v => v.price || 0)),
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_performance`)(data.performanceLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_performance`)(data.performanceLogs),
   )
   const revoked = mapObjIndexed(
     obj => sum(obj.map(v => v.price || 0)),
-    groupBy<LogsProps>(({ salesId, salesName }) => `${salesId}_${salesName}_revoked`)(data.revokedLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_revoked`)(data.revokedLogs),
   )
 
   const salesCollection = Object.assign(
@@ -130,16 +129,14 @@ const SalesActivenessTable: React.FC<{
 
   const dataSource = Object.values(
     map(([sale, value]) => {
-      const [salesId, salesName, field] = split('_')(sale)
+      const [salesId, field] = split('_')(sale)
       return {
         salesId,
-        salesName,
         [field]: value,
       }
     }, toPairs(salesCollection)).reduce<{
       [x: string]: {
         salesId: string
-        salesName: string
         firsthand: number
         secondhand: number
         totalAssignments: number
@@ -163,6 +160,7 @@ const SalesActivenessTable: React.FC<{
   ).map(v => {
     return {
       ...v,
+      salesName: data.salesList?.find(w => w.id === v.salesId)?.name,
       totalAssignments: (v.firsthand || 0) + (v.secondhand || 0),
     }
   })
@@ -316,23 +314,24 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
   const { loading, error, data } = useQuery<hasura.GET_SALES_ACTIVE_LOG, hasura.GET_SALES_ACTIVE_LOGVariables>(
     gql`
       query GET_SALES_ACTIVE_LOG($startedAt: timestamptz!, $endedAt: timestamptz!) {
-        firsthand: sales_active_log(
-          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, past_count: { _eq: 0 } }
-        ) {
+        sales_active_log(distinct_on: sales_id) {
           id
           sales {
             id
             name
           }
         }
+        firsthand: sales_active_log(
+          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, past_count: { _eq: 0 } }
+        ) {
+          id
+          sales_id
+        }
         secondhand: sales_active_log(
           where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, past_count: { _gte: 1 } }
         ) {
           id
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         attend: sales_active_log(
           where: { event: { _eq: "attend" }, started_at: { _lt: $endedAt }, ended_at: { _gt: $startedAt } }
@@ -340,29 +339,20 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           id
           started_at
           ended_at
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         validSpeaking: sales_active_log(
           where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, duration: { _gt: 90 } }
         ) {
           id
           duration
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         validDial: sales_active_log(
           where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, duration: { _gt: 90 } }
         ) {
           id
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         validGetThrough: sales_active_log(
           where: {
@@ -373,19 +363,13 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           }
         ) {
           id
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         invalidNumber: sales_active_log(
           where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, status: { _eq: "missed" } }
         ) {
           id
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         rejected: sales_active_log(
           where: {
@@ -396,10 +380,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           }
         ) {
           id
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         keepInTouch: sales_active_log(
           where: {
@@ -410,27 +391,18 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           }
         ) {
           id
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         reserveDemo: sales_active_log(where: { event: { _eq: "task" }, due_at: { _gt: $startedAt, _lte: $endedAt } }) {
           id
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         performance: sales_active_log(
           where: { event: { _eq: "contract" }, agreed_at: { _gt: $startedAt, _lte: $endedAt } }
         ) {
           id
           price
-          sales {
-            id
-            name
-          }
+          sales_id
         }
         revoked: sales_active_log(
           where: {
@@ -441,10 +413,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
         ) {
           id
           price
-          sales {
-            id
-            name
-          }
+          sales_id
         }
       }
     `,
@@ -452,82 +421,73 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       variables: filter,
     },
   )
-
+  const salesList: { id?: string; name?: string }[] | undefined = data?.sales_active_log.map(v => ({
+    id: v.sales?.id,
+    name: v.sales?.name,
+  }))
   const firsthandLogs: LogsProps[] =
     data?.firsthand.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const secondhandLogs: LogsProps[] =
     data?.secondhand.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const attendLogs: LogsProps[] =
     data?.attend.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
       startedAt: new Date(v.started_at),
       endedAt: new Date(v.ended_at),
     })) || []
   const validSpeakingLogs: LogsProps[] =
     data?.validSpeaking.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
       duration: v.duration || 0,
     })) || []
   const validDialLogs: LogsProps[] =
     data?.validDial.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const validGetThroughLogs: LogsProps[] =
     data?.validGetThrough.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const invalidNumberLogs: LogsProps[] =
     data?.invalidNumber.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const rejectedLogs: LogsProps[] =
     data?.rejected.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const keepInTouchLogs: LogsProps[] =
     data?.keepInTouch.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const reserveDemoLogs: LogsProps[] =
     data?.reserveDemo.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
     })) || []
   const performanceLogs: LogsProps[] =
     data?.performance.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
       price: v.price,
     })) || []
   const revokedLogs: LogsProps[] =
     data?.revoked.map(v => ({
       id: v.id,
-      salesId: v.sales?.id || '',
-      salesName: v.sales?.name || '',
+      salesId: v.sales_id,
       price: v.price,
     })) || []
 
@@ -535,6 +495,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
     loading,
     error,
     data: {
+      salesList,
       firsthandLogs,
       secondhandLogs,
       attendLogs,

@@ -1002,40 +1002,31 @@ export interface GET_MEMBER_NOTES_ADMINVariables {
 // GraphQL query operation: GET_SALES_ACTIVE_LOG
 // ====================================================
 
-export interface GET_SALES_ACTIVE_LOG_firsthand_sales {
+export interface GET_SALES_ACTIVE_LOG_sales_active_log_sales {
   __typename: "member";
   id: string;
   name: string;
+}
+
+export interface GET_SALES_ACTIVE_LOG_sales_active_log {
+  __typename: "sales_active_log";
+  id: string | null;
+  /**
+   * An object relationship
+   */
+  sales: GET_SALES_ACTIVE_LOG_sales_active_log_sales | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_firsthand {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_firsthand_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_secondhand_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_secondhand {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_secondhand_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_attend_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_attend {
@@ -1043,151 +1034,71 @@ export interface GET_SALES_ACTIVE_LOG_attend {
   id: string | null;
   started_at: any | null;
   ended_at: any | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_attend_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_validSpeaking_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_validSpeaking {
   __typename: "sales_active_log";
   id: string | null;
   duration: number | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_validSpeaking_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_validDial_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_validDial {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_validDial_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_validGetThrough_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_validGetThrough {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_validGetThrough_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_invalidNumber_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_invalidNumber {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_invalidNumber_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_rejected_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_rejected {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_rejected_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_keepInTouch_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_keepInTouch {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_keepInTouch_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_reserveDemo_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_reserveDemo {
   __typename: "sales_active_log";
   id: string | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_reserveDemo_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_performance_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_performance {
   __typename: "sales_active_log";
   id: string | null;
   price: any | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_performance_sales | null;
-}
-
-export interface GET_SALES_ACTIVE_LOG_revoked_sales {
-  __typename: "member";
-  id: string;
-  name: string;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_revoked {
   __typename: "sales_active_log";
   id: string | null;
   price: any | null;
-  /**
-   * An object relationship
-   */
-  sales: GET_SALES_ACTIVE_LOG_revoked_sales | null;
+  sales_id: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG {
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  sales_active_log: GET_SALES_ACTIVE_LOG_sales_active_log[];
   /**
    * fetch data from the table: "sales_active_log"
    */
