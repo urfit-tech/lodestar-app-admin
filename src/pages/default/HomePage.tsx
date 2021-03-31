@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
     if (currentUserRole === 'app-owner') {
       history.push('/admin')
     } else if (currentUserRole === 'content-creator') {
-      history.push('/studio')
+      history.push('/programs')
     } else if (isAuthenticated) {
       if (!permissions.BACKSTAGE_ENTER) {
         message.error(formatMessage(messages.deniedRolePermission))
