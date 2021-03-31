@@ -44,14 +44,15 @@ const MemberContractFilterSelector: React.FC<{
       </StyledSelect>
 
       <DatePicker.RangePicker
-        defaultValue={[moment(startedAt), moment(endedAt)]}
-        onChange={time => {
-          const [startedAt, endedAt] = time?.map(v => v?.toDate() || null) || [null, null]
+        defaultValue={[moment(startedAt).startOf('day'), moment(endedAt).endOf('day')]}
+        onChange={range =>
+          range?.[0] &&
+          range[1] &&
           onSetRange?.({
-            startedAt,
-            endedAt,
+            startedAt: range[0].startOf('day').toDate(),
+            endedAt: range[1].endOf('day').toDate(),
           })
-        }}
+        }
       />
     </div>
   )

@@ -139,16 +139,16 @@ export default function SalesMemberCategoryPage() {
       <StyledFilter className="mb-4">
         <span>指派時間</span>
         <DatePicker.RangePicker
-          defaultValue={[moment(condition.startedAt), moment(condition.endedAt)]}
-          onChange={range => {
-            const [startedAt, endedAt] = range ? map(time => (time ? time.toDate() : null), range) : [null, null]
-
+          defaultValue={[moment(condition.startedAt).startOf('day'), moment(condition.endedAt).endOf('day')]}
+          onChange={range =>
+            range?.[0] &&
+            range[1] &&
             setCondition({
               ...condition,
-              startedAt,
-              endedAt,
+              startedAt: range[0].startOf('day').toDate(),
+              endedAt: range[1].endOf('day').toDate(),
             })
-          }}
+          }
         />
 
         <span>會員分類</span>

@@ -46,7 +46,7 @@ const SalesMaterialsPage: React.FC = () => {
         <Form.Item label="時間">
           <DatePicker.RangePicker
             value={range}
-            onChange={value => value?.[0] && value[1] && setRange([value[0], value[1]])}
+            onChange={value => value?.[0] && value[1] && setRange([value[0].startOf('day'), value[1].endOf('day')])}
           />
         </Form.Item>
         <Form.Item label="業務">
