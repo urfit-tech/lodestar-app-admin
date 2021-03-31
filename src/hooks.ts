@@ -630,12 +630,15 @@ export const useLead = (sales: SalesProps) => {
 
   useEffect(() => {
     // request new lead if there is no current lead
-    if (!sales || currentLead || !oddsAdditions) return
+    if (!sales || currentLead || !oddsAdditions) {
+      return
+    }
 
-    const odds =
+    const score =
       Number(sales?.metadata?.assignment?.odds) +
       (oddsAdditions.lastAttendMemberNotesCount > 40 ? 5 : 0) +
       oddsAdditions.lastWeekAgreedContractsCount * 5
+    const odds = score > 100 ? 100 : score
 
     const requestLeads = async (odds: number) => {
       const chance = new Chance()
@@ -694,6 +697,9 @@ export const useLead = (sales: SalesProps) => {
                   _set: { manager_id: $managerId, assigned_at: $assignedAt }
                 ) {
                   affected_rows
+                  returning {
+                    id
+                  }
                 }
               }
             `,
@@ -703,15 +709,23 @@ export const useLead = (sales: SalesProps) => {
               assignedAt: new Date(),
             },
           })
-          if (data?.update_member?.affected_rows || 0) {
-            break
-          }
+          return data?.update_member?.returning?.[0]?.id || null
         }
       }
+      return null
     }
+
     requestLeads(odds)
       .then(assignLeads)
-      .then(() => refetch())
+      .then(data => {
+        if (data) {
+          refetch()
+        } else {
+          requestLeads(0)
+            .then(assignLeads)
+            .then(() => refetch())
+        }
+      })
   }, [apolloClient, currentLead, oddsAdditions, refetch, sales])
 
   return {

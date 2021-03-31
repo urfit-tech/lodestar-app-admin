@@ -582,12 +582,21 @@ export interface GET_LEADSVariables {
 // GraphQL mutation operation: UPDATE_MEMBER_MANAGER
 // ====================================================
 
+export interface UPDATE_MEMBER_MANAGER_update_member_returning {
+  __typename: "member";
+  id: string;
+}
+
 export interface UPDATE_MEMBER_MANAGER_update_member {
   __typename: "member_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: UPDATE_MEMBER_MANAGER_update_member_returning[];
 }
 
 export interface UPDATE_MEMBER_MANAGER {
