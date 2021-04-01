@@ -60,6 +60,7 @@ export const commonMessages = {
     send: { id: 'common.ui.send', defaultMessage: '送出' },
     upload: { id: 'common.ui.upload', defaultMessage: '上傳' },
     uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
+    selectFile: { id: 'common.ui.selectFile', defaultMessage: '選擇檔案' },
     copy: { id: 'common.ui.copy', defaultMessage: '複製' },
     jumpTo: { id: 'common.ui.jumpTo', defaultMessage: '前往填寫' },
     uploadCertification: { id: 'common.ui.uploadCertification', defaultMessage: '上傳證明' },
