@@ -77,7 +77,9 @@ const ProgramContentAdminModal: React.FC<{
     caption?: boolean
     materials?: boolean
   }>({})
-
+  const [uploadProgress, setUploadProgress] = useState<{
+    [fileName: string]: number
+  }>({})
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
     setIsUploadFailed(prev => ({ ...prev, materials: false }))
@@ -92,6 +94,9 @@ const ProgramContentAdminModal: React.FC<{
           cancelToken: new axios.CancelToken(canceler => {
             uploadCanceler.current = canceler
           }),
+          onUploadProgress: ({ loaded, total }) => {
+            setUploadProgress(prev => ({ ...prev, [video.name]: Math.floor((loaded / total) * 100) }))
+          },
         }).catch(() => setIsUploadFailed(prev => ({ ...prev, video: true })))
       }
       if (
@@ -103,6 +108,9 @@ const ProgramContentAdminModal: React.FC<{
           cancelToken: new axios.CancelToken(canceler => {
             uploadCanceler.current = canceler
           }),
+          onUploadProgress: ({ loaded, total }) => {
+            setUploadProgress(prev => ({ ...prev, [caption.name]: Math.floor((loaded / total) * 100) }))
+          },
         }).catch(() => setIsUploadFailed(prev => ({ ...prev, caption: true })))
       }
 
@@ -180,6 +188,9 @@ const ProgramContentAdminModal: React.FC<{
             cancelToken: new axios.CancelToken(canceler => {
               uploadCanceler.current = canceler
             }),
+            onUploadProgress: ({ loaded, total }) => {
+              setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
+            },
           }).catch(() => setIsUploadFailed(prev => ({ ...prev, materials: true })))
         }
 
@@ -201,6 +212,7 @@ const ProgramContentAdminModal: React.FC<{
 
       message.success(formatMessage(commonMessages.event.successfullySaved))
       onRefetch?.()
+      setUploadProgress({})
       setVisible(false)
     } catch (error) {
       handleError(error)
@@ -310,7 +322,7 @@ const ProgramContentAdminModal: React.FC<{
               renderTrigger={({ onClick }) => (
                 <>
                   <Button icon={<UploadOutlined />} onClick={onClick}>
-                    {formatMessage(commonMessages.ui.uploadFile)}
+                    {formatMessage(commonMessages.ui.selectFile)}
                   </Button>
                   {isUploadFailed.video && (
                     <span className="ml-2">
@@ -323,6 +335,8 @@ const ProgramContentAdminModal: React.FC<{
               showUploadList
               fileList={video ? [video] : []}
               accept="video/*"
+              downloadableLink={`videos/${appId}/${programContentBody.id}`}
+              uploadProgress={uploadProgress}
               onChange={async files => {
                 const duration = files[0] ? Math.ceil(await getFileDuration(files[0])) : 0
                 form.setFields([{ name: 'duration', value: Math.ceil(duration / 60 || 0) }])
@@ -340,7 +354,7 @@ const ProgramContentAdminModal: React.FC<{
               renderTrigger={({ onClick }) => (
                 <>
                   <Button icon={<UploadOutlined />} onClick={onClick}>
-                    {formatMessage(commonMessages.ui.uploadFile)}
+                    {formatMessage(commonMessages.ui.selectFile)}
                   </Button>
                   {isUploadFailed.caption && (
                     <span className="ml-2">
@@ -352,6 +366,7 @@ const ProgramContentAdminModal: React.FC<{
               )}
               showUploadList
               fileList={caption ? [caption] : []}
+              uploadProgress={uploadProgress}
               onChange={files => setCaption(files[0])}
             />
           </Form.Item>
@@ -364,7 +379,7 @@ const ProgramContentAdminModal: React.FC<{
                 renderTrigger={({ onClick }) => (
                   <>
                     <Button icon={<UploadOutlined />} onClick={onClick}>
-                      {formatMessage(commonMessages.ui.uploadFile)}
+                      {formatMessage(commonMessages.ui.selectFile)}
                     </Button>
                     {isUploadFailed.materials && (
                       <span className="ml-2">
@@ -376,6 +391,8 @@ const ProgramContentAdminModal: React.FC<{
                 )}
                 multiple
                 showUploadList
+                downloadableLink={file => `materials/${appId}/${programContent.id}_${file.name}`}
+                uploadProgress={uploadProgress}
                 fileList={materialFiles}
                 onChange={files => setMaterialFiles(files)}
               />
