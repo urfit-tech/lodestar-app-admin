@@ -537,6 +537,12 @@ export const useMutateProgramContent = () => {
         delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
           affected_rows
         }
+        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
       }
     `,
   )

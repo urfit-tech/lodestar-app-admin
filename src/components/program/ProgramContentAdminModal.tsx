@@ -11,7 +11,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
-import { getFileDuration, uploadFile } from '../../helpers'
+import { getFileDuration, handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
@@ -305,9 +305,9 @@ const ProgramContentAdminModal: React.FC<{
                     <Menu.Item
                       onClick={() =>
                         window.confirm(formatMessage(programMessages.text.deleteContentWarning)) &&
-                        deleteProgramContent({
-                          variables: { programContentId: programContent.id },
-                        }).then(() => onRefetch?.())
+                        deleteProgramContent({ variables: { programContentId: programContent.id } })
+                          .then(() => onRefetch?.())
+                          .catch(handleError)
                       }
                     >
                       {formatMessage(programMessages.ui.deleteContent)}

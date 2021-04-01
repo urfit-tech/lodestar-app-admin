@@ -3967,6 +3967,93 @@ export interface UPDATE_EXERCISE_POSITIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PRACTICE
+// ====================================================
+
+export interface UPDATE_PRACTICE_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRACTICE_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRACTICE {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_PRACTICE_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_PRACTICE_update_program_content_body | null;
+}
+
+export interface UPDATE_PRACTICEVariables {
+  programContentId: any;
+  title?: string | null;
+  description?: string | null;
+  publishedAt?: any | null;
+  duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+  metadata?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PRACTICE
+// ====================================================
+
+export interface DELETE_PRACTICE_delete_practice {
+  __typename: "practice_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PRACTICE_delete_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PRACTICE {
+  /**
+   * delete data from the table: "practice"
+   */
+  delete_practice: DELETE_PRACTICE_delete_practice | null;
+  /**
+   * delete data from the table: "program_content_body"
+   */
+  delete_program_content_body: DELETE_PRACTICE_delete_program_content_body | null;
+}
+
+export interface DELETE_PRACTICEVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
 
@@ -4164,93 +4251,6 @@ export interface UPDATE_PROGRAM_CONTENT_MATERIALS {
 export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
   programContentId: any;
   materials: program_content_material_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PRACTICE
-// ====================================================
-
-export interface UPDATE_PRACTICE_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: UPDATE_PRACTICE_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_PRACTICE_update_program_content_body | null;
-}
-
-export interface UPDATE_PRACTICEVariables {
-  programContentId: any;
-  title?: string | null;
-  description?: string | null;
-  publishedAt?: any | null;
-  duration?: any | null;
-  isNotifyUpdate?: boolean | null;
-  notifiedAt?: any | null;
-  metadata?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PRACTICE
-// ====================================================
-
-export interface DELETE_PRACTICE_delete_practice {
-  __typename: "practice_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE_delete_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE {
-  /**
-   * delete data from the table: "practice"
-   */
-  delete_practice: DELETE_PRACTICE_delete_practice | null;
-  /**
-   * delete data from the table: "program_content_body"
-   */
-  delete_program_content_body: DELETE_PRACTICE_delete_program_content_body | null;
-}
-
-export interface DELETE_PRACTICEVariables {
-  programContentId: any;
 }
 
 /* tslint:disable */
@@ -10370,6 +10370,22 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content_body {
   affected_rows: number;
 }
 
+export interface DELETE_PROGRAM_CONTENT_delete_exercise {
+  __typename: "exercise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_delete_practice {
+  __typename: "practice_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT {
   /**
    * delete data from the table: "program_content_progress"
@@ -10379,6 +10395,14 @@ export interface DELETE_PROGRAM_CONTENT {
    * delete data from the table: "program_content_body"
    */
   delete_program_content_body: DELETE_PROGRAM_CONTENT_delete_program_content_body | null;
+  /**
+   * delete data from the table: "exercise"
+   */
+  delete_exercise: DELETE_PROGRAM_CONTENT_delete_exercise | null;
+  /**
+   * delete data from the table: "practice"
+   */
+  delete_practice: DELETE_PROGRAM_CONTENT_delete_practice | null;
 }
 
 export interface DELETE_PROGRAM_CONTENTVariables {
@@ -14901,6 +14925,7 @@ export enum role_constraint {
  */
 export enum role_permission_constraint {
   role_permission_pkey = "role_permission_pkey",
+  role_permission_role_id_permission_id_key = "role_permission_role_id_permission_id_key",
 }
 
 /**
