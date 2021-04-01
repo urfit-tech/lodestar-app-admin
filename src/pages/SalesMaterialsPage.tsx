@@ -6,7 +6,7 @@ import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import moment, { Moment } from 'moment'
-import { countBy, filter, flatten, map, pipe, split, trim, uniq } from 'ramda'
+import { countBy, eqProps, filter, flatten, map, pipe, split, trim, unionWith, uniq } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import SalesMemberInput from '../components/common/SalesMemberInput'
@@ -46,7 +46,7 @@ const SalesMaterialsPage: React.FC = () => {
         <Form.Item label="時間">
           <DatePicker.RangePicker
             value={range}
-            onChange={value => value?.[0] && value[1] && setRange([value[0], value[1]])}
+            onChange={value => value?.[0] && value[1] && setRange([value[0].startOf('day'), value[1].endOf('day')])}
           />
         </Form.Item>
         <Form.Item label="業務">
@@ -119,7 +119,7 @@ const MaterialStatisticsTable: React.FC<{
   const salesMaterials = {
     calledMembersCount: count(data.calledMembers.map(v => v.v)),
     contactedMembersCount: count(data.contactedMembers.map(v => v.v)),
-    demonstratedMembersCount: count(data.demonstratedMembers.map(v => v.v)),
+    demonstratedMembersCount: count(unionWith(eqProps('m'), data.demonstratedMembers, data.dealtMembers).map(v => v.v)),
     dealtMembersCount: count(data.dealtMembers.map(v => v.v)),
     rejectedMembersCount: count(data.rejectedMembers.map(v => v.v)),
   }
@@ -247,6 +247,7 @@ const GET_SALES_MATERIALS = gql`
       }
     ) {
       v: value
+      m: member_id
     }
     dealtMembers: member_property(
       where: {
@@ -260,12 +261,12 @@ const GET_SALES_MATERIALS = gql`
             type: { _eq: "outbound" }
             duration: { _gt: 90 }
           }
-          member_tasks: { category: { name: { _eq: "預約DEMO" } } }
           member_contracts: { agreed_at: { _gt: $startedAt, _lt: $endedAt }, revoked_at: { _is_null: true } }
         }
       }
     ) {
       v: value
+      m: member_id
     }
     rejectedMembers: member_property(
       where: {

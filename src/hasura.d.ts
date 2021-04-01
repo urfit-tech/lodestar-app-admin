@@ -380,6 +380,7 @@ export interface GET_SALES_CALL_MEMBER_member_member_tasks_category {
 export interface GET_SALES_CALL_MEMBER_member_member_tasks {
   __typename: "member_task";
   id: string;
+  due_at: any | null;
   /**
    * An object relationship
    */
@@ -429,6 +430,7 @@ export interface GET_SALES_CALL_MEMBERVariables {
   orderBy?: member_order_by[] | null;
   hasContacted: boolean;
   hasTransacted: boolean;
+  now?: any | null;
 }
 
 /* tslint:disable */
@@ -449,6 +451,9 @@ export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk_member_properties {
 export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk {
   __typename: "member";
   id: string;
+  name: string;
+  username: string;
+  email: string;
   metadata: any;
   /**
    * An array relationship
@@ -1141,11 +1146,13 @@ export interface GET_SALES_MATERIALS_contactedMembers {
 export interface GET_SALES_MATERIALS_demonstratedMembers {
   __typename: "member_property";
   v: string;
+  m: string;
 }
 
 export interface GET_SALES_MATERIALS_dealtMembers {
   __typename: "member_property";
   v: string;
+  m: string;
 }
 
 export interface GET_SALES_MATERIALS_rejectedMembers {
@@ -2763,6 +2770,7 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  is_deleted = "is_deleted",
   last_paid_at = "last_paid_at",
   member_id = "member_id",
   message = "message",
@@ -10655,6 +10663,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -10687,6 +10696,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  is_deleted?: boolean | null;
   last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;

@@ -4,6 +4,7 @@ import { Chance } from 'chance'
 import gql from 'graphql-tag'
 import { product } from 'ramda'
 import { useEffect, useMemo } from 'react'
+import moment from 'moment'
 import { memberPropertyFields } from './helpers'
 import hasura from './hasura'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
@@ -349,7 +350,7 @@ export type SalesCallMemberProps = {
   phones: string[]
   categoryNames: string[]
   lastContactAt: Date | null
-  lastTaskCategoryName: string | null
+  lastTask: { dueAt: Date | null, categoryName: string | null } | null
   contracts: {
     projectPlanName: string
     endedAt: Date
@@ -429,6 +430,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
         $orderBy: [member_order_by!]
         $hasContacted: Boolean!
         $hasTransacted: Boolean!
+        $now: timestamptz
       ) {
         member_aggregate(where: $condition) {
           aggregate {
@@ -465,8 +467,9 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
             ended_at
             agreed_at
           }
-          member_tasks(limit: 1, order_by: { created_at: desc }) @include(if: $hasContacted) {
+          member_tasks(where: { due_at: { _gt: $now } }, limit: 1, order_by: { created_at: desc }) @include(if: $hasContacted) {
             id
+            due_at
             category {
               id
               name
@@ -481,6 +484,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
         orderBy,
         hasContacted,
         hasTransacted,
+        now: moment().startOf('minute').toDate(),
       },
       context: {
         important: true,
@@ -495,7 +499,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       email: v.email,
       phones: v.member_phones.map(w => w.phone),
       lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes[0]?.created_at) : null,
-      lastTaskCategoryName: v.member_tasks?.[0]?.category?.name || null,
+      lastTask: v.member_tasks?.[0] ? { dueAt: v.member_tasks[0].due_at && new Date(v.member_tasks[0].due_at), categoryName: v.member_tasks[0].category?.name || null } : null,
       categoryNames: v.member_categories?.map(w => w.category.name) || [],
       contracts:
         v.member_contracts?.map(w => ({
@@ -523,6 +527,9 @@ export const useLead = (salesId: string) => {
       query GET_FIRST_ASSIGNED_MEMBER($salesId: String!, $selectedProperties: [String!]!) {
         member_by_pk(id: $salesId) {
           id
+          name
+          username
+          email
           metadata
           member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
             id
@@ -580,6 +587,8 @@ export const useLead = (salesId: string) => {
       data?.member_by_pk
         ? {
             id: data.member_by_pk.id,
+            name: data.member_by_pk.name || data.member_by_pk.username,
+            email: data.member_by_pk.email,
             telephone: data.member_by_pk.member_properties[0]?.value || '',
             metadata: data.member_by_pk.metadata || {},
           }
