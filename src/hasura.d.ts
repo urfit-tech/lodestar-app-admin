@@ -11282,13 +11282,6 @@ export interface GET_CONTRACT_INFO_appointment_plan {
   creator: GET_CONTRACT_INFO_appointment_plan_creator | null;
 }
 
-export interface GET_CONTRACT_INFO_referralMember {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-}
-
 export interface GET_CONTRACT_INFO_xuemi_sales_member {
   __typename: "member";
   id: string;
@@ -11330,10 +11323,6 @@ export interface GET_CONTRACT_INFO {
    */
   appointment_plan: GET_CONTRACT_INFO_appointment_plan[];
   /**
-   * fetch data from the table: "member"
-   */
-  referralMember: GET_CONTRACT_INFO_referralMember[];
-  /**
    * fetch data from the table: "xuemi.sales"
    */
   xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
@@ -11342,7 +11331,6 @@ export interface GET_CONTRACT_INFO {
 export interface GET_CONTRACT_INFOVariables {
   appId: string;
   memberId: string;
-  condition?: member_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -11374,6 +11362,33 @@ export interface ADD_MEMBER_CONTRACTVariables {
   endedAt: any;
   values: any;
   options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_REFERRAL_MEMBER
+// ====================================================
+
+export interface GET_REFERRAL_MEMBER_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface GET_REFERRAL_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_REFERRAL_MEMBER_member[];
+}
+
+export interface GET_REFERRAL_MEMBERVariables {
+  condition?: member_bool_exp | null;
 }
 
 /* tslint:disable */

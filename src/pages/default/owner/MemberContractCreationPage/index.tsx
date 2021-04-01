@@ -1,20 +1,6 @@
-import { CloseOutlined, MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
+import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import {
-  Alert,
-  Button,
-  Checkbox,
-  DatePicker,
-  Descriptions,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Radio,
-  Select,
-  Space,
-  Upload,
-} from 'antd'
+import { Alert, Button, DatePicker, Descriptions, Form, Input, InputNumber, message, Radio, Select, Space } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -28,16 +14,30 @@ import DefaultLayout from '../../../../components/layout/DefaultLayout'
 import { useApp } from '../../../../contexts/AppContext'
 import { useAuth } from '../../../../contexts/AuthContext'
 import hasura from '../../../../hasura'
-import { currencyFormatter, handleError, notEmpty, uploadFile } from '../../../../helpers'
+import { currencyFormatter, notEmpty } from '../../../../helpers'
 import { PeriodType } from '../../../../types/general'
 import LoadingPage from '../../LoadingPage'
+import CertificationUploader from './CertificationUploader'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
+import ReferralMemberSelector from './ReferralMemberSelector'
+
+const paymentMethods = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'] as const
+const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30] as const
 
 type FieldProps = {
   contractId: string
+  selectedProjectPlanId: string | null
+  selectedGiftDays: 0 | 7 | 14
+  startedAt: Date
+  contractProducts: {
+    id: string
+    amount: number
+  }[]
+  withCreatorId: boolean
   creatorId?: string | null
-  paymentMethod: string
-  installmentPlan: number
+  referralMemberId: string
+  paymentMethod: typeof paymentMethods[number]
+  installmentPlan: typeof installmentPlans[number]
   paymentNumber: string
   orderExecutorId: string
   orderExecutorRatio: number
@@ -45,13 +45,8 @@ type FieldProps = {
     memberId?: string
     ratio?: number
   }[]
-  contractProducts: {
-    id: string
-    amount: number
-  }[]
 }
-
-export type ContractInfo = {
+type ContractInfo = {
   member: {
     id: string
     name: string
@@ -79,14 +74,9 @@ export type ContractInfo = {
     appointments: number
     coins: number
   }[]
-  mentors: {
+  appointmentPlanCreators: {
     id: string | null
     name: string | null
-  }[]
-  referralMembers: {
-    id: string
-    name: string
-    email: string
   }[]
   sales: {
     id: string
@@ -94,7 +84,6 @@ export type ContractInfo = {
     username: string
   }[]
 }
-
 type OrderItem = {
   id: string
   type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount'
@@ -123,10 +112,10 @@ const StyledTotal = styled.div`
   text-align: right;
 `
 
-const MemberContractCreationPage: React.FC = () => {
+const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
-  const [referralMemberFilter, setReferralMemberFilter] = useState('')
+  const { currentMemberId } = useAuth()
 
   const {
     member,
@@ -134,50 +123,53 @@ const MemberContractCreationPage: React.FC = () => {
     properties,
     contracts,
     projectPlans,
-    mentors,
-    referralMembers,
+    appointmentPlanCreators,
     sales,
-    ...contractInfoState
-  } = usePrivateTeachContractInfo(appId, memberId, referralMemberFilter)
-
-  const [form] = useForm<FieldProps>()
-  const { authToken, apiHost, currentMemberId } = useAuth()
-
+    ...contractInfoStatus
+  } = usePrivateTeachContractInfo(appId, memberId)
+  const options = {
+    product: {
+      designatedIndustryTeacher: '10c7004c-e615-4ca9-90f8-29ce674e0463',
+    },
+    discount: {
+      // deposit: 'a2e79c69-a200-4baa-934b-7d256f129ee0',
+      referral: 'fe09068e-5f24-4d82-b9b3-186ee498d144',
+      student: '5e298545-9190-44b1-aadc-b0d43b94cbe5',
+      tenPercentOff: '47c21171-afd9-4510-aa5f-547c436125b7',
+      fifteenPercentOff: '01fa990e-ec1d-4b41-a958-5d93240a8205',
+      twentyPercentOff: 'c8cfcb04-7e31-444f-8796-5800b5741019',
+    },
+  }
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
+
+  const [form] = useForm<FieldProps>()
+  const values = form.getFieldsValue()
+
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
-
+  const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
   const [memberContractUrl, setMemberContractUrl] = useState('')
-  const [selectedProjectPlanId, setSelectedProjectPlanId] = useState('')
-  const [selectedGiftDays, setSelectedGiftDays] = useState('')
-  const [startedAt, setStartedAt] = useState<Date>(moment().add(1, 'day').startOf('day').toDate())
-
   const [contractProducts, setContractProducts] = useState<
     {
       id: string
       amount: number
     }[]
   >([])
-  const [withCreatorId, setWithCreatorId] = useState(false)
-  const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
   const [certificationPath, setCertificationPath] = useState('')
-  const [referralMemberId, setReferralMemberId] = useState('')
-  const [uploading, setUploading] = useState(false)
-  const [hasDeposit, setHasDeposit] = useState(false)
 
-  if (contractInfoState.loading || !!contractInfoState.error || !member) {
+  if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />
   }
 
-  const selectedProjectPlan = projectPlans.find(v => v.id === selectedProjectPlanId)
+  const selectedProjectPlan = projectPlans.find(v => v.id === values.selectedProjectPlanId)
   const endedAt = selectedProjectPlan
-    ? moment(startedAt)
+    ? moment(values.startedAt)
         .add(
           selectedProjectPlan.periodAmount || 0,
           selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
         )
-        .add(selectedGiftDays, 'days')
+        .add(values.selectedGiftDays, 'days')
         .toDate()
     : null
 
@@ -188,6 +180,8 @@ const MemberContractCreationPage: React.FC = () => {
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
     products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
+
+  // calculate order products
   const orderProducts: OrderItem[] = contractProducts
     .map(contractProduct => {
       const product = products.find(product => product.id === contractProduct.id)
@@ -216,24 +210,9 @@ const MemberContractCreationPage: React.FC = () => {
   const mainProducts = orderProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
   const totalAppointments = sum(orderProducts.map(product => product.appointments * product.amount))
   const totalCoins = sum(orderProducts.map(product => product.coins * product.amount))
-
-  const options = {
-    product: {
-      designatedMentor: '10c7004c-e615-4ca9-90f8-29ce674e0463',
-    },
-    discount: {
-      deposit: 'a2e79c69-a200-4baa-934b-7d256f129ee0',
-      referral: 'fe09068e-5f24-4d82-b9b3-186ee498d144',
-      student: '5e298545-9190-44b1-aadc-b0d43b94cbe5',
-      tenPercentOff: '47c21171-afd9-4510-aa5f-547c436125b7',
-      fifteenPercentOff: '01fa990e-ec1d-4b41-a958-5d93240a8205',
-      twentyPercentOff: 'c8cfcb04-7e31-444f-8796-5800b5741019',
-    },
-  }
-
-  if (withCreatorId && totalAppointments > 0) {
+  if (values.withCreatorId && totalAppointments > 0) {
     orderProducts.push({
-      id: options.product.designatedMentor,
+      id: options.product.designatedIndustryTeacher,
       type: 'addonProduct',
       name: '指定業師',
       price: 1000,
@@ -243,78 +222,99 @@ const MemberContractCreationPage: React.FC = () => {
     })
   }
 
+  // calculate order discounts
   const orderDiscounts: OrderItem[] = []
-
-  if (hasDeposit) {
-    orderDiscounts.push({
-      id: options.discount.deposit,
-      type: 'depositDiscount',
-      name: '扣除訂金',
-      price: -1000,
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    })
+  const discountPrice = {
+    referral: 0,
+    student: 0,
+    group: 0,
+    deposit: -1000,
   }
 
-  const referralDiscountPrice = referralMemberId ? 2000 * -1 : 0
+  if (values.referralMemberId) {
+    discountPrice.referral = 2000 * -1
+  }
+  if (identity === 'student' && certificationPath) {
+    discountPrice.student =
+      (sum(mainProducts.map(mainProduct => mainProduct.price)) + discountPrice.referral * mainProducts.length) * -0.1
+  }
+  discountPrice.group =
+    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
+      discountPrice.referral * mainProducts.length +
+      discountPrice.student) *
+    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
 
-  if (referralDiscountPrice) {
+  if (discountPrice.referral) {
     orderDiscounts.push({
       id: options.discount.referral,
       type: 'referralDiscount',
       name: '被介紹人折抵',
-      price: referralDiscountPrice,
+      price: discountPrice.referral,
       appointments: 0,
       coins: 0,
       amount: mainProducts.length,
     })
   }
-
-  const studentDiscountPrice =
-    identity === 'student' && certificationPath
-      ? (sum(mainProducts.map(mainProduct => mainProduct.price)) + referralDiscountPrice * mainProducts.length) * -0.1
-      : 0
-
-  if (studentDiscountPrice) {
+  if (discountPrice.student) {
     orderDiscounts.push({
       id: options.discount.student,
       type: 'promotionDiscount',
       name: '學生方案',
-      price: studentDiscountPrice,
+      price: discountPrice.student,
       appointments: 0,
       coins: 0,
       amount: 1,
     })
   }
-
-  const groupDiscountPrice =
-    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
-      referralDiscountPrice * mainProducts.length +
-      studentDiscountPrice) *
-    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
-
-  if (Math.ceil(groupDiscountPrice)) {
-    orderDiscounts.push({
-      id:
-        mainProducts.length === 2
-          ? options.discount.tenPercentOff
-          : mainProducts.length === 3
-          ? options.discount.fifteenPercentOff
-          : options.discount.twentyPercentOff,
+  if (Math.ceil(discountPrice.group)) {
+    const promotionDiscount: Omit<OrderItem, 'id' | 'name'> = {
+      price: Math.ceil(discountPrice.group),
       type: 'promotionDiscount',
-      name: mainProducts.length === 2 ? '任選兩件折抵' : mainProducts.length === 3 ? '任選三件折抵' : '任選四件折抵',
-      price: Math.ceil(groupDiscountPrice),
       appointments: 0,
       coins: 0,
       amount: 1,
-    })
+    }
+
+    if (mainProducts.length === 2) {
+      orderDiscounts.push({
+        id: options.discount.tenPercentOff,
+        name: '任選兩件折抵',
+        ...promotionDiscount,
+      })
+    }
+    if (mainProducts.length === 3) {
+      orderDiscounts.push({
+        id: options.discount.fifteenPercentOff,
+        name: '任選三件折抵',
+        ...promotionDiscount,
+      })
+    }
+    if (mainProducts.length >= 4) {
+      orderDiscounts.push({
+        id: options.discount.twentyPercentOff,
+        name: '任選四件折抵',
+        ...promotionDiscount,
+      })
+    }
   }
+  // if (hasDeposit) {
+  //   orderDiscounts.push({
+  //     id: options.discount.deposit,
+  //     type: 'depositDiscount',
+  //     name: '扣除訂金',
+  //     price: discountPrice.deposit,
+  //     appointments: 0,
+  //     coins: 0,
+  //     amount: 1,
+  //   })
+  // }
+
   const orderItems = [...orderProducts, ...orderDiscounts]
   const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
 
   const handleMemberContractCreate = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
+
     if (memberBlockRef.current?.contains(alert)) {
       message.warning('學員資料請填寫完整')
       return
@@ -330,8 +330,6 @@ const MemberContractCreationPage: React.FC = () => {
       process.env.NODE_ENV === 'development' && console.error(error)
     }
 
-    const values = form.getFieldsValue()
-
     const orderExecutors: {
       member_id: string
       ratio: number
@@ -340,7 +338,7 @@ const MemberContractCreationPage: React.FC = () => {
         member_id: values.orderExecutorId || '',
         ratio: values.orderExecutorRatio,
       },
-      ...(values.orderExecutors?.map(orderExecutor => ({
+      ...(values.orderExecutors.map(orderExecutor => ({
         member_id: orderExecutor.memberId || '',
         ratio: orderExecutor.ratio || 0,
       })) || []),
@@ -379,7 +377,7 @@ const MemberContractCreationPage: React.FC = () => {
                     amount: 100,
                     title: `學米諮詢券`,
                     description: `學員編號：${member.id}, 合約編號：${values.contractId}`,
-                    started_at: startedAt,
+                    started_at: values.startedAt,
                     ended_at: endedAt,
                     scope: ['AppointmentPlan'],
                   },
@@ -389,21 +387,21 @@ const MemberContractCreationPage: React.FC = () => {
       },
     }))
 
-    let times = 0
-    const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
+    const times = '0'
+    const orderId = moment().format('YYYYMMDDHHmmssSSS') + times.padStart(2, '0')
 
     addMemberContract({
       variables: {
         memberId: member.id,
         contractId: values.contractId,
-        startedAt,
+        startedAt: values.startedAt,
         endedAt,
         authorId: currentMemberId || '',
         values: {
           orderId,
           price: totalPrice,
           coupons,
-          startedAt,
+          startedAt: values.startedAt,
           endedAt,
           invoice: {
             name: member.name,
@@ -416,24 +414,24 @@ const MemberContractCreationPage: React.FC = () => {
           coinAmount: totalCoins,
           orderProducts: [
             {
-              product_id: `ProjectPlan_${selectedProjectPlanId}`,
+              product_id: `ProjectPlan_${values.selectedProjectPlanId}`,
               name: selectedProjectPlan?.title,
               price: 0,
-              started_at: startedAt,
+              started_at: values.startedAt,
               ended_at: endedAt,
             },
             ...orderProducts.map(v => ({
               product_id: `ProjectPlan_${v.id}`,
               name: v.name,
               price: v.price,
-              started_at: startedAt,
+              started_at: values.startedAt,
               ended_at: endedAt,
             })),
             {
               product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
               name: '學米 VIP 會員卡',
               price: 0,
-              started_at: startedAt,
+              started_at: values.startedAt,
               ended_at: endedAt,
             },
           ],
@@ -451,15 +449,15 @@ const MemberContractCreationPage: React.FC = () => {
           },
         },
         options: {
-          appointmentCreatorId: withCreatorId ? values.creatorId : null,
+          appointmentCreatorId: values.withCreatorId ? values.creatorId : null,
           studentCertification: identity === 'student' ? certificationPath : null,
-          referralMemberId,
+          referralMemberId: values.referralMemberId,
         },
       },
     })
       .then(({ data }) => {
         const contractId = data?.insert_member_contract_one?.id
-        setMemberContractUrl(`https://www.xuemi.co/members/${member.id}/contracts/${contractId}`)
+        setMemberContractUrl(`https://www.xuemi.co/members/${memberId}/contracts/${contractId}`)
         message.success('成功產生合約')
       })
       .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
@@ -473,18 +471,19 @@ const MemberContractCreationPage: React.FC = () => {
 
           <Form
             form={form}
-            layout="vertical"
-            colon={false}
-            hideRequiredMark
             initialValues={{
-              contractId: contracts[0]?.id,
+              contractId: contracts[0].id,
               withCreatorId: false,
-              identity: 'normal',
               orderExecutorRatio: 1,
+              startedAt: moment().add(1, 'day').startOf('day'),
             }}
             onValuesChange={(_, values) => {
               setContractProducts(uniqBy(v => v.id, values.contractProducts || []))
             }}
+            onFinish={handleMemberContractCreate}
+            layout="vertical"
+            colon={false}
+            hideRequiredMark
           >
             <Descriptions title="合約期間" column={2} bordered className="mb-5">
               <Descriptions.Item label="合約項目">
@@ -505,11 +504,7 @@ const MemberContractCreationPage: React.FC = () => {
                   name="selectedProjectPlanId"
                   rules={[{ required: true, message: '請選擇合約效期' }]}
                 >
-                  <Select<string>
-                    style={{ width: 150 }}
-                    value={selectedProjectPlanId}
-                    onChange={value => setSelectedProjectPlanId(value)}
-                  >
+                  <Select<string> style={{ width: 150 }}>
                     {projectPlans.map(v => (
                       <Select.Option key={v.id} value={v.id}>
                         {v.periodAmount} {v.periodType}
@@ -520,7 +515,7 @@ const MemberContractCreationPage: React.FC = () => {
                 <div className="d-flex align-items-center mt-2">
                   <div>加贈：</div>
                   <Form.Item className="mb-0" name="selectedGiftDays">
-                    <Select<string> style={{ width: 100 }} value={selectedGiftDays} onChange={setSelectedGiftDays}>
+                    <Select<string> style={{ width: 100 }}>
                       {[0, 7, 14].map(value => (
                         <Select.Option key={value} value={value}>
                           {value}天
@@ -532,12 +527,9 @@ const MemberContractCreationPage: React.FC = () => {
               </Descriptions.Item>
 
               <Descriptions.Item label="服務開始日">
-                <DatePicker
-                  showTime
-                  format="YYYY-MM-DD HH:mm:ss"
-                  defaultValue={moment(startedAt)}
-                  onChange={value => value && setStartedAt(value.toDate())}
-                />
+                <Form.Item className="mb-0" name="startedAt">
+                  <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                </Form.Item>
               </Descriptions.Item>
 
               <Descriptions.Item label="服務結束日">
@@ -562,7 +554,7 @@ const MemberContractCreationPage: React.FC = () => {
                               label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                             >
                               <Select<string> className="mr-3" style={{ width: '250px' }}>
-                                {products?.map(product => (
+                                {products.map(product => (
                                   <Select.Option key={product.id} value={product.id}>
                                     {product.name}
                                   </Select.Option>
@@ -603,8 +595,8 @@ const MemberContractCreationPage: React.FC = () => {
 
             <Descriptions column={1} bordered className="mb-5">
               <Descriptions.Item label="指定業師">
-                <Form.Item noStyle>
-                  <Radio.Group value={withCreatorId} onChange={e => setWithCreatorId(e.target.value)}>
+                <Form.Item noStyle name="withCreatorId">
+                  <Radio.Group>
                     <Radio value={false}>不指定</Radio>
                     <Radio value={true}>指定</Radio>
                   </Radio.Group>
@@ -612,7 +604,7 @@ const MemberContractCreationPage: React.FC = () => {
 
                 <Form.Item name="creatorId" noStyle>
                   <Select<string> style={{ width: '150px' }}>
-                    {mentors.map(v =>
+                    {appointmentPlanCreators.map(v =>
                       v.id && v.name ? (
                         <Select.Option key={v.id} value={v.id}>
                           {v.name}
@@ -623,57 +615,29 @@ const MemberContractCreationPage: React.FC = () => {
                 </Form.Item>
               </Descriptions.Item>
 
-              <Descriptions.Item label="學員身份">
-                <Form.Item className="m-0">
-                  <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
-                    <Radio value="normal">一般</Radio>
-                    <Radio value="student">學生</Radio>
+              <Descriptions.Item label="學員身份" className="m-0">
+                <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
+                  <Radio value="normal">一般</Radio>
+                  <Radio value="student">學生</Radio>
+                </Radio.Group>
 
-                    <Upload
-                      showUploadList={false}
-                      customRequest={({ file }) => {
-                        setUploading(true)
-                        uploadFile(`certification/${appId}/student_${member?.id}`, file, authToken, apiHost)
-                          .then(() => setCertificationPath(file.name))
-                          .catch(handleError)
-                          .finally(() => setUploading(false))
-                      }}
-                      className={identity === 'normal' ? 'd-none' : undefined}
-                    >
-                      <Button icon={<UploadOutlined />} loading={uploading}>
-                        上傳證明
-                      </Button>
-                    </Upload>
-                  </Radio.Group>
+                <CertificationUploader
+                  memberId={memberId}
+                  identity={identity}
+                  onCertificationPathSet={path => setCertificationPath(path)}
+                />
 
-                  <span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>
-                </Form.Item>
+                {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
               </Descriptions.Item>
 
               <Descriptions.Item label="介紹人">
-                <Form.Item className="m-0">
-                  <Select<string>
-                    allowClear
-                    showSearch
-                    filterOption={false}
-                    value={referralMemberId}
-                    onChange={value => setReferralMemberId(value)}
-                    onSearch={v => setReferralMemberFilter(v)}
-                    style={{ width: '150px' }}
-                  >
-                    {referralMembers.map(v => (
-                      <Select.Option key={v.name} value={v.id}>
-                        {v.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                <Form.Item name="referralMemberId">
+                  <ReferralMemberSelector />
                 </Form.Item>
               </Descriptions.Item>
-              <Descriptions.Item label="扣除訂金 $1000">
-                <Form.Item className="m-0">
-                  <Checkbox value={hasDeposit} onChange={e => setHasDeposit(e.target.checked)} />
-                </Form.Item>
-              </Descriptions.Item>
+              {/* <Descriptions.Item label="扣除訂金 $1000">
+                <Checkbox value={hasDeposit} onChange={e => setHasDeposit(e.target.checked)} />
+              </Descriptions.Item> */}
             </Descriptions>
 
             <Descriptions title="付款方式" bordered className="mb-5">
@@ -684,7 +648,7 @@ const MemberContractCreationPage: React.FC = () => {
                   rules={[{ required: true, message: '請選擇付款方式' }]}
                 >
                   <Select<string> style={{ width: 120 }}>
-                    {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
+                    {paymentMethods.map((payment: string) => (
                       <Select.Option key={payment} value={payment}>
                         {payment}
                       </Select.Option>
@@ -700,7 +664,7 @@ const MemberContractCreationPage: React.FC = () => {
                   rules={[{ required: true, message: '請選擇分期期數' }]}
                 >
                   <Select<string> style={{ width: 120 }}>
-                    {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
+                    {installmentPlans.map(installmentPlan => (
                       <Select.Option key={installmentPlan} value={installmentPlan}>
                         {installmentPlan}
                       </Select.Option>
@@ -753,7 +717,7 @@ const MemberContractCreationPage: React.FC = () => {
                               style={{ width: '150px' }}
                               optionFilterProp="label"
                             >
-                              {sales?.map(member => (
+                              {sales.map(member => (
                                 <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
                                   {member.name}
                                 </Select.Option>
@@ -767,11 +731,9 @@ const MemberContractCreationPage: React.FC = () => {
                         </Space>
                       ))}
 
-                      <Form.Item>
-                        <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
-                          <PlusOutlined /> 加入
-                        </Button>
-                      </Form.Item>
+                      <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
+                        <PlusOutlined /> 加入
+                      </Button>
                     </div>
                   )}
                 </Form.List>
@@ -782,13 +744,9 @@ const MemberContractCreationPage: React.FC = () => {
               {orderItems.map(orderItem => (
                 <div key={orderItem.id} className="row mb-2">
                   <div className="col-6 text-right">
-                    {orderItem.type === 'addonProduct'
-                      ? '【加購項目】'
-                      : orderItem.type === 'referralDiscount'
-                      ? '【介紹折抵】'
-                      : orderItem.type === 'promotionDiscount'
-                      ? '【促銷折抵】'
-                      : ''}
+                    {orderItem.type === 'addonProduct' && '【加購項目】'}
+                    {orderItem.type === 'referralDiscount' && '【介紹折抵】'}
+                    {orderItem.type === 'promotionDiscount' && '【促銷折抵】'}
                   </div>
                   <div className="col-3">
                     <span>{orderItem.name}</span>
@@ -812,7 +770,7 @@ const MemberContractCreationPage: React.FC = () => {
             {memberContractUrl ? (
               <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
             ) : (
-              <Button size="large" block type="primary" onClick={handleMemberContractCreate}>
+              <Button size="large" block type="primary" htmlType="submit">
                 產生合約
               </Button>
             )}
@@ -831,20 +789,10 @@ const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
   return type as MomentPeriodType
 }
 
-const usePrivateTeachContractInfo = (appId: string, memberId: string, referralMemberFilter: string) => {
-  const condition = referralMemberFilter
-    ? {
-        _or: [
-          { name: { _ilike: `%${referralMemberFilter}%` } },
-          { username: { _ilike: `%${referralMemberFilter}%` } },
-          { email: { _ilike: `%${referralMemberFilter}%` } },
-        ],
-      }
-    : undefined
-
+const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
   const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
     gql`
-      query GET_CONTRACT_INFO($appId: String!, $memberId: String!, $condition: member_bool_exp) {
+      query GET_CONTRACT_INFO($appId: String!, $memberId: String!) {
         member_by_pk(id: $memberId) {
           id
           name
@@ -893,11 +841,6 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string, referralMe
             name
           }
         }
-        referralMember: member(where: { _and: [{ member_contracts: {} }, $condition] }, limit: 10) {
-          id
-          name
-          email
-        }
         xuemi_sales {
           member {
             id
@@ -911,7 +854,6 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string, referralMe
       variables: {
         appId,
         memberId,
-        condition,
       },
     },
   )
@@ -922,8 +864,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string, referralMe
     contracts: [],
     projectPlans: [],
     products: [],
-    mentors: [],
-    referralMembers: [],
+    appointmentPlanCreators: [],
     sales: [],
   }
 
@@ -957,7 +898,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string, referralMe
       appointments: v.options?.appointments || 0,
       coins: v.options?.coins || 0,
     }))
-    info.mentors = data.appointment_plan
+    info.appointmentPlanCreators = data.appointment_plan
       .map(v =>
         v.creator
           ? {
@@ -967,7 +908,6 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string, referralMe
           : null,
       )
       .filter(notEmpty)
-    info.referralMembers = data.referralMember
     info.sales = data.xuemi_sales.map(v => v.member).filter(notEmpty)
   }
 
@@ -1003,5 +943,7 @@ const ADD_MEMBER_CONTRACT = gql`
     }
   }
 `
+
+export type { ContractInfo }
 
 export default MemberContractCreationPage
