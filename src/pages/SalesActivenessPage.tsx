@@ -74,10 +74,7 @@ const SalesActivenessTable: React.FC<{
     obj => sum(obj.map(v => v.duration || 0)),
     groupBy<LogsProps>(({ salesId }) => `${salesId}_validSpeaking`)(data.validSpeakingLogs),
   )
-  const validDial = mapObjIndexed(
-    obj => obj.length,
-    groupBy<LogsProps>(({ salesId }) => `${salesId}_validDial`)(data.validDialLogs),
-  )
+  const dial = mapObjIndexed(obj => obj.length, groupBy<LogsProps>(({ salesId }) => `${salesId}_dial`)(data.dialLogs))
   const validGetThrough = mapObjIndexed(
     obj => obj.length,
     groupBy<LogsProps>(({ salesId }) => `${salesId}_validGetThrough`)(data.validGetThroughLogs),
@@ -116,7 +113,7 @@ const SalesActivenessTable: React.FC<{
     secondhand,
     attend,
     validSpeaking,
-    validDial,
+    dial,
     validGetThrough,
     invalidNumber,
     rejected,
@@ -143,7 +140,7 @@ const SalesActivenessTable: React.FC<{
         totalAssignments: number
         attend: number
         validSpeaking: number
-        validDial: number
+        dial: number
         validGetThrough: number
         invalidNumber: number
         rejected: number
@@ -234,12 +231,12 @@ const SalesActivenessTable: React.FC<{
           sorter={(a, b) => columnSorter(a, b, 'validSpeaking')}
           width="9rem"
         />
-        <Table.Column<Pick<RecordType, 'validDial'>>
-          key="validDial"
+        <Table.Column<Pick<RecordType, 'dial'>>
+          key="dial"
           title="撥打次數"
-          dataIndex="validDial"
+          dataIndex="dial"
           render={v => v || 0}
-          sorter={(a, b) => columnSorter(a, b, 'validDial')}
+          sorter={(a, b) => columnSorter(a, b, 'dial')}
           width="7.5rem"
         />
         <Table.Column<Pick<RecordType, 'validGetThrough'>>
@@ -349,9 +346,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           duration
           sales_id
         }
-        validDial: sales_active_log(
-          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, duration: { _gt: 90 } }
-        ) {
+        dial: sales_active_log(where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt } }) {
           id
           sales_id
         }
@@ -451,8 +446,8 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       salesId: v.sales_id,
       duration: v.duration || 0,
     })) || []
-  const validDialLogs: LogsProps[] =
-    data?.validDial.map(v => ({
+  const dialLogs: LogsProps[] =
+    data?.dial.map(v => ({
       id: v.id,
       salesId: v.sales_id,
     })) || []
@@ -503,7 +498,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       secondhandLogs,
       attendLogs,
       validSpeakingLogs,
-      validDialLogs,
+      dialLogs,
       validGetThroughLogs,
       invalidNumberLogs,
       rejectedLogs,

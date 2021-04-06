@@ -1044,7 +1044,7 @@ export interface GET_SALES_ACTIVE_LOG_validSpeaking {
   sales_id: string | null;
 }
 
-export interface GET_SALES_ACTIVE_LOG_validDial {
+export interface GET_SALES_ACTIVE_LOG_dial {
   __typename: "sales_active_log";
   id: string | null;
   sales_id: string | null;
@@ -1118,7 +1118,7 @@ export interface GET_SALES_ACTIVE_LOG {
   /**
    * fetch data from the table: "sales_active_log"
    */
-  validDial: GET_SALES_ACTIVE_LOG_validDial[];
+  dial: GET_SALES_ACTIVE_LOG_dial[];
   /**
    * fetch data from the table: "sales_active_log"
    */
@@ -2107,6 +2107,7 @@ export enum contract_update_column {
   description = "description",
   id = "id",
   name = "name",
+  options = "options",
   published_at = "published_at",
   revocation = "revocation",
   template = "template",
@@ -6810,6 +6811,7 @@ export interface contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -6826,6 +6828,7 @@ export interface contract_insert_input {
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  options?: any | null;
   published_at?: any | null;
   revocation?: string | null;
   template?: string | null;
@@ -16584,6 +16587,7 @@ export interface xuemi_member_private_teach_contract_bool_exp {
   agreed_at?: timestamptz_comparison_exp | null;
   appointment_creator_name?: String_comparison_exp | null;
   approved_at?: String_comparison_exp | null;
+  attachments?: jsonb_comparison_exp | null;
   author_id?: String_comparison_exp | null;
   author_name?: String_comparison_exp | null;
   contract_id?: uuid_comparison_exp | null;
@@ -16619,6 +16623,7 @@ export interface xuemi_member_private_teach_contract_order_by {
   agreed_at?: order_by | null;
   appointment_creator_name?: order_by | null;
   approved_at?: order_by | null;
+  attachments?: order_by | null;
   author_id?: order_by | null;
   author_name?: order_by | null;
   contract_id?: order_by | null;
