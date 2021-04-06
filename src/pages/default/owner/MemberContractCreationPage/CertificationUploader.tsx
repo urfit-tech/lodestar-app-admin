@@ -1,15 +1,18 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, Upload } from 'antd'
+import { UploadProps } from 'antd/lib/upload/Upload'
 import { useState } from 'react'
 import { useApp } from '../../../../contexts/AppContext'
 import { useAuth } from '../../../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../../../helpers'
 
-const CertificationUploader: React.VFC<{
-  memberId: string
-  identity: 'normal' | 'student'
-  onCertificationPathSet?: (path: string) => void
-}> = ({ memberId, identity, onCertificationPathSet }) => {
+const CertificationUploader: React.VFC<
+  UploadProps & {
+    memberId: string
+    identity: 'normal' | 'student'
+    onCertificationPathSet?: (path: string) => void
+  }
+> = ({ memberId, identity, onCertificationPathSet, ...uploadProps }) => {
   const { id: appId } = useApp()
   const { authToken, apiHost } = useAuth()
 
@@ -26,6 +29,7 @@ const CertificationUploader: React.VFC<{
           .finally(() => setUploading(false))
       }}
       className={identity === 'normal' ? 'd-none' : undefined}
+      {...uploadProps}
     >
       <Button icon={<UploadOutlined />} loading={uploading}>
         上傳證明

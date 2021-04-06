@@ -1,51 +1,53 @@
-import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Alert, Button, DatePicker, Descriptions, Form, Input, InputNumber, message, Radio, Select, Space } from 'antd'
+import { useQuery } from '@apollo/react-hooks'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { range, sum, uniqBy } from 'ramda'
+import { uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import styled from 'styled-components'
-import { v4 } from 'uuid'
-import { AdminBlock, AdminBlockTitle } from '../../../../components/admin'
+import { AdminBlock } from '../../../../components/admin'
 import DefaultLayout from '../../../../components/layout/DefaultLayout'
 import { useApp } from '../../../../contexts/AppContext'
-import { useAuth } from '../../../../contexts/AuthContext'
 import hasura from '../../../../hasura'
-import { currencyFormatter, notEmpty } from '../../../../helpers'
+import { notEmpty } from '../../../../helpers'
 import { PeriodType } from '../../../../types/general'
 import LoadingPage from '../../LoadingPage'
-import CertificationUploader from './CertificationUploader'
+import MemberContractCreationBlock from './MemberContractCreationBlock'
+import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
-import ReferralMemberSelector from './ReferralMemberSelector'
 
 const paymentMethods = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'] as const
 const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30] as const
 
 type FieldProps = {
   contractId: string
-  selectedProjectPlanId: string | null
-  selectedGiftDays: 0 | 7 | 14
+  withCreatorId: boolean
+  orderExecutorRatio: number
   startedAt: Date
-  contractProducts: {
+  identity: 'normal' | 'student'
+  certification?: {
+    file: {
+      name: string
+    }
+  }
+  selectedProjectPlanId?: string | null
+  selectedGiftDays?: 0 | 7 | 14
+  contractProducts?: {
     id: string
     amount: number
   }[]
-  withCreatorId: boolean
   creatorId?: string | null
-  referralMemberId: string
-  paymentMethod: typeof paymentMethods[number]
-  installmentPlan: typeof installmentPlans[number]
-  paymentNumber: string
-  orderExecutorId: string
-  orderExecutorRatio: number
-  orderExecutors: {
+  referralMemberId?: string
+  paymentMethod?: typeof paymentMethods[number]
+  installmentPlan?: typeof installmentPlans[number]
+  paymentNumber?: string
+  orderExecutorId?: string
+  orderExecutors?: {
     memberId?: string
     ratio?: number
   }[]
 }
+
 type ContractInfo = {
   member: {
     id: string
@@ -59,7 +61,11 @@ type ContractInfo = {
     }[]
   } | null
   properties: { id: string; name: string; placeholder: string | null }[]
-  contracts: { id: string; name: string }[]
+  contracts: {
+    id: string
+    name: string
+    options: any
+  }[]
   projectPlans: {
     id: string
     title: string
@@ -84,38 +90,13 @@ type ContractInfo = {
     username: string
   }[]
 }
-type OrderItem = {
-  id: string
-  type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount'
-  name: string
-  price: number
-  appointments: number
-  coins: number
-  amount: number
-}
 type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
-
-const StyledFieldLabel = styled.div`
-  font-size: 14px;
-`
-const StyledPriceField = styled.div`
-  width: 150px;
-`
-const StyledOrder = styled.div`
-  border: 1px solid var(--gray-darker);
-  padding: 1rem;
-`
-const StyledTotal = styled.div`
-  margin-bottom: 0.5rem;
-  color: ${props => props.theme['@primary-color']};
-  font-size: 20px;
-  text-align: right;
-`
 
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
-  const { currentMemberId } = useAuth()
+  const [form] = useForm<FieldProps>()
+  const fieldValue = form.getFieldsValue()
 
   const {
     member,
@@ -127,654 +108,72 @@ const MemberContractCreationPage: React.VFC = () => {
     sales,
     ...contractInfoStatus
   } = usePrivateTeachContractInfo(appId, memberId)
-  const options = {
-    product: {
-      designatedIndustryTeacher: '10c7004c-e615-4ca9-90f8-29ce674e0463',
-    },
-    discount: {
-      // deposit: 'a2e79c69-a200-4baa-934b-7d256f129ee0',
-      referral: 'fe09068e-5f24-4d82-b9b3-186ee498d144',
-      student: '5e298545-9190-44b1-aadc-b0d43b94cbe5',
-      tenPercentOff: '47c21171-afd9-4510-aa5f-547c436125b7',
-      fifteenPercentOff: '01fa990e-ec1d-4b41-a958-5d93240a8205',
-      twentyPercentOff: 'c8cfcb04-7e31-444f-8796-5800b5741019',
-    },
-  }
-  const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
-    ADD_MEMBER_CONTRACT,
-  )
-
-  const [form] = useForm<FieldProps>()
-  const values = form.getFieldsValue()
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
-  const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
-  const [memberContractUrl, setMemberContractUrl] = useState('')
-  const [contractProducts, setContractProducts] = useState<
-    {
-      id: string
-      amount: number
-    }[]
-  >([])
-  const [certificationPath, setCertificationPath] = useState('')
+  const [reRender, setReRender] = useState(0)
 
   if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />
   }
 
-  const selectedProjectPlan = projectPlans.find(v => v.id === values.selectedProjectPlanId)
+  const selectedProjectPlan = projectPlans.find(v => v.id === fieldValue.selectedProjectPlanId) || null
   const endedAt = selectedProjectPlan
-    ? moment(values.startedAt)
+    ? moment(fieldValue.startedAt)
         .add(
           selectedProjectPlan.periodAmount || 0,
           selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
         )
-        .add(values.selectedGiftDays, 'days')
+        .add(fieldValue.selectedGiftDays, 'days')
         .toDate()
     : null
 
-  // calculate order items results
-  const selectedMainProducts = contractProducts.filter(contractProduct =>
-    products.find(product => product.id === contractProduct.id && product.price),
+  // calculate contract items results
+  const contractProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
+  const selectedMainProducts = contractProducts.filter(orderProduct =>
+    products.find(product => product.id === orderProduct.id && product.price),
   )
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
     products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
 
-  // calculate order products
-  const orderProducts: OrderItem[] = contractProducts
-    .map(contractProduct => {
-      const product = products.find(product => product.id === contractProduct.id)
-      if (!product) {
-        return null
-      }
-      const productType: 'mainProduct' | 'addonProduct' =
-        product.name === '業師諮詢' && isAppointmentOnly
-          ? 'mainProduct'
-          : product.addonPrice
-          ? 'addonProduct'
-          : 'mainProduct'
-
-      return {
-        id: contractProduct.id,
-        name: product.name,
-        type: productType,
-        price: productType === 'mainProduct' ? product.price : product.addonPrice || 0,
-        appointments:
-          productType === 'mainProduct' && identity === 'student' ? product.appointments / 2 : product.appointments,
-        coins: product.coins,
-        amount: contractProduct.amount,
-      }
-    })
-    .filter(notEmpty)
-  const mainProducts = orderProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
-  const totalAppointments = sum(orderProducts.map(product => product.appointments * product.amount))
-  const totalCoins = sum(orderProducts.map(product => product.coins * product.amount))
-  if (values.withCreatorId && totalAppointments > 0) {
-    orderProducts.push({
-      id: options.product.designatedIndustryTeacher,
-      type: 'addonProduct',
-      name: '指定業師',
-      price: 1000,
-      appointments: 0,
-      coins: 0,
-      amount: totalAppointments,
-    })
-  }
-
-  // calculate order discounts
-  const orderDiscounts: OrderItem[] = []
-  const discountPrice = {
-    referral: 0,
-    student: 0,
-    group: 0,
-    deposit: -1000,
-  }
-
-  if (values.referralMemberId) {
-    discountPrice.referral = 2000 * -1
-  }
-  if (identity === 'student' && certificationPath) {
-    discountPrice.student =
-      (sum(mainProducts.map(mainProduct => mainProduct.price)) + discountPrice.referral * mainProducts.length) * -0.1
-  }
-  discountPrice.group =
-    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
-      discountPrice.referral * mainProducts.length +
-      discountPrice.student) *
-    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
-
-  if (discountPrice.referral) {
-    orderDiscounts.push({
-      id: options.discount.referral,
-      type: 'referralDiscount',
-      name: '被介紹人折抵',
-      price: discountPrice.referral,
-      appointments: 0,
-      coins: 0,
-      amount: mainProducts.length,
-    })
-  }
-  if (discountPrice.student) {
-    orderDiscounts.push({
-      id: options.discount.student,
-      type: 'promotionDiscount',
-      name: '學生方案',
-      price: discountPrice.student,
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    })
-  }
-  if (Math.ceil(discountPrice.group)) {
-    const promotionDiscount: Omit<OrderItem, 'id' | 'name'> = {
-      price: Math.ceil(discountPrice.group),
-      type: 'promotionDiscount',
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    }
-
-    if (mainProducts.length === 2) {
-      orderDiscounts.push({
-        id: options.discount.tenPercentOff,
-        name: '任選兩件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length === 3) {
-      orderDiscounts.push({
-        id: options.discount.fifteenPercentOff,
-        name: '任選三件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length >= 4) {
-      orderDiscounts.push({
-        id: options.discount.twentyPercentOff,
-        name: '任選四件折抵',
-        ...promotionDiscount,
-      })
-    }
-  }
-  // if (hasDeposit) {
-  //   orderDiscounts.push({
-  //     id: options.discount.deposit,
-  //     type: 'depositDiscount',
-  //     name: '扣除訂金',
-  //     price: discountPrice.deposit,
-  //     appointments: 0,
-  //     coins: 0,
-  //     amount: 1,
-  //   })
-  // }
-
-  const orderItems = [...orderProducts, ...orderDiscounts]
-  const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
-
-  const handleMemberContractCreate = async () => {
-    const alert = document.getElementsByClassName('ant-alert')[0]
-
-    if (memberBlockRef.current?.contains(alert)) {
-      message.warning('學員資料請填寫完整')
-      return
-    }
-    if (identity === 'student' && !certificationPath) {
-      message.warn('需上傳證明')
-      return
-    }
-
-    try {
-      await form.validateFields()
-    } catch (error) {
-      process.env.NODE_ENV === 'development' && console.error(error)
-    }
-
-    const orderExecutors: {
-      member_id: string
-      ratio: number
-    }[] = [
-      {
-        member_id: values.orderExecutorId || '',
-        ratio: values.orderExecutorRatio,
-      },
-      ...(values.orderExecutors.map(orderExecutor => ({
-        member_id: orderExecutor.memberId || '',
-        ratio: orderExecutor.ratio || 0,
-      })) || []),
-    ].filter(v => v.member_id && v.ratio)
-
-    if (sum(orderExecutors.map(v => v.ratio)) !== 1) {
-      message.warn('承辦人分潤比例加總必須為 1')
-      return
-    }
-
-    if (!window.confirm('請確認合約是否正確？')) {
-      return
-    }
-
-    // generate coupons
-    const couponPlanId = v4()
-    const coupons = range(0, totalAppointments).map((v, index) => ({
-      member_id: member.id,
-      coupon_code: {
-        data: {
-          code: moment().format('x') + v,
-          count: 1,
-          remaining: 0,
-          app_id: 'xuemi',
-          coupon_plan_id: index !== 0 ? couponPlanId : undefined,
-          coupon_plan:
-            index === 0
-              ? {
-                  on_conflict: {
-                    constraint: 'coupon_plan_pkey',
-                    update_columns: ['title'],
-                  },
-                  data: {
-                    id: couponPlanId,
-                    type: 2,
-                    amount: 100,
-                    title: `學米諮詢券`,
-                    description: `學員編號：${member.id}, 合約編號：${values.contractId}`,
-                    started_at: values.startedAt,
-                    ended_at: endedAt,
-                    scope: ['AppointmentPlan'],
-                  },
-                }
-              : undefined,
-        },
-      },
-    }))
-
-    const times = '0'
-    const orderId = moment().format('YYYYMMDDHHmmssSSS') + times.padStart(2, '0')
-
-    addMemberContract({
-      variables: {
-        memberId: member.id,
-        contractId: values.contractId,
-        startedAt: values.startedAt,
-        endedAt,
-        authorId: currentMemberId || '',
-        values: {
-          orderId,
-          price: totalPrice,
-          coupons,
-          startedAt: values.startedAt,
-          endedAt,
-          invoice: {
-            name: member.name,
-            phone: member.phones,
-            email: member.email,
-          },
-          coinName: `${selectedProjectPlan?.title}`,
-          memberId: member.id,
-          paymentNo: moment().format('YYYYMMDDHHmmss'),
-          coinAmount: totalCoins,
-          orderProducts: [
-            {
-              product_id: `ProjectPlan_${values.selectedProjectPlanId}`,
-              name: selectedProjectPlan?.title,
-              price: 0,
-              started_at: values.startedAt,
-              ended_at: endedAt,
-            },
-            ...orderProducts.map(v => ({
-              product_id: `ProjectPlan_${v.id}`,
-              name: v.name,
-              price: v.price,
-              started_at: values.startedAt,
-              ended_at: endedAt,
-            })),
-            {
-              product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
-              name: '學米 VIP 會員卡',
-              price: 0,
-              started_at: values.startedAt,
-              ended_at: endedAt,
-            },
-          ],
-          orderDiscounts: orderDiscounts.map(v => ({
-            name: v.name,
-            price: v.price,
-            type: 'Coupon',
-            target: v.id,
-          })),
-          orderExecutors,
-          paymentOptions: {
-            paymentMethod: values.paymentMethod,
-            installmentPlan: values.installmentPlan,
-            paymentNumber: values.paymentNumber,
-          },
-        },
-        options: {
-          appointmentCreatorId: values.withCreatorId ? values.creatorId : null,
-          studentCertification: identity === 'student' ? certificationPath : null,
-          referralMemberId: values.referralMemberId,
-        },
-      },
-    })
-      .then(({ data }) => {
-        const contractId = data?.insert_member_contract_one?.id
-        setMemberContractUrl(`https://www.xuemi.co/members/${memberId}/contracts/${contractId}`)
-        message.success('成功產生合約')
-      })
-      .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
-  }
-
   return (
     <DefaultLayout>
       <div className="container py-5">
         <AdminBlock>
-          <MemberDescriptionBlock ref={memberBlockRef} member={member} properties={properties} />
-
-          <Form
+          <MemberDescriptionBlock member={member} properties={properties} memberBlockRef={memberBlockRef} />
+          <MemberContractCreationForm
             form={form}
             initialValues={{
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
               startedAt: moment().add(1, 'day').startOf('day'),
+              identity: 'normal',
             }}
-            onValuesChange={(_, values) => {
-              setContractProducts(uniqBy(v => v.id, values.contractProducts || []))
-            }}
-            onFinish={handleMemberContractCreate}
-            layout="vertical"
-            colon={false}
-            hideRequiredMark
-          >
-            <Descriptions title="合約期間" column={2} bordered className="mb-5">
-              <Descriptions.Item label="合約項目">
-                <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
-                  <Select<string> style={{ width: 150 }}>
-                    {contracts.map(v => (
-                      <Select.Option key={v.id} value={v.id}>
-                        {v.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Descriptions.Item>
+            onValuesChange={() => setReRender(prev => prev + 1)}
+            memberId={memberId}
+            endedAt={endedAt}
+            contractProducts={contractProducts}
+            isAppointmentOnly={isAppointmentOnly}
+            products={products}
+            contracts={contracts}
+            projectPlans={projectPlans}
+            sales={sales}
+            appointmentPlanCreators={appointmentPlanCreators}
+          />
 
-              <Descriptions.Item label="合約效期">
-                <Form.Item
-                  className="mb-0"
-                  name="selectedProjectPlanId"
-                  rules={[{ required: true, message: '請選擇合約效期' }]}
-                >
-                  <Select<string> style={{ width: 150 }}>
-                    {projectPlans.map(v => (
-                      <Select.Option key={v.id} value={v.id}>
-                        {v.periodAmount} {v.periodType}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <div className="d-flex align-items-center mt-2">
-                  <div>加贈：</div>
-                  <Form.Item className="mb-0" name="selectedGiftDays">
-                    <Select<string> style={{ width: 100 }}>
-                      {[0, 7, 14].map(value => (
-                        <Select.Option key={value} value={value}>
-                          {value}天
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="服務開始日">
-                <Form.Item className="mb-0" name="startedAt">
-                  <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-                </Form.Item>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="服務結束日">
-                {endedAt ? moment(endedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
-              </Descriptions.Item>
-            </Descriptions>
-
-            <div className="mb-5">
-              <AdminBlockTitle>合約內容</AdminBlockTitle>
-              <Form.List name="contractProducts">
-                {(fields, { add, remove }) => {
-                  return (
-                    <>
-                      {fields.map((field, index) => {
-                        const contractProduct = products.find(product => product.id === contractProducts[index]?.id)
-
-                        return (
-                          <div key={field.key} className="d-flex align-items-center justify-content-start">
-                            <Form.Item
-                              name={[field.name, 'id']}
-                              fieldKey={[field.fieldKey, 'id']}
-                              label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
-                            >
-                              <Select<string> className="mr-3" style={{ width: '250px' }}>
-                                {products.map(product => (
-                                  <Select.Option key={product.id} value={product.id}>
-                                    {product.name}
-                                  </Select.Option>
-                                ))}
-                              </Select>
-                            </Form.Item>
-
-                            <Form.Item label={index === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
-                              <StyledPriceField>
-                                {contractProduct?.name === '業師諮詢' && isAppointmentOnly
-                                  ? contractProduct?.price
-                                  : contractProduct?.addonPrice || contractProduct?.price || 0}
-                              </StyledPriceField>
-                            </Form.Item>
-
-                            <Form.Item
-                              name={[field.name, 'amount']}
-                              fieldKey={[field.fieldKey, 'amount']}
-                              label={index === 0 ? <StyledFieldLabel>數量</StyledFieldLabel> : undefined}
-                            >
-                              <InputNumber min={1} className="mr-3" />
-                            </Form.Item>
-
-                            <div className={index === 0 ? 'mt-2' : 'mb-4'}>
-                              <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
-                            </div>
-                          </div>
-                        )
-                      })}
-                      <Button icon={<PlusOutlined />} onClick={() => add({ amount: 1 })}>
-                        新增項目
-                      </Button>
-                    </>
-                  )
-                }}
-              </Form.List>
-            </div>
-
-            <Descriptions column={1} bordered className="mb-5">
-              <Descriptions.Item label="指定業師">
-                <Form.Item noStyle name="withCreatorId">
-                  <Radio.Group>
-                    <Radio value={false}>不指定</Radio>
-                    <Radio value={true}>指定</Radio>
-                  </Radio.Group>
-                </Form.Item>
-
-                <Form.Item name="creatorId" noStyle>
-                  <Select<string> style={{ width: '150px' }}>
-                    {appointmentPlanCreators.map(v =>
-                      v.id && v.name ? (
-                        <Select.Option key={v.id} value={v.id}>
-                          {v.name}
-                        </Select.Option>
-                      ) : null,
-                    )}
-                  </Select>
-                </Form.Item>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="學員身份" className="m-0">
-                <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
-                  <Radio value="normal">一般</Radio>
-                  <Radio value="student">學生</Radio>
-                </Radio.Group>
-
-                <CertificationUploader
-                  memberId={memberId}
-                  identity={identity}
-                  onCertificationPathSet={path => setCertificationPath(path)}
-                />
-
-                {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
-              </Descriptions.Item>
-
-              <Descriptions.Item label="介紹人">
-                <Form.Item name="referralMemberId">
-                  <ReferralMemberSelector />
-                </Form.Item>
-              </Descriptions.Item>
-              {/* <Descriptions.Item label="扣除訂金 $1000">
-                <Checkbox value={hasDeposit} onChange={e => setHasDeposit(e.target.checked)} />
-              </Descriptions.Item> */}
-            </Descriptions>
-
-            <Descriptions title="付款方式" bordered className="mb-5">
-              <Descriptions.Item label="付款方式">
-                <Form.Item
-                  className="mb-0"
-                  name="paymentMethod"
-                  rules={[{ required: true, message: '請選擇付款方式' }]}
-                >
-                  <Select<string> style={{ width: 120 }}>
-                    {paymentMethods.map((payment: string) => (
-                      <Select.Option key={payment} value={payment}>
-                        {payment}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="分期期數">
-                <Form.Item
-                  className="mb-0"
-                  name="installmentPlan"
-                  rules={[{ required: true, message: '請選擇分期期數' }]}
-                >
-                  <Select<string> style={{ width: 120 }}>
-                    {installmentPlans.map(installmentPlan => (
-                      <Select.Option key={installmentPlan} value={installmentPlan}>
-                        {installmentPlan}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="金流編號">
-                <Form.Item
-                  className="mb-0"
-                  name="paymentNumber"
-                  rules={[{ required: true, message: '請填寫金流編號' }]}
-                >
-                  <Input />
-                </Form.Item>
-              </Descriptions.Item>
-
-              <Descriptions.Item label="承辦人 / 分潤" span={3}>
-                <Space align="center" className="d-flex mb-3">
-                  <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
-                    <Select<string> showSearch placeholder="承辦人" style={{ width: '150px' }} optionFilterProp="label">
-                      {sales.map(member => (
-                        <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
-                          {member.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-
-                  <Form.Item name="orderExecutorRatio">
-                    <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
-                  </Form.Item>
-                </Space>
-
-                <Form.List name="orderExecutors">
-                  {(fields, { add, remove }) => (
-                    <div>
-                      {fields.map(field => (
-                        <Space key={field.key} align="center" className="d-flex mb-3">
-                          <Form.Item
-                            {...field}
-                            name={[field.name, 'memberId']}
-                            fieldKey={[field.fieldKey, 'memberId']}
-                            rules={[{ required: true, message: '請填寫承辦人' }]}
-                          >
-                            <Select<string>
-                              showSearch
-                              placeholder="承辦人"
-                              style={{ width: '150px' }}
-                              optionFilterProp="label"
-                            >
-                              {sales.map(member => (
-                                <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
-                                  {member.name}
-                                </Select.Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']}>
-                            <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
-                          </Form.Item>
-                          <MinusCircleOutlined className="mb-4" onClick={() => remove(field.name)} />
-                        </Space>
-                      ))}
-
-                      <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
-                        <PlusOutlined /> 加入
-                      </Button>
-                    </div>
-                  )}
-                </Form.List>
-              </Descriptions.Item>
-            </Descriptions>
-
-            <StyledOrder className="mb-5">
-              {orderItems.map(orderItem => (
-                <div key={orderItem.id} className="row mb-2">
-                  <div className="col-6 text-right">
-                    {orderItem.type === 'addonProduct' && '【加購項目】'}
-                    {orderItem.type === 'referralDiscount' && '【介紹折抵】'}
-                    {orderItem.type === 'promotionDiscount' && '【促銷折抵】'}
-                  </div>
-                  <div className="col-3">
-                    <span>{orderItem.name}</span>
-                    {orderItem.amount > 1 ? <span>x{orderItem.amount}</span> : ''}
-                  </div>
-                  <div className="col-3 text-right">{currencyFormatter(orderItem.price * orderItem.amount)}</div>
-                </div>
-              ))}
-
-              <div className="row mb-2">
-                <strong className="col-6 text-right">合計</strong>
-
-                <div className="col-6 text-right">
-                  <StyledTotal>{currencyFormatter(totalPrice)}</StyledTotal>
-                  <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
-                  <StyledTotal>{totalCoins} XP</StyledTotal>
-                </div>
-              </div>
-            </StyledOrder>
-
-            {memberContractUrl ? (
-              <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
-            ) : (
-              <Button size="large" block type="primary" htmlType="submit">
-                產生合約
-              </Button>
-            )}
-          </Form>
+          <MemberContractCreationBlock
+            form={form}
+            member={member}
+            products={products}
+            contracts={contracts}
+            selectedProjectPlan={selectedProjectPlan}
+            endedAt={endedAt}
+            contractProducts={contractProducts}
+            isAppointmentOnly={isAppointmentOnly}
+            memberBlockRef={memberBlockRef}
+            reRender={reRender}
+          />
         </AdminBlock>
       </div>
     </DefaultLayout>
@@ -818,6 +217,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
         contract(where: { published_at: { _is_null: false } }) {
           id
           name
+          options
         }
         projectPrivateTeachPlan: project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
           id
@@ -918,32 +318,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
   }
 }
 
-const ADD_MEMBER_CONTRACT = gql`
-  mutation ADD_MEMBER_CONTRACT(
-    $memberId: String!
-    $authorId: String!
-    $contractId: uuid!
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $values: jsonb!
-    $options: jsonb
-  ) {
-    insert_member_contract_one(
-      object: {
-        member_id: $memberId
-        contract_id: $contractId
-        author_id: $authorId
-        started_at: $startedAt
-        ended_at: $endedAt
-        values: $values
-        options: $options
-      }
-    ) {
-      id
-    }
-  }
-`
-
-export type { ContractInfo }
+export type { ContractInfo, FieldProps }
+export { paymentMethods, installmentPlans }
 
 export default MemberContractCreationPage

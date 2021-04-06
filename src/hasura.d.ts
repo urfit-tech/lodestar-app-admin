@@ -3967,6 +3967,93 @@ export interface UPDATE_EXERCISE_POSITIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PRACTICE
+// ====================================================
+
+export interface UPDATE_PRACTICE_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRACTICE_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRACTICE {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_PRACTICE_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_PRACTICE_update_program_content_body | null;
+}
+
+export interface UPDATE_PRACTICEVariables {
+  programContentId: any;
+  title?: string | null;
+  description?: string | null;
+  publishedAt?: any | null;
+  duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+  metadata?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PRACTICE
+// ====================================================
+
+export interface DELETE_PRACTICE_delete_practice {
+  __typename: "practice_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PRACTICE_delete_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PRACTICE {
+  /**
+   * delete data from the table: "practice"
+   */
+  delete_practice: DELETE_PRACTICE_delete_practice | null;
+  /**
+   * delete data from the table: "program_content_body"
+   */
+  delete_program_content_body: DELETE_PRACTICE_delete_program_content_body | null;
+}
+
+export interface DELETE_PRACTICEVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
 
@@ -4164,93 +4251,6 @@ export interface UPDATE_PROGRAM_CONTENT_MATERIALS {
 export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
   programContentId: any;
   materials: program_content_material_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PRACTICE
-// ====================================================
-
-export interface UPDATE_PRACTICE_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: UPDATE_PRACTICE_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_PRACTICE_update_program_content_body | null;
-}
-
-export interface UPDATE_PRACTICEVariables {
-  programContentId: any;
-  title?: string | null;
-  description?: string | null;
-  publishedAt?: any | null;
-  duration?: any | null;
-  isNotifyUpdate?: boolean | null;
-  notifiedAt?: any | null;
-  metadata?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PRACTICE
-// ====================================================
-
-export interface DELETE_PRACTICE_delete_practice {
-  __typename: "practice_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE_delete_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE {
-  /**
-   * delete data from the table: "practice"
-   */
-  delete_practice: DELETE_PRACTICE_delete_practice | null;
-  /**
-   * delete data from the table: "program_content_body"
-   */
-  delete_program_content_body: DELETE_PRACTICE_delete_program_content_body | null;
-}
-
-export interface DELETE_PRACTICEVariables {
-  programContentId: any;
 }
 
 /* tslint:disable */
@@ -11246,6 +11246,7 @@ export interface GET_CONTRACT_INFO_contract {
   __typename: "contract";
   id: any;
   name: string;
+  options: any | null;
 }
 
 export interface GET_CONTRACT_INFO_projectPrivateTeachPlan {
@@ -11362,6 +11363,48 @@ export interface ADD_MEMBER_CONTRACTVariables {
   endedAt: any;
   values: any;
   options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_COUPON
+// ====================================================
+
+export interface INSERT_COUPON_insert_coupon_code_returning_coupons {
+  __typename: "coupon";
+  id: any;
+}
+
+export interface INSERT_COUPON_insert_coupon_code_returning {
+  __typename: "coupon_code";
+  coupon_plan_id: any;
+  /**
+   * An array relationship
+   */
+  coupons: INSERT_COUPON_insert_coupon_code_returning_coupons[];
+}
+
+export interface INSERT_COUPON_insert_coupon_code {
+  __typename: "coupon_code_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_COUPON_insert_coupon_code_returning[];
+}
+
+export interface INSERT_COUPON {
+  /**
+   * insert data into the table: "coupon_code"
+   */
+  insert_coupon_code: INSERT_COUPON_insert_coupon_code | null;
+}
+
+export interface INSERT_COUPONVariables {
+  privateTeachCoupons: coupon_code_insert_input[];
 }
 
 /* tslint:disable */
@@ -12857,6 +12900,7 @@ export enum contract_update_column {
   description = "description",
   id = "id",
   name = "name",
+  options = "options",
   published_at = "published_at",
   revocation = "revocation",
   template = "template",
@@ -17944,6 +17988,7 @@ export interface contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -17960,6 +18005,7 @@ export interface contract_insert_input {
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  options?: any | null;
   published_at?: any | null;
   revocation?: string | null;
   template?: string | null;
