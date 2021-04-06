@@ -188,7 +188,7 @@ const MemberContractCreationForm: React.FC<
                 </Radio.Group>
               </Form.Item>
 
-              <Form.Item name="certificationPat" noStyle>
+              <Form.Item name="certification" noStyle>
                 <CertificationUploader
                   memberId={memberId}
                   identity={identity}
