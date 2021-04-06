@@ -44,7 +44,6 @@ const MemberContractCreationBlock: React.FC<{
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
   contractProducts: NonNullable<FieldProps['contractProducts']>
   form: FormInstance<FieldProps>
-  reRender: number
 }> = ({
   member,
   products,

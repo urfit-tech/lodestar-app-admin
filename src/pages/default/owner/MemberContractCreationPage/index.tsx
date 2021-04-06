@@ -110,7 +110,7 @@ const MemberContractCreationPage: React.VFC = () => {
   } = usePrivateTeachContractInfo(appId, memberId)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
-  const [reRender, setReRender] = useState(0)
+  const [_, setReRender] = useState(0)
 
   if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />
@@ -172,7 +172,6 @@ const MemberContractCreationPage: React.VFC = () => {
             contractProducts={contractProducts}
             isAppointmentOnly={isAppointmentOnly}
             memberBlockRef={memberBlockRef}
-            reRender={reRender}
           />
         </AdminBlock>
       </div>
