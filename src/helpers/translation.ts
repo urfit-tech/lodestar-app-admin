@@ -746,6 +746,14 @@ export const programMessages = {
       defaultMessage: '選項刪除即不可恢復，確定要刪除嗎？',
     },
     unfinishedQuestions: { id: 'program.text.unfinishedQuestions', defaultMessage: '未完成內容：{questions}' },
+    noAddedQuestion: { id: 'program.text.noAnyQuestion', defaultMessage: '未新增題目' },
+    noQuestionPoints: { id: 'program.text.noQuestionPoints', defaultMessage: '未填寫問題分數' },
+    noQuestionDescription: { id: 'program.text.noQuestionDescription', defaultMessage: '未填寫題目敘述' },
+    noAnswers: { id: 'program.text.noAnswers', defaultMessage: '至少選一個正確解答' },
+    noQuestionChoice: { id: 'program.text.noQuestionChoice', defaultMessage: '請新增題目選項' },
+    noChoiceDescription: { id: 'program.text.noChoiceDescription', defaultMessage: '未填寫選項敘述' },
+    noAnswerDescription: { id: 'program.text.noAnswersDescription', defaultMessage: '未填寫解答敘述' },
+    invalidExercise: { id: 'program.text.invalidExercise', defaultMessage: '未完成測驗' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -1181,7 +1189,7 @@ export const permissionMessages = defineMessages({
   SALES_ADMIN: { id: 'permission.SALES_ADMIN', defaultMessage: '所有銷售管理功能' },
   SALES_READ: { id: 'permission.SALES_READ', defaultMessage: '查看所有訂單' },
   SALES_EXPORT: { id: 'permission.SALES_EXPORT', defaultMessage: '匯出所有訂單' },
-  SALES_CREATOR_VIEW: {id: 'permission.SALES_CREATOR_VIEW', defaultMessage: '創作者銷售管理功能'},
+  SALES_CREATOR_VIEW: { id: 'permission.SALES_CREATOR_VIEW', defaultMessage: '創作者銷售管理功能' },
 
   // program
   PROGRAM_ADMIN: { id: 'permission.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },

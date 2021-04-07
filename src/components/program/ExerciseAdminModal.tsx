@@ -197,7 +197,7 @@ const ExerciseAdminForm: React.FC<{
             onClick={() => {
               form.resetFields()
               setQuestions(programContentBody.data?.questions || [])
-              setWithInvalidQuestion(questionValidations.some(validation => !validation))
+              setWithInvalidQuestion(questions.length === 0 || questionValidations.some(validation => !validation))
               onCancel?.()
             }}
             className="mr-2"
@@ -232,6 +232,18 @@ const ExerciseAdminForm: React.FC<{
         </div>
       </div>
 
+      {questions.length === 0 && (
+        <Alert
+          type="error"
+          message={
+            <>
+              <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
+              {formatMessage(programMessages.text.noAddedQuestion)}
+            </>
+          }
+          className="mb-3"
+        />
+      )}
       {withInvalidQuestion && questionValidations.some(validation => !validation) && (
         <Alert
           type="error"
@@ -303,6 +315,7 @@ const ExerciseAdminForm: React.FC<{
         <QuestionInput
           key={question.id}
           index={index}
+          invalid={!questionValidations[index]}
           value={question}
           onChange={value => {
             const newQuestions = clone(questions)
