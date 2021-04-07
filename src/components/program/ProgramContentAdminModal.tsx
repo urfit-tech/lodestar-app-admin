@@ -75,14 +75,15 @@ const ProgramContentAdminModal: React.FC<{
   const [isUploadFailed, setIsUploadFailed] = useState<{
     video?: boolean
     caption?: boolean
-    materials?: boolean
   }>({})
+  const [failedUploadMaterials, setFailedUploadMaterials] = useState<File[]>([])
   const [uploadProgress, setUploadProgress] = useState<{
     [fileName: string]: number
   }>({})
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    setIsUploadFailed(prev => ({ ...prev, materials: false }))
+    setFailedUploadMaterials([])
+    setUploadProgress({})
 
     try {
       if (
@@ -191,7 +192,7 @@ const ProgramContentAdminModal: React.FC<{
             onUploadProgress: ({ loaded, total }) => {
               setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
             },
-          }).catch(() => setIsUploadFailed(prev => ({ ...prev, materials: true })))
+          }).catch(() => setFailedUploadMaterials(prev => [...prev, file]))
         }
 
         await updateProgramContentMaterials({
@@ -335,7 +336,6 @@ const ProgramContentAdminModal: React.FC<{
               showUploadList
               fileList={video ? [video] : []}
               accept="video/*"
-              downloadableLink={`videos/${appId}/${programContentBody.id}`}
               uploadProgress={uploadProgress}
               onChange={async files => {
                 const duration = files[0] ? Math.ceil(await getFileDuration(files[0])) : 0
@@ -381,7 +381,7 @@ const ProgramContentAdminModal: React.FC<{
                     <Button icon={<UploadOutlined />} onClick={onClick}>
                       {formatMessage(commonMessages.ui.selectFile)}
                     </Button>
-                    {isUploadFailed.materials && (
+                    {!!failedUploadMaterials.length && (
                       <span className="ml-2">
                         <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
                         <span>{formatMessage(commonMessages.event.failedUpload)}</span>
@@ -391,8 +391,8 @@ const ProgramContentAdminModal: React.FC<{
                 )}
                 multiple
                 showUploadList
-                downloadableLink={file => `materials/${appId}/${programContent.id}_${file.name}`}
                 uploadProgress={uploadProgress}
+                failedUploadFiles={failedUploadMaterials}
                 fileList={materialFiles}
                 onChange={files => setMaterialFiles(files)}
               />

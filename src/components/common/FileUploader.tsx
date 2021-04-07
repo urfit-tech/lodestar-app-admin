@@ -3,6 +3,8 @@ import { Button } from 'antd'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
+import { downloadFile, getFileDownloadableLink } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import FileItem from './FileItem'
 
@@ -12,17 +14,29 @@ const StyledButtonWrapper = styled.div`
 
 const FileUploader: React.FC<{
   fileList: File[]
+  accept?: string
   multiple?: boolean
   showUploadList?: boolean
-  accept?: string
+  failedUploadFiles?: File[]
   uploadProgress?: { [fileName: string]: number }
   downloadableLink?: string | ((file: File) => string)
   renderTrigger?: React.FC<{
     onClick: () => void
   }>
   onChange?: (files: File[]) => void
-}> = ({ renderTrigger, multiple, accept, uploadProgress, fileList, showUploadList, onChange, downloadableLink }) => {
+}> = ({
+  fileList,
+  multiple,
+  accept,
+  uploadProgress,
+  showUploadList,
+  failedUploadFiles,
+  downloadableLink,
+  renderTrigger,
+  onChange,
+}) => {
   const { formatMessage } = useIntl()
+  const { authToken, apiHost } = useAuth()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [uploadFilesDownloadableLink, setUploadFilesDownloadableLink] = useState<{ [fileName: string]: string }>({})
 
@@ -67,9 +81,24 @@ const FileUploader: React.FC<{
           <FileItem
             key={v.name}
             fileName={v.name}
-            downloadableLink={typeof downloadableLink === 'string' ? downloadableLink : downloadableLink?.(v)}
-            uploadFileDownloadableLink={uploadFilesDownloadableLink[v.name]}
-            uploadProgress={uploadProgress?.[v.name]}
+            loadingProgress={uploadProgress?.[v.name]}
+            isFailed={failedUploadFiles?.some(file => file.name === v.name && file.lastModified === v.lastModified)}
+            onDownload={
+              uploadFilesDownloadableLink[v.name] || downloadableLink
+                ? async () => {
+                    const link =
+                      uploadFilesDownloadableLink[v.name] ||
+                      (await getFileDownloadableLink(
+                        `${typeof downloadableLink === 'string' ? downloadableLink : downloadableLink?.(v)}`,
+                        authToken,
+                        apiHost,
+                      ))
+                    return downloadFile(v.name, {
+                      url: link,
+                    })
+                  }
+                : undefined
+            }
             onDelete={() => onChange?.(fileList.filter(w => w.name !== v.name))}
           />
         ))}

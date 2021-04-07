@@ -3,15 +3,13 @@ import { message, Progress } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useAuth } from '../../contexts/AuthContext'
-import { downloadFile, getFileDownloadableLink } from '../../helpers'
 
 const messages = defineMessages({
   failedDownload: { id: 'common.event.failedDownload', defaultMessage: '下載失敗' },
 })
 
-const StyledFileItem = styled.div`
-  color: var(--gray-darker);
+const StyledFileItem = styled.div<{ isFailed?: boolean }>`
+  color: ${props => (props.isFailed ? 'var(--error)' : 'var(--gray-darker)')};
   font-size: 14px;
 
   :hover {
@@ -21,13 +19,12 @@ const StyledFileItem = styled.div`
 
 const FileItem: React.FC<{
   fileName: string
-  downloadableLink?: string
-  uploadFileDownloadableLink?: string
-  uploadProgress?: number
+  loadingProgress?: number
+  isFailed?: boolean
   onDelete?: () => void
-}> = ({ fileName, downloadableLink, uploadFileDownloadableLink, uploadProgress, onDelete }) => {
+  onDownload?: () => Promise<any>
+}> = ({ fileName, loadingProgress, isFailed, onDelete, onDownload }) => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost } = useAuth()
   const [isHover, setIsHover] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -37,38 +34,33 @@ const FileItem: React.FC<{
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
         className="d-flex align-items-center justify-content-between py-1 px-2"
+        isFailed={isFailed}
       >
         <div className="flex-grow-1">{fileName}</div>
         {isDownloading ? (
           <LoadingOutlined className="flex-shrink-0 ml-2 " />
         ) : (
-          isHover && (
-            <>
-              <DownloadOutlined
-                hidden={!(uploadFileDownloadableLink || downloadableLink)}
-                className="flex-shrink-0 ml-2 pointer-cursor"
-                onClick={async () => {
-                  setIsDownloading(true)
-                  const link =
-                    uploadFileDownloadableLink ||
-                    (await getFileDownloadableLink(`${downloadableLink}`, authToken, apiHost))
-                  downloadFile(fileName, {
-                    url: link,
-                  })
-                    .catch(() => {
-                      message.error(formatMessage(messages.failedDownload))
-                    })
-                    .finally(() => {
-                      setIsDownloading(false)
-                    })
-                }}
-              />
-              <CloseOutlined hidden={!onDelete} className="flex-shrink-0 ml-2 pointer-cursor" onClick={onDelete} />
-            </>
-          )
+          <>
+            <DownloadOutlined
+              hidden={!(isHover && onDownload)}
+              className="flex-shrink-0 ml-2 pointer-cursor"
+              onClick={async () => {
+                setIsDownloading(true)
+                await onDownload?.().catch(() => {
+                  message.error(formatMessage(messages.failedDownload))
+                })
+                setIsDownloading(false)
+              }}
+            />
+            <CloseOutlined
+              hidden={!(isHover && onDelete)}
+              className="flex-shrink-0 ml-2 pointer-cursor"
+              onClick={onDelete}
+            />
+          </>
         )}
       </StyledFileItem>
-      {!!uploadProgress && <Progress percent={uploadProgress} strokeColor="#4ed1b3" />}
+      {!!loadingProgress && <Progress percent={loadingProgress} strokeColor="#4ed1b3" />}
     </>
   )
 }
