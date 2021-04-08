@@ -84,7 +84,8 @@ const ProgramPublishBlock: React.FC<{
       message: formatMessage(programMessages.text.noPrice),
       to: `/programs/${program.id}?tab=plan`,
     })
-  program.contentSections.map(v => v.programContents.some(w => w.metadata.withInvalidQuestion)) &&
+
+  program.contentSections.map(v => v.programContents.some(w => w.metadata?.withInvalidQuestion))[0] &&
     errors.push({
       message: formatMessage(programMessages.text.invalidExercise),
       to: `/programs/${program.id}?tab=content`,
