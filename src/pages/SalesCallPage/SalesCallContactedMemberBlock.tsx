@@ -15,8 +15,9 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { SalesCallMemberProps, useLead } from '../../hooks'
+import { SalesCallMemberProps } from '../../hooks'
 import { ReactComponent as DemoIcon } from '../../images/icons/demo.svg'
+import { SalesProps } from '../../types/member'
 import JitsiDemoModal from './JitsiDemoModal'
 
 const messages = {
@@ -55,15 +56,14 @@ const StyledNotice = styled.div`
 `
 
 const SalesCallContactedMemberBlock: React.FC<{
-  salesId: string
+  sales: SalesProps
   members: SalesCallMemberProps[]
   loadingMembers: boolean
-}> = ({ salesId, members, loadingMembers }) => {
+}> = ({ sales, members, loadingMembers }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
 
-  const { sales } = useLead(salesId)
   const { insertMemberNote } = useMutateMemberNote()
 
   const [filters, setFilters] = useState<{
@@ -210,7 +210,7 @@ const SalesCallContactedMemberBlock: React.FC<{
             }}
           />
           <StyledButton
-            disabled={!record.phones[0] || !sales?.telephone}
+            disabled={!record.phones[0] || !sales.telephone}
             icon={<Icon component={() => <CallOutIcon />} />}
             type="primary"
             onClick={() =>
@@ -219,7 +219,7 @@ const SalesCallContactedMemberBlock: React.FC<{
                 apiHost,
                 authToken,
                 phone: record.phones[0],
-                salesTelephone: sales?.telephone || '',
+                salesTelephone: sales.telephone || '',
               })
             }
           />
@@ -245,7 +245,7 @@ const SalesCallContactedMemberBlock: React.FC<{
         <JitsiDemoModal
           member={selectedMember}
           salesMember={{
-            id: salesId,
+            id: sales.id,
             name: sales.name,
             email: sales.email,
           }}

@@ -8,7 +8,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { salesMessages } from '../../helpers/translation'
-import { SalesCallMemberProps, useSalesCallMember } from '../../hooks'
+import { SalesCallMemberProps, useSales, useSalesCallMember } from '../../hooks'
 import CurrentLeadContactBlock from './CurrentLeadContactBlock'
 import SalesCallContactedMemberBlock from './SalesCallContactedMemberBlock'
 import SalesCallTransactedMemberBlock from './SalesCallTransactedMemberBlock'
@@ -18,6 +18,7 @@ const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { sales } = useSales(currentMemberId || '')
   const [submittedPotentialMembers, setSubmittedPotentialMembers] = useState<SalesCallMemberProps[]>([])
   const {
     loadingMembers: loadingContactedMembers,
@@ -43,13 +44,13 @@ const SalesCallPage: React.FC = () => {
         <span>{formatMessage(salesMessages.label.salesCall)}</span>
       </AdminPageTitle>
 
-      {currentMemberId && <SalesSummaryBlock salesId={currentMemberId} />}
+      {sales && <SalesSummaryBlock sales={sales} />}
 
       <Tabs activeKey={activeKey || 'potentials'} onChange={key => setActiveKey(key)}>
         <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}>
-          {currentMemberId && (
+          {sales && (
             <CurrentLeadContactBlock
-              salesId={currentMemberId}
+              sales={sales}
               onSubmit={(status, member) => {
                 status === 'willing' &&
                   setSubmittedPotentialMembers(prev => [
@@ -75,18 +76,18 @@ const SalesCallPage: React.FC = () => {
             submittedPotentialMembers.length + totalContactedMembers
           })`}
         >
-          {currentMemberId && (
+          {sales && (
             <SalesCallContactedMemberBlock
-              salesId={currentMemberId}
+              sales={sales}
               members={[...submittedPotentialMembers, ...contactedMembers]}
               loadingMembers={loadingContactedMembers}
             />
           )}
         </Tabs.TabPane>
         <Tabs.TabPane key="deals" tab={`${formatMessage(salesMessages.label.deals)} (${totalTransactedMembers})`}>
-          {currentMemberId && (
+          {sales && (
             <SalesCallTransactedMemberBlock
-              salesId={currentMemberId}
+              sales={sales}
               members={transactedMembers}
               loadingMembers={loadingTransactedMembers}
             />

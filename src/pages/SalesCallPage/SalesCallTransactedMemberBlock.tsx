@@ -13,7 +13,8 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { SalesCallMemberProps, useLead } from '../../hooks'
+import { SalesCallMemberProps } from '../../hooks'
+import { SalesProps } from '../../types/member'
 
 const StyledButton = styled(Button)`
   display: flex;
@@ -42,14 +43,14 @@ type RecordProps = {
 }
 
 const SalesCallTransactedMemberBlock: React.FC<{
-  salesId: string
+  sales: SalesProps
   members: SalesCallMemberProps[]
   loadingMembers: boolean
-}> = ({ salesId, members, loadingMembers }) => {
+}> = ({ sales, members, loadingMembers }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
-  const { sales } = useLead(salesId)
+
   const [filters, setFilters] = useState<{
     studentName?: string
     phone?: string
