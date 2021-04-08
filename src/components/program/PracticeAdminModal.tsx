@@ -25,6 +25,8 @@ const messages = defineMessages({
   difficulty: { id: 'program.ui.difficulty', defaultMessage: '難易度' },
   estimatedTime: { id: 'program.label.estimatedTime', defaultMessage: '估計時間（分鐘）' },
   uploadExample: { id: 'program.ui.uploadExample', defaultMessage: '範例素材' },
+  coverRequired: { id: 'program.label.coverRequired', defaultMessage: '上傳封面' },
+  coverRequiredTips: { id: 'program.text.coverRequiredTips', defaultMessage: '若作業形式以文件為主，建議不勾選' },
 })
 
 const StyledTitle = styled.div`
@@ -46,6 +48,7 @@ type FieldProps = {
   description: EditorState
   isPracticePrivate: boolean
   difficulty: number
+  isCoverRequired: boolean
 }
 
 const PracticeAdminModal: React.FC<{
@@ -109,7 +112,12 @@ const PracticeForm: React.FC<{
           duration: values.estimatedTime,
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
-          metadata: { ...programContent.metadata, difficulty: values.difficulty, private: values.isPracticePrivate },
+          metadata: {
+            ...programContent.metadata,
+            difficulty: values.difficulty,
+            private: values.isPracticePrivate,
+            isCoverRequired: values.isCoverRequired,
+          },
         },
       }),
     ])
@@ -176,12 +184,13 @@ const PracticeForm: React.FC<{
       layout="vertical"
       initialValues={{
         publishedAt: !!programContent.publishedAt,
-        isPracticePrivate: programContent.metadata && programContent.metadata.private,
+        isPracticePrivate: !!programContent.metadata?.private,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
         estimatedTime: programContent.duration,
         description: BraftEditor.createEditorState(programContentBody.description),
         difficulty: programContent.metadata?.difficulty || 1,
+        isCoverRequired: !!programContent.metadata?.isCoverRequired,
       }}
       onFinish={handleSubmit}
     >
@@ -198,6 +207,15 @@ const PracticeForm: React.FC<{
                 placement="bottom"
                 title={<StyledTips>{formatMessage(programMessages.text.practicePrivateTips)}</StyledTips>}
               >
+                <QuestionCircleFilled className="ml-1" />
+              </Tooltip>
+            </Checkbox>
+          </Form.Item>
+
+          <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3">
+            <Checkbox>
+              {formatMessage(messages.coverRequired)}
+              <Tooltip placement="bottom" title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}>
                 <QuestionCircleFilled className="ml-1" />
               </Tooltip>
             </Checkbox>
