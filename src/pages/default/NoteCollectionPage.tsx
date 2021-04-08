@@ -293,7 +293,7 @@ const NoteCollectionPage: React.FC = () => {
                 try {
                   const link: string = await getFileDownloadableLink(`attachments/${attachment.id}`, authToken, apiHost)
                   if (link && attachment.data?.name) {
-                    await downloadFile(link, attachment.data.name)
+                    await downloadFile(attachment.data.name, { url: link })
                     downloadedCount++
                     if (downloadedCount === record.attachments.length) {
                       setDownloadingNoteIds(prev => prev.filter(v => v !== record.id))
