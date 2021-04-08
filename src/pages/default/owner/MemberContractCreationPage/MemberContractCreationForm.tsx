@@ -189,11 +189,9 @@ const MemberContractCreationForm: React.FC<
               </Form.Item>
 
               <Form.Item name="certification" noStyle>
-                <CertificationUploader
-                  memberId={memberId}
-                  identity={identity}
-                  onCertificationPathSet={path => setCertificationPath(path)}
-                />
+                {identity === 'student' && (
+                  <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
+                )}
               </Form.Item>
 
               {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}

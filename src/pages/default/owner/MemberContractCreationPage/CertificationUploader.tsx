@@ -9,10 +9,9 @@ import { handleError, uploadFile } from '../../../../helpers'
 const CertificationUploader: React.VFC<
   UploadProps & {
     memberId: string
-    identity: 'normal' | 'student'
-    onCertificationPathSet?: (path: string) => void
+    onFinish?: (path: string) => void
   }
-> = ({ memberId, identity, onCertificationPathSet, ...uploadProps }) => {
+> = ({ memberId, onFinish, ...uploadProps }) => {
   const { id: appId } = useApp()
   const { authToken, apiHost } = useAuth()
 
@@ -24,11 +23,10 @@ const CertificationUploader: React.VFC<
       customRequest={({ file }) => {
         setUploading(true)
         uploadFile(`certification/${appId}/student_${memberId}`, file, authToken, apiHost)
-          .then(() => onCertificationPathSet?.(file.name))
+          .then(() => onFinish?.(file.name))
           .catch(handleError)
           .finally(() => setUploading(false))
       }}
-      className={identity === 'normal' ? 'd-none' : undefined}
       {...uploadProps}
     >
       <Button icon={<UploadOutlined />} loading={uploading}>
