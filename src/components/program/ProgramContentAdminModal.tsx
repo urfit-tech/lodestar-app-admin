@@ -90,7 +90,6 @@ const ProgramContentAdminModal: React.FC<{
       try {
         await uploadFile(`videos/${appId}/${programContentBody.id}`, videoFile, authToken, apiHost, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
-          timeout: 60000,
         })
       } catch (error) {
         uploadError.video = true
@@ -105,7 +104,6 @@ const ProgramContentAdminModal: React.FC<{
       try {
         await uploadFile(`texttracks/${appId}/${programContentBody.id}`, captionFile, authToken, apiHost, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
-          timeout: 60000,
         })
       } catch (error) {
         uploadError.caption = true
@@ -123,7 +121,6 @@ const ProgramContentAdminModal: React.FC<{
         for (const file of pendingFiles) {
           await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
             cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
-            timeout: 60000,
           })
         }
       } catch (error) {
