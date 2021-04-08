@@ -21,18 +21,9 @@ import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const messages = defineMessages({
-  show: { id: 'program.ui.show', defaultMessage: '顯示' },
-  deleteContentWarning: {
-    id: 'program.text.deleteContentWarning',
-    defaultMessage: '你確定要刪除此內容？此動作無法還原',
-  },
-  deleteContent: { id: 'program.ui.deleteContent', defaultMessage: '刪除內容' },
-  contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
-  estimatedTime: { id: 'program.label.estimatedTime', defaultMessage: '估計時間（分鐘）' },
-  description: { id: 'program.label.description', defaultMessage: '描述' },
-  notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
-  displayPrivate: { id: 'program.ui.displayPrivate', defaultMessage: '私密成果' },
+  displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
   difficulty: { id: 'program.ui.difficulty', defaultMessage: '難易度' },
+  estimatedTime: { id: 'program.label.estimatedTime', defaultMessage: '估計時間（分鐘）' },
   uploadExample: { id: 'program.ui.uploadExample', defaultMessage: '範例素材' },
 })
 
@@ -197,7 +188,7 @@ const PracticeForm: React.FC<{
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
           <Form.Item name="publishedAt" valuePropName="checked" className="mr-3">
-            <Checkbox>{formatMessage(messages.show)}</Checkbox>
+            <Checkbox>{formatMessage(programMessages.label.show)}</Checkbox>
           </Form.Item>
 
           <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3">
@@ -213,7 +204,7 @@ const PracticeForm: React.FC<{
           </Form.Item>
 
           <Form.Item name="isNotifyUpdate" valuePropName="checked">
-            <Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>
+            <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
           </Form.Item>
         </div>
 
@@ -238,13 +229,13 @@ const PracticeForm: React.FC<{
               <Menu>
                 <Menu.Item
                   onClick={() =>
-                    window.confirm(formatMessage(messages.deleteContentWarning)) &&
-                    deletePractice({
-                      variables: { programContentId: programContent.id },
-                    }).then(() => onRefetch?.())
+                    window.confirm(formatMessage(programMessages.text.deletePracticeWarning)) &&
+                    deletePractice({ variables: { programContentId: programContent.id } })
+                      .then(() => onRefetch?.())
+                      .catch(handleError)
                   }
                 >
-                  {formatMessage(messages.deleteContent)}
+                  {formatMessage(programMessages.ui.deleteContent)}
                 </Menu.Item>
               </Menu>
             }
@@ -256,7 +247,7 @@ const PracticeForm: React.FC<{
 
       <StyledTitle className="mb-3">{formatMessage(programMessages.label.practice)}</StyledTitle>
 
-      <Form.Item label={formatMessage(messages.contentTitle)} name="title">
+      <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
         <Input />
       </Form.Item>
 
@@ -286,7 +277,7 @@ const PracticeForm: React.FC<{
       >
         <FileUploader multiple showUploadList fileList={attachments} onChange={files => setAttachments(files)} />
       </Form.Item>
-      <Form.Item label={<span>{formatMessage(messages.description)}</span>} name="description">
+      <Form.Item label={<span>{formatMessage(programMessages.label.description)}</span>} name="description">
         <AdminBraftEditor />
       </Form.Item>
     </Form>

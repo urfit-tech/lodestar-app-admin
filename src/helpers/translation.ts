@@ -665,6 +665,8 @@ export const programMessages = {
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
     exerciseTitle: { id: 'program.label.exerciseTitle', defaultMessage: '標題' },
     allowMultipleAnswers: { id: 'program.label.allowMultipleAnswers', defaultMessage: '允許多個正確解答' },
+    contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
+    description: { id: 'program.label.description', defaultMessage: '內文' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -754,6 +756,14 @@ export const programMessages = {
     noChoiceDescription: { id: 'program.text.noChoiceDescription', defaultMessage: '未填寫選項敘述' },
     noAnswerDescription: { id: 'program.text.noAnswersDescription', defaultMessage: '未填寫解答敘述' },
     invalidExercise: { id: 'program.text.invalidExercise', defaultMessage: '未完成測驗' },
+    deleteExerciseWarning: {
+      id: 'program.text.deleteExerciseWarning',
+      defaultMessage: '將刪除所有與此測驗相關資料且不可復原，確定要刪除嗎？',
+    },
+    deletePracticeWarning: {
+      id: 'program.text.deletePracticeWarning',
+      defaultMessage: '將刪除所有與此作業相關資料且不可復原，確定要刪除嗎？',
+    },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },

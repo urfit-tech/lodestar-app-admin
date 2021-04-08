@@ -21,12 +21,10 @@ import AdminBraftEditor from '../form/AdminBraftEditor'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({
-  contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
   contentPlan: { id: 'program.label.contentPlan', defaultMessage: '適用方案' },
   uploadVideo: { id: 'program.ui.uploadVideo', defaultMessage: '上傳影片' },
   uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
-  contentContext: { id: 'program.label.contentContext', defaultMessage: '內文' },
   uploadMaterial: { id: 'program.ui.uploadMaterial', defaultMessage: '上傳教材' },
 })
 
@@ -320,7 +318,7 @@ const ProgramContentAdminModal: React.FC<{
             </div>
           </div>
 
-          <Form.Item label={formatMessage(messages.contentTitle)} name="title">
+          <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
             <Input />
           </Form.Item>
           {program.isSubscription && (
@@ -404,7 +402,7 @@ const ProgramContentAdminModal: React.FC<{
               />
             </Form.Item>
           )}
-          <Form.Item label={formatMessage(messages.contentContext)} name="description">
+          <Form.Item label={formatMessage(programMessages.label.description)} name="description">
             <AdminBraftEditor />
           </Form.Item>
         </Form>

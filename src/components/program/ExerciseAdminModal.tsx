@@ -214,7 +214,7 @@ const ExerciseAdminForm: React.FC<{
               <Menu>
                 <Menu.Item
                   onClick={() =>
-                    window.confirm(formatMessage(programMessages.text.deleteContentWarning)) &&
+                    window.confirm(formatMessage(programMessages.text.deleteExerciseWarning)) &&
                     deleteProgramContent({ variables: { programContentId: programContent.id } })
                       .then(() => onRefetch?.())
                       .catch(handleError)
