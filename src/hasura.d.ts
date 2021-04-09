@@ -11001,6 +11001,67 @@ export interface GET_PROGRAMS_WITH_EXERCISESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_EXERCISE_COLLECTION
+// ====================================================
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_body {
+  __typename: "program_content_body";
+  id: any;
+  data: any | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate_aggregate {
+  __typename: "program_content_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate {
+  __typename: "program_content_enrollment_aggregate";
+  aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk {
+  __typename: "program_content";
+  id: any;
+  metadata: any | null;
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_body;
+  /**
+   * An aggregated array relationship
+   */
+  enrollments_aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate;
+}
+
+export interface GET_EXERCISE_COLLECTION_exercise {
+  __typename: "exercise";
+  id: any;
+  member_id: string;
+  answer: any | null;
+}
+
+export interface GET_EXERCISE_COLLECTION {
+  /**
+   * fetch data from the table: "program_content" using primary key columns
+   */
+  program_content_by_pk: GET_EXERCISE_COLLECTION_program_content_by_pk | null;
+  /**
+   * fetch data from the table: "exercise"
+   */
+  exercise: GET_EXERCISE_COLLECTION_exercise[];
+}
+
+export interface GET_EXERCISE_COLLECTIONVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
