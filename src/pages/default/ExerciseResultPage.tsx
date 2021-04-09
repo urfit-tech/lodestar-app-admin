@@ -1,7 +1,8 @@
 import Icon from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Select, Skeleton, Spin } from 'antd'
+import { Select, Skeleton, Spin, Table, Tabs } from 'antd'
 import gql from 'graphql-tag'
+import moment from 'moment'
 import { flatten, sum, uniqBy } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -12,7 +13,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
-import { QuestionProps } from '../../types/program'
+import { ExerciseProps, QuestionProps } from '../../types/program'
 
 type FilterProps = {
   programId?: string
@@ -132,23 +133,61 @@ const StyledSummaryCount = styled.div`
     border-left: 1px solid var(--gray);
   }
 `
+const StyledTableWrapper = styled.div`
+  color: var(--gray-darker);
+  white-space: nowrap;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+`
+const StyledTag = styled.div<{ variant: 'accepted' | 'failed' }>`
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background-color: ${props => (props.variant === 'accepted' ? 'var(--success)' : 'var(--error)')};
+  color: white;
+  font-size: 12px;
+`
 
 const messages = defineMessages({
   averageScore: { id: 'program.text.averageScore', defaultMessage: '平均成績 {averageScore} 分' },
   exerciseInformation: {
     id: 'program.text.exerciseInformation',
-    defaultMessage: '滿分 {totalScore} 分，及格 {passingScore} 分',
+    defaultMessage: '滿分 {totalPoints} 分，及格 {passingScore} 分',
   },
   totalStudents: { id: 'program.text.totalStudents', defaultMessage: '學生總數 {count} 人' },
   submittedStudents: { id: 'program.text.submittedStudents', defaultMessage: '作答人數 {count} 人' },
   acceptedStudents: { id: 'program.text.acceptedStudents', defaultMessage: '通過人數 {count} 人 ({percent}%)' },
+  exerciseStatistics: { id: 'program.label.exerciseStatistics', defaultMessage: '答題狀況' },
+  individualExercise: { id: 'program.label.individualExercise', defaultMessage: '個別表現' },
+  exerciseCreatedAt: { id: 'program.label.exerciseCreatedAt', defaultMessage: '測驗日期' },
 })
+
+type ExerciseDisplayProps = ExerciseProps & {
+  createdAt: Date
+  member: {
+    id: string
+    name: string
+    email: string
+  }
+  score: number
+  status: 'accepted' | 'failed'
+}
 
 const ExerciseResultBlock: React.VFC<{
   programContentId: string
 }> = ({ programContentId }) => {
   const { formatMessage } = useIntl()
   const { loadingExercises, errorExercises, programContent, exercises } = useExerciseCollection(programContentId)
+  const [tab, setTab] = useState('')
+
+  if (loadingExercises) {
+    return <Skeleton active />
+  }
+
+  if (errorExercises || !programContent) {
+    return <>{formatMessage(errorMessages.data.fetch)}</>
+  }
+
   const averageScore = exercises.length
     ? (
         sum(exercises.map(exercise => exercise.answer.map(question => question.gainedPoints)).flat()) / exercises.length
@@ -164,22 +203,14 @@ const ExerciseResultBlock: React.VFC<{
     ),
   ).length
 
-  if (loadingExercises) {
-    return <Skeleton active />
-  }
-
-  if (errorExercises || !programContent) {
-    return <>{formatMessage(errorMessages.data.fetch)}</>
-  }
-
   return (
     <>
-      <SummaryBlock className="d-flex align-items-center p-4">
+      <SummaryBlock className="d-flex align-items-center p-4 mb-4">
         <div className="flex-shrink-0">
           <StyledSummaryTitle>{formatMessage(messages.averageScore, { averageScore })}</StyledSummaryTitle>
           <StyledSummaryMeta>
             {formatMessage(messages.exerciseInformation, {
-              totalScore: sum(programContent.questions.map(question => question.points) || []),
+              totalPoints: programContent.totalPoints,
               passingScore: programContent.passingScore || 0,
             })}
           </StyledSummaryMeta>
@@ -199,6 +230,67 @@ const ExerciseResultBlock: React.VFC<{
           </StyledSummaryCount>
         </div>
       </SummaryBlock>
+
+      <Tabs activeKey={tab || 'statistics'} onChange={key => setTab(key)}>
+        <Tabs.TabPane key="statistics" tab={formatMessage(messages.exerciseStatistics)}></Tabs.TabPane>
+        <Tabs.TabPane key="individual" tab={formatMessage(messages.individualExercise)}>
+          <StyledTableWrapper>
+            <Table<ExerciseDisplayProps>
+              rowKey="id"
+              scroll={{ x: true }}
+              columns={[
+                {
+                  dataIndex: 'createdAt',
+                  title: formatMessage(messages.exerciseCreatedAt),
+                  sorter: (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+                  render: value => moment(value).format('YYYY-MM-DD HH:mm'),
+                },
+                {
+                  key: 'memberId',
+                  title: formatMessage(commonMessages.label.nameAndEmail),
+                  render: (_, record, i) => (
+                    <>
+                      {record.member.name} / {record.member.email}
+                    </>
+                  ),
+                },
+                {
+                  dataIndex: 'score',
+                  title: formatMessage(programMessages.label.score),
+                  sorter: (a, b) => a.score - b.score,
+                  render: value => (
+                    <>
+                      {Math.floor(value * 10) / 10}/{programContent.totalPoints}
+                    </>
+                  ),
+                },
+                {
+                  dataIndex: 'status',
+                  title: formatMessage(commonMessages.label.status),
+                  render: value =>
+                    value === 'accepted' ? (
+                      <StyledTag variant="accepted">{formatMessage(programMessages.status.accepted)}</StyledTag>
+                    ) : (
+                      <StyledTag variant="failed">{formatMessage(programMessages.status.failed)}</StyledTag>
+                    ),
+                  filters: [
+                    {
+                      text: formatMessage(programMessages.status.accepted),
+                      value: 'accepted',
+                    },
+                    {
+                      text: formatMessage(programMessages.status.failed),
+                      value: 'failed',
+                    },
+                  ],
+                  onFilter: (value, record) => record.status === value,
+                },
+              ]}
+              dataSource={exercises}
+            />
+          </StyledTableWrapper>
+        </Tabs.TabPane>
+      </Tabs>
     </>
   )
 }
@@ -273,14 +365,19 @@ const useExerciseCollection = (programContentId: string) => {
             }
           }
         }
-        exercise(
-          where: { program_content_id: { _eq: $programContentId } }
-          distinct_on: [member_id]
-          order_by: [{ member_id: asc }, { created_at: desc }]
-        ) {
+        member: exercise(where: { program_content_id: { _eq: $programContentId } }, distinct_on: [member_id]) {
+          member {
+            id
+            name
+            username
+            email
+          }
+        }
+        exercise(where: { program_content_id: { _eq: $programContentId } }, order_by: [{ created_at: desc }]) {
           id
           member_id
           answer
+          created_at
         }
       }
     `,
@@ -292,30 +389,56 @@ const useExerciseCollection = (programContentId: string) => {
     passingScore: number
     questions: QuestionProps[]
     enrollments: number
+    totalPoints: number
   } | null = data?.program_content_by_pk
     ? {
         id: data.program_content_by_pk.id,
         passingScore: data.program_content_by_pk.metadata?.passingScore || 0,
         questions: data.program_content_by_pk.program_content_body.data?.questions || [],
         enrollments: data.program_content_by_pk.enrollments_aggregate.aggregate?.count || 0,
+        totalPoints: sum(
+          data.program_content_by_pk.program_content_body.data?.questions?.map((question: any) => question.points) ||
+            [],
+        ),
       }
     : null
 
-  const exercises: {
-    id: string
-    memberId: string
-    answer: {
-      questionId: string
-      choiceIds: string[]
-      questionPoints: number
-      gainedPoints: number
-    }[]
-  }[] =
-    data?.exercise.map(v => ({
-      id: v.id,
-      memberId: v.member_id,
-      answer: v.answer || [],
-    })) || []
+  const membersMap =
+    data?.member.reduce<
+      {
+        [memberId in string]?: {
+          name: string
+          email: string
+        }
+      }
+    >(
+      (accumulator, { member }) => ({
+        ...accumulator,
+        [member.id]: {
+          name: member.name || member.username,
+          email: member.email,
+        },
+      }),
+      {},
+    ) || {}
+
+  const exercises: ExerciseDisplayProps[] =
+    data?.exercise.map(v => {
+      const score = sum(v.answer.map((answer: any) => answer.gainedPoints))
+      return {
+        id: v.id,
+        memberId: v.member_id,
+        member: {
+          id: v.member_id,
+          name: membersMap[v.member_id]?.name || '',
+          email: membersMap[v.member_id]?.email || '',
+        },
+        answer: v.answer || [],
+        createdAt: v.created_at,
+        score,
+        status: score < (programContent?.passingScore || 0) ? 'failed' : 'accepted',
+      }
+    }) || []
 
   return {
     loadingExercises: loading,

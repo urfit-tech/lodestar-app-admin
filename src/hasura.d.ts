@@ -11034,11 +11034,28 @@ export interface GET_EXERCISE_COLLECTION_program_content_by_pk {
   enrollments_aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate;
 }
 
+export interface GET_EXERCISE_COLLECTION_member_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_EXERCISE_COLLECTION_member {
+  __typename: "exercise";
+  /**
+   * An object relationship
+   */
+  member: GET_EXERCISE_COLLECTION_member_member;
+}
+
 export interface GET_EXERCISE_COLLECTION_exercise {
   __typename: "exercise";
   id: any;
   member_id: string;
   answer: any | null;
+  created_at: any;
 }
 
 export interface GET_EXERCISE_COLLECTION {
@@ -11046,6 +11063,10 @@ export interface GET_EXERCISE_COLLECTION {
    * fetch data from the table: "program_content" using primary key columns
    */
   program_content_by_pk: GET_EXERCISE_COLLECTION_program_content_by_pk | null;
+  /**
+   * fetch data from the table: "exercise"
+   */
+  member: GET_EXERCISE_COLLECTION_member[];
   /**
    * fetch data from the table: "exercise"
    */
