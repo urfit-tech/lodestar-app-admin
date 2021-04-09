@@ -90,6 +90,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'PracticeCollectionAdminPage',
     authenticated: true,
   },
+  exercise_result: {
+    path: '/exercise-result',
+    pageName: 'ExerciseResultPage',
+    authenticated: true,
+  },
   program_package_collection: {
     path: '/program-packages',
     pageName: 'ProgramPackageCollectionAdminPage',
@@ -120,6 +125,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramPackageCategoryPage',
     authenticated: true,
   },
+
   //project
   project: {
     path: '/projects/:projectId',

@@ -373,6 +373,7 @@ export const commonMessages = {
     memberSettings: { id: 'common.menu.creatorSettings', defaultMessage: '個人設定' },
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
     practice: { id: 'common.menu.practice', defaultMessage: '作業管理' },
+    exerciseResult: {id: 'common.menu.exerciseResult', defaultMessage: '測驗成果'}
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
@@ -632,6 +633,7 @@ export const programMessages = {
     notDeliveryOnly: { id: 'program.label.notDeliveryOnly', defaultMessage: '僅顯示未交付' },
     memberList: { id: 'program.label.memberList', defaultMessage: '學員名單' },
     select: { id: 'program.label.select', defaultMessage: '選擇課程' },
+    selectExercise: {id: 'program.label.selectExercise', defaultMessage: '選擇測驗'},
     selectDeliveryAt: { id: 'program.label.selectDeliveryAt', defaultMessage: '選擇啟用日期' },
     programIntroduction: { id: 'program.label.programIntroduction', defaultMessage: '課程介紹' },
     programCover: { id: 'program.label.programCover', defaultMessage: '課程封面' },

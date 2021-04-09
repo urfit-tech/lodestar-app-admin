@@ -10956,6 +10956,51 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAMS_WITH_EXERCISES
+// ====================================================
+
+export interface GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections_program_contents {
+  __typename: "program_content";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections {
+  __typename: "program_content_section";
+  id: any;
+  /**
+   * An array relationship
+   */
+  program_contents: GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections_program_contents[];
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISES_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections[];
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISES {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAMS_WITH_EXERCISES_program[];
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISESVariables {
+  creatorId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
@@ -12952,6 +12997,7 @@ export enum contract_update_column {
   description = "description",
   id = "id",
   name = "name",
+  options = "options",
   published_at = "published_at",
   revocation = "revocation",
   template = "template",
@@ -18039,6 +18085,7 @@ export interface contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -18055,6 +18102,7 @@ export interface contract_insert_input {
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  options?: any | null;
   published_at?: any | null;
   revocation?: string | null;
   template?: string | null;
