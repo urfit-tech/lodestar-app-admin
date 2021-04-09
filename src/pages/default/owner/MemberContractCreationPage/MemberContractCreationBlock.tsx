@@ -94,7 +94,7 @@ const MemberContractCreationBlock: React.FC<{
   const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
   if (fieldValue.withCreatorId && totalAppointments > 0) {
     orderProducts.push({
-      id: contractsOptions.product.designatedIndustryTeacher,
+      id: contractsOptions.projectPlanId['designatedIndustryTeacher'],
       type: 'addonProduct',
       name: '指定業師',
       price: 1000,
@@ -128,7 +128,7 @@ const MemberContractCreationBlock: React.FC<{
 
   if (discountPrice.referral) {
     orderDiscounts.push({
-      id: contractsOptions.couponPlanId['referral'],
+      id: contractsOptions.couponCodeId['referral'],
       type: 'referralDiscount',
       name: '被介紹人折抵',
       price: discountPrice.referral,
@@ -139,7 +139,7 @@ const MemberContractCreationBlock: React.FC<{
   }
   if (discountPrice.student) {
     orderDiscounts.push({
-      id: contractsOptions.couponPlanId['student'],
+      id: contractsOptions.couponCodeId['student'],
       type: 'promotionDiscount',
       name: '學生方案',
       price: discountPrice.student,
@@ -159,21 +159,21 @@ const MemberContractCreationBlock: React.FC<{
 
     if (mainProducts.length === 2) {
       orderDiscounts.push({
-        id: contractsOptions.couponPlanId['tenPercentOff'],
+        id: contractsOptions.couponCodeId['tenPercentOff'],
         name: '任選兩件折抵',
         ...promotionDiscount,
       })
     }
     if (mainProducts.length === 3) {
       orderDiscounts.push({
-        id: contractsOptions.couponPlanId['fifteenPercentOff'],
+        id: contractsOptions.couponCodeId['fifteenPercentOff'],
         name: '任選三件折抵',
         ...promotionDiscount,
       })
     }
     if (mainProducts.length >= 4) {
       orderDiscounts.push({
-        id: contractsOptions.couponPlanId['twentyPercentOff'],
+        id: contractsOptions.couponCodeId['twentyPercentOff'],
         name: '任選四件折抵',
         ...promotionDiscount,
       })
@@ -181,7 +181,7 @@ const MemberContractCreationBlock: React.FC<{
   }
   // if (hasDeposit) {
   //   orderDiscounts.push({
-  //     id: contractsOptions.couponPlanId['deposit'],
+  //     id: contractsOptions.couponCodeId['deposit'],
   //     type: 'depositDiscount',
   //     name: '扣除訂金',
   //     price: discountPrice.deposit,
@@ -194,7 +194,6 @@ const MemberContractCreationBlock: React.FC<{
   const orderItems = [...orderProducts, ...orderDiscounts]
   const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
 
-  const [insertPrivateTeachCoupon] = useMutation<hasura.INSERT_COUPON, hasura.INSERT_COUPONVariables>(INSERT_COUPON)
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
@@ -277,38 +276,14 @@ const MemberContractCreationBlock: React.FC<{
     const times = '0'
     const orderId = moment().format('YYYYMMDDHHmmssSSS') + times.padStart(2, '0')
 
-    const { data } = await insertPrivateTeachCoupon({
-      variables: {
-        privateTeachCoupons: orderDiscounts.map(v => ({
-          id: v4(),
-          coupon_plan_id: v.id,
-          code: v4().split('-')[0],
-          count: 1,
-          remaining: 0,
-          app_id: appId,
-          coupons: {
-            data: [
-              {
-                member_id: member.id,
-              },
-            ],
-          },
-        })),
-      },
-    })
-
-    const contractCoupons =
-      data?.insert_coupon_code?.returning.map(v => ({
-        ...(orderDiscounts
-          .map(discount => pick(['id', 'name', 'price', 'type'], discount))
-          .find(discount => discount.id === v.coupon_plan_id) || {
-          id: '',
-          name: '',
-          price: 0,
-          type: '',
-        }),
-        target: v.coupons.map(w => w.id)[0] as string,
-      })) || []
+    const contractCoupons = orderDiscounts.map(v => ({
+      id: v4(),
+      name: v.name,
+      price: v.price,
+      coupon_code_id: v.id,
+      member_id: member.id,
+      type: 'Coupon',
+    }))
 
     addMemberContract({
       variables: {
@@ -318,20 +293,18 @@ const MemberContractCreationBlock: React.FC<{
         endedAt,
         authorId: currentMemberId || '',
         values: {
-          orderId,
-          price: totalPrice,
-          coupons,
           startedAt: fieldValue.startedAt,
           endedAt,
+          memberId: member.id,
           invoice: {
             name: member.name,
             phone: member.phones,
             email: member.email,
           },
+          price: totalPrice,
           coinName: `${selectedProjectPlan?.title}`,
-          memberId: member.id,
-          paymentNo: moment().format('YYYYMMDDHHmmss'),
           coinAmount: totalCoins,
+          orderId,
           orderProducts: [
             {
               product_id: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
@@ -355,15 +328,17 @@ const MemberContractCreationBlock: React.FC<{
               ended_at: endedAt,
             },
           ],
+          coupons: [...coupons, ...contractCoupons.map(coupon => pick(['id', 'member_id', 'coupon_code_id'], coupon))],
           orderDiscounts: [
             ...contractCoupons.map(v => ({
               name: v.name,
               price: v.price,
               type: 'Coupon',
-              target: v.target,
+              target: v.id,
             })),
           ],
           orderExecutors,
+          paymentNo: moment().format('YYYYMMDDHHmmss'),
           paymentOptions: {
             paymentMethod: fieldValue.paymentMethod,
             installmentPlan: fieldValue.installmentPlan,
@@ -447,19 +422,6 @@ const ADD_MEMBER_CONTRACT = gql`
       }
     ) {
       id
-    }
-  }
-`
-
-const INSERT_COUPON = gql`
-  mutation INSERT_COUPON($privateTeachCoupons: [coupon_code_insert_input!]!) {
-    insert_coupon_code(objects: $privateTeachCoupons) {
-      returning {
-        coupon_plan_id
-        coupons {
-          id
-        }
-      }
     }
   }
 `

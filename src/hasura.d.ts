@@ -11371,48 +11371,6 @@ export interface ADD_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_COUPON
-// ====================================================
-
-export interface INSERT_COUPON_insert_coupon_code_returning_coupons {
-  __typename: "coupon";
-  id: any;
-}
-
-export interface INSERT_COUPON_insert_coupon_code_returning {
-  __typename: "coupon_code";
-  coupon_plan_id: any;
-  /**
-   * An array relationship
-   */
-  coupons: INSERT_COUPON_insert_coupon_code_returning_coupons[];
-}
-
-export interface INSERT_COUPON_insert_coupon_code {
-  __typename: "coupon_code_mutation_response";
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_COUPON_insert_coupon_code_returning[];
-}
-
-export interface INSERT_COUPON {
-  /**
-   * insert data into the table: "coupon_code"
-   */
-  insert_coupon_code: INSERT_COUPON_insert_coupon_code | null;
-}
-
-export interface INSERT_COUPONVariables {
-  privateTeachCoupons: coupon_code_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_REFERRAL_MEMBER
 // ====================================================
 
