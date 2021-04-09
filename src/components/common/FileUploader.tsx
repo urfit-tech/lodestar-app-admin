@@ -24,6 +24,7 @@ const FileUploader: React.FC<{
     onClick: () => void
   }>
   onChange?: (files: File[]) => void
+  onDownload?: (files: File) => void
 }> = ({
   fileList,
   multiple,
@@ -34,11 +35,12 @@ const FileUploader: React.FC<{
   downloadableLink,
   renderTrigger,
   onChange,
+  onDownload,
 }) => {
   const { formatMessage } = useIntl()
   const { authToken, apiHost } = useAuth()
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const [uploadFilesDownloadableLink, setUploadFilesDownloadableLink] = useState<{ [fileName: string]: string }>({})
+  const [uploadFiles, setUploadFiles] = useState<File[]>([])
 
   return (
     <>
@@ -64,8 +66,10 @@ const FileUploader: React.FC<{
           const files: File[] = fileList?.slice() || []
           for (let i = 0; i < e.target.files.length; i++) {
             const file = e.target.files[i]
-            setUploadFilesDownloadableLink(prev => ({ ...prev, [file.name]: URL.createObjectURL(file) }))
-            file && !files.some(v => v.name === file.name) && files.push(file)
+            if (file && !files.some(v => v.name === file.name)) {
+              setUploadFiles(prev => [...prev, file])
+              files.push(file)
+            }
           }
           e.target.value = ''
           e.target.files = null
@@ -84,15 +88,15 @@ const FileUploader: React.FC<{
             loadingProgress={uploadProgress?.[v.name]}
             isFailed={failedUploadFiles?.some(file => file.name === v.name && file.lastModified === v.lastModified)}
             onDownload={
-              uploadFilesDownloadableLink[v.name] || downloadableLink
+              uploadFiles.every(file => file.name !== v.name && file.lastModified !== v.lastModified) &&
+              downloadableLink
                 ? async () => {
-                    const link =
-                      uploadFilesDownloadableLink[v.name] ||
-                      (await getFileDownloadableLink(
-                        `${typeof downloadableLink === 'string' ? downloadableLink : downloadableLink?.(v)}`,
-                        authToken,
-                        apiHost,
-                      ))
+                    onDownload?.(v)
+                    const link = await getFileDownloadableLink(
+                      `${typeof downloadableLink === 'string' ? downloadableLink : downloadableLink?.(v)}`,
+                      authToken,
+                      apiHost,
+                    )
                     return downloadFile(v.name, {
                       url: link,
                     })

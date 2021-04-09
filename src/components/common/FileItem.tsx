@@ -8,13 +8,21 @@ const messages = defineMessages({
   failedDownload: { id: 'common.event.failedDownload', defaultMessage: '下載失敗' },
 })
 
-const StyledFileItem = styled.div<{ isFailed?: boolean }>`
-  color: ${props => (props.isFailed ? 'var(--error)' : 'var(--gray-darker)')};
-  font-size: 14px;
-
+const StyledActionBlock = styled.span``
+const StyledFileItem = styled.div`
+  ${StyledActionBlock} svg {
+    display: none;
+  }
   :hover {
     background-color: var(--gray-lighter);
+    ${StyledActionBlock} svg {
+      display: inline-block;
+    }
   }
+`
+const StyledFileName = styled.div<{ isFailed?: boolean }>`
+  color: ${props => (props.isFailed ? 'var(--error)' : 'var(--gray-darker)')};
+  font-size: 14px;
 `
 
 const FileItem: React.FC<{
@@ -25,24 +33,21 @@ const FileItem: React.FC<{
   onDownload?: () => Promise<any>
 }> = ({ fileName, loadingProgress, isFailed, onDelete, onDownload }) => {
   const { formatMessage } = useIntl()
-  const [isHover, setIsHover] = useState(false)
+
   const [isDownloading, setIsDownloading] = useState(false)
 
   return (
-    <>
-      <StyledFileItem
-        onMouseEnter={() => setIsHover(true)}
-        onMouseLeave={() => setIsHover(false)}
-        className="d-flex align-items-center justify-content-between py-1 px-2"
-        isFailed={isFailed}
-      >
-        <div className="flex-grow-1">{fileName}</div>
+    <StyledFileItem>
+      <div className="d-flex align-items-center justify-content-between py-1 px-2">
+        <StyledFileName isFailed={isFailed} className="flex-grow-1">
+          {fileName}
+        </StyledFileName>
         {isDownloading ? (
           <LoadingOutlined className="flex-shrink-0 ml-2 " />
         ) : (
-          <>
+          <StyledActionBlock>
             <DownloadOutlined
-              hidden={!(isHover && onDownload)}
+              hidden={!onDownload}
               className="flex-shrink-0 ml-2 pointer-cursor"
               onClick={async () => {
                 setIsDownloading(true)
@@ -52,16 +57,12 @@ const FileItem: React.FC<{
                 setIsDownloading(false)
               }}
             />
-            <CloseOutlined
-              hidden={!(isHover && onDelete)}
-              className="flex-shrink-0 ml-2 pointer-cursor"
-              onClick={onDelete}
-            />
-          </>
+            <CloseOutlined hidden={!onDelete} className="flex-shrink-0 ml-2 pointer-cursor" onClick={onDelete} />
+          </StyledActionBlock>
         )}
-      </StyledFileItem>
-      {!!loadingProgress && <Progress percent={loadingProgress} strokeColor="#4ed1b3" />}
-    </>
+      </div>
+      {!!loadingProgress && <Progress className="ml-2" percent={loadingProgress} strokeColor="#4ed1b3" />}
+    </StyledFileItem>
   )
 }
 

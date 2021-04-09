@@ -99,7 +99,6 @@ const ProgramContentAdminModal: React.FC<{
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [videoFile.name]: Math.floor((loaded / total) * 100) }))
           },
-          timeout: 60000,
         })
       } catch (error) {
         uploadError.video = true
@@ -117,7 +116,6 @@ const ProgramContentAdminModal: React.FC<{
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [captionFile.name]: Math.floor((loaded / total) * 100) }))
           },
-          timeout: 60000,
         })
       } catch (error) {
         uploadError.caption = true
@@ -137,7 +135,6 @@ const ProgramContentAdminModal: React.FC<{
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
           },
-          timeout: 60000,
         }).catch(() => {
           uploadError.materials = true
           setFailedUploadFiles(prev => [...prev, file])
