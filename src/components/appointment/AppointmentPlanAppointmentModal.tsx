@@ -186,6 +186,7 @@ const AppointmentPlanAppointmentModal: React.FC<
         )
         .then(({ data: { code, result } }) => {
           if (code === 'SUCCESS') {
+            refetchAppointmentPlanAdmin()
             setTaskType('payment')
           } else {
             setAppointmentStep('failed')
