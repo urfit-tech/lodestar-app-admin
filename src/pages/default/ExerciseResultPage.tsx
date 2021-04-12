@@ -1,6 +1,8 @@
+import { Bar } from '@ant-design/charts'
 import Icon from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Select, Skeleton, Spin, Table, Tabs } from 'antd'
+import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { flatten, sum, uniqBy } from 'ramda'
@@ -8,6 +10,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
+import { BraftContent } from '../../components/common/StyledBraftEditor'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
@@ -133,6 +136,18 @@ const StyledSummaryCount = styled.div`
     border-left: 1px solid var(--gray);
   }
 `
+const StyledQuestionBlock = styled.div`
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+  border-radius: 4px;
+  background: white;
+`
+const StyledQuestionDescription = styled.div`
+  color: var(--gray-darker);
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+`
 const StyledTableWrapper = styled.div`
   color: var(--gray-darker);
   white-space: nowrap;
@@ -203,6 +218,45 @@ const ExerciseResultBlock: React.VFC<{
     ),
   ).length
 
+  const choiceCount = exercises.reduce<{ [key: string]: number }>((accumulator, exercise) => {
+    const updates: { [key: string]: number } = {}
+    exercise.answer.forEach(answer => {
+      answer.choiceIds.forEach(choiceId => {
+        const key = `${answer.questionId}_${choiceId}`
+        updates[key] = (updates[key] || accumulator[key] || 0) + 1
+      })
+    })
+    return {
+      ...accumulator,
+      ...updates,
+    }
+  }, {})
+
+  const isCorrectChoices = Object.fromEntries(
+    programContent.questions
+      .map(question =>
+        question.choices.map(
+          choice => [BraftEditor.createEditorState(choice.description).toText() as string, choice.isCorrect] as const,
+        ),
+      )
+      .flat(),
+  )
+
+  const chartConfigs = Object.fromEntries(
+    programContent.questions.map(
+      question =>
+        [
+          question.id,
+          {
+            data: question.choices.map(choice => ({
+              choice: BraftEditor.createEditorState(choice.description).toText(),
+              count: choiceCount[`${question.id}_${choice.id}`],
+            })),
+          },
+        ] as const,
+    ),
+  )
+
   return (
     <>
       <SummaryBlock className="d-flex align-items-center p-4 mb-4">
@@ -232,7 +286,23 @@ const ExerciseResultBlock: React.VFC<{
       </SummaryBlock>
 
       <Tabs activeKey={tab || 'statistics'} onChange={key => setTab(key)}>
-        <Tabs.TabPane key="statistics" tab={formatMessage(messages.exerciseStatistics)}></Tabs.TabPane>
+        <Tabs.TabPane key="statistics" tab={formatMessage(messages.exerciseStatistics)}>
+          {programContent.questions.map(question => (
+            <StyledQuestionBlock key={question.id}>
+              <StyledQuestionDescription className="mb-4">
+                <BraftContent>{question.description}</BraftContent>
+              </StyledQuestionDescription>
+              <Bar
+                data={chartConfigs[question.id].data}
+                seriesField="choice"
+                color={data => (isCorrectChoices[data.choice] ? '#4c5b8f' : '#cdcdcd')}
+                xField="count"
+                yField="choice"
+                legend={false}
+              />
+            </StyledQuestionBlock>
+          ))}
+        </Tabs.TabPane>
         <Tabs.TabPane key="individual" tab={formatMessage(messages.individualExercise)}>
           <StyledTableWrapper>
             <Table<ExerciseDisplayProps>
@@ -403,24 +473,18 @@ const useExerciseCollection = (programContentId: string) => {
       }
     : null
 
-  const membersMap =
-    data?.member.reduce<
-      {
-        [memberId in string]?: {
-          name: string
-          email: string
-        }
-      }
-    >(
-      (accumulator, { member }) => ({
-        ...accumulator,
-        [member.id]: {
-          name: member.name || member.username,
-          email: member.email,
-        },
-      }),
-      {},
-    ) || {}
+  const membersMap = Object.fromEntries(
+    data?.member.map(
+      ({ member }) =>
+        [
+          member.id,
+          {
+            name: member.name || member.username,
+            email: member.email,
+          },
+        ] as const,
+    ) || [],
+  )
 
   const exercises: ExerciseDisplayProps[] =
     data?.exercise.map(v => {
