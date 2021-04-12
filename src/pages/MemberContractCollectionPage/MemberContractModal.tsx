@@ -1,11 +1,13 @@
-import Icon, { DownloadOutlined, MinusCircleOutlined, UploadOutlined } from '@ant-design/icons'
+import Icon, { MinusCircleOutlined, UploadOutlined } from '@ant-design/icons'
 import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Select } from 'antd'
 import AdminModal, { AdminModalProps } from 'lodestar-app-admin/src/components/admin/AdminModal'
+import FileItem from 'lodestar-app-admin/src/components/common/FileItem'
 import FileUploader from 'lodestar-app-admin/src/components/common/FileUploader'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
+import { useMutateAttachment, useUploadAttachments } from 'lodestar-app-admin/src/hooks/data'
 import { ReactComponent as ExternalLinkIcon } from 'lodestar-app-admin/src/images/icon/external-link-square.svg'
 import moment, { Moment } from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -93,6 +95,7 @@ type MemberContractModalProps = {
     memberId: string
     ratio: number
   }[]
+  studentAttachments?: { id: string; data: any; options: any }[] | null
   studentCertification?: string | null
   onSuccess?: () => void
 } & AdminModalProps
@@ -108,6 +111,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   note,
   orderExecutors,
   studentCertification,
+  studentAttachments,
   onSuccess,
   ...props
 }) => {
@@ -129,12 +133,15 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   }>()
   const { xuemiSales } = useXuemiSales()
   const [certification, setCertification] = useState<File[]>([])
+  const [attachments, setAttachments] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [disabledInput, setDisabledInput] = useState({
     approvedAt: false,
     loanCanceledAt: false,
     refundAppliedAt: false,
   })
+  const uploadAttachments = useUploadAttachments()
+  const { deleteAttachments } = useMutateAttachment()
   const updateMemberContract = useMutateMemberContract()
 
   useEffect(
@@ -147,6 +154,11 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     [status.loanCanceledAt, status.approvedAt],
   )
 
+  useEffect(() => {
+    if (!studentAttachments) return
+    setAttachments(studentAttachments.map(v => v.data))
+  }, [studentAttachments])
+
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
@@ -154,6 +166,30 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         setIsLoading(true)
         if (certification.length) {
           return uploadFile(`certification/${appId}/student_${memberId}`, certification[0], authToken, apiHost)
+        }
+      })
+      .then(async () => {
+        if (!memberContractId) return
+        const deletedAttachmentIds =
+          studentAttachments
+            ?.filter(v =>
+              attachments.every(
+                attachment => attachment.name !== v.data.name && attachment.lastModified !== v.data.lastModified,
+              ),
+            )
+            .map(v => v.id) || []
+        const newAttachments = studentAttachments
+          ? attachments.filter(attachment =>
+              studentAttachments.every(
+                studentAttachment =>
+                  attachment.name !== studentAttachment.data?.name &&
+                  attachment.lastModified !== studentAttachment.data?.lastModified,
+              ),
+            )
+          : attachments
+        if (newAttachments.length || deletedAttachmentIds.length) {
+          await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+          await uploadAttachments('MemberContract', memberContractId, newAttachments)
         }
       })
       .then(() => {
@@ -194,11 +230,19 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       })
       .then(() => {
         setCertification([])
+        setAttachments([])
         setVisible(false)
         onSuccess?.()
       })
       .catch(handleError)
       .finally(() => setIsLoading(false))
+  }
+
+  const handleDownload = async (fileName: string, downloadableLink: string) => {
+    const link = await getFileDownloadableLink(`${downloadableLink}`, authToken, apiHost)
+    return downloadFile(fileName, {
+      url: link,
+    })
   }
 
   let sheet
@@ -248,25 +292,20 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         </div>
 
         {studentCertification && (
-          <>
+          <div className="mb-4">
             <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
-            <Button
-              icon={<DownloadOutlined />}
-              onClick={async () => {
-                try {
-                  const link = await getFileDownloadableLink(
-                    `certification/${appId}/student_${memberId}`,
-                    authToken,
-                    apiHost,
-                  )
-                  await downloadFile(link, studentCertification || '')
-                } catch (error) {
-                  handleError(error)
-                }
-              }}
-            >
-              {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
-            </Button>
+            <FileItem
+              fileName={studentCertification}
+              onDownload={() => handleDownload(studentCertification, `certification/${appId}/student_${memberId}`)}
+            />
+          </div>
+        )}
+        {studentAttachments?.length && (
+          <>
+            <StyledAreaTitle>附加檔案</StyledAreaTitle>
+            {studentAttachments.map(v => (
+              <FileItem fileName={v.data.name} onDownload={() => handleDownload(v.data.name, `attachments/${v.id}`)} />
+            ))}
           </>
         )}
       </>
@@ -435,7 +474,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         </Form>
 
         {studentCertification && (
-          <>
+          <div className="mb-2">
             <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
 
             {permissions.CONTRACT_ATTACHMENT_EDIT && (
@@ -452,24 +491,38 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             )}
 
             {!certification.length && (
-              <>
-                <Button
-                  className="ml-3"
-                  icon={<DownloadOutlined />}
-                  onClick={async () => {
-                    const link = await getFileDownloadableLink(
-                      `certification/${appId}/student_${memberId}`,
-                      authToken,
-                      apiHost,
-                    )
-                    downloadFile(link, studentCertification || '')
-                  }}
-                >
-                  {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
-                </Button>
-                <StyledText className="py-1 px-2">{studentCertification}</StyledText>
-              </>
+              <FileItem
+                fileName={studentCertification}
+                onDownload={() => handleDownload(studentCertification, `certification/${appId}/student_${memberId}`)}
+              />
             )}
+          </div>
+        )}
+        <StyledAreaTitle>附加檔案</StyledAreaTitle>
+        {permissions.CONTRACT_ATTACHMENT_EDIT ? (
+          <FileUploader
+            multiple
+            fileList={attachments}
+            onChange={files => setAttachments(files)}
+            showUploadList
+            downloadableLink={file => {
+              const attachmentId = studentAttachments?.find(v => v.data.name === file.name && v.data.lastModified)?.id
+              return `attachments/${attachmentId}`
+            }}
+            renderTrigger={({ onClick }) => (
+              <Button icon={<UploadOutlined />} onClick={onClick}>
+                {formatMessage(commonMessages.ui.uploadFile)}
+              </Button>
+            )}
+          />
+        ) : (
+          <>
+            {studentAttachments?.map(attachment => (
+              <FileItem
+                fileName={attachment.data.name}
+                onDownload={() => handleDownload(attachment.data.name, `attachments/${attachment.id}`)}
+              />
+            ))}
           </>
         )}
       </>

@@ -510,6 +510,7 @@ export const MemberContractCollectionBlock: React.FC<{
           note={activeMemberContract?.note}
           orderExecutors={activeMemberContract?.orderExecutors || []}
           studentCertification={activeMemberContract?.studentCertification}
+          studentAttachments={activeMemberContract?.attachments}
           onSuccess={() => {
             setIsLoading(true)
             refetchMemberContracts().finally(() => setIsLoading(false))
