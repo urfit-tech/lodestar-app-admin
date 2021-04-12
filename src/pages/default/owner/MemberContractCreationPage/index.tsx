@@ -46,6 +46,7 @@ type FieldProps = {
     memberId?: string
     ratio?: number
   }[]
+  hasDeposit?: boolean[]
 }
 
 type ContractInfo = {

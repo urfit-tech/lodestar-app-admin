@@ -1,5 +1,5 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
+import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import moment from 'moment'
 import { last } from 'ramda'
@@ -203,9 +203,13 @@ const MemberContractCreationForm: React.FC<
               <ReferralMemberSelector />
             </Form.Item>
           </Descriptions.Item>
-          {/* <Descriptions.Item label="扣除訂金 $1000">
-      <Checkbox value={hasDeposit} onChange={e => setHasDeposit(e.target.checked)} />
-    </Descriptions.Item> */}
+          <Descriptions.Item label="扣除訂金 $1000">
+            <Form.Item name="hasDeposit" noStyle>
+              <Checkbox.Group>
+                <Checkbox value={true} />
+              </Checkbox.Group>
+            </Form.Item>
+          </Descriptions.Item>
         </Descriptions>
 
         <Descriptions title="付款方式" bordered className="mb-5">

@@ -179,17 +179,17 @@ const MemberContractCreationBlock: React.FC<{
       })
     }
   }
-  // if (hasDeposit) {
-  //   orderDiscounts.push({
-  //     id: contractsOptions.couponCodeId['deposit'],
-  //     type: 'depositDiscount',
-  //     name: '扣除訂金',
-  //     price: discountPrice.deposit,
-  //     appointments: 0,
-  //     coins: 0,
-  //     amount: 1,
-  //   })
-  // }
+  if (fieldValue.hasDeposit?.length) {
+    orderDiscounts.push({
+      id: contractsOptions.couponCodeId['deposit'],
+      type: 'depositDiscount',
+      name: '扣除訂金',
+      price: discountPrice.deposit,
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
 
   const orderItems = [...orderProducts, ...orderDiscounts]
   const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
