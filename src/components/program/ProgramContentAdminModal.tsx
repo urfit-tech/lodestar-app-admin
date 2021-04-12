@@ -90,8 +90,8 @@ const ProgramContentAdminModal: React.FC<{
     // upload video
     if (
       videoFile &&
-      (videoFile?.name !== programContentBody.data?.video?.name ||
-        videoFile?.lastModified !== programContentBody.data?.video?.lastModified)
+      videoFile?.name !== programContentBody.data?.video?.name &&
+      videoFile?.lastModified !== programContentBody.data?.video?.lastModified
     ) {
       try {
         await uploadFile(`videos/${appId}/${programContentBody.id}`, videoFile, authToken, apiHost, {
@@ -107,8 +107,8 @@ const ProgramContentAdminModal: React.FC<{
     // upload caption
     if (
       captionFile &&
-      (captionFile.name !== programContentBody.data?.texttrack?.name ||
-        captionFile.lastModified !== programContentBody.data?.texttrack?.lastModified)
+      captionFile.name !== programContentBody.data?.texttrack?.name &&
+      captionFile.lastModified !== programContentBody.data?.texttrack?.lastModified
     ) {
       try {
         await uploadFile(`texttracks/${appId}/${programContentBody.id}`, captionFile, authToken, apiHost, {
