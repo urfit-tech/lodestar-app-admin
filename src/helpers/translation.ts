@@ -618,8 +618,8 @@ export const programMessages = {
     closed: { id: 'program.status.closed', defaultMessage: '關閉' },
     pending: { id: 'program.status.pending', defaultMessage: '審核中' },
     approved: { id: 'program.status.approved', defaultMessage: '審核通過' },
-    accepted: {id: 'program.status.accepted', defaultMessage: '已通過'},
-    failed: {id: 'program.status.failed', defaultMessage: '未通過'}
+    accepted: { id: 'program.status.accepted', defaultMessage: '已通過' },
+    failed: { id: 'program.status.failed', defaultMessage: '未通過' },
   }),
   label: defineMessages({
     wholeProgram: { id: 'program.label.wholeProgram', defaultMessage: '全部課程' },
@@ -770,6 +770,7 @@ export const programMessages = {
       id: 'program.text.deletePracticeWarning',
       defaultMessage: '將刪除所有與此作業相關資料且不可復原，確定要刪除嗎？',
     },
+    searchExerciseMember: { id: 'program.text. searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },

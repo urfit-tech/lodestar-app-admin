@@ -1,6 +1,8 @@
-import { Table } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import { Button, Input, Table } from 'antd'
+import { ColumnType } from 'antd/lib/table'
 import moment from 'moment'
-import React from 'react'
+import React, { useRef } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, programMessages } from '../../../helpers/translation'
@@ -41,6 +43,42 @@ const ExerciseDisplayTable: React.VFC<{
   exercises: ExerciseDisplayProps[]
 }> = ({ totalPoints, exercises }) => {
   const { formatMessage } = useIntl()
+  const inputRef = useRef<Input>(null)
+
+  const getColumnSearchProps: (
+    dataIndex: keyof ExerciseDisplayProps,
+  ) => ColumnType<ExerciseDisplayProps> = dataIndex => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div className="p-2" style={{ width: '200px' }}>
+        <Input
+          ref={inputRef}
+          placeholder={formatMessage(programMessages.text.searchExerciseMember)}
+          value={selectedKeys[0]}
+          className="d-block mb-2"
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => confirm()}
+        />
+        <div className="d-flex justify-content-between">
+          <Button type="primary" icon={<SearchOutlined />} size="small" block onClick={() => confirm()}>
+            {formatMessage(commonMessages.ui.search)}
+          </Button>
+          <Button size="small" block className="ml-2" onClick={() => clearFilters?.()}>
+            {formatMessage(commonMessages.ui.reset)}
+          </Button>
+        </div>
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilter: (value, record) =>
+      record[dataIndex]
+        ? `${JSON.stringify(record[dataIndex])}`.toLowerCase().includes(`${value}`.toLowerCase())
+        : false,
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => inputRef.current?.select(), 100)
+      }
+    },
+  })
 
   return (
     <StyledTableWrapper>
@@ -62,6 +100,7 @@ const ExerciseDisplayTable: React.VFC<{
                 {record.member.name} / {record.member.email}
               </>
             ),
+            ...getColumnSearchProps('member'),
           },
           {
             dataIndex: 'score',
