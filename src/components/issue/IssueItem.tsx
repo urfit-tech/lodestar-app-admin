@@ -54,7 +54,10 @@ const StyledTag = styled(Tag)<{ variant?: string }>`
 
 const messages = defineMessages({
   editIssueFailed: { id: 'program.event.editIssueFailed', defaultMessage: '無法更改問題' },
-  deleteIssuePrompt: { id: 'program.label.deleteIssuePrompt', defaultMessage: '此問題的留言將被一併刪除' },
+  deleteIssuePrompt: {
+    id: 'program.label.deleteIssuePrompt',
+    defaultMessage: '將刪除所有與此留言相關資料且不可復原，確定要刪除嗎？',
+  },
   markIssueAs: { id: 'program.label.markIssueAs', defaultMessage: '標記為 {status}' },
 })
 
@@ -207,7 +210,11 @@ const IssueItem: React.FC<{
                 <Menu.Item
                   onClick={() => {
                     window.confirm(formatMessage(messages.deleteIssuePrompt)) &&
-                      deleteIssue()
+                      deleteIssue({
+                        variables: {
+                          issueId,
+                        },
+                      })
                         .then(() => onRefetch?.())
                         .catch(handleError)
                   }}
