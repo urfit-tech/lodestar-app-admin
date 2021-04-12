@@ -14,6 +14,7 @@ import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
+import { useMutateProgramContent } from '../../hooks/program'
 import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
@@ -98,7 +99,7 @@ const PracticeForm: React.FC<{
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
   const [updatePractice] = useMutation<hasura.UPDATE_PRACTICE, hasura.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
-  const [deletePractice] = useMutation<hasura.DELETE_PRACTICE, hasura.DELETE_PRACTICEVariables>(DELETE_PRACTICE)
+  const { deleteProgramContent } = useMutateProgramContent()
 
   const handleSubmit = (values: FieldProps) => {
     setIsSubmitting(true)
@@ -190,7 +191,7 @@ const PracticeForm: React.FC<{
         estimatedTime: programContent.duration,
         description: BraftEditor.createEditorState(programContentBody.description),
         difficulty: programContent.metadata?.difficulty || 1,
-        isCoverRequired: !!programContent.metadata?.isCoverRequired,
+        isCoverRequired: programContent.metadata?.isCoverRequired ?? true,
       }}
       onFinish={handleSubmit}
     >
@@ -248,7 +249,7 @@ const PracticeForm: React.FC<{
                 <Menu.Item
                   onClick={() =>
                     window.confirm(formatMessage(programMessages.text.deletePracticeWarning)) &&
-                    deletePractice({ variables: { programContentId: programContent.id } })
+                    deleteProgramContent({ variables: { programContentId: programContent.id } })
                       .then(() => onRefetch?.())
                       .catch(handleError)
                   }
@@ -329,17 +330,6 @@ const UPDATE_PRACTICE = gql`
       where: { program_contents: { id: { _eq: $programContentId } } }
       _set: { description: $description }
     ) {
-      affected_rows
-    }
-  }
-`
-
-const DELETE_PRACTICE = gql`
-  mutation DELETE_PRACTICE($programContentId: uuid!) {
-    delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
-      affected_rows
-    }
-    delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
       affected_rows
     }
   }
