@@ -203,11 +203,9 @@ const MemberContractCreationForm: React.FC<
               <ReferralMemberSelector />
             </Form.Item>
           </Descriptions.Item>
-          <Descriptions.Item label="扣除訂金 $1000">
-            <Form.Item name="hasDeposit" noStyle>
-              <Checkbox.Group>
-                <Checkbox value={true} />
-              </Checkbox.Group>
+          <Descriptions.Item label="訂金">
+            <Form.Item name="hasDeposit" valuePropName="checked" noStyle>
+              <Checkbox>扣除訂金 $1000</Checkbox>
             </Form.Item>
           </Descriptions.Item>
         </Descriptions>

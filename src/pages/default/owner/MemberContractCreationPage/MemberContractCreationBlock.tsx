@@ -179,7 +179,7 @@ const MemberContractCreationBlock: React.FC<{
       })
     }
   }
-  if (fieldValue.hasDeposit?.length) {
+  if (fieldValue.hasDeposit) {
     orderDiscounts.push({
       id: contractsOptions.couponCodeId['deposit'],
       type: 'depositDiscount',
