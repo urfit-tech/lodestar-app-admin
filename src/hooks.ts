@@ -83,6 +83,7 @@ export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
       loan_canceled_at
       refund_applied_at
       student_certification
+      attachments
       note
       values
       member {
@@ -197,6 +198,7 @@ export const useMemberContractCollection = ({
       },
       appointmentCreatorName: v.appointment_creator_name,
       studentCertification: v.student_certification || null,
+      attachments: v.attachments,
       invoice: v.values?.invoice || null,
       projectPlanName: v.values?.projectPlanName || null,
       price: v.values?.price || null,

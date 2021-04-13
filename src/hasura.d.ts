@@ -120,6 +120,7 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_co
   loan_canceled_at: string | null;
   refund_applied_at: string | null;
   student_certification: string | null;
+  attachments: any | null;
   note: string | null;
   values: any | null;
   /**

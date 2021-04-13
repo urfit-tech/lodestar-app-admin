@@ -30,6 +30,7 @@ export type MemberContractProps = {
   }
   appointmentCreatorName: string | null
   studentCertification: string | null
+  attachments: { id: string, data: any, options: any }[] | null
   invoice: {
     name: string
     email: string
