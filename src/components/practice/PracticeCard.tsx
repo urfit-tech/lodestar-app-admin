@@ -61,6 +61,9 @@ const StyledTitle = styled(Typography.Title)`
     letter-spacing: 0.2px;
   }
 `
+const StyledTitleBlock = styled.div`
+  overflow: hidden;
+`
 const StyledDesktopTitle = styled.div`
   font-size: 16px;
   color: var(--gray-darker);
@@ -221,33 +224,32 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
       </Responsive.Default>
 
       <Responsive.Desktop>
-        <div className="d-flex col-12 p-0">
-          <div className="d-flex col-9 p-0 cursor-pointer" onClick={() => window.open(practiceUrl, '_blank')}>
+        <div className="row">
+          <div
+            className="col-6 d-flex align-items-center cursor-pointer"
+            onClick={() => window.open(practiceUrl, '_blank')}
+          >
             {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
-            <div className="col-5 p-0">
+            <StyledTitleBlock>
               <StyledDesktopTitle>{title}</StyledDesktopTitle>
               <StyledCreatedAt>
                 <CalendarOutlined className="mr-2" />
                 <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
               </StyledCreatedAt>
-            </div>
-
-            <div className="d-flex algin-items-center col-2 m-auto p-0">
-              <MemberAvatar size="28px" withName memberId={memberId} />
-            </div>
+            </StyledTitleBlock>
           </div>
-          <div className="d-flex col-3 p-0">
-            <StyledCommentIcon>
+
+          <div className="col-3 d-flex align-items-center">
+            <MemberAvatar size="28px" withName memberId={memberId} />
+          </div>
+
+          <div className="col-3 d-flex align-items-center">
+            <StyledCommentIcon className="mr-3">
               <CommentAltLinesIcon className="mr-2" />
-              <div>{practiceAmount && practiceAmount}</div>
+              <div>{practiceAmount}</div>
             </StyledCommentIcon>
 
-            <StyledHeartIcon
-              reacted={reacted}
-              onClick={e => {
-                toggleReaction(reacted)
-              }}
-            >
+            <StyledHeartIcon className="mr-3" reacted={reacted} onClick={e => toggleReaction(reacted)}>
               {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
               <div>{reactedMemberIds.length}</div>
             </StyledHeartIcon>
@@ -256,27 +258,26 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
             roles
               .filter(role => role?.memberId === currentMemberId)
               .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
-              <StyledCheckboxWrapper className="d-flex m-auto">
-                <Checkbox
-                  checked={reviewed}
-                  onChange={e => {
-                    const updatedReviewed = e.target.checked
-                    updatedPracticeStatus({
-                      variables: {
-                        practiceId: id,
-                        reviewedAt: updatedReviewed ? new Date() : null,
-                      },
-                    }).then(() => {
-                      setReviewed(updatedReviewed)
-                      onRefetch?.()
-                    })
-                  }}
-                >
-                  {isReviewed
-                    ? formatMessage(practiceMessages.status.reviewed)
-                    : formatMessage(practiceMessages.status.unreviewed)}
-                </Checkbox>
-              </StyledCheckboxWrapper>
+              <Checkbox
+                className="flex-grow-1 text-right"
+                checked={reviewed}
+                onChange={e => {
+                  const updatedReviewed = e.target.checked
+                  updatedPracticeStatus({
+                    variables: {
+                      practiceId: id,
+                      reviewedAt: updatedReviewed ? new Date() : null,
+                    },
+                  }).then(() => {
+                    setReviewed(updatedReviewed)
+                    onRefetch?.()
+                  })
+                }}
+              >
+                {isReviewed
+                  ? formatMessage(practiceMessages.status.reviewed)
+                  : formatMessage(practiceMessages.status.unreviewed)}
+              </Checkbox>
             ) : null}
           </div>
         </div>
