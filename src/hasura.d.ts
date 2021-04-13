@@ -10137,6 +10137,56 @@ export interface GET_EDITABLE_PROGRAMSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAMS
+// ====================================================
+
+export interface GET_PROGRAMS_program_program_content_sections_program_contents {
+  __typename: "program_content";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAMS_program_program_content_sections {
+  __typename: "program_content_section";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_contents: GET_PROGRAMS_program_program_content_sections_program_contents[];
+}
+
+export interface GET_PROGRAMS_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_PROGRAMS_program_program_content_sections[];
+}
+
+export interface GET_PROGRAMS {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAMS_program[];
+}
+
+export interface GET_PROGRAMSVariables {
+  condition: program_bool_exp;
+  contentSectionCondition?: program_content_section_bool_exp | null;
+  contentCondition?: program_content_bool_exp | null;
+  withContentSection: boolean;
+  withContent: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM_CONTENT_ENROLLMENT
 // ====================================================
 
@@ -11897,6 +11947,8 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION {
 export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
   searchText?: string | null;
   programId?: any | null;
+  programContentSectionId?: any | null;
+  programContentId?: any | null;
   unreviewed?: boolean | null;
   programRoleMemberId?: string | null;
 }

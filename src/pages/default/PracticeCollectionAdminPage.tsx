@@ -7,17 +7,29 @@ import { useIntl } from 'react-intl'
 import { AdminPageTitle, EmptyBlock } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import PracticeCard from '../../components/practice/PracticeCard'
-import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
+import { ProgramTreeSelector } from '../../components/program/ProgramSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { commonMessages, errorMessages, practiceMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 
+type PracticeFiltersProps = {
+  searchText?: string
+  selectedProgramId?: string
+  selectedProgramContentSectionId?: string
+  selectedProgramContentId?: string
+}
+
 const PracticeCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
   const [selectedStatus, setSelectedStatus] = useState<string>('unreviewed')
-  const [selectedProgramId, setSelectedProgramId] = useState<string>('all')
+  const [selectedId, setSelectedId] = useState<{
+    program?: string
+    programContentSection?: string
+    programContent?: string
+  }>({})
+
   const [searchText, setSearchText] = useState('')
 
   return (
@@ -37,16 +49,13 @@ const PracticeCollectionAdminPage: React.FC = () => {
             </Select>
           </div>
           <div className="col-12 col-sm-5 mb-2 mb-sm-0 px-0 pr-sm-3">
-            {currentMemberId && currentUserRole === 'app-owner' && (
-              <OwnedProgramSelector value={selectedProgramId} onChange={key => setSelectedProgramId(key)} />
-            )}
-            {currentMemberId && currentUserRole === 'content-creator' && (
-              <EditableProgramSelector
-                value={selectedProgramId}
-                memberId={currentMemberId}
-                onChange={key => setSelectedProgramId(key)}
-              />
-            )}
+            <ProgramTreeSelector
+              allowContentType="practice"
+              memberId={currentUserRole === 'content-creator' && currentMemberId ? currentMemberId : undefined}
+              onSelect={(value, option) => {
+                setSelectedId({ [option.group]: value })
+              }}
+            />
           </div>
           <div className="col-12 col-sm-2" />
           <div className="col-12 col-sm-3 px-0">
@@ -60,9 +69,13 @@ const PracticeCollectionAdminPage: React.FC = () => {
 
       {currentMemberId && (
         <AllPracticeCollectionBlock
-          selectedProgramId={selectedProgramId}
           selectedStatus={selectedStatus}
-          searchText={searchText}
+          filters={{
+            searchText,
+            selectedProgramId: selectedId.program,
+            selectedProgramContentSectionId: selectedId.programContentSection,
+            selectedProgramContentId: selectedId.programContent,
+          }}
         />
       )}
     </AdminLayout>
@@ -70,10 +83,9 @@ const PracticeCollectionAdminPage: React.FC = () => {
 }
 
 const AllPracticeCollectionBlock: React.FC<{
-  selectedProgramId: string
   selectedStatus: string
-  searchText: string
-}> = ({ selectedProgramId, selectedStatus, searchText }) => {
+  filters?: PracticeFiltersProps
+}> = ({ selectedStatus, filters }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
 
@@ -87,12 +99,11 @@ const AllPracticeCollectionBlock: React.FC<{
       break
   }
 
-  const { loadingPractice, errorPractice, practices, refetchPractice } = usePracticePreviewCollection(
-    selectedProgramId,
-    searchText,
+  const { loadingPractice, errorPractice, practices, refetchPractice } = usePracticePreviewCollection({
+    ...filters,
     unreviewed,
-    { programRoleMemberId: currentUserRole !== 'app-owner' ? currentMemberId : undefined },
-  )
+    programRoleMemberId: currentUserRole !== 'app-owner' ? currentMemberId : undefined,
+  })
 
   if (loadingPractice) {
     return <Skeleton active />
@@ -114,21 +125,22 @@ const AllPracticeCollectionBlock: React.FC<{
     </>
   )
 }
-
 const usePracticePreviewCollection = (
-  selectedProgramId: string,
-  searchText: string | null,
-  unreviewed?: boolean,
-  options?: { programRoleMemberId?: string | null },
+  options?: PracticeFiltersProps & {
+    unreviewed?: boolean
+    programRoleMemberId?: string | null
+  },
 ) => {
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_PRACTICE_PREVIEW_COLLECTION,
     hasura.GET_PRACTICE_PREVIEW_COLLECTIONVariables
   >(GET_PRACTICE_PREVIEW_COLLECTION, {
     variables: {
-      searchText: searchText ? `%${searchText}%` : undefined,
-      programId: selectedProgramId === 'all' ? undefined : selectedProgramId,
-      unreviewed,
+      searchText: options?.searchText ? `%${options.searchText}%` : undefined,
+      programId: options?.selectedProgramId,
+      programContentSectionId: options?.selectedProgramContentSectionId,
+      programContentId: options?.selectedProgramContentId,
+      unreviewed: options?.unreviewed,
       programRoleMemberId: options?.programRoleMemberId,
     },
   })
@@ -172,6 +184,8 @@ const GET_PRACTICE_PREVIEW_COLLECTION = gql`
   query GET_PRACTICE_PREVIEW_COLLECTION(
     $searchText: String
     $programId: uuid
+    $programContentSectionId: uuid
+    $programContentId: uuid
     $unreviewed: Boolean
     $programRoleMemberId: String
   ) {
@@ -179,7 +193,9 @@ const GET_PRACTICE_PREVIEW_COLLECTION = gql`
       where: {
         _or: [{ member: { username: { _like: $searchText } } }, { title: { _like: $searchText } }]
         program_content: {
+          id: { _eq: $programContentId }
           program_content_section: {
+            id: { _eq: $programContentSectionId }
             program_id: { _eq: $programId }
             program: { program_roles: { member_id: { _eq: $programRoleMemberId } } }
           }
