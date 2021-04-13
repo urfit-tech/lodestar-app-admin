@@ -356,6 +356,7 @@ const ProgramContentAdminModal: React.FC<{
               showUploadList
               fileList={videoFile ? [videoFile] : []}
               accept="video/*"
+              downloadableLink={`videos/${appId}/${programContentBody.id}`}
               uploadProgress={uploadProgress}
               onChange={async files => {
                 const duration = files[0] ? Math.ceil(await getFileDuration(files[0])) : 0
@@ -386,6 +387,7 @@ const ProgramContentAdminModal: React.FC<{
               )}
               showUploadList
               uploadProgress={uploadProgress}
+              downloadableLink={`texttracks/${appId}/${programContentBody.id}`}
               fileList={captionFile ? [captionFile] : []}
               onChange={files => setCaptionFile(files[0])}
             />
