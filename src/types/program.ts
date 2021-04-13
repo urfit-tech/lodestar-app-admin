@@ -147,3 +147,14 @@ export type ChoiceProps = {
   description: string | null
   isCorrect: boolean
 }
+
+export type ExerciseProps = {
+  id: string
+  memberId: string
+  answer: {
+    questionId: string
+    choiceIds: string[]
+    questionPoints: number
+    gainedPoints: number
+  }[]
+}

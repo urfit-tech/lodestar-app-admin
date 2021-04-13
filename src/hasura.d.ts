@@ -10965,6 +10965,133 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAMS_WITH_EXERCISES
+// ====================================================
+
+export interface GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections_program_contents {
+  __typename: "program_content";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections {
+  __typename: "program_content_section";
+  id: any;
+  /**
+   * An array relationship
+   */
+  program_contents: GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections_program_contents[];
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISES_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections[];
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISES {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAMS_WITH_EXERCISES_program[];
+}
+
+export interface GET_PROGRAMS_WITH_EXERCISESVariables {
+  creatorId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_EXERCISE_COLLECTION
+// ====================================================
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_body {
+  __typename: "program_content_body";
+  id: any;
+  data: any | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate_aggregate {
+  __typename: "program_content_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate {
+  __typename: "program_content_enrollment_aggregate";
+  aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk {
+  __typename: "program_content";
+  id: any;
+  metadata: any | null;
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_body;
+  /**
+   * An aggregated array relationship
+   */
+  enrollments_aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate;
+}
+
+export interface GET_EXERCISE_COLLECTION_member_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_EXERCISE_COLLECTION_member {
+  __typename: "exercise";
+  /**
+   * An object relationship
+   */
+  member: GET_EXERCISE_COLLECTION_member_member;
+}
+
+export interface GET_EXERCISE_COLLECTION_exercise {
+  __typename: "exercise";
+  id: any;
+  member_id: string;
+  answer: any | null;
+  created_at: any;
+}
+
+export interface GET_EXERCISE_COLLECTION {
+  /**
+   * fetch data from the table: "program_content" using primary key columns
+   */
+  program_content_by_pk: GET_EXERCISE_COLLECTION_program_content_by_pk | null;
+  /**
+   * fetch data from the table: "exercise"
+   */
+  member: GET_EXERCISE_COLLECTION_member[];
+  /**
+   * fetch data from the table: "exercise"
+   */
+  exercise: GET_EXERCISE_COLLECTION_exercise[];
+}
+
+export interface GET_EXERCISE_COLLECTIONVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
