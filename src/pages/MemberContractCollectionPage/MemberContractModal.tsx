@@ -242,7 +242,6 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       })
       .then(() => {
         setCertification([])
-        setAttachments([])
         setUploadProgress({})
         setVisible(false)
         onSuccess?.()
