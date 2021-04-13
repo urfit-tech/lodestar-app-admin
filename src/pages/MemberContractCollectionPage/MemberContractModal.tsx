@@ -143,6 +143,9 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
   const updateMemberContract = useMutateMemberContract()
+  const [uploadProgress, setUploadProgress] = useState<{
+    [key: string]: number
+  }>({})
 
   useEffect(
     () =>
@@ -160,12 +163,17 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   }, [studentAttachments])
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+    setUploadProgress({})
     form
       .validateFields()
       .then(() => {
         setIsLoading(true)
         if (certification.length) {
-          return uploadFile(`certification/${appId}/student_${memberId}`, certification[0], authToken, apiHost)
+          return uploadFile(`certification/${appId}/student_${memberId}`, certification[0], authToken, apiHost, {
+            onUploadProgress: ({ loaded, total }) => {
+              setUploadProgress(prev => ({ ...prev, [certification[0].name]: Math.floor((loaded / total) * 100) }))
+            },
+          })
         }
       })
       .then(async () => {
@@ -189,7 +197,11 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           : attachments
         if (newAttachments.length || deletedAttachmentIds.length) {
           await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
-          await uploadAttachments('MemberContract', memberContractId, newAttachments)
+          await uploadAttachments('MemberContract', memberContractId, newAttachments, file => ({
+            onUploadProgress: ({ loaded, total }) => {
+              setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
+            },
+          }))
         }
       })
       .then(() => {
@@ -231,6 +243,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       .then(() => {
         setCertification([])
         setAttachments([])
+        setUploadProgress({})
         setVisible(false)
         onSuccess?.()
       })
@@ -479,9 +492,10 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
 
             {permissions.CONTRACT_ATTACHMENT_EDIT && (
               <FileUploader
+                showUploadList
                 fileList={certification}
                 onChange={files => setCertification(files)}
-                showUploadList
+                uploadProgress={uploadProgress}
                 renderTrigger={({ onClick }) => (
                   <Button icon={<UploadOutlined />} onClick={onClick}>
                     {formatMessage(memberContractMessages.ui.reupload)}
@@ -502,9 +516,10 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         {permissions.CONTRACT_ATTACHMENT_EDIT ? (
           <FileUploader
             multiple
+            showUploadList
             fileList={attachments}
             onChange={files => setAttachments(files)}
-            showUploadList
+            uploadProgress={uploadProgress}
             downloadableLink={file => {
               const attachmentId = studentAttachments?.find(v => v.data.name === file.name && v.data.lastModified)?.id
               return `attachments/${attachmentId}`
