@@ -123,7 +123,6 @@ const ExerciseAdminForm: React.FC<{
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
     setWithInvalidQuestion(true)
-    setLoading(true)
     updateExercise({
       variables: {
         programContentId: programContent.id,
@@ -141,7 +140,7 @@ const ExerciseAdminForm: React.FC<{
           },
         },
         body: {
-          data: { questions },
+          data: { questions: questions.map(v => ({ ...v, validChecked: true })) },
         },
       },
     })
@@ -337,6 +336,7 @@ const ExerciseAdminForm: React.FC<{
                 description: null,
                 answerDescription: null,
                 isMultipleAnswers: false,
+                validChecked: false,
                 choices: [
                   {
                     id: uuidV4(),

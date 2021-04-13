@@ -42,6 +42,9 @@ export const useProgram = (programId: string) => {
               is_notify_update
               notified_at
               metadata
+              program_content_body {
+                data
+              }
               program_content_type {
                 id
                 type
@@ -151,6 +154,7 @@ export const useProgram = (programId: string) => {
                 title: programContentPlan.program_plan.title,
               })),
               metadata: programContent.metadata,
+              programContentBodyData: programContent.program_content_body.data,
               attachments: programContent.program_content_attachments.map(v => ({
                 id: v.attachment_id,
                 data: v.data,

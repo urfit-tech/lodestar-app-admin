@@ -159,7 +159,6 @@ const ProgramContentSectionAdminCard: React.FC<{
                       metadata: {
                         isAvailableToGoBack: true,
                         isAvailableToRetry: true,
-                        withInvalidQuestion: true,
                       },
                     },
                   })

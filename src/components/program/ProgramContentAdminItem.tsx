@@ -13,7 +13,7 @@ import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/excla
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
-import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
+import { ProgramAdminProps, ProgramContentProps, QuestionProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
 import PracticeAdminModal from './PracticeAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
@@ -93,7 +93,10 @@ const ProgramContentAdminItem: React.FC<{
       </div>
 
       <div className="d-flex align-items-center">
-        {programContent.metadata?.withInvalidQuestion && (
+        {(!programContentBody.data?.questions ||
+          (programContentBody.data?.questions && programContentBody.data?.questions.length === 0) ||
+          programContentBody.data?.questions?.some((v: QuestionProps) => !v.validChecked) ||
+          programContent.metadata?.withInvalidQuestion) && (
           <Icon className="mr-3" component={() => <ExclamationCircleIcon />} />
         )}
         {programContent.listPrice === 0 && (

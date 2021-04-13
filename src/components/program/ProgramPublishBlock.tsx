@@ -85,7 +85,17 @@ const ProgramPublishBlock: React.FC<{
       to: `/programs/${program.id}?tab=plan`,
     })
 
-  program.contentSections.map(v => v.programContents.some(w => w.metadata?.withInvalidQuestion))[0] &&
+  program.contentSections
+    .map(v =>
+      v.programContents
+        .map(
+          w =>
+            w.programContentType === 'exercise' &&
+            (w.metadata?.withInvalidQuestion || w.programContentBodyData?.questions !== 0),
+        )
+        .find(x => x === true),
+    )
+    .find(y => y === true) &&
     errors.push({
       message: formatMessage(programMessages.text.invalidExercise),
       to: `/programs/${program.id}?tab=content`,

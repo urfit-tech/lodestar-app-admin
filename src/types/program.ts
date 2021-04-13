@@ -80,6 +80,7 @@ export type ProgramContentProps = {
     data: any
     options: any
   }[]
+  programContentBodyData: any
 }
 
 export type ProgramContentBodyProps = {
@@ -138,6 +139,7 @@ export type QuestionProps = {
   description: string | null
   answerDescription: string | null
   isMultipleAnswers: boolean
+  validChecked: boolean
   choices: ChoiceProps[]
 }
 

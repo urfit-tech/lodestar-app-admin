@@ -9858,6 +9858,11 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
 // GraphQL query operation: GET_PROGRAM
 // ====================================================
 
+export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_body {
+  __typename: "program_content_body";
+  data: any | null;
+}
+
 export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_type {
   __typename: "program_content_type";
   id: any | null;
@@ -9899,6 +9904,10 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   is_notify_update: boolean;
   notified_at: any | null;
   metadata: any | null;
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_body;
   /**
    * An object relationship
    */
@@ -12952,6 +12961,7 @@ export enum contract_update_column {
   description = "description",
   id = "id",
   name = "name",
+  options = "options",
   published_at = "published_at",
   revocation = "revocation",
   template = "template",
@@ -18039,6 +18049,7 @@ export interface contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -18055,6 +18066,7 @@ export interface contract_insert_input {
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  options?: any | null;
   published_at?: any | null;
   revocation?: string | null;
   template?: string | null;
