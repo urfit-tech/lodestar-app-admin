@@ -111,7 +111,7 @@ const MemberContractCreationPage: React.VFC = () => {
   } = usePrivateTeachContractInfo(appId, memberId)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
-  const [_, setReRender] = useState(0)
+  const [, setReRender] = useState(0)
 
   if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />

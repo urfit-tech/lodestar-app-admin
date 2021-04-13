@@ -8,7 +8,6 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { ContractInfo, FieldProps } from '.'
-import { useApp } from '../../../../contexts/AppContext'
 import { useAuth } from '../../../../contexts/AuthContext'
 import hasura from '../../../../hasura'
 import { currencyFormatter, notEmpty } from '../../../../helpers'
@@ -56,7 +55,7 @@ const MemberContractCreationBlock: React.FC<{
   contracts,
 }) => {
   const fieldValue = form.getFieldsValue()
-  const { id: appId } = useApp()
+
   const { currentMemberId } = useAuth()
   const [memberContractUrl, setMemberContractUrl] = useState('')
 

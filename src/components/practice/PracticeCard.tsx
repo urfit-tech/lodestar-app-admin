@@ -20,6 +20,7 @@ import { BREAK_POINT } from '../common/Responsive'
 
 type PracticeCardProps = CardProps & {
   id: string
+  isCoverRequired: boolean
   coverUrl: string | null
   title: string
   createdAt: Date
@@ -103,6 +104,7 @@ const StyledCheckboxWrapper = styled.div`
 `
 const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   id,
+  isCoverRequired,
   coverUrl,
   title,
   createdAt,
@@ -161,13 +163,8 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   return (
     <StyledAdminCard className="mb-3" {...props}>
       <Responsive.Default>
-        <div
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            window.open(practiceUrl, '_blank')
-          }}
-        >
-          <StyledCover src={coverUrl || EmptyCover} />
+        <div className="cursor-pointer" onClick={() => window.open(practiceUrl, '_blank')}>
+          {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
 
           <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
           <StyledCreatedAt>
@@ -225,14 +222,8 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
 
       <Responsive.Desktop>
         <div className="d-flex col-12 p-0">
-          <div
-            className="d-flex col-9 p-0"
-            onClick={() => {
-              window.open(practiceUrl, '_blank')
-            }}
-            style={{ cursor: 'pointer' }}
-          >
-            <StyledCover src={coverUrl || EmptyCover} />
+          <div className="d-flex col-9 p-0 cursor-pointer" onClick={() => window.open(practiceUrl, '_blank')}>
+            {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
             <div className="col-5 p-0">
               <StyledDesktopTitle>{title}</StyledDesktopTitle>
               <StyledCreatedAt>

@@ -94,10 +94,16 @@ const AllPracticeCollectionBlock: React.FC<{
     { programRoleMemberId: currentUserRole !== 'app-owner' ? currentMemberId : undefined },
   )
 
-  if (loadingPractice) return <Skeleton active />
-  if (errorPractice) return <EmptyBlock>{formatMessage(errorMessages.data.fetch)}</EmptyBlock>
+  if (loadingPractice) {
+    return <Skeleton active />
+  }
+
   if (practices.length === 0) {
-    return <EmptyBlock>{formatMessage(practiceMessages.text.emptyPractice)}</EmptyBlock>
+    return (
+      <EmptyBlock>
+        {errorPractice ? formatMessage(errorMessages.data.fetch) : formatMessage(practiceMessages.text.emptyPractice)}
+      </EmptyBlock>
+    )
   }
 
   return (
@@ -129,6 +135,7 @@ const usePracticePreviewCollection = (
 
   const practices: {
     id: string
+    isCoverRequired: boolean
     coverUrl: string | null
     createdAt: Date
     title: string
@@ -139,6 +146,7 @@ const usePracticePreviewCollection = (
   }[] =
     data?.practice.map(v => ({
       id: v.id,
+      isCoverRequired: !!v.program_content.metadata?.isCoverRequired,
       coverUrl: v.cover_url,
       createdAt: new Date(v.created_at),
       title: v.title,
@@ -188,8 +196,12 @@ const GET_PRACTICE_PREVIEW_COLLECTION = gql`
       reviewed_at
       member_id
       program_content {
+        id
+        metadata
         program_content_section {
+          id
           program {
+            id
             program_roles {
               id
               name
@@ -199,6 +211,7 @@ const GET_PRACTICE_PREVIEW_COLLECTION = gql`
         }
       }
       practice_reactions {
+        id
         member_id
       }
     }
