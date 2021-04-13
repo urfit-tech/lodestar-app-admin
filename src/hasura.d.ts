@@ -11228,62 +11228,32 @@ export interface DELETE_COIN_LOGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SALE_COLLECTION
+// GraphQL query operation: GET_CONTRACT_INFO
 // ====================================================
 
-export interface GET_SALE_COLLECTION_xuemi_sales_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_SALE_COLLECTION_xuemi_sales {
-  __typename: "xuemi_sales";
-  /**
-   * An object relationship
-   */
-  member: GET_SALE_COLLECTION_xuemi_sales_member | null;
-}
-
-export interface GET_SALE_COLLECTION {
-  /**
-   * fetch data from the table: "xuemi.sales"
-   */
-  xuemi_sales: GET_SALE_COLLECTION_xuemi_sales[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CONTRACT_MEMBER
-// ====================================================
-
-export interface GET_CONTRACT_MEMBER_member_by_pk_member_phones {
+export interface GET_CONTRACT_INFO_member_by_pk_member_phones {
   __typename: "member_phone";
+  id: any;
   phone: string;
 }
 
-export interface GET_CONTRACT_MEMBER_member_by_pk_member_properties_property {
+export interface GET_CONTRACT_INFO_member_by_pk_member_properties_property {
   __typename: "property";
   id: any;
   name: string;
 }
 
-export interface GET_CONTRACT_MEMBER_member_by_pk_member_properties {
+export interface GET_CONTRACT_INFO_member_by_pk_member_properties {
   __typename: "member_property";
   id: any;
   value: string;
   /**
    * An object relationship
    */
-  property: GET_CONTRACT_MEMBER_member_by_pk_member_properties_property;
+  property: GET_CONTRACT_INFO_member_by_pk_member_properties_property;
 }
 
-export interface GET_CONTRACT_MEMBER_member_by_pk {
+export interface GET_CONTRACT_INFO_member_by_pk {
   __typename: "member";
   id: string;
   name: string;
@@ -11291,58 +11261,31 @@ export interface GET_CONTRACT_MEMBER_member_by_pk {
   /**
    * An array relationship
    */
-  member_phones: GET_CONTRACT_MEMBER_member_by_pk_member_phones[];
+  member_phones: GET_CONTRACT_INFO_member_by_pk_member_phones[];
   /**
    * An array relationship
    */
-  member_properties: GET_CONTRACT_MEMBER_member_by_pk_member_properties[];
+  member_properties: GET_CONTRACT_INFO_member_by_pk_member_properties[];
 }
 
-export interface GET_CONTRACT_MEMBER {
-  /**
-   * fetch data from the table: "member" using primary key columns
-   */
-  member_by_pk: GET_CONTRACT_MEMBER_member_by_pk | null;
+export interface GET_CONTRACT_INFO_property {
+  __typename: "property";
+  id: any;
+  name: string;
+  placeholder: string | null;
 }
 
-export interface GET_CONTRACT_MEMBERVariables {
-  id: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CONTRACTS
-// ====================================================
-
-export interface GET_CONTRACTS_contract {
+export interface GET_CONTRACT_INFO_contract {
   __typename: "contract";
   id: any;
   name: string;
+  options: any | null;
 }
 
-export interface GET_CONTRACTS {
-  /**
-   * fetch data from the table: "contract"
-   */
-  contract: GET_CONTRACTS_contract[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROJECT_PLANS
-// ====================================================
-
-export interface GET_PROJECT_PLANS_project_plan {
+export interface GET_CONTRACT_INFO_projectPrivateTeachPlan {
   __typename: "project_plan";
   id: any;
+  title: string;
   period_amount: any | null;
   /**
    * Y / M / W / D
@@ -11350,118 +11293,78 @@ export interface GET_PROJECT_PLANS_project_plan {
   period_type: string | null;
 }
 
-export interface GET_PROJECT_PLANS {
-  /**
-   * fetch data from the table: "project_plan"
-   */
-  project_plan: GET_PROJECT_PLANS_project_plan[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROPERTIES
-// ====================================================
-
-export interface GET_PROPERTIES_property {
-  __typename: "property";
+export interface GET_CONTRACT_INFO_products {
+  __typename: "project_plan";
   id: any;
-  name: string;
-  placeholder: string | null;
+  title: string;
+  list_price: any | null;
+  options: any | null;
 }
 
-export interface GET_PROPERTIES {
-  /**
-   * fetch data from the table: "property"
-   */
-  property: GET_PROPERTIES_property[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CONTRACT_PRODUCT
-// ====================================================
-
-export interface GET_CONTRACT_PRODUCT_xuemi_product {
-  __typename: "xuemi_product";
-  id: any;
-  name: string;
-  price: any;
-  addon_price: any | null;
-  appointments: number;
-  coins: number;
-}
-
-export interface GET_CONTRACT_PRODUCT {
-  /**
-   * fetch data from the table: "xuemi.product"
-   */
-  xuemi_product: GET_CONTRACT_PRODUCT_xuemi_product[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APPOINTMENT_PLAN_CREATORS
-// ====================================================
-
-export interface GET_APPOINTMENT_PLAN_CREATORS_appointment_plan_creator {
+export interface GET_CONTRACT_INFO_appointment_plan_creator {
   __typename: "member_public";
   id: string | null;
   name: string | null;
 }
 
-export interface GET_APPOINTMENT_PLAN_CREATORS_appointment_plan {
+export interface GET_CONTRACT_INFO_appointment_plan {
   __typename: "appointment_plan";
   id: any;
   /**
    * An object relationship
    */
-  creator: GET_APPOINTMENT_PLAN_CREATORS_appointment_plan_creator | null;
+  creator: GET_CONTRACT_INFO_appointment_plan_creator | null;
 }
 
-export interface GET_APPOINTMENT_PLAN_CREATORS {
-  /**
-   * fetch data from the table: "appointment_plan"
-   */
-  appointment_plan: GET_APPOINTMENT_PLAN_CREATORS_appointment_plan[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_REFERRAL_MEMBER_COLLECTION
-// ====================================================
-
-export interface GET_REFERRAL_MEMBER_COLLECTION_member {
+export interface GET_CONTRACT_INFO_xuemi_sales_member {
   __typename: "member";
   id: string;
   name: string;
-  email: string;
+  username: string;
 }
 
-export interface GET_REFERRAL_MEMBER_COLLECTION {
+export interface GET_CONTRACT_INFO_xuemi_sales {
+  __typename: "xuemi_sales";
   /**
-   * fetch data from the table: "member"
+   * An object relationship
    */
-  member: GET_REFERRAL_MEMBER_COLLECTION_member[];
+  member: GET_CONTRACT_INFO_xuemi_sales_member | null;
 }
 
-export interface GET_REFERRAL_MEMBER_COLLECTIONVariables {
-  condition?: member_bool_exp | null;
+export interface GET_CONTRACT_INFO {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_CONTRACT_INFO_member_by_pk | null;
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_CONTRACT_INFO_property[];
+  /**
+   * fetch data from the table: "contract"
+   */
+  contract: GET_CONTRACT_INFO_contract[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  projectPrivateTeachPlan: GET_CONTRACT_INFO_projectPrivateTeachPlan[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  products: GET_CONTRACT_INFO_products[];
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_CONTRACT_INFO_appointment_plan[];
+  /**
+   * fetch data from the table: "xuemi.sales"
+   */
+  xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
+}
+
+export interface GET_CONTRACT_INFOVariables {
+  appId: string;
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -11493,6 +11396,33 @@ export interface ADD_MEMBER_CONTRACTVariables {
   endedAt: any;
   values: any;
   options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_REFERRAL_MEMBER
+// ====================================================
+
+export interface GET_REFERRAL_MEMBER_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface GET_REFERRAL_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_REFERRAL_MEMBER_member[];
+}
+
+export interface GET_REFERRAL_MEMBERVariables {
+  condition?: member_bool_exp | null;
 }
 
 /* tslint:disable */
