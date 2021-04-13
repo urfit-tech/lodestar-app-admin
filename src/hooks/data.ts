@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
 import { useIntl } from 'react-intl'
+import { AxiosRequestConfig } from 'axios'
 import { useApp } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 import { handleError, uploadFile } from '../helpers'
@@ -645,7 +646,7 @@ export const useUploadAttachments = () => {
     }
   `)
 
-  return async (type: string, target: string, files: File[]) => {
+  return async (type: string, target: string, files: File[], uploadFileConfig?: (file: File) => AxiosRequestConfig) => {
     const { data } = await insertAttachment({
       variables: {
         attachments: files.map(() => ({
@@ -662,7 +663,7 @@ export const useUploadAttachments = () => {
       for (let index = 0; files[index]; index++) {
         const attachmentId = attachmentIds[index]
         const file = files[index]
-        await uploadFile(`attachments/${attachmentId}`, file, authToken, apiHost)
+        await uploadFile(`attachments/${attachmentId}`, file, authToken, apiHost, uploadFileConfig?.(file))
         await insertAttachment({
           variables: {
             attachments: [
