@@ -50,14 +50,12 @@ const ExerciseSummaryBlock: React.VFC<{
   const { formatMessage } = useIntl()
 
   const averageScore = exercises.length
-    ? (
-        sum(exercises.map(exercise => exercise.answer.map(question => question.gainedPoints)).flat()) / exercises.length
-      ).toFixed(1)
+    ? (sum(exercises.map(exercise => exercise.score)) / exercises.length).toFixed(1)
     : 0
   const submittedStudents = uniqBy(exercise => exercise.memberId, exercises).length
   const acceptedStudents = uniqBy(
     exercise => exercise.memberId,
-    exercises.filter(exercise => sum(exercise.answer.map(answer => answer.gainedPoints)) > passingScore),
+    exercises.filter(exercise => exercise.status === 'accepted'),
   ).length
 
   return (

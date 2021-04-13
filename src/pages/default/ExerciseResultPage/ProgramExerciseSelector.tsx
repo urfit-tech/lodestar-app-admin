@@ -35,11 +35,7 @@ const ProgramExerciseSelector: React.VFC<{
         placeholder={<>{formatMessage(programMessages.label.select)}</>}
         optionFilterProp="children"
         value={value.programId || undefined}
-        onChange={newProgramId =>
-          onChange?.({
-            programId: newProgramId,
-          })
-        }
+        onChange={newProgramId => onChange?.({ programId: newProgramId })}
         className="mr-3"
         style={{ width: '24rem' }}
       >
