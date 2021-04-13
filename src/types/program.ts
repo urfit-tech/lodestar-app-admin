@@ -139,7 +139,6 @@ export type QuestionProps = {
   description: string | null
   answerDescription: string | null
   isMultipleAnswers: boolean
-  validChecked: boolean
   choices: ChoiceProps[]
 }
 

@@ -104,7 +104,7 @@ const ExerciseAdminForm: React.FC<{
   >(UPDATE_EXERCISE_POSITION)
 
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
-  const [withInvalidQuestion, setWithInvalidQuestion] = useState(!!programContent.metadata?.withInvalidQuestion)
+  const [isValidationVisible, setIsValidationVisible] = useState(programContent.metadata?.withInvalidQuestion === true)
   const questionValidations = questions.map(
     question =>
       question.points !== 0 &&
@@ -122,7 +122,7 @@ const ExerciseAdminForm: React.FC<{
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
-    setWithInvalidQuestion(true)
+    setIsValidationVisible(true)
     updateExercise({
       variables: {
         programContentId: programContent.id,
@@ -136,11 +136,13 @@ const ExerciseAdminForm: React.FC<{
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
             passingScore: values.passingScore || 0,
-            withInvalidQuestion: questionValidations.some(validation => !validation),
+            withInvalidQuestion: questions.length === 0 || questionValidations.some(validation => !validation),
           },
         },
         body: {
-          data: { questions: questions.map(v => ({ ...v, validChecked: true })) },
+          data: {
+            questions: questions.map(v => ({ ...v, isUnfinished: true })),
+          },
         },
       },
     })
@@ -196,7 +198,7 @@ const ExerciseAdminForm: React.FC<{
             onClick={() => {
               form.resetFields()
               setQuestions(programContentBody.data?.questions || [])
-              setWithInvalidQuestion(questions.length === 0 || questionValidations.some(validation => !validation))
+              setIsValidationVisible(questions.length === 0 || questionValidations.some(validation => !validation))
               onCancel?.()
             }}
             className="mr-2"
@@ -229,7 +231,7 @@ const ExerciseAdminForm: React.FC<{
         </div>
       </div>
 
-      {questions.length === 0 && (
+      {isValidationVisible && questions.length === 0 && (
         <Alert
           type="error"
           message={
@@ -241,7 +243,7 @@ const ExerciseAdminForm: React.FC<{
           className="mb-3"
         />
       )}
-      {withInvalidQuestion && questionValidations.some(validation => !validation) && (
+      {isValidationVisible && questionValidations.some(validation => !validation) && (
         <Alert
           type="error"
           message={
@@ -312,7 +314,7 @@ const ExerciseAdminForm: React.FC<{
         <QuestionInput
           key={question.id}
           index={index}
-          invalid={!questionValidations[index]}
+          isValidationVisible={isValidationVisible}
           value={question}
           onChange={value => {
             const newQuestions = clone(questions)
@@ -336,7 +338,6 @@ const ExerciseAdminForm: React.FC<{
                 description: null,
                 answerDescription: null,
                 isMultipleAnswers: false,
-                validChecked: false,
                 choices: [
                   {
                     id: uuidV4(),

@@ -59,10 +59,10 @@ const StyledAlertText = styled.div`
 const QuestionInput: React.FC<{
   index: number
   value: QuestionProps
-  invalid?: boolean
+  isValidationVisible: boolean
   onChange?: (value: QuestionProps) => void
   onRemove?: () => void
-}> = ({ index, value, invalid, onChange, onRemove }) => {
+}> = ({ index, value, isValidationVisible, onChange, onRemove }) => {
   const { formatMessage } = useIntl()
   const [isCollapsed, setIsCollapsed] = useState(true)
   const [description, setDescription] = useState<EditorState>(BraftEditor.createEditorState(value.description))
@@ -75,8 +75,18 @@ const QuestionInput: React.FC<{
     setAnswerDescription(BraftEditor.createEditorState(value.answerDescription))
   }, [value.answerDescription, value.description])
 
+  const checkErrors: { [key: string]: boolean } = {
+    noPoints: value.points < 1,
+    noDescription: BraftEditor.createEditorState(description).isEmpty(),
+    noChoice: value.choices.length === 0,
+    noAnswer: value.choices.every(choice => !choice.isCorrect),
+  }
+
   return (
-    <QuestionBlock variant={isCollapsed ? 'collapsed' : undefined} invalid={value.validChecked && invalid}>
+    <QuestionBlock
+      variant={isCollapsed ? 'collapsed' : undefined}
+      invalid={isValidationVisible && Object.values(checkErrors).some(v => v)}
+    >
       <div className="d-flex align-items-center mb-4 cursor-pointer">
         <StyledTitle className="flex-grow-1" onClick={() => setIsCollapsed(!isCollapsed)}>
           {formatMessage(programMessages.label.question)} {index + 1}
@@ -120,9 +130,9 @@ const QuestionInput: React.FC<{
                 points: typeof v === 'string' ? parseFloat(v) : v || 0,
               })
             }
-            invalid={value.validChecked && value?.points < 1}
+            invalid={isValidationVisible && checkErrors.noPoints}
           />
-          {value.validChecked && value?.points < 1 && (
+          {isValidationVisible && checkErrors.noPoints && (
             <StyledAlertText className="ml-3 d-flex align-items-center">
               <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
               <span>{formatMessage(programMessages.text.noQuestionPoints)}</span>
@@ -150,7 +160,7 @@ const QuestionInput: React.FC<{
         label={
           <div className="d-flex">
             {formatMessage(programMessages.label.question)}
-            {value.validChecked && BraftEditor.createEditorState(description).isEmpty() && (
+            {isValidationVisible && checkErrors.noDescription && (
               <StyledAlertText className="ml-3 d-flex align-items-center">
                 <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
                 <span>{formatMessage(programMessages.text.noQuestionDescription)}</span>
@@ -159,7 +169,7 @@ const QuestionInput: React.FC<{
           </div>
         }
       >
-        <StyledEditorWrapper invalid={value.validChecked && BraftEditor.createEditorState(description).isEmpty()}>
+        <StyledEditorWrapper invalid={isValidationVisible && checkErrors.noDescription}>
           <AdminBraftEditor
             variant="short"
             value={description}
@@ -179,8 +189,8 @@ const QuestionInput: React.FC<{
           key={choice.id || index}
           index={index}
           value={choice}
-          hasAnswer={value.choices.some(choice => choice.isCorrect)}
-          validChecked={value.validChecked}
+          isValidationVisible={isValidationVisible}
+          noAnswer={checkErrors.noAnswer}
           onChange={newChoice => {
             const newChoices = value.choices.map(v => {
               if (v.id === newChoice.id) {
@@ -229,7 +239,7 @@ const QuestionInput: React.FC<{
         >
           {formatMessage(programMessages.ui.createExerciseChoice)}
         </Button>
-        {value.validChecked && value.choices.length === 0 && (
+        {isValidationVisible && checkErrors.noChoice && (
           <StyledAlertText className="ml-1 d-flex align-items-center">
             <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
             <span>{formatMessage(programMessages.text.noQuestionChoice)}</span>
@@ -237,20 +247,8 @@ const QuestionInput: React.FC<{
         )}
       </div>
 
-      <Form.Item
-        label={
-          <div className="d-flex">
-            {formatMessage(programMessages.label.answerDescription)}
-            {value.validChecked && BraftEditor.createEditorState(answerDescription).isEmpty() && (
-              <StyledAlertText className="ml-3 d-flex align-items-center">
-                <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
-                <span>{formatMessage(programMessages.text.noAnswerDescription)}</span>
-              </StyledAlertText>
-            )}
-          </div>
-        }
-      >
-        <StyledEditorWrapper invalid={value.validChecked && BraftEditor.createEditorState(answerDescription).isEmpty()}>
+      <Form.Item label={<div className="d-flex">{formatMessage(programMessages.label.answerDescription)}</div>}>
+        <StyledEditorWrapper>
           <AdminBraftEditor
             variant="short"
             value={answerDescription}
@@ -271,17 +269,21 @@ const QuestionInput: React.FC<{
 const ChoiceInput: React.FC<{
   index: number
   value: ChoiceProps
-  hasAnswer?: boolean
-  validChecked: boolean
+  isValidationVisible: boolean
+  noAnswer: boolean
   onChange?: (value: ChoiceProps) => void
   onRemove?: () => void
-}> = ({ index, value, hasAnswer, validChecked, onChange, onRemove }) => {
+}> = ({ index, value, noAnswer, isValidationVisible, onChange, onRemove }) => {
   const { formatMessage } = useIntl()
   const [description, setDescription] = useState<EditorState>(BraftEditor.createEditorState(value.description))
 
   useEffect(() => {
     setDescription(BraftEditor.createEditorState(value.description))
   }, [value.description])
+
+  const checkErrors: { [key: string]: boolean } = {
+    noDescription: BraftEditor.createEditorState(description).isEmpty(),
+  }
 
   return (
     <ChoiceBlock>
@@ -290,7 +292,7 @@ const ChoiceInput: React.FC<{
           <StyledTitle>
             {formatMessage(programMessages.label.choice)} {index + 1}
           </StyledTitle>
-          {validChecked && BraftEditor.createEditorState(description).isEmpty() && (
+          {isValidationVisible && checkErrors.noDescription && (
             <StyledAlertText className="ml-3 d-flex align-items-center">
               <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
               <span>{formatMessage(programMessages.text.noChoiceDescription)}</span>
@@ -311,7 +313,7 @@ const ChoiceInput: React.FC<{
       </div>
 
       <Form.Item>
-        <StyledEditorWrapper invalid={validChecked && BraftEditor.createEditorState(description).isEmpty()}>
+        <StyledEditorWrapper invalid={isValidationVisible && checkErrors.noDescription}>
           <AdminBraftEditor
             variant="short"
             value={description}
@@ -338,7 +340,7 @@ const ChoiceInput: React.FC<{
           >
             {formatMessage(programMessages.label.isCorrectAnswer)}
           </Checkbox>
-          {!hasAnswer && (
+          {noAnswer && (
             <StyledAlertText className="ml-3 d-flex align-items-center">
               <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
               <span>{formatMessage(programMessages.text.noAnswers)}</span>

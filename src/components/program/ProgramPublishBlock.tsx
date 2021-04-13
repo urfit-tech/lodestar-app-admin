@@ -85,17 +85,13 @@ const ProgramPublishBlock: React.FC<{
       to: `/programs/${program.id}?tab=plan`,
     })
 
-  program.contentSections
-    .map(v =>
-      v.programContents
-        .map(
-          w =>
-            w.programContentType === 'exercise' &&
-            (w.metadata?.withInvalidQuestion || w.programContentBodyData?.questions !== 0),
-        )
-        .find(x => x === true),
-    )
-    .find(y => y === true) &&
+  program.contentSections.some(section =>
+    section.programContents.some(
+      content =>
+        content.programContentType === 'exercise' &&
+        (content.metadata?.withInvalidQuestion || !content.programContentBodyData?.questions.length),
+    ),
+  ) &&
     errors.push({
       message: formatMessage(programMessages.text.invalidExercise),
       to: `/programs/${program.id}?tab=content`,
