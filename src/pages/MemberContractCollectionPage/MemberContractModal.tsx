@@ -158,8 +158,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   )
 
   useEffect(() => {
-    if (!studentAttachments) return
-    setAttachments(studentAttachments.map(v => v.data))
+    setAttachments(studentAttachments?.map(attachment => attachment.data) || [])
   }, [studentAttachments])
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
