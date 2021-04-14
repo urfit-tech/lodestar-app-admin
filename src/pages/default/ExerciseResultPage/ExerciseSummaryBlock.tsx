@@ -1,4 +1,4 @@
-import { sum, uniqBy } from 'ramda'
+import { filter, pipe, sum, uniqBy } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -53,10 +53,11 @@ const ExerciseSummaryBlock: React.VFC<{
     ? (sum(exercises.map(exercise => exercise.score)) / exercises.length).toFixed(1)
     : 0
   const submittedStudents = uniqBy(exercise => exercise.memberId, exercises).length
-  const acceptedStudents = uniqBy(
-    exercise => exercise.memberId,
-    exercises.filter(exercise => exercise.status === 'accepted'),
-  ).length
+  const getAcceptedMemberIds = pipe(
+    filter<ExerciseDisplayProps, 'array'>(v => v.status === 'accepted'),
+    uniqBy(v => v.memberId),
+  )
+  const acceptedStudents = getAcceptedMemberIds(exercises).length
 
   return (
     <SummaryBlock className="d-flex align-items-center p-4 mb-4">

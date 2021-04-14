@@ -20,6 +20,7 @@ import QuestionChartsBlock from './QuestionChartsBlock'
 const messages = defineMessages({
   exerciseStatistics: { id: 'program.label.exerciseStatistics', defaultMessage: '答題狀況' },
   individualExercise: { id: 'program.label.individualExercise', defaultMessage: '個別表現' },
+  noExercise: { id: 'program.label.noExercise', defaultMessage: '目前尚無任何測驗成果' },
 })
 
 const ExerciseResultPage: React.VFC = () => {
@@ -32,7 +33,7 @@ const ExerciseResultPage: React.VFC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <BookIcon />} className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.practice)}</span>
+        <span>{formatMessage(commonMessages.menu.exerciseResult)}</span>
       </AdminPageTitle>
 
       <div className="mb-4">
@@ -61,6 +62,10 @@ const ExerciseResultBlock: React.VFC<{
 
   if (errorExercises || !programContent) {
     return <>{formatMessage(errorMessages.data.fetch)}</>
+  }
+
+  if (exercises.length === 0) {
+    return <>{formatMessage(messages.noExercise)}</>
   }
 
   const totalPoints = sum(programContent.questions.map(question => question.points))

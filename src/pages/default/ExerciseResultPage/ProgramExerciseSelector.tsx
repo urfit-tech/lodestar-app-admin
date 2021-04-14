@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { Select, Spin } from 'antd'
 import gql from 'graphql-tag'
 import { flatten } from 'ramda'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../../hasura'
 import { errorMessages, programMessages } from '../../../helpers/translation'
@@ -20,6 +20,15 @@ const ProgramExerciseSelector: React.VFC<{
   const { formatMessage } = useIntl()
   const { loadingPrograms, errorPrograms, programs } = useProgramWithExercises(creatorId)
 
+  useEffect(() => {
+    if (programs.length && typeof value.programId === 'undefined') {
+      onChange?.({
+        programId: programs[0]?.id || '',
+        contentId: programs[0]?.contents[0]?.id || '',
+      })
+    }
+  }, [onChange, programs, value.programId])
+
   if (loadingPrograms) {
     return <Spin />
   }
@@ -35,7 +44,12 @@ const ProgramExerciseSelector: React.VFC<{
         placeholder={<>{formatMessage(programMessages.label.select)}</>}
         optionFilterProp="children"
         value={value.programId || undefined}
-        onChange={newProgramId => onChange?.({ programId: newProgramId })}
+        onChange={newProgramId =>
+          onChange?.({
+            programId: newProgramId,
+            contentId: programs.find(program => program.id === newProgramId)?.contents[0]?.id,
+          })
+        }
         className="mr-3"
         style={{ width: '24rem' }}
       >
@@ -82,6 +96,7 @@ const useProgramWithExercises = (creatorId?: string) => {
             program_roles: { name: { _eq: "owner" }, member_id: { _eq: $creatorId } }
             program_content_sections: { program_contents: { program_content_body: { type: { _eq: "exercise" } } } }
           }
+          order_by: [{ published_at: desc_nulls_last }]
         ) {
           id
           title
