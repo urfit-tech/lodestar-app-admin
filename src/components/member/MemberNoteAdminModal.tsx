@@ -168,7 +168,20 @@ const MemberNoteAdminModal: React.FC<
 
           <div className="col-12">
             <Form.Item label={formatMessage(memberMessages.label.attachment)}>
-              <FileUploader multiple fileList={attachments} onChange={files => setAttachments(files)} showUploadList />
+              <FileUploader
+                multiple
+                showUploadList
+                fileList={attachments}
+                onChange={files => setAttachments(files)}
+                downloadableLink={
+                  note?.attachments &&
+                  (file => {
+                    const attachmentId = note.attachments.find(v => v.data.name === file.name && v.data.lastModified)
+                      ?.id
+                    return `attachments/${attachmentId}`
+                  })
+                }
+              />
             </Form.Item>
           </div>
         </div>
