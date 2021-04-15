@@ -46,29 +46,29 @@ export const EditableProgramSelector: React.FC<ProgramSelectorProps & SelectProp
   )
 }
 
-export const ProgramTreeSelector: React.FC<ProgramSelectorProps & TreeSelectProps<string>> = ({
-  allowContentType,
-  memberId,
-  ...selectProps
-}) => {
+export const ProgramTreeSelector: React.FC<
+  ProgramSelectorProps & TreeSelectProps<string> & { treeNodeSelectable?: boolean }
+> = ({ allowContentType, memberId, treeNodeSelectable, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { loadingPrograms, programs } = usePrograms({
     allowContentType,
     memberId,
-    isPublished: true,
+    isPublished: false,
     withContentSection: true,
     withContent: true,
   })
-  const treeData = programs.map(program => ({
+  const treeData: TreeSelectProps<string>['treeData'] = programs.map(program => ({
     key: program.id,
     title: program.title,
     value: program.id,
     group: 'program',
+    selectable: treeNodeSelectable ?? 'true',
     children: program.contentSections.map(section => ({
       key: section.id,
       title: section.title,
       value: section.id,
       group: 'programContentSection',
+      selectable: treeNodeSelectable ?? 'true',
       children: section.contents.map(content => ({
         key: content.id,
         title: content.title,
