@@ -79,9 +79,7 @@ const ExerciseAdminModal: React.FC<{
           programContent={programContent}
           programContentBody={programContentBody}
           onCancel={() => setVisible(false)}
-          onRefetch={() => {
-            onRefetch?.()
-          }}
+          onRefetch={() => onRefetch?.()}
         />
       </StyledModal>
     </>
@@ -104,7 +102,7 @@ const ExerciseAdminForm: React.FC<{
   >(UPDATE_EXERCISE_POSITION)
 
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
-  const [isValidationVisible, setIsValidationVisible] = useState(programContent.metadata?.withInvalidQuestion === true)
+  const [isValidationVisible, setIsValidationVisible] = useState(false)
   const questionValidations = questions.map(
     question =>
       question.points !== 0 &&
@@ -148,8 +146,10 @@ const ExerciseAdminForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onCancel?.()
         onRefetch?.()
+        if (questionValidations.every(validation => validation)) {
+          onCancel?.()
+        }
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -198,7 +198,7 @@ const ExerciseAdminForm: React.FC<{
             onClick={() => {
               form.resetFields()
               setQuestions(programContentBody.data?.questions || [])
-              setIsValidationVisible(questions.length === 0 || questionValidations.some(validation => !validation))
+              setIsValidationVisible(false)
               onCancel?.()
             }}
             className="mr-2"
