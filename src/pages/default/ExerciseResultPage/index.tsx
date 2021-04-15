@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../../components/admin'
 import AdminLayout from '../../../components/layout/AdminLayout'
+import { ProgramTreeSelector } from '../../../components/program/ProgramSelector'
 import { useAuth } from '../../../contexts/AuthContext'
 import hasura from '../../../hasura'
 import { commonMessages, errorMessages } from '../../../helpers/translation'
@@ -14,7 +15,6 @@ import { ReactComponent as BookIcon } from '../../../images/icon/book.svg'
 import { QuestionProps } from '../../../types/program'
 import ExerciseDisplayTable, { ExerciseDisplayProps } from './ExerciseDisplayTable'
 import ExerciseSummaryBlock from './ExerciseSummaryBlock'
-import ProgramExerciseSelector, { FilterProps } from './ProgramExerciseSelector'
 import QuestionChartsBlock from './QuestionChartsBlock'
 
 const messages = defineMessages({
@@ -27,7 +27,7 @@ const ExerciseResultPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { currentUserRole, currentMemberId } = useAuth()
 
-  const [filter, setFilter] = useState<FilterProps>({})
+  const [selectedContentId, setSelectedContentId] = useState('')
 
   return (
     <AdminLayout>
@@ -36,15 +36,18 @@ const ExerciseResultPage: React.VFC = () => {
         <span>{formatMessage(commonMessages.menu.exerciseResult)}</span>
       </AdminPageTitle>
 
-      <div className="mb-4">
-        <ProgramExerciseSelector
-          creatorId={currentUserRole === 'content-creator' ? currentMemberId || '' : undefined}
-          value={filter}
-          onChange={value => setFilter(value)}
-        />
+      <div className="row mb-4">
+        <div className="col-12 col-lg-6">
+          <ProgramTreeSelector
+            allowContentType="exercise"
+            treeNodeSelectable={false}
+            memberId={currentUserRole === 'content-creator' ? currentMemberId || '' : undefined}
+            onChange={value => setSelectedContentId(value)}
+          />
+        </div>
       </div>
 
-      {filter.contentId && <ExerciseResultBlock programContentId={filter.contentId} />}
+      {selectedContentId && <ExerciseResultBlock programContentId={selectedContentId} />}
     </AdminLayout>
   )
 }
