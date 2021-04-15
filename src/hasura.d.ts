@@ -493,6 +493,7 @@ export interface GET_FIRST_ASSIGNED_MEMBER_member {
   email: string;
   name: string;
   username: string;
+  created_at: any | null;
   /**
    * An array relationship
    */

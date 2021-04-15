@@ -201,15 +201,7 @@ const CurrentLeadContactBlock: React.FC<{
               查看
             </a>
           </div>
-          <div>
-            填單日期：
-            {currentLead.properties
-              .find(property => property.name === '填單日期')
-              ?.value.split(',')
-              .filter(date => moment(date).isValid())
-              .map(date => moment(date).fromNow())
-              .join(', ')}
-          </div>
+          <div>名單建立日期：{currentLead.createdAt && moment(currentLead.createdAt).fromNow()}</div>
         </div>
       </div>
       <Divider />
