@@ -219,7 +219,7 @@ const SalesActivenessTable: React.FC<{
           key="attend"
           title="在線時間(分)"
           dataIndex="attend"
-          render={v => Math.ceil(v / 60000) || 0}
+          render={v => Math.ceil(v / 60) || 0}
           sorter={(a, b) => columnSorter(a, b, 'attend')}
           width="9rem"
         />
@@ -320,13 +320,23 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           }
         }
         firsthand: sales_active_log(
-          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, past_count: { _eq: 0 } }
+          where: {
+            event: { _eq: "note" }
+            created_at: { _gt: $startedAt, _lte: $endedAt }
+            past_count: { _eq: 0 }
+            type: { _eq: "outbound" }
+          }
         ) {
           id
           sales_id
         }
         secondhand: sales_active_log(
-          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, past_count: { _gte: 1 } }
+          where: {
+            event: { _eq: "note" }
+            created_at: { _gt: $startedAt, _lte: $endedAt }
+            past_count: { _gte: 1 }
+            type: { _eq: "outbound" }
+          }
         ) {
           id
           sales_id
@@ -346,7 +356,9 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           duration
           sales_id
         }
-        dial: sales_active_log(where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt } }) {
+        dial: sales_active_log(
+          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, type: { _eq: "outbound" } }
+        ) {
           id
           sales_id
         }
@@ -356,13 +368,19 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
             created_at: { _gt: $startedAt, _lte: $endedAt }
             duration: { _gt: 90 }
             status: { _eq: "answered" }
+            type: { _eq: "outbound" }
           }
         ) {
           id
           sales_id
         }
         invalidNumber: sales_active_log(
-          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, status: { _eq: "missed" } }
+          where: {
+            event: { _eq: "note" }
+            created_at: { _gt: $startedAt, _lte: $endedAt }
+            status: { _eq: "missed" }
+            type: { _eq: "outbound" }
+          }
         ) {
           id
           sales_id
@@ -373,6 +391,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
             created_at: { _gt: $startedAt, _lte: $endedAt }
             status: { _eq: "answered" }
             rejected_at: { _is_null: false }
+            type: { _eq: "outbound" }
           }
         ) {
           id
@@ -384,6 +403,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
             created_at: { _gt: $startedAt, _lte: $endedAt }
             status: { _eq: "answered" }
             rejected_at: { _is_null: true }
+            type: { _eq: "outbound" }
           }
         ) {
           id
