@@ -22,10 +22,6 @@ const messages = defineMessages({
   },
 })
 
-const StyledCard = styled(Card)`
-  margin-bottom: 1.25rem;
-  width: 100%;
-`
 const StyledLabel = styled.span<{ variant?: 'default' | 'agreed' | 'revoked' }>`
   color: ${props =>
     props.variant === 'agreed'
@@ -102,7 +98,7 @@ const MemberContractAdminBlock: React.FC<{
           target="_blank"
           rel="noopener noreferrer"
         >
-          <StyledCard
+          <Card
             title={
               <div className="d-flex align-items-center justify-content-between">
                 <span className="mr-1">{contract.title}</span>
@@ -115,6 +111,7 @@ const MemberContractAdminBlock: React.FC<{
                 )}
               </div>
             }
+            className="mb-4"
           >
             <StyledMeta>
               {contract.revokedAt
@@ -150,7 +147,7 @@ const MemberContractAdminBlock: React.FC<{
                 </Button>
               )}
             </div>
-          </StyledCard>
+          </Card>
         </a>
       ))}
     </div>

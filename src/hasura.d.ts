@@ -11386,6 +11386,11 @@ export interface GET_CONTRACT_INFO_products {
   title: string;
   list_price: any | null;
   options: any | null;
+  period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
 }
 
 export interface GET_CONTRACT_INFO_appointment_plan_creator {

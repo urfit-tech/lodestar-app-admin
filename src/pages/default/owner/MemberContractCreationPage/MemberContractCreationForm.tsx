@@ -40,13 +40,14 @@ const MemberContractCreationForm: React.FC<
     memberId,
     isAppointmentOnly,
     sales,
+    form,
     ...formProps
   }) => {
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
 
     return (
-      <Form layout="vertical" colon={false} hideRequiredMark {...formProps}>
+      <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <Descriptions title="合約期間" column={2} bordered className="mb-5">
           <Descriptions.Item label="合約項目">
             <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
@@ -66,7 +67,7 @@ const MemberContractCreationForm: React.FC<
               name="selectedProjectPlanId"
               rules={[{ required: true, message: '請選擇合約效期' }]}
             >
-              <Select<string> style={{ width: 150 }}>
+              <Select<string> onChange={() => form?.setFieldsValue({ contractProducts: [] })} style={{ width: 150 }}>
                 {projectPlans.map(v => (
                   <Select.Option key={v.id} value={v.id}>
                     {v.periodAmount} {v.periodType}

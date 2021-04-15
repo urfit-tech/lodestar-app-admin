@@ -80,6 +80,8 @@ type ContractInfo = {
     addonPrice: number | null
     appointments: number
     coins: number
+    periodAmount: number
+    periodType: PeriodType | null
   }[]
   appointmentPlanCreators: {
     id: string | null
@@ -156,7 +158,12 @@ const MemberContractCreationPage: React.VFC = () => {
             endedAt={endedAt}
             contractProducts={contractProducts}
             isAppointmentOnly={isAppointmentOnly}
-            products={products}
+            products={products.filter(
+              product =>
+                product.periodType === null ||
+                (product.periodAmount === selectedProjectPlan?.periodAmount &&
+                  product.periodType === selectedProjectPlan.periodType),
+            )}
             contracts={contracts}
             projectPlans={projectPlans}
             sales={sales}
@@ -233,6 +240,8 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           title
           list_price
           options
+          period_amount
+          period_type
         }
         appointment_plan(distinct_on: [creator_id]) {
           id
@@ -287,7 +296,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
     info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
       id: v.id,
       title: v.title,
-      periodAmount: v.period_amount,
+      periodAmount: v.period_amount || 0,
       periodType: v.period_type as PeriodType | null,
     }))
     info.products = data.products.map(v => ({
@@ -297,6 +306,8 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
       addonPrice: v.options?.addonPrice || 0,
       appointments: v.options?.appointments || 0,
       coins: v.options?.coins || 0,
+      periodAmount: v.period_amount || 0,
+      periodType: v.period_type as PeriodType | null,
     }))
     info.appointmentPlanCreators = data.appointment_plan
       .map(v =>
