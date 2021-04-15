@@ -5,6 +5,7 @@ import moment from 'moment'
 import React, { useRef } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../../contexts/AppContext'
 import { commonMessages, programMessages } from '../../../helpers/translation'
 import { ExerciseProps } from '../../../types/program'
 
@@ -41,8 +42,11 @@ export type ExerciseDisplayProps = ExerciseProps & {
 const ExerciseDisplayTable: React.VFC<{
   totalPoints: number
   exercises: ExerciseDisplayProps[]
-}> = ({ totalPoints, exercises }) => {
+  programId: string
+  programContentId: string
+}> = ({ totalPoints, exercises, programId, programContentId }) => {
   const { formatMessage } = useIntl()
+  const { settings } = useApp()
   const inputRef = useRef<Input>(null)
 
   const getColumnSearchProps: (
@@ -85,6 +89,14 @@ const ExerciseDisplayTable: React.VFC<{
       <Table<ExerciseDisplayProps>
         rowKey="id"
         scroll={{ x: true }}
+        onRow={record => ({
+          onClick: () =>
+            window.open(
+              `//${settings['host']}/programs/${programId}/contents/${programContentId}?exerciseId=${record.id}`,
+              '_blank',
+            ),
+        })}
+        rowClassName="cursor-pointer"
         columns={[
           {
             dataIndex: 'createdAt',

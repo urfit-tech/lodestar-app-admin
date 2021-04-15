@@ -87,7 +87,12 @@ const ExerciseResultBlock: React.VFC<{
           <QuestionChartsBlock questions={programContent.questions} exercises={exercises} />
         </Tabs.TabPane>
         <Tabs.TabPane key="individual" tab={`${formatMessage(messages.individualExercise)} (${exercises.length})`}>
-          <ExerciseDisplayTable totalPoints={totalPoints} exercises={exercises} />
+          <ExerciseDisplayTable
+            totalPoints={totalPoints}
+            exercises={exercises}
+            programId={programContent.programId}
+            programContentId={programContentId}
+          />
         </Tabs.TabPane>
       </Tabs>
     </>
@@ -112,6 +117,10 @@ const useExerciseCollection = (programContentId: string) => {
             aggregate {
               count
             }
+          }
+          program_content_section {
+            id
+            program_id
           }
         }
         member: exercise(where: { program_content_id: { _eq: $programContentId } }, distinct_on: [member_id]) {
@@ -138,12 +147,14 @@ const useExerciseCollection = (programContentId: string) => {
     passingScore: number
     questions: QuestionProps[]
     enrollments: number
+    programId: string
   } | null = data?.program_content_by_pk
     ? {
         id: data.program_content_by_pk.id,
         passingScore: data.program_content_by_pk.metadata?.passingScore || 0,
         questions: data.program_content_by_pk.program_content_body.data?.questions || [],
         enrollments: data.program_content_by_pk.enrollments_aggregate.aggregate?.count || 0,
+        programId: data.program_content_by_pk.program_content_section.program_id,
       }
     : null
 
