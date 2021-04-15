@@ -263,67 +263,83 @@ export const useProgramContentBody = (programContentId: string) => {
   }
 }
 
-export const useOwnedPrograms = () => {
+export const usePrograms = (options?: {
+  allowContentType?: string
+  memberId?: string
+  isPublished?: boolean
+  withContentSection?: boolean
+  withContent?: boolean
+}) => {
   const { id: appId } = useApp()
-  const { loading, error, data, refetch } = useQuery<hasura.GET_OWNED_PROGRAMS, hasura.GET_OWNED_PROGRAMSVariables>(
-    gql`
-      query GET_OWNED_PROGRAMS($appId: String!) {
-        program(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
-          id
-          title
-        }
-      }
-    `,
-    { variables: { appId } },
-  )
 
-  const programs: {
-    id: string
-    title: string
-  }[] =
-    loading || !!error || !data
-      ? []
-      : data.program.map(program => ({
-          id: program.id,
-          title: program.title,
-        }))
-
-  return {
-    loadingPrograms: loading,
-    errorPrograms: error,
-    programs,
-    refetchPrograms: refetch,
+  const condition: hasura.GET_PROGRAMSVariables['condition'] = {
+    app_id: { _eq: appId },
+    published_at: options?.isPublished ? { _is_null: false } : undefined,
+    program_content_sections: {
+      program_contents: { program_content_type: { type: { _eq: options?.allowContentType } } },
+    },
+    editors: { member_id: { _eq: options?.memberId } },
   }
-}
 
-export const useEditablePrograms = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_EDITABLE_PROGRAMS,
-    hasura.GET_EDITABLE_PROGRAMSVariables
-  >(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAMS, hasura.GET_PROGRAMSVariables>(
     gql`
-      query GET_EDITABLE_PROGRAMS($memberId: String!) {
-        program(where: { editors: { member_id: { _eq: $memberId } } }) {
+      query GET_PROGRAMS(
+        $condition: program_bool_exp!
+        $contentSectionCondition: program_content_section_bool_exp
+        $contentCondition: program_content_bool_exp
+        $withContentSection: Boolean!
+        $withContent: Boolean!
+      ) {
+        program(where: $condition) {
           id
           title
+          program_content_sections(where: $contentSectionCondition, order_by: [{ position: asc }])
+            @include(if: $withContentSection) {
+            id
+            title
+            program_contents(where: $contentCondition, order_by: [{ position: asc }]) @include(if: $withContent) {
+              id
+              title
+            }
+          }
         }
       }
     `,
     {
-      variables: { memberId },
+      variables: {
+        condition,
+        contentSectionCondition: condition.program_content_sections,
+        contentCondition: condition.program_content_sections?.program_contents,
+        withContentSection: !!options?.withContentSection,
+        withContent: !!options?.withContent,
+      },
     },
   )
 
   const programs: {
     id: string
     title: string
+    contentSections: {
+      id: string
+      title: string
+      contents: {
+        id: string
+        title: string
+      }[]
+    }[]
   }[] =
-    loading || error || !data
-      ? []
-      : data.program.map(program => ({
-          id: program.id,
-          title: program.title,
-        }))
+    data?.program.map(program => ({
+      id: program.id,
+      title: program.title,
+      contentSections: program.program_content_sections.map(v => ({
+        id: v.id,
+        title: v.title,
+        contents: v.program_contents.map(w => ({
+          id: w.id,
+          title: w.title,
+        })),
+      })),
+    })) || []
 
   return {
     loadingPrograms: loading,
