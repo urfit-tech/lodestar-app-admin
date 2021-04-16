@@ -57,6 +57,7 @@ type ContractInfo = {
     phones: string[]
     properties: {
       id: string
+      propertyId: string
       value: string
       name: string
     }[]
@@ -287,6 +288,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           properties: data.member_by_pk.member_properties.map(v => ({
             id: v.id,
             value: v.value,
+            propertyId: v.property.id,
             name: v.property.name,
           })),
         }
