@@ -355,6 +355,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           id
           duration
           sales_id
+          type
         }
         dial: sales_active_log(
           where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, type: { _eq: "outbound" } }
@@ -461,11 +462,13 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       endedAt: new Date(v.ended_at),
     })) || []
   const validSpeakingLogs: LogsProps[] =
-    data?.validSpeaking.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
-      duration: v.duration || 0,
-    })) || []
+    data?.validSpeaking
+      .filter(v => v.type !== 'demo')
+      .map(w => ({
+        id: w.id,
+        salesId: w.sales_id,
+        duration: w.duration || 0,
+      })) || []
   const dialLogs: LogsProps[] =
     data?.dial.map(v => ({
       id: v.id,

@@ -1127,6 +1127,7 @@ export interface GET_SALES_ACTIVE_LOG_validSpeaking {
   id: string | null;
   duration: number | null;
   sales_id: string | null;
+  type: string | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_dial {
