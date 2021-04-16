@@ -219,7 +219,7 @@ const SalesActivenessTable: React.FC<{
           key="attend"
           title="在線時間(分)"
           dataIndex="attend"
-          render={v => Math.ceil(v / 60) || 0}
+          render={v => Math.ceil(v / 60000) || 0}
           sorter={(a, b) => columnSorter(a, b, 'attend')}
           width="9rem"
         />
@@ -227,7 +227,7 @@ const SalesActivenessTable: React.FC<{
           key="validSpeaking"
           title="通話時間(分)"
           dataIndex="validSpeaking"
-          render={v => Math.ceil(v / 60000) || 0}
+          render={v => Math.ceil(v / 60) || 0}
           sorter={(a, b) => columnSorter(a, b, 'validSpeaking')}
           width="9rem"
         />
