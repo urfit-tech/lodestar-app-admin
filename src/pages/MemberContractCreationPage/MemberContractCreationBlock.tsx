@@ -278,7 +278,7 @@ const MemberContractCreationBlock: React.FC<{
     const contractCoupons = orderDiscounts.map(v => ({
       id: v4(),
       name: v.name,
-      price: v.price,
+      price: v.price * v.amount,
       coupon_code_id: v.id,
       member_id: member.id,
       type: 'Coupon',
