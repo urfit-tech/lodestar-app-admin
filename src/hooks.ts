@@ -598,21 +598,21 @@ export const useLead = (sales: SalesProps) => {
     () =>
       data?.member?.[0]
         ? {
-          id: data.member[0].id,
-          email: data.member[0].email,
-          name: data.member[0].name || data.member[0].username,
-          createdAt: data.member[0].created_at ? new Date(data.member[0].created_at) : null,
-          phones: data.member[0].member_phones.map(v => v.phone),
-          categories: data.member[0].member_categories.map(v => ({
-            id: v.category.id,
-            name: v.category.name,
-          })),
-          properties: data.member[0].member_properties.map(v => ({
-            id: v.property.id,
-            name: v.property.name,
-            value: v.value,
-          })),
-        }
+            id: data.member[0].id,
+            email: data.member[0].email,
+            name: data.member[0].name || data.member[0].username,
+            createdAt: data.member[0].created_at ? new Date(data.member[0].created_at) : null,
+            phones: data.member[0].member_phones.map(v => v.phone),
+            categories: data.member[0].member_categories.map(v => ({
+              id: v.category.id,
+              name: v.category.name,
+            })),
+            properties: data.member[0].member_properties.map(v => ({
+              id: v.property.id,
+              name: v.property.name,
+              value: v.value,
+            })),
+          }
         : null,
     [data?.member],
   )

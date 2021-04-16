@@ -16,7 +16,7 @@
     "test": "react-scripts test",
     "typegen": "apollo client:codegen ./src/hasura.d.ts --outputFlat --target typescript",
     "format:organize-imports": "organize-imports-cli ./src/**/*.ts[x]",
-    "format:prettier": "prettier --write ./src/**/*.ts[x]",
+    "format:prettier": "prettier --write ./src/**/*.ts*",
     "format": "npm run format:organize-imports && npm run format:prettier",
     "trans:compile": "tsc --noEmit false --outDir src/extracted",
     "trans:extract": "babel --config-file ./.intl.babelrc ./src/extracted > /dev/null",
