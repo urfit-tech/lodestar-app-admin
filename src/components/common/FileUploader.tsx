@@ -66,7 +66,7 @@ const FileUploader: React.FC<{
           const files: File[] = fileList?.slice() || []
           for (let i = 0; i < e.target.files.length; i++) {
             const file = e.target.files[i]
-            if (file && !files.some(v => v.name === file.name)) {
+            if (file && !files.some(v => v.name === file.name && v.lastModified === file.lastModified)) {
               setUploadFiles(prev => [...prev, file])
               files.push(file)
             }
