@@ -200,7 +200,8 @@ export const useMemberContractCollection = ({
       studentCertification: v.student_certification || null,
       attachments: v.attachments,
       invoice: v.values?.invoice || null,
-      projectPlanName: v.values?.projectPlanName || null,
+      projectPlanName:
+        v.values?.projectPlanName || v.values?.orderProducts.map((v: { name: string }) => v.name).join('、') || null,
       price: v.values?.price || null,
       coinAmount: v.values?.coinAmount || null,
       paymentOptions: {
