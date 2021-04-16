@@ -297,7 +297,7 @@ const MemberContractCreationBlock: React.FC<{
           memberId: member.id,
           invoice: {
             name: member.name,
-            phone: member.phones,
+            phone: member.phones.join(','),
             email: member.email,
           },
           price: totalPrice,
