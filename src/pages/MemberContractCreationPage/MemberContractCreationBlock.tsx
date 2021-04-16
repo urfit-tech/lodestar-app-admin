@@ -331,7 +331,7 @@ const MemberContractCreationBlock: React.FC<{
           orderDiscounts: [
             ...contractCoupons.map(v => ({
               name: v.name,
-              price: v.price,
+              price: -v.price,
               type: 'Coupon',
               target: v.id,
             })),

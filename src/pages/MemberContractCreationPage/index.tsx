@@ -235,6 +235,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
         }
         products: project_plan(
           where: {
+            title: { _nlike: "%私塾方案%" }
             project_id: { _eq: "50b678a6-14b0-4148-b706-724d7e834e20" }
             published_at: { _is_null: false }
             project: { app_id: { _eq: $appId } }
