@@ -4,7 +4,7 @@ import { Chance } from 'chance'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { product } from 'ramda'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import hasura from './hasura'
 import { memberPropertyFields } from './helpers'
 import { SalesProps } from './types/member'
@@ -657,6 +657,7 @@ export const useLead = (sales: SalesProps) => {
         where: { member_note_count: { _gt: 0 } },
         orderBy: { lead_score: 'asc' },
       }
+      const variables = chance.weighted([firstHandVariables, secondHandVariables], [odds, 100 - odds])
       const { data } = await apolloClient.query<hasura.GET_LEADS>({
         query: gql`
           query GET_LEADS($where: xuemi_lead_bool_exp, $orderBy: [xuemi_lead_order_by!]) {
@@ -672,7 +673,7 @@ export const useLead = (sales: SalesProps) => {
             }
           }
         `,
-        variables: chance.weighted([firstHandVariables, secondHandVariables], [odds, 100 - odds]),
+        variables,
       })
       const leads = []
       for (const lead of data.xuemi_lead) {
@@ -690,48 +691,44 @@ export const useLead = (sales: SalesProps) => {
       return leads
     }
     const assignLeads = async (leads: { memberId: string; rate: number }[]) => {
-      for (const lead of leads) {
-        if (lead.rate >= Math.random()) {
-          const { data } = await apolloClient.mutate<
-            hasura.UPDATE_MEMBER_MANAGER,
-            hasura.UPDATE_MEMBER_MANAGERVariables
-          >({
-            mutation: gql`
-              mutation UPDATE_MEMBER_MANAGER($memberId: String!, $managerId: String!, $assignedAt: timestamptz!) {
-                update_member(
-                  where: { id: { _eq: $memberId }, manager_id: { _is_null: true } }
-                  _set: { manager_id: $managerId, assigned_at: $assignedAt }
-                ) {
-                  affected_rows
-                  returning {
-                    id
-                  }
-                }
+      const chance = new Chance()
+      const leadMemberId = chance.weighted(
+        leads.map(lead => lead.memberId),
+        leads.map(lead => lead.rate + 1),
+      )
+      const { data } = await apolloClient.mutate<hasura.UPDATE_MEMBER_MANAGER, hasura.UPDATE_MEMBER_MANAGERVariables>({
+        mutation: gql`
+          mutation UPDATE_MEMBER_MANAGER($memberId: String!, $managerId: String!, $assignedAt: timestamptz!) {
+            update_member(
+              where: { id: { _eq: $memberId }, manager_id: { _is_null: true } }
+              _set: { manager_id: $managerId, assigned_at: $assignedAt }
+            ) {
+              affected_rows
+              returning {
+                id
               }
-            `,
-            variables: {
-              memberId: lead.memberId,
-              managerId: sales.id,
-              assignedAt: new Date(),
-            },
-          })
-          return data?.update_member?.returning?.[0]?.id || null
-        }
-      }
-      return null
+            }
+          }
+        `,
+        variables: {
+          memberId: leadMemberId,
+          managerId: sales.id,
+          assignedAt: new Date(),
+        },
+      })
+      return data?.update_member?.returning?.[0]?.id || null
     }
 
-    requestLeads(odds)
-      .then(assignLeads)
-      .then(data => {
-        if (data) {
-          refetch()
-        } else {
-          requestLeads(0)
-            .then(assignLeads)
-            .then(() => refetch())
-        }
-      })
+    const deliverLead = async () => {
+      let leads = await requestLeads(odds)
+      let assignedLead = await assignLeads(leads)
+      if (leads.length === 0 || !assignedLead) {
+        leads = await requestLeads(0)
+        assignedLead = await assignLeads(leads)
+      }
+      await refetch()
+    }
+    deliverLead()
   }, [apolloClient, currentLead, oddsAdditions, refetch, sales])
 
   return {
