@@ -365,6 +365,7 @@ export type CurrentLeadProps = {
   id: string
   email: string
   name: string
+  createdAt: Date | null
   phones: string[]
   categories: {
     id: string
@@ -556,6 +557,7 @@ export const useLead = (sales: SalesProps) => {
           email
           name
           username
+          created_at
           member_phones {
             id
             phone
@@ -600,6 +602,7 @@ export const useLead = (sales: SalesProps) => {
             id: data.member[0].id,
             email: data.member[0].email,
             name: data.member[0].name || data.member[0].username,
+            createdAt: data.member[0].created_at ? new Date(data.member[0].created_at) : null,
             phones: data.member[0].member_phones.map(v => v.phone),
             categories: data.member[0].member_categories.map(v => ({
               id: v.category.id,
