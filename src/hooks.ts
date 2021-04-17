@@ -692,10 +692,14 @@ export const useLead = (sales: SalesProps) => {
     }
     const assignLeads = async (leads: { memberId: string; rate: number }[]) => {
       const chance = new Chance()
+      const filteredLeads = leads.filter(lead => lead.rate > 0)
       const leadMemberId = chance.weighted(
-        leads.map(lead => lead.memberId),
-        leads.map(lead => lead.rate + 1),
+        filteredLeads.map(lead => lead.memberId),
+        filteredLeads.map(lead => lead.rate),
       )
+      if (!leadMemberId) {
+        return null
+      }
       const { data } = await apolloClient.mutate<hasura.UPDATE_MEMBER_MANAGER, hasura.UPDATE_MEMBER_MANAGERVariables>({
         mutation: gql`
           mutation UPDATE_MEMBER_MANAGER($memberId: String!, $managerId: String!, $assignedAt: timestamptz!) {
@@ -722,7 +726,7 @@ export const useLead = (sales: SalesProps) => {
     const deliverLead = async () => {
       let leads = await requestLeads(odds)
       let assignedLead = await assignLeads(leads)
-      if (leads.length === 0 || !assignedLead) {
+      if (!assignedLead) {
         leads = await requestLeads(0)
         assignedLead = await assignLeads(leads)
       }
