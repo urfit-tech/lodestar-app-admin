@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter, notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
-import { pick, range, sum } from 'ramda'
+import { project, range, sum } from 'ramda'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
@@ -128,7 +128,7 @@ const MemberContractCreationBlock: React.FC<{
 
   if (discountAmount['referral']) {
     contractDiscounts.push({
-      id: contractsOptions.couponCodeId['referral'],
+      id: contractsOptions.couponPlanId['referral'],
       type: 'referralDiscount',
       name: '被介紹人折抵',
       price: discountAmount['referral'],
@@ -139,7 +139,7 @@ const MemberContractCreationBlock: React.FC<{
   }
   if (discountAmount['studentPromotion']) {
     contractDiscounts.push({
-      id: contractsOptions.couponCodeId['student'],
+      id: contractsOptions.couponPlanId['student'],
       type: 'promotionDiscount',
       name: '學生方案',
       price: discountAmount['studentPromotion'],
@@ -159,21 +159,21 @@ const MemberContractCreationBlock: React.FC<{
 
     if (mainProducts.length === 2) {
       contractDiscounts.push({
-        id: contractsOptions.couponCodeId['tenPercentOff'],
+        id: contractsOptions.couponPlanId['tenPercentOff'],
         name: '任選兩件折抵',
         ...promotionDiscount,
       })
     }
     if (mainProducts.length === 3) {
       contractDiscounts.push({
-        id: contractsOptions.couponCodeId['fifteenPercentOff'],
+        id: contractsOptions.couponPlanId['fifteenPercentOff'],
         name: '任選三件折抵',
         ...promotionDiscount,
       })
     }
     if (mainProducts.length >= 4) {
       contractDiscounts.push({
-        id: contractsOptions.couponCodeId['twentyPercentOff'],
+        id: contractsOptions.couponPlanId['twentyPercentOff'],
         name: '任選四件折抵',
         ...promotionDiscount,
       })
@@ -181,7 +181,7 @@ const MemberContractCreationBlock: React.FC<{
   }
   if (fieldValue.hasDeposit) {
     contractDiscounts.push({
-      id: contractsOptions.couponCodeId['deposit'],
+      id: contractsOptions.couponPlanId['deposit'],
       type: 'depositDiscount',
       name: '扣除訂金',
       price: discountAmount['deposit'],
@@ -280,9 +280,16 @@ const MemberContractCreationBlock: React.FC<{
       id: v4(),
       name: v.name,
       price: Math.abs(v.price) * v.amount,
-      coupon_code_id: v.id,
       member_id: member.id,
-      type: 'Coupon',
+      coupon_code: {
+        data: {
+          coupon_plan_id: v.id,
+          code: v4().split('-')[0],
+          app_id: 'xuemi',
+          count: 0,
+          remaining: 0,
+        },
+      },
     }))
 
     addMemberContract({
@@ -328,7 +335,7 @@ const MemberContractCreationBlock: React.FC<{
               ended_at: endedAt,
             },
           ],
-          coupons: [...coupons, ...contractCoupons.map(coupon => pick(['id', 'member_id', 'coupon_code_id'], coupon))],
+          coupons: [...coupons, ...project(['id', 'member_id', 'coupon_code'], contractCoupons)],
           orderDiscounts: [
             ...contractCoupons.map(v => ({
               name: v.name,
