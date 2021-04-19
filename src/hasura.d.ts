@@ -604,16 +604,6 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 // GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
 // ====================================================
 
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate {
-  __typename: "appointment_plan_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate {
-  __typename: "appointment_plan_aggregate";
-  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate | null;
-}
-
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
   __typename: "member_public";
   id: string | null;
@@ -656,10 +646,6 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
   /**
-   * fetch aggregated fields from the table: "appointment_plan"
-   */
-  appointment_plan_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate;
-  /**
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
@@ -667,7 +653,64 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
   condition: appointment_plan_bool_exp;
-  orderBy?: appointment_plan_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PLAN_COUNTS
+// ====================================================
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_published_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_published {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COUNTS_published_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_privately_published_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_privately_published {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COUNTS_privately_published_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_draft_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_draft {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COUNTS_draft_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS {
+  /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  published: GET_APPOINTMENT_PLAN_COUNTS_published;
+  /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  privately_published: GET_APPOINTMENT_PLAN_COUNTS_privately_published;
+  /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  draft: GET_APPOINTMENT_PLAN_COUNTS_draft;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTSVariables {
+  condition?: appointment_plan_bool_exp | null;
 }
 
 /* tslint:disable */

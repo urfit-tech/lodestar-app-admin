@@ -14,7 +14,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 
-const AppointmentPlanCollectionAdminPage: React.FC = () => {
+const AppointmentPlanCollectionAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentUserRole, currentMemberId } = useAuth()
@@ -48,7 +48,9 @@ const AppointmentPlanCollectionAdminPage: React.FC = () => {
         />
       </div>
 
-      <AppointmentPlanCollectionTabs />
+      {currentMemberId && (
+        <AppointmentPlanCollectionTabs creatorId={currentUserRole === 'app-owner' ? undefined : currentMemberId} />
+      )}
     </AdminLayout>
   )
 }

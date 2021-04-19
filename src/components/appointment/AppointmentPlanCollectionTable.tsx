@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -72,17 +72,10 @@ type AppointmentPlanProps = {
 
 const AppointmentPlanCollectionTable: React.FC<{
   condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
-  orderBy?: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy']
   withAppointmentButton?: Boolean
-  onReady?: (count: number) => void
-}> = ({ condition, orderBy, withAppointmentButton, onReady }) => {
+}> = ({ condition, withAppointmentButton }) => {
   const { formatMessage } = useIntl()
-  const {
-    loadingAppointmentPlans,
-    appointmentPlans,
-    appointmentPlanCount,
-    refetchAppointmentPlans,
-  } = useAppointmentPlansAdmin(condition, orderBy)
+  const { loadingAppointmentPlans, appointmentPlans, refetchAppointmentPlans } = useAppointmentPlansAdmin(condition)
 
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
@@ -95,11 +88,6 @@ const AppointmentPlanCollectionTable: React.FC<{
       (searchName && appointmentPlan.creator.name.includes(searchName)) ||
       (searchTitle && appointmentPlan.title.includes(searchTitle)),
   )
-
-  useEffect(() => {
-    onReady?.(appointmentPlanCount)
-    refetchAppointmentPlans()
-  }, [onReady, appointmentPlanCount, refetchAppointmentPlans])
 
   const columns: ColumnProps<AppointmentPlanProps>[] = [
     {
@@ -181,7 +169,7 @@ const AppointmentPlanCollectionTable: React.FC<{
     <>
       <Table
         rowKey="id"
-        rowClassName={() => 'cursor-pointer'}
+        rowClassName="cursor-pointer"
         loading={loadingAppointmentPlans}
         onRow={record => ({
           onClick: () => window.open(`/appointment-plans/${record.id}`),
@@ -202,27 +190,14 @@ const AppointmentPlanCollectionTable: React.FC<{
   )
 }
 
-const useAppointmentPlansAdmin = (
-  condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition'],
-  orderBy: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy'] = [
-    { updated_at: 'desc_nulls_last' as hasura.order_by },
-  ],
-) => {
+const useAppointmentPlansAdmin = (condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']) => {
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
     hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables
   >(
     gql`
-      query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN(
-        $condition: appointment_plan_bool_exp!
-        $orderBy: [appointment_plan_order_by!]
-      ) {
-        appointment_plan_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-        appointment_plan(where: $condition, order_by: $orderBy) {
+      query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN($condition: appointment_plan_bool_exp!) {
+        appointment_plan(where: $condition) {
           id
           creator_id
           creator {
@@ -244,33 +219,31 @@ const useAppointmentPlansAdmin = (
         }
       }
     `,
-    { variables: { condition, orderBy } },
+    {
+      variables: { condition },
+      fetchPolicy: 'no-cache',
+    },
   )
 
   const appointmentPlans: AppointmentPlanProps[] =
-    loading || !!error || !data
-      ? []
-      : data.appointment_plan.map(appointmentPlan => ({
-          id: appointmentPlan.id,
-          creator: {
-            id: appointmentPlan.creator_id,
-            avatarUrl: appointmentPlan.creator?.picture_url || null,
-            name: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
-            abstract: appointmentPlan.creator?.abstract || null,
-          },
-          title: appointmentPlan.title,
-          duration: appointmentPlan.duration,
-          listPrice: appointmentPlan.price,
-          enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate
-            ? appointmentPlan.appointment_enrollments_aggregate.aggregate.count || 0
-            : 0,
-          isPublished: !!appointmentPlan.published_at,
-        }))
+    data?.appointment_plan.map(appointmentPlan => ({
+      id: appointmentPlan.id,
+      creator: {
+        id: appointmentPlan.creator_id,
+        avatarUrl: appointmentPlan.creator?.picture_url || null,
+        name: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
+        abstract: appointmentPlan.creator?.abstract || null,
+      },
+      title: appointmentPlan.title,
+      duration: appointmentPlan.duration,
+      listPrice: appointmentPlan.price,
+      enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate?.count || 0,
+      isPublished: !!appointmentPlan.published_at,
+    })) || []
 
   return {
     loadingAppointmentPlans: loading,
     errorAppointmentPlans: error,
-    appointmentPlanCount: data?.appointment_plan_aggregate.aggregate?.count || 0,
     appointmentPlans,
     refetchAppointmentPlans: refetch,
   }
