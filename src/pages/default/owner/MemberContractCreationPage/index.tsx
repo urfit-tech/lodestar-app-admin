@@ -58,6 +58,7 @@ type ContractInfo = {
     properties: {
       id: string
       value: string
+      propertyId: string
       name: string
     }[]
   } | null
@@ -291,6 +292,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           properties: data.member_by_pk.member_properties.map(v => ({
             id: v.id,
             value: v.value,
+            propertyId: v.property.id,
             name: v.property.name,
           })),
         }
