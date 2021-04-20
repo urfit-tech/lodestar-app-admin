@@ -59,6 +59,7 @@ type ContractInfo = {
       id: string
       propertyId: string
       value: string
+      propertyId: string
       name: string
     }[]
   } | null
@@ -132,9 +133,9 @@ const MemberContractCreationPage: React.VFC = () => {
     : null
 
   // calculate contract items results
-  const contractProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
-  const selectedMainProducts = contractProducts.filter(orderProduct =>
-    products.find(product => product.id === orderProduct.id && product.price),
+  const selectedProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
+  const selectedMainProducts = selectedProducts.filter(contractProduct =>
+    products.find(product => product.id === contractProduct.id && product.price),
   )
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
@@ -157,7 +158,7 @@ const MemberContractCreationPage: React.VFC = () => {
             onValuesChange={() => setReRender(prev => prev + 1)}
             memberId={memberId}
             endedAt={endedAt}
-            contractProducts={contractProducts}
+            contractProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
             products={products.filter(
               product =>
@@ -178,7 +179,7 @@ const MemberContractCreationPage: React.VFC = () => {
             contracts={contracts}
             selectedProjectPlan={selectedProjectPlan}
             endedAt={endedAt}
-            contractProducts={contractProducts}
+            selectedProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
             memberBlockRef={memberBlockRef}
           />
@@ -234,7 +235,11 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           period_type
         }
         products: project_plan(
-          where: { published_at: { _is_null: false }, project: { app_id: { _eq: $appId } } }
+          where: {
+            title: { _nlike: "%私塾方案%" }
+            published_at: { _is_null: false }
+            project: { app_id: { _eq: $appId } }
+          }
           order_by: [{ position: asc_nulls_last }, { title: asc }]
         ) {
           id
