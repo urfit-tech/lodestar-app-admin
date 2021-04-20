@@ -12,7 +12,7 @@ import { v4 } from 'uuid'
 import { ContractInfo, FieldProps } from '.'
 import hasura from '../../hasura'
 
-type OrderItem = {
+type ContractItem = {
   id: string
   type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount'
   name: string
@@ -41,7 +41,7 @@ const MemberContractCreationBlock: React.FC<{
   endedAt: Date | null
   isAppointmentOnly: boolean
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
-  contractProducts: NonNullable<FieldProps['contractProducts']>
+  selectedProducts: NonNullable<FieldProps['contractProducts']>
   form: FormInstance<FieldProps>
 }> = ({
   member,
@@ -51,7 +51,7 @@ const MemberContractCreationBlock: React.FC<{
   isAppointmentOnly,
   memberBlockRef,
   form,
-  contractProducts,
+  selectedProducts,
   contracts,
 }) => {
   const fieldValue = form.getFieldsValue()
@@ -59,8 +59,8 @@ const MemberContractCreationBlock: React.FC<{
   const { currentMemberId } = useAuth()
   const [memberContractUrl, setMemberContractUrl] = useState('')
 
-  // calculate order products
-  const orderProducts: OrderItem[] = contractProducts
+  // calculate contract products
+  const contractProducts: ContractItem[] = selectedProducts
     .map(contractProduct => {
       const product = products.find(product => product.id === contractProduct.id)
       if (!product) {
@@ -87,12 +87,12 @@ const MemberContractCreationBlock: React.FC<{
       }
     })
     .filter(notEmpty)
-  const mainProducts = orderProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
-  const totalAppointments = sum(orderProducts.map(product => product.appointments * product.amount))
-  const totalCoins = sum(orderProducts.map(product => product.coins * product.amount))
+  const mainProducts = contractProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
+  const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
+  const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
   const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
   if (fieldValue.withCreatorId && totalAppointments > 0) {
-    orderProducts.push({
+    contractProducts.push({
       id: contractsOptions.projectPlanId['designatedIndustryTeacher'],
       type: 'addonProduct',
       name: '指定業師',
@@ -103,53 +103,54 @@ const MemberContractCreationBlock: React.FC<{
     })
   }
 
-  // calculate order discounts
-  const orderDiscounts: OrderItem[] = []
-  const discountPrice = {
+  // calculate contract discounts
+  const contractDiscounts: ContractItem[] = []
+  const discountAmount = {
     referral: 0,
-    student: 0,
-    group: 0,
     deposit: -1000,
+    studentPromotion: 0,
+    groupPromotion: 0,
   }
 
   if (fieldValue.referralMemberId) {
-    discountPrice.referral = 2000 * -1
+    discountAmount['referral'] = 2000 * -1
   }
   if (fieldValue.identity === 'student' && fieldValue?.certification?.file.name) {
-    discountPrice.student =
-      (sum(mainProducts.map(mainProduct => mainProduct.price)) + discountPrice.referral * mainProducts.length) * -0.1
+    discountAmount['studentPromotion'] =
+      (sum(mainProducts.map(mainProduct => mainProduct.price)) + discountAmount['referral'] * mainProducts.length) *
+      -0.1
   }
-  discountPrice.group =
+  discountAmount['groupPromotion'] =
     (sum(mainProducts.map(mainProduct => mainProduct.price)) +
-      discountPrice.referral * mainProducts.length +
-      discountPrice.student) *
+      discountAmount['referral'] * mainProducts.length +
+      discountAmount['studentPromotion']) *
     (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
 
-  if (discountPrice.referral) {
-    orderDiscounts.push({
+  if (discountAmount['referral']) {
+    contractDiscounts.push({
       id: contractsOptions.couponCodeId['referral'],
       type: 'referralDiscount',
       name: '被介紹人折抵',
-      price: discountPrice.referral,
+      price: discountAmount['referral'],
       appointments: 0,
       coins: 0,
       amount: mainProducts.length,
     })
   }
-  if (discountPrice.student) {
-    orderDiscounts.push({
+  if (discountAmount['studentPromotion']) {
+    contractDiscounts.push({
       id: contractsOptions.couponCodeId['student'],
       type: 'promotionDiscount',
       name: '學生方案',
-      price: discountPrice.student,
+      price: discountAmount['studentPromotion'],
       appointments: 0,
       coins: 0,
       amount: 1,
     })
   }
-  if (Math.ceil(discountPrice.group)) {
-    const promotionDiscount: Omit<OrderItem, 'id' | 'name'> = {
-      price: Math.ceil(discountPrice.group),
+  if (Math.ceil(discountAmount['groupPromotion'])) {
+    const promotionDiscount: Omit<ContractItem, 'id' | 'name'> = {
+      price: Math.ceil(discountAmount['groupPromotion']),
       type: 'promotionDiscount',
       appointments: 0,
       coins: 0,
@@ -157,21 +158,21 @@ const MemberContractCreationBlock: React.FC<{
     }
 
     if (mainProducts.length === 2) {
-      orderDiscounts.push({
+      contractDiscounts.push({
         id: contractsOptions.couponCodeId['tenPercentOff'],
         name: '任選兩件折抵',
         ...promotionDiscount,
       })
     }
     if (mainProducts.length === 3) {
-      orderDiscounts.push({
+      contractDiscounts.push({
         id: contractsOptions.couponCodeId['fifteenPercentOff'],
         name: '任選三件折抵',
         ...promotionDiscount,
       })
     }
     if (mainProducts.length >= 4) {
-      orderDiscounts.push({
+      contractDiscounts.push({
         id: contractsOptions.couponCodeId['twentyPercentOff'],
         name: '任選四件折抵',
         ...promotionDiscount,
@@ -179,19 +180,19 @@ const MemberContractCreationBlock: React.FC<{
     }
   }
   if (fieldValue.hasDeposit) {
-    orderDiscounts.push({
+    contractDiscounts.push({
       id: contractsOptions.couponCodeId['deposit'],
       type: 'depositDiscount',
       name: '扣除訂金',
-      price: discountPrice.deposit,
+      price: discountAmount['deposit'],
       appointments: 0,
       coins: 0,
       amount: 1,
     })
   }
 
-  const orderItems = [...orderProducts, ...orderDiscounts]
-  const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
+  const contractItems = [...contractProducts, ...contractDiscounts]
+  const totalPrice = sum(contractItems.map(v => v.price * v.amount))
 
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
@@ -275,10 +276,10 @@ const MemberContractCreationBlock: React.FC<{
     const times = '0'
     const orderId = moment().format('YYYYMMDDHHmmssSSS') + times.padStart(2, '0')
 
-    const contractCoupons = orderDiscounts.map(v => ({
+    const contractCoupons = contractDiscounts.map(v => ({
       id: v4(),
       name: v.name,
-      price: v.price * v.amount,
+      price: Math.abs(v.price) * v.amount,
       coupon_code_id: v.id,
       member_id: member.id,
       type: 'Coupon',
@@ -312,7 +313,7 @@ const MemberContractCreationBlock: React.FC<{
               started_at: fieldValue.startedAt,
               ended_at: endedAt,
             },
-            ...orderProducts.map(v => ({
+            ...contractProducts.map(v => ({
               product_id: `ProjectPlan_${v.id}`,
               name: v.name,
               price: v.price * v.amount,
@@ -331,7 +332,7 @@ const MemberContractCreationBlock: React.FC<{
           orderDiscounts: [
             ...contractCoupons.map(v => ({
               name: v.name,
-              price: -v.price,
+              price: v.price,
               type: 'Coupon',
               target: v.id,
             })),
@@ -362,18 +363,18 @@ const MemberContractCreationBlock: React.FC<{
   return (
     <>
       <StyledOrder className="mb-5">
-        {orderItems.map(orderItem => (
-          <div key={orderItem.id} className="row mb-2">
+        {contractItems.map(item => (
+          <div key={item.id} className="row mb-2">
             <div className="col-6 text-right">
-              {orderItem.type === 'addonProduct' && '【加購項目】'}
-              {orderItem.type === 'referralDiscount' && '【介紹折抵】'}
-              {orderItem.type === 'promotionDiscount' && '【促銷折抵】'}
+              {item.type === 'addonProduct' && '【加購項目】'}
+              {item.type === 'referralDiscount' && '【介紹折抵】'}
+              {item.type === 'promotionDiscount' && '【促銷折抵】'}
             </div>
             <div className="col-3">
-              <span>{orderItem.name}</span>
-              {orderItem.amount > 1 ? <span>x{orderItem.amount}</span> : ''}
+              <span>{item.name}</span>
+              {item.amount > 1 ? <span>x{item.amount}</span> : ''}
             </div>
-            <div className="col-3 text-right">{currencyFormatter(orderItem.price * orderItem.amount)}</div>
+            <div className="col-3 text-right">{currencyFormatter(item.price * item.amount)}</div>
           </div>
         ))}
 
