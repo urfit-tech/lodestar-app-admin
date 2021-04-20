@@ -10085,58 +10085,6 @@ export interface GET_PROGRAM_CONTENT_BODYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_OWNED_PROGRAMS
-// ====================================================
-
-export interface GET_OWNED_PROGRAMS_program {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_OWNED_PROGRAMS {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_OWNED_PROGRAMS_program[];
-}
-
-export interface GET_OWNED_PROGRAMSVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_EDITABLE_PROGRAMS
-// ====================================================
-
-export interface GET_EDITABLE_PROGRAMS_program {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_EDITABLE_PROGRAMS {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_EDITABLE_PROGRAMS_program[];
-}
-
-export interface GET_EDITABLE_PROGRAMSVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROGRAMS
 // ====================================================
 
@@ -10373,6 +10321,22 @@ export interface UPDATE_PROGRAM_CONTENT_BODYVariables {
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT
 // ====================================================
 
+export interface DELETE_PROGRAM_CONTENT_delete_practice {
+  __typename: "practice_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_delete_exercise {
+  __typename: "exercise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT_delete_program_content_progress {
   __typename: "program_content_progress_mutation_response";
   /**
@@ -10389,23 +10353,15 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content_body {
   affected_rows: number;
 }
 
-export interface DELETE_PROGRAM_CONTENT_delete_exercise {
-  __typename: "exercise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CONTENT_delete_practice {
-  __typename: "practice_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface DELETE_PROGRAM_CONTENT {
+  /**
+   * delete data from the table: "practice"
+   */
+  delete_practice: DELETE_PROGRAM_CONTENT_delete_practice | null;
+  /**
+   * delete data from the table: "exercise"
+   */
+  delete_exercise: DELETE_PROGRAM_CONTENT_delete_exercise | null;
   /**
    * delete data from the table: "program_content_progress"
    */
@@ -10414,14 +10370,6 @@ export interface DELETE_PROGRAM_CONTENT {
    * delete data from the table: "program_content_body"
    */
   delete_program_content_body: DELETE_PROGRAM_CONTENT_delete_program_content_body | null;
-  /**
-   * delete data from the table: "exercise"
-   */
-  delete_exercise: DELETE_PROGRAM_CONTENT_delete_exercise | null;
-  /**
-   * delete data from the table: "practice"
-   */
-  delete_practice: DELETE_PROGRAM_CONTENT_delete_practice | null;
 }
 
 export interface DELETE_PROGRAM_CONTENTVariables {
@@ -10994,6 +10942,12 @@ export interface GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggre
   aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate_aggregate | null;
 }
 
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_section {
+  __typename: "program_content_section";
+  id: any;
+  program_id: any;
+}
+
 export interface GET_EXERCISE_COLLECTION_program_content_by_pk {
   __typename: "program_content";
   id: any;
@@ -11006,6 +10960,10 @@ export interface GET_EXERCISE_COLLECTION_program_content_by_pk {
    * An aggregated array relationship
    */
   enrollments_aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate;
+  /**
+   * An object relationship
+   */
+  program_content_section: GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_section;
 }
 
 export interface GET_EXERCISE_COLLECTION_member_member {
@@ -11049,51 +11007,6 @@ export interface GET_EXERCISE_COLLECTION {
 
 export interface GET_EXERCISE_COLLECTIONVariables {
   programContentId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAMS_WITH_EXERCISES
-// ====================================================
-
-export interface GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections_program_contents {
-  __typename: "program_content";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections {
-  __typename: "program_content_section";
-  id: any;
-  /**
-   * An array relationship
-   */
-  program_contents: GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections_program_contents[];
-}
-
-export interface GET_PROGRAMS_WITH_EXERCISES_program {
-  __typename: "program";
-  id: any;
-  title: string;
-  /**
-   * An array relationship
-   */
-  program_content_sections: GET_PROGRAMS_WITH_EXERCISES_program_program_content_sections[];
-}
-
-export interface GET_PROGRAMS_WITH_EXERCISES {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_PROGRAMS_WITH_EXERCISES_program[];
-}
-
-export interface GET_PROGRAMS_WITH_EXERCISESVariables {
-  creatorId?: string | null;
 }
 
 /* tslint:disable */
@@ -13072,7 +12985,6 @@ export enum coupon_code_update_column {
  * unique or primary key constraints on table "coupon"
  */
 export enum coupon_constraint {
-  coupon_member_id_coupon_code_id_key = "coupon_member_id_coupon_code_id_key",
   coupon_pkey = "coupon_pkey",
 }
 
