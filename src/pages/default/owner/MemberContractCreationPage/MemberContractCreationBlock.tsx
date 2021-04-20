@@ -285,7 +285,7 @@ const MemberContractCreationBlock: React.FC<{
       coupon_code: {
         data: {
           coupon_plan_id: v.id,
-          code: v4().split('-')[0],
+          code: v4(),
           app_id: appId,
           count: 0,
           remaining: 0,
