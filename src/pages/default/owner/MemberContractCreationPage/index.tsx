@@ -59,7 +59,6 @@ type ContractInfo = {
       id: string
       propertyId: string
       value: string
-      propertyId: string
       name: string
     }[]
   } | null
