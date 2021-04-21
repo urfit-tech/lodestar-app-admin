@@ -32,6 +32,7 @@ type AssignedMemberProps = {
     price: number
     orderExecutors: { ratio: number; memberId: string }[]
   }[]
+  isDemoInvited: boolean
   isDemoed: boolean
   isAgreed: boolean
 }
@@ -108,6 +109,7 @@ export default function SalesMemberCategoryPage() {
           return length(saleNotes) >= 1 && length(saleRejectedNotes) === 0
         }, memberList),
       ),
+      demoInvitedCount: length(filter(member => member.isDemoInvited, memberList)),
       demoCount: length(filter(member => member.isDemoed, memberList)),
       agreedCount: length(filter(member => member.isAgreed, memberList)),
       laborEvaluationScore: Math.floor(
@@ -235,6 +237,13 @@ export default function SalesMemberCategoryPage() {
           />
 
           <Table.ColumnGroup title="示範">
+            <Table.Column<Pick<RecordType, 'demoInvitedCount'>>
+              key="demoInvitedCount"
+              title="邀約數"
+              dataIndex="demoInvitedCount"
+              sorter={(a, b) => a.demoInvitedCount - b.demoInvitedCount}
+              width="6.5rem"
+            />
             <Table.Column<Pick<RecordType, 'demoCount'>>
               key="demoCount"
               title="示範數"
@@ -370,6 +379,11 @@ const useAssignedMemberCollection = (filter: {
               count
             }
           }
+          member_notes_aggregate(where: { type: { _eq: "demo" } }) {
+            aggregate {
+              count
+            }
+          }
           member_tasks_aggregate(where: { category: { name: { _eq: "預約DEMO" } } }) {
             aggregate {
               count
@@ -408,7 +422,8 @@ const useAssignedMemberCollection = (filter: {
                 memberId: x.member_id,
               })) || [],
           })),
-          isDemoed: !!v.member_tasks_aggregate?.aggregate?.count,
+          isDemoInvited: !!v.member_tasks_aggregate?.aggregate?.count,
+          isDemoed: !!v.member_notes_aggregate?.aggregate?.count,
           isAgreed: !!v.member_contracts_aggregate?.aggregate?.count,
         }))
 

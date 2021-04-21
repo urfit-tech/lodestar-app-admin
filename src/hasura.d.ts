@@ -1369,10 +1369,17 @@ export interface GET_SALES_ACTIVE_LOG_keepInTouch {
   sales_id: string | null;
 }
 
-export interface GET_SALES_ACTIVE_LOG_reserveDemo {
+export interface GET_SALES_ACTIVE_LOG_invitedDemo {
   __typename: "sales_active_log";
   id: string | null;
   sales_id: string | null;
+}
+
+export interface GET_SALES_ACTIVE_LOG_demonstrated {
+  __typename: "sales_active_log";
+  id: string | null;
+  sales_id: string | null;
+  duration: number | null;
 }
 
 export interface GET_SALES_ACTIVE_LOG_performance {
@@ -1433,7 +1440,11 @@ export interface GET_SALES_ACTIVE_LOG {
   /**
    * fetch data from the table: "sales_active_log"
    */
-  reserveDemo: GET_SALES_ACTIVE_LOG_reserveDemo[];
+  invitedDemo: GET_SALES_ACTIVE_LOG_invitedDemo[];
+  /**
+   * fetch data from the table: "sales_active_log"
+   */
+  demonstrated: GET_SALES_ACTIVE_LOG_demonstrated[];
   /**
    * fetch data from the table: "sales_active_log"
    */
@@ -1517,10 +1528,15 @@ export interface GET_SALES_MATERIALS_contactedMembers {
   v: string;
 }
 
-export interface GET_SALES_MATERIALS_demonstratedMembers {
+export interface GET_SALES_MATERIALS_demoInvitedMembers {
   __typename: "member_property";
   v: string;
   m: string;
+}
+
+export interface GET_SALES_MATERIALS_demonstratedMembers {
+  __typename: "member_property";
+  v: string;
 }
 
 export interface GET_SALES_MATERIALS_dealtMembers {
@@ -1543,6 +1559,10 @@ export interface GET_SALES_MATERIALS {
    * fetch data from the table: "member_property"
    */
   contactedMembers: GET_SALES_MATERIALS_contactedMembers[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  demoInvitedMembers: GET_SALES_MATERIALS_demoInvitedMembers[];
   /**
    * fetch data from the table: "member_property"
    */
@@ -1612,6 +1632,16 @@ export interface GET_ASSIGNED_MEMBER_member_member_contracts_aggregate {
   aggregate: GET_ASSIGNED_MEMBER_member_member_contracts_aggregate_aggregate | null;
 }
 
+export interface GET_ASSIGNED_MEMBER_member_member_notes_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ASSIGNED_MEMBER_member_member_notes_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_ASSIGNED_MEMBER_member_member_notes_aggregate_aggregate | null;
+}
+
 export interface GET_ASSIGNED_MEMBER_member_member_tasks_aggregate_aggregate {
   __typename: "member_task_aggregate_fields";
   count: number | null;
@@ -1641,6 +1671,10 @@ export interface GET_ASSIGNED_MEMBER_member {
    * An aggregated array relationship
    */
   member_contracts_aggregate: GET_ASSIGNED_MEMBER_member_member_contracts_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  member_notes_aggregate: GET_ASSIGNED_MEMBER_member_member_notes_aggregate;
   /**
    * An aggregated array relationship
    */

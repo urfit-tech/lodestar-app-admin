@@ -85,6 +85,7 @@ type MaterialStatisticsProps = {
   materialName: string
   called: number
   contacted: number
+  demoInvited: number
   demonstrated: number
   dealt: number
   rejected: number
@@ -119,7 +120,8 @@ const MaterialStatisticsTable: React.FC<{
   const salesMaterials = {
     calledMembersCount: count(data.calledMembers.map(v => v.v)),
     contactedMembersCount: count(data.contactedMembers.map(v => v.v)),
-    demonstratedMembersCount: count(unionWith(eqProps('m'), data.demonstratedMembers, data.dealtMembers).map(v => v.v)),
+    demoInvitedMembersCount: count(unionWith(eqProps('m'), data.demoInvitedMembers, data.dealtMembers).map(v => v.v)),
+    demonstratedMembersCount: count(data.demonstratedMembers.map(v => v.v)),
     dealtMembersCount: count(data.dealtMembers.map(v => v.v)),
     rejectedMembersCount: count(data.rejectedMembers.map(v => v.v)),
   }
@@ -152,6 +154,11 @@ const MaterialStatisticsTable: React.FC<{
       sorter: (a, b) => a.contacted - b.contacted,
     },
     {
+      dataIndex: 'demoInvited',
+      title: '已邀約',
+      sorter: (a, b) => a.demoInvited - b.demoInvited,
+    },
+    {
       dataIndex: 'demonstrated',
       title: '已示範',
       sorter: (a, b) => a.demonstrated - b.demonstrated,
@@ -174,6 +181,7 @@ const MaterialStatisticsTable: React.FC<{
       dataSource={allMaterialNames.map(materialName => {
         const called = salesMaterials.calledMembersCount[materialName] || 0
         const contacted = salesMaterials.contactedMembersCount[materialName] || 0
+        const demoInvited = salesMaterials.demoInvitedMembersCount[materialName] || 0
         const demonstrated = salesMaterials.demonstratedMembersCount[materialName] || 0
         const dealt = salesMaterials.dealtMembersCount[materialName] || 0
         const rejected = salesMaterials.rejectedMembersCount[materialName] || 0
@@ -181,7 +189,8 @@ const MaterialStatisticsTable: React.FC<{
         return {
           materialName,
           called: Math.max(called, contacted),
-          contacted: Math.max(contacted, demonstrated),
+          contacted: Math.max(contacted, demoInvited),
+          demoInvited: Math.max(demoInvited, demonstrated),
           demonstrated: Math.max(demonstrated, dealt),
           dealt,
           rejected,
@@ -230,7 +239,7 @@ const GET_SALES_MATERIALS = gql`
     ) {
       v: value
     }
-    demonstratedMembers: member_property(
+    demoInvitedMembers: member_property(
       where: {
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
@@ -248,6 +257,23 @@ const GET_SALES_MATERIALS = gql`
     ) {
       v: value
       m: member_id
+    }
+    demonstratedMembers: member_property(
+      where: {
+        property: { name: { _eq: $materialName } }
+        value: { _neq: "" }
+        member: {
+          manager_id: $sales
+          member_notes: {
+            author_id: $sales
+            created_at: { _gt: $startedAt, _lt: $endedAt }
+            type: { _eq: "demo" }
+            status: { _eq: "answered" }
+          }
+        }
+      }
+    ) {
+      v: value
     }
     dealtMembers: member_property(
       where: {
