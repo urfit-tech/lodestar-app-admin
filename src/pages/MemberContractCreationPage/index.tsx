@@ -80,6 +80,10 @@ type ContractInfo = {
     price: number
     addonPrice: number | null
     appointments: number
+    preview: {
+      productId: string
+      title: string
+    } | null
     coins: number
     periodAmount: number
     periodType: PeriodType | null
@@ -313,6 +317,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
       price: v.list_price,
       addonPrice: v.options?.addonPrice || 0,
       appointments: v.options?.appointments || 0,
+      preview: v.options?.preview || null,
       coins: v.options?.coins || 0,
       periodAmount: v.period_amount || 0,
       periodType: v.period_type as PeriodType | null,
