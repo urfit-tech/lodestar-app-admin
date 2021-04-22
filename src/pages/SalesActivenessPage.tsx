@@ -301,9 +301,9 @@ const SalesActivenessTable: React.FC<{
         />
         <Table.Column<Pick<RecordType, 'demonstrateDuration'>>
           key="demonstrateDuration"
-          title="示範通時"
+          title="示範通時(分)"
           dataIndex="demonstrateDuration"
-          render={v => v || 0}
+          render={v => Math.ceil(v / 60) || 0}
           sorter={(a, b) => columnSorter(a, b, 'demonstrateDuration')}
           width="9.5rem"
         />
