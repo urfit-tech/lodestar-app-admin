@@ -120,6 +120,7 @@ const ExerciseAdminForm: React.FC<{
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
+    setLoading(true)
     setIsValidationVisible(true)
     updateExercise({
       variables: {
@@ -147,8 +148,9 @@ const ExerciseAdminForm: React.FC<{
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
-        if (questionValidations.every(validation => validation)) {
+        if (questionValidations.length && questionValidations.every(validation => validation)) {
           onCancel?.()
+          setIsValidationVisible(false)
         }
       })
       .catch(handleError)
@@ -329,7 +331,8 @@ const ExerciseAdminForm: React.FC<{
         <Button
           type="link"
           icon={<PlusOutlined />}
-          onClick={() =>
+          onClick={() => {
+            setIsValidationVisible(false)
             setQuestions([
               ...questions,
               {
@@ -352,7 +355,7 @@ const ExerciseAdminForm: React.FC<{
                 ],
               },
             ])
-          }
+          }}
         >
           {formatMessage(programMessages.ui.createExerciseQuestion)}
         </Button>
