@@ -239,6 +239,23 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
+    const previewProducts = selectedProducts
+      .map(contractProduct => {
+        const product = products.find(product => product.id === contractProduct.id)
+        if (!product?.preview) {
+          return null
+        }
+
+        return {
+          product_id: product.preview.productId,
+          name: product.preview.title,
+          price: 0,
+          started_at: fieldValue.startedAt,
+          ended_at: endedAt,
+        }
+      })
+      .filter(notEmpty)
+
     // generate coupons
     const couponPlanId = v4()
     const coupons = range(0, totalAppointments).map((v, index) => ({
@@ -327,6 +344,7 @@ const MemberContractCreationBlock: React.FC<{
               started_at: fieldValue.startedAt,
               ended_at: endedAt,
             })),
+            ...previewProducts,
             {
               product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
               name: '學米 VIP 會員卡',
