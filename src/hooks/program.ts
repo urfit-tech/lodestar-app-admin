@@ -331,14 +331,16 @@ export const usePrograms = (options?: {
     data?.program.map(program => ({
       id: program.id,
       title: program.title,
-      contentSections: program.program_content_sections.map(v => ({
-        id: v.id,
-        title: v.title,
-        contents: v.program_contents.map(w => ({
-          id: w.id,
-          title: w.title,
-        })),
-      })),
+      contentSections:
+        program.program_content_sections?.map(v => ({
+          id: v.id,
+          title: v.title,
+          contents:
+            v.program_contents?.map(w => ({
+              id: w.id,
+              title: w.title,
+            })) || [],
+        })) || [],
     })) || []
 
   return {
