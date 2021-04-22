@@ -374,17 +374,17 @@ const useAssignedMemberCollection = (filter: {
             id
             values
           }
-          member_contracts_aggregate(where: { agreed_at: { _is_null: false } }) {
+          member_contracts_aggregate(where: { agreed_at: { _is_null: false } }, limit: 1) {
             aggregate {
               count
             }
           }
-          member_notes_aggregate(where: { type: { _eq: "demo" } }) {
+          member_notes_aggregate(where: { type: { _eq: "demo" } }, limit: 1) {
             aggregate {
               count
             }
           }
-          member_tasks_aggregate(where: { category: { name: { _eq: "預約DEMO" } } }) {
+          member_tasks_aggregate(where: { category: { name: { _eq: "預約DEMO" } } }, limit: 1) {
             aggregate {
               count
             }
