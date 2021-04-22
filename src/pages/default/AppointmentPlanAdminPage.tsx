@@ -18,8 +18,10 @@ import AppointmentPlanPublishBlock from '../../components/appointment/Appointmen
 import AppointmentPlanSaleForm from '../../components/appointment/AppointmentPlanSaleForm'
 import AppointmentPlanScheduleBlock from '../../components/appointment/AppointmentPlanScheduleBlock'
 import AppointmentPlanScheduleCreationModal from '../../components/appointment/AppointmentPlanScheduleCreationModal'
+import AppointmentScheduleImportModal from '../../components/appointment/AppointmentScheduleImportModal'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 
@@ -33,8 +35,9 @@ const messages = defineMessages({
 const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
-  const { settings } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { settings } = useApp()
+  const { currentUserRole, currentMemberId } = useAuth()
   const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
 
   return (
@@ -49,23 +52,23 @@ const AppointmentPlanAdminPage: React.FC = () => {
         <AdminHeaderTitle>{appointmentPlanAdmin?.title || appointmentPlanId}</AdminHeaderTitle>
         {appointmentPlanAdmin?.isPrivate ? (
           <Button
-            onClick={() => {
+            onClick={() =>
               window.open(
                 `//${settings['host']}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments&appointment_plan=${appointmentPlanId}`,
                 '_blank',
               )
-            }}
+            }
           >
             {formatMessage(commonMessages.ui.preview)}
           </Button>
         ) : (
           <Button
-            onClick={() => {
+            onClick={() =>
               window.open(
                 `//${settings['host']}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments`,
                 '_blank',
               )
-            }}
+            }
           >
             {formatMessage(commonMessages.ui.preview)}
           </Button>
@@ -118,11 +121,18 @@ const AppointmentPlanAdminPage: React.FC = () => {
           <Tabs.TabPane tab={formatMessage(messages.scheduleSettings)} key="schedule">
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.scheduleSettings)}</AdminPaneTitle>
-              <div className="mb-4">
+              <div className="d-flex justify-content-between mb-4">
                 <AppointmentPlanScheduleCreationModal
                   appointmentPlanAdmin={appointmentPlanAdmin}
                   onRefetch={refetchAppointmentPlanAdmin}
                 />
+                {appointmentPlanAdmin && currentMemberId && (
+                  <AppointmentScheduleImportModal
+                    appointmentPlanAdmin={appointmentPlanAdmin}
+                    creatorId={currentUserRole === 'app-owner' ? undefined : currentMemberId}
+                    onRefetch={refetchAppointmentPlanAdmin}
+                  />
+                )}
               </div>
               <AdminBlock>
                 <AppointmentPlanScheduleBlock
