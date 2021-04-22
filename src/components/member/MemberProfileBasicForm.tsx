@@ -126,10 +126,10 @@ const MemberProfileBasicForm: React.FC<{
         <Input />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.account)} name="username">
-        <Input disabled={permissions['MEMBER_USERNAME_EDIT'] ? false : true} />
+        <Input disabled={!permissions['MEMBER_USERNAME_EDIT']} />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.email)} name="email">
-        <Input disabled={permissions['MEMBER_EMAIL_EDIT'] ? false : true} />
+        <Input disabled={!permissions['MEMBER_EMAIL_EDIT']} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
         <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
