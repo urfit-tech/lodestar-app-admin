@@ -18,6 +18,8 @@ import TagSelector from '../form/TagSelector'
 
 type FieldProps = {
   name: string
+  username: string
+  email: string
   phones: string[]
   categoryIds: string[]
   tags?: string[]
@@ -48,6 +50,8 @@ const MemberProfileBasicForm: React.FC<{
     updateMemberProfileBasic({
       variables: {
         name: values?.name || memberAdmin.name,
+        username: permissions['MEMBER_USERNAME_EDIT'] ? values?.username || memberAdmin.username : memberAdmin.username,
+        email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
         memberId: memberAdmin.id,
         phones: permissions['MEMBER_PHONE_ADMIN']
           ? values.phones
@@ -122,10 +126,10 @@ const MemberProfileBasicForm: React.FC<{
         <Input />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.account)} name="username">
-        <Input disabled />
+        <Input disabled={permissions['MEMBER_USERNAME_EDIT'] ? false : true} />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.email)} name="email">
-        <Input disabled />
+        <Input disabled={permissions['MEMBER_EMAIL_EDIT'] ? false : true} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
         <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
@@ -181,6 +185,8 @@ const PhoneCollectionInput: React.FC<{
 const UPDATE_MEMBER_PROFILE_BASIC = gql`
   mutation UPDATE_MEMBER_PROFILE_BASIC(
     $name: String
+    $username: String
+    $email: String
     $memberId: String!
     $managerId: String
     $assignedAt: timestamptz
@@ -191,7 +197,7 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
   ) {
     update_member(
       where: { id: { _eq: $memberId } }
-      _set: { name: $name, manager_id: $managerId, assigned_at: $assignedAt }
+      _set: { name: $name, username: $username, email: $email, manager_id: $managerId, assigned_at: $assignedAt }
     ) {
       affected_rows
     }
