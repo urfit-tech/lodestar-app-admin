@@ -866,29 +866,55 @@ export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
+// GraphQL query operation: GET_APPOINTMENT_PLAN_SCHEDULES
 // ====================================================
 
-export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
-  __typename: "appointment_schedule_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
+export interface GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
 }
 
-export interface CREATE_APPOINTMENT_SCHEDULE {
+export interface GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_appointment_schedules {
+  __typename: "appointment_schedule";
+  id: any;
+  started_at: any;
+  interval_amount: number | null;
   /**
-   * insert data into the table: "appointment_schedule"
+   * Y / M / W / D
    */
-  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
+  interval_type: string | null;
+  /**
+   * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
+   */
+  excludes: any;
 }
 
-export interface CREATE_APPOINTMENT_SCHEDULEVariables {
-  appointmentPlanId: any;
-  startedAt: any;
-  intervalType?: string | null;
-  intervalAmount?: number | null;
+export interface GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_creator | null;
+  /**
+   * An array relationship
+   */
+  appointment_schedules: GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_appointment_schedules[];
+}
+
+export interface GET_APPOINTMENT_PLAN_SCHEDULES {
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan[];
+}
+
+export interface GET_APPOINTMENT_PLAN_SCHEDULESVariables {
+  condition: appointment_plan_bool_exp;
+  now: any;
 }
 
 /* tslint:disable */
@@ -6574,6 +6600,12 @@ export interface GET_ACTIVITY_ADMINVariables {
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules {
   __typename: "appointment_schedule";
   id: any;
+  started_at: any;
+  interval_amount: number | null;
+  /**
+   * Y / M / W / D
+   */
+  interval_type: string | null;
   /**
    * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
    */
@@ -6784,6 +6816,34 @@ export interface GET_APPOINTMENT_ENROLLMENTS {
 export interface GET_APPOINTMENT_ENROLLMENTSVariables {
   condition?: appointment_enrollment_bool_exp | null;
   sort?: appointment_enrollment_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_APPOINTMENT_SCHEDULES
+// ====================================================
+
+export interface INSERT_APPOINTMENT_SCHEDULES_insert_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_APPOINTMENT_SCHEDULES {
+  /**
+   * insert data into the table: "appointment_schedule"
+   */
+  insert_appointment_schedule: INSERT_APPOINTMENT_SCHEDULES_insert_appointment_schedule | null;
+}
+
+export interface INSERT_APPOINTMENT_SCHEDULESVariables {
+  data: appointment_schedule_insert_input[];
 }
 
 /* tslint:disable */
@@ -13028,6 +13088,7 @@ export enum coupon_code_update_column {
  * unique or primary key constraints on table "coupon"
  */
 export enum coupon_constraint {
+  coupon_member_id_coupon_code_id_key = "coupon_member_id_coupon_code_id_key",
   coupon_pkey = "coupon_pkey",
 }
 
@@ -13294,6 +13355,7 @@ export enum member_constraint {
   User_pkey = "User_pkey",
   member_app_id_email_key = "member_app_id_email_key",
   member_app_id_username_key = "member_app_id_username_key",
+  member_line_nounce_key = "member_line_nounce_key",
   member_refresh_token_key = "member_refresh_token_key",
   member_zoom_user_id_key = "member_zoom_user_id_key",
 }
@@ -13525,6 +13587,7 @@ export enum member_update_column {
   facebook_user_id = "facebook_user_id",
   google_user_id = "google_user_id",
   id = "id",
+  line_nonce = "line_nonce",
   logined_at = "logined_at",
   manager_id = "manager_id",
   metadata = "metadata",
@@ -19591,6 +19654,7 @@ export interface member_bool_exp {
   issue_replies?: issue_reply_bool_exp | null;
   issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
   issues?: issue_bool_exp | null;
+  line_nonce?: uuid_comparison_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
   manager?: member_bool_exp | null;
   manager_id?: String_comparison_exp | null;
@@ -19992,6 +20056,7 @@ export interface member_insert_input {
   issue_replies?: issue_reply_arr_rel_insert_input | null;
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
+  line_nonce?: any | null;
   logined_at?: any | null;
   manager?: member_obj_rel_insert_input | null;
   manager_id?: string | null;
@@ -20057,6 +20122,7 @@ export interface member_max_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  line_nonce?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
   name?: order_by | null;
@@ -20083,6 +20149,7 @@ export interface member_min_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  line_nonce?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
   name?: order_by | null;
@@ -20437,6 +20504,7 @@ export interface member_order_by {
   issue_replies_aggregate?: issue_reply_aggregate_order_by | null;
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
+  line_nonce?: order_by | null;
   logined_at?: order_by | null;
   manager?: member_order_by | null;
   manager_id?: order_by | null;

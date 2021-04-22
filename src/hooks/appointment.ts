@@ -4,7 +4,8 @@ import moment from 'moment'
 import { useMemo } from 'react'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import hasura from '../hasura'
-import { AppointmentPlanAdminProps, ReservationType, ScheduleIntervalType } from '../types/appointment'
+import { AppointmentPlanAdminProps, ReservationType } from '../types/appointment'
+import { PeriodType } from '../types/general'
 
 export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   const { loading, error, data, refetch } = useQuery<
@@ -29,6 +30,9 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           reservation_type
           appointment_schedules {
             id
+            started_at
+            interval_amount
+            interval_type
             excludes
           }
           appointment_periods(where: { started_at: { _gt: $now } }, order_by: { started_at: asc }) {
@@ -53,13 +57,13 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
     {
       variables: {
         appointmentPlanId,
-        now: moment().startOf('hour').toDate(),
+        now: moment().startOf('minute').toDate(),
       },
     },
   )
 
   const appointmentPlanAdmin = useMemo<AppointmentPlanAdminProps | null>(() => {
-    if (loading || error || !data || !data.appointment_plan_by_pk) {
+    if (!data?.appointment_plan_by_pk) {
       return null
     }
 
@@ -72,19 +76,19 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
       listPrice: data.appointment_plan_by_pk.price,
       reservationAmount: data.appointment_plan_by_pk.reservation_amount,
       reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
-      schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => {
-        const excludedPeriods = appointmentSchedule.excludes as string[]
-        return {
-          id: appointmentSchedule.id,
-          excludes: excludedPeriods.map(period => new Date(period).getTime()),
-        }
-      }),
+      schedules: data.appointment_plan_by_pk.appointment_schedules.map(s => ({
+        id: s.id,
+        startedAt: new Date(s.started_at),
+        intervalAmount: s.interval_amount,
+        intervalType: s.interval_type as PeriodType,
+        excludes: s.excludes.map((e: string) => new Date(e)),
+      })),
       periods: data.appointment_plan_by_pk.appointment_periods.map(period => ({
         id: `${period.appointment_schedule?.id || ''}-${period.started_at}`,
         schedule: {
           id: period.appointment_schedule?.id || '',
           periodAmount: period.appointment_schedule?.interval_amount || null,
-          periodType: (period.appointment_schedule?.interval_type as ScheduleIntervalType) || null,
+          periodType: (period.appointment_schedule?.interval_type as PeriodType) || null,
         },
         startedAt: new Date(period.started_at),
         endedAt: new Date(period.ended_at),
@@ -100,7 +104,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
       creatorId: data?.appointment_plan_by_pk.creator_id,
       isPrivate: data?.appointment_plan_by_pk.is_private,
     }
-  }, [loading, error, data, appointmentPlanId])
+  }, [appointmentPlanId, data])
 
   return {
     loadingAppointmentPlanAdmin: loading,
@@ -311,3 +315,11 @@ export const useAppointmentEnrollmentCollection = (
     loadMoreAppointmentEnrollments,
   }
 }
+
+export const INSERT_APPOINTMENT_SCHEDULES = gql`
+  mutation INSERT_APPOINTMENT_SCHEDULES($data: [appointment_schedule_insert_input!]!) {
+    insert_appointment_schedule(objects: $data) {
+      affected_rows
+    }
+  }
+`
