@@ -91,9 +91,17 @@ const SalesActivenessTable: React.FC<{
     obj => obj.length,
     groupBy<LogsProps>(({ salesId }) => `${salesId}_keepInTouch`)(data.keepInTouchLogs),
   )
-  const reserveDemo = mapObjIndexed(
+  const invitedDemo = mapObjIndexed(
     obj => obj.length,
-    groupBy<LogsProps>(({ salesId }) => `${salesId}_reserveDemo`)(data.reserveDemoLogs),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_invitedDemo`)(data.invitedDemoLogs),
+  )
+  const demonstrated = mapObjIndexed(
+    obj => obj.length,
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_demonstrated`)(data.demonstratedLogs),
+  )
+  const demonstrateDuration = mapObjIndexed(
+    obj => sum(obj.map(v => v?.duration || 0)),
+    groupBy<LogsProps>(({ salesId }) => `${salesId}_demonstrateDuration`)(data.demonstratedLogs),
   )
   const deal = mapObjIndexed(
     obj => obj.length,
@@ -118,7 +126,9 @@ const SalesActivenessTable: React.FC<{
     invalidNumber,
     rejected,
     keepInTouch,
-    reserveDemo,
+    invitedDemo,
+    demonstrated,
+    demonstrateDuration,
     deal,
     performance,
     revoked,
@@ -145,7 +155,9 @@ const SalesActivenessTable: React.FC<{
         invalidNumber: number
         rejected: number
         keepInTouch: number
-        reserveDemo: number
+        invitedDemo: number
+        demonstrated: number
+        demonstrateDuration: number
         deal: number
         performance: number
         revoked: number
@@ -271,12 +283,28 @@ const SalesActivenessTable: React.FC<{
           sorter={(a, b) => columnSorter(a, b, 'keepInTouch')}
           width="7rem"
         />
-        <Table.Column<Pick<RecordType, 'reserveDemo'>>
-          key="reserveDemo"
-          title="預約示範次數"
-          dataIndex="reserveDemo"
+        <Table.Column<Pick<RecordType, 'invitedDemo'>>
+          key="invitedDemo"
+          title="邀約次數"
+          dataIndex="invitedDemo"
           render={v => v || 0}
-          sorter={(a, b) => columnSorter(a, b, 'reserveDemo')}
+          sorter={(a, b) => columnSorter(a, b, 'inviteDemo')}
+          width="9.5rem"
+        />
+        <Table.Column<Pick<RecordType, 'demonstrated'>>
+          key="demonstrated"
+          title="示範次數"
+          dataIndex="demonstrated"
+          render={v => v || 0}
+          sorter={(a, b) => columnSorter(a, b, 'demonstrated')}
+          width="9.5rem"
+        />
+        <Table.Column<Pick<RecordType, 'demonstrateDuration'>>
+          key="demonstrateDuration"
+          title="示範通時(分)"
+          dataIndex="demonstrateDuration"
+          render={v => Math.ceil(v / 60) || 0}
+          sorter={(a, b) => columnSorter(a, b, 'demonstrateDuration')}
           width="9.5rem"
         />
         <Table.Column<Pick<RecordType, 'deal'>>
@@ -350,7 +378,12 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           sales_id
         }
         validSpeaking: sales_active_log(
-          where: { event: { _eq: "note" }, created_at: { _gt: $startedAt, _lte: $endedAt }, duration: { _gt: 90 } }
+          where: {
+            event: { _eq: "note" }
+            created_at: { _gt: $startedAt, _lte: $endedAt }
+            duration: { _gt: 90 }
+            type: { _in: ["outbound", "inbound"] }
+          }
         ) {
           id
           duration
@@ -410,9 +443,21 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           id
           sales_id
         }
-        reserveDemo: sales_active_log(where: { event: { _eq: "task" }, due_at: { _gt: $startedAt, _lte: $endedAt } }) {
+        invitedDemo: sales_active_log(where: { event: { _eq: "task" }, due_at: { _gt: $startedAt, _lte: $endedAt } }) {
           id
           sales_id
+        }
+        demonstrated: sales_active_log(
+          where: {
+            event: { _eq: "note" }
+            created_at: { _gt: $startedAt, _lte: $endedAt }
+            status: { _eq: "answered" }
+            type: { _eq: "demo" }
+          }
+        ) {
+          id
+          sales_id
+          duration
         }
         performance: sales_active_log(
           where: { event: { _eq: "contract" }, agreed_at: { _gt: $startedAt, _lte: $endedAt } }
@@ -462,13 +507,11 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       endedAt: new Date(v.ended_at),
     })) || []
   const validSpeakingLogs: LogsProps[] =
-    data?.validSpeaking
-      .filter(v => v.type !== 'demo')
-      .map(w => ({
-        id: w.id,
-        salesId: w.sales_id,
-        duration: w.duration || 0,
-      })) || []
+    data?.validSpeaking.map(w => ({
+      id: w.id,
+      salesId: w.sales_id,
+      duration: w.duration || 0,
+    })) || []
   const dialLogs: LogsProps[] =
     data?.dial.map(v => ({
       id: v.id,
@@ -494,10 +537,16 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       id: v.id,
       salesId: v.sales_id,
     })) || []
-  const reserveDemoLogs: LogsProps[] =
-    data?.reserveDemo.map(v => ({
+  const invitedDemoLogs: LogsProps[] =
+    data?.invitedDemo.map(v => ({
       id: v.id,
       salesId: v.sales_id,
+    })) || []
+  const demonstratedLogs: LogsProps[] =
+    data?.demonstrated.map(v => ({
+      id: v.id,
+      salesId: v.sales_id,
+      duration: v.duration || 0,
     })) || []
   const performanceLogs: LogsProps[] =
     data?.performance.map(v => ({
@@ -526,7 +575,8 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
       invalidNumberLogs,
       rejectedLogs,
       keepInTouchLogs,
-      reserveDemoLogs,
+      invitedDemoLogs,
+      demonstratedLogs,
       performanceLogs,
       revokedLogs,
     },
