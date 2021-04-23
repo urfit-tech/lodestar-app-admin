@@ -12,8 +12,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call, memberPropertyFields } from '../../helpers'
-import { CurrentLeadProps, useLead } from '../../hooks'
-import { SalesProps } from '../../types/member'
+import { CurrentLeadProps, SalesProps, useLead } from './salesHooks'
 
 const CurrentLeadName = styled.div`
   color: var(--gray-darker);
