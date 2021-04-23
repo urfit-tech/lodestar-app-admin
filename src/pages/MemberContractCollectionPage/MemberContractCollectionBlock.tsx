@@ -96,7 +96,6 @@ export const MemberContractCollectionBlock: React.FC<{
     ...filter,
     sortOrder,
     isRevoked: variant === 'revoked',
-    authorId: currentUserRole === 'general-member' ? currentMemberId : null,
   })
   const [isLoading, setIsLoading] = useState(false)
   const [activeMemberContractId, setActiveMemberContractId] = useState<string | null>(null)
