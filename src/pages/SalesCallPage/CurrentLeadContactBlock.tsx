@@ -1,5 +1,8 @@
+import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Divider, Form, Input, message, Radio, Select, Skeleton, TimePicker } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { Chance } from 'chance'
+import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
@@ -7,13 +10,20 @@ import { handleError, notEmpty } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, errorMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
 import moment, { Moment } from 'moment'
-import { uniq } from 'ramda'
-import React, { useState } from 'react'
+import { product, uniq } from 'ramda'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { call, memberPropertyFields } from '../../helpers'
-import { CurrentLeadProps, useLead } from '../../hooks'
-import { SalesProps } from '../../types/member'
+import hasura from '../../hasura'
+import { call } from '../../helpers'
+import {
+  CurrentLeadProps,
+  memberPropertyFields,
+  SalesProps,
+  useCurrentLead,
+  useLeadProperties,
+  useSalesOddsAddition,
+} from './salesHooks'
 
 const CurrentLeadName = styled.div`
   color: var(--gray-darker);
@@ -48,7 +58,7 @@ type memberPropertyFieldProps = {
   [PropertyName: string]: string
 }
 
-const CurrentLeadContactBlock: React.FC<{
+const CurrentLeadContactBlock: React.VFC<{
   sales: SalesProps
   onSubmit?: (status: memberNoteFieldProps['status'], value: CurrentLeadProps) => void
   onFinish?: () => void
@@ -60,17 +70,18 @@ const CurrentLeadContactBlock: React.FC<{
   const [memberNoteForm] = useForm<memberNoteFieldProps>()
   const [memberPropertyForm] = useForm<memberPropertyFieldProps>()
 
+  const { loadingProperties, errorProperties, properties } = useLeadProperties()
+  const { loadingOddsAddition, errorOddsAddition, oddsAdditions } = useSalesOddsAddition(sales.id, sales.lastAttend)
   const {
     loadingCurrentLead,
     errorCurrentLead,
-    properties,
     currentLead,
     refetchCurrentLead,
     updatePhones,
     insertNote,
     updateProperties,
     markUnresponsive,
-  } = useLead(sales)
+  } = useCurrentLead(sales)
 
   const [selectedPhone, setSelectedPhone] = useState('')
   const [disabledPhones, setDisabledPhones] = useState<string[]>([])
@@ -78,16 +89,19 @@ const CurrentLeadContactBlock: React.FC<{
   const [memberNoteStatus, setMemberNoteStatus] = useState<memberNoteFieldProps['status']>('not-answered')
   const [loading, setLoading] = useState(false)
 
-  if (loadingCurrentLead) {
+  if (loadingProperties || loadingOddsAddition || loadingCurrentLead) {
     return <Skeleton active />
   }
 
-  if (errorCurrentLead) {
+  if (errorProperties || errorOddsAddition || errorCurrentLead) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   if (!currentLead) {
-    return <div>等待新名單中...</div>
+    const salesOdds = Number(sales?.metadata?.assignment?.odds) + (oddsAdditions || 0)
+    return (
+      <FetchNewLeadsBlock sales={sales} salesOdds={salesOdds > 100 ? 100 : salesOdds} onRefetch={refetchCurrentLead} />
+    )
   }
 
   const withDurationInput = !sales?.telephone?.startsWith('8')
@@ -100,13 +114,7 @@ const CurrentLeadContactBlock: React.FC<{
     setMemberNoteStatus('not-answered')
     refetchCurrentLead().then(({ data }) => {
       memberPropertyForm.setFieldsValue(
-        properties.reduce(
-          (accumulator, property) => ({
-            ...accumulator,
-            [property.id]: data.member[0]?.member_properties.find(v => v.property.id === property.id)?.value || '',
-          }),
-          {} as { [PropertyID: string]: string },
-        ),
+        Object.fromEntries(data.member[0]?.member_properties.map(v => [v.property.id, v.value || ''])),
       )
     })
     message.success('儲存成功')
@@ -131,7 +139,6 @@ const CurrentLeadContactBlock: React.FC<{
       await memberNoteForm.validateFields()
       await memberPropertyForm.validateFields()
     } catch (error) {
-      process.env.NODE_ENV === 'development' && console.error(error)
       message.error('請確實填寫必填欄位')
       setLoading(false)
       return
@@ -204,7 +211,9 @@ const CurrentLeadContactBlock: React.FC<{
           <div>名單建立日期：{currentLead.createdAt && moment(currentLead.createdAt).fromNow()}</div>
         </div>
       </div>
+
       <Divider />
+
       <div className="row mb-4">
         <div className="col-5">
           <AdminBlockTitle className="mb-4">聯絡紀錄</AdminBlockTitle>
@@ -338,7 +347,7 @@ const CurrentLeadContactBlock: React.FC<{
                   label={property.name}
                   rules={[{ required: memberNoteStatus === 'willing' && propertyField.required }]}
                 >
-                  {property.options ? (
+                  {property.options?.length ? (
                     <Select disabled={!primaryPhoneNumber}>
                       {property.options.map(option => (
                         <Select.Option key={option} value={option}>
@@ -355,10 +364,153 @@ const CurrentLeadContactBlock: React.FC<{
           </Form>
         </div>
       </div>
+
       <Button type="primary" loading={loading} block onClick={() => handleSubmit()}>
         {formatMessage(commonMessages.ui.save)}
       </Button>
     </AdminBlock>
+  )
+}
+
+const FetchNewLeadsBlock: React.VFC<{
+  sales: SalesProps
+  salesOdds: number
+  onRefetch?: () => Promise<any>
+}> = ({ sales, salesOdds, onRefetch }) => {
+  const apolloClient = useApolloClient()
+  const [leadStatus, setLeadStatus] = useState('')
+
+  useEffect(() => {
+    if (leadStatus) {
+      return
+    }
+
+    const requestLeads = async (odds: number) => {
+      const chance = new Chance()
+      const isFirstHand = chance.weighted([true, false], [odds, 100 - odds])
+
+      setLeadStatus('fetching')
+      const { data } = await apolloClient.query<hasura.GET_LEADS, hasura.GET_LEADSVariables>({
+        query: gql`
+          query GET_LEADS($where: xuemi_lead_bool_exp, $orderBy: [xuemi_lead_order_by!]) {
+            xuemi_lead(where: $where, order_by: $orderBy) {
+              member {
+                id
+                member_categories {
+                  category {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: isFirstHand
+          ? {
+              where: { member_note_count: { _eq: 0 } },
+              orderBy: [{ created_at: 'desc' as hasura.order_by }],
+            }
+          : {
+              where: { member_note_count: { _gt: 0 } },
+              orderBy: [{ lead_score: 'asc' as hasura.order_by }],
+            },
+        fetchPolicy: 'no-cache',
+      })
+
+      setLeadStatus('distributing')
+      const salesCategoryRates: { [categoryName: string]: number } = sales?.metadata?.assignment?.categories || {}
+      const leads: { memberId: string; rate: number }[] = []
+
+      for (const lead of data.xuemi_lead) {
+        if (!lead.member) {
+          continue
+        }
+        const memberCategoryRates =
+          lead.member.member_categories.length > 0
+            ? lead.member.member_categories.map(v => salesCategoryRates[v.category.name])
+            : [salesCategoryRates[''] || 0]
+        const rate = 1 - product(memberCategoryRates.map(rate => 1 - rate))
+
+        if (rate > 0) {
+          leads.push({
+            memberId: lead.member.id,
+            rate,
+          })
+        }
+      }
+
+      setLeadStatus('assigning')
+      const leadMemberIds: string[] = []
+
+      while (leadMemberIds.length < (isFirstHand ? 1 : 5) && leads.length) {
+        const index = chance.weighted(
+          leads.map((_, i) => i),
+          leads.map(lead => lead.rate),
+        )
+        const selectedLead = leads.splice(index, 1)
+        leadMemberIds.push(selectedLead[0].memberId)
+      }
+
+      if (!leadMemberIds.length) {
+        return 0
+      }
+
+      const { data: result } = await apolloClient.mutate<
+        hasura.UPDATE_MEMBER_MANAGER,
+        hasura.UPDATE_MEMBER_MANAGERVariables
+      >({
+        mutation: gql`
+          mutation UPDATE_MEMBER_MANAGER($memberIds: [String!]!, $managerId: String!, $assignedAt: timestamptz!) {
+            update_member(
+              where: { id: { _in: $memberIds }, manager_id: { _is_null: true } }
+              _set: { manager_id: $managerId, assigned_at: $assignedAt }
+            ) {
+              affected_rows
+              returning {
+                id
+              }
+            }
+          }
+        `,
+        variables: {
+          memberIds: leadMemberIds,
+          managerId: sales.id,
+          assignedAt: new Date(),
+        },
+      })
+
+      return result?.update_member?.affected_rows || 0
+    }
+
+    const deliverLead = async () => {
+      try {
+        const assignedLeads = await requestLeads(salesOdds)
+        if (!assignedLeads) {
+          // try second hand when failed
+          await requestLeads(0)
+        }
+        setLeadStatus('reloading')
+      } catch {
+        setLeadStatus('')
+      }
+
+      await onRefetch?.()
+    }
+    deliverLead()
+  }, [apolloClient, leadStatus, onRefetch, sales, salesOdds])
+
+  return (
+    <div>
+      {leadStatus === 'fetching'
+        ? '更新名單中...'
+        : leadStatus === 'distributing'
+        ? '分派名單中...'
+        : leadStatus === 'assigning'
+        ? '指派學員中...'
+        : leadStatus === 'reloading'
+        ? '更新學員資料中...'
+        : '等待新名單中...'}
+    </div>
   )
 }
 
