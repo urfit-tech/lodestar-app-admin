@@ -86,12 +86,8 @@ const AssignmentRateBar: React.FC<{
     return null
   }
 
-  const score =
-    baseOdds +
-    (oddsAdditions.lastAttendMemberNotesCount > 40 ? 5 : 0) +
-    oddsAdditions.lastWeekAgreedContractsCount * 5 +
-    20
-  const newAssignmentRate = score > 90 ? 90 : Math.floor(score)
+  const salesOdds = baseOdds + (oddsAdditions || 0) + 20
+  const newAssignmentRate = salesOdds > 90 ? 90 : Math.floor(salesOdds)
 
   return (
     <Tooltip title={`新 ${newAssignmentRate}% / 舊 ${100 - newAssignmentRate}%`}>

@@ -36,8 +36,8 @@ const SalesCallBlock: React.VFC<{
 }> = ({ currentMemberId }) => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+
   const { loadingSales, errorSales, sales } = useSales(currentMemberId)
-  const [submittedPotentialMembers, setSubmittedPotentialMembers] = useState<SalesCallMemberProps[]>([])
   const {
     loadingMembers: loadingContactedMembers,
     members: contactedMembers,
@@ -48,6 +48,8 @@ const SalesCallBlock: React.VFC<{
     members: transactedMembers,
     totalMembers: totalTransactedMembers,
   } = useSalesCallMember(currentMemberId, 'transacted')
+
+  const [submittedPotentialMembers, setSubmittedPotentialMembers] = useState<SalesCallMemberProps[]>([])
 
   if (loadingSales) {
     return <Skeleton active />
@@ -86,7 +88,7 @@ const SalesCallBlock: React.VFC<{
         <Tabs.TabPane
           key="keep-in-touch"
           tab={`${formatMessage(salesMessages.label.keepInTouch)} (${
-            submittedPotentialMembers.length + totalContactedMembers
+            totalContactedMembers + submittedPotentialMembers.length
           })`}
         >
           <SalesCallContactedMemberBlock

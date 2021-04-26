@@ -946,6 +946,96 @@ export interface GET_SALES_ACTIVE_LOGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_LEADS
+// ====================================================
+
+export interface GET_LEADS_xuemi_lead_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_LEADS_xuemi_lead_member_member_categories {
+  __typename: "member_category";
+  /**
+   * An object relationship
+   */
+  category: GET_LEADS_xuemi_lead_member_member_categories_category;
+}
+
+export interface GET_LEADS_xuemi_lead_member {
+  __typename: "member";
+  id: string;
+  /**
+   * An array relationship
+   */
+  member_categories: GET_LEADS_xuemi_lead_member_member_categories[];
+}
+
+export interface GET_LEADS_xuemi_lead {
+  __typename: "xuemi_lead";
+  /**
+   * An object relationship
+   */
+  member: GET_LEADS_xuemi_lead_member | null;
+}
+
+export interface GET_LEADS {
+  /**
+   * fetch data from the table: "xuemi.lead"
+   */
+  xuemi_lead: GET_LEADS_xuemi_lead[];
+}
+
+export interface GET_LEADSVariables {
+  where?: xuemi_lead_bool_exp | null;
+  orderBy?: xuemi_lead_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_MANAGER
+// ====================================================
+
+export interface UPDATE_MEMBER_MANAGER_update_member_returning {
+  __typename: "member";
+  id: string;
+}
+
+export interface UPDATE_MEMBER_MANAGER_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: UPDATE_MEMBER_MANAGER_update_member_returning[];
+}
+
+export interface UPDATE_MEMBER_MANAGER {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_MANAGER_update_member | null;
+}
+
+export interface UPDATE_MEMBER_MANAGERVariables {
+  memberIds: string[];
+  managerId: string;
+  assignedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES
 // ====================================================
 
@@ -1030,122 +1120,6 @@ export interface GET_SALESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SALES_CALL_MEMBER
-// ====================================================
-
-export interface GET_SALES_CALL_MEMBER_member_aggregate_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_aggregate {
-  __typename: "member_aggregate";
-  aggregate: GET_SALES_CALL_MEMBER_member_aggregate_aggregate | null;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_phones {
-  __typename: "member_phone";
-  id: any;
-  phone: string;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_notes {
-  __typename: "member_note";
-  id: string;
-  created_at: any;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_categories {
-  __typename: "member_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_SALES_CALL_MEMBER_member_member_categories_category;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_contracts {
-  __typename: "member_contract";
-  id: any;
-  values: any | null;
-  ended_at: any | null;
-  agreed_at: any | null;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_tasks_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_tasks {
-  __typename: "member_task";
-  id: string;
-  due_at: any | null;
-  /**
-   * An object relationship
-   */
-  category: GET_SALES_CALL_MEMBER_member_member_tasks_category | null;
-}
-
-export interface GET_SALES_CALL_MEMBER_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_SALES_CALL_MEMBER_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_notes: GET_SALES_CALL_MEMBER_member_member_notes[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_SALES_CALL_MEMBER_member_member_categories[];
-  /**
-   * An array relationship
-   */
-  member_contracts: GET_SALES_CALL_MEMBER_member_member_contracts[];
-  /**
-   * An array relationship
-   */
-  member_tasks: GET_SALES_CALL_MEMBER_member_member_tasks[];
-}
-
-export interface GET_SALES_CALL_MEMBER {
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  member_aggregate: GET_SALES_CALL_MEMBER_member_aggregate;
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_SALES_CALL_MEMBER_member[];
-}
-
-export interface GET_SALES_CALL_MEMBERVariables {
-  condition: member_bool_exp;
-  orderBy?: member_order_by[] | null;
-  hasContacted: boolean;
-  hasTransacted: boolean;
-  now?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_SALES_ODDS_ADDITION
 // ====================================================
 
@@ -1193,15 +1167,35 @@ export interface GET_SALES_ODDS_ADDITIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_FIRST_ASSIGNED_MEMBER
+// GraphQL query operation: GET_LEAD_PROPERTIES
 // ====================================================
 
-export interface GET_FIRST_ASSIGNED_MEMBER_property {
+export interface GET_LEAD_PROPERTIES_property {
   __typename: "property";
   id: any;
   name: string;
   placeholder: string | null;
 }
+
+export interface GET_LEAD_PROPERTIES {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_LEAD_PROPERTIES_property[];
+}
+
+export interface GET_LEAD_PROPERTIESVariables {
+  selectedProperties: string[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_FIRST_ASSIGNED_MEMBER
+// ====================================================
 
 export interface GET_FIRST_ASSIGNED_MEMBER_member_member_phones {
   __typename: "member_phone";
@@ -1263,10 +1257,6 @@ export interface GET_FIRST_ASSIGNED_MEMBER_member {
 
 export interface GET_FIRST_ASSIGNED_MEMBER {
   /**
-   * fetch data from the table: "property"
-   */
-  property: GET_FIRST_ASSIGNED_MEMBER_property[];
-  /**
    * fetch data from the table: "member"
    */
   member: GET_FIRST_ASSIGNED_MEMBER_member[];
@@ -1274,97 +1264,6 @@ export interface GET_FIRST_ASSIGNED_MEMBER {
 
 export interface GET_FIRST_ASSIGNED_MEMBERVariables {
   salesId: string;
-  selectedProperties: string[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_LEADS
-// ====================================================
-
-export interface GET_LEADS_xuemi_lead_member_member_categories_category {
-  __typename: "category";
-  name: string;
-}
-
-export interface GET_LEADS_xuemi_lead_member_member_categories {
-  __typename: "member_category";
-  /**
-   * An object relationship
-   */
-  category: GET_LEADS_xuemi_lead_member_member_categories_category;
-}
-
-export interface GET_LEADS_xuemi_lead_member {
-  __typename: "member";
-  id: string;
-  /**
-   * An array relationship
-   */
-  member_categories: GET_LEADS_xuemi_lead_member_member_categories[];
-}
-
-export interface GET_LEADS_xuemi_lead {
-  __typename: "xuemi_lead";
-  /**
-   * An object relationship
-   */
-  member: GET_LEADS_xuemi_lead_member | null;
-}
-
-export interface GET_LEADS {
-  /**
-   * fetch data from the table: "xuemi.lead"
-   */
-  xuemi_lead: GET_LEADS_xuemi_lead[];
-}
-
-export interface GET_LEADSVariables {
-  where?: xuemi_lead_bool_exp | null;
-  orderBy?: xuemi_lead_order_by[] | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_MANAGER
-// ====================================================
-
-export interface UPDATE_MEMBER_MANAGER_update_member_returning {
-  __typename: "member";
-  id: string;
-}
-
-export interface UPDATE_MEMBER_MANAGER_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: UPDATE_MEMBER_MANAGER_update_member_returning[];
-}
-
-export interface UPDATE_MEMBER_MANAGER {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_MANAGER_update_member | null;
-}
-
-export interface UPDATE_MEMBER_MANAGERVariables {
-  memberIds: string[];
-  managerId: string;
-  assignedAt: any;
 }
 
 /* tslint:disable */
@@ -1491,6 +1390,122 @@ export interface UPDATE_MEMBER_PROPERTIES {
 
 export interface UPDATE_MEMBER_PROPERTIESVariables {
   data: member_property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_CALL_MEMBER
+// ====================================================
+
+export interface GET_SALES_CALL_MEMBER_member_aggregate_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_aggregate {
+  __typename: "member_aggregate";
+  aggregate: GET_SALES_CALL_MEMBER_member_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_notes {
+  __typename: "member_note";
+  id: string;
+  created_at: any;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_CALL_MEMBER_member_member_categories_category;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_contracts {
+  __typename: "member_contract";
+  id: any;
+  values: any | null;
+  ended_at: any | null;
+  agreed_at: any | null;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_tasks_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_tasks {
+  __typename: "member_task";
+  id: string;
+  due_at: any | null;
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_CALL_MEMBER_member_member_tasks_category | null;
+}
+
+export interface GET_SALES_CALL_MEMBER_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_SALES_CALL_MEMBER_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_notes: GET_SALES_CALL_MEMBER_member_member_notes[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_CALL_MEMBER_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_contracts: GET_SALES_CALL_MEMBER_member_member_contracts[];
+  /**
+   * An array relationship
+   */
+  member_tasks: GET_SALES_CALL_MEMBER_member_member_tasks[];
+}
+
+export interface GET_SALES_CALL_MEMBER {
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  member_aggregate: GET_SALES_CALL_MEMBER_member_aggregate;
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_SALES_CALL_MEMBER_member[];
+}
+
+export interface GET_SALES_CALL_MEMBERVariables {
+  condition: member_bool_exp;
+  orderBy?: member_order_by[] | null;
+  hasContacted: boolean;
+  hasTransacted: boolean;
+  now?: any | null;
 }
 
 /* tslint:disable */
