@@ -7,7 +7,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
+import { handleError, notEmpty } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 
 const messages = defineMessages({
@@ -56,6 +56,15 @@ const MemberContractAdminBlock: React.FC<{
     return <Skeleton active />
   }
   const handleContractRevoke = async (memberContractId: string, values: any) => {
+    type Coupon = {
+      id: string
+      coupon_code: {
+        data: {
+          code: string
+        }
+      }
+    }
+
     if (window.confirm(formatMessage(messages.deleteContractWarning))) {
       setRevokeLoading(true)
       permissions.MEMBER_CONTRACT_REVOKE &&
@@ -71,6 +80,12 @@ const MemberContractAdminBlock: React.FC<{
               parentProductInfo: {
                 parentProductId: values.projectPlanProductId,
               },
+              // revoke contract discount
+              couponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
+              couponCodes:
+                values?.coupons
+                  ?.filter((v: Pick<Coupon, 'id'>) => v.id)
+                  .map((v: Pick<Coupon, 'coupon_code'>) => v.coupon_code.data.code) || [],
             },
             revokedAt: new Date(),
           },
