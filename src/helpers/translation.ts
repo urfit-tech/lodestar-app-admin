@@ -56,6 +56,7 @@ export const commonMessages = {
     changePosition: { id: 'common.ui.changePosition', defaultMessage: '調整排序' },
     downloadMemberList: { id: 'common.ui.downloadMemberList', defaultMessage: '下載名單' },
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
+    import: { id: 'common.ui.import', defaultMessage: '匯入' },
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
     send: { id: 'common.ui.send', defaultMessage: '送出' },
     upload: { id: 'common.ui.upload', defaultMessage: '上傳' },
@@ -477,9 +478,13 @@ export const appointmentMessages = {
     reservationAmount: { id: 'appointment.term.reservationAmount', defaultMessage: '時間長度' },
     reservationType: { id: 'appointment.term.reservationType', defaultMessage: '時間單位' },
   }),
+  ui: defineMessages({
+    createPeriod: { id: 'appointment.ui.createPeriod', defaultMessage: '建立時段' },
+    importPeriod: { id: 'appointment.ui.importPeriod', defaultMessage: '匯入時段' },
+  }),
   label: defineMessages({
     duration: { id: 'appointment.label.duration', defaultMessage: '時間長度(分鐘)' },
-    createPeriod: { id: 'appointment.label.createPeriod', defaultMessage: '建立時段' },
+    selectPlan: { id: 'appointment.label.selectPlan', defaultMessage: '選擇方案' },
   }),
   status: defineMessages({
     aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
@@ -509,6 +514,14 @@ export const appointmentMessages = {
     isPrivatePublishedNotation: {
       id: 'appointment.text.isPrivatePublishedNotation',
       defaultMessage: '你的預約方案已經私密發佈，學生將能購買預約並由預覽網址關注這個方案。',
+    },
+    scheduleImportNotation: {
+      id: 'appointment.text.scheduleImportNotation',
+      defaultMessage: '將你在其他方案設定的時段複製更新到此方案',
+    },
+    selectImportedSchedule: {
+      id: 'appointment.text.selectedImportedSchedule',
+      defaultMessage: '選擇欲匯入的預約方案時段',
     },
   }),
 }

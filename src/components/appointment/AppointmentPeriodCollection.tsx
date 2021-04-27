@@ -88,8 +88,7 @@ const AppointmentPeriodCollection: React.FC<{
                   danger
                   block
                   onClick={() =>
-                    onDelete &&
-                    onDelete(selectedPeriod.schedule.id).then(() => {
+                    onDelete?.(selectedPeriod.schedule.id).then(() => {
                       setVisible(false)
                       setSelectedPeriod(null)
                     })
@@ -128,7 +127,7 @@ const AppointmentPeriodCollection: React.FC<{
             {moment(selectedPeriod.startedAt).format('YYYY-MM-DD(dd) HH:mm')}
           </StyledModalDescription>
         )}
-        {selectedPeriod && selectedPeriod.schedule.periodType !== null && selectedPeriod.schedule.periodAmount && (
+        {selectedPeriod?.schedule.periodType && selectedPeriod.schedule.periodAmount && (
           <StyledModalMeta className="mb-2">
             {formatMessage(messages.repetitiveMeta)}
             {selectedPeriod.schedule.periodType === 'Y'

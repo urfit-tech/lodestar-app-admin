@@ -1,5 +1,7 @@
-export type ScheduleIntervalType = 'Y' | 'M' | 'W' | 'D'
+import { PeriodType } from './general'
+
 export type ReservationType = 'hour' | 'day'
+
 export type AppointmentPlanAdminProps = {
   id: string
   title: string
@@ -7,10 +9,7 @@ export type AppointmentPlanAdminProps = {
   description: string | null
   duration: number
   listPrice: number
-  schedules: {
-    id: string
-    excludes: number[]
-  }[]
+  schedules: AppointmentScheduleProps[]
   periods: AppointmentPeriodProps[]
   enrollments: number
   isPublished: boolean | null
@@ -27,10 +26,18 @@ export type AppointmentPeriodProps = {
   schedule: {
     id: string
     periodAmount: number | null
-    periodType: ScheduleIntervalType | null
+    periodType: PeriodType | null
   }
   startedAt: Date
   endedAt: Date
   isEnrolled?: boolean
   isExcluded?: boolean
+}
+
+export type AppointmentScheduleProps = {
+  id: string
+  startedAt: Date
+  intervalAmount: number | null
+  intervalType: PeriodType | null
+  excludes: Date[]
 }
