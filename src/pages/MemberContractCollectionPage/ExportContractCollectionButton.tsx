@@ -3,7 +3,7 @@ import { Button } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
-import { currencyFormatter, downloadCSV, handleError, toCSV } from 'lodestar-app-admin/src/helpers'
+import { downloadCSV, handleError, toCSV } from 'lodestar-app-admin/src/helpers'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import { useState } from 'react'
@@ -100,7 +100,10 @@ const ExportContractCollectionButton: React.FC<{
           studentCertification: v.student_certification || null,
           attachments: v.attachments,
           invoice: v.values?.invoice || null,
-          projectPlanName: v.values?.projectPlanName || null,
+          projectPlanName:
+            v.values?.projectPlanName ||
+            v.values?.orderProducts.map((v: { name: string }) => v.name).join('、') ||
+            null,
           price: v.values?.price || null,
           coinAmount: v.values?.coinAmount || null,
           paymentOptions: {
@@ -112,7 +115,7 @@ const ExportContractCollectionButton: React.FC<{
           orderExecutors:
             v.values?.orderExecutors?.map((v: any) => ({
               ratio: v.ratio,
-              memberId: v.member_id || v.memberId,
+              memberId: v.member_id,
             })) || [],
           couponCount: v.values?.coupons.length || null,
           manager: v.member?.manager
@@ -179,7 +182,7 @@ const ExportContractCollectionButton: React.FC<{
               case 'authorName':
                 return contract.authorName || ''
               case 'price':
-                return `${currencyFormatter(contract.price)}`
+                return `${contract.price}`
               case 'projectPlanName':
                 return contract.projectPlanName || ''
               case 'note':
