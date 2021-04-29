@@ -132,21 +132,22 @@ export const useMemberContractCollection = ({
   const dateRangeCondition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['dateRangeCondition'] = {
     [dateRangeType]: {
       _gt: startedAt,
-      _lte: endedAt,
+      _lt: endedAt,
     },
   }
-
   const condition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
     agreed_at: { _is_null: false },
     revoked_at: { _is_null: !isRevoked },
     ...dateRangeCondition,
-    author_name: { _ilike: authorName && `%${authorName}%` },
+    author_name: authorName ? { _ilike: `%${authorName}%` } : undefined,
     author_id: authorId ? { _eq: authorId } : undefined,
-    status: { _in: status.length ? status : undefined },
-    _or: [
-      { member_name: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
-      { member_email: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
-    ],
+    status: status.length ? { _in: status } : undefined,
+    _or: memberNameAndEmail
+      ? [
+          { member_name: { _ilike: `%${memberNameAndEmail}%` } },
+          { member_email: { _ilike: `%${memberNameAndEmail}%` } },
+        ]
+      : undefined,
   }
 
   const orderBy: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
@@ -226,39 +227,61 @@ export const useMemberContractCollection = ({
 
   const loadMoreMemberContracts =
     (data?.xuemi_member_private_teach_contract_aggregate.aggregate?.count || 0) >= 10
-      ? () =>
-          fetchMore({
+      ? () => {
+          const lastRecord =
+            data?.xuemi_member_private_teach_contract?.[data.xuemi_member_private_teach_contract.length - 1]
+
+          return fetchMore({
             variables: {
               orderBy,
               condition: {
                 ...condition,
-                agreed_at: sortOrder.agreedAt
-                  ? {
-                      [sortOrder.agreedAt === 'descend'
-                        ? '_lte'
-                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.agreed_at,
-                      [sortOrder.agreedAt === 'descend' ? '_gt' : '_lte']:
-                        sortOrder.agreedAt === 'descend' ? startedAt : endedAt,
-                    }
-                  : { _is_null: false },
-                revoked_at: sortOrder.revokedAt
-                  ? {
-                      [sortOrder.revokedAt === 'descend'
-                        ? '_lte'
-                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.revoked_at,
-                      [sortOrder.agreedAt === 'descend' ? '_gt' : '_lte']:
-                        sortOrder.agreedAt === 'descend' ? startedAt : endedAt,
-                    }
-                  : { _is_null: !isRevoked },
-                started_at: sortOrder.startedAt
-                  ? {
-                      [sortOrder.startedAt === 'descend'
-                        ? '_lte'
-                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.started_at,
-                      [sortOrder.agreedAt === 'descend' ? '_gt' : '_lte']:
-                        sortOrder.agreedAt === 'descend' ? startedAt : endedAt,
-                    }
-                  : undefined,
+                id: {
+                  _nin: data?.xuemi_member_private_teach_contract
+                    .filter(
+                      v =>
+                        v.agreed_at === lastRecord?.agreed_at ||
+                        v.revoked_at === lastRecord?.revoked_at ||
+                        v.started_at === lastRecord?.started_at,
+                    )
+                    .map(v => v.id),
+                },
+                agreed_at:
+                  sortOrder.agreedAt === 'descend'
+                    ? {
+                        _lte: lastRecord?.agreed_at,
+                        _gt: startedAt,
+                      }
+                    : sortOrder.agreedAt === 'ascend'
+                    ? {
+                        _gte: lastRecord?.agreed_at,
+                        _lt: endedAt,
+                      }
+                    : { _is_null: false },
+                revoked_at:
+                  sortOrder.revokedAt === 'descend'
+                    ? {
+                        _lte: lastRecord?.revoked_at,
+                        _gt: startedAt,
+                      }
+                    : sortOrder.revokedAt === 'ascend'
+                    ? {
+                        _gte: lastRecord?.revoked_at,
+                        _lt: endedAt,
+                      }
+                    : { _is_null: !isRevoked },
+                started_at:
+                  sortOrder.startedAt === 'descend'
+                    ? {
+                        _lte: lastRecord?.started_at,
+                        _gt: startedAt,
+                      }
+                    : sortOrder.startedAt === 'ascend'
+                    ? {
+                        _gte: lastRecord?.started_at,
+                        _lt: endedAt,
+                      }
+                    : undefined,
               },
               limit: 10,
             },
@@ -276,6 +299,7 @@ export const useMemberContractCollection = ({
               })
             },
           })
+        }
       : undefined
 
   const memberContractPriceAmount: Record<StatusType, number> = {
