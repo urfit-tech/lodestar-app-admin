@@ -50,6 +50,7 @@ const PracticeCollectionAdminPage: React.FC = () => {
           </div>
           <div className="col-12 col-sm-5 mb-2 mb-sm-0 px-0 pr-sm-3">
             <ProgramTreeSelector
+              treeNodeSelectable
               allowContentType="practice"
               memberId={currentUserRole === 'content-creator' && currentMemberId ? currentMemberId : undefined}
               onSelect={(value, option) => {

@@ -62,13 +62,13 @@ export const ProgramTreeSelector: React.FC<
     title: program.title,
     value: program.id,
     group: 'program',
-    selectable: treeNodeSelectable ?? 'true',
+    selectable: treeNodeSelectable,
     children: program.contentSections.map(section => ({
       key: section.id,
       title: section.title,
       value: section.id,
       group: 'programContentSection',
-      selectable: treeNodeSelectable ?? 'true',
+      selectable: treeNodeSelectable,
       children: section.contents.map(content => ({
         key: content.id,
         title: content.title,
