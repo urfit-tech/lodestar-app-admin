@@ -187,6 +187,11 @@ const CurrentLeadContactBlock: React.VFC<{
     setLoading(false)
   }
 
+  let leadCreatedAt = currentLead.createdAt
+  if (leadCreatedAt && moment(leadCreatedAt).add(3, 'month') > moment()) {
+    leadCreatedAt = moment().subtract(3, 'month').toDate()
+  }
+
   return (
     <AdminBlock className="p-4">
       <div className="row">
