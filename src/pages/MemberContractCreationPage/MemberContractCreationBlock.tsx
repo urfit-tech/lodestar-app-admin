@@ -38,6 +38,7 @@ const MemberContractCreationBlock: React.FC<{
   products: ContractInfo['products']
   contracts: ContractInfo['contracts']
   selectedProjectPlan: ContractInfo['projectPlans'][number] | null
+  startedAt: Date | null
   endedAt: Date | null
   isAppointmentOnly: boolean
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
@@ -47,6 +48,7 @@ const MemberContractCreationBlock: React.FC<{
   member,
   products,
   selectedProjectPlan,
+  startedAt,
   endedAt,
   isAppointmentOnly,
   memberBlockRef,
@@ -249,8 +251,8 @@ const MemberContractCreationBlock: React.FC<{
         return {
           product_id: product.preview.productId,
           name: product.preview.title,
-          price: 0,
-          started_at: fieldValue.startedAt,
+          price: 225,
+          started_at: null,
           ended_at: endedAt,
         }
       })
@@ -280,7 +282,7 @@ const MemberContractCreationBlock: React.FC<{
                     amount: 100,
                     title: `學米諮詢券`,
                     description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
-                    started_at: fieldValue.startedAt,
+                    started_at: startedAt,
                     ended_at: endedAt,
                     scope: ['AppointmentPlan'],
                   },
@@ -313,11 +315,11 @@ const MemberContractCreationBlock: React.FC<{
       variables: {
         memberId: member.id,
         contractId: fieldValue.contractId,
-        startedAt: fieldValue.startedAt,
+        startedAt: startedAt,
         endedAt,
         authorId: currentMemberId || '',
         values: {
-          startedAt: fieldValue.startedAt,
+          startedAt: startedAt,
           endedAt,
           memberId: member.id,
           invoice: {
@@ -334,14 +336,14 @@ const MemberContractCreationBlock: React.FC<{
               product_id: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
               name: selectedProjectPlan?.title,
               price: 0,
-              started_at: fieldValue.startedAt,
+              started_at: startedAt,
               ended_at: endedAt,
             },
             ...contractProducts.map(v => ({
               product_id: `ProjectPlan_${v.id}`,
               name: v.name,
               price: v.price * v.amount,
-              started_at: fieldValue.startedAt,
+              started_at: startedAt,
               ended_at: endedAt,
             })),
             ...previewProducts,
@@ -349,7 +351,7 @@ const MemberContractCreationBlock: React.FC<{
               product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
               name: '學米 VIP 會員卡',
               price: 0,
-              started_at: fieldValue.startedAt,
+              started_at: startedAt,
               ended_at: endedAt,
             },
           ],
@@ -360,6 +362,13 @@ const MemberContractCreationBlock: React.FC<{
               price: v.price,
               type: 'Coupon',
               target: v.id,
+            })),
+            ...previewProducts.map(v => ({
+              name: v.name,
+              price: 225,
+              type: 'Coin',
+              target: v4(),
+              options: { coins: 5, exchangeRate: 45 },
             })),
           ],
           orderExecutors,
