@@ -23,7 +23,6 @@ type FieldProps = {
   contractId: string
   withCreatorId: boolean
   orderExecutorRatio: number
-  startedAt: Date
   identity: 'normal' | 'student'
   certification?: {
     file: {
@@ -125,8 +124,9 @@ const MemberContractCreationPage: React.VFC = () => {
   }
 
   const selectedProjectPlan = projectPlans.find(v => v.id === fieldValue.selectedProjectPlanId) || null
+  const startedAt = moment().add(1, 'days').startOf('day').toDate()
   const endedAt = selectedProjectPlan
-    ? moment(fieldValue.startedAt)
+    ? moment(startedAt)
         .add(
           selectedProjectPlan.periodAmount || 0,
           selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
@@ -156,11 +156,11 @@ const MemberContractCreationPage: React.VFC = () => {
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
-              startedAt: moment().add(1, 'day').startOf('day'),
               identity: 'normal',
             }}
             onValuesChange={() => setReRender(prev => prev + 1)}
             memberId={memberId}
+            startedAt={startedAt}
             endedAt={endedAt}
             contractProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
@@ -182,6 +182,7 @@ const MemberContractCreationPage: React.VFC = () => {
             products={products}
             contracts={contracts}
             selectedProjectPlan={selectedProjectPlan}
+            startedAt={startedAt}
             endedAt={endedAt}
             selectedProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}

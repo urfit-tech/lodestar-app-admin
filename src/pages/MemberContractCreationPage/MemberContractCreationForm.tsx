@@ -1,5 +1,5 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
+import { Button, Checkbox, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import { AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
 import moment from 'moment'
@@ -21,6 +21,7 @@ const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
     projectPlans: ContractInfo['projectPlans']
+    startedAt: Date | null
     endedAt: Date | null
     products: ContractInfo['products']
     contractProducts: NonNullable<FieldProps['contractProducts']>
@@ -33,6 +34,7 @@ const MemberContractCreationForm: React.FC<
   ({
     contracts,
     projectPlans,
+    startedAt,
     endedAt,
     products,
     contractProducts,
@@ -90,9 +92,7 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="服務開始日">
-            <Form.Item className="mb-0" name="startedAt">
-              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-            </Form.Item>
+            {startedAt ? moment(startedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
           </Descriptions.Item>
 
           <Descriptions.Item label="服務結束日">
