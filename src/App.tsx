@@ -15,6 +15,7 @@ import SalesActivenessPage from './pages/SalesActivenessPage'
 import SalesCallPage from './pages/SalesCallPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
+import SalesStatusPage from './pages/SalesStatusPage'
 import TermsPtPage from './pages/TermsPtPage'
 
 const App: React.FC = () => {
@@ -41,6 +42,11 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'sales_call',
                   name: '業務撥打',
+                },
+                {
+                  permissionIsAllowed: true,
+                  key: 'sales_status',
+                  name: '業務狀況',
                 },
               ],
             },
@@ -127,6 +133,11 @@ const App: React.FC = () => {
         sales_call: {
           path: '/sales-call',
           pageName: <SalesCallPage />,
+          authenticated: true,
+        },
+        sales_status: {
+          path: '/sales-status',
+          pageName: <SalesStatusPage />,
           authenticated: true,
         },
         analytics_sales_materials: {
