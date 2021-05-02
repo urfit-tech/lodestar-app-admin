@@ -44,7 +44,7 @@ const teamSettings = [
     name: '攻城獅',
     sales: [
       {
-        id: 'edbc066d-7bb1-4bab-a266-6b5d03e4afe3',
+        id: '54eec91c-a636-4043-ac8e-7c1616b970eb',
         name: 'steven',
       },
       {
