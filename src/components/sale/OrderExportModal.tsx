@@ -468,7 +468,7 @@ const OrderExportModal: React.FC = () => {
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.timeRange),
+                field: formatMessage(commonMessages.label.timeRange),
               }),
             },
           ]}
@@ -490,7 +490,7 @@ const OrderExportModal: React.FC = () => {
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.orderStatus),
+                field: formatMessage(commonMessages.label.orderStatus),
               }),
             },
           ]}

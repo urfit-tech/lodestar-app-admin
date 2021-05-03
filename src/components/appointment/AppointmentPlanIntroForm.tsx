@@ -66,7 +66,7 @@ const AppointmentPlanIntroForm: React.FC<{
               value.isEmpty()
                 ? callback(
                     formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.term.planTitle),
+                      field: formatMessage(commonMessages.label.planTitle),
                     }),
                   )
                 : callback()

@@ -4,16 +4,11 @@ import { UploadProps } from 'antd/lib/upload'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
 import React, { useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import { uploadFile } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-
-const messages = defineMessages({
-  uploadSuccess: { id: 'upload.event.success', defaultMessage: '上傳成功' },
-  uploadFailed: { id: 'upload.event.failed', defaultMessage: '上傳失敗' },
-})
 
 const StyledCloseOutlines = styled(CloseOutlined)`
   cursor: pointer;
@@ -106,10 +101,12 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
         ])
         return onSuccess
           ? onSuccess(info)
-          : message.success(`${info.file.name} ${formatMessage(messages.uploadSuccess)}`)
+          : message.success(`${info.file.name} ${formatMessage(commonMessages.event.successfullyUpload)}`)
       }
       if (info.file.status === 'error') {
-        return onError ? onError(info) : message.error(`${info.file.name} ${formatMessage(messages.uploadFailed)}`)
+        return onError
+          ? onError(info)
+          : message.error(`${info.file.name} ${formatMessage(commonMessages.event.failedUpload)}`)
       }
     },
     customRequest: ({ file, onSuccess, onError }) => {
@@ -147,7 +144,7 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
             onClick={() => {
               onDelete?.(fileList.find(oldFile => oldFile.uid === file.uid))
               onSetFileList(fileList.filter(oldFile => oldFile.uid !== file.uid))
-              message.success(formatMessage(commonMessages.ui.deleted))
+              message.success(formatMessage(commonMessages.status.deleted))
             }}
           />
         </StyledFileBlock>

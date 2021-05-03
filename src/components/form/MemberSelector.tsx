@@ -17,7 +17,7 @@ const StyledTextSecondary = styled.span`
 `
 
 const messages = defineMessages({
-  memberSelect: { id: 'error.form.memberSelect', defaultMessage: '請輸入帳號或 Email' },
+  memberSelect: { id: 'member.text.memberSelect', defaultMessage: '請輸入帳號或 Email' },
 })
 
 const MemberSelector: React.FC<{

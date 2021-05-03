@@ -25,10 +25,10 @@ const PeriodSelector: React.FC<{
             onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
             style={{ width: '90px' }}
           >
-            <Select.Option value="D">{formatMessage(commonMessages.label.day)}</Select.Option>
-            <Select.Option value="W">{formatMessage(commonMessages.label.week)}</Select.Option>
-            <Select.Option value="M">{formatMessage(commonMessages.label.month)}</Select.Option>
-            <Select.Option value="Y">{formatMessage(commonMessages.label.year)}</Select.Option>
+            <Select.Option value="D">{formatMessage(commonMessages.unit.day)}</Select.Option>
+            <Select.Option value="W">{formatMessage(commonMessages.unit.week)}</Select.Option>
+            <Select.Option value="M">{formatMessage(commonMessages.unit.month)}</Select.Option>
+            <Select.Option value="Y">{formatMessage(commonMessages.unit.year)}</Select.Option>
           </Select>
         </div>
       )}

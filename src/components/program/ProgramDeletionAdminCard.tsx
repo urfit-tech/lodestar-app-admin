@@ -90,7 +90,7 @@ const ProgramDeletionAdminCard: React.FC<{
         title={formatMessage(commonMessages.ui.deleteProgram)}
         renderTrigger={({ setVisible }) =>
           program.isDeleted ? (
-            <Button disabled>{formatMessage(commonMessages.ui.deleted)}</Button>
+            <Button disabled>{formatMessage(commonMessages.status.deleted)}</Button>
           ) : (
             <Button type="primary" danger onClick={() => setVisible(true)}>
               {formatMessage(commonMessages.ui.deleteProgram)}

@@ -116,7 +116,7 @@ const MemberAdminLayout: React.FC<{
         {activeKey === 'task' && children}
       </Tabs.TabPane>
     ),
-    <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.term.coupon)}>
+    <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
       {activeKey === 'coupon' && children}
     </Tabs.TabPane>,
     enabledModules.contract && (

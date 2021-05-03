@@ -88,7 +88,7 @@ const BlogPostSettingForm: React.FC<{
       <Form.Item
         label={
           <span>
-            {formatMessage(commonMessages.term.cover)}
+            {formatMessage(commonMessages.label.cover)}
             <Tooltip
               placement="top"
               title={<StyledTips>{formatMessage(blogMessages.text.suggestedPictureSize)}</StyledTips>}

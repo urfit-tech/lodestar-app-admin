@@ -24,12 +24,12 @@ const productTypeLabel = (productType: string) => {
     case 'PodcastProgram':
       return commonMessages.label.allPodcastProgram
     default:
-      return commonMessages.term.unknownProduct
+      return commonMessages.label.unknownProduct
   }
 }
 
 const messages = defineMessages({
-  selectProducts: { id: 'voucher.label.selectProducts', defaultMessage: '選擇兌換項目' },
+  selectProducts: { id: 'promotion.label.selectProducts', defaultMessage: '選擇兌換項目' },
 })
 
 const ProductSelector: React.FC<{

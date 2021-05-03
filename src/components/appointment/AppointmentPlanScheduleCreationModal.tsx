@@ -134,7 +134,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
         }}
       >
         <Form.Item
-          label={formatMessage(appointmentMessages.term.startedAt)}
+          label={formatMessage(appointmentMessages.label.startedAt)}
           name="startedAt"
           rules={[{ required: true, message: formatMessage(appointmentMessages.text.selectStartedAt) }]}
         >
@@ -148,14 +148,14 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
         </Form.Item>
 
         <Checkbox className="mb-2" defaultChecked={withRepeat} onChange={e => setWithRepeat(e.target.checked)}>
-          {formatMessage(appointmentMessages.term.periodType)}
+          {formatMessage(appointmentMessages.label.periodType)}
         </Checkbox>
         <div className={withRepeat ? 'd-block mb-4' : 'd-none'}>
           <Form.Item name="periodType">
             <StyledSelect className="ml-4">
-              <Select.Option value="D">{formatMessage(commonMessages.label.perDay)}</Select.Option>
-              <Select.Option value="W">{formatMessage(commonMessages.label.week)}</Select.Option>
-              <Select.Option value="M">{formatMessage(commonMessages.label.month)}</Select.Option>
+              <Select.Option value="D">{formatMessage(commonMessages.unit.day)}</Select.Option>
+              <Select.Option value="W">{formatMessage(commonMessages.unit.week)}</Select.Option>
+              <Select.Option value="M">{formatMessage(commonMessages.unit.month)}</Select.Option>
             </StyledSelect>
           </Form.Item>
         </div>

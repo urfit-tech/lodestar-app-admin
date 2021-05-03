@@ -94,7 +94,7 @@ const ActivityTicketAdminModal: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(activityMessages.term.ticketPlan)}
+      title={formatMessage(activityMessages.label.ticketPlan)}
       maskClosable={false}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -126,20 +126,20 @@ const ActivityTicketAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(activityMessages.term.ticketPlanTitle)}
+          label={formatMessage(activityMessages.label.ticketPlanTitle)}
           name="title"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(activityMessages.term.ticketPlanTitle),
+                field: formatMessage(activityMessages.label.ticketPlanTitle),
               }),
             },
           ]}
         >
           <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(activityMessages.term.includingSessions)} name="sessionIds">
+        <Form.Item label={formatMessage(activityMessages.label.includingSessions)} name="sessionIds">
           <Select
             mode="multiple"
             style={{ width: '100%' }}
@@ -191,13 +191,13 @@ const ActivityTicketAdminModal: React.FC<
             disabledDate={current => current < moment().startOf('day')}
           />
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="price">
+        <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="price">
           <InputNumber min={0} formatter={value => `NT$ ${value}`} parser={value => value?.replace(/\D/g, '') || ''} />
         </Form.Item>
         <Form.Item label={formatMessage(messages.limit)} name="count">
           <InputNumber min={1} />
         </Form.Item>
-        <Form.Item label={formatMessage(activityMessages.term.description)} name="description">
+        <Form.Item label={formatMessage(activityMessages.label.description)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
       </Form>

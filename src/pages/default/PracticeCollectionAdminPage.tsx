@@ -10,7 +10,7 @@ import PracticeCard from '../../components/practice/PracticeCard'
 import { ProgramTreeSelector } from '../../components/program/ProgramSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
-import { commonMessages, errorMessages, practiceMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 
 type PracticeFiltersProps = {
@@ -43,8 +43,8 @@ const PracticeCollectionAdminPage: React.FC = () => {
         <div className="d-flex flex-wrap col-12 px-0 mb-2 mb-md-0">
           <div className="col-12 col-sm-2 mb-2 mb-sm-0 px-0 pr-sm-3">
             <Select style={{ width: '100%' }} value={selectedStatus} onChange={(key: string) => setSelectedStatus(key)}>
-              <Select.Option value="unreviewed">{formatMessage(practiceMessages.status.unreviewed)}</Select.Option>
-              <Select.Option value="reviewed">{formatMessage(practiceMessages.status.reviewed)}</Select.Option>
+              <Select.Option value="unreviewed">{formatMessage(programMessages.status.unreviewed)}</Select.Option>
+              <Select.Option value="reviewed">{formatMessage(programMessages.status.reviewed)}</Select.Option>
               <Select.Option value="all">{formatMessage(commonMessages.label.all)}</Select.Option>
             </Select>
           </div>
@@ -61,7 +61,7 @@ const PracticeCollectionAdminPage: React.FC = () => {
           <div className="col-12 col-sm-2" />
           <div className="col-12 col-sm-3 px-0">
             <Input.Search
-              placeholder={formatMessage(practiceMessages.text.searchPractice)}
+              placeholder={formatMessage(programMessages.text.searchPractice)}
               onChange={e => setSearchText(e.target.value)}
             />
           </div>
@@ -113,7 +113,7 @@ const AllPracticeCollectionBlock: React.FC<{
   if (practices.length === 0) {
     return (
       <EmptyBlock>
-        {errorPractice ? formatMessage(errorMessages.data.fetch) : formatMessage(practiceMessages.text.emptyPractice)}
+        {errorPractice ? formatMessage(errorMessages.data.fetch) : formatMessage(programMessages.text.emptyPractice)}
       </EmptyBlock>
     )
   }

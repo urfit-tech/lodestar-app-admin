@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
-import { appointmentMessages } from '../../helpers/translation'
+import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { AvatarImage } from '../common/Image'
 import AppointmentPlanAppointmentModal from './AppointmentPlanAppointmentModal'
 
@@ -43,13 +43,10 @@ const StyledText = styled.div`
 
 const messages = defineMessages({
   instructor: { id: 'appointment.label.instructor', defaultMessage: '老師' },
-  minutes: { id: 'appointment.label.minutes', defaultMessage: '分鐘' },
   price: { id: 'appointment.label.price', defaultMessage: '金額' },
   appointment: { id: 'appointment.label.appointment', defaultMessage: '預約' },
   enrollments: { id: 'appointment.label.enrollments', defaultMessage: '已預約' },
   status: { id: 'appointment.label.status', defaultMessage: '狀態' },
-  isPublished: { id: 'appointment.status.isPublished', defaultMessage: '已發佈' },
-  notPublished: { id: 'appointment.status.notPublished', defaultMessage: '未發佈' },
   people: { id: 'appointment.label.people', defaultMessage: '{count} 人' },
 })
 
@@ -115,7 +112,7 @@ const AppointmentPlanCollectionTable: React.FC<{
     },
     {
       dataIndex: 'title',
-      title: formatMessage(appointmentMessages.term.planTitle),
+      title: formatMessage(appointmentMessages.label.planTitle),
       render: (text, record, index) => <StyledPlanTitle>{text}</StyledPlanTitle>,
       filterDropdown: () => (
         <div className="p-2">
@@ -133,7 +130,7 @@ const AppointmentPlanCollectionTable: React.FC<{
     },
     {
       dataIndex: 'duration',
-      title: formatMessage(messages.minutes),
+      title: formatMessage(commonMessages.unit.minute),
       render: (text, record, index) => <StyledText>{text}</StyledText>,
       sorter: (a, b) => b.duration - a.duration,
     },

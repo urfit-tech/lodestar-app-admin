@@ -1,7 +1,7 @@
 import Icon from '@ant-design/icons'
 import { Divider, Tag } from 'antd'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter, dateRangeFormatter } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
@@ -75,10 +75,6 @@ const StyledExtraAdmin = styled.div`
   letter-spacing: 0.2px;
 `
 
-const messages = defineMessages({
-  expired: { id: 'activity.status.expired', defaultMessage: '已截止' },
-})
-
 const ActivityTicket: React.FC<
   ActivityTicketProps & {
     sessions: {
@@ -92,11 +88,11 @@ const ActivityTicket: React.FC<
 
   const status =
     !isPublished || Date.now() < startedAt.getTime()
-      ? formatMessage(commonMessages.status.notPublished)
+      ? formatMessage(commonMessages.status.notSold)
       : (enrollmentsCount || 0) >= count
       ? formatMessage(commonMessages.status.soldOut)
       : Date.now() > endedAt.getTime()
-      ? formatMessage(messages.expired)
+      ? formatMessage(activityMessages.status.expired)
       : formatMessage(commonMessages.status.selling)
 
   return (
@@ -109,7 +105,7 @@ const ActivityTicket: React.FC<
 
       <Divider />
 
-      <StyledSubTitle>{formatMessage(activityMessages.term.includingSessions)}</StyledSubTitle>
+      <StyledSubTitle>{formatMessage(activityMessages.label.includingSessions)}</StyledSubTitle>
       {sessions.map(session => (
         <StyledTag key={session.id} color="#585858" className="mb-2">
           {session.title}
@@ -118,12 +114,12 @@ const ActivityTicket: React.FC<
 
       {!!description && (
         <StyledDescription>
-          <StyledSubTitle>{formatMessage(activityMessages.term.description)}</StyledSubTitle>
+          <StyledSubTitle>{formatMessage(activityMessages.label.description)}</StyledSubTitle>
           <BraftContent>{description}</BraftContent>
         </StyledDescription>
       )}
 
-      <StyledSubTitle>{formatMessage(activityMessages.term.sellingTime)}</StyledSubTitle>
+      <StyledSubTitle>{formatMessage(activityMessages.label.sellingTime)}</StyledSubTitle>
       <StyledMeta>{dateRangeFormatter({ startedAt, endedAt, dateFormat: 'YYYY-MM-DD(dd)' })}</StyledMeta>
 
       <StyledExtraAdmin className="d-flex align-items-center justify-content-between">

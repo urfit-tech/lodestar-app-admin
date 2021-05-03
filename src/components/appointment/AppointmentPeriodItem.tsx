@@ -1,6 +1,7 @@
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
+import { appointmentMessages } from '../../helpers/translation'
 import { AppointmentPeriodProps } from '../../types/appointment'
 
 const StyledItemWrapper = styled.div<{ variant?: 'default' | 'excluded' | 'disabled' }>`
@@ -45,12 +46,6 @@ const StyledItemMeta = styled.div`
   letter-spacing: 0.34px;
 `
 
-const messages = defineMessages({
-  enrolled: { id: 'appointment.status.enrolled', defaultMessage: '已預約' },
-  excluded: { id: 'appointment.status.excluded', defaultMessage: '已關閉' },
-  available: { id: 'appointment.status.available', defaultMessage: '可預約' },
-})
-
 const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ id, startedAt, isEnrolled, isExcluded }) => {
   const { formatMessage } = useIntl()
 
@@ -61,10 +56,10 @@ const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ id, startedAt
       </StyledItemTitle>
       <StyledItemMeta>
         {isEnrolled
-          ? formatMessage(messages.enrolled)
+          ? formatMessage(appointmentMessages.status.enrolled)
           : isExcluded
-          ? formatMessage(messages.excluded)
-          : formatMessage(messages.available)}
+          ? formatMessage(appointmentMessages.status.excluded)
+          : formatMessage(appointmentMessages.status.available)}
       </StyledItemMeta>
     </StyledItemWrapper>
   )

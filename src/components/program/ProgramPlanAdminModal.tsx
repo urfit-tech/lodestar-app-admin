@@ -200,13 +200,13 @@ const ProgramPlanAdminModal: React.FC<
         )}
         {enabledModules?.currency && (
           <Form.Item
-            label={formatMessage(commonMessages.term.currency)}
+            label={formatMessage(commonMessages.label.currency)}
             name="currencyId"
             rules={[
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.listPrice),
+                  field: formatMessage(commonMessages.label.listPrice),
                 }),
               },
             ]}
@@ -215,7 +215,7 @@ const ProgramPlanAdminModal: React.FC<
           </Form.Item>
         )}
 
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
+        <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
           <CurrencyInput noLabel currencyId={currencyId} />
         </Form.Item>
 

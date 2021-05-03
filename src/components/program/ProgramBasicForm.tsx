@@ -90,10 +90,10 @@ const ProgramBasicForm: React.FC<{
       <Form.Item label={formatMessage(programMessages.label.programTitle)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="program" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tag)} name="tags">
+      <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
         <TagSelector />
       </Form.Item>
 

@@ -3,7 +3,7 @@ import { Button, Checkbox, Modal } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -33,10 +33,6 @@ const StyledCheckbox = styled(Checkbox)`
   bottom: 24px;
   z-index: 999;
 `
-
-const messages = defineMessages({
-  checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
-})
 
 type IssueAdminCardProps = CardProps & {
   threadId: string
@@ -133,7 +129,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
           <>
             <span>{programTitle}</span>
             <Button type="link" onClick={() => window.open(`//${settings['host']}${threadId}`)}>
-              {formatMessage(messages.checkProgramContent)}
+              {formatMessage(programMessages.ui.checkProgramContent)}
             </Button>
           </>
         }

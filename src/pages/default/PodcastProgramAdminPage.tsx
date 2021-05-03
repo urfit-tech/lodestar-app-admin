@@ -95,11 +95,11 @@ const PodcastProgramAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
               <AdminBlock>
-                <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.term.owner)}</AdminBlockTitle>
+                <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.label.owner)}</AdminBlockTitle>
                 <PodcastProgramCreatorBlock podcastProgramAdmin={podcastProgramAdmin} />
               </AdminBlock>
               <AdminBlock>
-                <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.term.instructor)}</AdminBlockTitle>
+                <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.label.instructor)}</AdminBlockTitle>
                 <PodcastProgramInstructorCollectionBlock
                   podcastProgramAdmin={podcastProgramAdmin}
                   onRefetch={refetchPodcastProgramAdmin}

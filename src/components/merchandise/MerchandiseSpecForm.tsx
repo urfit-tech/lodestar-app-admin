@@ -173,7 +173,7 @@ const MerchandiseSpecForm: React.FC<{
                   <Form.Item
                     name={[field.name, 'listPrice']}
                     fieldKey={[field.fieldKey, 'listPrice']}
-                    label={<StyledLabel>{formatMessage(commonMessages.term.listPrice)}</StyledLabel>}
+                    label={<StyledLabel>{formatMessage(commonMessages.label.listPrice)}</StyledLabel>}
                     className="mb-0 mr-3"
                     required
                   >

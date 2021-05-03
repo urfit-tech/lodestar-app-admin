@@ -51,7 +51,7 @@ const RegisterSection: React.FC<{
           name="username"
           rules={[{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }]}
         >
-          <Input placeholder={formatMessage(commonMessages.term.username)} suffix={<UserOutlined />} />
+          <Input placeholder={formatMessage(commonMessages.label.username)} suffix={<UserOutlined />} />
         </Form.Item>
         <Form.Item
           name="email"
@@ -59,7 +59,7 @@ const RegisterSection: React.FC<{
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.email),
+                field: formatMessage(commonMessages.label.email),
               }),
             },
             { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
@@ -73,12 +73,12 @@ const RegisterSection: React.FC<{
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.password),
+                field: formatMessage(commonMessages.label.password),
               }),
             },
           ]}
         >
-          <Input type="password" placeholder={formatMessage(commonMessages.term.password)} suffix={<LockOutlined />} />
+          <Input type="password" placeholder={formatMessage(commonMessages.label.password)} suffix={<LockOutlined />} />
         </Form.Item>
 
         <Form.Item>
@@ -89,7 +89,7 @@ const RegisterSection: React.FC<{
       </Form>
 
       <StyledAction>
-        <span>{formatMessage(commonMessages.label.alreadyMember)}</span>
+        <span>{formatMessage(commonMessages.text.alreadyMember)}</span>
         <Button type="link" size="small" onClick={() => onAuthStateChange('login')}>
           {formatMessage(commonMessages.label.goToLogin)}
         </Button>

@@ -91,9 +91,9 @@ const MemberPermissionForm: React.FC<{
     >
       <Form.Item label={formatMessage(messages.roleSettings)} name="roleId">
         <Select>
-          <Select.Option value="general-member">{formatMessage(commonMessages.term.generalMember)}</Select.Option>
-          <Select.Option value="content-creator">{formatMessage(commonMessages.term.contentCreator)}</Select.Option>
-          <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
+          <Select.Option value="general-member">{formatMessage(commonMessages.label.generalMember)}</Select.Option>
+          <Select.Option value="content-creator">{formatMessage(commonMessages.label.contentCreator)}</Select.Option>
+          <Select.Option value="app-owner">{formatMessage(commonMessages.label.appOwner)}</Select.Option>
         </Select>
       </Form.Item>
 

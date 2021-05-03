@@ -262,13 +262,13 @@ const AppointmentPeriodCard: React.FC<
 
         {member.email && (
           <StyledMeta className="d-flex justify-content-between mb-3">
-            <div>{formatMessage(commonMessages.term.email)}</div>
+            <div>{formatMessage(commonMessages.label.email)}</div>
             <div>{member.email}</div>
           </StyledMeta>
         )}
         {member.phone && (
           <StyledMeta className="d-flex justify-content-between mb-3">
-            <div>{formatMessage(commonMessages.term.phone)}</div>
+            <div>{formatMessage(commonMessages.label.phone)}</div>
             <div>{member.phone}</div>
           </StyledMeta>
         )}

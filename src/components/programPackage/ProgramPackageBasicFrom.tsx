@@ -91,13 +91,13 @@ const ProgramPackageBasicForm: React.FC<{
       onFinish={handleSubmit}
     >
       <Form.Item
-        label={formatMessage(commonMessages.term.title)}
+        label={formatMessage(commonMessages.label.title)}
         name="title"
         rules={[
           {
             required: true,
             message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(commonMessages.term.title),
+              field: formatMessage(commonMessages.label.title),
             }),
           },
         ]}
@@ -105,11 +105,11 @@ const ProgramPackageBasicForm: React.FC<{
         <Input />
       </Form.Item>
 
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="programPackage" />
       </Form.Item>
 
-      <Form.Item label={formatMessage(commonMessages.term.cover)}>
+      <Form.Item label={formatMessage(commonMessages.label.cover)}>
         <ImageInput
           path={`program_package_covers/${appId}/${programPackage.id}`}
           image={{

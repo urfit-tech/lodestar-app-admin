@@ -185,7 +185,7 @@ const ShippingMethodItem: React.FC<{
         }
         className="mr-3"
       />
-      <span>{formatMessage(commonMessages.label.days)}</span>
+      <span>{formatMessage(commonMessages.unit.day)}</span>
     </div>
   )
 }

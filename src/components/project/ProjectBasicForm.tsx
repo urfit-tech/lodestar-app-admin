@@ -124,7 +124,7 @@ const ProjectBasicForm: React.FC<{
       <Form.Item label={formatMessage(projectMessages.label.projectTitle)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="project" />
       </Form.Item>
       {project.projectType === 'funding' && (

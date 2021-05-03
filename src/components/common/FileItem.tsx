@@ -1,12 +1,9 @@
 import { CloseOutlined, DownloadOutlined, LoadingOutlined } from '@ant-design/icons'
 import { message, Progress } from 'antd'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-
-const messages = defineMessages({
-  failedDownload: { id: 'common.event.failedDownload', defaultMessage: '下載失敗' },
-})
+import { errorMessages } from '../../helpers/translation'
 
 const StyledActionBlock = styled.span``
 const StyledFileItem = styled.div`
@@ -52,7 +49,7 @@ const FileItem: React.FC<{
               onClick={async () => {
                 setIsDownloading(true)
                 await onDownload?.().catch(() => {
-                  message.error(formatMessage(messages.failedDownload))
+                  message.error(formatMessage(errorMessages.data.failedDownload))
                 })
                 setIsDownloading(false)
               }}

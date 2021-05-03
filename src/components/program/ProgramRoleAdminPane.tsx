@@ -73,7 +73,7 @@ const ProgramRoleAdminPane: React.FC<{
       </AdminBlock>
 
       <AdminBlock>
-        <AdminBlockTitle>{formatMessage(commonMessages.term.instructor)}</AdminBlockTitle>
+        <AdminBlockTitle>{formatMessage(commonMessages.label.instructor)}</AdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'instructor')
           .map(role => (
@@ -123,7 +123,7 @@ const ProgramRoleAdminPane: React.FC<{
       </AdminBlock>
 
       <AdminBlock>
-        <AdminBlockTitle>{formatMessage(commonMessages.term.teachingAssistant)}</AdminBlockTitle>
+        <AdminBlockTitle>{formatMessage(commonMessages.label.teachingAssistant)}</AdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'assistant')
           .map(role => (

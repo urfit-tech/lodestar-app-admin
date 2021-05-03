@@ -9,8 +9,8 @@ import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useProgramProgressCollection } from '../../hooks/program'
 
 const messages = defineMessages({
-  learningDuration: { id: 'common.term.learningDuration', defaultMessage: '學習時數' },
-  learningProgress: { id: 'common.term.learningProgress', defaultMessage: '學習進度' },
+  learningDuration: { id: 'common.label.learningDuration', defaultMessage: '學習時數' },
+  learningProgress: { id: 'common.label.learningProgress', defaultMessage: '學習進度' },
   exportProgramProgress: { id: 'common.ui.exportProgramProgress', defaultMessage: '匯出學習進度' },
 })
 
@@ -51,7 +51,7 @@ const ProgramProgressTable: React.FC<{
   useEffect(() => {
     const data: string[][] = [
       [
-        formatMessage(commonMessages.term.memberName),
+        formatMessage(commonMessages.label.memberName),
         formatMessage(messages.learningDuration),
         formatMessage(messages.learningProgress),
       ],
@@ -93,7 +93,7 @@ const ProgramProgressTable: React.FC<{
   const programProgressTableColumns: ColumnProps<MemberProgressProps>[] = [
     {
       dataIndex: 'id',
-      title: formatMessage(commonMessages.term.memberName),
+      title: formatMessage(commonMessages.label.memberName),
       render: (text, record, index) => <MemberAvatar size="32px" memberId={record.memberId} withName />,
     },
     {

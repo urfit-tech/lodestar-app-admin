@@ -90,7 +90,7 @@ const ActivityParticipantCollectionModal: React.FC<
                   const data: string[][] = [
                     [
                       '',
-                      formatMessage(commonMessages.label.name),
+                      formatMessage(commonMessages.label.memberName),
                       formatMessage(messages.ticketType),
                       formatMessage(messages.attended),
                       formatMessage(commonMessages.label.phone),

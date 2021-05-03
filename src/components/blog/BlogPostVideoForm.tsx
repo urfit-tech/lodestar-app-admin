@@ -76,7 +76,7 @@ const BlogPostVideoForm: React.FC<{
           onFinish={handleSubmit}
         >
           <Form.Item name="videoUrl">
-            <Input className="mr-4" placeholder={formatMessage(blogMessages.term.pasteVideoUrl)} />
+            <Input className="mr-4" placeholder={formatMessage(blogMessages.text.pasteVideoUrl)} />
           </Form.Item>
 
           <Form.Item>

@@ -253,13 +253,13 @@ const ProjectPlanAdminModal: React.FC<
         )}
 
         <Form.Item
-          label={formatMessage(commonMessages.term.listPrice)}
+          label={formatMessage(commonMessages.label.listPrice)}
           name="listPrice"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.listPrice),
+                field: formatMessage(commonMessages.label.listPrice),
               }),
             },
           ]}

@@ -54,7 +54,7 @@ const BlogPostDeletionModal: React.FC<{
         <Typography.Text>{formatMessage(messages.deletePostWarning)}</Typography.Text>
       </div>
       {post.isDeleted ? (
-        <Button disabled>{formatMessage(commonMessages.ui.deleted)}</Button>
+        <Button disabled>{formatMessage(commonMessages.status.deleted)}</Button>
       ) : (
         <Button type="primary" danger onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.deletePost)}

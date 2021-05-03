@@ -26,11 +26,11 @@ const MemberExportModal: React.FC<{
   const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
 
   const options = [
-    { label: formatMessage(commonMessages.term.memberName), value: 'name' },
+    { label: formatMessage(commonMessages.label.memberName), value: 'name' },
     { label: formatMessage(commonMessages.label.memberIdentity), value: 'memberIdentity' },
     { label: 'Email', value: 'email' },
-    { label: formatMessage(commonMessages.term.phone), value: 'phone' },
-    { label: formatMessage(commonMessages.term.memberCategories), value: 'category' },
+    { label: formatMessage(commonMessages.label.phone), value: 'phone' },
+    { label: formatMessage(commonMessages.label.memberCategory), value: 'category' },
     { label: formatMessage(commonMessages.label.orderLogCreatedDate), value: 'orderLogCreatedDate' },
     { label: formatMessage(commonMessages.label.lastLogin), value: 'lastLogin' },
     { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },

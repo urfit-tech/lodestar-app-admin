@@ -67,7 +67,7 @@ const PodcastProgramPlanForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
+      <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
         <InputNumber
           min={0}
           formatter={value => `NT$ ${value}`}

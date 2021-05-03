@@ -338,7 +338,7 @@ const ProgramContentAdminModal: React.FC<{
               <ProgramPlanSelector programId={program.id} placeholder={formatMessage(messages.contentPlan)} />
             </Form.Item>
           )}
-          <Form.Item label={formatMessage(commonMessages.term.video)} name="video">
+          <Form.Item label={formatMessage(commonMessages.label.video)} name="video">
             <FileUploader
               renderTrigger={({ onClick }) => (
                 <>
@@ -367,7 +367,7 @@ const ProgramContentAdminModal: React.FC<{
             />
           </Form.Item>
           <Form.Item
-            label={formatMessage(commonMessages.term.caption)}
+            label={formatMessage(commonMessages.label.caption)}
             name="texttrack"
             className={videoFile ? undefined : 'd-none'}
           >
@@ -396,7 +396,7 @@ const ProgramContentAdminModal: React.FC<{
             <InputNumber min={0} />
           </Form.Item>
           {enabledModules.program_content_material && (
-            <Form.Item label={formatMessage(commonMessages.term.material)}>
+            <Form.Item label={formatMessage(commonMessages.label.material)}>
               <FileUploader
                 renderTrigger={({ onClick }) => (
                   <>

@@ -2,14 +2,14 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, message } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { defineMessage, useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
 
-const messages = defineMessage({
+const messages = defineMessages({
   cancelSubscription: {
     id: 'common.ui.cancelSubscription',
     defaultMessage: '取消訂閱',

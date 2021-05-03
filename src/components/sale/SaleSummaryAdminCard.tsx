@@ -29,7 +29,7 @@ const SaleSummaryAdminCard: React.FC = () => {
       <Statistic
         title={formatMessage(messages.totalSales)}
         value={totalSales}
-        suffix={formatMessage(promotionMessages.term.dollar)}
+        suffix={formatMessage(promotionMessages.label.dollar)}
       />
     </AdminCard>
   )

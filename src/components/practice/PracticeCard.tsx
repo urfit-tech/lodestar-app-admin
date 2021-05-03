@@ -11,7 +11,7 @@ import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { dateFormatter } from '../../helpers'
-import { practiceMessages } from '../../helpers/translation'
+import { programMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as CommentAltLinesIcon } from '../../images/icon/comment-alt-lines-o.svg'
 import AdminCard from '../admin/AdminCard'
@@ -216,8 +216,8 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
               }}
             >
               {isReviewed
-                ? formatMessage(practiceMessages.status.reviewed)
-                : formatMessage(practiceMessages.status.unreviewed)}
+                ? formatMessage(programMessages.status.reviewed)
+                : formatMessage(programMessages.status.unreviewed)}
             </Checkbox>
           </StyledCheckboxWrapper>
         ) : null}
@@ -275,8 +275,8 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
                 }}
               >
                 {isReviewed
-                  ? formatMessage(practiceMessages.status.reviewed)
-                  : formatMessage(practiceMessages.status.unreviewed)}
+                  ? formatMessage(programMessages.status.reviewed)
+                  : formatMessage(programMessages.status.unreviewed)}
               </Checkbox>
             ) : null}
           </div>

@@ -29,7 +29,7 @@ const messages = defineMessages({
   perpetual: { id: 'programPackage.label.perpetual', defaultMessage: '單次' },
   subscription: { id: 'programPackage.ui.subscription', defaultMessage: '訂閱' },
   perpetualPeriod: { id: 'programPackage.label.perpetualPeriod', defaultMessage: '觀看期限' },
-  subscriptionPeriod: { id: 'programPackage.lable.subscriptionPeriod', defaultMessage: '訂閱週期' },
+  subscriptionPeriod: { id: 'programPackage.label.subscriptionPeriod', defaultMessage: '訂閱週期' },
 
   permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
   availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
@@ -232,7 +232,7 @@ const ProgramPackagePlanAdminModal: React.FC<
           </Form.Item>
         </Form.Item>
 
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
+        <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
           <InputNumber
             min={0}
             formatter={value => `NT$ ${value}`}

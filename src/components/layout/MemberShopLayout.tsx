@@ -20,12 +20,8 @@ const messages = defineMessages({
   settingsAdmin: { id: 'merchandise.label.settingsAdmin', defaultMessage: '商店資訊' },
   shippingMethodsAdmin: { id: 'merchandise.label.shippingMethodsAdmin', defaultMessage: '物流設定' },
   publishAdmin: { id: 'merchandise.label.publishAdmin', defaultMessage: '啟用設定' },
-
   basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
   shippingMethod: { id: 'merchandise.label.shippingMethod', defaultMessage: '寄送方式' },
-
-  ownerBackstage: { id: 'layout.label.ownerBackstage', defaultMessage: '平台管理者專區' },
-  creatorStudio: { id: 'layout.label.creatorStudio', defaultMessage: '創作者工作室' },
 })
 
 const StyledMemberInfo = styled.div`
@@ -89,9 +85,9 @@ const MemberShopLayout: React.FC<{
           <Link to={`/`} className="d-flex">
             <Button type="link">
               {currentUserRole === 'app-owner'
-                ? formatMessage(messages.ownerBackstage)
+                ? formatMessage(commonMessages.ui.ownerBackstage)
                 : currentUserRole === 'content-creator'
-                ? formatMessage(messages.creatorStudio)
+                ? formatMessage(commonMessages.ui.creatorStudio)
                 : null}
             </Button>
           </Link>

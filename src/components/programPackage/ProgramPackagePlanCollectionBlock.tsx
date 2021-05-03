@@ -21,9 +21,8 @@ import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 
 const messages = defineMessages({
-  people: { id: 'programPackage.term.people', defaultMessage: '人' },
+  people: { id: 'programPackage.label.people', defaultMessage: '人' },
   availableForLimitTime: { id: 'programPackage.label.availableForLimitTime', defaultMessage: '可觀看 {amount} {unit}' },
-  unknownPeriod: { id: 'common.term.unknownPeriod', defaultMessage: '未知週期' },
 })
 
 const StyledButton = styled(Button)`
@@ -180,7 +179,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
   const status =
     publishedAt && Date.now() > publishedAt.getTime()
       ? formatMessage(commonMessages.status.selling)
-      : formatMessage(commonMessages.status.notPublished)
+      : formatMessage(commonMessages.status.notSold)
 
   return (
     <StyledCard>
@@ -203,14 +202,14 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
             amount: periodAmount,
             unit:
               periodType === 'D'
-                ? formatMessage(commonMessages.label.day)
+                ? formatMessage(commonMessages.unit.day)
                 : periodType === 'W'
-                ? formatMessage(commonMessages.label.week)
+                ? formatMessage(commonMessages.unit.week)
                 : periodType === 'M'
-                ? formatMessage(commonMessages.label.month)
+                ? formatMessage(commonMessages.unit.month)
                 : periodType === 'Y'
-                ? formatMessage(commonMessages.label.year)
-                : formatMessage(messages.unknownPeriod),
+                ? formatMessage(commonMessages.unit.year)
+                : formatMessage(commonMessages.label.unknownPeriod),
           })}
         </StyledText>
       )}

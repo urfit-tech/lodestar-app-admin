@@ -74,20 +74,20 @@ const ProfileAccountAdminCard: React.FC<
         onFinish={handleSubmit}
       >
         <Form.Item
-          label={formatMessage(commonMessages.term.account)}
+          label={formatMessage(commonMessages.label.account)}
           name="username"
           rules={[{ required: true, message: formatMessage(errorMessages.form.account) }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.email)}
+          label={formatMessage(commonMessages.label.email)}
           name="email"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.email),
+                field: formatMessage(commonMessages.label.email),
               }),
             },
           ]}

@@ -97,13 +97,13 @@ const BlogPostBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(commonMessages.term.title)} name="title">
+      <Form.Item label={formatMessage(blogMessages.label.title)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="post" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tag)} name="tags">
+      <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
         <TagSelector />
       </Form.Item>
       <Form.Item

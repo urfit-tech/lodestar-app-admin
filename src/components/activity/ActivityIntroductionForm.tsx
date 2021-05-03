@@ -88,7 +88,7 @@ const ActivityIntroductionForm: React.FC<{
       <Form.Item
         label={
           <span>
-            {formatMessage(commonMessages.term.cover)}
+            {formatMessage(commonMessages.label.cover)}
             <Tooltip placement="top" title={<StyledTips>{formatMessage(activityMessages.text.imageTips)}</StyledTips>}>
               <QuestionCircleFilled className="ml-2" />
             </Tooltip>
@@ -107,7 +107,7 @@ const ActivityIntroductionForm: React.FC<{
         />
       </Form.Item>
       <Form.Item
-        label={formatMessage(commonMessages.term.description)}
+        label={formatMessage(commonMessages.label.description)}
         wrapperCol={{ md: { span: 20 } }}
         name="description"
       >

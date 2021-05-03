@@ -77,20 +77,20 @@ const ActivityBasicForm: React.FC<{
       onFinish={handleSubmit}
     >
       <Form.Item
-        label={formatMessage(commonMessages.term.title)}
+        label={formatMessage(commonMessages.label.title)}
         name="title"
         rules={[
           {
             required: true,
             message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(commonMessages.term.title),
+              field: formatMessage(commonMessages.label.title),
             }),
           },
         ]}
       >
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="activity" />
       </Form.Item>
       {enabledModules.locale && (

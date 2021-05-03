@@ -128,10 +128,10 @@ const PointSendingModal: React.FC<{
         <Form.Item label={formatMessage(messages.availableDateRange)}>
           <Input.Group compact>
             <Form.Item name="startedAt">
-              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.term.startedAt)} />
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.startedAt)} />
             </Form.Item>
             <Form.Item name="endedAt">
-              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.term.endedAt)} />
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.endedAt)} />
             </Form.Item>
           </Input.Group>
         </Form.Item>

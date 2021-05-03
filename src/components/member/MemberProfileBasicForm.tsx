@@ -114,7 +114,7 @@ const MemberProfileBasicForm: React.FC<{
     >
       {enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN'] && (
         <Form.Item
-          label={formatMessage(commonMessages.term.assign)}
+          label={formatMessage(commonMessages.label.assign)}
           name="managerId"
           extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
         >
@@ -122,28 +122,28 @@ const MemberProfileBasicForm: React.FC<{
         </Form.Item>
       )}
 
-      <Form.Item label={formatMessage(commonMessages.term.name)} name="name">
+      <Form.Item label={formatMessage(commonMessages.label.name)} name="name">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.account)} name="username">
+      <Form.Item label={formatMessage(commonMessages.label.account)} name="username">
         <Input disabled={!permissions['MEMBER_USERNAME_EDIT']} />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.email)} name="email">
+      <Form.Item label={formatMessage(commonMessages.label.email)} name="email">
         <Input disabled={!permissions['MEMBER_EMAIL_EDIT']} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
-        <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
+        <Form.Item label={formatMessage(commonMessages.label.phone)} name="phones">
           <PhoneCollectionInput />
         </Form.Item>
       )}
-      <Form.Item label={formatMessage(commonMessages.term.speciality)} name="specialities">
+      <Form.Item label={formatMessage(commonMessages.label.speciality)} name="specialities">
         <TagSelector disabled />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.memberCategories)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.memberCategory)} name="categoryIds">
         <CategorySelector classType="member" />
       </Form.Item>
       {includes(currentUserRole, ['app-owner', 'content-creator']) && (
-        <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+        <Form.Item label={formatMessage(commonMessages.label.tags)} name="tags">
           <TagSelector />
         </Form.Item>
       )}

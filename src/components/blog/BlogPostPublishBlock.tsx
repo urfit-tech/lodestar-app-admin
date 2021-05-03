@@ -10,7 +10,6 @@ import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } fr
 
 const messages = defineMessages({
   noTitle: { id: 'merchandise.text.noTitle', defaultMessage: '尚未填寫名稱' },
-
   notCompleteNotation: {
     id: 'blog.status.notCompleteNotation',
     defaultMessage: '你的文章未發佈，此文章並不會顯示在頁面上。',

@@ -83,7 +83,7 @@ const ForgotPasswordPage: React.FC = () => {
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.email),
+                  field: formatMessage(commonMessages.label.email),
                 }),
               },
               { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },

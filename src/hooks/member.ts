@@ -699,17 +699,17 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
       {
         role: 'app-owner',
         count: count.appOwner,
-        intlKey: commonMessages.term.appOwner,
+        intlKey: commonMessages.label.appOwner,
       },
       {
         role: 'content-creator',
         count: count.contentCreator,
-        intlKey: commonMessages.term.contentCreator,
+        intlKey: commonMessages.label.contentCreator,
       },
       {
         role: 'general-member',
         count: count.generalMember,
-        intlKey: commonMessages.term.generalMember,
+        intlKey: commonMessages.label.generalMember,
       },
     ],
     refetch,

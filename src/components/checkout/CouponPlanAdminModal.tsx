@@ -172,13 +172,13 @@ const CouponPlanAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(promotionMessages.term.couponPlanTitle)}
+          label={formatMessage(promotionMessages.label.couponPlanTitle)}
           name="title"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(promotionMessages.term.couponPlanTitle),
+                field: formatMessage(promotionMessages.label.couponPlanTitle),
               }),
             },
           ]}
@@ -204,7 +204,7 @@ const CouponPlanAdminModal: React.FC<
           <InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />
         </Form.Item>
         <Form.Item
-          label={formatMessage(promotionMessages.term.discount)}
+          label={formatMessage(promotionMessages.label.discount)}
           help={formatMessage(promotionMessages.label.discountHelp)}
           name="discount"
         >
@@ -213,7 +213,7 @@ const CouponPlanAdminModal: React.FC<
 
         {!couponPlan && (
           <Form.Item
-            label={formatMessage(promotionMessages.term.couponCodes)}
+            label={formatMessage(promotionMessages.label.couponCodes)}
             name="codes"
             rules={[{ required: true, message: formatMessage(errorMessages.form.couponCodes) }]}
           >
@@ -226,19 +226,19 @@ const CouponPlanAdminModal: React.FC<
               <DatePicker
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                placeholder={formatMessage(commonMessages.term.startedAt)}
+                placeholder={formatMessage(commonMessages.label.startedAt)}
               />
             </Form.Item>
             <Form.Item name="endedAt">
               <DatePicker
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
-                placeholder={formatMessage(commonMessages.term.endedAt)}
+                placeholder={formatMessage(commonMessages.label.endedAt)}
               />
             </Form.Item>
           </Input.Group>
         </Form.Item>
-        <Form.Item label={formatMessage(promotionMessages.term.description)} name="description">
+        <Form.Item label={formatMessage(promotionMessages.label.description)} name="description">
           <Input.TextArea placeholder={formatMessage(commonMessages.label.optional)} rows={4} />
         </Form.Item>
       </Form>

@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { dateRangeFormatter, handleError } from '../../helpers'
-import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { appointmentMessages, codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 import { useCheck } from '../../hooks/checkout'
 import { useTask } from '../../hooks/task'
@@ -29,8 +29,6 @@ const messages = defineMessages({
   phonePlaceholder: { id: 'appointment.text.phonePlaceholder', defaultMessage: '填寫手機以便發送簡訊通知' },
   selectDiscount: { id: 'appointment.label.selectDiscount', defaultMessage: '使用折扣' },
   contactInformation: { id: 'appointment.label.contactInformation', defaultMessage: '聯絡資訊' },
-  creator: { id: 'creator.label.creator', defaultMessage: '講師' },
-  member: { id: 'common.label.member', defaultMessage: '學生' },
   reschedule: { id: 'appointment.text.reschedule', defaultMessage: '請再重新預約一次' },
   appointmentSuccessfully: { id: 'appointment.event.appointmentSuccessfully', defaultMessage: '預約成功' },
   checkMemberPage: { id: 'appointment.ui.checkMemberPage', defaultMessage: '查看學員主頁' },
@@ -404,24 +402,24 @@ const AppointmentPlanAppointmentModal: React.FC<
                     })}
                 </StyledPeriod>
                 <StyledAppointmentInfo>
-                  <div>{formatMessage(messages.creator)}</div>
+                  <div>{formatMessage(appointmentMessages.label.creator)}</div>
                   <div>{creator.name}</div>
                 </StyledAppointmentInfo>
                 <StyledAppointmentInfo>
-                  <div>{formatMessage(messages.member)}</div>
+                  <div>{formatMessage(appointmentMessages.label.member)}</div>
                   <div>{appointmentValues.member?.name}</div>
                 </StyledAppointmentInfo>
                 <StyledAppointmentInfo>
                   <div>
-                    {formatMessage(messages.member)}
-                    {formatMessage(commonMessages.term.email)}
+                    {formatMessage(appointmentMessages.label.member)}
+                    {formatMessage(commonMessages.label.email)}
                   </div>
                   <div>{appointmentValues.member?.email}</div>
                 </StyledAppointmentInfo>
                 <StyledAppointmentInfo>
                   <div>
-                    {formatMessage(messages.member)}
-                    {formatMessage(commonMessages.term.phone)}
+                    {formatMessage(appointmentMessages.label.member)}
+                    {formatMessage(commonMessages.label.phone)}
                   </div>
                   <div>{form.getFieldValue('phone')}</div>
                 </StyledAppointmentInfo>

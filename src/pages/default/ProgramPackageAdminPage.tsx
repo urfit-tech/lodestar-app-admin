@@ -128,7 +128,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               </AdminBlock>
 
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.term.description)}</AdminBlockTitle>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.description)}</AdminBlockTitle>
                 <ProgramPackageDescriptionForm programPackage={programPackage} onRefetch={refetch} />
               </AdminBlock>
             </div>

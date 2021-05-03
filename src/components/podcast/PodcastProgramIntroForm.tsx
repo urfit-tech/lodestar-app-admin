@@ -92,7 +92,7 @@ const PodcastProgramIntroForm: React.FC<{
       <Form.Item
         label={
           <span>
-            <span className="mr-2">{formatMessage(podcastMessages.term.podcastCover)}</span>
+            <span className="mr-2">{formatMessage(podcastMessages.label.podcastCover)}</span>
             <Tooltip
               placement="top"
               title={<StyledTips>{formatMessage(podcastMessages.text.podcastCoverTips)}</StyledTips>}
@@ -112,7 +112,7 @@ const PodcastProgramIntroForm: React.FC<{
           onChange={() => handleUpload()}
         />
       </Form.Item>
-      <Form.Item label={formatMessage(podcastMessages.term.podcastAbstract)} name="abstract">
+      <Form.Item label={formatMessage(podcastMessages.label.podcastAbstract)} name="abstract">
         <Input.TextArea rows={4} maxLength={100} placeholder={formatMessage(podcastMessages.text.abstractLimit)} />
       </Form.Item>
 

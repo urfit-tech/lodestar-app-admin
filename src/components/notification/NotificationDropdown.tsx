@@ -48,9 +48,9 @@ const StyledReadAllButton = styled(Button)`
 `
 
 const messages = defineMessages({
-  checkNotifications: { id: 'notification.ui.checkNotifications', defaultMessage: '查看通知' },
-  notification: { id: 'notification.term.notification', defaultMessage: '通知' },
-  markAllAsRead: { id: 'notification.ui.markAllAsRead', defaultMessage: '全部標示為已讀' },
+  notification: { id: 'common.label.notification', defaultMessage: '通知' },
+  checkNotifications: { id: 'common.ui.checkNotifications', defaultMessage: '查看通知' },
+  markAllAsRead: { id: 'common.ui.markAllAsRead', defaultMessage: '全部標示為已讀' },
 })
 
 const NotificationDropdown: React.FC<{

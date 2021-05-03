@@ -74,7 +74,7 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.title),
+                  field: formatMessage(commonMessages.label.title),
                 }),
               },
             ],

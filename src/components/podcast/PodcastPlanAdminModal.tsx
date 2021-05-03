@@ -97,7 +97,7 @@ const PodcastPlanAdminModal: React.FC<
   return (
     <AdminModal
       icon={<FileAddOutlined />}
-      title={formatMessage(podcastMessages.term.podcastPlan)}
+      title={formatMessage(podcastMessages.label.podcastPlan)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
@@ -153,13 +153,13 @@ const PodcastPlanAdminModal: React.FC<
           </Radio.Group>
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.periodType)}
+          label={formatMessage(commonMessages.label.periodType)}
           name="period"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.periodType),
+                field: formatMessage(commonMessages.label.periodType),
               }),
             },
           ]}
@@ -167,13 +167,13 @@ const PodcastPlanAdminModal: React.FC<
           <PeriodSelector />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.listPrice)}
+          label={formatMessage(commonMessages.label.listPrice)}
           name="listPrice"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.listPrice),
+                field: formatMessage(commonMessages.label.listPrice),
               }),
             },
             { type: 'number' },

@@ -186,7 +186,7 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'category',
-      title: formatMessage(commonMessages.term.category),
+      title: formatMessage(commonMessages.label.category),
       width: '10rem',
       ...getColumnSearchProps('categories'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -218,7 +218,7 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'tag',
-      title: formatMessage(commonMessages.term.tag),
+      title: formatMessage(commonMessages.label.tag),
       width: '10rem',
       ...getColumnSearchProps('tags'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (

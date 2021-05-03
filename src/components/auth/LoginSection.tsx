@@ -62,7 +62,7 @@ const LoginSection: React.FC<{
           name="account"
           rules={[{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }]}
         >
-          <Input placeholder={formatMessage(commonMessages.term.username)} suffix={<UserOutlined />} />
+          <Input placeholder={formatMessage(commonMessages.label.username)} suffix={<UserOutlined />} />
         </Form.Item>
         <Form.Item
           name="password"
@@ -70,12 +70,12 @@ const LoginSection: React.FC<{
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.password),
+                field: formatMessage(commonMessages.label.password),
               }),
             },
           ]}
         >
-          <Input type="password" placeholder={formatMessage(commonMessages.term.password)} suffix={<LockOutlined />} />
+          <Input type="password" placeholder={formatMessage(commonMessages.label.password)} suffix={<LockOutlined />} />
         </Form.Item>
 
         <ForgetPassword>
@@ -90,7 +90,7 @@ const LoginSection: React.FC<{
 
         {onAuthStateChange && (
           <StyledAction>
-            <span>{formatMessage(commonMessages.label.notMember)}</span>
+            <span>{formatMessage(commonMessages.text.notMember)}</span>
             <Button type="link" size="small" onClick={() => onAuthStateChange('register')}>
               {formatMessage(commonMessages.ui.registerNow)}
             </Button>

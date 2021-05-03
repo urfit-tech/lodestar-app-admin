@@ -106,17 +106,17 @@ const PodcastProgramBasicForm: React.FC<{
           {
             required: true,
             message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(commonMessages.term.title),
+              field: formatMessage(commonMessages.label.title),
             }),
           },
         ]}
       >
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="podcastProgram" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+      <Form.Item label={formatMessage(commonMessages.label.tags)} name="tags">
         <TagSelector />
       </Form.Item>
       {enabledModules.locale && (

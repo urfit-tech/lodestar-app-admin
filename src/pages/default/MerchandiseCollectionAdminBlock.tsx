@@ -19,6 +19,7 @@ import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
 
 const messages = defineMessages({
+  price: { id: 'merchandise.label.price', defaultMessage: '價格' },
   allMerchandiseType: { id: 'merchandise.label.allMerchandiseType', defaultMessage: '所有商品類型' },
   soldQuantity: { id: 'merchandise.label.soldQuantity', defaultMessage: '已售' },
 })
@@ -166,9 +167,9 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandises.length})`}>
             <div className="d-flex align-items-center justify-content-between p-3">
-              <StyledHeader className="flex-grow-1">{formatMessage(commonMessages.term.merchandise)}</StyledHeader>
+              <StyledHeader className="flex-grow-1">{formatMessage(commonMessages.label.merchandise)}</StyledHeader>
               <StyledHeader className="flex-shrink-0" width="12rem">
-                {formatMessage(commonMessages.label.price)}
+                {formatMessage(messages.price)}
               </StyledHeader>
               <StyledHeader className="flex-shrink-0" width="7rem">
                 {formatMessage(messages.soldQuantity)}

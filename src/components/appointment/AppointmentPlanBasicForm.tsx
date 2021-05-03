@@ -12,9 +12,12 @@ import { AppointmentPlanAdminProps, ReservationType } from '../../types/appointm
 import { StyledTips } from '../admin'
 
 const messages = defineMessages({
-  hoursAgo: { id: 'message.label.hoursAgo', defaultMessage: '小時前' },
-  daysAgo: { id: 'message.label.daysAgo', defaultMessage: '天前' },
-  appointmentDeadline: { id: 'message.text.', defaultMessage: '限定用戶於時段開始前多久需完成預約' },
+  hoursAgo: { id: 'appointment.label.hoursAgo', defaultMessage: '小時前' },
+  daysAgo: { id: 'appointment.label.daysAgo', defaultMessage: '天前' },
+  appointmentDeadline: {
+    id: 'appointment.text.appointmentDeadline.',
+    defaultMessage: '限定用戶於時段開始前多久需完成預約',
+  },
 })
 
 type FieldProps = {
@@ -77,13 +80,13 @@ const AppointmentPlanBasicForm: React.FC<{
       onFinish={handleSubmit}
     >
       <Form.Item
-        label={formatMessage(appointmentMessages.term.planTitle)}
+        label={formatMessage(appointmentMessages.label.planTitle)}
         name="title"
         rules={[
           {
             required: true,
             message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(appointmentMessages.term.planTitle),
+              field: formatMessage(appointmentMessages.label.planTitle),
             }),
           },
         ]}
@@ -91,13 +94,13 @@ const AppointmentPlanBasicForm: React.FC<{
         <Input maxLength={10} />
       </Form.Item>
       <Form.Item
-        label={formatMessage(appointmentMessages.term.contactPhone)}
+        label={formatMessage(appointmentMessages.label.contactPhone)}
         name="phone"
         rules={[
           {
             required: true,
             message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(appointmentMessages.term.contactPhone),
+              field: formatMessage(appointmentMessages.label.contactPhone),
             }),
           },
         ]}
@@ -108,7 +111,7 @@ const AppointmentPlanBasicForm: React.FC<{
       <Form.Item
         label={
           <span>
-            {formatMessage(appointmentMessages.term.reservationPlan)}
+            {formatMessage(appointmentMessages.label.reservationPlan)}
             <Tooltip placement="top" title={<StyledTips>{formatMessage(messages.appointmentDeadline)}</StyledTips>}>
               <QuestionCircleFilled className="ml-2" />
             </Tooltip>
@@ -122,7 +125,7 @@ const AppointmentPlanBasicForm: React.FC<{
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(appointmentMessages.term.reservationAmount),
+                  field: formatMessage(appointmentMessages.label.reservationAmount),
                 }),
               },
             ]}
@@ -137,7 +140,7 @@ const AppointmentPlanBasicForm: React.FC<{
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(appointmentMessages.term.reservationType),
+                  field: formatMessage(appointmentMessages.label.reservationType),
                 }),
               },
             ]}

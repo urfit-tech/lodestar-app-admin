@@ -2,16 +2,12 @@ import { useQuery } from '@apollo/react-hooks'
 import { Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { AdminPageBlock } from '../../components/admin'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import AppointmentPlanCollectionTable from './AppointmentPlanCollectionTable'
-
-const messages = defineMessages({
-  notPublished: { id: 'appointment.status.notPublished', defaultMessage: '未發佈' },
-})
 
 const AppointmentPlanCollectionTabs: React.VFC<{
   creatorId?: string
@@ -53,7 +49,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
     },
     {
       key: 'draft',
-      tab: formatMessage(messages.notPublished),
+      tab: formatMessage(commonMessages.status.notPublished),
       condition: {
         published_at: { _is_null: true },
       },

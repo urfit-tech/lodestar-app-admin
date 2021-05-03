@@ -14,7 +14,7 @@ const LanguageSelector: React.FC<{
       mode="multiple"
       value={value}
       onChange={onChange}
-      placeholder={formatMessage(commonMessages.term.supportedLanguages)}
+      placeholder={formatMessage(commonMessages.label.supportedLanguages)}
     >
       <Select.Option value="zh">繁體中文</Select.Option>
       <Select.Option value="en">English</Select.Option>

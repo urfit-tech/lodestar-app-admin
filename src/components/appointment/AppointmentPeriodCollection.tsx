@@ -35,10 +35,6 @@ const StyledModalMeta = styled.div`
 const messages = defineMessages({
   editPeriod: { id: 'appointment.ui.editPeriod', defaultMessage: '編輯時段' },
   repetitiveMeta: { id: 'appointment.warning.repetitiveMeta', defaultMessage: '※重複週期為' },
-  perYear: { id: 'appointment.label.perYear', defaultMessage: '每年' },
-  perMonth: { id: 'appointment.label.perMonth', defaultMessage: '每月' },
-  perWeek: { id: 'appointment.label.perWeek', defaultMessage: '每週' },
-  perDay: { id: 'appointment.label.perDay', defaultMessage: '每日' },
   singlePeriod: { id: 'appointment.label.singlePeriod', defaultMessage: '時段' },
   seriesPeriod: { id: 'appointment.label.seriesPeriod', defaultMessage: '重複週期' },
   single: { id: 'appointment.ui.single', defaultMessage: '單一' },
@@ -115,7 +111,7 @@ const AppointmentPeriodCollection: React.FC<{
                 >
                   {selectedPeriod.isExcluded ? formatMessage(messages.open) : formatMessage(messages.close)}
                   {selectedPeriod.schedule.periodType !== null && formatMessage(messages.single)}
-                  {formatMessage(appointmentMessages.term.period)}
+                  {formatMessage(appointmentMessages.label.period)}
                 </Button>
               )}
             </div>
@@ -131,13 +127,13 @@ const AppointmentPeriodCollection: React.FC<{
           <StyledModalMeta className="mb-2">
             {formatMessage(messages.repetitiveMeta)}
             {selectedPeriod.schedule.periodType === 'Y'
-              ? formatMessage(messages.perYear)
+              ? formatMessage(commonMessages.label.perYear)
               : selectedPeriod.schedule.periodType === 'M'
-              ? formatMessage(messages.perMonth)
+              ? formatMessage(commonMessages.label.perMonth)
               : selectedPeriod.schedule.periodType === 'W'
-              ? formatMessage(messages.perWeek)
+              ? formatMessage(commonMessages.label.perWeek)
               : selectedPeriod.schedule.periodType === 'D'
-              ? formatMessage(messages.perDay)
+              ? formatMessage(commonMessages.label.perDay)
               : ''}
           </StyledModalMeta>
         )}
