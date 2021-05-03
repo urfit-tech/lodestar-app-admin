@@ -13357,7 +13357,7 @@ export enum member_constraint {
   User_pkey = "User_pkey",
   member_app_id_email_key = "member_app_id_email_key",
   member_app_id_username_key = "member_app_id_username_key",
-  member_line_nounce_key = "member_line_nounce_key",
+  member_line_user_id_app_id_key = "member_line_user_id_app_id_key",
   member_refresh_token_key = "member_refresh_token_key",
   member_zoom_user_id_key = "member_zoom_user_id_key",
 }
@@ -13589,7 +13589,7 @@ export enum member_update_column {
   facebook_user_id = "facebook_user_id",
   google_user_id = "google_user_id",
   id = "id",
-  line_nonce = "line_nonce",
+  line_user_id = "line_user_id",
   logined_at = "logined_at",
   manager_id = "manager_id",
   metadata = "metadata",
@@ -19656,7 +19656,7 @@ export interface member_bool_exp {
   issue_replies?: issue_reply_bool_exp | null;
   issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
   issues?: issue_bool_exp | null;
-  line_nonce?: uuid_comparison_exp | null;
+  line_user_id?: String_comparison_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
   manager?: member_bool_exp | null;
   manager_id?: String_comparison_exp | null;
@@ -20058,7 +20058,7 @@ export interface member_insert_input {
   issue_replies?: issue_reply_arr_rel_insert_input | null;
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
-  line_nonce?: any | null;
+  line_user_id?: string | null;
   logined_at?: any | null;
   manager?: member_obj_rel_insert_input | null;
   manager_id?: string | null;
@@ -20124,7 +20124,7 @@ export interface member_max_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
-  line_nonce?: order_by | null;
+  line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
   name?: order_by | null;
@@ -20151,7 +20151,7 @@ export interface member_min_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
-  line_nonce?: order_by | null;
+  line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
   name?: order_by | null;
@@ -20506,7 +20506,7 @@ export interface member_order_by {
   issue_replies_aggregate?: issue_reply_aggregate_order_by | null;
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
-  line_nonce?: order_by | null;
+  line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager?: member_order_by | null;
   manager_id?: order_by | null;
