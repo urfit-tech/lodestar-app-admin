@@ -301,6 +301,7 @@ const MemberContractCreationBlock: React.FC<{
         endedAt,
         authorId: currentMemberId || '',
         values: {
+          projectPlanProductId: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
           startedAt: fieldValue.startedAt,
           endedAt,
           memberId: member.id,

@@ -78,7 +78,7 @@ const MemberContractAdminBlock: React.FC<{
               startedAt: values.startedAt,
               coinAmount: -values.coinAmount,
               parentProductInfo: {
-                parentProductId: values.projectPlanProductId,
+                parentProductId: values?.projectPlanProductId || '',
               },
               // revoke contract discount
               couponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
