@@ -78,7 +78,10 @@ const MemberContractAdminBlock: React.FC<{
               startedAt: values.startedAt,
               coinAmount: -values.coinAmount,
               parentProductInfo: {
-                parentProductId: values?.projectPlanProductId || '',
+                parentProductId: values?.projectPlanProductId || values?.orderProducts?.find((v: {
+                  name: string
+                  product_id: string
+                }) => v.name.includes('私塾方案') && v.product_id.includes('ProjectPlan'))?.product_id || '',
               },
               // revoke contract discount
               couponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
