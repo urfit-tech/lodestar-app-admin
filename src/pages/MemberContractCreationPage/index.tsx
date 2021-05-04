@@ -228,7 +228,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           name
           placeholder
         }
-        contract(where: { published_at: { _is_null: false } }) {
+        contract(where: { published_at: { _is_null: false }, app_id: { _eq: "xuemi" } }) {
           id
           name
           options
