@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Card, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
+import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -76,12 +77,18 @@ const MemberContractAdminBlock: React.FC<{
               memberId: values.memberId,
               paymentNo: values.paymentNo,
               startedAt: values.startedAt,
-              coinAmount: -values.coinAmount,
+              coinAmount:
+                -sum(values?.coinLogs?.map((v: { amount?: number }) => v.amount || 0) || []) ||
+                -values?.coinAmount ||
+                0,
               parentProductInfo: {
-                parentProductId: values?.projectPlanProductId || values?.orderProducts?.find((v: {
-                  name: string
-                  product_id: string
-                }) => v.name.includes('私塾方案') && v.product_id.includes('ProjectPlan'))?.product_id || '',
+                parentProductId:
+                  values?.projectPlanProductId ||
+                  values?.orderProducts?.find(
+                    (v: { name: string; product_id: string }) =>
+                      v.name.includes('私塾方案') && v.product_id.includes('ProjectPlan'),
+                  )?.product_id ||
+                  '',
               },
               // revoke contract discount
               couponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
