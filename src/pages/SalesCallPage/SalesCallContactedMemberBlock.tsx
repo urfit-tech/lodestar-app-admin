@@ -126,7 +126,7 @@ const SalesCallContactedMemberBlock: React.FC<{
     {
       key: 'categoryNames',
       dataIndex: 'categoryNames',
-      title: formatMessage(commonMessages.term.category),
+      title: formatMessage(commonMessages.label.category),
       render: categoryNames => categoryNames.map((v: string) => <div>{v}</div>),
     },
     {
