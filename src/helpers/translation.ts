@@ -62,6 +62,8 @@ export const salesMessages = {
   label: defineMessages({
     salesCall: { id: 'sales.label.salesCall', defaultMessage: '業務撥打' },
     salesStatus: { id: 'sales.label.salesStatus', defaultMessage: '業務狀況' },
+    chaileaseLookup: { id: 'sales.label.chaileaseLookup', defaultMessage: '資融查詢' },
+    chaileaseApply: { id: 'sales.label.chaileaseApply', defaultMessage: '申請資融' },
     autoStartCalls: { id: 'sales.label.autoStartCalls', defaultMessage: '自動撥號' },
     potentials: { id: 'sales.label.potentials', defaultMessage: '待開發' },
     keepInTouch: { id: 'sales.label.keepInTouch', defaultMessage: '開發中' },

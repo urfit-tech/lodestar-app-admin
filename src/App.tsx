@@ -7,6 +7,7 @@ import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
+import ChaileaseLookupPage from './pages/ChaileaseLookupPage/index'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import MemberContractCollectionPage from './pages/MemberContractCollectionPage'
 import MemberContractCreationPage from './pages/MemberContractCreationPage'
@@ -47,6 +48,11 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'sales_status',
                   name: '業務狀況',
+                },
+                {
+                  permissionIsAllowed: true,
+                  key: 'chailease_lookup',
+                  name: '資融查詢',
                 },
               ],
             },
@@ -164,6 +170,11 @@ const App: React.FC = () => {
           path: '/terms',
           pageName: <TermsPtPage />,
           authenticated: false,
+        },
+        chailease_lookup: {
+          path: '/chailease-lookup',
+          pageName: <ChaileaseLookupPage />,
+          authenticated: true,
         },
       }}
     />
