@@ -380,13 +380,13 @@ const MemberContractCreationBlock: React.FC<{
           ],
           orderDiscounts: [
             ...contractCoupons.map(v => ({
-              name: v.name,
+              name: `【折價券】${v.name}`,
               price: v.price,
               type: 'Coupon',
               target: v.id,
             })),
             ...previewProducts.map(v => ({
-              name: v.name,
+              name: `【代幣折抵】${v.name}`,
               price: 225,
               type: 'Coin',
               target: previewProductCoinLogId,
