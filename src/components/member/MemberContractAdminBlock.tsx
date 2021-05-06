@@ -68,7 +68,7 @@ const MemberContractAdminBlock: React.FC<{
               memberId: values?.memberId || memberId,
               revokedAt: new Date(),
               orderId: values?.orderId || '',
-              paymentNo: values.paymentNo || '',
+              paymentNo: values?.paymentNo || '',
               parentProductInfo: {
                 parentProductId:
                   values?.projectPlanProductId ||
@@ -78,9 +78,9 @@ const MemberContractAdminBlock: React.FC<{
                   )?.product_id ||
                   '',
               },
-              coinLogIds: values?.coinLogs.map((v: { id: string }) => v.id) || [],
+              coinLogIds: values?.coinLogs?.map((v: { id: string }) => v.id) || [],
               couponPlanId:
-                values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data.coupon_plan).coupon_code.data
+                values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data?.coupon_plan).coupon_code.data
                   .coupon_plan?.data.id || '',
               // delete contract coupon
               contractCouponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
