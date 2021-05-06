@@ -1769,25 +1769,15 @@ export interface GET_ASSIGNED_MEMBERVariables {
 // GraphQL query operation: GET_SALES_STATUS
 // ====================================================
 
-export interface GET_SALES_STATUS_order_executor_sharing_executor {
-  __typename: "member";
-  email: string;
-}
-
-export interface GET_SALES_STATUS_order_executor_sharing {
-  __typename: "order_executor_sharing";
-  /**
-   * An object relationship
-   */
-  executor: GET_SALES_STATUS_order_executor_sharing_executor | null;
-  total_price: any | null;
-  ratio: any | null;
-  created_at: any | null;
+export interface GET_SALES_STATUS_member_contract {
+  __typename: "member_contract";
+  agreed_at: any | null;
+  values: any | null;
 }
 
 export interface GET_SALES_STATUS_member_note_author {
   __typename: "member";
-  email: string;
+  id: string;
 }
 
 export interface GET_SALES_STATUS_member_note {
@@ -1810,9 +1800,9 @@ export interface GET_SALES_STATUS_member_note {
 
 export interface GET_SALES_STATUS {
   /**
-   * fetch data from the table: "order_executor_sharing"
+   * fetch data from the table: "member_contract"
    */
-  order_executor_sharing: GET_SALES_STATUS_order_executor_sharing[];
+  member_contract: GET_SALES_STATUS_member_contract[];
   /**
    * fetch data from the table: "member_note"
    */
