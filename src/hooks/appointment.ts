@@ -28,14 +28,14 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           is_private
           reservation_amount
           reservation_type
-          appointment_schedules {
+          appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
             started_at
             interval_amount
             interval_type
             excludes
           }
-          appointment_periods(where: { started_at: { _gt: $now } }, order_by: { started_at: asc }) {
+          appointment_periods(where: { started_at: { _gt: $now } }, order_by: [{ started_at: asc }]) {
             appointment_schedule {
               id
               interval_amount

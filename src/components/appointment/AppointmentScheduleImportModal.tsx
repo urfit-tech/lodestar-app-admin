@@ -20,12 +20,16 @@ const messages = defineMessages({
   repeatEveryWeek: { id: 'appointment.text.repeatEveryWeek', defaultMessage: '重複週期：每週' },
   repeatEveryMonth: { id: 'appointment.text.repeatEveryMonth', defaultMessage: '重複週期：每月' },
   repeatEveryYear: { id: 'appointment.text.repeatEveryYear', defaultMessage: '重複週期：每年' },
+  isExisted: { id: 'appointment.label.isExisted', defaultMessage: '已匯入' },
 })
 
 const StyledText = styled.div`
   color: var(--gray-dark);
   font-size: 14px;
   letter-spacing: 0.4px;
+`
+const StyledSchedule = styled.span<{ isExisted: boolean }>`
+  ${props => (props.isExisted ? 'text-decoration: line-through;' : '')}
 `
 
 type AppointmentPlanImportingProps = {
@@ -35,7 +39,7 @@ type AppointmentPlanImportingProps = {
     id: string
     name: string
   }
-  schedules: AppointmentScheduleProps[]
+  schedules: (AppointmentScheduleProps & { isExisted: boolean })[]
 }
 
 const isScheduleOverlapping = (scheduleA: AppointmentScheduleProps, scheduleB: AppointmentScheduleProps) =>
@@ -62,7 +66,7 @@ const AppointmentScheduleImportModal: React.VFC<{
 }> = ({ appointmentPlanAdmin, creatorId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { loadingAppointmentPlans, appointmentPlans } = useAppointmentPlansWithSchedules(
-    appointmentPlanAdmin.id,
+    appointmentPlanAdmin,
     creatorId,
   )
   const [insertAppointmentSchedules] = useMutation<
@@ -80,28 +84,16 @@ const AppointmentScheduleImportModal: React.VFC<{
     )
   }
 
-  const uniqSchedules =
-    appointmentPlans
-      .find(plan => plan.id === selectedPlanId)
-      ?.schedules.filter(schedule =>
-        appointmentPlanAdmin.schedules.every(currentSchedule =>
-          schedule.intervalType === null
-            ? schedule.startedAt.getTime() !== currentSchedule.startedAt.getTime()
-            : !isScheduleOverlapping(schedule, currentSchedule),
-        ),
-      ) || []
-
   const handleSubmit = (onSuccess: () => void) => {
-    setLoading(true)
-
-    if (!uniqSchedules.length) {
-      setLoading(false)
+    const schedules = appointmentPlans.find(appointmentPlan => appointmentPlan.id === selectedPlanId)?.schedules || []
+    if (!schedules.length) {
       return
     }
 
+    setLoading(true)
     insertAppointmentSchedules({
       variables: {
-        data: uniqSchedules.map(schedule => ({
+        data: schedules.map(schedule => ({
           appointment_plan_id: appointmentPlanAdmin.id,
           started_at: schedule.startedAt,
           interval_amount: schedule.intervalAmount,
@@ -163,35 +155,45 @@ const AppointmentScheduleImportModal: React.VFC<{
         </Form.Item>
       </Form>
 
-      {!selectedPlanId ? null : uniqSchedules.length === 0 ? (
-        <div>{formatMessage(messages.noAvailableSchedule)}</div>
-      ) : (
+      {selectedPlanId && (
         <ul>
-          {uniqSchedules.map(schedule => (
-            <li key={schedule.id}>
-              <span>{moment(schedule.startedAt).format('YYYY-MM-DD(dd) HH:mm')}</span>
-              <StyledText className="d-inline ml-2">
-                {schedule.intervalType === 'D'
-                  ? formatMessage(messages.repeatEveryDay)
-                  : schedule.intervalType === 'W'
-                  ? formatMessage(messages.repeatEveryWeek)
-                  : schedule.intervalType === 'M'
-                  ? formatMessage(messages.repeatEveryMonth)
-                  : schedule.intervalType === 'Y'
-                  ? formatMessage(messages.repeatEveryYear)
-                  : null}
-              </StyledText>
-            </li>
-          ))}
+          {appointmentPlans
+            .find(plan => plan.id === selectedPlanId)
+            ?.schedules.map(schedule => (
+              <li key={schedule.id}>
+                <StyledSchedule isExisted={schedule.isExisted}>
+                  <span>{moment(schedule.startedAt).format('YYYY-MM-DD(dd) HH:mm')}</span>
+                  <StyledText className="d-inline ml-2">
+                    {schedule.intervalType === 'D'
+                      ? formatMessage(messages.repeatEveryDay)
+                      : schedule.intervalType === 'W'
+                      ? formatMessage(messages.repeatEveryWeek)
+                      : schedule.intervalType === 'M'
+                      ? formatMessage(messages.repeatEveryMonth)
+                      : schedule.intervalType === 'Y'
+                      ? formatMessage(messages.repeatEveryYear)
+                      : null}
+                  </StyledText>
+                </StyledSchedule>
+                {schedule.isExisted && <span className="ml-2">{formatMessage(messages.isExisted)}</span>}
+              </li>
+            )) || null}
         </ul>
       )}
     </AdminModal>
   )
 }
 
-const useAppointmentPlansWithSchedules = (currentPlanId: string, creatorId?: string | null) => {
+const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps, creatorId?: string | null) => {
+  const [{ now, startedAt }] = useState<{
+    now: Date
+    startedAt: Date
+  }>({
+    now: moment().endOf('minute').toDate(),
+    startedAt: moment().subtract(3, 'months').startOf('minute').toDate(),
+  })
   const condition: hasura.GET_APPOINTMENT_PLAN_SCHEDULESVariables['condition'] = {
-    id: { _neq: currentPlanId },
+    id: { _neq: currentPlan.id },
     creator_id: creatorId ? { _eq: creatorId } : undefined,
     published_at: { _is_null: false },
   }
@@ -201,8 +203,30 @@ const useAppointmentPlansWithSchedules = (currentPlanId: string, creatorId?: str
     hasura.GET_APPOINTMENT_PLAN_SCHEDULESVariables
   >(
     gql`
-      query GET_APPOINTMENT_PLAN_SCHEDULES($condition: appointment_plan_bool_exp!, $now: timestamptz!) {
-        appointment_plan(where: $condition) {
+      query GET_APPOINTMENT_PLAN_SCHEDULES(
+        $condition: appointment_plan_bool_exp!
+        $now: timestamptz!
+        $startedAt: timestamptz!
+      ) {
+        appointment_plan(
+          where: {
+            _and: [
+              $condition
+              {
+                appointment_schedules: {
+                  _or: [
+                    {
+                      interval_amount: { _is_null: false }
+                      interval_type: { _is_null: false }
+                      started_at: { _gte: $startedAt }
+                    }
+                    { started_at: { _gte: $now } }
+                  ]
+                }
+              }
+            ]
+          }
+        ) {
           id
           title
           creator {
@@ -213,7 +237,11 @@ const useAppointmentPlansWithSchedules = (currentPlanId: string, creatorId?: str
           appointment_schedules(
             where: {
               _or: [
-                { interval_amount: { _is_null: false }, interval_type: { _is_null: false } }
+                {
+                  interval_amount: { _is_null: false }
+                  interval_type: { _is_null: false }
+                  started_at: { _gte: $startedAt }
+                }
                 { started_at: { _gte: $now } }
               ]
             }
@@ -231,7 +259,8 @@ const useAppointmentPlansWithSchedules = (currentPlanId: string, creatorId?: str
     {
       variables: {
         condition,
-        now: moment().endOf('minute').toDate(),
+        now,
+        startedAt,
       },
     },
   )
@@ -250,12 +279,25 @@ const useAppointmentPlansWithSchedules = (currentPlanId: string, creatorId?: str
         intervalAmount: s.interval_amount,
         intervalType: s.interval_type as PeriodType | null,
         excludes: s.excludes.map((e: string) => new Date(e)),
+        isExisted: false,
       })),
     })) || []
 
   return {
     loadingAppointmentPlans: loading,
-    appointmentPlans,
+    appointmentPlans: appointmentPlans
+      .map(appointmentPlan => ({
+        ...appointmentPlan,
+        schedules: appointmentPlan.schedules.map(schedule => ({
+          ...schedule,
+          isExisted: currentPlan.schedules.some(currentSchedule =>
+            schedule.intervalType === null
+              ? schedule.startedAt.getTime() === currentSchedule.startedAt.getTime()
+              : isScheduleOverlapping(schedule, currentSchedule),
+          ),
+        })),
+      }))
+      .filter(appointmentPlan => appointmentPlan.schedules.length),
   }
 }
 

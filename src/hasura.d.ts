@@ -915,6 +915,7 @@ export interface GET_APPOINTMENT_PLAN_SCHEDULES {
 export interface GET_APPOINTMENT_PLAN_SCHEDULESVariables {
   condition: appointment_plan_bool_exp;
   now: any;
+  startedAt: any;
 }
 
 /* tslint:disable */
@@ -13053,6 +13054,7 @@ export enum contract_constraint {
  * update columns of table "contract"
  */
 export enum contract_update_column {
+  app_id = "app_id",
   created_at = "created_at",
   deliverables = "deliverables",
   description = "description",
@@ -18142,6 +18144,7 @@ export interface contract_bool_exp {
   _and?: (contract_bool_exp | null)[] | null;
   _not?: contract_bool_exp | null;
   _or?: (contract_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   deliverables?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -18159,6 +18162,7 @@ export interface contract_bool_exp {
  * input type for inserting data into table "contract"
  */
 export interface contract_insert_input {
+  app_id?: string | null;
   created_at?: any | null;
   deliverables?: string | null;
   description?: string | null;
