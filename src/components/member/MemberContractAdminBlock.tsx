@@ -56,14 +56,7 @@ const MemberContractAdminBlock: React.FC<{
     return <Skeleton active />
   }
   const handleContractRevoke = async (memberContractId: string, values: any) => {
-    type Coupon = {
-      id: string
-      coupon_code: {
-        data: {
-          code: string
-        }
-      }
-    }
+    type Coupon = hasura.coupon_insert_input
 
     if (window.confirm(formatMessage(messages.deleteContractWarning))) {
       setRevokeLoading(true)
@@ -72,23 +65,29 @@ const MemberContractAdminBlock: React.FC<{
           variables: {
             memberContractId,
             revocationValues: {
-              endedAt: values.endedAt,
-              memberId: values.memberId,
-              paymentNo: values.paymentNo,
-              startedAt: values.startedAt,
-              coinAmount: -values.coinAmount,
+              memberId: values?.memberId || memberId,
+              revokedAt: new Date(),
+              orderId: values?.orderId || '',
+              paymentNo: values.paymentNo || '',
               parentProductInfo: {
-                parentProductId: values?.projectPlanProductId || values?.orderProducts?.find((v: {
-                  name: string
-                  product_id: string
-                }) => v.name.includes('私塾方案') && v.product_id.includes('ProjectPlan'))?.product_id || '',
+                parentProductId:
+                  values?.projectPlanProductId ||
+                  values?.orderProducts?.find(
+                    (v: { name: string; product_id: string }) =>
+                      v.name.includes('私塾方案') && v.product_id.includes('ProjectPlan'),
+                  )?.product_id ||
+                  '',
               },
-              // revoke contract discount
-              couponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
-              couponCodes:
+              coinLogIds: values?.coinLogs.map((v: { id: string }) => v.id) || [],
+              couponPlanId:
+                values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data.coupon_plan).coupon_code.data
+                  .coupon_plan?.data.id || '',
+              // delete contract coupon
+              contractCouponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
+              contractCouponCodes:
                 values?.coupons
                   ?.filter((v: Pick<Coupon, 'id'>) => v.id)
-                  .map((v: Pick<Coupon, 'coupon_code'>) => v.coupon_code.data.code) || [],
+                  .map((v: Pick<Coupon, 'coupon_code'>) => v.coupon_code?.data.code) || [],
             },
             revokedAt: new Date(),
           },
