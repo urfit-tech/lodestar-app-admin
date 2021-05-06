@@ -7,6 +7,7 @@ import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
+import CustomScriptsPage from './pages/CustomScriptsPage'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import MemberContractCollectionPage from './pages/MemberContractCollectionPage'
 import MemberContractCreationPage from './pages/MemberContractCreationPage'
@@ -164,6 +165,11 @@ const App: React.FC = () => {
           path: '/terms',
           pageName: <TermsPtPage />,
           authenticated: false,
+        },
+        custom_scripts: {
+          path: '/custom-scripts',
+          pageName: <CustomScriptsPage />,
+          authenticated: true,
         },
       }}
     />

@@ -324,6 +324,73 @@ export interface GET_SALE_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_IMPLEMENT_PRACTICES
+// ====================================================
+
+export interface GET_IMPLEMENT_PRACTICES_practice_program_content {
+  __typename: "program_content";
+  id: any;
+  title: string;
+}
+
+export interface GET_IMPLEMENT_PRACTICES_practice_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_IMPLEMENT_PRACTICES_practice_practice_issues_issue {
+  __typename: "issue";
+  id: any;
+  description: string;
+}
+
+export interface GET_IMPLEMENT_PRACTICES_practice_practice_issues {
+  __typename: "practice_issue";
+  /**
+   * An object relationship
+   */
+  issue: GET_IMPLEMENT_PRACTICES_practice_practice_issues_issue | null;
+}
+
+export interface GET_IMPLEMENT_PRACTICES_practice {
+  __typename: "practice";
+  id: any;
+  /**
+   * An object relationship
+   */
+  program_content: GET_IMPLEMENT_PRACTICES_practice_program_content;
+  created_at: any;
+  updated_at: any;
+  /**
+   * An object relationship
+   */
+  member: GET_IMPLEMENT_PRACTICES_practice_member;
+  /**
+   * An array relationship
+   */
+  practice_issues: GET_IMPLEMENT_PRACTICES_practice_practice_issues[];
+}
+
+export interface GET_IMPLEMENT_PRACTICES {
+  /**
+   * fetch data from the table: "practice"
+   */
+  practice: GET_IMPLEMENT_PRACTICES_practice[];
+}
+
+export interface GET_IMPLEMENT_PRACTICESVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_NAMES
 // ====================================================
 
@@ -2412,6 +2479,7 @@ export enum contract_constraint {
  * update columns of table "contract"
  */
 export enum contract_update_column {
+  app_id = "app_id",
   created_at = "created_at",
   deliverables = "deliverables",
   description = "description",
@@ -7117,6 +7185,7 @@ export interface contract_bool_exp {
   _and?: (contract_bool_exp | null)[] | null;
   _not?: contract_bool_exp | null;
   _or?: (contract_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   deliverables?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -7134,6 +7203,7 @@ export interface contract_bool_exp {
  * input type for inserting data into table "contract"
  */
 export interface contract_insert_input {
+  app_id?: string | null;
   created_at?: any | null;
   deliverables?: string | null;
   description?: string | null;
