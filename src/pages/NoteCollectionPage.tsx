@@ -236,7 +236,7 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'category',
-      title: formatMessage(commonMessages.term.category),
+      title: formatMessage(commonMessages.label.category),
       width: '10rem',
       ...getColumnSearchProps('categories'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -268,7 +268,7 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'tag',
-      title: formatMessage(commonMessages.term.tag),
+      title: formatMessage(commonMessages.label.tag),
       width: '10rem',
       ...getColumnSearchProps('tags'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -361,7 +361,7 @@ const NoteCollectionPage: React.FC = () => {
                 try {
                   const link: string = await getFileDownloadableLink(`attachments/${attachment.id}`, authToken, apiHost)
                   if (link && attachment.data?.name) {
-                    await downloadFile(link, attachment.data.name)
+                    await downloadFile(attachment.data.name, { url: link })
                     downloadedCount++
                     if (downloadedCount === record.attachments.length) {
                       setDownloadingNoteIds(prev => prev.filter(v => v !== record.id))

@@ -92,8 +92,8 @@ const MemberCollectionAdminPage: React.FC = () => {
     { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
     { id: 'loginedAt', title: formatMessage(commonMessages.label.lastLogin) },
     { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
-    { id: 'categories', title: formatMessage(commonMessages.term.category) },
-    { id: 'tags', title: formatMessage(commonMessages.term.tags) },
+    { id: 'categories', title: formatMessage(commonMessages.label.category) },
+    { id: 'tags', title: formatMessage(commonMessages.label.tags) },
     enabledModules.member_assignment && currentUserRole === 'app-owner'
       ? { id: 'managerName', title: formatMessage(memberMessages.label.manager) }
       : null,
@@ -234,7 +234,7 @@ const MemberCollectionAdminPage: React.FC = () => {
 
   const columns: ColumnProps<MemberInfoProps>[] = [
     {
-      title: formatMessage(commonMessages.term.memberName),
+      title: formatMessage(commonMessages.label.memberName),
       key: 'name',
       render: (text, record, index) => (
         <div className="d-flex align-items-center">
@@ -242,12 +242,12 @@ const MemberCollectionAdminPage: React.FC = () => {
           <StyledMemberName>{record.name}</StyledMemberName>
           {record.role === 'app-owner' && (
             <StyledTag color="#585858" className="ml-2 mr-0">
-              {formatMessage(commonMessages.term.appOwner)}
+              {formatMessage(commonMessages.label.appOwner)}
             </StyledTag>
           )}
           {record.role === 'content-creator' && (
             <StyledTag color={theme['@primary-color']} className="ml-2 mr-0">
-              {formatMessage(commonMessages.term.contentCreator)}
+              {formatMessage(commonMessages.label.contentCreator)}
             </StyledTag>
           )}
         </div>
@@ -290,14 +290,14 @@ const MemberCollectionAdminPage: React.FC = () => {
       sorter: (a, b) => b.consumption - a.consumption,
     },
     {
-      title: formatMessage(commonMessages.term.category),
+      title: formatMessage(commonMessages.label.category),
       dataIndex: 'categories',
       key: 'categories',
       render: (text, record, index) => record.categories.map(category => category.name).join(', '),
       ...getColumnSearchProps('category'),
     },
     {
-      title: formatMessage(commonMessages.term.tags),
+      title: formatMessage(commonMessages.label.tags),
       dataIndex: 'tags',
       key: 'tags',
       render: (text, record, index) => (

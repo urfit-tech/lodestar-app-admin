@@ -114,7 +114,12 @@ const CurrentLeadContactBlock: React.VFC<{
     setMemberNoteStatus('not-answered')
     refetchCurrentLead().then(({ data }) => {
       memberPropertyForm.setFieldsValue(
-        Object.fromEntries(data.member[0]?.member_properties.map(v => [v.property.id, v.value || ''])),
+        Object.fromEntries(
+          properties.map(property => [
+            property.id,
+            data.member[0]?.member_properties.find(v => v.property.id === property.id)?.value || '',
+          ]),
+        ),
       )
     })
     message.success('儲存成功')
