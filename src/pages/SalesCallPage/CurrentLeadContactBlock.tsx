@@ -213,7 +213,7 @@ const CurrentLeadContactBlock: React.VFC<{
               查看
             </a>
           </div>
-          <div>名單建立日期：{currentLead.createdAt && moment(currentLead.createdAt).fromNow()}</div>
+          {/* <div>名單建立日期：{leadCreatedAt && moment(leadCreatedAt).fromNow()}</div> */}
         </div>
       </div>
 
@@ -430,10 +430,7 @@ const FetchNewLeadsBlock: React.VFC<{
         if (!lead.member) {
           continue
         }
-        const memberCategoryRates =
-          lead.member.member_categories.length > 0
-            ? lead.member.member_categories.map(v => salesCategoryRates[v.category.name])
-            : [salesCategoryRates[''] || 0]
+        const memberCategoryRates = lead.member.member_categories.map(v => salesCategoryRates[v.category.name])
         const rate = 1 - product(memberCategoryRates.map(rate => 1 - rate))
 
         if (rate > 0) {
