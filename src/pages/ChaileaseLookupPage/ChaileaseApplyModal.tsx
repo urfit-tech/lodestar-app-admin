@@ -17,7 +17,8 @@ type ChaileaseApplyModalProps = {
   chailease: {
     orderId: string
     productName: string
-    info_reserve: { [key: string]: any }
+    infoReserve: { [key: string]: any }
+    status?: string
   }[]
   onSuccess?: () => void
 } & AdminModalProps
@@ -64,7 +65,7 @@ const ChaileaseApplyModal: React.FC<ChaileaseApplyModalProps> = ({
                   {
                     orderId: orderId,
                     productName: values.productName,
-                    info_reserve: infoReserve,
+                    infoReserve,
                   },
                 ],
               },
@@ -124,7 +125,7 @@ const requestChailease = async (info: {
   const agedAccount = dateNow - createdAt.getTime() > 30 * 86400 * 1000
 
   const { data: apiData } = await axios.post(
-    'https://uatapi.chaileaseholding.com/api_zero_card/payments/reserve_ec',
+    'https://api.chaileaseholding.com/api_zero_card',
     {
       product_name: productName,
       order_id: orderId,
@@ -149,8 +150,8 @@ const requestChailease = async (info: {
     },
   )
   if (apiData.result === '000') {
-    const { info_reserve } = apiData
-    return info_reserve
+    const { info_reserve: infoReserve } = apiData
+    return infoReserve
   } else {
     return new Error(apiData.result_message)
   }

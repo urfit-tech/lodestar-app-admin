@@ -22,17 +22,27 @@ type MemberDataFieldProps = {
   marriage: string
   phone: string
   birthday: Moment | null
-  'residence.address': string
-  'home.address': string
-  'home.phone': string
-  'company.status': string
-  'company.name': string
-  'company.phone': string
-  'creditCard.own': string
-  'creditCard.bank': string
-  'contact.name': string
-  'contact.relationship': string
-  'contact.phone': string
+  residence: {
+    address: string
+  }
+  home: {
+    address: string
+    phone: string
+  }
+  company: {
+    status: string
+    name: string
+    phone: string
+  }
+  creditCard: {
+    own: string
+    bank: string
+  }
+  contact: {
+    name: string
+    relationship: string
+    phone: string
+  }
 }
 
 const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, profile, onSuccess, ...props }) => {
@@ -45,25 +55,12 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
       .validateFields()
       .then(async values => {
         setIsLoading(true)
-        const profileMetadata = Object.keys(values).reduce((acc: { [key: string]: any }, key) => {
-          if (key.includes('.')) {
-            const [key1, key2] = key.split('.')
-            if (!acc[key1]) {
-              acc[key1] = {}
-            }
-            acc[key1][key2] = values[key as keyof MemberDataFieldProps]
-          } else if (typeof values[key as keyof MemberDataFieldProps] === 'object') {
-            acc[key] = moment(values[key as keyof MemberDataFieldProps]).toISOString()
-          } else {
-            acc[key] = values[key as keyof MemberDataFieldProps]
-          }
-          return acc
-        }, {})
+
         try {
           await updateMember({
             variables: {
               memberId,
-              metadata: { profile: profileMetadata },
+              metadata: { profile: values },
               phone: { member_id: memberId, phone: values.phone },
             },
           })
@@ -107,17 +104,27 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
                 marriage: profile?.marriage,
                 phone: profile?.phone,
                 birthday: profile?.birthday ? moment(profile.birthday) : null,
-                'residence.address': profile?.residence?.address,
-                'home.address': profile?.home?.address,
-                'home.phone': profile?.home?.phone,
-                'company.status': profile?.company?.status,
-                'company.name': profile?.company?.name,
-                'company.phone': profile?.company?.phone,
-                'creditCard.own': profile?.creditCard?.own,
-                'creditCard.bank': profile?.creditCard?.bank,
-                'contact.name': profile?.contact?.name,
-                'contact.relationship': profile?.contact?.relationship,
-                'contact.phone': profile?.contact?.phone,
+                residence: {
+                  address: profile?.residence?.address,
+                },
+                home: {
+                  address: profile?.home?.address,
+                  phone: profile?.home?.phone,
+                },
+                company: {
+                  status: profile?.company?.status,
+                  name: profile?.company?.name,
+                  phone: profile?.company?.phone,
+                },
+                creditCard: {
+                  own: profile?.creditCard?.own,
+                  bank: profile?.creditCard?.bank,
+                },
+                contact: {
+                  name: profile?.contact?.name,
+                  relationship: profile?.contact?.relationship,
+                  phone: profile?.contact?.phone,
+                },
               }
             : {}
         }
@@ -137,44 +144,44 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
         <Form.Item label={'生日'} name="birthday" rules={[{ required: true }]}>
           <DatePicker />
         </Form.Item>
-        <Form.Item label={'戶籍地址'} name="residence.address" rules={[{ required: true }]}>
+        <Form.Item label={'戶籍地址'} name={['residence', 'address']} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
         <Form.Item label={'手機'} name="phone" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label={'住家地址'} name="home.address" rules={[{ required: true }]}>
+        <Form.Item label={'住家地址'} name={['home', 'address']} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label={'住家電話'} name="home.phone" rules={[{ required: true }]}>
+        <Form.Item label={'住家電話'} name={['home', 'phone']} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label={'就業狀況'} name="company.status" rules={[{ required: true }]}>
+        <Form.Item label={'就業狀況'} name={['company', 'status']} rules={[{ required: true }]}>
           <Radio.Group>
             <Radio value={'就業中'}>就業中</Radio>
             <Radio value={'學生'}>學生</Radio>
             <Radio value={'其他'}>其他</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item label={'工作公司'} name="company.name" rules={[{ required: true }]}>
+        <Form.Item label={'工作公司'} name={['company', 'name']} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label={'工作電話'} name="company.phone">
+        <Form.Item label={'工作電話'} name={['company', 'phone']}>
           <Input />
         </Form.Item>
-        <Form.Item label={'信用卡狀態'} name="creditCard.own" rules={[{ required: true }]}>
+        <Form.Item label={'信用卡狀態'} name={['creditCard', 'own']} rules={[{ required: true }]}>
           <Radio.Group>
             <Radio value={'有卡'}>有卡</Radio>
             <Radio value={'無卡'}>無卡</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item label={'發卡銀行'} name="creditCard.bank">
+        <Form.Item label={'發卡銀行'} name={['creditCard', 'bank']}>
           <Input />
         </Form.Item>
-        <Form.Item label={'聯絡人姓名'} name="contact.name" rules={[{ required: true }]}>
+        <Form.Item label={'聯絡人姓名'} name={['contact', 'name']} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item label={'聯絡人關係'} name="contact.relationship" rules={[{ required: true }]}>
+        <Form.Item label={'聯絡人關係'} name={['contact', 'relationship']} rules={[{ required: true }]}>
           <Select>
             <Select.Option value={'配偶'}>配偶</Select.Option>
             <Select.Option value={'父母'}>父母</Select.Option>
@@ -186,7 +193,7 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
             <Select.Option value={'其他'}>其他</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item label={'聯絡人電話'} name="contact.phone" rules={[{ required: true }]}>
+        <Form.Item label={'聯絡人電話'} name={['contact', 'phone']} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
       </Form>

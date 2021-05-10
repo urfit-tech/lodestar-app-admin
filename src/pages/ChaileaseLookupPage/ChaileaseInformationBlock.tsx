@@ -78,7 +78,13 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
   if (!member) {
     return <div>查無會員</div>
   }
-  const { chailease, profile } = member.metadata
+  const {
+    chailease,
+    profile,
+  }: {
+    chailease: { orderId: string; productName: string; infoReserve: { [key: string]: any }; status?: string }[]
+    profile: { [key: string]: any }
+  } = member.metadata
 
   return (
     <AdminBlock className="p-4" key={member.id}>
@@ -99,7 +105,7 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
             memberId={member.id}
             email={member.email}
             createdAt={member.createdAt}
-            idNumber={profile?.idNumber}
+            idNumber={profile?.idNumber || ''}
             chailease={chailease || []}
             renderTrigger={({ setVisible }) => (
               <Button onClick={() => setVisible(true)}>{formatMessage(salesMessages.label.chaileaseApply)}</Button>
@@ -109,21 +115,21 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
         </div>
       </div>
       <div>
-        {chailease?.map((order: any) => (
+        {chailease?.map(order => (
           <StyledChaileaseRecordBlock
             className="d-flex justify-content-between align-items-center"
             key={order?.orderId}
           >
             <div className="col-2">{order?.productName}</div>
-            <StyledChaileaseRecordTag variant={order?.status}>
+            <StyledChaileaseRecordTag variant={order?.status as 'SUCCESS' | 'FAILED'}>
               {order?.status === 'SUCCESS' ? '審核成功' : order.status === 'FAILED' ? '審核失敗' : '待提交/審核中'}
             </StyledChaileaseRecordTag>
             <div>
               連結失效時間：
-              {order?.info_reserve?.expire_date}
+              {order?.infoReserve?.expire_date}
             </div>
-            {moment() <= moment(order?.info_reserve?.expire_date) ? (
-              <Button className="mr-1" onClick={() => window.open(order?.info_reserve?.payment_url_web)}>
+            {moment() <= moment(order?.infoReserve?.expire_date) ? (
+              <Button className="mr-1" onClick={() => window.open(order?.infoReserve?.payment_url_web)}>
                 融資連結
               </Button>
             ) : (
