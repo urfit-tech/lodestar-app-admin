@@ -87,6 +87,10 @@ body {
   display: none;
 }
 
+.no-wrap {
+  white-space: nowrap;
+}
+
 // color palette
 :root {
   --primary: #1890ff;

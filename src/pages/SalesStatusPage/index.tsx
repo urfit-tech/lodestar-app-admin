@@ -17,15 +17,41 @@ import TotalRevenueBlock from './TotalRevenueBlock'
 const teamSettings = [
   {
     name: '今天吃什麼',
-    sales: ['alan@xuemi.co', 'cherry@xuemi.co', 'nicole@xuemi.co'],
+    sales: [
+      {
+        id: '67d897bb-d500-497f-b8a8-7ceb55227da4',
+        name: 'alan',
+      },
+      {
+        id: '906450b5-e4ab-4736-96ae-261d8a3abb96',
+        name: 'nicole',
+      },
+      {
+        id: '585757d9-50c1-4800-a16b-fadf6fd8b669',
+        name: 'cherry',
+      },
+    ],
   },
   {
     name: '喜刷刷',
-    sales: ['violet@xuemi.co', 'jason@xuemi.co', 'jade@xuemi.co'],
+    sales: [
+      { id: 'fac9ad75-296b-456e-a577-a7cf7264635d', name: 'violet' },
+      { id: 'a8c910cf-c626-4f2d-827a-d7c92e22b707', name: 'jason' },
+      { id: 'c91ef026-c46b-4cf4-bc8d-7aba9fe650bc', name: 'jade' },
+    ],
   },
   {
     name: '攻城獅',
-    sales: ['steven@xuemi.co', 'youjia@xuemi.co'],
+    sales: [
+      {
+        id: '54eec91c-a636-4043-ac8e-7c1616b970eb',
+        name: 'steven',
+      },
+      {
+        id: 'f13368e0-ca7f-4ec3-a5fb-88224b287896',
+        name: 'youjia',
+      },
+    ],
   },
 ]
 
@@ -48,19 +74,15 @@ const SalesStatusPage: React.VFC = () => {
 
 const GET_SALES_STATUS = gql`
   query GET_SALES_STATUS($startedAt: timestamptz!, $endedAt: timestamptz!) {
-    order_executor_sharing(where: { created_at: { _gte: $startedAt, _lt: $endedAt } }) {
-      executor {
-        email
-      }
-      total_price
-      ratio
-      created_at
+    member_contract(where: { agreed_at: { _gte: $startedAt }, revoked_at: { _is_null: true } }) {
+      agreed_at
+      values
     }
     member_note(
       where: { created_at: { _gte: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" }, status: { _eq: "answered" } }
     ) {
       author {
-        email
+        id
       }
       type
       status
@@ -86,46 +108,64 @@ const useSalesStatus = (today: moment.Moment): { loading: boolean; data: SalesSt
       name: setting.name,
       data: setting.sales.map(sales => {
         return {
-          id: sales,
-          name: sales.split('@')[0],
+          id: sales.id,
+          name: sales.name,
           revenue: {
             today: sum(
-              data?.order_executor_sharing
-                .filter(v => moment(v.created_at) >= today && v.executor?.email === sales)
-                .map(v => v.total_price * v.ratio) || [],
+              data?.member_contract
+                .filter(v => moment(v.agreed_at) >= today)
+                .map(v =>
+                  sum(
+                    v.values.orderExecutors
+                      .filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
+                      .map((executor: { member_id: string; ratio: number }) => v.values.price * executor.ratio) || [],
+                  ),
+                ) || [],
             ),
             thisWeek: sum(
-              data?.order_executor_sharing
-                .filter(v => moment(v.created_at) >= thisWeek && v.executor?.email === sales)
-                .map(v => v.total_price * v.ratio) || [],
+              data?.member_contract
+                .filter(v => moment(v.agreed_at) >= thisWeek)
+                .map(v =>
+                  sum(
+                    v.values.orderExecutors
+                      .filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
+                      .map((executor: { member_id: string; ratio: number }) => v.values.price * executor.ratio) || [],
+                  ),
+                ) || [],
             ),
             thisMonth: sum(
-              data?.order_executor_sharing
-                .filter(v => moment(v.created_at) >= thisMonth && v.executor?.email === sales)
-                .map(v => v.total_price * v.ratio) || [],
+              data?.member_contract
+                .filter(v => moment(v.agreed_at) >= thisMonth)
+                .map(v =>
+                  sum(
+                    v.values.orderExecutors
+                      .filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
+                      .map((executor: { member_id: string; ratio: number }) => v.values.price * executor.ratio) || [],
+                  ),
+                ) || [],
             ),
           },
           callTimes: {
-            today: data?.member_note.filter(v => moment(v.created_at) >= today && v.author.email === sales).length || 0,
+            today: data?.member_note.filter(v => moment(v.created_at) >= today && v.author.id === sales.id).length || 0,
             thisWeek:
-              data?.member_note.filter(v => moment(v.created_at) >= thisWeek && v.author.email === sales).length || 0,
+              data?.member_note.filter(v => moment(v.created_at) >= thisWeek && v.author.id === sales.id).length || 0,
             thisMonth:
-              data?.member_note.filter(v => moment(v.created_at) >= thisMonth && v.author.email === sales).length || 0,
+              data?.member_note.filter(v => moment(v.created_at) >= thisMonth && v.author.id === sales.id).length || 0,
           },
           callDuration: {
             today: sum(
               data?.member_note
-                .filter(v => moment(v.created_at) >= today && v.author.email === sales)
+                .filter(v => moment(v.created_at) >= today && v.author.id === sales.id)
                 .map(v => v.duration) || [],
             ),
             thisWeek: sum(
               data?.member_note
-                .filter(v => moment(v.created_at) >= thisWeek && v.author.email === sales)
+                .filter(v => moment(v.created_at) >= thisWeek && v.author.id === sales.id)
                 .map(v => v.duration) || [],
             ),
             thisMonth: sum(
               data?.member_note
-                .filter(v => moment(v.created_at) >= thisMonth && v.author.email === sales)
+                .filter(v => moment(v.created_at) >= thisMonth && v.author.id === sales.id)
                 .map(v => v.duration) || [],
             ),
           },

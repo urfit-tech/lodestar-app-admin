@@ -218,7 +218,7 @@ const CurrentLeadContactBlock: React.VFC<{
               查看
             </a>
           </div>
-          <div>名單建立日期：{currentLead.createdAt && moment(currentLead.createdAt).fromNow()}</div>
+          {/* <div>名單建立日期：{leadCreatedAt && moment(leadCreatedAt).fromNow()}</div> */}
         </div>
       </div>
 
@@ -395,9 +395,10 @@ const FetchNewLeadsBlock: React.VFC<{
       return
     }
 
-    const requestLeads = async (odds: number) => {
+    const requestLeads = async (odds: number | null) => {
       const chance = new Chance()
-      const isFirstHand = chance.weighted([true, false], [odds, 100 - odds])
+      const leadsType: 'all' | 'firsthand' | 'secondhand' =
+        odds === null ? 'all' : chance.weighted(['firsthand', 'secondhand'], [odds, 100 - odds])
 
       setLeadStatus('fetching')
       const { data } = await apolloClient.query<hasura.GET_LEADS, hasura.GET_LEADSVariables>({
@@ -415,15 +416,20 @@ const FetchNewLeadsBlock: React.VFC<{
             }
           }
         `,
-        variables: isFirstHand
-          ? {
-              where: { member_note_count: { _eq: 0 } },
-              orderBy: [{ created_at: 'desc' as hasura.order_by }],
-            }
-          : {
-              where: { member_note_count: { _gt: 0 } },
-              orderBy: [{ lead_score: 'asc' as hasura.order_by }],
-            },
+        variables:
+          leadsType === 'firsthand'
+            ? {
+                where: { member_note_count: { _eq: 0 } },
+                orderBy: [{ created_at: 'desc' as hasura.order_by }],
+              }
+            : leadsType === 'secondhand'
+            ? {
+                where: { member_note_count: { _gt: 0 } },
+                orderBy: [{ lead_score: 'asc' as hasura.order_by }],
+              }
+            : {
+                orderBy: [{ lead_score: 'asc' as hasura.order_by }],
+              },
         fetchPolicy: 'no-cache',
       })
 
@@ -435,10 +441,7 @@ const FetchNewLeadsBlock: React.VFC<{
         if (!lead.member) {
           continue
         }
-        const memberCategoryRates =
-          lead.member.member_categories.length > 0
-            ? lead.member.member_categories.map(v => salesCategoryRates[v.category.name])
-            : [salesCategoryRates[''] || 0]
+        const memberCategoryRates = lead.member.member_categories.map(v => salesCategoryRates[v.category.name])
         const rate = 1 - product(memberCategoryRates.map(rate => 1 - rate))
 
         if (rate > 0) {
@@ -452,7 +455,7 @@ const FetchNewLeadsBlock: React.VFC<{
       setLeadStatus('assigning')
       const leadMemberIds: string[] = []
 
-      while (leadMemberIds.length < (isFirstHand ? 1 : 5) && leads.length) {
+      while (leadMemberIds.length < (leadsType === 'firsthand' ? 1 : 5) && leads.length) {
         const index = chance.weighted(
           leads.map((_, i) => i),
           leads.map(lead => lead.rate),
@@ -496,8 +499,8 @@ const FetchNewLeadsBlock: React.VFC<{
       try {
         const assignedLeads = await requestLeads(salesOdds)
         if (!assignedLeads) {
-          // try second hand when failed
-          await requestLeads(0)
+          // try again when get nothing
+          await requestLeads(null)
         }
         setLeadStatus('reloading')
       } catch {

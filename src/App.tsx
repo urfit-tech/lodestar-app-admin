@@ -8,6 +8,7 @@ import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
 import ChaileaseLookupPage from './pages/ChaileaseLookupPage/index'
+import CustomScriptsPage from './pages/CustomScriptsPage'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import MemberContractCollectionPage from './pages/MemberContractCollectionPage'
 import MemberContractCreationPage from './pages/MemberContractCreationPage'
@@ -174,6 +175,10 @@ const App: React.FC = () => {
         chailease_lookup: {
           path: '/chailease-lookup',
           pageName: <ChaileaseLookupPage />,
+          authenticated: true,
+        custom_scripts: {
+          path: '/custom-scripts',
+          pageName: <CustomScriptsPage />,
           authenticated: true,
         },
       }}

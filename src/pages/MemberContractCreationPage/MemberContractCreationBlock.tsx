@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter, notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
-import { project, range, sum } from 'ramda'
+import { range, sum } from 'ramda'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
@@ -258,6 +258,8 @@ const MemberContractCreationBlock: React.FC<{
       })
       .filter(notEmpty)
 
+    const previewProductCoinLogId = v4()
+
     // generate coupons
     const couponPlanId = v4()
     const coupons = range(0, totalAppointments).map((v, index) => ({
@@ -292,9 +294,6 @@ const MemberContractCreationBlock: React.FC<{
       },
     }))
 
-    const times = '0'
-    const orderId = moment().format('YYYYMMDDHHmmssSSS') + times.padStart(2, '0')
-
     const contractCoupons = contractDiscounts.map(v => ({
       id: v4(),
       name: v.name,
@@ -315,22 +314,40 @@ const MemberContractCreationBlock: React.FC<{
       variables: {
         memberId: member.id,
         contractId: fieldValue.contractId,
-        startedAt: startedAt,
+        startedAt,
         endedAt,
         authorId: currentMemberId || '',
         values: {
-          startedAt: startedAt,
-          endedAt,
           memberId: member.id,
-          invoice: {
-            name: member.name,
-            phone: member.phones.join(','),
-            email: member.email,
-          },
-          price: totalPrice,
-          coinName: `${selectedProjectPlan?.title}`,
-          coinAmount: totalCoins,
-          orderId,
+          coinLogs: [
+            {
+              id: previewProductCoinLogId,
+              member_id: member.id,
+              title: '學習禮包',
+              description: '搶先看學習禮包',
+              amount: 5 * previewProducts.length,
+              started_at: null,
+              ended_at: endedAt,
+            },
+            {
+              id: v4(),
+              member_id: member.id,
+              title: `${selectedProjectPlan?.title}`,
+              description: '私塾課代幣',
+              amount: totalCoins,
+              started_at: startedAt,
+              ended_at: endedAt,
+            },
+          ],
+          coupons: [
+            ...contractCoupons.map(v => ({
+              id: v.id,
+              member_id: v.member_id,
+              coupon_code: v.coupon_code,
+            })),
+            ...coupons,
+          ],
+          orderId: `${moment().format('YYYYMMDDHHmmssSSS')}00`,
           orderProducts: [
             {
               product_id: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
@@ -345,6 +362,12 @@ const MemberContractCreationBlock: React.FC<{
               price: v.price * v.amount,
               started_at: startedAt,
               ended_at: endedAt,
+              options:
+                v.amount > 1
+                  ? {
+                      quantity: v.amount,
+                    }
+                  : null,
             })),
             ...previewProducts,
             {
@@ -355,29 +378,37 @@ const MemberContractCreationBlock: React.FC<{
               ended_at: endedAt,
             },
           ],
-          coupons: [...coupons, ...project(['id', 'member_id', 'coupon_code'], contractCoupons)],
           orderDiscounts: [
             ...contractCoupons.map(v => ({
-              name: v.name,
+              name: `【折價券】${v.name}`,
               price: v.price,
               type: 'Coupon',
               target: v.id,
             })),
             ...previewProducts.map(v => ({
-              name: v.name,
+              name: `【代幣折抵】${v.name}`,
               price: 225,
               type: 'Coin',
-              target: v4(),
-              options: { coins: 5, exchangeRate: 45 },
+              target: previewProductCoinLogId,
+              options: {
+                coins: 5,
+                exchangeRate: 45,
+              },
             })),
           ],
           orderExecutors,
+          invoice: {
+            name: member.name,
+            phone: member.phones.join(','),
+            email: member.email,
+          },
           paymentNo: moment().format('YYYYMMDDHHmmss'),
           paymentOptions: {
             paymentMethod: fieldValue.paymentMethod,
             installmentPlan: fieldValue.installmentPlan,
             paymentNumber: fieldValue.paymentNumber,
           },
+          price: totalPrice,
         },
         options: {
           appointmentCreatorId: fieldValue.withCreatorId ? fieldValue.creatorId : null,
