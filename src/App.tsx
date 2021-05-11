@@ -176,6 +176,7 @@ const App: React.FC = () => {
           path: '/chailease-lookup',
           pageName: <ChaileaseLookupPage />,
           authenticated: true,
+        },
         custom_scripts: {
           path: '/custom-scripts',
           pageName: <CustomScriptsPage />,
