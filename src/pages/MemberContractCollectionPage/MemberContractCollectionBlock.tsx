@@ -494,7 +494,7 @@ export const MemberContractCollectionBlock: React.FC<{
             projectPlanName: activeMemberContract?.projectPlanName,
             price: activeMemberContract?.price,
             coinAmount: activeMemberContract?.coinAmount,
-            couponCount: activeMemberContract?.couponCount,
+            appointmentCouponCount: activeMemberContract?.appointmentCouponCount,
             appointmentCreatorName: activeMemberContract?.appointmentCreatorName,
             referral: activeMemberContract?.referral,
             startedAt: activeMemberContract?.startedAt,
