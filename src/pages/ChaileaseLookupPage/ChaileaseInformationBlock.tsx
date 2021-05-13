@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { AdminBlock } from 'lodestar-app-admin/src/components/admin'
 import FileItem from 'lodestar-app-admin/src/components/common/FileItem'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
-import { getFileDownloadableLink } from 'lodestar-app-admin/src/helpers/index'
+import { downloadFile, getFileDownloadableLink } from 'lodestar-app-admin/src/helpers/index'
 import { commonMessages, errorMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -53,7 +53,12 @@ const StyledChaileaseRecordTag = styled.span<{ variant?: 'SUCCESS' | 'FAILED' }>
 const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
-  const [idImage, setIdImage] = useState<{ front?: string; back?: string }>({})
+  const [attachmentsLink, setAttachmentsLink] = useState<{
+    idImageFront?: string
+    idImageBack?: string
+    ownSignature?: string
+    contactSignature?: string
+  }>({})
   const { loadingMember, errorMember, member, refetchMember } = useMember(email)
 
   useEffect(() => {
@@ -62,11 +67,22 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
       const getLink = async () => {
         const frontIdImageLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-01`, authToken, apiHost)
         const backIdImageLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-02`, authToken, apiHost)
-        setIdImage({ front: frontIdImageLink, back: backIdImageLink })
+        const ownSignatureLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-03`, authToken, apiHost)
+        const contactSignatureLink = await getFileDownloadableLink(
+          `chailease/${profile?.imageId}-04`,
+          authToken,
+          apiHost,
+        )
+        setAttachmentsLink({
+          idImageFront: frontIdImageLink,
+          idImageBack: backIdImageLink,
+          ownSignature: ownSignatureLink,
+          contactSignature: contactSignatureLink,
+        })
       }
       getLink()
     } else {
-      setIdImage({})
+      setAttachmentsLink({})
     }
   }, [email, member?.metadata, authToken, apiHost])
   if (loadingMember) {
@@ -146,8 +162,8 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
         <StyledInfoBlock>
           <StyledInfoItem className="align-items-center mb-2">
             <p>身分證（ 正 / 反 ）</p>
-            <StyledIdImage src={idImage.front} alt="" className="mr-4" />
-            <StyledIdImage src={idImage.back} alt="" />
+            <StyledIdImage src={attachmentsLink.idImageFront} alt="" className="mr-4" />
+            <StyledIdImage src={attachmentsLink.idImageBack} alt="" />
           </StyledInfoItem>
           <StyledInfoItem>
             <p>Email</p>
@@ -205,11 +221,11 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
           </StyledInfoItem>
           <StyledInfoItem>
             <p>工作電話</p>
-            {/* {profile?.company?.phone} */}
+            {profile?.company?.telephone}
           </StyledInfoItem>
           <StyledInfoItem>
             <p>學校名稱</p>
-            {/* {profile?.company?.phone} */}
+            {profile?.school?.name}
           </StyledInfoItem>
         </StyledInfoBlock>
       </div>
@@ -252,12 +268,30 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
         <StyledInfoBlock>
           <StyledInfoItem>
             <p>本人親簽</p>
-            <FileItem fileName="文件1" />
+            {profile?.signature?.own && (
+              <FileItem
+                fileName="親簽"
+                onDownload={() =>
+                  downloadFile(`${member.name}_親簽`, {
+                    url: attachmentsLink.ownSignature,
+                  })
+                }
+              />
+            )}
           </StyledInfoItem>
-          <StyledInfoItem>
-            <p>聯絡人親簽</p>
-            <FileItem fileName="文件2" />
-          </StyledInfoItem>
+          {profile?.signature?.contact && (
+            <StyledInfoItem>
+              <p>聯絡人親簽</p>
+              <FileItem
+                fileName="親簽"
+                onDownload={() =>
+                  downloadFile(`${member.name}_聯絡人親簽`, {
+                    url: attachmentsLink.contactSignature,
+                  })
+                }
+              />
+            </StyledInfoItem>
+          )}
         </StyledInfoBlock>
       </div>
       <div>
@@ -265,11 +299,11 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
         <StyledInfoBlock>
           <StyledInfoItem>
             <p>寄送地址</p>
-            {profile?.home?.address}
+            {profile?.bill?.address}
           </StyledInfoItem>
           <StyledInfoItem>
             <p>Email</p>
-            {member.email}
+            {profile?.bill?.email}
           </StyledInfoItem>
         </StyledInfoBlock>
       </div>

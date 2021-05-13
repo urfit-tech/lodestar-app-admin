@@ -4,6 +4,7 @@ import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import gql from 'graphql-tag'
 import AdminModal, { AdminModalProps } from 'lodestar-app-admin/src/components/admin/AdminModal'
+import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { handleError } from 'lodestar-app-admin/src/helpers/index'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -39,6 +40,7 @@ const ChaileaseApplyModal: React.FC<ChaileaseApplyModalProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [form] = useForm<ChaileaseApplyFieldProps>()
+  const { settings } = useApp()
   const [updateMemberMetadata] = useMutation<hasura.UPDATE_MEMBER_METADATA, hasura.UPDATE_MEMBER_METADATAVariables>(
     UPDATE_MEMBER_METADATA,
   )
@@ -54,6 +56,7 @@ const ChaileaseApplyModal: React.FC<ChaileaseApplyModalProps> = ({
             email: email,
             createdAt: createdAt,
             idNumber: idNumber,
+            apiKey: settings['chailease.api_key'] || '',
             ...values,
           })
           await updateMemberMetadata({
@@ -116,16 +119,19 @@ const requestChailease = async (info: {
   email: string
   createdAt: Date
   idNumber: string
+  apiKey: string
   productName: string
   productPrice: number
 }) => {
-  const { orderId, email, createdAt, idNumber, productName, productPrice } = info
+  const { orderId, email, createdAt, idNumber, apiKey, productName, productPrice } = info
 
   const dateNow = new Date().getTime()
   const agedAccount = dateNow - createdAt.getTime() > 30 * 86400 * 1000
 
   const { data: apiData } = await axios.post(
-    'https://api.chaileaseholding.com/api_zero_card',
+    process.env.NODE_ENV === 'development'
+      ? 'https://uatapi.chaileaseholding.com/api_zero_card/payments/reserve_ec'
+      : 'https://api.chaileaseholding.com/api_zero_card',
     {
       product_name: productName,
       order_id: orderId,
@@ -144,7 +150,7 @@ const requestChailease = async (info: {
     {
       headers: {
         '0Card-Merchant-Id': '50929405',
-        '0Card-API-Key': process.env.CHAILEASE_API_KEY,
+        '0Card-API-Key': apiKey,
         'Content-Type': 'application/json',
       },
     },
