@@ -121,7 +121,10 @@ const useImplementPractices = (programContentId: string) => {
   >(
     gql`
       query GET_IMPLEMENT_PRACTICES($programContentId: uuid!) {
-        practice(where: { program_content_id: { _eq: $programContentId } }, order_by: [{ created_at: asc }]) {
+        practice(
+          where: { program_content_id: { _eq: $programContentId }, is_deleted: { _eq: false } }
+          order_by: [{ created_at: asc }]
+        ) {
           id
           program_content {
             id

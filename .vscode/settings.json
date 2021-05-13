@@ -17,7 +17,8 @@
     "starttime",
     "timestamptz",
     "typegen",
-    "wavesurfer"
+    "wavesurfer",
+    "chailease"
   ],
   "typescript.tsdk": "node_modules/typescript/lib"
 }

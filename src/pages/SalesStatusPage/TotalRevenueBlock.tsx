@@ -6,12 +6,21 @@ import React from 'react'
 import { SalesStatus } from '../../types/sales'
 
 const TARGET_REVENUE = 7000000
-const TotalRevenueBlock: React.VFC<{ salesStatus: SalesStatus; loading?: boolean }> = ({ salesStatus, loading }) => {
+const TotalRevenueBlock: React.VFC<{
+  salesStatus: SalesStatus
+  loading?: boolean
+  error?: Error
+}> = ({ salesStatus, loading, error }) => {
+  if (error) {
+    return null
+  }
+
   const totalMonthlyRevenue = sum(
     salesStatus.map(status => {
       return sum(status.data.map(d => d.revenue.thisMonth))
     }),
   )
+
   return (
     <div className="row mb-5">
       <div className="col-3">

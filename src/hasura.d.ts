@@ -323,6 +323,100 @@ export interface GET_SALE_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// GraphQL mutation operation: UPDATE_MEMBER_METADATA
+// ====================================================
+
+export interface UPDATE_MEMBER_METADATA_update_member_by_pk {
+  __typename: "member";
+  id: string;
+}
+
+export interface UPDATE_MEMBER_METADATA {
+  /**
+   * update single row of the table: "member"
+   */
+  update_member_by_pk: UPDATE_MEMBER_METADATA_update_member_by_pk | null;
+}
+
+export interface UPDATE_MEMBER_METADATAVariables {
+  memberId: string;
+  metadata?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBERS_BY_EMAIL
+// ====================================================
+
+export interface GET_MEMBERS_BY_EMAIL_member_member_phones {
+  __typename: "member_phone";
+  phone: string;
+}
+
+export interface GET_MEMBERS_BY_EMAIL_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  metadata: any;
+  created_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_MEMBERS_BY_EMAIL_member_member_phones[];
+}
+
+export interface GET_MEMBERS_BY_EMAIL {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_MEMBERS_BY_EMAIL_member[];
+}
+
+export interface GET_MEMBERS_BY_EMAILVariables {
+  email: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER
+// ====================================================
+
+export interface UPDATE_MEMBER_update_member_by_pk {
+  __typename: "member";
+  id: string;
+}
+
+export interface UPDATE_MEMBER_insert_member_phone_one {
+  __typename: "member_phone";
+  id: any;
+}
+
+export interface UPDATE_MEMBER {
+  /**
+   * update single row of the table: "member"
+   */
+  update_member_by_pk: UPDATE_MEMBER_update_member_by_pk | null;
+  /**
+   * insert a single row into the table: "member_phone"
+   */
+  insert_member_phone_one: UPDATE_MEMBER_insert_member_phone_one | null;
+}
+
+export interface UPDATE_MEMBERVariables {
+  memberId: string;
+  metadata?: any | null;
+  phone: member_phone_insert_input;
+}
+
 // ====================================================
 // GraphQL query operation: GET_IMPLEMENT_PRACTICES
 // ====================================================

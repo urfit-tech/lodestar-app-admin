@@ -7,6 +7,7 @@ import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
+import ChaileaseLookupPage from './pages/ChaileaseLookupPage/index'
 import CustomScriptsPage from './pages/CustomScriptsPage'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import MemberContractCollectionPage from './pages/MemberContractCollectionPage'
@@ -24,7 +25,7 @@ const App: React.FC = () => {
     <Application
       appId="xuemi"
       customRender={{
-        renderAdminMenu: ({ role, permissions, menuItems, onClick }) => {
+        renderAdminMenu: ({ settings, role, permissions, menuItems, onClick }) => {
           const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
             {
@@ -48,6 +49,11 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'sales_status',
                   name: '業務狀況',
+                },
+                {
+                  permissionIsAllowed: settings['feature.chailease_lookup'] === 'enabled',
+                  key: 'chailease_lookup',
+                  name: '資融查詢',
                 },
               ],
             },
@@ -165,6 +171,11 @@ const App: React.FC = () => {
           path: '/terms',
           pageName: <TermsPtPage />,
           authenticated: false,
+        },
+        chailease_lookup: {
+          path: '/chailease-lookup',
+          pageName: <ChaileaseLookupPage />,
+          authenticated: true,
         },
         custom_scripts: {
           path: '/custom-scripts',
