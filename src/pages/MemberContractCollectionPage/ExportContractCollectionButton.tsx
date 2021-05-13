@@ -110,7 +110,10 @@ const ExportContractCollectionButton: React.FC<{
               v.values?.orderProducts.map((v: { name: string }) => v.name).join('、') ||
               null,
             price: v.values?.price || null,
-            coinAmount: v.values?.coinAmount || null,
+            coinAmount:
+              v.values?.coinAmount ||
+              v.values?.coinLogs?.find((coinLog: any) => coinLog.description === '私塾課代幣')?.amount ||
+              null,
             paymentOptions: {
               paymentMethod: v.values.paymentOptions?.paymentMethod || '',
               paymentNumber: v.values.paymentOptions?.paymentNumber || '',
