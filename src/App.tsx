@@ -25,7 +25,7 @@ const App: React.FC = () => {
     <Application
       appId="xuemi"
       customRender={{
-        renderAdminMenu: ({ role, permissions, menuItems, onClick }) => {
+        renderAdminMenu: ({ settings, role, permissions, menuItems, onClick }) => {
           const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
             {
@@ -51,7 +51,7 @@ const App: React.FC = () => {
                   name: '業務狀況',
                 },
                 {
-                  permissionIsAllowed: true,
+                  permissionIsAllowed: settings['feature.chailease_lookup'] === 'enabled',
                   key: 'chailease_lookup',
                   name: '資融查詢',
                 },
