@@ -33,11 +33,7 @@ export const AppProvider: React.FC<{
     { variables: { host: window.location.host } },
   )
 
-  const settings =
-    data?.app_admin_by_pk?.app.app_settings?.reduce((accumulator, appSetting) => {
-      accumulator[appSetting.key] = appSetting.value
-      return accumulator
-    }, {} as { [key: string]: string }) || {}
+  const settings = Object.fromEntries(data?.app_admin_by_pk?.app.app_settings.map(v => [v.key, v.value]) || [])
 
   const contextValue = {
     ...defaultContextValue,
@@ -49,11 +45,9 @@ export const AppProvider: React.FC<{
     title: data?.app_admin_by_pk?.app.title || '',
     description: data?.app_admin_by_pk?.app.description || '',
     vimeoProjectId: data?.app_admin_by_pk?.app.vimeo_project_id,
-    enabledModules:
-      data?.app_admin_by_pk?.app.app_modules.reduce((dict, el) => {
-        dict[el.module_id as Module] = true
-        return dict
-      }, {} as { [key in Module]?: boolean }) || {},
+    enabledModules: Object.fromEntries(
+      data?.app_admin_by_pk?.app.app_modules.map(v => [v.module_id as Module, true]) || [],
+    ),
     settings,
     currencies:
       data?.currency.reduce((accumulator, currency) => {

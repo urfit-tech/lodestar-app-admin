@@ -31,7 +31,7 @@ export const StyledMenu = styled(Menu)`
 const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { permissions, currentUserRole } = useAuth()
   const { renderAdminMenu } = useCustomRenderer()
 
@@ -379,6 +379,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   return (
     <>
       {renderAdminMenu?.({
+        settings,
         role: currentUserRole,
         permissions,
         menuItems: defaultMenuItems,

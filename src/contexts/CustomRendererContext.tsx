@@ -8,6 +8,7 @@ export type CustomRendererProps = {
     content?: (props: renderMemberAdminLayoutProps) => React.ReactElement
   }
   renderAdminMenu?: (props: {
+    settings: { [key: string]: string }
     role: UserRole
     permissions: { [key: string]: boolean }
     menuItems: {
