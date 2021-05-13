@@ -433,10 +433,7 @@ export const useSalesCallMember = (salesId: string, status: 'contacted' | 'trans
             status: { _eq: 'answered' },
           },
           _not: {
-            _or: [
-              { member_notes: { rejected_at: { _is_null: false } } },
-              { member_contracts: { _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }] } },
-            ],
+            member_contracts: { _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }] },
           },
         }
       : {
