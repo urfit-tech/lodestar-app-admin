@@ -7,7 +7,15 @@ import { SalesStatus } from '../../types/sales'
 
 const TARGET_CALL_DURATION = 180 * 60
 
-const CallStatusBlock: React.VFC<{ salesStatus: SalesStatus; loading?: boolean }> = ({ salesStatus, loading }) => {
+const CallStatusBlock: React.VFC<{
+  salesStatus: SalesStatus
+  loading?: boolean
+  error?: Error
+}> = ({ salesStatus, loading, error }) => {
+  if (error) {
+    return null
+  }
+
   return (
     <div className="row">
       <div className="col-6">

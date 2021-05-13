@@ -18,18 +18,9 @@ const teamSettings = [
   {
     name: '今天吃什麼',
     sales: [
-      {
-        id: '67d897bb-d500-497f-b8a8-7ceb55227da4',
-        name: 'alan',
-      },
-      {
-        id: '906450b5-e4ab-4736-96ae-261d8a3abb96',
-        name: 'nicole',
-      },
-      {
-        id: '585757d9-50c1-4800-a16b-fadf6fd8b669',
-        name: 'cherry',
-      },
+      { id: '67d897bb-d500-497f-b8a8-7ceb55227da4', name: 'alan' },
+      { id: '906450b5-e4ab-4736-96ae-261d8a3abb96', name: 'nicole' },
+      { id: '585757d9-50c1-4800-a16b-fadf6fd8b669', name: 'cherry' },
     ],
   },
   {
@@ -43,21 +34,15 @@ const teamSettings = [
   {
     name: '攻城獅',
     sales: [
-      {
-        id: '54eec91c-a636-4043-ac8e-7c1616b970eb',
-        name: 'steven',
-      },
-      {
-        id: 'f13368e0-ca7f-4ec3-a5fb-88224b287896',
-        name: 'youjia',
-      },
+      { id: '54eec91c-a636-4043-ac8e-7c1616b970eb', name: 'steven' },
+      { id: 'f13368e0-ca7f-4ec3-a5fb-88224b287896', name: 'youjia' },
     ],
   },
 ]
 
 const SalesStatusPage: React.VFC = () => {
   const [today, setToday] = useState(moment().startOf('day'))
-  const { loading, data: salesStatus } = useSalesStatus(today)
+  const { loading, data: salesStatus, error } = useSalesStatus(today)
   const { formatMessage } = useIntl()
   return (
     <AdminLayout>
@@ -66,8 +51,8 @@ const SalesStatusPage: React.VFC = () => {
         <span className="mr-3">{formatMessage(salesMessages.label.salesStatus)}</span>
         <DatePicker onChange={e => setToday((e || moment()).startOf('day'))} />
       </AdminPageTitle>
-      <TotalRevenueBlock salesStatus={salesStatus} loading={loading} />
-      <CallStatusBlock salesStatus={salesStatus} loading={loading} />
+      <TotalRevenueBlock salesStatus={salesStatus} loading={loading} error={error} />
+      <CallStatusBlock salesStatus={salesStatus} loading={loading} error={error} />
     </AdminLayout>
   )
 }
@@ -91,19 +76,23 @@ const GET_SALES_STATUS = gql`
     }
   }
 `
-const useSalesStatus = (today: moment.Moment): { loading: boolean; data: SalesStatus } => {
+const useSalesStatus = (today: moment.Moment): { loading: boolean; error: Error | undefined; data: SalesStatus } => {
   const tomorrow = today.clone().add(1, 'day')
   const thisWeek = today.clone().startOf('week')
   const thisMonth = today.clone().startOf('month')
-  const { loading, data } = useQuery<hasura.GET_SALES_STATUS, hasura.GET_SALES_STATUSVariables>(GET_SALES_STATUS, {
-    variables: {
-      startedAt: thisMonth,
-      endedAt: tomorrow,
+  const { loading, error, data } = useQuery<hasura.GET_SALES_STATUS, hasura.GET_SALES_STATUSVariables>(
+    GET_SALES_STATUS,
+    {
+      variables: {
+        startedAt: thisMonth,
+        endedAt: tomorrow,
+      },
+      pollInterval: 10000,
     },
-    pollInterval: 10000,
-  })
+  )
   return {
     loading,
+    error,
     data: teamSettings.map(setting => ({
       name: setting.name,
       data: setting.sales.map(sales => {
