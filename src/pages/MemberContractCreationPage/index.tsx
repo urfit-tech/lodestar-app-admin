@@ -7,7 +7,7 @@ import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import LoadingPage from 'lodestar-app-admin/src/pages/default/LoadingPage'
 import { PeriodType } from 'lodestar-app-admin/src/types/general'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -46,6 +46,8 @@ type FieldProps = {
     ratio?: number
   }[]
   hasDeposit?: boolean[]
+  withProductStartedAt: boolean
+  productStartedAt: Moment
 }
 
 type ContractInfo = {
@@ -157,6 +159,8 @@ const MemberContractCreationPage: React.VFC = () => {
               withCreatorId: false,
               orderExecutorRatio: 1,
               identity: 'normal',
+              withProductStartedAt: false,
+              productStartedAt: moment(startedAt),
             }}
             onValuesChange={() => setReRender(prev => prev + 1)}
             memberId={memberId}
