@@ -60,7 +60,17 @@ type MemberDataFieldProps = {
 
 const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, profile, onSuccess, ...props }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [idImage, setIdImage] = useState<{ front: File | null; back: File | null }>({ front: null, back: null })
+  const [attachments, setAttachments] = useState<{
+    idImageFront: File | null
+    idImageBack: File | null
+    ownSignature: File | null
+    contactSignature: File | null
+  }>({
+    idImageFront: null,
+    idImageBack: null,
+    ownSignature: null,
+    contactSignature: null,
+  })
   const [form] = useForm<MemberDataFieldProps>()
   const { authToken, apiHost } = useAuth()
   const [updateMember] = useMutation<hasura.UPDATE_MEMBER, hasura.UPDATE_MEMBERVariables>(UPDATE_MEMBER)
@@ -72,8 +82,14 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
       .then(async () => {
         setIsLoading(true)
         const imageId = profile.imageId || uuid()
-        idImage.front && (await uploadFile(`chailease/${imageId}-01`, idImage.front, authToken, apiHost))
-        idImage.back && (await uploadFile(`chailease/${imageId}-02`, idImage.back, authToken, apiHost))
+        attachments.idImageFront &&
+          (await uploadFile(`chailease/${imageId}-01`, attachments.idImageFront, authToken, apiHost))
+        attachments.idImageBack &&
+          (await uploadFile(`chailease/${imageId}-02`, attachments.idImageBack, authToken, apiHost))
+        attachments.ownSignature &&
+          (await uploadFile(`chailease/${imageId}-03`, attachments.ownSignature, authToken, apiHost))
+        attachments.contactSignature &&
+          (await uploadFile(`chailease/${imageId}-04`, attachments.contactSignature, authToken, apiHost))
         return imageId
       })
       .then(async imageId => {
@@ -90,12 +106,20 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
                   ...values,
                   imageId,
                   idImage: {
-                    front: idImage.front
+                    front: attachments.idImageFront
                       ? await getFileDownloadableLink(`chailease/${imageId}-01`, authToken, apiHost)
                       : profile.idImage?.front,
-                    back: idImage.back
+                    back: attachments.idImageBack
                       ? await getFileDownloadableLink(`chailease/${imageId}-02`, authToken, apiHost)
                       : profile.idImage?.back,
+                  },
+                  signature: {
+                    own: attachments.ownSignature
+                      ? await getFileDownloadableLink(`chailease/${imageId}-03`, authToken, apiHost)
+                      : profile.signature?.own,
+                    contact: attachments.contactSignature
+                      ? await getFileDownloadableLink(`chailease/${imageId}-04`, authToken, apiHost)
+                      : profile.signature?.contact,
                   },
                 },
               },
@@ -198,8 +222,8 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
           <>
             <FileUploader
               showUploadList
-              fileList={idImage.front ? [idImage.front] : []}
-              onChange={files => setIdImage(prev => ({ ...prev, front: files[0] }))}
+              fileList={attachments.idImageFront ? [attachments.idImageFront] : []}
+              onChange={files => setAttachments(prev => ({ ...prev, idImageFront: files[0] }))}
               renderTrigger={({ onClick }) => (
                 <Button icon={<UploadOutlined />} onClick={onClick}>
                   正面
@@ -208,8 +232,8 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
             />
             <FileUploader
               showUploadList
-              fileList={idImage.back ? [idImage.back] : []}
-              onChange={files => setIdImage(prev => ({ ...prev, back: files[0] }))}
+              fileList={attachments.idImageBack ? [attachments.idImageBack] : []}
+              onChange={files => setAttachments(prev => ({ ...prev, idImageBack: files[0] }))}
               renderTrigger={({ onClick }) => (
                 <Button icon={<UploadOutlined />} onClick={onClick}>
                   反面
@@ -272,6 +296,30 @@ const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, pr
         </Form.Item>
         <Form.Item label={'聯絡人身分證號'} name={['contact', 'idNumber']}>
           <Input />
+        </Form.Item>
+        <Form.Item label={'親簽文件'}>
+          <FileUploader
+            showUploadList
+            fileList={attachments.ownSignature ? [attachments.ownSignature] : []}
+            onChange={files => setAttachments(prev => ({ ...prev, ownSignature: files[0] }))}
+            renderTrigger={({ onClick }) => (
+              <Button icon={<UploadOutlined />} onClick={onClick}>
+                重新上傳
+              </Button>
+            )}
+          />
+        </Form.Item>
+        <Form.Item label={'聯絡人親簽文件'}>
+          <FileUploader
+            showUploadList
+            fileList={attachments.contactSignature ? [attachments.contactSignature] : []}
+            onChange={files => setAttachments(prev => ({ ...prev, contactSignature: files[0] }))}
+            renderTrigger={({ onClick }) => (
+              <Button icon={<UploadOutlined />} onClick={onClick}>
+                重新上傳
+              </Button>
+            )}
+          />
         </Form.Item>
         <Form.Item label={'帳單寄送地址'} name={['bill', 'address']}>
           <Input />
