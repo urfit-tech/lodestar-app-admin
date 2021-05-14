@@ -73,7 +73,7 @@ type MemberContractModalProps = {
     projectPlanName?: string | null
     price?: number | null
     coinAmount?: number | null
-    couponCount?: number | null
+    appointmentCouponCount?: number | null
     appointmentCreatorName?: string | null
     referral?: {
       name: string | null
@@ -598,7 +598,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               {formatMessage(memberContractMessages.label.coins)} ：{purchasedItem.coinAmount}
             </span>
             <span>
-              {formatMessage(memberContractMessages.label.appointment)}：{purchasedItem.couponCount}
+              {formatMessage(memberContractMessages.label.appointment)}：{purchasedItem.appointmentCouponCount}
             </span>
           </StyledText>
           {purchasedItem.appointmentCreatorName && (

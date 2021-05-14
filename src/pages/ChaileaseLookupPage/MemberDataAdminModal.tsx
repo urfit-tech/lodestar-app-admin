@@ -14,12 +14,6 @@ import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 
-type MemberContractModalProps = {
-  memberId: string
-  profile: any
-  onSuccess?: () => void
-} & AdminModalProps
-
 type MemberDataFieldProps = {
   name: string
   idNumber: string
@@ -58,7 +52,13 @@ type MemberDataFieldProps = {
   }
 }
 
-const MemberDataAdminModal: React.FC<MemberContractModalProps> = ({ memberId, profile, onSuccess, ...props }) => {
+const MemberDataAdminModal: React.FC<
+  {
+    memberId: string
+    profile: any
+    onSuccess?: () => void
+  } & AdminModalProps
+> = ({ memberId, profile, onSuccess, ...props }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [attachments, setAttachments] = useState<{
     idImageFront: File | null

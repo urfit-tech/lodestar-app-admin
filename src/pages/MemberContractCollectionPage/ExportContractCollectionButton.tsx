@@ -75,62 +75,77 @@ const ExportContractCollectionButton: React.FC<{
       })
 
       const memberContracts: MemberContractProps[] =
-        data?.xuemi_member_private_teach_contract.map(v => ({
-          id: v.id,
-          authorName: v.author_name,
-          member: {
-            id: v.member_id,
-            name: v.member_name,
-            pictureUrl: v.member_picture_url,
-            email: v.member_email,
-            createdAt: v.member?.created_at && new Date(v.member.created_at),
-          },
-          startedAt: new Date(v.started_at),
-          endedAt: new Date(v.ended_at),
-          agreedAt: v.agreed_at ? new Date(v.agreed_at) : null,
-          revokedAt: v.revoked_at ? new Date(v.revoked_at) : null,
-          approvedAt: v.approved_at ? new Date(v.approved_at) : null,
-          loanCanceledAt: v.loan_canceled_at ? new Date(v.loan_canceled_at) : null,
-          refundAppliedAt: v.refund_applied_at ? new Date(v.refund_applied_at) : null,
-          referral: {
-            name: v.referral_name,
-            email: v.referral_email,
-          },
-          appointmentCreatorName: v.appointment_creator_name,
-          studentCertification: v.student_certification || null,
-          attachments: v.attachments,
-          invoice: v.values?.invoice || null,
-          projectPlanName:
-            v.values?.projectPlanName ||
-            v.values?.orderProducts.map((v: { name: string }) => v.name).join('、') ||
-            null,
-          price: v.values?.price || null,
-          coinAmount: v.values?.coinAmount || null,
-          paymentOptions: {
-            paymentMethod: v.values.paymentOptions?.paymentMethod || '',
-            paymentNumber: v.values.paymentOptions?.paymentNumber || '',
-            installmentPlan: v.values.paymentOptions?.installmentPlan || 0,
-          },
-          note: v.note,
-          orderExecutors:
-            v.values?.orderExecutors?.map((v: any) => ({
-              ratio: v.ratio,
-              memberId: v.member_id,
-            })) || [],
-          couponCount: v.values?.coupons.length || null,
-          manager: v.member?.manager
-            ? {
-                id: v.member.manager.id,
-                name: v.member.manager.name || v.member.manager.username,
-              }
-            : null,
-          status: v.status as StatusType | null,
-          lastActivity: v.last_marketing_activity,
-          lastAdPackage: v.last_ad_package,
-          lastAdMaterial: v.last_ad_material,
-          firstFilledAt: v.first_fill_in_date,
-          lastFilledAt: v.last_fill_in_date,
-        })) || []
+        data?.xuemi_member_private_teach_contract.map(v => {
+          const appointmentCouponPlanId: string | undefined = v.values?.coupons?.find(
+            (coupon: any) => coupon?.coupon_code?.data?.coupon_plan?.data?.title === '學米諮詢券',
+          )?.coupon_code.data.coupon_plan.data.id
+
+          return {
+            id: v.id,
+            authorName: v.author_name,
+            member: {
+              id: v.member_id,
+              name: v.member_name,
+              pictureUrl: v.member_picture_url,
+              email: v.member_email,
+              createdAt: v.member?.created_at && new Date(v.member.created_at),
+            },
+            startedAt: new Date(v.started_at),
+            endedAt: new Date(v.ended_at),
+            agreedAt: v.agreed_at ? new Date(v.agreed_at) : null,
+            revokedAt: v.revoked_at ? new Date(v.revoked_at) : null,
+            approvedAt: v.approved_at ? new Date(v.approved_at) : null,
+            loanCanceledAt: v.loan_canceled_at ? new Date(v.loan_canceled_at) : null,
+            refundAppliedAt: v.refund_applied_at ? new Date(v.refund_applied_at) : null,
+            referral: {
+              name: v.referral_name,
+              email: v.referral_email,
+            },
+            appointmentCreatorName: v.appointment_creator_name,
+            studentCertification: v.student_certification || null,
+            attachments: v.attachments,
+            invoice: v.values?.invoice || null,
+            projectPlanName:
+              v.values?.projectPlanName ||
+              v.values?.orderProducts.map((v: { name: string }) => v.name).join('、') ||
+              null,
+            price: v.values?.price || null,
+            coinAmount:
+              v.values?.coinAmount ||
+              v.values?.coinLogs?.find((coinLog: any) => coinLog.description === '私塾課代幣')?.amount ||
+              null,
+            paymentOptions: {
+              paymentMethod: v.values.paymentOptions?.paymentMethod || '',
+              paymentNumber: v.values.paymentOptions?.paymentNumber || '',
+              installmentPlan: v.values.paymentOptions?.installmentPlan || 0,
+            },
+            note: v.note,
+            orderExecutors:
+              v.values?.orderExecutors?.map((v: any) => ({
+                ratio: v.ratio,
+                memberId: v.member_id,
+              })) || [],
+            appointmentCouponCount: appointmentCouponPlanId
+              ? v.values.coupons?.filter(
+                  (coupon: any) =>
+                    coupon?.coupon_code?.data?.coupon_plan_id === appointmentCouponPlanId ||
+                    coupon?.coupon_code?.data?.coupon_plan?.data?.title === '學米諮詢券',
+                ).length || null
+              : null,
+            manager: v.member?.manager
+              ? {
+                  id: v.member.manager.id,
+                  name: v.member.manager.name || v.member.manager.username,
+                }
+              : null,
+            status: v.status as StatusType | null,
+            lastActivity: v.last_marketing_activity,
+            lastAdPackage: v.last_ad_package,
+            lastAdMaterial: v.last_ad_material,
+            firstFilledAt: v.first_fill_in_date,
+            lastFilledAt: v.last_fill_in_date,
+          }
+        }) || []
 
       const salesIds = memberContracts
         .map(
@@ -190,7 +205,7 @@ const ExportContractCollectionButton: React.FC<{
               case 'coin':
                 return `${contract.coinAmount || 0}`
               case 'appointment':
-                return `${contract.couponCount || 0}`
+                return `${contract.appointmentCouponCount || 0}`
               case 'appointmentCreator':
                 return contract.appointmentCreatorName || ''
               case 'referralMember':

@@ -51,7 +51,7 @@ export type MemberContractProps = {
         memberId: string
       }[]
     | null
-  couponCount: number | null
+  appointmentCouponCount: number | null
   manager: {
     id: string
     name: string
