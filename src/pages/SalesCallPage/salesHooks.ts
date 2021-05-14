@@ -197,17 +197,18 @@ export const memberPropertyFields: {
   name: string
   required?: boolean
 }[] = [
-  { name: '性別', required: true },
-  { name: '縣市' },
-  { name: '有意願領域', required: true },
-  { name: '是否在職', required: true },
-  { name: '是否為相關職務' },
-  { name: '學生程度', required: true },
-  { name: '學習動機' },
-  { name: '每月學習預算' },
-  { name: '有沒有上過其他課程' },
-  { name: '是否有轉職意願', required: true },
-]
+    { name: '性別', required: true },
+    { name: '縣市' },
+    { name: '有意願領域', required: true },
+    { name: '學生程度', required: true },
+    { name: '學習動機', required: true },
+    { name: '每月學習預算', required: true },
+    { name: '有沒有上過其他課程', required: true },
+    { name: '是否有轉職意願', required: true },
+    { name: '是否為相關職務', required: true },
+    { name: '身分', required: true },
+    { name: '職業', required: true }
+  ]
 
 export const useLeadProperties = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_LEAD_PROPERTIES, hasura.GET_LEAD_PROPERTIESVariables>(
