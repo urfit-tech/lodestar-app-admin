@@ -219,9 +219,11 @@ export const useMemberContractCollection = ({
             memberId: v.member_id || v.memberId,
           })) || [],
         appointmentCouponCount: appointmentCouponPlanId
-          ? (v.values.coupons?.filter(
-              (coupon: any) => coupon?.coupon_code?.data?.coupon_plan_id === appointmentCouponPlanId,
-            ).length || 0) + 1
+          ? v.values.coupons?.filter(
+              (coupon: any) =>
+                coupon?.coupon_code?.data?.coupon_plan_id === appointmentCouponPlanId ||
+                coupon?.coupon_code?.data?.coupon_plan?.data?.title === '學米諮詢券',
+            ).length || null
           : null,
         manager: v.member?.manager
           ? {
