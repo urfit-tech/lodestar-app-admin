@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useMemo } from 'react'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
-import types from '../types'
+import hasura from '../hasura'
 import { CategoryProps, PeriodType } from '../types/general'
 import {
   PodcastPlanProps,
@@ -13,8 +13,8 @@ import {
 
 export const usePodcastProgramCollection = (memberId?: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PODCAST_PROGRAM_ADMIN_COLLECTION,
-    types.GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables
+    hasura.GET_PODCAST_PROGRAM_ADMIN_COLLECTION,
+    hasura.GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables
   >(
     gql`
       query GET_PODCAST_PROGRAM_ADMIN_COLLECTION($memberId: String) {
@@ -96,8 +96,8 @@ export const usePodcastProgramCollection = (memberId?: string) => {
 
 export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PODCAST_PROGRAM_ADMIN,
-    types.GET_PODCAST_PROGRAM_ADMINVariables
+    hasura.GET_PODCAST_PROGRAM_ADMIN,
+    hasura.GET_PODCAST_PROGRAM_ADMINVariables
   >(
     gql`
       query GET_PODCAST_PROGRAM_ADMIN($podcastProgramId: uuid!) {
@@ -207,8 +207,8 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
 
 export const usePodcastPlanAdminCollection = (creatorId?: string) => {
   const { data, loading, error, refetch } = useQuery<
-    types.GET_PODCAST_PLAN_ADMIN_COLLECTION,
-    types.GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables
+    hasura.GET_PODCAST_PLAN_ADMIN_COLLECTION,
+    hasura.GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables
   >(
     gql`
       query GET_PODCAST_PLAN_ADMIN_COLLECTION($creatorId: String) {

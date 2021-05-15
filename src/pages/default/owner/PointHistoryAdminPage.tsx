@@ -16,11 +16,11 @@ import {
   StyledModalTitle,
 } from '../../../components/program/ProgramDeletionAdminCard'
 import { useApp } from '../../../contexts/AppContext'
+import hasura from '../../../hasura'
 import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as PointIcon } from '../../../images/icon/point.svg'
 import { ReactComponent as TextIcon } from '../../../images/icon/text.svg'
-import types from '../../../types'
 import { MemberBriefProps } from '../../../types/member'
 import LoadingPage from '../LoadingPage'
 import NotFoundPage from '../NotFoundPage'
@@ -307,8 +307,8 @@ const PointHistoryAdminPage: React.FC = () => {
 
 const usePointLogCollection = () => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_POINT_RELEASE_HISTORY,
-    types.GET_POINT_RELEASE_HISTORYVariables
+    hasura.GET_POINT_RELEASE_HISTORY,
+    hasura.GET_POINT_RELEASE_HISTORYVariables
   >(gql`
     query GET_POINT_RELEASE_HISTORY($offset: Int) {
       point_log(order_by: { created_at: desc }, limit: 10, offset: $offset) {
@@ -381,8 +381,8 @@ const usePointLogCollection = () => {
 
 const useOrderLogWithPointsCollection = () => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_ORDER_LOG_WITH_POINTS_COLLECTION,
-    types.GET_ORDER_LOG_WITH_POINTS_COLLECTIONVariables
+    hasura.GET_ORDER_LOG_WITH_POINTS_COLLECTION,
+    hasura.GET_ORDER_LOG_WITH_POINTS_COLLECTIONVariables
   >(gql`
     query GET_ORDER_LOG_WITH_POINTS_COLLECTION($offset: Int) {
       order_log(
@@ -461,7 +461,7 @@ const useOrderLogWithPointsCollection = () => {
 }
 
 const useDeletePointLog = () => {
-  const [deletePointLogHandler] = useMutation<types.DELETE_POINT_LOG>(gql`
+  const [deletePointLogHandler] = useMutation<hasura.DELETE_POINT_LOG>(gql`
     mutation DELETE_POINT_LOG($pointLogId: uuid!) {
       delete_point_log(where: { id: { _eq: $pointLogId } }) {
         affected_rows

@@ -7,9 +7,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -29,10 +29,10 @@ const ProgramIntroForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
-  const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
+  const [updateProgramCover] = useMutation<hasura.UPDATE_PROGRAM_COVER, hasura.UPDATE_PROGRAM_COVERVariables>(
     UPDATE_PROGRAM_COVER,
   )
-  const [updateProgramIntro] = useMutation<types.UPDATE_PROGRAM_INTRO, types.UPDATE_PROGRAM_INTROVariables>(
+  const [updateProgramIntro] = useMutation<hasura.UPDATE_PROGRAM_INTRO, hasura.UPDATE_PROGRAM_INTROVariables>(
     UPDATE_PROGRAM_INTRO,
   )
   const [loading, setLoading] = useState(false)

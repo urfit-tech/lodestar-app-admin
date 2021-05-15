@@ -23,13 +23,13 @@ export const ShortenPeriodTypeLabel: React.FC<{ periodType: PeriodType | string 
 
   switch (periodType) {
     case 'D':
-      return <>{formatMessage(commonMessages.label.day)}</>
+      return <>{formatMessage(commonMessages.unit.day)}</>
     case 'W':
-      return <>{formatMessage(commonMessages.label.week)}</>
+      return <>{formatMessage(commonMessages.unit.week)}</>
     case 'M':
-      return <>{formatMessage(commonMessages.label.month)}</>
+      return <>{formatMessage(commonMessages.unit.month)}</>
     case 'Y':
-      return <>{formatMessage(commonMessages.label.year)}</>
+      return <>{formatMessage(commonMessages.unit.year)}</>
     default:
       return <>{formatMessage(commonMessages.label.unknownPeriod)}</>
   }

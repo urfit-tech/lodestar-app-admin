@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import types from '../../types'
 import { CategoryProps } from '../../types/general'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
@@ -36,8 +36,8 @@ const PodcastProgramBasicForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
   const [updatePodcastProgramBasic] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_BASIC,
-    types.UPDATE_PODCAST_PROGRAM_BASICVariables
+    hasura.UPDATE_PODCAST_PROGRAM_BASIC,
+    hasura.UPDATE_PODCAST_PROGRAM_BASICVariables
   >(UPDATE_PODCAST_PROGRAM_BASIC)
   const [loading, setLoading] = useState(false)
 
@@ -106,17 +106,17 @@ const PodcastProgramBasicForm: React.FC<{
           {
             required: true,
             message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(commonMessages.term.title),
+              field: formatMessage(commonMessages.label.title),
             }),
           },
         ]}
       >
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="podcastProgram" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+      <Form.Item label={formatMessage(commonMessages.label.tags)} name="tags">
         <TagSelector />
       </Form.Item>
       {enabledModules.locale && (

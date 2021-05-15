@@ -10,18 +10,18 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackageCollection } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
-import types from '../../types'
 
 const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { id: appId } = useApp()
   const { programPackages, refetch } = useGetProgramPackageCollection(appId)
-  const [createProgramPackage] = useMutation<types.INSERT_PROGRAM_PACKAGE, types.INSERT_PROGRAM_PACKAGEVariables>(
+  const [createProgramPackage] = useMutation<hasura.INSERT_PROGRAM_PACKAGE, hasura.INSERT_PROGRAM_PACKAGEVariables>(
     INSERT_PROGRAM_PACKAGE,
   )
 

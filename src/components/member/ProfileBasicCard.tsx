@@ -7,12 +7,12 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
 import { useMember } from '../../hooks/member'
 import DefaultAvatarImage from '../../images/default/avatar.svg'
-import types from '../../types'
 import { AdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -47,10 +47,10 @@ const ProfileBasicCard: React.FC<
   const { member, refetchMember } = useMember(memberId)
   const { categories } = useCategory('creator')
 
-  const [updateMemberAvatar] = useMutation<types.UPDATE_MEMBER_AVATAR, types.UPDATE_MEMBER_AVATARVariables>(
+  const [updateMemberAvatar] = useMutation<hasura.UPDATE_MEMBER_AVATAR, hasura.UPDATE_MEMBER_AVATARVariables>(
     UPDATE_MEMBER_AVATAR,
   )
-  const [updateMemberBasic] = useMutation<types.UPDATE_MEMBER_BASIC, types.UPDATE_MEMBER_BASICVariables>(
+  const [updateMemberBasic] = useMutation<hasura.UPDATE_MEMBER_BASIC, hasura.UPDATE_MEMBER_BASICVariables>(
     UPDATE_MEMBER_BASIC,
   )
 
@@ -137,7 +137,7 @@ const ProfileBasicCard: React.FC<
         }}
         onFinish={handleSubmit}
       >
-        <Form.Item label={formatMessage(commonMessages.term.avatar)}>
+        <Form.Item label={formatMessage(commonMessages.label.avatar)}>
           <ImageInput
             path={`avatars/${appId}/${memberId}`}
             image={{
@@ -150,13 +150,13 @@ const ProfileBasicCard: React.FC<
           />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.name)}
+          label={formatMessage(commonMessages.label.name)}
           name="name"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.name),
+                field: formatMessage(commonMessages.label.name),
               }),
             },
           ]}
@@ -164,14 +164,14 @@ const ProfileBasicCard: React.FC<
           <Input />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.creatorTitle)}
+          label={formatMessage(commonMessages.label.creatorTitle)}
           name="title"
           className={withTitle ? '' : 'd-none'}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.field)}
+          label={formatMessage(commonMessages.label.field)}
           className={withFields ? '' : 'd-none'}
           name="fields"
         >
@@ -184,7 +184,7 @@ const ProfileBasicCard: React.FC<
           </Select>
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.speciality)}
+          label={formatMessage(commonMessages.label.speciality)}
           name="specialities"
           className={withTags ? '' : 'd-none'}
         >
@@ -198,13 +198,13 @@ const ProfileBasicCard: React.FC<
         </Form.Item>
         {withAbstract && (
           <Form.Item
-            label={formatMessage(commonMessages.term.shortDescription)}
+            label={formatMessage(commonMessages.label.shortDescription)}
             name="abstract"
             rules={[
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.shortDescription),
+                  field: formatMessage(commonMessages.label.shortDescription),
                 }),
               },
             ]}
@@ -218,7 +218,7 @@ const ProfileBasicCard: React.FC<
         )}
         {withDescription && (
           <Form.Item
-            label={formatMessage(commonMessages.term.introduction)}
+            label={formatMessage(commonMessages.label.introduction)}
             wrapperCol={{ md: { span: 20 } }}
             name="description"
           >

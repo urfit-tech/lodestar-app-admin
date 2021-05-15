@@ -5,8 +5,8 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { rgba } from '../../helpers'
-import types from '../../types'
 import { AvatarImage } from '../common/Image'
 
 const StyledListItem = styled(List.Item)`
@@ -31,7 +31,7 @@ const NotificationItem: React.FC<{
   readAt: Date | null
   onRead?: () => void
 }> = ({ id, description, avatar, updatedAt, extra, referenceUrl, type, readAt, onRead }) => {
-  const [readNotification] = useMutation<types.READ_NOTIFICATION, types.READ_NOTIFICATIONVariables>(READ_NOTIFICATION)
+  const [readNotification] = useMutation<hasura.READ_NOTIFICATION, hasura.READ_NOTIFICATIONVariables>(READ_NOTIFICATION)
 
   return (
     <StyledListItem

@@ -33,11 +33,11 @@ const StyledPriceLabel = styled.div`
 `
 
 const messages = defineMessages({
-  firstPeriod: { id: 'price.label.firstPeriod', defaultMessage: '首期' },
-  second: { id: 'price.label.second', defaultMessage: '第二期開始' },
-  originalPrice: { id: 'price.label.originalPrice', defaultMessage: '原價' },
-  free: { id: 'price.label.free', defaultMessage: '免費' },
-  perPeriods: { id: 'price.label.perPeriods', defaultMessage: '每 {amount} {unit}' },
+  firstPeriod: { id: 'common.label.firstPeriod', defaultMessage: '首期' },
+  second: { id: 'common.label.second', defaultMessage: '第二期開始' },
+  originalPrice: { id: 'common.label.originalPrice', defaultMessage: '原價' },
+  free: { id: 'common.label.free', defaultMessage: '免費' },
+  perPeriods: { id: 'common.label.perPeriods', defaultMessage: '每 {amount} {unit}' },
 })
 
 const PriceLabel: React.FC<{
@@ -74,13 +74,13 @@ const PriceLabel: React.FC<{
                 amount: periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : '',
                 unit:
                   periodType === 'D'
-                    ? formatMessage(commonMessages.label.day)
+                    ? formatMessage(commonMessages.unit.day)
                     : periodType === 'W'
-                    ? formatMessage(commonMessages.label.week)
+                    ? formatMessage(commonMessages.unit.week)
                     : periodType === 'M'
-                    ? formatMessage(commonMessages.label.month)
+                    ? formatMessage(commonMessages.unit.month)
                     : periodType === 'Y'
-                    ? formatMessage(commonMessages.label.year)
+                    ? formatMessage(commonMessages.unit.year)
                     : '',
               })}
           </span>
@@ -100,13 +100,13 @@ const PriceLabel: React.FC<{
               amount: periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : '',
               unit:
                 periodType === 'D'
-                  ? formatMessage(commonMessages.label.day)
+                  ? formatMessage(commonMessages.unit.day)
                   : periodType === 'W'
-                  ? formatMessage(commonMessages.label.week)
+                  ? formatMessage(commonMessages.unit.week)
                   : periodType === 'M'
-                  ? formatMessage(commonMessages.label.month)
+                  ? formatMessage(commonMessages.unit.month)
                   : periodType === 'Y'
-                  ? formatMessage(commonMessages.label.year)
+                  ? formatMessage(commonMessages.unit.year)
                   : '',
             })}
         </span>

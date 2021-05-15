@@ -591,6 +591,8 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
   appointmentPlanId: any;
   title: string;
   phone: string;
+  reservationAmount?: any | null;
+  reservationType?: string | null;
 }
 
 /* tslint:disable */
@@ -602,22 +604,13 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 // GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
 // ====================================================
 
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate {
-  __typename: "appointment_plan_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate {
-  __typename: "appointment_plan_aggregate";
-  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate | null;
-}
-
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
   __typename: "member_public";
   id: string | null;
   picture_url: string | null;
   name: string | null;
   username: string | null;
+  abstract: string | null;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
@@ -633,6 +626,7 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointm
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   __typename: "appointment_plan";
   id: any;
+  creator_id: string;
   /**
    * An object relationship
    */
@@ -652,10 +646,6 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
   /**
-   * fetch aggregated fields from the table: "appointment_plan"
-   */
-  appointment_plan_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate;
-  /**
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
@@ -663,7 +653,64 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
   condition: appointment_plan_bool_exp;
-  orderBy?: appointment_plan_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PLAN_COUNTS
+// ====================================================
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_published_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_published {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COUNTS_published_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_privately_published_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_privately_published {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COUNTS_privately_published_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_draft_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS_draft {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COUNTS_draft_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTS {
+  /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  published: GET_APPOINTMENT_PLAN_COUNTS_published;
+  /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  privately_published: GET_APPOINTMENT_PLAN_COUNTS_privately_published;
+  /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  draft: GET_APPOINTMENT_PLAN_COUNTS_draft;
+}
+
+export interface GET_APPOINTMENT_PLAN_COUNTSVariables {
+  condition?: appointment_plan_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -819,29 +866,56 @@ export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
+// GraphQL query operation: GET_APPOINTMENT_PLAN_SCHEDULES
 // ====================================================
 
-export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
-  __typename: "appointment_schedule_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
+export interface GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
 }
 
-export interface CREATE_APPOINTMENT_SCHEDULE {
+export interface GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_appointment_schedules {
+  __typename: "appointment_schedule";
+  id: any;
+  started_at: any;
+  interval_amount: number | null;
   /**
-   * insert data into the table: "appointment_schedule"
+   * Y / M / W / D
    */
-  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
+  interval_type: string | null;
+  /**
+   * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
+   */
+  excludes: any;
 }
 
-export interface CREATE_APPOINTMENT_SCHEDULEVariables {
-  appointmentPlanId: any;
+export interface GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_creator | null;
+  /**
+   * An array relationship
+   */
+  appointment_schedules: GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_appointment_schedules[];
+}
+
+export interface GET_APPOINTMENT_PLAN_SCHEDULES {
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan[];
+}
+
+export interface GET_APPOINTMENT_PLAN_SCHEDULESVariables {
+  condition: appointment_plan_bool_exp;
+  now: any;
   startedAt: any;
-  intervalType?: string | null;
-  intervalAmount?: number | null;
 }
 
 /* tslint:disable */
@@ -2386,6 +2460,8 @@ export interface UPDATE_MEMBER_PROFILE_BASIC {
 
 export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   name?: string | null;
+  username?: string | null;
+  email?: string | null;
   memberId: string;
   managerId?: string | null;
   assignedAt?: any | null;
@@ -3963,6 +4039,53 @@ export interface UPDATE_EXERCISE_POSITIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PRACTICE
+// ====================================================
+
+export interface UPDATE_PRACTICE_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRACTICE_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRACTICE {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_PRACTICE_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_PRACTICE_update_program_content_body | null;
+}
+
+export interface UPDATE_PRACTICEVariables {
+  programContentId: any;
+  title?: string | null;
+  description?: string | null;
+  publishedAt?: any | null;
+  duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+  metadata?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
 
@@ -4160,93 +4283,6 @@ export interface UPDATE_PROGRAM_CONTENT_MATERIALS {
 export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
   programContentId: any;
   materials: program_content_material_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PRACTICE
-// ====================================================
-
-export interface UPDATE_PRACTICE_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: UPDATE_PRACTICE_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_PRACTICE_update_program_content_body | null;
-}
-
-export interface UPDATE_PRACTICEVariables {
-  programContentId: any;
-  title?: string | null;
-  description?: string | null;
-  publishedAt?: any | null;
-  duration?: any | null;
-  isNotifyUpdate?: boolean | null;
-  notifiedAt?: any | null;
-  metadata?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PRACTICE
-// ====================================================
-
-export interface DELETE_PRACTICE_delete_practice {
-  __typename: "practice_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE_delete_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE {
-  /**
-   * delete data from the table: "practice"
-   */
-  delete_practice: DELETE_PRACTICE_delete_practice | null;
-  /**
-   * delete data from the table: "program_content_body"
-   */
-  delete_program_content_body: DELETE_PRACTICE_delete_program_content_body | null;
-}
-
-export interface DELETE_PRACTICEVariables {
-  programContentId: any;
 }
 
 /* tslint:disable */
@@ -6567,6 +6603,12 @@ export interface GET_ACTIVITY_ADMINVariables {
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules {
   __typename: "appointment_schedule";
   id: any;
+  started_at: any;
+  interval_amount: number | null;
+  /**
+   * Y / M / W / D
+   */
+  interval_type: string | null;
   /**
    * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
    */
@@ -6621,6 +6663,11 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   currency_id: string;
   creator_id: string;
   is_private: boolean;
+  reservation_amount: any;
+  /**
+   * hour / day
+   */
+  reservation_type: string | null;
   /**
    * An array relationship
    */
@@ -6772,6 +6819,34 @@ export interface GET_APPOINTMENT_ENROLLMENTS {
 export interface GET_APPOINTMENT_ENROLLMENTSVariables {
   condition?: appointment_enrollment_bool_exp | null;
   sort?: appointment_enrollment_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_APPOINTMENT_SCHEDULES
+// ====================================================
+
+export interface INSERT_APPOINTMENT_SCHEDULES_insert_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_APPOINTMENT_SCHEDULES {
+  /**
+   * insert data into the table: "appointment_schedule"
+   */
+  insert_appointment_schedule: INSERT_APPOINTMENT_SCHEDULES_insert_appointment_schedule | null;
+}
+
+export interface INSERT_APPOINTMENT_SCHEDULESVariables {
+  data: appointment_schedule_insert_input[];
 }
 
 /* tslint:disable */
@@ -7014,6 +7089,97 @@ export interface GET_POSTS {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ENROLLED_CARD_IDS
+// ====================================================
+
+export interface GET_ENROLLED_CARD_IDS_card_enrollment {
+  __typename: "card_enrollment";
+  card_id: any | null;
+}
+
+export interface GET_ENROLLED_CARD_IDS {
+  /**
+   * fetch data from the table: "card_enrollment"
+   */
+  card_enrollment: GET_ENROLLED_CARD_IDS_card_enrollment[];
+}
+
+export interface GET_ENROLLED_CARD_IDSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ENROLLED_CARD
+// ====================================================
+
+export interface GET_ENROLLED_CARD_card_by_pk {
+  __typename: "card";
+  id: any;
+  title: string;
+  description: string;
+  template: string;
+  app_id: string;
+}
+
+export interface GET_ENROLLED_CARD {
+  /**
+   * fetch data from the table: "card" using primary key columns
+   */
+  card_by_pk: GET_ENROLLED_CARD_card_by_pk | null;
+}
+
+export interface GET_ENROLLED_CARDVariables {
+  cardId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ENROLLED_CARDS
+// ====================================================
+
+export interface GET_ENROLLED_CARDS_card_enrollment_card {
+  __typename: "card";
+  id: any;
+  title: string;
+  description: string;
+  template: string;
+}
+
+export interface GET_ENROLLED_CARDS_card_enrollment {
+  __typename: "card_enrollment";
+  /**
+   * An object relationship
+   */
+  card: GET_ENROLLED_CARDS_card_enrollment_card | null;
+  updated_at: any | null;
+}
+
+export interface GET_ENROLLED_CARDS {
+  /**
+   * fetch data from the table: "card_enrollment"
+   */
+  card_enrollment: GET_ENROLLED_CARDS_card_enrollment[];
+}
+
+export interface GET_ENROLLED_CARDSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_COUPON_PLAN_COLLECTION
 // ====================================================
 
@@ -7114,6 +7280,7 @@ export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_member {
 export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_status {
   __typename: "coupon_status";
   used: boolean | null;
+  outdated: boolean | null;
 }
 
 export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons {
@@ -7164,6 +7331,100 @@ export interface GET_COUPON__CODE_COLLECTION {
 
 export interface GET_COUPON__CODE_COLLECTIONVariables {
   couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_VOUCHER_PLAN
+// ====================================================
+
+export interface INSERT_VOUCHER_PLAN_insert_voucher_plan {
+  __typename: "voucher_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_VOUCHER_PLAN {
+  /**
+   * insert data into the table: "voucher_plan"
+   */
+  insert_voucher_plan: INSERT_VOUCHER_PLAN_insert_voucher_plan | null;
+}
+
+export interface INSERT_VOUCHER_PLANVariables {
+  title: string;
+  description?: string | null;
+  appId: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  productQuantityLimit: number;
+  voucherCodes: voucher_code_insert_input[];
+  voucherPlanProducts: voucher_plan_product_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_VOUCHER_PLAN
+// ====================================================
+
+export interface UPDATE_VOUCHER_PLAN_update_voucher_plan {
+  __typename: "voucher_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN_delete_voucher_plan_product {
+  __typename: "voucher_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN_insert_voucher_plan_product {
+  __typename: "voucher_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN {
+  /**
+   * update data of the table: "voucher_plan"
+   */
+  update_voucher_plan: UPDATE_VOUCHER_PLAN_update_voucher_plan | null;
+  /**
+   * delete data from the table: "voucher_plan_product"
+   */
+  delete_voucher_plan_product: UPDATE_VOUCHER_PLAN_delete_voucher_plan_product | null;
+  /**
+   * insert data into the table: "voucher_plan_product"
+   */
+  insert_voucher_plan_product: UPDATE_VOUCHER_PLAN_insert_voucher_plan_product | null;
+}
+
+export interface UPDATE_VOUCHER_PLANVariables {
+  voucherPlanId: any;
+  title: string;
+  description?: string | null;
+  appId: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  productQuantityLimit: number;
+  voucherPlanProducts: voucher_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -7276,100 +7537,6 @@ export interface GET_VOUCHER_CODE {
 
 export interface GET_VOUCHER_CODEVariables {
   voucherPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_VOUCHER_PLAN
-// ====================================================
-
-export interface INSERT_VOUCHER_PLAN_insert_voucher_plan {
-  __typename: "voucher_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_VOUCHER_PLAN {
-  /**
-   * insert data into the table: "voucher_plan"
-   */
-  insert_voucher_plan: INSERT_VOUCHER_PLAN_insert_voucher_plan | null;
-}
-
-export interface INSERT_VOUCHER_PLANVariables {
-  title: string;
-  description?: string | null;
-  appId: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  productQuantityLimit: number;
-  voucherCodes: voucher_code_insert_input[];
-  voucherPlanProducts: voucher_plan_product_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_VOUCHER_PLAN
-// ====================================================
-
-export interface UPDATE_VOUCHER_PLAN_update_voucher_plan {
-  __typename: "voucher_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN_delete_voucher_plan_product {
-  __typename: "voucher_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN_insert_voucher_plan_product {
-  __typename: "voucher_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN {
-  /**
-   * update data of the table: "voucher_plan"
-   */
-  update_voucher_plan: UPDATE_VOUCHER_PLAN_update_voucher_plan | null;
-  /**
-   * delete data from the table: "voucher_plan_product"
-   */
-  delete_voucher_plan_product: UPDATE_VOUCHER_PLAN_delete_voucher_plan_product | null;
-  /**
-   * insert data into the table: "voucher_plan_product"
-   */
-  insert_voucher_plan_product: UPDATE_VOUCHER_PLAN_insert_voucher_plan_product | null;
-}
-
-export interface UPDATE_VOUCHER_PLANVariables {
-  voucherPlanId: any;
-  title: string;
-  description?: string | null;
-  appId: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  productQuantityLimit: number;
-  voucherPlanProducts: voucher_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -8016,6 +8183,80 @@ export interface DELETE_ATTACHMENTSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_COUPON_COLLECTION
+// ====================================================
+
+export interface GET_COUPON_COLLECTION_coupon_status {
+  __typename: "coupon_status";
+  outdated: boolean | null;
+  used: boolean | null;
+}
+
+export interface GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan_coupon_plan_products {
+  __typename: "coupon_plan_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan {
+  __typename: "coupon_plan";
+  id: any;
+  title: string;
+  amount: any;
+  /**
+   * 1 - cash / 2 - percent
+   */
+  type: number;
+  constraint: any | null;
+  started_at: any | null;
+  ended_at: any | null;
+  description: string | null;
+  scope: any | null;
+  /**
+   * An array relationship
+   */
+  coupon_plan_products: GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan_coupon_plan_products[];
+}
+
+export interface GET_COUPON_COLLECTION_coupon_coupon_code {
+  __typename: "coupon_code";
+  code: string;
+  /**
+   * An object relationship
+   */
+  coupon_plan: GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan;
+}
+
+export interface GET_COUPON_COLLECTION_coupon {
+  __typename: "coupon";
+  id: any;
+  /**
+   * An object relationship
+   */
+  status: GET_COUPON_COLLECTION_coupon_status | null;
+  /**
+   * An object relationship
+   */
+  coupon_code: GET_COUPON_COLLECTION_coupon_coupon_code;
+}
+
+export interface GET_COUPON_COLLECTION {
+  /**
+   * fetch data from the table: "coupon"
+   */
+  coupon: GET_COUPON_COLLECTION_coupon[];
+}
+
+export interface GET_COUPON_COLLECTIONVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -8081,10 +8322,10 @@ export interface GET_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_DESCRIPTION
+// GraphQL query operation: GET_MEMBER_ADMIN
 // ====================================================
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_manager {
+export interface GET_MEMBER_ADMIN_member_by_pk_manager {
   __typename: "member";
   id: string;
   email: string;
@@ -8092,85 +8333,59 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_manager {
   picture_url: string | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_tags {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_tags {
   __typename: "member_tag";
   id: any;
   tag_name: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_specialities {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_specialities {
   __typename: "member_speciality";
   id: any;
   tag_name: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_phones {
   __typename: "member_phone";
   id: any;
   phone: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
-  __typename: "member";
-  id: string;
-  /**
-   * app-owner / content-creator
-   */
-  role: string;
-  name: string;
-  picture_url: string | null;
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments {
-  __typename: "member_note_attachment";
-  attachment_id: any | null;
-  data: any | null;
-  options: any | null;
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
-  __typename: "member_note";
-  id: string;
-  /**
-   * NULL | inbound | outbound
-   */
-  type: string | null;
-  /**
-   * NULL | answered | missed
-   */
-  status: string | null;
-  duration: number;
-  description: string | null;
-  created_at: any;
-  rejected_at: any | null;
-  /**
-   * An object relationship
-   */
-  author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
-  /**
-   * An array relationship
-   */
-  member_note_attachments: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments[];
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_contracts {
   __typename: "member_contract";
   id: any;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_notes_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_ADMIN_member_by_pk_member_notes {
+  __typename: "member_note";
+  id: string;
+  /**
+   * An object relationship
+   */
+  author: GET_MEMBER_ADMIN_member_by_pk_member_notes_author;
+  description: string | null;
+  rejected_at: any | null;
+}
+
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_status {
   __typename: "coupon_status";
   outdated: boolean | null;
   used: boolean | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products {
   __typename: "coupon_plan_product";
   id: any;
   product_id: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan {
   __typename: "coupon_plan";
   id: any;
   title: string;
@@ -8187,90 +8402,90 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_
   /**
    * An array relationship
    */
-  coupon_plan_products: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products[];
+  coupon_plan_products: GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products[];
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code {
   __typename: "coupon_code";
   id: any;
   /**
    * An object relationship
    */
-  coupon_plan: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan;
+  coupon_plan: GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons {
   __typename: "coupon";
   id: any;
   /**
    * An object relationship
    */
-  status: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status | null;
+  status: GET_MEMBER_ADMIN_member_by_pk_coupons_status | null;
   /**
    * An object relationship
    */
-  coupon_code: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code;
+  coupon_code: GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_permission_extras {
   __typename: "member_permission_extra";
   id: any;
   permission_id: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
+export interface GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate_sum {
   __typename: "coin_log_sum_fields";
   amount: any | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate {
   __typename: "coin_log_aggregate_fields";
-  sum: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate_sum | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate {
   __typename: "coin_log_aggregate";
-  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
   price: any | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate {
   __typename: "order_product_aggregate_fields";
-  sum: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate_sum | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate {
   __typename: "order_product_aggregate";
-  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs {
   __typename: "order_log";
   /**
    * An aggregated array relationship
    */
-  order_products_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate;
+  order_products_aggregate: GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_categories_category {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_categories_category {
   __typename: "category";
   id: string;
   name: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_categories {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_categories {
   __typename: "member_category";
   /**
    * An object relationship
    */
-  category: GET_MEMBER_DESCRIPTION_member_by_pk_member_categories_category;
+  category: GET_MEMBER_ADMIN_member_by_pk_member_categories_category;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk {
+export interface GET_MEMBER_ADMIN_member_by_pk {
   __typename: "member";
   id: string;
   picture_url: string | null;
@@ -8287,59 +8502,252 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
   /**
    * An object relationship
    */
-  manager: GET_MEMBER_DESCRIPTION_member_by_pk_manager | null;
+  manager: GET_MEMBER_ADMIN_member_by_pk_manager | null;
   /**
    * An array relationship
    */
-  member_tags: GET_MEMBER_DESCRIPTION_member_by_pk_member_tags[];
+  member_tags: GET_MEMBER_ADMIN_member_by_pk_member_tags[];
   /**
    * An array relationship
    */
-  member_specialities: GET_MEMBER_DESCRIPTION_member_by_pk_member_specialities[];
+  member_specialities: GET_MEMBER_ADMIN_member_by_pk_member_specialities[];
   /**
    * An array relationship
    */
-  member_phones: GET_MEMBER_DESCRIPTION_member_by_pk_member_phones[];
+  member_phones: GET_MEMBER_ADMIN_member_by_pk_member_phones[];
   /**
    * An array relationship
    */
-  member_notes: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes[];
+  member_contracts: GET_MEMBER_ADMIN_member_by_pk_member_contracts[];
   /**
    * An array relationship
    */
-  member_contracts: GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts[];
+  member_notes: GET_MEMBER_ADMIN_member_by_pk_member_notes[];
   /**
    * An array relationship
    */
-  coupons: GET_MEMBER_DESCRIPTION_member_by_pk_coupons[];
+  coupons: GET_MEMBER_ADMIN_member_by_pk_coupons[];
   /**
    * An array relationship
    */
-  member_permission_extras: GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras[];
+  member_permission_extras: GET_MEMBER_ADMIN_member_by_pk_member_permission_extras[];
   /**
    * An aggregated array relationship
    */
-  coin_logs_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate;
+  coin_logs_aggregate: GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate;
   /**
    * An array relationship
    */
-  order_logs: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs[];
+  order_logs: GET_MEMBER_ADMIN_member_by_pk_order_logs[];
   /**
    * An array relationship
    */
-  member_categories: GET_MEMBER_DESCRIPTION_member_by_pk_member_categories[];
+  member_categories: GET_MEMBER_ADMIN_member_by_pk_member_categories[];
 }
 
-export interface GET_MEMBER_DESCRIPTION {
+export interface GET_MEMBER_ADMIN {
   /**
    * fetch data from the table: "member" using primary key columns
    */
-  member_by_pk: GET_MEMBER_DESCRIPTION_member_by_pk | null;
+  member_by_pk: GET_MEMBER_ADMIN_member_by_pk | null;
 }
 
-export interface GET_MEMBER_DESCRIPTIONVariables {
+export interface GET_MEMBER_ADMINVariables {
   memberId: string;
-  authorId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
+// ====================================================
+
+export interface GET_MEMBER_NOTES_ADMIN_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_tag {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs {
+  __typename: "order_log";
+  id: string;
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_NOTES_ADMIN_member_note_member_manager | null;
+  /**
+   * An array relationship
+   */
+  member_categories: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
+  /**
+   * An array relationship
+   */
+  order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments {
+  __typename: "member_note_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note {
+  __typename: "member_note";
+  id: string;
+  created_at: any;
+  /**
+   * NULL | inbound | outbound
+   */
+  type: string | null;
+  /**
+   * NULL | answered | missed
+   */
+  status: string | null;
+  /**
+   * An object relationship
+   */
+  author: GET_MEMBER_NOTES_ADMIN_member_note_author;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
+  duration: number;
+  description: string | null;
+  metadata: any | null;
+  note: string | null;
+  /**
+   * An array relationship
+   */
+  member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
+}
+
+export interface GET_MEMBER_NOTES_ADMIN {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_MEMBER_NOTES_ADMIN_category[];
+  /**
+   * fetch data from the table: "member_tag"
+   */
+  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
+  /**
+   * fetch data from the table: "member_note"
+   */
+  member_note: GET_MEMBER_NOTES_ADMIN_member_note[];
+}
+
+export interface GET_MEMBER_NOTES_ADMINVariables {
+  orderBy: member_note_order_by;
+  condition?: member_note_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -9516,6 +9924,11 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
 // GraphQL query operation: GET_PROGRAM
 // ====================================================
 
+export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_body {
+  __typename: "program_content_body";
+  data: any | null;
+}
+
 export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_type {
   __typename: "program_content_type";
   id: any | null;
@@ -9557,6 +9970,10 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   is_notify_update: boolean;
   notified_at: any | null;
   metadata: any | null;
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_body;
   /**
    * An object relationship
    */
@@ -9774,50 +10191,48 @@ export interface GET_PROGRAM_CONTENT_BODYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_OWNED_PROGRAMS
+// GraphQL query operation: GET_PROGRAMS
 // ====================================================
 
-export interface GET_OWNED_PROGRAMS_program {
-  __typename: "program";
+export interface GET_PROGRAMS_program_program_content_sections_program_contents {
+  __typename: "program_content";
   id: any;
   title: string;
 }
 
-export interface GET_OWNED_PROGRAMS {
+export interface GET_PROGRAMS_program_program_content_sections {
+  __typename: "program_content_section";
+  id: any;
+  title: string;
   /**
-   * fetch data from the table: "program"
+   * An array relationship
    */
-  program: GET_OWNED_PROGRAMS_program[];
+  program_contents: GET_PROGRAMS_program_program_content_sections_program_contents[];
 }
 
-export interface GET_OWNED_PROGRAMSVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_EDITABLE_PROGRAMS
-// ====================================================
-
-export interface GET_EDITABLE_PROGRAMS_program {
+export interface GET_PROGRAMS_program {
   __typename: "program";
   id: any;
   title: string;
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_PROGRAMS_program_program_content_sections[];
 }
 
-export interface GET_EDITABLE_PROGRAMS {
+export interface GET_PROGRAMS {
   /**
    * fetch data from the table: "program"
    */
-  program: GET_EDITABLE_PROGRAMS_program[];
+  program: GET_PROGRAMS_program[];
 }
 
-export interface GET_EDITABLE_PROGRAMSVariables {
-  memberId: string;
+export interface GET_PROGRAMSVariables {
+  condition: program_bool_exp;
+  contentSectionCondition?: program_content_section_bool_exp | null;
+  contentCondition?: program_content_bool_exp | null;
+  withContentSection: boolean;
+  withContent: boolean;
 }
 
 /* tslint:disable */
@@ -9955,31 +10370,16 @@ export interface UPDATE_PROGRAM_CONTENT_update_program_content {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_CONTENT_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPDATE_PROGRAM_CONTENT {
   /**
    * update data of the table: "program_content"
    */
   update_program_content: UPDATE_PROGRAM_CONTENT_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_PROGRAM_CONTENT_update_program_content_body | null;
 }
 
 export interface UPDATE_PROGRAM_CONTENTVariables {
   programContentId: any;
   title?: string | null;
-  description?: string | null;
-  type?: string | null;
-  data?: any | null;
   price?: any | null;
   publishedAt?: any | null;
   duration?: any | null;
@@ -9993,8 +10393,55 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_BODY
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_BODY_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_BODY {
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_PROGRAM_CONTENT_BODY_update_program_content_body | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_BODYVariables {
+  programContentId: any;
+  description?: string | null;
+  type?: string | null;
+  data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT
 // ====================================================
+
+export interface DELETE_PROGRAM_CONTENT_delete_practice {
+  __typename: "practice_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_delete_exercise {
+  __typename: "exercise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
 
 export interface DELETE_PROGRAM_CONTENT_delete_program_content_progress {
   __typename: "program_content_progress_mutation_response";
@@ -10013,6 +10460,14 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content_body {
 }
 
 export interface DELETE_PROGRAM_CONTENT {
+  /**
+   * delete data from the table: "practice"
+   */
+  delete_practice: DELETE_PROGRAM_CONTENT_delete_practice | null;
+  /**
+   * delete data from the table: "exercise"
+   */
+  delete_exercise: DELETE_PROGRAM_CONTENT_delete_exercise | null;
   /**
    * delete data from the table: "program_content_progress"
    */
@@ -10574,6 +11029,98 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_EXERCISE_COLLECTION
+// ====================================================
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_body {
+  __typename: "program_content_body";
+  id: any;
+  data: any | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate_aggregate {
+  __typename: "program_content_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate {
+  __typename: "program_content_enrollment_aggregate";
+  aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_section {
+  __typename: "program_content_section";
+  id: any;
+  program_id: any;
+}
+
+export interface GET_EXERCISE_COLLECTION_program_content_by_pk {
+  __typename: "program_content";
+  id: any;
+  metadata: any | null;
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_body;
+  /**
+   * An aggregated array relationship
+   */
+  enrollments_aggregate: GET_EXERCISE_COLLECTION_program_content_by_pk_enrollments_aggregate;
+  /**
+   * An object relationship
+   */
+  program_content_section: GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_section;
+}
+
+export interface GET_EXERCISE_COLLECTION_member_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_EXERCISE_COLLECTION_member {
+  __typename: "exercise";
+  /**
+   * An object relationship
+   */
+  member: GET_EXERCISE_COLLECTION_member_member;
+}
+
+export interface GET_EXERCISE_COLLECTION_exercise {
+  __typename: "exercise";
+  id: any;
+  member_id: string;
+  answer: any | null;
+  created_at: any;
+}
+
+export interface GET_EXERCISE_COLLECTION {
+  /**
+   * fetch data from the table: "program_content" using primary key columns
+   */
+  program_content_by_pk: GET_EXERCISE_COLLECTION_program_content_by_pk | null;
+  /**
+   * fetch data from the table: "exercise"
+   */
+  member: GET_EXERCISE_COLLECTION_member[];
+  /**
+   * fetch data from the table: "exercise"
+   */
+  exercise: GET_EXERCISE_COLLECTION_exercise[];
+}
+
+export interface GET_EXERCISE_COLLECTIONVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
@@ -10598,191 +11145,6 @@ export interface INSERT_MERCHANDISEVariables {
   isPhysical?: boolean | null;
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
-// ====================================================
-
-export interface GET_MEMBER_NOTES_ADMIN_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_tag {
-  __typename: "member_tag";
-  tag_name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
-  __typename: "member_note_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
-  __typename: "member_note_aggregate";
-  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_manager {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories {
-  __typename: "member_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags {
-  __typename: "member_tag";
-  tag_name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
-  __typename: "order_discount_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
-  __typename: "order_discount_aggregate_fields";
-  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
-  __typename: "order_discount_aggregate";
-  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs {
-  __typename: "order_log";
-  id: string;
-  /**
-   * An aggregated array relationship
-   */
-  order_products_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
-  /**
-   * An aggregated array relationship
-   */
-  order_discounts_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  /**
-   * An object relationship
-   */
-  manager: GET_MEMBER_NOTES_ADMIN_member_note_member_manager | null;
-  /**
-   * An array relationship
-   */
-  member_categories: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
-  /**
-   * An array relationship
-   */
-  member_tags: GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
-  /**
-   * An array relationship
-   */
-  order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments {
-  __typename: "member_note_attachment";
-  attachment_id: any | null;
-  data: any | null;
-  options: any | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note {
-  __typename: "member_note";
-  id: string;
-  created_at: any;
-  /**
-   * An object relationship
-   */
-  author: GET_MEMBER_NOTES_ADMIN_member_note_author;
-  /**
-   * An object relationship
-   */
-  member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
-  duration: number;
-  description: string | null;
-  metadata: any | null;
-  note: string | null;
-  /**
-   * An array relationship
-   */
-  member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
-}
-
-export interface GET_MEMBER_NOTES_ADMIN {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_MEMBER_NOTES_ADMIN_category[];
-  /**
-   * fetch data from the table: "member_tag"
-   */
-  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
-  /**
-   * fetch aggregated fields from the table: "member_note"
-   */
-  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
-  /**
-   * fetch data from the table: "member_note"
-   */
-  member_note: GET_MEMBER_NOTES_ADMIN_member_note[];
-}
-
-export interface GET_MEMBER_NOTES_ADMINVariables {
-  orderBy: member_note_order_by;
-  condition?: member_note_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -11022,62 +11384,32 @@ export interface DELETE_COIN_LOGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SALE_COLLECTION
+// GraphQL query operation: GET_CONTRACT_INFO
 // ====================================================
 
-export interface GET_SALE_COLLECTION_xuemi_sales_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_SALE_COLLECTION_xuemi_sales {
-  __typename: "xuemi_sales";
-  /**
-   * An object relationship
-   */
-  member: GET_SALE_COLLECTION_xuemi_sales_member | null;
-}
-
-export interface GET_SALE_COLLECTION {
-  /**
-   * fetch data from the table: "xuemi.sales"
-   */
-  xuemi_sales: GET_SALE_COLLECTION_xuemi_sales[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CONTRACT_MEMBER
-// ====================================================
-
-export interface GET_CONTRACT_MEMBER_member_by_pk_member_phones {
+export interface GET_CONTRACT_INFO_member_by_pk_member_phones {
   __typename: "member_phone";
+  id: any;
   phone: string;
 }
 
-export interface GET_CONTRACT_MEMBER_member_by_pk_member_properties_property {
+export interface GET_CONTRACT_INFO_member_by_pk_member_properties_property {
   __typename: "property";
   id: any;
   name: string;
 }
 
-export interface GET_CONTRACT_MEMBER_member_by_pk_member_properties {
+export interface GET_CONTRACT_INFO_member_by_pk_member_properties {
   __typename: "member_property";
   id: any;
   value: string;
   /**
    * An object relationship
    */
-  property: GET_CONTRACT_MEMBER_member_by_pk_member_properties_property;
+  property: GET_CONTRACT_INFO_member_by_pk_member_properties_property;
 }
 
-export interface GET_CONTRACT_MEMBER_member_by_pk {
+export interface GET_CONTRACT_INFO_member_by_pk {
   __typename: "member";
   id: string;
   name: string;
@@ -11085,58 +11417,31 @@ export interface GET_CONTRACT_MEMBER_member_by_pk {
   /**
    * An array relationship
    */
-  member_phones: GET_CONTRACT_MEMBER_member_by_pk_member_phones[];
+  member_phones: GET_CONTRACT_INFO_member_by_pk_member_phones[];
   /**
    * An array relationship
    */
-  member_properties: GET_CONTRACT_MEMBER_member_by_pk_member_properties[];
+  member_properties: GET_CONTRACT_INFO_member_by_pk_member_properties[];
 }
 
-export interface GET_CONTRACT_MEMBER {
-  /**
-   * fetch data from the table: "member" using primary key columns
-   */
-  member_by_pk: GET_CONTRACT_MEMBER_member_by_pk | null;
+export interface GET_CONTRACT_INFO_property {
+  __typename: "property";
+  id: any;
+  name: string;
+  placeholder: string | null;
 }
 
-export interface GET_CONTRACT_MEMBERVariables {
-  id: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CONTRACTS
-// ====================================================
-
-export interface GET_CONTRACTS_contract {
+export interface GET_CONTRACT_INFO_contract {
   __typename: "contract";
   id: any;
   name: string;
+  options: any | null;
 }
 
-export interface GET_CONTRACTS {
-  /**
-   * fetch data from the table: "contract"
-   */
-  contract: GET_CONTRACTS_contract[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROJECT_PLANS
-// ====================================================
-
-export interface GET_PROJECT_PLANS_project_plan {
+export interface GET_CONTRACT_INFO_projectPrivateTeachPlan {
   __typename: "project_plan";
   id: any;
+  title: string;
   period_amount: any | null;
   /**
    * Y / M / W / D
@@ -11144,118 +11449,83 @@ export interface GET_PROJECT_PLANS_project_plan {
   period_type: string | null;
 }
 
-export interface GET_PROJECT_PLANS {
-  /**
-   * fetch data from the table: "project_plan"
-   */
-  project_plan: GET_PROJECT_PLANS_project_plan[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROPERTIES
-// ====================================================
-
-export interface GET_PROPERTIES_property {
-  __typename: "property";
+export interface GET_CONTRACT_INFO_products {
+  __typename: "project_plan";
   id: any;
-  name: string;
-  placeholder: string | null;
-}
-
-export interface GET_PROPERTIES {
+  title: string;
+  list_price: any | null;
+  options: any | null;
+  period_amount: any | null;
   /**
-   * fetch data from the table: "property"
+   * Y / M / W / D
    */
-  property: GET_PROPERTIES_property[];
+  period_type: string | null;
 }
 
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CONTRACT_PRODUCT
-// ====================================================
-
-export interface GET_CONTRACT_PRODUCT_xuemi_product {
-  __typename: "xuemi_product";
-  id: any;
-  name: string;
-  price: any;
-  addon_price: any | null;
-  appointments: number;
-  coins: number;
-}
-
-export interface GET_CONTRACT_PRODUCT {
-  /**
-   * fetch data from the table: "xuemi.product"
-   */
-  xuemi_product: GET_CONTRACT_PRODUCT_xuemi_product[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APPOINTMENT_PLAN_CREATORS
-// ====================================================
-
-export interface GET_APPOINTMENT_PLAN_CREATORS_appointment_plan_creator {
+export interface GET_CONTRACT_INFO_appointment_plan_creator {
   __typename: "member_public";
   id: string | null;
   name: string | null;
 }
 
-export interface GET_APPOINTMENT_PLAN_CREATORS_appointment_plan {
+export interface GET_CONTRACT_INFO_appointment_plan {
   __typename: "appointment_plan";
   id: any;
   /**
    * An object relationship
    */
-  creator: GET_APPOINTMENT_PLAN_CREATORS_appointment_plan_creator | null;
+  creator: GET_CONTRACT_INFO_appointment_plan_creator | null;
 }
 
-export interface GET_APPOINTMENT_PLAN_CREATORS {
-  /**
-   * fetch data from the table: "appointment_plan"
-   */
-  appointment_plan: GET_APPOINTMENT_PLAN_CREATORS_appointment_plan[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_REFERRAL_MEMBER_COLLECTION
-// ====================================================
-
-export interface GET_REFERRAL_MEMBER_COLLECTION_member {
+export interface GET_CONTRACT_INFO_xuemi_sales_member {
   __typename: "member";
   id: string;
   name: string;
-  email: string;
+  username: string;
 }
 
-export interface GET_REFERRAL_MEMBER_COLLECTION {
+export interface GET_CONTRACT_INFO_xuemi_sales {
+  __typename: "xuemi_sales";
   /**
-   * fetch data from the table: "member"
+   * An object relationship
    */
-  member: GET_REFERRAL_MEMBER_COLLECTION_member[];
+  member: GET_CONTRACT_INFO_xuemi_sales_member | null;
 }
 
-export interface GET_REFERRAL_MEMBER_COLLECTIONVariables {
-  condition?: member_bool_exp | null;
+export interface GET_CONTRACT_INFO {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_CONTRACT_INFO_member_by_pk | null;
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_CONTRACT_INFO_property[];
+  /**
+   * fetch data from the table: "contract"
+   */
+  contract: GET_CONTRACT_INFO_contract[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  projectPrivateTeachPlan: GET_CONTRACT_INFO_projectPrivateTeachPlan[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  products: GET_CONTRACT_INFO_products[];
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_CONTRACT_INFO_appointment_plan[];
+  /**
+   * fetch data from the table: "xuemi.sales"
+   */
+  xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
+}
+
+export interface GET_CONTRACT_INFOVariables {
+  appId: string;
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -11287,6 +11557,33 @@ export interface ADD_MEMBER_CONTRACTVariables {
   endedAt: any;
   values: any;
   options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_REFERRAL_MEMBER
+// ====================================================
+
+export interface GET_REFERRAL_MEMBER_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface GET_REFERRAL_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_REFERRAL_MEMBER_member[];
+}
+
+export interface GET_REFERRAL_MEMBERVariables {
+  condition?: member_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -11614,6 +11911,7 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_progra
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program {
   __typename: "program";
+  id: any;
   /**
    * An array relationship
    */
@@ -11622,6 +11920,7 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_progra
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section {
   __typename: "program_content_section";
+  id: any;
   /**
    * An object relationship
    */
@@ -11630,6 +11929,8 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_progra
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content {
   __typename: "program_content";
+  id: any;
+  metadata: any | null;
   /**
    * An object relationship
    */
@@ -11638,6 +11939,7 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content {
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_practice_reactions {
   __typename: "practice_reaction";
+  id: any;
   member_id: string;
 }
 
@@ -11669,6 +11971,8 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION {
 export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
   searchText?: string | null;
   programId?: any | null;
+  programContentSectionId?: any | null;
+  programContentId?: any | null;
   unreviewed?: boolean | null;
   programRoleMemberId?: string | null;
 }
@@ -12483,6 +12787,8 @@ export enum appointment_plan_update_column {
   phone = "phone",
   price = "price",
   published_at = "published_at",
+  reservation_amount = "reservation_amount",
+  reservation_type = "reservation_type",
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
@@ -12748,11 +13054,13 @@ export enum contract_constraint {
  * update columns of table "contract"
  */
 export enum contract_update_column {
+  app_id = "app_id",
   created_at = "created_at",
   deliverables = "deliverables",
   description = "description",
   id = "id",
   name = "name",
+  options = "options",
   published_at = "published_at",
   revocation = "revocation",
   template = "template",
@@ -13051,6 +13359,7 @@ export enum member_constraint {
   User_pkey = "User_pkey",
   member_app_id_email_key = "member_app_id_email_key",
   member_app_id_username_key = "member_app_id_username_key",
+  member_line_user_id_app_id_key = "member_line_user_id_app_id_key",
   member_refresh_token_key = "member_refresh_token_key",
   member_zoom_user_id_key = "member_zoom_user_id_key",
 }
@@ -13282,6 +13591,7 @@ export enum member_update_column {
   facebook_user_id = "facebook_user_id",
   google_user_id = "google_user_id",
   id = "id",
+  line_user_id = "line_user_id",
   logined_at = "logined_at",
   manager_id = "manager_id",
   metadata = "metadata",
@@ -13577,6 +13887,7 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  is_deleted = "is_deleted",
   last_paid_at = "last_paid_at",
   member_id = "member_id",
   message = "message",
@@ -14592,6 +14903,7 @@ export enum project_plan_update_column {
   is_physical = "is_physical",
   is_subscription = "is_subscription",
   list_price = "list_price",
+  options = "options",
   period_amount = "period_amount",
   period_type = "period_type",
   position = "position",
@@ -14724,6 +15036,7 @@ export enum role_constraint {
  */
 export enum role_permission_constraint {
   role_permission_pkey = "role_permission_pkey",
+  role_permission_role_id_permission_id_key = "role_permission_role_id_permission_id_key",
 }
 
 /**
@@ -14917,25 +15230,6 @@ export enum xuemi_assign_rule_update_column {
   target_member_id = "target_member_id",
   total_limit = "total_limit",
   trigger_id = "trigger_id",
-}
-
-/**
- * unique or primary key constraints on table "xuemi.attend"
- */
-export enum xuemi_attend_constraint {
-  attend_pkey = "attend_pkey",
-}
-
-/**
- * update columns of table "xuemi.attend"
- */
-export enum xuemi_attend_update_column {
-  created_at = "created_at",
-  ended_at = "ended_at",
-  id = "id",
-  member_id = "member_id",
-  started_at = "started_at",
-  updated_at = "updated_at",
 }
 
 /**
@@ -16371,6 +16665,7 @@ export interface appointment_plan_arr_rel_insert_input {
 export interface appointment_plan_avg_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16395,6 +16690,8 @@ export interface appointment_plan_bool_exp {
   phone?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  reservation_amount?: numeric_comparison_exp | null;
+  reservation_type?: String_comparison_exp | null;
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -16416,6 +16713,8 @@ export interface appointment_plan_insert_input {
   phone?: string | null;
   price?: any | null;
   published_at?: any | null;
+  reservation_amount?: any | null;
+  reservation_type?: string | null;
   support_locales?: any | null;
   title?: string | null;
   updated_at?: any | null;
@@ -16434,6 +16733,8 @@ export interface appointment_plan_max_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -16451,6 +16752,8 @@ export interface appointment_plan_min_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -16491,6 +16794,8 @@ export interface appointment_plan_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   support_locales?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
@@ -16502,6 +16807,7 @@ export interface appointment_plan_order_by {
 export interface appointment_plan_stddev_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16510,6 +16816,7 @@ export interface appointment_plan_stddev_order_by {
 export interface appointment_plan_stddev_pop_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16518,6 +16825,7 @@ export interface appointment_plan_stddev_pop_order_by {
 export interface appointment_plan_stddev_samp_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16526,6 +16834,7 @@ export interface appointment_plan_stddev_samp_order_by {
 export interface appointment_plan_sum_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16534,6 +16843,7 @@ export interface appointment_plan_sum_order_by {
 export interface appointment_plan_var_pop_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16542,6 +16852,7 @@ export interface appointment_plan_var_pop_order_by {
 export interface appointment_plan_var_samp_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16550,6 +16861,7 @@ export interface appointment_plan_var_samp_order_by {
 export interface appointment_plan_variance_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -17832,12 +18144,14 @@ export interface contract_bool_exp {
   _and?: (contract_bool_exp | null)[] | null;
   _not?: contract_bool_exp | null;
   _or?: (contract_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   deliverables?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -17848,12 +18162,14 @@ export interface contract_bool_exp {
  * input type for inserting data into table "contract"
  */
 export interface contract_insert_input {
+  app_id?: string | null;
   created_at?: any | null;
   deliverables?: string | null;
   description?: string | null;
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  options?: any | null;
   published_at?: any | null;
   revocation?: string | null;
   template?: string | null;
@@ -19323,8 +19639,7 @@ export interface member_bool_exp {
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
   assign_rules?: xuemi_assign_rule_bool_exp | null;
   assigned_at?: timestamptz_comparison_exp | null;
-  attends?: xuemi_attend_bool_exp | null;
-  attendsByMemberId?: attend_bool_exp | null;
+  attends?: attend_bool_exp | null;
   coin_logs?: coin_log_bool_exp | null;
   coin_status?: coin_status_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
@@ -19345,6 +19660,7 @@ export interface member_bool_exp {
   issue_replies?: issue_reply_bool_exp | null;
   issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
   issues?: issue_bool_exp | null;
+  line_user_id?: String_comparison_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
   manager?: member_bool_exp | null;
   manager_id?: String_comparison_exp | null;
@@ -19726,8 +20042,7 @@ export interface member_insert_input {
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assign_rules?: xuemi_assign_rule_arr_rel_insert_input | null;
   assigned_at?: any | null;
-  attends?: xuemi_attend_arr_rel_insert_input | null;
-  attendsByMemberId?: attend_arr_rel_insert_input | null;
+  attends?: attend_arr_rel_insert_input | null;
   coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
@@ -19747,6 +20062,7 @@ export interface member_insert_input {
   issue_replies?: issue_reply_arr_rel_insert_input | null;
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
+  line_user_id?: string | null;
   logined_at?: any | null;
   manager?: member_obj_rel_insert_input | null;
   manager_id?: string | null;
@@ -19812,6 +20128,7 @@ export interface member_max_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
   name?: order_by | null;
@@ -19838,6 +20155,7 @@ export interface member_min_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
   name?: order_by | null;
@@ -20171,8 +20489,7 @@ export interface member_order_by {
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assign_rules_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assigned_at?: order_by | null;
-  attendsByMemberId_aggregate?: attend_aggregate_order_by | null;
-  attends_aggregate?: xuemi_attend_aggregate_order_by | null;
+  attends_aggregate?: attend_aggregate_order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
   coin_status?: coin_status_order_by | null;
   comment_reactions_aggregate?: comment_reaction_aggregate_order_by | null;
@@ -20193,6 +20510,7 @@ export interface member_order_by {
   issue_replies_aggregate?: issue_reply_aggregate_order_by | null;
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
+  line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager?: member_order_by | null;
   manager_id?: order_by | null;
@@ -22197,6 +22515,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -22260,6 +22579,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  is_deleted?: boolean | null;
   last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
@@ -22353,6 +22673,7 @@ export interface order_log_order_by {
   expired_at?: order_by | null;
   id?: order_by | null;
   invoice?: order_by | null;
+  is_deleted?: order_by | null;
   last_paid_at?: order_by | null;
   member?: member_order_by | null;
   member_id?: order_by | null;
@@ -28156,6 +28477,7 @@ export interface project_plan_bool_exp {
   is_physical?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -28198,6 +28520,7 @@ export interface project_plan_insert_input {
   is_physical?: boolean | null;
   is_subscription?: boolean | null;
   list_price?: any | null;
+  options?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
   position?: number | null;
@@ -29828,85 +30151,6 @@ export interface xuemi_assign_rule_variance_order_by {
   limit?: order_by | null;
   position?: order_by | null;
   total_limit?: order_by | null;
-}
-
-/**
- * order by aggregate values of table "xuemi.attend"
- */
-export interface xuemi_attend_aggregate_order_by {
-  count?: order_by | null;
-  max?: xuemi_attend_max_order_by | null;
-  min?: xuemi_attend_min_order_by | null;
-}
-
-/**
- * input type for inserting array relation for remote table "xuemi.attend"
- */
-export interface xuemi_attend_arr_rel_insert_input {
-  data: xuemi_attend_insert_input[];
-  on_conflict?: xuemi_attend_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "xuemi.attend". All fields are combined with a logical 'AND'.
- */
-export interface xuemi_attend_bool_exp {
-  _and?: (xuemi_attend_bool_exp | null)[] | null;
-  _not?: xuemi_attend_bool_exp | null;
-  _or?: (xuemi_attend_bool_exp | null)[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  ended_at?: timestamptz_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
-  member_id?: String_comparison_exp | null;
-  started_at?: timestamptz_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "xuemi.attend"
- */
-export interface xuemi_attend_insert_input {
-  created_at?: any | null;
-  ended_at?: any | null;
-  id?: any | null;
-  member?: member_obj_rel_insert_input | null;
-  member_id?: string | null;
-  started_at?: any | null;
-  updated_at?: any | null;
-}
-
-/**
- * order by max() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_max_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * order by min() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_min_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * on conflict condition type for table "xuemi.attend"
- */
-export interface xuemi_attend_on_conflict {
-  constraint: xuemi_attend_constraint;
-  update_columns: xuemi_attend_update_column[];
-  where?: xuemi_attend_bool_exp | null;
 }
 
 /**

@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, projectMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProjectAdminProps } from '../../types/project'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
@@ -27,10 +27,10 @@ const ProjectIntroForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
-  const [updateProjectCover] = useMutation<types.UPDATE_PROJECT_COVER, types.UPDATE_PROJECT_COVERVariables>(
+  const [updateProjectCover] = useMutation<hasura.UPDATE_PROJECT_COVER, hasura.UPDATE_PROJECT_COVERVariables>(
     UPDATE_PROJECT_COVER,
   )
-  const [updateProjectIntro] = useMutation<types.UPDATE_PROJECT_INTRO, types.UPDATE_PROJECT_INTROVariables>(
+  const [updateProjectIntro] = useMutation<hasura.UPDATE_PROJECT_INTRO, hasura.UPDATE_PROJECT_INTROVariables>(
     UPDATE_PROJECT_INTRO,
   )
   const [loading, setLoading] = useState(false)

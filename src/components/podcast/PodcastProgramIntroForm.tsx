@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin/index'
 import ImageInput from '../form/ImageInput'
@@ -27,13 +27,13 @@ const PodcastProgramIntroForm: React.FC<{
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramCover] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_COVER,
-    types.UPDATE_PODCAST_PROGRAM_COVERVariables
+    hasura.UPDATE_PODCAST_PROGRAM_COVER,
+    hasura.UPDATE_PODCAST_PROGRAM_COVERVariables
   >(UPDATE_PODCAST_PROGRAM_COVER)
 
   const [updatePodcastProgramIntro] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_INTRO,
-    types.UPDATE_PODCAST_PROGRAM_INTROVariables
+    hasura.UPDATE_PODCAST_PROGRAM_INTRO,
+    hasura.UPDATE_PODCAST_PROGRAM_INTROVariables
   >(UPDATE_PODCAST_PROGRAM_INTRO)
 
   if (!podcastProgramAdmin) {
@@ -92,7 +92,7 @@ const PodcastProgramIntroForm: React.FC<{
       <Form.Item
         label={
           <span>
-            <span className="mr-2">{formatMessage(podcastMessages.term.podcastCover)}</span>
+            <span className="mr-2">{formatMessage(podcastMessages.label.podcastCover)}</span>
             <Tooltip
               placement="top"
               title={<StyledTips>{formatMessage(podcastMessages.text.podcastCoverTips)}</StyledTips>}
@@ -112,7 +112,7 @@ const PodcastProgramIntroForm: React.FC<{
           onChange={() => handleUpload()}
         />
       </Form.Item>
-      <Form.Item label={formatMessage(podcastMessages.term.podcastAbstract)} name="abstract">
+      <Form.Item label={formatMessage(podcastMessages.label.podcastAbstract)} name="abstract">
         <Input.TextArea rows={4} maxLength={100} placeholder={formatMessage(podcastMessages.text.abstractLimit)} />
       </Form.Item>
 

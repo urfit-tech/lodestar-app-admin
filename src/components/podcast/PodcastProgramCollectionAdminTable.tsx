@@ -122,7 +122,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
 
   const columns: ColumnProps<PodcastProgramColumnProps>[] = [
     {
-      title: formatMessage(commonMessages.term.title),
+      title: formatMessage(commonMessages.label.title),
       dataIndex: 'title',
       key: 'title',
       render: (text, record, index) => (
@@ -148,7 +148,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       }),
     },
     {
-      title: formatMessage(commonMessages.term.instructor),
+      title: formatMessage(commonMessages.label.instructor),
       dataIndex: 'instructorName',
       key: 'instructorName',
       width: '12rem',
@@ -165,7 +165,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       }),
     },
     {
-      title: formatMessage(commonMessages.term.price),
+      title: formatMessage(commonMessages.label.price),
       dataIndex: 'price',
       key: 'price',
       width: '12rem',
@@ -198,21 +198,21 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
           {record.isPublished
-            ? formatMessage(podcastMessages.status.published)
-            : formatMessage(podcastMessages.status.notPublished)}
+            ? formatMessage(commonMessages.status.published)
+            : formatMessage(commonMessages.status.notPublished)}
         </StyledStatusLabel>
       ),
       filters: [
         {
-          text: formatMessage(podcastMessages.status.published),
-          value: formatMessage(podcastMessages.status.published),
+          text: formatMessage(commonMessages.status.published),
+          value: formatMessage(commonMessages.status.published),
         },
         {
-          text: formatMessage(podcastMessages.status.notPublished),
-          value: formatMessage(podcastMessages.status.notPublished),
+          text: formatMessage(commonMessages.status.notPublished),
+          value: formatMessage(commonMessages.status.notPublished),
         },
       ],
-      onFilter: (value, record) => record.isPublished === (value === formatMessage(podcastMessages.status.published)),
+      onFilter: (value, record) => record.isPublished === (value === formatMessage(commonMessages.status.published)),
     },
   ]
 

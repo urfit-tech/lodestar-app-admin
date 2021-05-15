@@ -1,7 +1,6 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, message } from 'antd'
 import moment from 'moment'
-import { contains } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -12,7 +11,8 @@ import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
-import { MemberAdminProps, MemberNoteAdminProps } from '../../types/member'
+import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
+import { MemberAdminProps, NoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
 import { StyledModalParagraph } from '../program/ProgramDeletionAdminCard'
@@ -44,7 +44,7 @@ const StyledAuthorName = styled.div`
 `
 
 const MemberNoteAdminItem: React.FC<{
-  note: MemberNoteAdminProps
+  note: NoteAdminProps
   memberAdmin: MemberAdminProps
   onRefetch?: () => void
 }> = ({ note, memberAdmin, onRefetch }) => {
@@ -66,12 +66,15 @@ const MemberNoteAdminItem: React.FC<{
         <div>
           <div>
             <span>{moment(note.createdAt).format('YYYY-MM-DD HH:mm')}</span>
-            {contains(note.type, ['outbound', 'inbound']) && (
+            {note.type && (
               <StyledStatus>
                 <StyledIcon
                   variant={note.status}
                   component={() =>
-                    (note.type === 'outbound' && <CallOutIcon />) || (note.type === 'inbound' && <CallInIcon />) || null
+                    (note.type === 'outbound' && <CallOutIcon />) ||
+                    (note.type === 'inbound' && <CallInIcon />) ||
+                    (note.type === 'demo' && <DemoIcon />) ||
+                    null
                   }
                 />
                 {note.status === 'answered' && (
@@ -92,8 +95,7 @@ const MemberNoteAdminItem: React.FC<{
           <Menu>
             <StyledMenuItem>
               <MemberNoteAdminModal
-                title={formatMessage(memberMessages.label.editMemberNote)}
-                member={memberAdmin}
+                title={formatMessage(memberMessages.label.editNote)}
                 note={note}
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
@@ -141,7 +143,7 @@ const MemberNoteAdminItem: React.FC<{
             </StyledMenuItem>
             <StyledMenuItem>
               <AdminModal
-                title={formatMessage(memberMessages.label.deleteMemberNote)}
+                title={formatMessage(memberMessages.label.deleteNote)}
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
                 )}

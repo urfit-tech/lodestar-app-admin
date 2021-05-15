@@ -15,8 +15,8 @@ import LoadingPage from './LoadingPage'
 import NotFoundPage from './NotFoundPage'
 
 const messages = defineMessages({
-  learningDuration: { id: 'common.term.learningDuration', defaultMessage: '學習時數' },
-  learningProgress: { id: 'common.term.learningProgress', defaultMessage: '學習進度' },
+  learningDuration: { id: 'common.label.learningDuration', defaultMessage: '學習時數' },
+  learningProgress: { id: 'common.label.learningProgress', defaultMessage: '學習進度' },
   exportProgramProgress: { id: 'common.ui.exportProgramProgress', defaultMessage: '匯出學習進度' },
 })
 

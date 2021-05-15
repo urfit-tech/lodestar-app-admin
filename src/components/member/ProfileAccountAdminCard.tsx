@@ -5,10 +5,10 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
-import types from '../../types'
 import { AdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
 
@@ -29,7 +29,7 @@ const ProfileAccountAdminCard: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { member } = useMember(memberId)
-  const [updateMemberAccount] = useMutation<types.UPDATE_MEMBER_ACCOUNT, types.UPDATE_MEMBER_ACCOUNTVariables>(
+  const [updateMemberAccount] = useMutation<hasura.UPDATE_MEMBER_ACCOUNT, hasura.UPDATE_MEMBER_ACCOUNTVariables>(
     UPDATE_MEMBER_ACCOUNT,
   )
   const [loading, setLoading] = useState(false)
@@ -74,20 +74,20 @@ const ProfileAccountAdminCard: React.FC<
         onFinish={handleSubmit}
       >
         <Form.Item
-          label={formatMessage(commonMessages.term.account)}
+          label={formatMessage(commonMessages.label.account)}
           name="username"
           rules={[{ required: true, message: formatMessage(errorMessages.form.account) }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.email)}
+          label={formatMessage(commonMessages.label.email)}
           name="email"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.email),
+                field: formatMessage(commonMessages.label.email),
               }),
             },
           ]}

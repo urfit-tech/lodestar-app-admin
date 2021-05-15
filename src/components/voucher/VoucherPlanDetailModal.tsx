@@ -51,7 +51,7 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
 
   const exportCodes = () => {
     const data: string[][] = [
-      [formatMessage(promotionMessages.term.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
+      [formatMessage(promotionMessages.label.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
     ]
 
     voucherCodes.forEach(voucherCode => {
@@ -84,7 +84,7 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
       </Button>
 
       <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
-        <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.term.voucherCode)} className="pt-4">
+        <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.label.voucherCode)} className="pt-4">
           {voucherCodes.map(voucherCode => (
             <StyledVoucherCode
               key={voucherCode.code}

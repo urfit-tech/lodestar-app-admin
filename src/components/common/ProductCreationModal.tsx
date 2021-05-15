@@ -127,13 +127,13 @@ const ProductCreationModal: React.FC<
           </Form.Item>
         )}
         <Form.Item
-          label={customTitle || formatMessage(commonMessages.term.title)}
+          label={customTitle || formatMessage(commonMessages.label.title)}
           name="title"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.title),
+                field: formatMessage(commonMessages.label.title),
               }),
             },
           ]}
@@ -141,7 +141,7 @@ const ProductCreationModal: React.FC<
           <Input />
         </Form.Item>
         {categoryClassType && (
-          <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+          <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
             <CategorySelector classType={categoryClassType} />
           </Form.Item>
         )}

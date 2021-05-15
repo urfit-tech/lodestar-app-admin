@@ -6,9 +6,9 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
 const StyledTitle = styled.div`
@@ -90,7 +90,7 @@ const ActivityParticipantCollectionModal: React.FC<
                   const data: string[][] = [
                     [
                       '',
-                      formatMessage(commonMessages.label.name),
+                      formatMessage(commonMessages.label.memberName),
                       formatMessage(messages.ticketType),
                       formatMessage(messages.attended),
                       formatMessage(commonMessages.label.phone),
@@ -149,8 +149,8 @@ const ActivityParticipantCollectionModal: React.FC<
 
 const useActivitySessionParticipants = (activityId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_ACTIVITY_PARTICIPANTS,
-    types.GET_ACTIVITY_PARTICIPANTSVariables
+    hasura.GET_ACTIVITY_PARTICIPANTS,
+    hasura.GET_ACTIVITY_PARTICIPANTSVariables
   >(
     gql`
       query GET_ACTIVITY_PARTICIPANTS($activityId: uuid!) {

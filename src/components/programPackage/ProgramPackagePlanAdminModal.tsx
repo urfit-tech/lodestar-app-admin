@@ -7,9 +7,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -29,7 +29,7 @@ const messages = defineMessages({
   perpetual: { id: 'programPackage.label.perpetual', defaultMessage: '單次' },
   subscription: { id: 'programPackage.ui.subscription', defaultMessage: '訂閱' },
   perpetualPeriod: { id: 'programPackage.label.perpetualPeriod', defaultMessage: '觀看期限' },
-  subscriptionPeriod: { id: 'programPackage.lable.subscriptionPeriod', defaultMessage: '訂閱週期' },
+  subscriptionPeriod: { id: 'programPackage.label.subscriptionPeriod', defaultMessage: '訂閱週期' },
 
   permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
   availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
@@ -71,8 +71,8 @@ const ProgramPackagePlanAdminModal: React.FC<
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
   const [insertProgramPackagePlan] = useMutation<
-    types.INSERT_PROGRAM_PACKAGE_PLAN,
-    types.INSERT_PROGRAM_PACKAGE_PLANVariables
+    hasura.INSERT_PROGRAM_PACKAGE_PLAN,
+    hasura.INSERT_PROGRAM_PACKAGE_PLANVariables
   >(INSERT_PROGRAM_PACKAGE_PLAN)
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(typeof plan?.discountDownPrice === 'number')
@@ -232,7 +232,7 @@ const ProgramPackagePlanAdminModal: React.FC<
           </Form.Item>
         </Form.Item>
 
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
+        <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
           <InputNumber
             min={0}
             formatter={value => `NT$ ${value}`}

@@ -1,6 +1,5 @@
 import { Button, message, Skeleton } from 'antd'
-import { isEmpty } from 'ramda'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
@@ -8,21 +7,29 @@ import MemberAdminLayout, { StyledEmptyBlock } from '../../components/layout/Mem
 import MemberNoteAdminItem from '../../components/member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../../components/member/MemberNoteAdminModal'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useMemberAdmin, useMutateMemberNote } from '../../hooks/member'
+import { useMemberAdmin, useMemberNotesAdmin, useMutateMemberNote } from '../../hooks/member'
 import { ReactComponent as FilePlusIcon } from '../../images/icon/file-plus.svg'
 
 const MemberProfileAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
   const { currentMemberId } = useAuth()
-  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+
+  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
+    { created_at: 'desc' as hasura.order_by },
+    { member: memberId },
+  )
   const { insertMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
 
-  if (!currentMemberId || loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
+  const [loading, setLoading] = useState(false)
+
+  if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
   }
 
@@ -30,7 +37,6 @@ const MemberProfileAdminPage: React.FC = () => {
     <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
       <div className="p-5">
         <MemberNoteAdminModal
-          member={memberAdmin}
           title={formatMessage(memberMessages.label.createMemberNote)}
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon={<FilePlusIcon />} onClick={() => setVisible(true)}>
@@ -55,19 +61,40 @@ const MemberProfileAdminPage: React.FC = () => {
                 }
                 message.success(formatMessage(commonMessages.event.successfullyCreated))
                 refetchMemberAdmin()
+                refetchNotes()
               })
               .catch(handleError)
           }
         />
         <AdminBlock className="mt-4">
-          {isEmpty(memberAdmin.notes) ? (
+          {notes.length === 0 ? (
             <StyledEmptyBlock>
               <span>{formatMessage(memberMessages.text.noMemberNote)}</span>
             </StyledEmptyBlock>
           ) : (
-            memberAdmin.notes.map(note => (
-              <MemberNoteAdminItem key={note.id} note={note} memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+            notes.map(note => (
+              <MemberNoteAdminItem
+                key={note.id}
+                note={note}
+                memberAdmin={memberAdmin}
+                onRefetch={() => {
+                  refetchMemberAdmin()
+                  refetchNotes()
+                }}
+              />
             ))
+          )}
+
+          {loadMoreNotes && (
+            <Button
+              onClick={() => {
+                setLoading(true)
+                loadMoreNotes().finally(() => setLoading(true))
+              }}
+              loading={loading}
+            >
+              {formatMessage(commonMessages.ui.showMore)}
+            </Button>
           )}
         </AdminBlock>
       </div>

@@ -89,9 +89,9 @@ const ActivityAdminPage: React.FC = () => {
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane key="tickets" tab={formatMessage(activityMessages.term.ticketPlan)}>
+            <Tabs.TabPane key="tickets" tab={formatMessage(activityMessages.label.ticketPlan)}>
               <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(activityMessages.term.ticketPlan)}</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(activityMessages.label.ticketPlan)}</AdminPaneTitle>
                 <ActivityTicketsAdminBlock activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
               </div>
             </Tabs.TabPane>

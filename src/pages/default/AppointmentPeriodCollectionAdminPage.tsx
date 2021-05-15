@@ -75,14 +75,14 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
           <DatePicker
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-            placeholder={formatMessage(commonMessages.term.startedAt)}
+            placeholder={formatMessage(commonMessages.label.startedAt)}
             value={startedAt && moment(startedAt)}
             onChange={value => setStartedAt(value && value.startOf('minute').toDate())}
           />
           <DatePicker
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
-            placeholder={formatMessage(commonMessages.term.endedAt)}
+            placeholder={formatMessage(commonMessages.label.endedAt)}
             value={endedAt && moment(endedAt)}
             onChange={value => setEndedAt(value && value.startOf('minute').toDate())}
           />

@@ -6,8 +6,8 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import types from '../../types'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
@@ -41,16 +41,16 @@ const ProgramContentSectionAdminCard: React.FC<{
 }> = ({ program, programContentSection, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const [createProgramContent] = useMutation<types.INSERT_PROGRAM_CONTENT, types.INSERT_PROGRAM_CONTENTVariables>(
+  const [createProgramContent] = useMutation<hasura.INSERT_PROGRAM_CONTENT, hasura.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
   )
   const [updateProgramContentSection] = useMutation<
-    types.UPDATE_PROGRAM_CONTENT_SECTION,
-    types.UPDATE_PROGRAM_CONTENT_SECTIONVariables
+    hasura.UPDATE_PROGRAM_CONTENT_SECTION,
+    hasura.UPDATE_PROGRAM_CONTENT_SECTIONVariables
   >(UPDATE_PROGRAM_CONTENT_SECTION)
   const [deleteProgramContentSection] = useMutation<
-    types.DELETE_PROGRAM_CONTENT_SECTION,
-    types.DELETE_PROGRAM_CONTENT_SECTIONVariables
+    hasura.DELETE_PROGRAM_CONTENT_SECTION,
+    hasura.DELETE_PROGRAM_CONTENT_SECTIONVariables
   >(DELETE_PROGRAM_CONTENT_SECTION)
 
   return (
@@ -107,6 +107,7 @@ const ProgramContentSectionAdminCard: React.FC<{
         </div>
       ))}
       <Dropdown
+        trigger={['click']}
         overlay={
           <Menu>
             <StyledMenuItem

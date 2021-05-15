@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 
@@ -31,9 +31,10 @@ const MerchandiseSalesForm: React.FC<{
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updateMerchandiseSales] = useMutation<types.UPDATE_MERCHANDISE_SALES, types.UPDATE_MERCHANDISE_SALESVariables>(
-    UPDATE_MERCHANDISE_SALES,
-  )
+  const [updateMerchandiseSales] = useMutation<
+    hasura.UPDATE_MERCHANDISE_SALES,
+    hasura.UPDATE_MERCHANDISE_SALESVariables
+  >(UPDATE_MERCHANDISE_SALES)
   const [loading, setLoading] = useState(false)
   const [withSellingTime, setWithSellingTime] = useState(!!merchandise.startedAt || !!merchandise.endedAt)
 

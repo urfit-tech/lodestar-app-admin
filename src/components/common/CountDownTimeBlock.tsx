@@ -43,7 +43,7 @@ const CountDownTimeBlock: React.FC<{
     <>
       {icon && <Icon component={() => <CalendarOIcon />} className="mr-2" />}
       <StyledDiscountDown className="discount-down mr-1">
-        {text || formatMessage(commonMessages.defaults.countdown)}
+        {text || formatMessage(commonMessages.label.countdown)}
       </StyledDiscountDown>
       {seconds > 86400 && (
         <StyledNumberBlock>
@@ -60,13 +60,13 @@ const CountDownTimeBlock: React.FC<{
       {seconds > 60 && (
         <StyledNumberBlock>
           <span className="text-primary">{Math.floor((seconds % 3600) / 60)}</span>
-          <span>{formatMessage(commonMessages.unit.min)}</span>
+          <span>{formatMessage(commonMessages.unit.minute)}</span>
         </StyledNumberBlock>
       )}
       {seconds > 0 && (
         <StyledNumberBlock>
           <span className="text-primary">{Math.floor(seconds % 60)}</span>
-          <span>{formatMessage(commonMessages.unit.sec)}</span>
+          <span>{formatMessage(commonMessages.unit.second)}</span>
         </StyledNumberBlock>
       )}
     </>

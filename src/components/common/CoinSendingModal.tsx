@@ -6,10 +6,10 @@ import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMemberSummaryCollection } from '../../hooks/member'
-import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import MemberSelector from '../form/MemberSelector'
 
@@ -43,8 +43,8 @@ const CoinSendingModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { members } = useMemberSummaryCollection()
   const [insertCoinLogCollection] = useMutation<
-    types.INSERT_COIN_LOG_COLLECTION,
-    types.INSERT_COIN_LOG_COLLECTIONVariables
+    hasura.INSERT_COIN_LOG_COLLECTION,
+    hasura.INSERT_COIN_LOG_COLLECTIONVariables
   >(INSERT_COIN_LOG_COLLECTION)
   const [loading, setLoading] = useState(false)
 
@@ -145,10 +145,10 @@ const CoinSendingModal: React.FC<{
         <Form.Item label={formatMessage(messages.availableDateRange)}>
           <Input.Group compact>
             <Form.Item name="startedAt">
-              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.term.startedAt)} />
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.startedAt)} />
             </Form.Item>
             <Form.Item name="endedAt">
-              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.term.endedAt)} />
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.label.endedAt)} />
             </Form.Item>
           </Input.Group>
         </Form.Item>

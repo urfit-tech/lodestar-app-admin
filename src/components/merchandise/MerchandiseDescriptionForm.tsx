@@ -5,9 +5,9 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
@@ -23,8 +23,8 @@ const MerchandiseDescriptionForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateMerchandiseDescription] = useMutation<
-    types.UPDATE_MERCHANDISE_DESCRIPTION,
-    types.UPDATE_MERCHANDISE_DESCRIPTIONVariables
+    hasura.UPDATE_MERCHANDISE_DESCRIPTION,
+    hasura.UPDATE_MERCHANDISE_DESCRIPTIONVariables
   >(UPDATE_MERCHANDISE_DESCRIPTION)
   const [loading, setLoading] = useState(false)
 

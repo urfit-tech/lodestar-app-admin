@@ -1,14 +1,16 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
+import { useMemo } from 'react'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
-import types from '../types'
-import { AppointmentPlanAdminProps, ScheduleIntervalType } from '../types/appointment'
+import hasura from '../hasura'
+import { AppointmentPlanAdminProps, ReservationType } from '../types/appointment'
+import { PeriodType } from '../types/general'
 
 export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_APPOINTMENT_PLAN_ADMIN,
-    types.GET_APPOINTMENT_PLAN_ADMINVariables
+    hasura.GET_APPOINTMENT_PLAN_ADMIN,
+    hasura.GET_APPOINTMENT_PLAN_ADMINVariables
   >(
     gql`
       query GET_APPOINTMENT_PLAN_ADMIN($appointmentPlanId: uuid!, $now: timestamptz) {
@@ -24,11 +26,16 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           currency_id
           creator_id
           is_private
-          appointment_schedules {
+          reservation_amount
+          reservation_type
+          appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
+            started_at
+            interval_amount
+            interval_type
             excludes
           }
-          appointment_periods(where: { started_at: { _gt: $now } }, order_by: { started_at: asc }) {
+          appointment_periods(where: { started_at: { _gt: $now } }, order_by: [{ started_at: asc }]) {
             appointment_schedule {
               id
               interval_amount
@@ -50,49 +57,54 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
     {
       variables: {
         appointmentPlanId,
-        now: moment().startOf('hour').toDate(),
+        now: moment().startOf('minute').toDate(),
       },
     },
   )
 
-  const appointmentPlanAdmin: AppointmentPlanAdminProps | null =
-    loading || !!error || !data || !data.appointment_plan_by_pk
-      ? null
-      : {
-          id: appointmentPlanId,
-          title: data.appointment_plan_by_pk.title,
-          phone: data.appointment_plan_by_pk.phone || '',
-          description: data.appointment_plan_by_pk.description,
-          duration: data.appointment_plan_by_pk.duration,
-          listPrice: data.appointment_plan_by_pk.price,
-          schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => {
-            const excludedPeriods = appointmentSchedule.excludes as string[]
+  const appointmentPlanAdmin = useMemo<AppointmentPlanAdminProps | null>(() => {
+    if (!data?.appointment_plan_by_pk) {
+      return null
+    }
 
-            return {
-              id: appointmentSchedule.id,
-              excludes: excludedPeriods.map(period => new Date(period).getTime()),
-            }
-          }),
-          periods: data.appointment_plan_by_pk.appointment_periods.map(appointmentPeriod => ({
-            id: `${appointmentPeriod.appointment_schedule?.id || ''}-${appointmentPeriod.started_at}`,
-            schedule: {
-              id: appointmentPeriod.appointment_schedule?.id || '',
-              periodAmount: appointmentPeriod.appointment_schedule?.interval_amount || null,
-              periodType: (appointmentPeriod.appointment_schedule?.interval_type as ScheduleIntervalType) || null,
-            },
-            startedAt: new Date(appointmentPeriod.started_at),
-            isEnrolled: !!appointmentPeriod.booked,
-            isExcluded: !appointmentPeriod.available,
-          })),
-          enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
-            ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
-            : 0,
-          isPublished: !!data.appointment_plan_by_pk.published_at,
-          supportLocales: data?.appointment_plan_by_pk.support_locales || [],
-          currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
-          creatorId: data?.appointment_plan_by_pk.creator_id,
-          isPrivate: data?.appointment_plan_by_pk.is_private,
-        }
+    return {
+      id: appointmentPlanId,
+      title: data.appointment_plan_by_pk.title,
+      phone: data.appointment_plan_by_pk.phone || '',
+      description: data.appointment_plan_by_pk.description,
+      duration: data.appointment_plan_by_pk.duration,
+      listPrice: data.appointment_plan_by_pk.price,
+      reservationAmount: data.appointment_plan_by_pk.reservation_amount,
+      reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
+      schedules: data.appointment_plan_by_pk.appointment_schedules.map(s => ({
+        id: s.id,
+        startedAt: new Date(s.started_at),
+        intervalAmount: s.interval_amount,
+        intervalType: s.interval_type as PeriodType,
+        excludes: s.excludes.map((e: string) => new Date(e)),
+      })),
+      periods: data.appointment_plan_by_pk.appointment_periods.map(period => ({
+        id: `${period.appointment_schedule?.id || ''}-${period.started_at}`,
+        schedule: {
+          id: period.appointment_schedule?.id || '',
+          periodAmount: period.appointment_schedule?.interval_amount || null,
+          periodType: (period.appointment_schedule?.interval_type as PeriodType) || null,
+        },
+        startedAt: new Date(period.started_at),
+        endedAt: new Date(period.ended_at),
+        isEnrolled: !!period.booked,
+        isExcluded: !period.available,
+      })),
+      enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
+        ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
+        : 0,
+      isPublished: !!data.appointment_plan_by_pk.published_at,
+      supportLocales: data?.appointment_plan_by_pk.support_locales || [],
+      currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
+      creatorId: data?.appointment_plan_by_pk.creator_id,
+      isPrivate: data?.appointment_plan_by_pk.is_private,
+    }
+  }, [appointmentPlanId, data])
 
   return {
     loadingAppointmentPlanAdmin: loading,
@@ -103,7 +115,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
 }
 
 export const useAppointmentEnrollmentCreator = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_ENROLLMENT_CREATOR>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_APPOINTMENT_ENROLLMENT_CREATOR>(
     gql`
       query GET_APPOINTMENT_ENROLLMENT_CREATOR {
         member(
@@ -139,7 +151,7 @@ export const useAppointmentEnrollmentCollection = (
   isCanceled: boolean,
   isFinished?: boolean,
 ) => {
-  const condition: types.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
+  const condition: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
     appointment_plan: {
       creator_id: { _eq: selectedCreatorId || undefined },
     },
@@ -159,19 +171,19 @@ export const useAppointmentEnrollmentCollection = (
         },
   }
 
-  const sort: types.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
+  const sort: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
     !isCanceled && !isFinished
       ? {
-          started_at: 'asc' as types.order_by,
+          started_at: 'asc' as hasura.order_by,
         }
       : {
-          ended_at: 'desc' as types.order_by,
+          ended_at: 'desc' as hasura.order_by,
         },
   ]
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_APPOINTMENT_ENROLLMENTS,
-    types.GET_APPOINTMENT_ENROLLMENTSVariables
+    hasura.GET_APPOINTMENT_ENROLLMENTS,
+    hasura.GET_APPOINTMENT_ENROLLMENTSVariables
   >(
     gql`
       query GET_APPOINTMENT_ENROLLMENTS(
@@ -233,12 +245,12 @@ export const useAppointmentEnrollmentCollection = (
       ? {
           started_at: {
             _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at,
-          } as types.timestamptz_comparison_exp,
+          } as hasura.timestamptz_comparison_exp,
         }
       : {
           ended_at: {
             _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at,
-          } as types.timestamptz_comparison_exp,
+          } as hasura.timestamptz_comparison_exp,
         }
 
   const loadMoreAppointmentEnrollments =
@@ -303,3 +315,11 @@ export const useAppointmentEnrollmentCollection = (
     loadMoreAppointmentEnrollments,
   }
 }
+
+export const INSERT_APPOINTMENT_SCHEDULES = gql`
+  mutation INSERT_APPOINTMENT_SCHEDULES($data: [appointment_schedule_insert_input!]!) {
+    insert_appointment_schedule(objects: $data) {
+      affected_rows
+    }
+  }
+`

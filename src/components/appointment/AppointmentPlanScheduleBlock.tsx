@@ -5,8 +5,8 @@ import moment from 'moment'
 import { groupBy } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import { EmptyBlock } from '../admin'
 import AppointmentPeriodCollection from './AppointmentPeriodCollection'
@@ -22,12 +22,12 @@ const AppointmentPlanScheduleBlock: React.FC<{
   const { formatMessage } = useIntl()
 
   const [updateAppointmentSchedule] = useMutation<
-    types.UPDATE_APPOINTMENT_SCHEDULE,
-    types.UPDATE_APPOINTMENT_SCHEDULEVariables
+    hasura.UPDATE_APPOINTMENT_SCHEDULE,
+    hasura.UPDATE_APPOINTMENT_SCHEDULEVariables
   >(UPDATE_APPOINTMENT_SCHEDULE)
   const [deleteAppointmentSchedule] = useMutation<
-    types.DELETE_APPOINTMENT_SCHEDULE,
-    types.DELETE_APPOINTMENT_SCHEDULEVariables
+    hasura.DELETE_APPOINTMENT_SCHEDULE,
+    hasura.DELETE_APPOINTMENT_SCHEDULEVariables
   >(DELETE_APPOINTMENT_SCHEDULE)
 
   if (!appointmentPlanAdmin) {
@@ -53,15 +53,15 @@ const AppointmentPlanScheduleBlock: React.FC<{
       return
     }
 
-    const isReopenedPeriod = targetSchedule.excludes.includes(startedAt.getTime())
-    const excludes: number[] = isReopenedPeriod
-      ? targetSchedule.excludes.filter(exclude => exclude !== startedAt.getTime())
-      : [...targetSchedule.excludes, startedAt.getTime()].sort()
+    const isExcluded = targetSchedule.excludes.some(exclude => exclude.getTime() === startedAt.getTime())
+    const excludes: Date[] = isExcluded
+      ? targetSchedule.excludes.filter(exclude => exclude.getTime() !== startedAt.getTime())
+      : [...targetSchedule.excludes, startedAt].sort((a, b) => a.getTime() - b.getTime())
 
     return updateAppointmentSchedule({
       variables: {
         appointmentScheduleId: targetSchedule.id,
-        excludes: excludes.map(exclude => new Date(exclude).toISOString()),
+        excludes: excludes.map(exclude => exclude.toISOString()),
       },
     })
       .then(() => onRefetch?.())
@@ -79,6 +79,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
             id: period.id,
             schedule: period.schedule,
             startedAt: period.startedAt,
+            endedAt: period.endedAt,
             isEnrolled: period.isEnrolled,
             isExcluded: period.isExcluded,
           }))}

@@ -1,9 +1,7 @@
-import { EditOutlined, MoreOutlined } from '@ant-design/icons'
+import Icon, { EditOutlined, MoreOutlined, UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { UploadChangeParam } from 'antd/lib/upload'
-import { UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
@@ -12,23 +10,21 @@ import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError, uploadFile } from '../../helpers'
+import hasura from '../../hasura'
+import { getFileDuration, handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
-import types from '../../types'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ProgramContentBodyProps, ProgramContentProps, ProgramProps } from '../../types/program'
 import FileUploader from '../common/FileUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
-import SingleUploader from '../form/SingleUploader'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({
-  contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
   contentPlan: { id: 'program.label.contentPlan', defaultMessage: '適用方案' },
   uploadVideo: { id: 'program.ui.uploadVideo', defaultMessage: '上傳影片' },
   uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
-  contentContext: { id: 'program.label.contentContext', defaultMessage: '內文' },
   uploadMaterial: { id: 'program.ui.uploadMaterial', defaultMessage: '上傳教材' },
 })
 
@@ -52,129 +48,198 @@ const ProgramContentAdminModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
   const { authToken, apiHost } = useAuth()
-  const { updateProgramContent, deleteProgramContent } = useMutateProgramContent()
 
+  const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
   const [updateProgramContentPlan] = useMutation<
-    types.UPDATE_PROGRAM_CONTENT_PLAN,
-    types.UPDATE_PROGRAM_CONTENT_PLANVariables
+    hasura.UPDATE_PROGRAM_CONTENT_PLAN,
+    hasura.UPDATE_PROGRAM_CONTENT_PLANVariables
   >(UPDATE_PROGRAM_CONTENT_PLAN)
-
   const [updateProgramContentMaterials] = useMutation<
-    types.UPDATE_PROGRAM_CONTENT_MATERIALS,
-    types.UPDATE_PROGRAM_CONTENT_MATERIALSVariables
+    hasura.UPDATE_PROGRAM_CONTENT_MATERIALS,
+    hasura.UPDATE_PROGRAM_CONTENT_MATERIALSVariables
   >(UPDATE_PROGRAM_CONTENT_MATERIALS)
 
   const [visible, setVisible] = useState(false)
   const [isTrial, setIsTrial] = useState(programContent.listPrice === 0)
   const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
-  const [video, setVideo] = useState<any>(programContentBody.data.video || null)
+
   const [loading, setLoading] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [realDuration, setRealDuration] = useState(0)
   const uploadCanceler = useRef<Canceler>()
+
+  const [videoFile, setVideoFile] = useState<File | null>(programContentBody.data.video || null)
+  const [captionFile, setCaptionFile] = useState<File | null>(programContentBody.data.texttrack || null)
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
+  const [isUploadFailed, setIsUploadFailed] = useState<{
+    video?: boolean
+    caption?: boolean
+    materials?: boolean
+  }>({})
+  const [failedUploadFiles, setFailedUploadFiles] = useState<File[]>([])
+  const [uploadProgress, setUploadProgress] = useState<{
+    [key: string]: number
+  }>({})
 
-  const handleUploadVideo = async (info: UploadChangeParam<UploadFile>) => {
-    const file = info.file.originFileObj as File
-    if (file == null) {
-      console.warn('File is null')
-    }
-    // const duration = Math.ceil(await getFileDuration(file))
-    const duration = 0
-    setRealDuration(duration)
-    form.setFields([{ name: 'duration', value: Math.ceil(duration / 60 || 0) }])
-    setUploading(false)
-  }
-
-  const handleSubmit = (values: FieldProps) => {
+  const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    Promise.all([
-      updateProgramContent({
+    setIsUploadFailed({})
+    setFailedUploadFiles([])
+    setUploadProgress({})
+    const uploadError: typeof isUploadFailed = {}
+
+    // upload video
+    if (
+      videoFile &&
+      (videoFile?.name !== programContentBody.data?.video?.name ||
+        videoFile?.lastModified !== programContentBody.data?.video?.lastModified)
+    ) {
+      try {
+        await uploadFile(`videos/${appId}/${programContentBody.id}`, videoFile, authToken, apiHost, {
+          cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+          onUploadProgress: ({ loaded, total }) => {
+            setUploadProgress(prev => ({ ...prev, [videoFile.name]: Math.floor((loaded / total) * 100) }))
+          },
+        })
+      } catch (error) {
+        uploadError.video = true
+      }
+    }
+    // upload caption
+    if (
+      captionFile &&
+      (captionFile.name !== programContentBody.data?.texttrack?.name ||
+        captionFile.lastModified !== programContentBody.data?.texttrack?.lastModified)
+    ) {
+      try {
+        await uploadFile(`texttracks/${appId}/${programContentBody.id}`, captionFile, authToken, apiHost, {
+          cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+          onUploadProgress: ({ loaded, total }) => {
+            setUploadProgress(prev => ({ ...prev, [captionFile.name]: Math.floor((loaded / total) * 100) }))
+          },
+        })
+      } catch (error) {
+        uploadError.caption = true
+      }
+    }
+    // upload materials
+    const pendingFiles = materialFiles.filter(
+      file =>
+        !programContentBody.materials.some(
+          material => material.data.name === file.name && material.data.lastModified === file.lastModified,
+        ),
+    )
+    if (pendingFiles.length) {
+      for (const file of pendingFiles) {
+        await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
+          cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
+          onUploadProgress: ({ loaded, total }) => {
+            setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))
+          },
+        }).catch(() => {
+          uploadError.materials = true
+          setFailedUploadFiles(prev => [...prev, file])
+        })
+      }
+    }
+    setIsUploadFailed(uploadError)
+
+    try {
+      await updateProgramContent({
         variables: {
           programContentId: programContent.id,
           price: isTrial ? 0 : null,
           publishedAt: program.isSubscription
             ? values.publishedAt
-              ? values.publishedAt || new Date()
+              ? values.publishedAt.toDate()
               : null
             : isPublished
             ? new Date()
             : null,
           title: values.title,
-          description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration:
             realDuration !== 0
               ? realDuration
               : values.duration !== Math.ceil((programContent.duration || 0) / 60)
               ? values.duration * 60
               : programContent.duration,
-          type: video ? 'video' : 'text',
-          data: {
-            video: video || null,
-            texttrack: values.texttrack || null,
-          },
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
         },
-      }),
-      program.isSubscription
-        ? updateProgramContentPlan({
-            variables: {
-              programContentId: programContent.id,
-              programContentPlans:
-                values.planIds?.map((planId: string) => ({
-                  program_content_id: programContent.id,
-                  program_plan_id: planId,
-                })) || [],
-            },
-          })
-        : null,
-      updateProgramContentMaterials({
+      })
+
+      await updateProgramContentBody({
         variables: {
           programContentId: programContent.id,
-          materials: materialFiles.map(file => ({
-            program_content_id: programContent.id,
-            data: {
-              lastModified: file.lastModified,
-              name: file.name,
-              size: file.size,
-              type: file.type,
-            },
-          })),
+          description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
+          type: videoFile ? 'video' : 'text',
+          data: {
+            video: uploadError.video
+              ? programContentBody.data?.video || null
+              : videoFile
+              ? {
+                  name: videoFile.name,
+                  type: videoFile.type,
+                  size: videoFile.size,
+                  lastModified: videoFile.lastModified,
+                }
+              : null,
+            texttrack: uploadError.caption
+              ? programContentBody.data?.texttrack || null
+              : captionFile
+              ? {
+                  name: captionFile.name,
+                  type: captionFile.type,
+                  size: captionFile.size,
+                  lastModified: captionFile.lastModified,
+                }
+              : null,
+          },
         },
-      }),
-    ])
-      .then(async () => {
-        try {
-          const existedFiles: File[] = programContentBody.materials.map(material => material.data).flat()
+      })
 
-          for (const file of materialFiles) {
-            if (
-              existedFiles.some(
-                existedFile => existedFile.name === file.name && existedFile.lastModified === file.lastModified,
-              )
-            ) {
-              continue
-            }
-            await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
-              cancelToken: new axios.CancelToken(canceler => {
-                uploadCanceler.current = canceler
-              }),
-            })
-          }
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-          onRefetch?.()
-        } catch (error) {
-          process.env.NODE_ENV === 'development' && console.error(error)
-          return error
-        }
-      })
-      .then(() => {
+      if (program.isSubscription) {
+        await updateProgramContentPlan({
+          variables: {
+            programContentId: programContent.id,
+            programContentPlans:
+              values.planIds?.map((planId: string) => ({
+                program_content_id: programContent.id,
+                program_plan_id: planId,
+              })) || [],
+          },
+        })
+      }
+
+      if (!uploadError.materials) {
+        await updateProgramContentMaterials({
+          variables: {
+            programContentId: programContent.id,
+            materials: materialFiles.map(file => ({
+              program_content_id: programContent.id,
+              data: {
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified,
+              },
+            })),
+          },
+        })
+      }
+
+      if (Object.values(uploadError).some(v => v)) {
+        message.error(formatMessage(commonMessages.event.failedUpload))
+      } else {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        setUploadProgress({})
         setVisible(false)
-        onRefetch?.()
-      })
-      .catch(handleError)
-      .finally(() => setLoading(false))
+      }
+      onRefetch?.()
+    } catch (error) {
+      message.error(formatMessage(commonMessages.event.failedSave))
+    }
+
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -207,7 +272,7 @@ const ProgramContentAdminModal: React.FC<{
             description: BraftEditor.createEditorState(programContentBody.description),
           }}
           onValuesChange={(values: any) => {
-            typeof values.video !== 'undefined' && setVideo(values.video)
+            typeof values.video !== 'undefined' && setVideoFile(values.video)
           }}
           onFinish={handleSubmit}
         >
@@ -236,10 +301,10 @@ const ProgramContentAdminModal: React.FC<{
             </div>
 
             <div>
-              <Button disabled={loading || uploading} onClick={() => setVisible(false)} className="mr-2">
+              <Button disabled={loading} onClick={() => setVisible(false)} className="mr-2">
                 {formatMessage(commonMessages.ui.cancel)}
               </Button>
-              <Button type="primary" htmlType="submit" disabled={uploading} loading={loading} className="mr-2">
+              <Button type="primary" htmlType="submit" loading={loading} className="mr-2">
                 {formatMessage(commonMessages.ui.save)}
               </Button>
               <Dropdown
@@ -250,9 +315,9 @@ const ProgramContentAdminModal: React.FC<{
                     <Menu.Item
                       onClick={() =>
                         window.confirm(formatMessage(programMessages.text.deleteContentWarning)) &&
-                        deleteProgramContent({
-                          variables: { programContentId: programContent.id },
-                        }).then(() => onRefetch?.())
+                        deleteProgramContent({ variables: { programContentId: programContent.id } })
+                          .then(() => onRefetch?.())
+                          .catch(handleError)
                       }
                     >
                       {formatMessage(programMessages.ui.deleteContent)}
@@ -265,7 +330,7 @@ const ProgramContentAdminModal: React.FC<{
             </div>
           </div>
 
-          <Form.Item label={formatMessage(messages.contentTitle)} name="title">
+          <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
             <Input />
           </Form.Item>
           {program.isSubscription && (
@@ -273,43 +338,90 @@ const ProgramContentAdminModal: React.FC<{
               <ProgramPlanSelector programId={program.id} placeholder={formatMessage(messages.contentPlan)} />
             </Form.Item>
           )}
-          <Form.Item label={formatMessage(commonMessages.term.video)} name="video">
-            <SingleUploader
+          <Form.Item label={formatMessage(commonMessages.label.video)} name="video">
+            <FileUploader
+              renderTrigger={({ onClick }) => (
+                <>
+                  <Button icon={<UploadOutlined />} onClick={onClick}>
+                    {formatMessage(commonMessages.ui.selectFile)}
+                  </Button>
+                  {isUploadFailed.video && (
+                    <span className="ml-2">
+                      <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                      <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                    </span>
+                  )}
+                </>
+              )}
+              showUploadList
+              fileList={videoFile ? [videoFile] : []}
               accept="video/*"
-              uploadText={formatMessage(messages.uploadVideo)}
-              path={`videos/${appId}/${programContentBody.id}`}
-              onUploading={() => setUploading(true)}
-              onSuccess={handleUploadVideo}
-              onError={() => setUploading(false)}
-              onCancel={() => setUploading(false)}
+              downloadableLink={`videos/${appId}/${programContentBody.id}`}
+              uploadProgress={uploadProgress}
+              onChange={async files => {
+                const duration = files[0] ? Math.ceil(await getFileDuration(files[0])) : 0
+                form.setFields([{ name: 'duration', value: Math.ceil(duration / 60 || 0) }])
+                setRealDuration(duration)
+                setVideoFile(files[0] || null)
+              }}
             />
           </Form.Item>
-          {(video?.status === 'done' || programContentBody.data.video) && (
-            <Form.Item label={formatMessage(commonMessages.term.caption)} name="texttrack">
-              <SingleUploader
-                uploadText={formatMessage(messages.uploadCaption)}
-                path={`texttracks/${appId}/${programContentBody.id}`}
-                onUploading={() => setUploading(true)}
-                onSuccess={() => setUploading(false)}
-                onError={() => setUploading(false)}
-                onCancel={() => setUploading(false)}
-              />
-            </Form.Item>
-          )}
+          <Form.Item
+            label={formatMessage(commonMessages.label.caption)}
+            name="texttrack"
+            className={videoFile ? undefined : 'd-none'}
+          >
+            <FileUploader
+              renderTrigger={({ onClick }) => (
+                <>
+                  <Button icon={<UploadOutlined />} onClick={onClick}>
+                    {formatMessage(commonMessages.ui.selectFile)}
+                  </Button>
+                  {isUploadFailed.caption && (
+                    <span className="ml-2">
+                      <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                      <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                    </span>
+                  )}
+                </>
+              )}
+              showUploadList
+              uploadProgress={uploadProgress}
+              downloadableLink={`texttracks/${appId}/${programContentBody.id}`}
+              fileList={captionFile ? [captionFile] : []}
+              onChange={files => setCaptionFile(files[0])}
+            />
+          </Form.Item>
           <Form.Item label={formatMessage(messages.duration)} name="duration">
             <InputNumber min={0} />
           </Form.Item>
           {enabledModules.program_content_material && (
-            <Form.Item label={formatMessage(commonMessages.term.material)}>
+            <Form.Item label={formatMessage(commonMessages.label.material)}>
               <FileUploader
+                renderTrigger={({ onClick }) => (
+                  <>
+                    <Button icon={<UploadOutlined />} onClick={onClick}>
+                      {formatMessage(commonMessages.ui.selectFile)}
+                    </Button>
+                    {isUploadFailed.materials && (
+                      <span className="ml-2">
+                        <Icon component={() => <ExclamationCircleIcon />} className="mr-2" />
+                        <span>{formatMessage(commonMessages.event.failedUpload)}</span>
+                      </span>
+                    )}
+                  </>
+                )}
                 multiple
                 showUploadList
                 fileList={materialFiles}
+                uploadProgress={uploadProgress}
+                failedUploadFiles={failedUploadFiles}
+                downloadableLink={file => `materials/${appId}/${programContent.id}_${file.name}`}
                 onChange={files => setMaterialFiles(files)}
               />
             </Form.Item>
           )}
-          <Form.Item label={formatMessage(messages.contentContext)} name="description">
+          <Form.Item label={formatMessage(programMessages.label.description)} name="description">
             <AdminBraftEditor />
           </Form.Item>
         </Form>

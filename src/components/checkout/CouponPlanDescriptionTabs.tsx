@@ -34,12 +34,12 @@ const CouponPlanDescriptionTabs: React.FC<{
 
   const exportCodes = () => {
     const data: string[][] = [
-      [formatMessage(promotionMessages.term.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
+      [formatMessage(promotionMessages.label.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
     ]
 
     couponCodes.forEach(couponPlanCode => {
       couponPlanCode.coupons.forEach(coupon => {
-        data.push([couponPlanCode.code, coupon.used ? 'v' : '', coupon.member.email])
+        data.push([couponPlanCode.code, coupon.status?.used ? 'v' : '', coupon.member.email])
       })
 
       if (couponPlanCode.remaining) {
@@ -53,7 +53,7 @@ const CouponPlanDescriptionTabs: React.FC<{
   }
   return (
     <Tabs activeKey={activeKey || 'coupon-codes'} onChange={key => setActiveKey(key)}>
-      <Tabs.TabPane key="coupon-codes" tab={formatMessage(promotionMessages.term.couponCode)} className="pt-4">
+      <Tabs.TabPane key="coupon-codes" tab={formatMessage(promotionMessages.label.couponCode)} className="pt-4">
         <Button type="primary" icon={<DownloadOutlined />} className="mb-4" onClick={() => exportCodes()}>
           {formatMessage(promotionMessages.ui.exportCodes)}
         </Button>

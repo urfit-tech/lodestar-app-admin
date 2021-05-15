@@ -15,8 +15,8 @@ import { ReactComponent as CalendarAltIcon } from '../../../images/icon/calendar
 import LoadingPage from '../LoadingPage'
 
 const messages = defineMessages({
-  published: { id: 'creator.label.published', defaultMessage: '已公開 ({count})' },
-  hidden: { id: 'creator.label.hidden', defaultMessage: '隱藏 ({count})' },
+  publishedCreators: { id: 'common.label.publishedCreators', defaultMessage: '已公開 ({count})' },
+  hiddenCreators: { id: 'common.label.hiddenCreators', defaultMessage: '隱藏 ({count})' },
 })
 
 const CreatorCollectionAdminPage: React.FC<{}> = () => {
@@ -36,12 +36,12 @@ const CreatorCollectionAdminPage: React.FC<{}> = () => {
   const tabContents = [
     {
       key: 'published',
-      tab: formatMessage(messages.published, { count: creators.filter(v => v.isPublished).length }),
+      tab: formatMessage(messages.publishedCreators, { count: creators.filter(v => v.isPublished).length }),
       creators: creators.filter(v => v.isPublished),
     },
     {
       key: 'hidden',
-      tab: formatMessage(messages.hidden, { count: creators.filter(v => !v.isPublished).length }),
+      tab: formatMessage(messages.hiddenCreators, { count: creators.filter(v => !v.isPublished).length }),
       creators: creators.filter(v => !v.isPublished),
     },
   ]

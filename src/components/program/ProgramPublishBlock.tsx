@@ -10,13 +10,13 @@ import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSearchIcon } from '../../images/default/status-search.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
-import types from '../../types'
 import { ProgramAdminProps, ProgramApprovalProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
@@ -33,14 +33,14 @@ const ProgramPublishBlock: React.FC<{
   const [form] = useForm<FieldProps>()
   const { currentUserRole } = useAuth()
   const { enabledModules } = useApp()
-  const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
-  const [sendProgramApproval] = useMutation<types.SEND_PROGRAM_APPROVAL, types.SEND_PROGRAM_APPROVALVariables>(
+  const [publishProgram] = useMutation<hasura.PUBLISH_PROGRAM, hasura.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
+  const [sendProgramApproval] = useMutation<hasura.SEND_PROGRAM_APPROVAL, hasura.SEND_PROGRAM_APPROVALVariables>(
     SEND_PROGRAM_APPROVAL,
   )
-  const [cancelProgramApproval] = useMutation<types.CANCEL_PROGRAM_APPROVAL, types.CANCEL_PROGRAM_APPROVALVariables>(
+  const [cancelProgramApproval] = useMutation<hasura.CANCEL_PROGRAM_APPROVAL, hasura.CANCEL_PROGRAM_APPROVALVariables>(
     CANCEL_PROGRAM_APPROVAL,
   )
-  const [updateProgramApproval] = useMutation<types.UPDATE_PROGRAM_APPROVAL, types.UPDATE_PROGRAM_APPROVALVariables>(
+  const [updateProgramApproval] = useMutation<hasura.UPDATE_PROGRAM_APPROVAL, hasura.UPDATE_PROGRAM_APPROVALVariables>(
     UPDATE_PROGRAM_APPROVAL,
   )
 
@@ -83,6 +83,18 @@ const ProgramPublishBlock: React.FC<{
     errors.push({
       message: formatMessage(programMessages.text.noPrice),
       to: `/programs/${program.id}?tab=plan`,
+    })
+
+  program.contentSections.some(section =>
+    section.programContents.some(
+      content =>
+        content.programContentType === 'exercise' &&
+        (content.metadata?.withInvalidQuestion || !content.programContentBodyData?.questions?.length),
+    ),
+  ) &&
+    errors.push({
+      message: formatMessage(programMessages.text.invalidExercise),
+      to: `/programs/${program.id}?tab=content`,
     })
 
   // program state

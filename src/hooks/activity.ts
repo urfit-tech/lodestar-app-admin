@@ -1,12 +1,12 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import types from '../types'
+import hasura from '../hasura'
 import { ActivityAdminProps, ActivityBriefProps } from '../types/activity'
 
 export const useActivityCollection = (memberId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_ACTIVITY_COLLECTION_ADMIN,
-    types.GET_ACTIVITY_COLLECTION_ADMINVariables
+    hasura.GET_ACTIVITY_COLLECTION_ADMIN,
+    hasura.GET_ACTIVITY_COLLECTION_ADMINVariables
   >(
     gql`
       query GET_ACTIVITY_COLLECTION_ADMIN($memberId: String) {
@@ -62,7 +62,7 @@ export const useActivityCollection = (memberId: string | null) => {
 }
 
 export const useActivityAdmin = (activityId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_ACTIVITY_ADMIN, types.GET_ACTIVITY_ADMINVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_ACTIVITY_ADMIN, hasura.GET_ACTIVITY_ADMINVariables>(
     gql`
       query GET_ACTIVITY_ADMIN($activityId: uuid!) {
         activity_by_pk(id: $activityId) {

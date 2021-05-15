@@ -3,8 +3,8 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramRoleProps } from '../../types/program'
 import IssueReplyCreationBlock from './IssueReplyCreationBlock'
 import IssueReplyItem from './IssueReplyItem'
@@ -15,7 +15,7 @@ const IssueReplyCollectionBlock: React.FC<{
 }> = ({ programRoles, issueId }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-  const { loading, data, error, refetch } = useQuery<types.GET_ISSUE_REPLIES, types.GET_ISSUE_REPLIESVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_ISSUE_REPLIES, hasura.GET_ISSUE_REPLIESVariables>(
     GET_ISSUE_REPLIES,
     { variables: { issueId } },
   )

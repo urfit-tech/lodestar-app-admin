@@ -41,8 +41,8 @@ const PlanCodeSelector: React.FC<{
       >
         {formatMessage(promotionMessages.label.create)}{' '}
         {planType === 'coupon'
-          ? formatMessage(promotionMessages.term.couponCodes)
-          : formatMessage(promotionMessages.term.voucherCodes)}
+          ? formatMessage(promotionMessages.label.couponCodes)
+          : formatMessage(promotionMessages.label.voucherCodes)}
       </Button>
     </div>
   )
@@ -66,7 +66,7 @@ const PlanCodeInputGroup: React.FC<{
 
         <InputNumber
           style={{ width: '20%' }}
-          placeholder={formatMessage(promotionMessages.term.amount)}
+          placeholder={formatMessage(promotionMessages.label.amount)}
           value={value.count}
           onChange={count => typeof count === 'number' && onChange({ ...value, count })}
           formatter={v => `${v} ${formatMessage(promotionMessages.label.unit)}`}
@@ -80,8 +80,8 @@ const PlanCodeInputGroup: React.FC<{
             onChange={e => onChange({ ...value, code: e.target.value })}
             placeholder={`${formatMessage(promotionMessages.ui.custom)} ${
               planType === 'coupon'
-                ? formatMessage(promotionMessages.term.couponCodes)
-                : formatMessage(promotionMessages.term.voucherCodes)
+                ? formatMessage(promotionMessages.label.couponCodes)
+                : formatMessage(promotionMessages.label.voucherCodes)
             }`}
           />
         )}

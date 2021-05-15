@@ -7,9 +7,9 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 
 const StyledStatusBlock = styled.div`
@@ -38,7 +38,7 @@ const BlogPostVideoForm: React.FC<{
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updatePostVideoUrl] = useMutation<types.UPDATE_POST_VIDEO_URL, types.UPDATE_POST_VIDEO_URLVariables>(
+  const [updatePostVideoUrl] = useMutation<hasura.UPDATE_POST_VIDEO_URL, hasura.UPDATE_POST_VIDEO_URLVariables>(
     UPDATE_POST_VIDEO_URL,
   )
   const [loading, setLoading] = useState(false)
@@ -76,7 +76,7 @@ const BlogPostVideoForm: React.FC<{
           onFinish={handleSubmit}
         >
           <Form.Item name="videoUrl">
-            <Input className="mr-4" placeholder={formatMessage(blogMessages.term.pasteVideoUrl)} />
+            <Input className="mr-4" placeholder={formatMessage(blogMessages.text.pasteVideoUrl)} />
           </Form.Item>
 
           <Form.Item>

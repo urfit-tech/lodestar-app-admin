@@ -10,15 +10,15 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import PodcastProgramCollectionAdminTable from '../../components/podcast/PodcastProgramCollectionAdminTable'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneOIcon } from '../../images/icon/microphone-o.svg'
-import types from '../../types'
 
 const PodcastProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentUserRole, currentMemberId } = useAuth()
-  const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(
+  const [createPodcastProgram] = useMutation<hasura.CREATE_PODCAST_PROGRAM, hasura.CREATE_PODCAST_PROGRAMVariables>(
     CREATE_PODCAST_PROGRAM,
   )
 

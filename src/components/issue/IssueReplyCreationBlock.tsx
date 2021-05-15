@@ -8,9 +8,9 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import MemberAvatar from '../common/MemberAvatar'
 import { createUploadFn } from '../form/AdminBraftEditor'
 
@@ -36,7 +36,7 @@ const IssueReplyCreationBlock: React.FC<{
   const [form] = useForm<FieldProps>()
   const { authToken, apiHost } = useAuth()
   const { id: appId } = useApp()
-  const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
+  const [insertIssueReply] = useMutation<hasura.INSERT_ISSUE_REPLY, hasura.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
   )
   const [loading, setLoading] = useState(false)

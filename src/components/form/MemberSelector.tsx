@@ -17,17 +17,18 @@ const StyledTextSecondary = styled.span`
 `
 
 const messages = defineMessages({
-  memberSelect: { id: 'error.form.memberSelect', defaultMessage: '請輸入帳號或 Email' },
+  memberSelect: { id: 'member.text.memberSelect', defaultMessage: '請輸入帳號或 Email' },
 })
 
 const MemberSelector: React.FC<{
   members: MemberOptionProps[]
   value?: string | string[]
   onChange?: (value: string | string[]) => void
+  onSelect?: SelectProps<string[]>['onSelect']
   disabled?: boolean
   allowClear?: boolean
   mode?: SelectProps<string[]>['mode']
-}> = ({ members, value, onChange, disabled, allowClear = false, mode }) => {
+}> = ({ members, value, onChange, onSelect, disabled, allowClear = false, mode }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -38,6 +39,7 @@ const MemberSelector: React.FC<{
       optionFilterProp="data-source"
       value={value}
       onChange={value => onChange && onChange(value)}
+      onSelect={onSelect}
       onClear={() => onChange && onChange('')}
       showSearch
       disabled={disabled}
@@ -50,6 +52,7 @@ const MemberSelector: React.FC<{
           value={member.id}
           title={member.name || member.username}
           data-source={`${member.id} ${member.name} ${member.username} ${member.email}`}
+          data-email={member.email}
           disabled={member.disabled}
         >
           <div className="d-flex align-items-center justify-content-start">

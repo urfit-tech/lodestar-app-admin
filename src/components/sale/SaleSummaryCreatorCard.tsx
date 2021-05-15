@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { commaFormatter } from '../../helpers'
 import { useMember } from '../../hooks/member'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import { AvatarImage } from '../common/Image'
 
@@ -50,8 +50,8 @@ const SaleSummaryCreatorCard: React.FC<{
   const { formatMessage } = useIntl()
   const { member } = useMember(memberId)
   const { loading, data, error } = useQuery<
-    types.GET_PRODUCT_OWNER_TOTAL_AMOUNT,
-    types.GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables
+    hasura.GET_PRODUCT_OWNER_TOTAL_AMOUNT,
+    hasura.GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables
   >(
     gql`
       query GET_PRODUCT_OWNER_TOTAL_AMOUNT($memberId: String!) {

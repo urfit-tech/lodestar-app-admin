@@ -5,9 +5,9 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
@@ -21,7 +21,7 @@ const BlogPostContentForm: React.FC<{
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updatePostDescription] = useMutation<types.UPDATE_POST_DESCRIPTION, types.UPDATE_POST_DESCRIPTIONVariables>(
+  const [updatePostDescription] = useMutation<hasura.UPDATE_POST_DESCRIPTION, hasura.UPDATE_POST_DESCRIPTIONVariables>(
     UPDATE_POST_DESCRIPTION,
   )
   const [loading, setLoading] = useState(false)

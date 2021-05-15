@@ -7,17 +7,17 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
-import types from '../../types'
 import { CreatorProps } from '../../types/creator'
 import { AvatarImage } from '../common/Image'
 
 const messages = defineMessages({
-  showCreator: { id: 'creator.label.showCreator', defaultMessage: '顯示講師' },
-  hideCreator: { id: 'creator.ui.hideCreator', defaultMessage: '隱藏講師' },
-  publishedSuccess: { id: 'creator.status.publishedSuccess', defaultMessage: '已公開' },
-  hiddenSuccess: { id: 'creator.status.hiddenSuccess', defaultMessage: '已隱藏' },
+  showCreator: { id: 'common.ui.showCreator', defaultMessage: '顯示講師' },
+  hideCreator: { id: 'common.ui.hideCreator', defaultMessage: '隱藏講師' },
+  creatorPublishedSuccess: { id: 'common.status.creatorPublishedSuccess', defaultMessage: '已公開' },
+  creatorHiddenSuccess: { id: 'common.status.creatorHiddenSuccess', defaultMessage: '已隱藏' },
 })
 
 const StyledFilterButton = styled(Button)`
@@ -69,7 +69,7 @@ const CreatorCollectionAdminTable: React.FC<{
     speciality: null,
   })
 
-  const [insertCreatorDisplay] = useMutation<types.INSERT_CREATOR_DISPLAY, types.INSERT_CREATOR_DISPLAYVariables>(gql`
+  const [insertCreatorDisplay] = useMutation<hasura.INSERT_CREATOR_DISPLAY, hasura.INSERT_CREATOR_DISPLAYVariables>(gql`
     mutation INSERT_CREATOR_DISPLAY($creatorId: String!) {
       insert_creator_display_one(object: { member_id: $creatorId }) {
         id
@@ -77,7 +77,7 @@ const CreatorCollectionAdminTable: React.FC<{
     }
   `)
 
-  const [deleteCreatorDisplay] = useMutation<types.DELETE_CREATOR_DISPLAY, types.DELETE_CREATOR_DISPLAYVariables>(gql`
+  const [deleteCreatorDisplay] = useMutation<hasura.DELETE_CREATOR_DISPLAY, hasura.DELETE_CREATOR_DISPLAYVariables>(gql`
     mutation DELETE_CREATOR_DISPLAY($creatorId: String!) {
       delete_creator_display(where: { member_id: { _eq: $creatorId }, block_id: { _eq: "default" } }) {
         affected_rows
@@ -126,7 +126,7 @@ const CreatorCollectionAdminTable: React.FC<{
 
   const columns: ColumnProps<CreatorProps>[] = [
     {
-      title: formatMessage(commonMessages.term.instructor),
+      title: formatMessage(commonMessages.label.instructor),
       dataIndex: 'name',
       key: 'name',
       width: '30%',
@@ -149,7 +149,7 @@ const CreatorCollectionAdminTable: React.FC<{
       ),
     },
     {
-      title: formatMessage(commonMessages.term.field),
+      title: formatMessage(commonMessages.label.field),
       dataIndex: 'categoryNames',
       key: 'field',
       width: '30%',
@@ -172,7 +172,7 @@ const CreatorCollectionAdminTable: React.FC<{
       ),
     },
     {
-      title: formatMessage(commonMessages.term.speciality),
+      title: formatMessage(commonMessages.label.speciality),
       dataIndex: 'specialityNames',
       key: 'speciality',
       width: '35%',
@@ -214,7 +214,7 @@ const CreatorCollectionAdminTable: React.FC<{
                     onClick={() =>
                       deleteCreatorDisplay({ variables: { creatorId } })
                         .then(() => {
-                          message.success(formatMessage(messages.hiddenSuccess))
+                          message.success(formatMessage(messages.creatorHiddenSuccess))
                           onRefetch?.()
                         })
                         .catch(err => process.env.NODE_ENV === 'development' && console.error(err))
@@ -227,7 +227,7 @@ const CreatorCollectionAdminTable: React.FC<{
                     onClick={() =>
                       insertCreatorDisplay({ variables: { creatorId } })
                         .then(() => {
-                          message.success(formatMessage(messages.publishedSuccess))
+                          message.success(formatMessage(messages.creatorPublishedSuccess))
                           onRefetch?.()
                         })
                         .catch(err => process.env.NODE_ENV === 'development' && console.error(err))

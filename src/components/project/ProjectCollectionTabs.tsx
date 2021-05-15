@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProjectDataType } from '../../types/project'
 import ProjectCollectionBlock from './ProjectCollectionBlock'
 
@@ -17,8 +17,8 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
   const tabContents: {
     key: string
     tab: string
-    condition: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
-    orderBy?: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy']
+    condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
+    orderBy?: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy']
     withSortingButton?: boolean
   }[] = [
     {
@@ -30,7 +30,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         _or: [{ expired_at: { _gt: 'now()' } }, { expired_at: { _is_null: true } }],
         creator_id: { _eq: currentUserRole !== 'app-owner' ? currentMemberId : null },
       },
-      orderBy: [{ position: 'asc' as types.order_by }],
+      orderBy: [{ position: 'asc' as hasura.order_by }],
       withSortingButton: true,
     },
     {

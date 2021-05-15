@@ -80,6 +80,7 @@ export type ProgramContentProps = {
     data: any
     options: any
   }[]
+  programContentBodyData: any
 }
 
 export type ProgramContentBodyProps = {
@@ -145,4 +146,15 @@ export type ChoiceProps = {
   id: string
   description: string | null
   isCorrect: boolean
+}
+
+export type ExerciseProps = {
+  id: string
+  memberId: string
+  answer: {
+    questionId: string
+    choiceIds: string[]
+    questionPoints: number
+    gainedPoints: number
+  }[]
 }

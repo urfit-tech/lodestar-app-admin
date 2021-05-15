@@ -207,13 +207,13 @@ const ProductItem: React.FC<{
                 amount: periodAmount,
                 unit:
                   periodType === 'D'
-                    ? formatMessage(commonMessages.label.day)
+                    ? formatMessage(commonMessages.unit.day)
                     : periodType === 'W'
-                    ? formatMessage(commonMessages.label.week)
+                    ? formatMessage(commonMessages.unit.week)
                     : periodType === 'M'
                     ? formatMessage(commonMessages.label.monthWithQuantifier)
                     : periodType === 'Y'
-                    ? formatMessage(commonMessages.label.year)
+                    ? formatMessage(commonMessages.unit.year)
                     : formatMessage(commonMessages.label.unknownPeriod),
               })}
             </StyledHighlight>

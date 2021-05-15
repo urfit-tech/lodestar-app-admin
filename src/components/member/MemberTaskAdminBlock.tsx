@@ -1,7 +1,9 @@
 // organize-imports-ignore
-import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, DatePicker, Input, Select, Spin, Table } from 'antd'
+import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import { Button, DatePicker, Input, Select, Spin, Table, Skeleton, Checkbox, Tooltip } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -9,19 +11,18 @@ import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
+import { useCategory } from '../../hooks/data'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import types from '../../types'
+import hasura from '../../hasura'
 import { MemberTaskProps } from '../../types/member'
 import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
   switchTable: { id: 'member.ui.switchTable', defaultMessage: '切換列表模式' },
+  manager: { id: 'member.label.manager', defaultMessage: '執行者' },
 })
 
 const StyledTitle = styled.span`
@@ -36,17 +37,51 @@ const StyledName = styled.span`
   color: var(--gray-darker);
   font-size: 14px;
 `
+const StyledCategory = styled.span`
+  display: flex;
+  align-items: center;
+`
+const StyledCategoryDot = styled.span<{ color?: string }>`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${props => props.color || 'transparent'};
+  margin-right: 0.5rem;
+`
+const StyledFilterWrapper = styled.div`
+  padding-top: 0.5rem;
+  max-height: 20rem;
+  overflow: auto;
+`
+const StyledFullCalendarWrapper = styled.div`
+  && a {
+    color: var(--gray-darker);
+  }
+`
+const StyledEventTime = styled.span`
+  margin-right: 3px;
+  font-weight: normal;
+`
 
 const priorityLevel: { [key in MemberTaskProps['priority']]: number } = {
   high: 1,
   medium: 2,
   low: 3,
 }
-const statusLevel: { [key in MemberTaskProps['status']]: number } = {
-  pending: 1,
-  'in-progress': 2,
-  done: 3,
-}
+
+const categoryColors: string[] = [
+  '#ff8dcf',
+  '#8191be',
+  '#81bea4',
+  '#ffbe1e',
+  '#b882cd',
+  '#77ccd6',
+  '#be9a81',
+  '#b1db71',
+  '#ff7d62',
+  '#a0a0a7',
+]
 
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
@@ -56,12 +91,13 @@ const MemberTaskAdminBlock: React.FC<{
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<{
     title?: string
-    category?: string
+    categoryIds?: string[]
     executor?: string
     dueAt?: Date[]
     status?: string
   }>({})
   const [display, setDisplay] = useState('table')
+  const { loading: categoriesLoading, categories } = useCategory('task')
   const {
     loadingMemberTasks,
     executors,
@@ -130,6 +166,14 @@ const MemberTaskAdminBlock: React.FC<{
     onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
   })
 
+  if (categoriesLoading || !categories) {
+    return <Skeleton active />
+  }
+
+  const categoryColorPairs = Object.fromEntries(
+    categories.map((category, index) => [category.id, categoryColors[index % categoryColors.length]]),
+  )
+
   const columns: ColumnProps<MemberTaskProps>[] = [
     {
       dataIndex: 'title',
@@ -166,13 +210,65 @@ const MemberTaskAdminBlock: React.FC<{
         ) : (
           <MemberTaskTag variant="done">{formatMessage(memberMessages.status.statusDone)}</MemberTaskTag>
         ),
-      sorter: (a, b) => statusLevel[a.status] - statusLevel[b.status],
     },
     {
       dataIndex: 'category',
       title: formatMessage(memberMessages.label.category),
-      render: (text, record, index) => record.category?.name,
-      ...getColumnSearchProps('category'),
+      render: (text, record, index) => (
+        <StyledCategory>
+          {record.category && <StyledCategoryDot color={categoryColorPairs[record.category?.id]} />}
+          {record.category?.name}
+        </StyledCategory>
+      ),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <StyledFilterWrapper>
+            <Checkbox.Group
+              value={selectedKeys}
+              onChange={values => {
+                values.length ? setSelectedKeys(values.map(value => value.toString())) : setSelectedKeys([])
+              }}
+            >
+              {categories.map(category => (
+                <Checkbox key={category.id} value={category.id} className="d-block mx-2 mb-2">
+                  {category.name}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+          </StyledFilterWrapper>
+          <div className="d-flex justify-content-center">
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                setFilter(filter => ({
+                  ...filter,
+                  categoryIds: selectedKeys.length ? selectedKeys.map(v => v.toString()) : undefined,
+                }))
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                setFilter(filter => ({
+                  ...filter,
+                  categoryIds: undefined,
+                }))
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       dataIndex: 'dueAt',
@@ -226,7 +322,7 @@ const MemberTaskAdminBlock: React.FC<{
     },
     {
       dataIndex: 'executor',
-      title: formatMessage(memberMessages.label.assign),
+      title: formatMessage(messages.manager),
       render: (text, record, index) =>
         record.executor ? (
           <div className="d-flex align-items-center justify-content-start">
@@ -234,7 +330,6 @@ const MemberTaskAdminBlock: React.FC<{
             <StyledName>{record.executor.name}</StyledName>
           </div>
         ) : null,
-      ...getColumnSearchProps('executor'),
     },
   ]
 
@@ -254,67 +349,60 @@ const MemberTaskAdminBlock: React.FC<{
         />
 
         <div>
-          {display === 'calendar' && (
-            <>
-              <Select
-                allowClear
-                placeholder={formatMessage(memberMessages.label.status)}
-                filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                className="mr-3"
-                style={{ width: '150px' }}
-                onSelect={(value: MemberTaskProps['status']) => {
-                  setFilter(filter => ({
-                    ...filter,
-                    status: value,
-                  }))
-                  refetchMemberTasks()
-                }}
-                onClear={() => {
-                  setFilter(filter => ({
-                    ...filter,
-                    status: undefined,
-                  }))
-                }}
-              >
-                <Select.Option value="pending">{formatMessage(memberMessages.status.statusPending)}</Select.Option>
-                <Select.Option value="in-progress">
-                  {formatMessage(memberMessages.status.statusInProgress)}
-                </Select.Option>
-                <Select.Option value="done">{formatMessage(memberMessages.status.statusDone)}</Select.Option>
-              </Select>
-              <Select
-                allowClear
-                showSearch
-                placeholder={formatMessage(memberMessages.label.manager)}
-                filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                className="mr-3"
-                style={{ width: '150px' }}
-                onSelect={value => {
-                  setFilter(filter => ({
-                    ...filter,
-                    executor: `${value}` || undefined,
-                  }))
-                }}
-                onClear={() => {
-                  setFilter(filter => ({
-                    ...filter,
-                    executor: undefined,
-                  }))
-                }}
-              >
-                {executors.map(executor => (
-                  <Select.Option key={executor.id} value={executor.name}>
-                    {executor.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </>
-          )}
-
+          <Select
+            allowClear
+            placeholder={formatMessage(memberMessages.label.status)}
+            filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            className="mr-3"
+            style={{ width: '150px' }}
+            onSelect={(value: MemberTaskProps['status']) => {
+              setFilter(filter => ({
+                ...filter,
+                status: value,
+              }))
+              refetchMemberTasks()
+            }}
+            onClear={() => {
+              setFilter(filter => ({
+                ...filter,
+                status: undefined,
+              }))
+            }}
+          >
+            <Select.Option value="pending">{formatMessage(memberMessages.status.statusPending)}</Select.Option>
+            <Select.Option value="in-progress">{formatMessage(memberMessages.status.statusInProgress)}</Select.Option>
+            <Select.Option value="done">{formatMessage(memberMessages.status.statusDone)}</Select.Option>
+          </Select>
+          <Select
+            allowClear
+            showSearch
+            placeholder={formatMessage(messages.manager)}
+            filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            className="mr-3"
+            style={{ width: '150px' }}
+            onSelect={value => {
+              setFilter(filter => ({
+                ...filter,
+                executor: `${value}` || undefined,
+              }))
+            }}
+            onClear={() => {
+              setFilter(filter => ({
+                ...filter,
+                executor: undefined,
+              }))
+            }}
+          >
+            {executors.map(executor => (
+              <Select.Option key={executor.id} value={executor.name}>
+                {executor.name}
+              </Select.Option>
+            ))}
+          </Select>
           <Button
             className="mb-3"
             onClick={() => {
-              setFilter({})
+              setFilter(filter => ({ executor: filter.executor, status: filter.status }))
               setDisplay(display === 'table' ? 'calendar' : 'table')
             }}
           >
@@ -326,24 +414,37 @@ const MemberTaskAdminBlock: React.FC<{
       <AdminBlock>
         {display === 'calendar' ? (
           <Spin spinning={loadingMemberTasks}>
-            <FullCalendar
-              plugins={[dayGridPlugin]}
-              initialView="dayGridMonth"
-              events={memberTasks
-                .filter(memberTask => memberTask.dueAt)
-                .map(memberTask => {
-                  return {
-                    id: memberTask.id,
-                    title: `${memberTask.title}(${memberTask.member.name})`,
-                    start: moment(memberTask.dueAt).format(),
-                  }
-                })}
-              eventClick={e => {
-                setSelectedMemberTask(memberTasks.find(memberTask => memberTask.id === e.event.id) || null)
-                setVisible(true)
-              }}
-              datesSet={dateInfo => setFilter({ dueAt: [dateInfo.start, dateInfo.end] })}
-            />
+            <StyledFullCalendarWrapper>
+              <FullCalendar
+                plugins={[dayGridPlugin]}
+                initialView="dayGridMonth"
+                eventContent={arg => (
+                  <Tooltip title={arg.event.extendedProps.description}>
+                    <div className="fc-event-title">
+                      <StyledCategoryDot color={arg.event.extendedProps.dotColor} className="mx-1" />
+                      <StyledEventTime>{arg.timeText}</StyledEventTime>
+                      {arg.event.title}
+                    </div>
+                  </Tooltip>
+                )}
+                events={memberTasks
+                  .filter(memberTask => memberTask.dueAt)
+                  .map(memberTask => {
+                    return {
+                      id: memberTask.id,
+                      title: `${memberTask.title}(${memberTask.member.name})`,
+                      description: memberTask.description,
+                      start: moment(memberTask.dueAt).format(),
+                      dotColor: memberTask.category ? categoryColorPairs[memberTask.category?.id] : 'transparent',
+                    }
+                  })}
+                eventClick={e => {
+                  setSelectedMemberTask(memberTasks.find(memberTask => memberTask.id === e.event.id) || null)
+                  setVisible(true)
+                }}
+                datesSet={dateInfo => setFilter(filter => ({ ...filter, dueAt: [dateInfo.start, dateInfo.end] }))}
+              />
+            </StyledFullCalendarWrapper>
           </Spin>
         ) : display === 'table' ? (
           <Table
@@ -397,16 +498,16 @@ const MemberTaskAdminBlock: React.FC<{
 const useMemberTaskCollection = (options?: {
   memberId?: string
   title?: string
-  category?: string
+  categoryIds?: string[]
   executor?: string
   dueAt?: Date[]
   status?: string
   limit?: number
 }) => {
-  const condition: types.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
     member_id: { _eq: options?.memberId },
     title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
-    category: options?.category ? { name: { _ilike: options.category } } : undefined,
+    category: options?.categoryIds ? { id: { _in: options.categoryIds } } : undefined,
     executor: options?.executor
       ? { _or: [{ name: { _ilike: `%${options.executor}%` } }, { username: { _ilike: `%${options.executor}%` } }] }
       : undefined,
@@ -415,8 +516,8 @@ const useMemberTaskCollection = (options?: {
   }
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_TASK_COLLECTION,
-    types.GET_MEMBER_TASK_COLLECTIONVariables
+    hasura.GET_MEMBER_TASK_COLLECTION,
+    hasura.GET_MEMBER_TASK_COLLECTIONVariables
   >(
     gql`
       query GET_MEMBER_TASK_COLLECTION($condition: member_task_bool_exp, $limit: Int) {

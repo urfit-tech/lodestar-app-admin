@@ -3,13 +3,13 @@ import { Button, Checkbox, Modal } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import IssueItem from './IssueItem'
 
@@ -33,10 +33,6 @@ const StyledCheckbox = styled(Checkbox)`
   bottom: 24px;
   z-index: 999;
 `
-
-const messages = defineMessages({
-  checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
-})
 
 type IssueAdminCardProps = CardProps & {
   threadId: string
@@ -69,7 +65,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   const { currentMemberId, currentUserRole } = useAuth()
   const { settings } = useApp()
   const { program } = useProgram(programId)
-  const [updateIssueStatus] = useMutation<types.UPDATE_ISSUE_STATUS, types.UPDATE_ISSUE_STATUSVariables>(
+  const [updateIssueStatus] = useMutation<hasura.UPDATE_ISSUE_STATUS, hasura.UPDATE_ISSUE_STATUSVariables>(
     UPDATE_ISSUE_STATUS,
   )
 
@@ -133,7 +129,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
           <>
             <span>{programTitle}</span>
             <Button type="link" onClick={() => window.open(`//${settings['host']}${threadId}`)}>
-              {formatMessage(messages.checkProgramContent)}
+              {formatMessage(programMessages.ui.checkProgramContent)}
             </Button>
           </>
         }

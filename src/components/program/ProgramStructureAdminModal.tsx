@@ -6,8 +6,8 @@ import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
@@ -28,10 +28,10 @@ const ProgramStructureAdminModal: React.FC<{
   const { formatMessage } = useIntl()
 
   const [updateProgramContentSections] = useMutation<
-    types.UPSERT_PROGRAM_CONTENT_SECTIONS,
-    types.UPSERT_PROGRAM_CONTENT_SECTIONSVariables
+    hasura.UPSERT_PROGRAM_CONTENT_SECTIONS,
+    hasura.UPSERT_PROGRAM_CONTENT_SECTIONSVariables
   >(UPSERT_PROGRAM_CONTENT_SECTIONS)
-  const [updateProgramContents] = useMutation<types.UPSERT_PROGRAM_CONTENTS, types.UPSERT_PROGRAM_CONTENTSVariables>(
+  const [updateProgramContents] = useMutation<hasura.UPSERT_PROGRAM_CONTENTS, hasura.UPSERT_PROGRAM_CONTENTSVariables>(
     UPSERT_PROGRAM_CONTENTS,
   )
 

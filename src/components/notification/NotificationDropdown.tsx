@@ -6,8 +6,8 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { useNotifications } from '../../hooks/data'
-import types from '../../types'
 import NotificationItem from './NotificationItem'
 
 const Wrapper = styled.div`
@@ -48,9 +48,9 @@ const StyledReadAllButton = styled(Button)`
 `
 
 const messages = defineMessages({
-  checkNotifications: { id: 'notification.ui.checkNotifications', defaultMessage: '查看通知' },
-  notification: { id: 'notification.term.notification', defaultMessage: '通知' },
-  markAllAsRead: { id: 'notification.ui.markAllAsRead', defaultMessage: '全部標示為已讀' },
+  notification: { id: 'common.label.notification', defaultMessage: '通知' },
+  checkNotifications: { id: 'common.ui.checkNotifications', defaultMessage: '查看通知' },
+  markAllAsRead: { id: 'common.ui.markAllAsRead', defaultMessage: '全部標示為已讀' },
 })
 
 const NotificationDropdown: React.FC<{
@@ -60,7 +60,7 @@ const NotificationDropdown: React.FC<{
   const history = useHistory()
   const { notifications, refetch } = useNotifications(memberId, 15)
 
-  const [readAllNotification] = useMutation<types.READ_ALL_NOTIFICATIONS, types.READ_ALL_NOTIFICATIONSVariables>(
+  const [readAllNotification] = useMutation<hasura.READ_ALL_NOTIFICATIONS, hasura.READ_ALL_NOTIFICATIONSVariables>(
     READ_ALL_NOTIFICATION,
   )
 

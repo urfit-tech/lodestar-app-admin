@@ -103,12 +103,12 @@ const BlogAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
 
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.term.owner)}</AdminBlockTitle>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.owner)}</AdminBlockTitle>
                 <RoleAdminBlock name={member?.name || ''} pictureUrl={member?.pictureUrl || ''} />
               </AdminBlock>
 
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.term.author)}</AdminBlockTitle>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.author)}</AdminBlockTitle>
                 <BlogPostAuthorCollectionBlock post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>

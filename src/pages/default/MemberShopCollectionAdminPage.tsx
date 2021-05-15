@@ -95,7 +95,7 @@ const MemberShopCollectionAdminPage: React.FC = () => {
                         <StyledCardTitle className="mb-2">{memberShop.title}</StyledCardTitle>
                         <StyledCardSubTitle className="mb-4">{memberShop.member.name}</StyledCardSubTitle>
                         <StyledCardMeta>
-                          {formatMessage(commonMessages.term.merchandise)} {memberShop.merchandisesCount}
+                          {formatMessage(commonMessages.label.merchandise)} {memberShop.merchandisesCount}
                         </StyledCardMeta>
                       </StyledCard>
                     </Link>

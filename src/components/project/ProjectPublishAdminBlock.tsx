@@ -3,8 +3,8 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProjectAdminProps, ProjectDataType } from '../../types/project'
 import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
@@ -34,7 +34,7 @@ const ProjectPublishAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ project, type, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [publishProject] = useMutation<types.PUBLISH_PROJECT, types.PUBLISH_PROJECTVariables>(PUBLISH_PROJECT)
+  const [publishProject] = useMutation<hasura.PUBLISH_PROJECT, hasura.PUBLISH_PROJECTVariables>(PUBLISH_PROJECT)
 
   if (!project) {
     return <Skeleton active />

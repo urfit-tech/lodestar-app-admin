@@ -7,9 +7,9 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
@@ -36,7 +36,7 @@ const BlogPostBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { settings } = useApp()
-  const [updatePostBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
+  const [updatePostBasic] = useMutation<hasura.UPDATE_POST_BASIC, hasura.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
   const [codeName, setCodeName] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -97,13 +97,13 @@ const BlogPostBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(commonMessages.term.title)} name="title">
+      <Form.Item label={formatMessage(blogMessages.label.title)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="post" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tag)} name="tags">
+      <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
         <TagSelector />
       </Form.Item>
       <Form.Item

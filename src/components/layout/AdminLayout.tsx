@@ -1,16 +1,13 @@
 import { Button } from 'antd'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { StyledContent } from '.'
+import { commonMessages } from '../../helpers/translation'
 import { useRouteKeys } from '../../hooks/util'
 import AdminMenu from '../admin/AdminMenu'
 import Responsive from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
-
-const messages = defineMessages({
-  backstage: { id: 'layout.label.backstage', defaultMessage: '管理後台' },
-})
 
 const AdminLayout: React.FC = ({ children }) => {
   const { formatMessage } = useIntl()
@@ -21,7 +18,7 @@ const AdminLayout: React.FC = ({ children }) => {
       noFooter
       renderTitle={() => (
         <Link to={`/`} className="d-flex">
-          <Button type="link">{formatMessage(messages.backstage)}</Button>
+          <Button type="link">{formatMessage(commonMessages.ui.backstage)}</Button>
         </Link>
       )}
     >

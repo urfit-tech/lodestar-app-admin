@@ -50,7 +50,7 @@ const SaleInput: React.FC<{
           )
         }}
       >
-        {formatMessage(commonMessages.term.salePrice)}
+        {formatMessage(commonMessages.label.salePrice)}
       </Checkbox>
 
       <div className={active ? 'pl-3' : 'd-none'}>
@@ -91,7 +91,7 @@ const SaleInput: React.FC<{
         {value?.soldAt && moment(value.soldAt).isBefore(moment()) ? (
           <Form.Item className="d-inline-block mb-0">
             <StyledIcon className="mr-1" />
-            <span>{formatMessage(commonMessages.label.outdated)}</span>
+            <span>{formatMessage(commonMessages.status.outdated)}</span>
           </Form.Item>
         ) : null}
         {withTimer && (

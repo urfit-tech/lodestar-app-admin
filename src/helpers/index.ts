@@ -76,8 +76,8 @@ export const getFileDownloadableLink = async (key: string, authToken: string | n
   return data.result
 }
 
-export const downloadFile = async (url: string, fileName: string) =>
-  await axios({ url, method: 'GET', responseType: 'blob' }).then((response: any) => {
+export const downloadFile = async (fileName: string, config: AxiosRequestConfig) =>
+  await axios({ ...config, method: 'GET', responseType: 'blob' }).then((response: any) => {
     const url = window.URL.createObjectURL(new Blob([response.data]))
     const link = document.createElement('a')
     link.href = url
@@ -236,4 +236,16 @@ export const getFileDuration = (blob: Blob): Promise<number> => {
       }
     }
   })
+}
+
+export const copyToClipboard = (str: string) => {
+  const el = document.createElement('textarea')
+  el.value = str
+  el.setAttribute('readonly', '')
+  el.style.position = 'absolute'
+  el.style.left = '-9999px'
+  document.body.appendChild(el)
+  el.select()
+  document.execCommand('copy')
+  document.body.removeChild(el)
 }

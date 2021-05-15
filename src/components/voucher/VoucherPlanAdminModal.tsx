@@ -82,13 +82,13 @@ const VoucherPlanAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(promotionMessages.term.voucherPlanTitle)}
+          label={formatMessage(promotionMessages.label.voucherPlanTitle)}
           name="title"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(promotionMessages.term.voucherPlanTitle),
+                field: formatMessage(promotionMessages.label.voucherPlanTitle),
               }),
             },
           ]}
@@ -98,7 +98,7 @@ const VoucherPlanAdminModal: React.FC<
 
         {!voucherPlan && (
           <Form.Item
-            label={formatMessage(promotionMessages.term.voucherCodes)}
+            label={formatMessage(promotionMessages.label.voucherCodes)}
             name="voucherCodes"
             rules={[{ required: true, message: formatMessage(errorMessages.form.voucherCodes) }]}
           >
@@ -127,7 +127,7 @@ const VoucherPlanAdminModal: React.FC<
             <DatePicker
               format="YYYY-MM-DD HH:mm"
               showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-              placeholder={formatMessage(commonMessages.term.startedAt)}
+              placeholder={formatMessage(commonMessages.label.startedAt)}
             />
           </Form.Item>
           <span className="d-inline-block px-2">-</span>
@@ -135,11 +135,11 @@ const VoucherPlanAdminModal: React.FC<
             <DatePicker
               format="YYYY-MM-DD HH:mm"
               showTime={{ defaultValue: moment('23:59:59', 'HH:mm:ss') }}
-              placeholder={formatMessage(commonMessages.term.endedAt)}
+              placeholder={formatMessage(commonMessages.label.endedAt)}
             />
           </Form.Item>
         </Form.Item>
-        <Form.Item label={formatMessage(promotionMessages.term.description)} name="description">
+        <Form.Item label={formatMessage(promotionMessages.label.description)} name="description">
           <Input.TextArea rows={4} placeholder={formatMessage(commonMessages.label.optional)} />
         </Form.Item>
       </Form>

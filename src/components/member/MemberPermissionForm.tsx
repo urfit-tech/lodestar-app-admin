@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberAdminProps, UserRole } from '../../types/member'
 import PermissionInput from '../form/PermissionInput'
 
@@ -28,7 +28,7 @@ const MemberPermissionForm: React.FC<{
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const [form] = useForm<FieldProps>()
-  const [updateMemberRole] = useMutation<types.UPDATE_MEMBER_ROLE, types.UPDATE_MEMBER_ROLEVariables>(
+  const [updateMemberRole] = useMutation<hasura.UPDATE_MEMBER_ROLE, hasura.UPDATE_MEMBER_ROLEVariables>(
     UPDATE_MEMBER_ROLE,
   )
   const { loadingPermissions, defaultRolePermissions } = useDefaultPermissions()
@@ -91,9 +91,9 @@ const MemberPermissionForm: React.FC<{
     >
       <Form.Item label={formatMessage(messages.roleSettings)} name="roleId">
         <Select>
-          <Select.Option value="general-member">{formatMessage(commonMessages.term.generalMember)}</Select.Option>
-          <Select.Option value="content-creator">{formatMessage(commonMessages.term.contentCreator)}</Select.Option>
-          <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
+          <Select.Option value="general-member">{formatMessage(commonMessages.label.generalMember)}</Select.Option>
+          <Select.Option value="content-creator">{formatMessage(commonMessages.label.contentCreator)}</Select.Option>
+          <Select.Option value="app-owner">{formatMessage(commonMessages.label.appOwner)}</Select.Option>
         </Select>
       </Form.Item>
 
@@ -138,7 +138,7 @@ const UPDATE_MEMBER_ROLE = gql`
 `
 
 const useDefaultPermissions = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_ROLE_PERMISSION>(gql`
+  const { loading, error, data, refetch } = useQuery<hasura.GET_ROLE_PERMISSION>(gql`
     query GET_ROLE_PERMISSION {
       role_permission {
         id

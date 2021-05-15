@@ -24,10 +24,10 @@ import ProgramPackageProgramCollectionBlock from '../../components/programPackag
 import ProgramPackageProgramConnectionModal from '../../components/programPackage/ProgramPackageProgramConnectionModal'
 import ProgramPackagePublishBlock from '../../components/programPackage/ProgramPackagePublishBlock'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackage } from '../../hooks/programPackage'
-import types from '../../types'
 
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -36,8 +36,8 @@ const ProgramPackageAdminPage: React.FC = () => {
   const { settings } = useApp()
   const { programPackage, refetch } = useGetProgramPackage(programPackageId)
   const [updatePosition] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
-    types.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables
+    hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
+    hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION)
 
   return (
@@ -128,7 +128,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               </AdminBlock>
 
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.term.description)}</AdminBlockTitle>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.description)}</AdminBlockTitle>
                 <ProgramPackageDescriptionForm programPackage={programPackage} onRefetch={refetch} />
               </AdminBlock>
             </div>

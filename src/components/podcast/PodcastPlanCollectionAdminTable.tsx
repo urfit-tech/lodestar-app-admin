@@ -97,7 +97,7 @@ const PodcastPlanCollectionAdminTable: React.FC<{
 
   const columns: ColumnProps<PodcastPlanRowProps>[] = [
     {
-      title: formatMessage(commonMessages.term.instructor),
+      title: formatMessage(commonMessages.label.instructor),
       key: 'creator',
       width: '12rem',
       render: (text, record, index) => (
@@ -148,21 +148,21 @@ const PodcastPlanCollectionAdminTable: React.FC<{
       width: '6rem',
       filters: [
         {
-          text: formatMessage(podcastMessages.status.published),
-          value: formatMessage(podcastMessages.status.published),
+          text: formatMessage(commonMessages.status.published),
+          value: formatMessage(commonMessages.status.published),
         },
         {
-          text: formatMessage(podcastMessages.status.notPublished),
-          value: formatMessage(podcastMessages.status.notPublished),
+          text: formatMessage(commonMessages.status.notPublished),
+          value: formatMessage(commonMessages.status.notPublished),
         },
       ],
       filterMultiple: false,
-      onFilter: (value, record) => !!record.publishedAt === (value === formatMessage(podcastMessages.status.published)),
+      onFilter: (value, record) => !!record.publishedAt === (value === formatMessage(commonMessages.status.published)),
       render: (text, record, index) => (
         <StyledStatusLabel active={!!record.publishedAt} className="d-flex align-items-center justify-content-start">
           {record.publishedAt
-            ? formatMessage(podcastMessages.status.published)
-            : formatMessage(podcastMessages.status.notPublished)}
+            ? formatMessage(commonMessages.status.published)
+            : formatMessage(commonMessages.status.notPublished)}
         </StyledStatusLabel>
       ),
     },

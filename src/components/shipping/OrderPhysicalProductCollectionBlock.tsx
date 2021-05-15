@@ -8,12 +8,12 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MultipleUploader, { StyledFileBlock } from '../../components/common/MultipleUploader'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useSimpleProduct } from '../../hooks/data'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
 import EmptyCover from '../../images/default/empty-cover.png'
-import types from '../../types'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
@@ -250,7 +250,7 @@ const ShippingProductItem: React.FC<{
 }
 
 const useUpdateOrderProductFiles = (orderProductId: string) => {
-  const [updateFiles] = useMutation<types.UPDATE_ORDER_PRODUCT_FILES, types.UPDATE_ORDER_PRODUCT_FILESVariables>(gql`
+  const [updateFiles] = useMutation<hasura.UPDATE_ORDER_PRODUCT_FILES, hasura.UPDATE_ORDER_PRODUCT_FILESVariables>(gql`
     mutation UPDATE_ORDER_PRODUCT_FILES(
       $orderProductId: uuid!
       $orderProductFiles: [order_product_file_insert_input!]!

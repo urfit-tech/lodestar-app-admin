@@ -10,8 +10,8 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { IssueProps } from '../../types/general'
 
 const ProgramIssueCollectionAdminPage = () => {
@@ -113,8 +113,8 @@ const AllProgramIssueCollectionBlock: React.FC<{
 const useGetCreatorProgramIssue = (memberId: string | null, selectedProgramId: string, unsolved?: boolean) => {
   const { id: appId } = useApp()
   const { loading, error, data, refetch } = useQuery<
-    types.GET_CREATOR_PROGRAM_ISSUES,
-    types.GET_CREATOR_PROGRAM_ISSUESVariables
+    hasura.GET_CREATOR_PROGRAM_ISSUES,
+    hasura.GET_CREATOR_PROGRAM_ISSUESVariables
   >(GET_CREATOR_PROGRAM_ISSUES, {
     variables: {
       appId,

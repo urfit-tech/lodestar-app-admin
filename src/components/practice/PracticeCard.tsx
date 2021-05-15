@@ -9,17 +9,18 @@ import styled from 'styled-components'
 import Responsive from '../../components/common/Responsive'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { dateFormatter } from '../../helpers'
-import { practiceMessages } from '../../helpers/translation'
+import { programMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as CommentAltLinesIcon } from '../../images/icon/comment-alt-lines-o.svg'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import MemberAvatar from '../common/MemberAvatar'
 import { BREAK_POINT } from '../common/Responsive'
 
 type PracticeCardProps = CardProps & {
   id: string
+  isCoverRequired: boolean
   coverUrl: string | null
   title: string
   createdAt: Date
@@ -59,6 +60,9 @@ const StyledTitle = styled(Typography.Title)`
     margin-top: 12px;
     letter-spacing: 0.2px;
   }
+`
+const StyledTitleBlock = styled.div`
+  overflow: hidden;
 `
 const StyledDesktopTitle = styled.div`
   font-size: 16px;
@@ -103,6 +107,7 @@ const StyledCheckboxWrapper = styled.div`
 `
 const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   id,
+  isCoverRequired,
   coverUrl,
   title,
   createdAt,
@@ -118,15 +123,17 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   const [reviewed, setReviewed] = useState(isReviewed)
   const [reacted, setReacted] = useState(false)
   const { currentMemberId, currentUserRole } = useAuth()
-  const [updatedPracticeStatus] = useMutation<types.UPDATE_PRACTICE_STATUS, types.UPDATE_PRACTICE_STATUSVariables>(
+  const [updatedPracticeStatus] = useMutation<hasura.UPDATE_PRACTICE_STATUS, hasura.UPDATE_PRACTICE_STATUSVariables>(
     UPDATE_PRACTICE_STATUS,
   )
-  const [insertPracticeReaction] = useMutation<types.INSERT_PRACTICE_REACTION, types.INSERT_PRACTICE_REACTIONVariables>(
-    INSERT_PRACTICE_REACTION,
-  )
-  const [deletePracticeReaction] = useMutation<types.DELETE_PRACTICE_REACTION, types.DELETE_PRACTICE_REACTIONVariables>(
-    DELETE_PRACTICE_REACTION,
-  )
+  const [insertPracticeReaction] = useMutation<
+    hasura.INSERT_PRACTICE_REACTION,
+    hasura.INSERT_PRACTICE_REACTIONVariables
+  >(INSERT_PRACTICE_REACTION)
+  const [deletePracticeReaction] = useMutation<
+    hasura.DELETE_PRACTICE_REACTION,
+    hasura.DELETE_PRACTICE_REACTIONVariables
+  >(DELETE_PRACTICE_REACTION)
   const { practiceAmount } = usePracticeIssueAmount(id)
 
   const practiceUrl = `https://${settings['host']}/practices/${id}`
@@ -159,13 +166,8 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   return (
     <StyledAdminCard className="mb-3" {...props}>
       <Responsive.Default>
-        <div
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            window.open(practiceUrl, '_blank')
-          }}
-        >
-          <StyledCover src={coverUrl || EmptyCover} />
+        <div className="cursor-pointer" onClick={() => window.open(practiceUrl, '_blank')}>
+          {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
 
           <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
           <StyledCreatedAt>
@@ -214,47 +216,40 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
               }}
             >
               {isReviewed
-                ? formatMessage(practiceMessages.status.reviewed)
-                : formatMessage(practiceMessages.status.unreviewed)}
+                ? formatMessage(programMessages.status.reviewed)
+                : formatMessage(programMessages.status.unreviewed)}
             </Checkbox>
           </StyledCheckboxWrapper>
         ) : null}
       </Responsive.Default>
 
       <Responsive.Desktop>
-        <div className="d-flex col-12 p-0">
+        <div className="row">
           <div
-            className="d-flex col-9 p-0"
-            onClick={() => {
-              window.open(practiceUrl, '_blank')
-            }}
-            style={{ cursor: 'pointer' }}
+            className="col-6 d-flex align-items-center cursor-pointer"
+            onClick={() => window.open(practiceUrl, '_blank')}
           >
-            <StyledCover src={coverUrl || EmptyCover} />
-            <div className="col-5 p-0">
+            {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
+            <StyledTitleBlock>
               <StyledDesktopTitle>{title}</StyledDesktopTitle>
               <StyledCreatedAt>
                 <CalendarOutlined className="mr-2" />
                 <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
               </StyledCreatedAt>
-            </div>
-
-            <div className="d-flex algin-items-center col-2 m-auto p-0">
-              <MemberAvatar size="28px" withName memberId={memberId} />
-            </div>
+            </StyledTitleBlock>
           </div>
-          <div className="d-flex col-3 p-0">
-            <StyledCommentIcon>
+
+          <div className="col-3 d-flex align-items-center">
+            <MemberAvatar size="28px" withName memberId={memberId} />
+          </div>
+
+          <div className="col-3 d-flex align-items-center">
+            <StyledCommentIcon className="mr-3">
               <CommentAltLinesIcon className="mr-2" />
-              <div>{practiceAmount && practiceAmount}</div>
+              <div>{practiceAmount}</div>
             </StyledCommentIcon>
 
-            <StyledHeartIcon
-              reacted={reacted}
-              onClick={e => {
-                toggleReaction(reacted)
-              }}
-            >
+            <StyledHeartIcon className="mr-3" reacted={reacted} onClick={e => toggleReaction(reacted)}>
               {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
               <div>{reactedMemberIds.length}</div>
             </StyledHeartIcon>
@@ -263,27 +258,26 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
             roles
               .filter(role => role?.memberId === currentMemberId)
               .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
-              <StyledCheckboxWrapper className="d-flex m-auto">
-                <Checkbox
-                  checked={reviewed}
-                  onChange={e => {
-                    const updatedReviewed = e.target.checked
-                    updatedPracticeStatus({
-                      variables: {
-                        practiceId: id,
-                        reviewedAt: updatedReviewed ? new Date() : null,
-                      },
-                    }).then(() => {
-                      setReviewed(updatedReviewed)
-                      onRefetch?.()
-                    })
-                  }}
-                >
-                  {isReviewed
-                    ? formatMessage(practiceMessages.status.reviewed)
-                    : formatMessage(practiceMessages.status.unreviewed)}
-                </Checkbox>
-              </StyledCheckboxWrapper>
+              <Checkbox
+                className="flex-grow-1 text-right"
+                checked={reviewed}
+                onChange={e => {
+                  const updatedReviewed = e.target.checked
+                  updatedPracticeStatus({
+                    variables: {
+                      practiceId: id,
+                      reviewedAt: updatedReviewed ? new Date() : null,
+                    },
+                  }).then(() => {
+                    setReviewed(updatedReviewed)
+                    onRefetch?.()
+                  })
+                }}
+              >
+                {isReviewed
+                  ? formatMessage(programMessages.status.reviewed)
+                  : formatMessage(programMessages.status.unreviewed)}
+              </Checkbox>
             ) : null}
           </div>
         </div>
@@ -315,8 +309,8 @@ const DELETE_PRACTICE_REACTION = gql`
 `
 const usePracticeIssueAmount = (practiceId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PRACTICE_ISSUE_AMOUNT,
-    types.GET_PRACTICE_ISSUE_AMOUNTVariables
+    hasura.GET_PRACTICE_ISSUE_AMOUNT,
+    hasura.GET_PRACTICE_ISSUE_AMOUNTVariables
   >(GET_PRACTICE_ISSUE_AMOUNT, { variables: { threadIdLike: `/practices/${practiceId}` } })
   return {
     loading,

@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
-import types from '../../types'
+import hasura from '../../hasura'
 import { ProductType } from '../../types/general'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 
@@ -208,7 +208,7 @@ const ScopeSelector: React.FC<{
 const useAllBriefProductCollection = () => {
   const { enabledModules } = useApp()
 
-  const { loading, error, data, refetch } = useQuery<types.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
     gql`
       query GET_ALL_BRIEF_PRODUCT_COLLECTION {
         program(where: { published_at: { _is_null: false } }) {

@@ -4,8 +4,8 @@ import { Button, Dropdown, Menu, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import ActivityTicket from './ActivityTicket'
 import ActivityTicketAdminModal from './ActivityTicketAdminModal'
@@ -15,10 +15,10 @@ const ActivityTicketsAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [insertActivityTicket] = useMutation<types.INSERT_ACTIVITY_TICKET, types.INSERT_ACTIVITY_TICKETVariables>(
+  const [insertActivityTicket] = useMutation<hasura.INSERT_ACTIVITY_TICKET, hasura.INSERT_ACTIVITY_TICKETVariables>(
     INSERT_ACTIVITY_TICKET,
   )
-  const [updateActivityTicket] = useMutation<types.UPDATE_ACTIVITY_TICKET, types.UPDATE_ACTIVITY_TICKETVariables>(
+  const [updateActivityTicket] = useMutation<hasura.UPDATE_ACTIVITY_TICKET, hasura.UPDATE_ACTIVITY_TICKETVariables>(
     UPDATE_ACTIVITY_TICKET,
   )
 

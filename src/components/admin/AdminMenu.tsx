@@ -31,7 +31,7 @@ export const StyledMenu = styled(Menu)`
 const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { permissions, currentUserRole } = useAuth()
   const { renderAdminMenu } = useCustomRenderer()
 
@@ -53,7 +53,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(commonMessages.menu.salesAdmin),
     },
     {
-      permissionIsAllowed: permissions.SALES_ADMIN && currentUserRole === 'content-creator',
+      permissionIsAllowed: permissions.SALES_CREATOR_VIEW && currentUserRole === 'content-creator',
       icon: () => <MoneyCircleIcon />,
       key: 'creator_sales',
       name: formatMessage(commonMessages.menu.salesAdmin),
@@ -85,6 +85,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           permissionIsAllowed: !!enabledModules.practice && permissions.PRACTICE_ADMIN,
           key: 'practice_collection',
           name: formatMessage(commonMessages.menu.practice),
+        },
+        {
+          permissionIsAllowed: !!enabledModules.exercise,
+          key: 'exercise_result',
+          name: formatMessage(commonMessages.menu.exerciseResult),
         },
         {
           permissionIsAllowed: !!enabledModules.program_package && permissions.PROGRAM_PACKAGE_ADMIN,
@@ -374,6 +379,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   return (
     <>
       {renderAdminMenu?.({
+        settings,
         role: currentUserRole,
         permissions,
         menuItems: defaultMenuItems,

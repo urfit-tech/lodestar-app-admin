@@ -2,15 +2,15 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Form, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import momentTz from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
-import types from '../../types'
+import { INSERT_APPOINTMENT_SCHEDULES } from '../../hooks/appointment'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import { PeriodType } from '../../types/general'
 import { StyledSelect } from '../admin'
@@ -40,17 +40,17 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [createAppointmentSchedule] = useMutation<
-    types.CREATE_APPOINTMENT_SCHEDULE,
-    types.CREATE_APPOINTMENT_SCHEDULEVariables
-  >(CREATE_APPOINTMENT_SCHEDULE)
+  const [insertAppointmentSchedules] = useMutation<
+    hasura.INSERT_APPOINTMENT_SCHEDULES,
+    hasura.INSERT_APPOINTMENT_SCHEDULESVariables
+  >(INSERT_APPOINTMENT_SCHEDULES)
   const [withRepeat, setWithRepeat] = useState(false)
   const [loading, setLoading] = useState(false)
 
   if (!appointmentPlanAdmin) {
     return (
       <Button type="primary" icon={<FileAddOutlined />} disabled>
-        {formatMessage(appointmentMessages.label.createPeriod)}
+        {formatMessage(appointmentMessages.ui.createPeriod)}
       </Button>
     )
   }
@@ -61,12 +61,16 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
       .then(() => {
         setLoading(true)
         const values = form.getFieldsValue()
-        createAppointmentSchedule({
+        insertAppointmentSchedules({
           variables: {
-            appointmentPlanId: appointmentPlanAdmin.id,
-            startedAt: values.startedAt.toDate(),
-            intervalAmount: withRepeat ? 1 : null,
-            intervalType: withRepeat ? values.periodType : null,
+            data: [
+              {
+                appointment_plan_id: appointmentPlanAdmin.id,
+                started_at: values.startedAt.toDate(),
+                interval_amount: withRepeat ? 1 : null,
+                interval_type: withRepeat ? values.periodType : null,
+              },
+            ],
           },
         })
           .then(() => {
@@ -83,9 +87,9 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <>
-          <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)} className="mb-4">
-            {formatMessage(appointmentMessages.label.createPeriod)}
+        <div>
+          <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)} className="mb-2">
+            {formatMessage(appointmentMessages.ui.createPeriod)}
           </Button>
           <StyledTimeStandardBlock>
             {formatMessage(appointmentMessages.text.timezone, {
@@ -93,12 +97,12 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
               timezone: moment().zone(momentTz.tz.guess()).format('Z'),
             })}
           </StyledTimeStandardBlock>
-        </>
+        </div>
       )}
       icon={<FileAddOutlined />}
       title={
         <>
-          <div className="mb-3">{formatMessage(appointmentMessages.label.createPeriod)}</div>
+          <div className="mb-3">{formatMessage(appointmentMessages.ui.createPeriod)}</div>
           <StyledTimeZoneBlock>
             {formatMessage(appointmentMessages.text.timezone, {
               city: momentTz.tz.guess().split('/')[1],
@@ -130,7 +134,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
         }}
       >
         <Form.Item
-          label={formatMessage(appointmentMessages.term.startedAt)}
+          label={formatMessage(appointmentMessages.label.startedAt)}
           name="startedAt"
           rules={[{ required: true, message: formatMessage(appointmentMessages.text.selectStartedAt) }]}
         >
@@ -144,14 +148,14 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
         </Form.Item>
 
         <Checkbox className="mb-2" defaultChecked={withRepeat} onChange={e => setWithRepeat(e.target.checked)}>
-          {formatMessage(appointmentMessages.term.periodType)}
+          {formatMessage(appointmentMessages.label.periodType)}
         </Checkbox>
         <div className={withRepeat ? 'd-block mb-4' : 'd-none'}>
           <Form.Item name="periodType">
             <StyledSelect className="ml-4">
-              <Select.Option value="D">{formatMessage(commonMessages.label.perDay)}</Select.Option>
-              <Select.Option value="W">{formatMessage(commonMessages.label.week)}</Select.Option>
-              <Select.Option value="M">{formatMessage(commonMessages.label.month)}</Select.Option>
+              <Select.Option value="D">{formatMessage(commonMessages.unit.day)}</Select.Option>
+              <Select.Option value="W">{formatMessage(commonMessages.unit.week)}</Select.Option>
+              <Select.Option value="M">{formatMessage(commonMessages.unit.month)}</Select.Option>
             </StyledSelect>
           </Form.Item>
         </div>
@@ -159,25 +163,5 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
     </AdminModal>
   )
 }
-
-const CREATE_APPOINTMENT_SCHEDULE = gql`
-  mutation CREATE_APPOINTMENT_SCHEDULE(
-    $appointmentPlanId: uuid!
-    $startedAt: timestamptz!
-    $intervalType: String
-    $intervalAmount: Int
-  ) {
-    insert_appointment_schedule(
-      objects: {
-        appointment_plan_id: $appointmentPlanId
-        started_at: $startedAt
-        interval_type: $intervalType
-        interval_amount: $intervalAmount
-      }
-    ) {
-      affected_rows
-    }
-  }
-`
 
 export default AppointmentPlanScheduleCreationModal

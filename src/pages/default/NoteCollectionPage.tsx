@@ -1,12 +1,9 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Input, Table, Tag, Typography } from 'antd'
+import { Button, Checkbox, DatePicker, Input, message, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import Axios from 'axios'
-import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
-import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -14,12 +11,15 @@ import { AdminPageTitle } from '../../components/admin'
 import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
+import MemberNoteAdminModal from '../../components/member/MemberNoteAdminModal'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, downloadFile, getFileDownloadableLink, handleError } from '../../helpers'
 import { commonMessages, memberMessages, podcastMessages } from '../../helpers/translation'
-import { useMutateMemberNote } from '../../hooks/member'
-import types from '../../types'
+import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
+import { useMemberNotesAdmin, useMutateMemberNote } from '../../hooks/member'
+import { NoteAdminProps } from '../../types/member'
 
 const messages = defineMessages({
   memberNoteCreatedAt: { id: 'member.label.memberNoteCreatedAt', defaultMessage: '聯絡時間' },
@@ -49,8 +49,10 @@ const StyledMemberEmail = styled.div`
   font-size: 12px;
   letter-spacing: 0.6px;
 `
-const StyledDescription = styled(Typography.Paragraph)`
-  white-space: pre-line;
+const StyledDescription = styled.div`
+  color: var(--gray-darker);
+  line-height: 1.5;
+  letter-spacing: 0.2px;
 `
 const FilterWrapper = styled.div`
   padding-top: 0.5rem;
@@ -69,60 +71,31 @@ type FiltersProps = {
   categories?: string[]
   tags?: string[]
 }
-type NoteAdminProps = {
-  id: string
-  createdAt: Date
-  author: {
-    id: string
-    name: string
-  }
-  manager: {
-    id: string
-    name: string
-  } | null
-  member: {
-    id: string
-    pictureUrl: string | null
-    name: string
-    email: string
-  } | null
-  memberCategories: {
-    id: string
-    name: string
-  }[]
-  memberTags: string[]
-  consumption: number
-  duration: number
-  audioFilePath: string | null
-  description: string | null
-  metadata: any
-  note: string | null
-  attachments: {
-    id: string
-    data: any
-    options: any
-  }[]
-}
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken, apiHost } = useAuth()
 
-  const searchInputRef = useRef<Input | null>(null)
-  const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
-    created_at: 'desc' as types.order_by.desc,
+  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
+    created_at: 'desc' as hasura.order_by,
   })
   const [filters, setFilters] = useState<FiltersProps>({
     range: [moment().startOf('month'), moment().endOf('month')],
   })
-  const { loadingNotes, allMemberCategories, allMemberTags, notes, loadMoreNotes } = useMemberNotesAdmin(
+  const { loadingNotes, allMemberCategories, allMemberTags, notes, loadMoreNotes, refetchNotes } = useMemberNotesAdmin(
     orderBy,
     filters,
   )
   const { updateMemberNote } = useMutateMemberNote()
-  const [updatedNotes, setUpdatedNotes] = useState<{ [noteID: string]: string }>({})
+  const uploadAttachments = useUploadAttachments()
+  const { deleteAttachments } = useMutateAttachment()
+
+  const searchInputRef = useRef<Input | null>(null)
+
+  const [updatedNotes, setUpdatedNotes] = useState<{ [NoteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
   const [downloadingNoteIds, setDownloadingNoteIds] = useState<string[]>([])
+  const [selectedNote, setSelectedNote] = useState<NoteAdminProps | null>(null)
 
   const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -213,7 +186,7 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'category',
-      title: formatMessage(commonMessages.term.category),
+      title: formatMessage(commonMessages.label.category),
       width: '10rem',
       ...getColumnSearchProps('categories'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -245,7 +218,7 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'tag',
-      title: formatMessage(commonMessages.term.tag),
+      title: formatMessage(commonMessages.label.tag),
       width: '10rem',
       ...getColumnSearchProps('tags'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -312,14 +285,15 @@ const NoteCollectionPage: React.FC = () => {
           <Button
             type="primary"
             loading={downloadingNoteIds.includes(record.id)}
-            onClick={async () => {
+            onClick={async event => {
+              event.stopPropagation()
               setDownloadingNoteIds(prev => [...prev, record.id])
               let downloadedCount = 0
               record.attachments.forEach(async attachment => {
                 try {
                   const link: string = await getFileDownloadableLink(`attachments/${attachment.id}`, authToken, apiHost)
                   if (link && attachment.data?.name) {
-                    await downloadFile(link, attachment.data.name)
+                    await downloadFile(attachment.data.name, { url: link })
                     downloadedCount++
                     if (downloadedCount === record.attachments.length) {
                       setDownloadingNoteIds(prev => prev.filter(v => v !== record.id))
@@ -341,30 +315,7 @@ const NoteCollectionPage: React.FC = () => {
       title: formatMessage(messages.memberNoteNote),
       width: '15rem',
       render: (text, record, index) => (
-        <StyledDescription
-          editable={{
-            autoSize: { maxRows: 5, minRows: 1 },
-            onChange: value =>
-              updateMemberNote({
-                variables: {
-                  memberNoteId: record.id,
-                  data: {
-                    note: value,
-                  },
-                },
-              })
-                .then(() =>
-                  setUpdatedNotes({
-                    ...updatedNotes,
-                    [record.id]: value,
-                  }),
-                )
-                .catch(handleError),
-          }}
-          className="mb-0"
-        >
-          {updatedNotes[record.id] || record.note || ''}
-        </StyledDescription>
+        <StyledDescription>{updatedNotes[record.id] || record.note || ''}</StyledDescription>
       ),
     },
   ]
@@ -378,6 +329,7 @@ const NoteCollectionPage: React.FC = () => {
 
       <DatePicker.RangePicker
         defaultValue={[moment().startOf('month'), moment().endOf('month')]}
+        showTime
         onChange={value =>
           value &&
           value[0] &&
@@ -392,19 +344,80 @@ const NoteCollectionPage: React.FC = () => {
 
       <AdminCard className="mb-5">
         <TableWrapper>
-          <Table<NoteAdminProps>
-            columns={columns}
-            rowKey="id"
-            pagination={false}
-            loading={loadingNotes}
-            dataSource={notes}
-            onChange={(pagination, filters, sorter) => {
-              const newSorter = sorter as SorterResult<NoteAdminProps>
-              setOrderBy({
-                [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
-                  newSorter.order === 'ascend' ? ('asc' as types.order_by.asc) : ('desc' as types.order_by.desc),
-              })
-            }}
+          <MemberNoteAdminModal
+            title={formatMessage(memberMessages.label.editNote)}
+            note={selectedNote || undefined}
+            renderTrigger={({ setVisible }) => (
+              <Table<NoteAdminProps>
+                columns={columns}
+                rowKey="id"
+                rowClassName="cursor-pointer"
+                pagination={false}
+                loading={loadingNotes}
+                dataSource={notes}
+                onChange={(pagination, filters, sorter) => {
+                  const newSorter = sorter as SorterResult<NoteAdminProps>
+                  setOrderBy({
+                    [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
+                      newSorter.order === 'ascend' ? 'asc' : 'desc',
+                  })
+                }}
+                onRow={note => ({
+                  onClick: () => {
+                    setSelectedNote(note)
+                    setVisible(true)
+                  },
+                })}
+              />
+            )}
+            onSubmit={
+              selectedNote
+                ? ({ type, status, duration, description, note, attachments }) =>
+                    updateMemberNote({
+                      variables: {
+                        memberNoteId: selectedNote.id || '',
+                        data: {
+                          type,
+                          status,
+                          duration,
+                          description,
+                          note,
+                        },
+                      },
+                    })
+                      .then(async ({ data }) => {
+                        setUpdatedNotes(prev => ({
+                          ...prev,
+                          [selectedNote.id]: note,
+                        }))
+
+                        const memberNoteId = data?.update_member_note_by_pk?.id
+                        const deletedAttachmentIds = selectedNote.attachments
+                          .filter(noteAttachment =>
+                            attachments.every(
+                              attachment =>
+                                attachment.name !== noteAttachment.data.name &&
+                                attachment.lastModified !== noteAttachment.data.lastModified,
+                            ),
+                          )
+                          .map(attachment => attachment.id)
+                        const newAttachments = attachments.filter(attachment =>
+                          selectedNote.attachments.every(
+                            noteAttachment =>
+                              noteAttachment.data.name !== attachment.name &&
+                              noteAttachment.data.lastModified !== attachment.lastModified,
+                          ),
+                        )
+                        if (memberNoteId && attachments.length) {
+                          await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                          await uploadAttachments('MemberNote', memberNoteId, newAttachments)
+                        }
+                        message.success(formatMessage(commonMessages.event.successfullyEdited))
+                        refetchNotes()
+                      })
+                      .catch(handleError)
+                : undefined
+            }
           />
         </TableWrapper>
 
@@ -466,240 +479,18 @@ const LoadRecordFileButton: React.FC<{
     }
   }
 
-  return !audioUrl ? (
-    <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>
-      {formatMessage(podcastMessages.ui.play)}
-    </Button>
-  ) : (
+  return audioUrl ? (
     <div className="d-flex align-items-center">
       <a href={audioUrl} download={`${memberName}_${startTime.replace(/:/g, '')}.wav`} className="flex-shrink-0 mr-2">
         <Button type="primary">{formatMessage(commonMessages.ui.download)}</Button>
       </a>
       <audio src={audioUrl} controls />
     </div>
+  ) : (
+    <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>
+      {formatMessage(podcastMessages.ui.play)}
+    </Button>
   )
-}
-
-const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
-  const condition: types.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
-    created_at: filters?.range
-      ? {
-          _gte: filters.range[0].toDate(),
-          _lte: filters.range[1].toDate(),
-        }
-      : undefined,
-    author: filters?.author
-      ? {
-          _or: [
-            { name: { _ilike: `%${filters.author}%` } },
-            { username: { _ilike: `%${filters.author}%` } },
-            { email: { _ilike: `%${filters.author}%` } },
-          ],
-        }
-      : undefined,
-    member: {
-      manager: filters?.manager
-        ? {
-            _or: [
-              { name: { _ilike: `%${filters.manager}%` } },
-              { username: { _ilike: `%${filters.manager}%` } },
-              { email: { _ilike: `%${filters.manager}%` } },
-            ],
-          }
-        : undefined,
-      _or: filters?.member
-        ? [
-            { name: { _ilike: `%${filters.member}%` } },
-            { username: { _ilike: `%${filters.member}%` } },
-            { email: { _ilike: `%${filters.member}%` } },
-          ]
-        : undefined,
-      _and: [
-        filters?.categories
-          ? {
-              _or: filters.categories.map(categoryId => ({
-                member_categories: { category_id: { _eq: categoryId } },
-              })),
-            }
-          : null,
-        filters?.tags
-          ? {
-              _or: filters.tags.map(tag => ({
-                member_tags: { tag_name: { _eq: tag } },
-              })),
-            }
-          : null,
-      ],
-    },
-  }
-  const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_NOTES_ADMIN,
-    types.GET_MEMBER_NOTES_ADMINVariables
-  >(
-    gql`
-      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
-        category(where: { member_categories: {} }) {
-          id
-          name
-        }
-        member_tag(distinct_on: tag_name) {
-          tag_name
-        }
-        member_note_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-        member_note(where: $condition, order_by: [$orderBy], limit: 10) {
-          id
-          created_at
-          author {
-            id
-            name
-            username
-          }
-          member {
-            id
-            picture_url
-            name
-            username
-            email
-            manager {
-              id
-              name
-              username
-            }
-            member_categories {
-              id
-              category {
-                id
-                name
-              }
-            }
-            member_tags {
-              tag_name
-            }
-            order_logs {
-              id
-              order_products_aggregate {
-                aggregate {
-                  sum {
-                    price
-                  }
-                }
-              }
-              order_discounts_aggregate {
-                aggregate {
-                  sum {
-                    price
-                  }
-                }
-              }
-            }
-          }
-          duration
-          description
-          metadata
-          note
-          member_note_attachments {
-            attachment_id
-            data
-            options
-          }
-        }
-      }
-    `,
-    { variables: { condition, orderBy } },
-  )
-
-  const allMemberCategories: {
-    id: string
-    name: string
-  }[] =
-    data?.category.map(v => ({
-      id: v.id,
-      name: v.name,
-    })) || []
-  const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
-
-  const notes: NoteAdminProps[] =
-    data?.member_note.map(v => ({
-      id: v.id,
-      createdAt: new Date(v.created_at),
-      author: {
-        id: v.author.id,
-        name: v.author.name,
-      },
-      manager: v.member?.manager
-        ? {
-            id: v.member.manager.id,
-            name: v.member.manager.name || v.member.manager.username,
-          }
-        : null,
-      member: v.member
-        ? {
-            id: v.member.id,
-            pictureUrl: v.member.picture_url,
-            name: v.member.name || v.member.username,
-            email: v.member.email,
-          }
-        : null,
-      memberCategories:
-        v.member?.member_categories.map(u => ({
-          id: u.category.id,
-          name: u.category.name,
-        })) || [],
-      memberTags: v.member?.member_tags.map(u => u.tag_name) || [],
-      consumption:
-        sum(v.member?.order_logs.map(u => u.order_products_aggregate.aggregate?.sum?.price || 0) || []) -
-        sum(v.member?.order_logs.map(u => u.order_discounts_aggregate.aggregate?.sum?.price || 0) || []),
-      duration: v.duration || 0,
-      audioFilePath: v.metadata?.recordfile || null,
-      description: v.description,
-      metadata: v.metadata,
-      note: v.note,
-      attachments: v.member_note_attachments.map(u => ({
-        id: u.attachment_id,
-        data: u.data,
-        options: u.options,
-      })),
-    })) || []
-
-  const loadMoreNotes = () =>
-    fetchMore({
-      variables: {
-        orderBy,
-        condition: {
-          ...condition,
-          created_at: orderBy.created_at
-            ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
-            : undefined,
-          duration: orderBy.duration
-            ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
-            : undefined,
-        },
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          return prev
-        }
-        return {
-          ...prev,
-          member_note_aggregate: fetchMoreResult.member_note_aggregate,
-          member_note: [...prev.member_note, ...fetchMoreResult.member_note],
-        }
-      },
-    })
-
-  return {
-    loadingNotes: loading,
-    errorNotes: error,
-    allMemberCategories,
-    allMemberTags,
-    notes,
-    refetchNotes: refetch,
-    loadMoreNotes: (data?.member_note_aggregate.aggregate?.count || 0) > 10 ? loadMoreNotes : undefined,
-  }
 }
 
 export default NoteCollectionPage

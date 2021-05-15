@@ -6,9 +6,9 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProjectAdminProps } from '../../types/project'
 import { BREAK_POINT } from '../common/Responsive'
 import CategorySelector from '../form/CategorySelector'
@@ -62,7 +62,7 @@ const ProjectBasicForm: React.FC<{
 }> = ({ project, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updateProjectBasic] = useMutation<types.UPDATE_PROJECT_BASIC, types.UPDATE_PROJECT_BASICVariables>(
+  const [updateProjectBasic] = useMutation<hasura.UPDATE_PROJECT_BASIC, hasura.UPDATE_PROJECT_BASICVariables>(
     UPDATE_PROJECT_BASIC,
   )
   const [loading, setLoading] = useState(false)
@@ -124,7 +124,7 @@ const ProjectBasicForm: React.FC<{
       <Form.Item label={formatMessage(projectMessages.label.projectTitle)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="project" />
       </Form.Item>
       {project.projectType === 'funding' && (

@@ -8,9 +8,9 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
 import AllMemberSelector from '../form/AllMemberSelector'
 import CategorySelector from '../form/CategorySelector'
@@ -18,6 +18,8 @@ import TagSelector from '../form/TagSelector'
 
 type FieldProps = {
   name: string
+  username: string
+  email: string
   phones: string[]
   categoryIds: string[]
   tags?: string[]
@@ -33,8 +35,8 @@ const MemberProfileBasicForm: React.FC<{
   const { currentUserRole, permissions } = useAuth()
   const { enabledModules } = useApp()
   const [updateMemberProfileBasic] = useMutation<
-    types.UPDATE_MEMBER_PROFILE_BASIC,
-    types.UPDATE_MEMBER_PROFILE_BASICVariables
+    hasura.UPDATE_MEMBER_PROFILE_BASIC,
+    hasura.UPDATE_MEMBER_PROFILE_BASICVariables
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
 
@@ -48,6 +50,8 @@ const MemberProfileBasicForm: React.FC<{
     updateMemberProfileBasic({
       variables: {
         name: values?.name || memberAdmin.name,
+        username: permissions['MEMBER_USERNAME_EDIT'] ? values?.username || memberAdmin.username : memberAdmin.username,
+        email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
         memberId: memberAdmin.id,
         phones: permissions['MEMBER_PHONE_ADMIN']
           ? values.phones
@@ -60,7 +64,10 @@ const MemberProfileBasicForm: React.FC<{
               member_id: memberAdmin.id,
               phone,
             })),
-        managerId: values.managerId || memberAdmin.manager?.id,
+        managerId:
+          enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
+            ? values.managerId || null
+            : memberAdmin.manager?.id,
         assignedAt: values.managerId ? new Date() : null,
         tags: (values.tags || memberAdmin.tags).map(tag => ({
           name: tag,
@@ -107,7 +114,7 @@ const MemberProfileBasicForm: React.FC<{
     >
       {enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN'] && (
         <Form.Item
-          label={formatMessage(commonMessages.term.assign)}
+          label={formatMessage(commonMessages.label.assign)}
           name="managerId"
           extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
         >
@@ -115,28 +122,28 @@ const MemberProfileBasicForm: React.FC<{
         </Form.Item>
       )}
 
-      <Form.Item label={formatMessage(commonMessages.term.name)} name="name">
+      <Form.Item label={formatMessage(commonMessages.label.name)} name="name">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.account)} name="username">
-        <Input disabled />
+      <Form.Item label={formatMessage(commonMessages.label.account)} name="username">
+        <Input disabled={!permissions['MEMBER_USERNAME_EDIT']} />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.email)} name="email">
-        <Input disabled />
+      <Form.Item label={formatMessage(commonMessages.label.email)} name="email">
+        <Input disabled={!permissions['MEMBER_EMAIL_EDIT']} />
       </Form.Item>
       {permissions['MEMBER_PHONE_ADMIN'] && (
-        <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
+        <Form.Item label={formatMessage(commonMessages.label.phone)} name="phones">
           <PhoneCollectionInput />
         </Form.Item>
       )}
-      <Form.Item label={formatMessage(commonMessages.term.speciality)} name="specialities">
+      <Form.Item label={formatMessage(commonMessages.label.speciality)} name="specialities">
         <TagSelector disabled />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.memberCategories)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.memberCategory)} name="categoryIds">
         <CategorySelector classType="member" />
       </Form.Item>
       {includes(currentUserRole, ['app-owner', 'content-creator']) && (
-        <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+        <Form.Item label={formatMessage(commonMessages.label.tags)} name="tags">
           <TagSelector />
         </Form.Item>
       )}
@@ -178,6 +185,8 @@ const PhoneCollectionInput: React.FC<{
 const UPDATE_MEMBER_PROFILE_BASIC = gql`
   mutation UPDATE_MEMBER_PROFILE_BASIC(
     $name: String
+    $username: String
+    $email: String
     $memberId: String!
     $managerId: String
     $assignedAt: timestamptz
@@ -188,7 +197,7 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
   ) {
     update_member(
       where: { id: { _eq: $memberId } }
-      _set: { name: $name, manager_id: $managerId, assigned_at: $assignedAt }
+      _set: { name: $name, username: $username, email: $email, manager_id: $managerId, assigned_at: $assignedAt }
     ) {
       affected_rows
     }

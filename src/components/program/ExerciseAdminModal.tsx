@@ -9,11 +9,11 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import types from '../../types'
 import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
 import QuestionInput from '../form/QuestionInput'
 import ExerciseSortingModal from './ExerciseSortingModal'
@@ -79,9 +79,7 @@ const ExerciseAdminModal: React.FC<{
           programContent={programContent}
           programContentBody={programContentBody}
           onCancel={() => setVisible(false)}
-          onRefetch={() => {
-            onRefetch?.()
-          }}
+          onRefetch={() => onRefetch?.()}
         />
       </StyledModal>
     </>
@@ -97,13 +95,14 @@ const ExerciseAdminForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { deleteProgramContent } = useMutateProgramContent()
-  const [updateExercise] = useMutation<types.UPDATE_EXERCISE, types.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
-  const [updateExercisePosition] = useMutation<types.UPDATE_EXERCISE_POSITION, types.UPDATE_EXERCISE_POSITIONVariables>(
-    UPDATE_EXERCISE_POSITION,
-  )
+  const [updateExercise] = useMutation<hasura.UPDATE_EXERCISE, hasura.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
+  const [updateExercisePosition] = useMutation<
+    hasura.UPDATE_EXERCISE_POSITION,
+    hasura.UPDATE_EXERCISE_POSITIONVariables
+  >(UPDATE_EXERCISE_POSITION)
 
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
-  const [withInvalidQuestion, setWithInvalidQuestion] = useState(!!programContent.metadata?.withInvalidQuestion)
+  const [isValidationVisible, setIsValidationVisible] = useState(false)
   const questionValidations = questions.map(
     question =>
       question.points !== 0 &&
@@ -121,8 +120,8 @@ const ExerciseAdminForm: React.FC<{
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
-    setWithInvalidQuestion(true)
     setLoading(true)
+    setIsValidationVisible(true)
     updateExercise({
       variables: {
         programContentId: programContent.id,
@@ -136,18 +135,23 @@ const ExerciseAdminForm: React.FC<{
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
             passingScore: values.passingScore || 0,
-            withInvalidQuestion: questionValidations.some(validation => !validation),
+            withInvalidQuestion: questions.length === 0 || questionValidations.some(validation => !validation),
           },
         },
         body: {
-          data: { questions },
+          data: {
+            questions: questions.map(v => ({ ...v, isUnfinished: true })),
+          },
         },
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onCancel?.()
         onRefetch?.()
+        if (questionValidations.length && questionValidations.every(validation => validation)) {
+          onCancel?.()
+          setIsValidationVisible(false)
+        }
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -196,7 +200,7 @@ const ExerciseAdminForm: React.FC<{
             onClick={() => {
               form.resetFields()
               setQuestions(programContentBody.data?.questions || [])
-              setWithInvalidQuestion(questionValidations.some(validation => !validation))
+              setIsValidationVisible(false)
               onCancel?.()
             }}
             className="mr-2"
@@ -213,10 +217,8 @@ const ExerciseAdminForm: React.FC<{
               <Menu>
                 <Menu.Item
                   onClick={() =>
-                    window.confirm(formatMessage(programMessages.text.deleteContentWarning)) &&
-                    deleteProgramContent({
-                      variables: { programContentId: programContent.id },
-                    })
+                    window.confirm(formatMessage(programMessages.text.deleteExerciseWarning)) &&
+                    deleteProgramContent({ variables: { programContentId: programContent.id } })
                       .then(() => onRefetch?.())
                       .catch(handleError)
                   }
@@ -231,7 +233,19 @@ const ExerciseAdminForm: React.FC<{
         </div>
       </div>
 
-      {withInvalidQuestion && questionValidations.some(validation => !validation) && (
+      {isValidationVisible && questions.length === 0 && (
+        <Alert
+          type="error"
+          message={
+            <>
+              <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
+              {formatMessage(programMessages.text.noAddedQuestion)}
+            </>
+          }
+          className="mb-3"
+        />
+      )}
+      {isValidationVisible && questionValidations.some(validation => !validation) && (
         <Alert
           type="error"
           message={
@@ -302,6 +316,7 @@ const ExerciseAdminForm: React.FC<{
         <QuestionInput
           key={question.id}
           index={index}
+          isValidationVisible={isValidationVisible}
           value={question}
           onChange={value => {
             const newQuestions = clone(questions)
@@ -316,7 +331,8 @@ const ExerciseAdminForm: React.FC<{
         <Button
           type="link"
           icon={<PlusOutlined />}
-          onClick={() =>
+          onClick={() => {
+            setIsValidationVisible(false)
             setQuestions([
               ...questions,
               {
@@ -339,7 +355,7 @@ const ExerciseAdminForm: React.FC<{
                 ],
               },
             ])
-          }
+          }}
         >
           {formatMessage(programMessages.ui.createExerciseQuestion)}
         </Button>

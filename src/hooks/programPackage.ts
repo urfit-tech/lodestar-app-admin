@@ -1,13 +1,13 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { flatten, sum } from 'ramda'
-import types from '../types'
+import hasura from '../hasura'
 import { PeriodType } from '../types/general'
 import { MemberBriefProps } from '../types/member'
 import { ProgramPackageProps } from '../types/programPackage'
 
 export const useProgramPackageCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE_COLLECTION>(gql`
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGE_COLLECTION>(gql`
     query GET_PROGRAM_PACKAGE_COLLECTION {
       program_package(order_by: { published_at: desc_nulls_last }) {
         id
@@ -40,8 +40,8 @@ export const useProgramPackageCollection = () => {
 
 export const useProgramPackagePlanCollection = (programPackageId: string | null, isTempoDelivery?: boolean) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_PACKAGE_PLAN_COLLECTION,
-    types.GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables
+    hasura.GET_PROGRAM_PACKAGE_PLAN_COLLECTION,
+    hasura.GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables
   >(
     gql`
       query GET_PROGRAM_PACKAGE_PLAN_COLLECTION($programPackageIds: [uuid!], $isTempoDelivery: Boolean) {
@@ -78,8 +78,8 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null,
 
 export const useProgramPackageProgramCollection = (programPackageId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION,
-    types.GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables
+    hasura.GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION,
+    hasura.GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables
   >(
     gql`
       query GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION($programPackageIds: [uuid!]) {
@@ -121,8 +121,8 @@ export const useProgramPackageProgramCollection = (programPackageId: string | nu
 
 export const useProgramPackagePlanEnrollment = (programPackagePlanId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT,
-    types.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables
+    hasura.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT,
+    hasura.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables
   >(
     gql`
       query GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT($programPackagePlanIds: [uuid!]) {
@@ -164,8 +164,8 @@ export const useProgramPackagePlanEnrollment = (programPackagePlanId: string | n
 
 export const useProgramTempoDelivery = (programPackageId: string | null, memberIds: string[]) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_TEMPO_DELIVERY,
-    types.GET_PROGRAM_TEMPO_DELIVERYVariables
+    hasura.GET_PROGRAM_TEMPO_DELIVERY,
+    hasura.GET_PROGRAM_TEMPO_DELIVERYVariables
   >(
     gql`
       query GET_PROGRAM_TEMPO_DELIVERY($programPackageIds: [uuid!], $memberIds: [String!]) {
@@ -229,8 +229,8 @@ export const useProgramTempoDelivery = (programPackageId: string | null, memberI
 
 export const useDeliverProgramCollection = () => {
   const [deliverProgramCollection] = useMutation<
-    types.DELIVER_PROGRAM_COLLECTION,
-    types.DELIVER_PROGRAM_COLLECTIONVariables
+    hasura.DELIVER_PROGRAM_COLLECTION,
+    hasura.DELIVER_PROGRAM_COLLECTIONVariables
   >(
     gql`
       mutation DELIVER_PROGRAM_COLLECTION($data: [program_tempo_delivery_insert_input!]!) {
@@ -266,7 +266,7 @@ export const useDeliverProgramCollection = () => {
 }
 
 export const useGetProgramPackageCollection = (appId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGES, types.GET_PROGRAM_PACKAGESVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGES, hasura.GET_PROGRAM_PACKAGESVariables>(
     gql`
       query GET_PROGRAM_PACKAGES($appId: String!) {
         program_package(where: { app: { id: { _eq: $appId } } }) {
@@ -318,7 +318,7 @@ export const useGetProgramPackageCollection = (appId: string) => {
 }
 
 export const useGetProgramPackage = (id: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE, types.GET_PROGRAM_PACKAGEVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGE, hasura.GET_PROGRAM_PACKAGEVariables>(
     gql`
       query GET_PROGRAM_PACKAGE($id: uuid!) {
         program_package_by_pk(id: $id) {

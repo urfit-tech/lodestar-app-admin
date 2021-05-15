@@ -3,8 +3,8 @@ import { Button, Checkbox, InputNumber, message } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberShopProps, ShippingMethodProps, ShippingMethodType } from '../../types/merchandise'
 import CurrencyInput from '../form/CurrencyInput'
 
@@ -23,7 +23,7 @@ const ShippingMethodAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ memberShop, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [updateShippingMethods] = useMutation<types.UPDATE_SHIPPING_METHODS, types.UPDATE_SHIPPING_METHODSVariables>(
+  const [updateShippingMethods] = useMutation<hasura.UPDATE_SHIPPING_METHODS, hasura.UPDATE_SHIPPING_METHODSVariables>(
     UPDATE_SHIPPING_METHODS,
   )
 
@@ -185,7 +185,7 @@ const ShippingMethodItem: React.FC<{
         }
         className="mr-3"
       />
-      <span>{formatMessage(commonMessages.label.days)}</span>
+      <span>{formatMessage(commonMessages.unit.day)}</span>
     </div>
   )
 }

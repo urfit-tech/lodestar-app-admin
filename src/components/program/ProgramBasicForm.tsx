@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
@@ -30,7 +30,7 @@ const ProgramBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
-  const [updateProgramBasic] = useMutation<types.UPDATE_PROGRAM_BASIC, types.UPDATE_PROGRAM_BASICVariables>(
+  const [updateProgramBasic] = useMutation<hasura.UPDATE_PROGRAM_BASIC, hasura.UPDATE_PROGRAM_BASICVariables>(
     UPDATE_PROGRAM_BASIC,
   )
   const [loading, setLoading] = useState(false)
@@ -90,10 +90,10 @@ const ProgramBasicForm: React.FC<{
       <Form.Item label={formatMessage(programMessages.label.programTitle)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="program" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tag)} name="tags">
+      <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
         <TagSelector />
       </Form.Item>
 

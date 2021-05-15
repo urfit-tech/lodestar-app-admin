@@ -7,11 +7,11 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
-import { handleError } from '../../helpers'
+import hasura from '../../hasura'
+import { copyToClipboard, handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
-import types from '../../types'
 
 const StyledLabel = styled.div`
   font-size: 14px;
@@ -47,7 +47,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
   const { id: appId, settings } = useApp()
   const pathKey = `/programs/${programId}`
   const { loadingSharingCodes, sharingCodes, refetchSharingCodes } = useSharingCodeCollection(pathKey)
-  const [insertSharingCode] = useMutation<types.INSERT_SHARING_CODE, types.INSERT_SHARING_CODEVariables>(
+  const [insertSharingCode] = useMutation<hasura.INSERT_SHARING_CODE, hasura.INSERT_SHARING_CODEVariables>(
     INSERT_SHARING_CODE,
   )
   const [sharingCodeInputs, setSharingCodeInputs] = useState<FieldProps['sharingCodes']>([])
@@ -81,19 +81,6 @@ const ProgramSharingCodeAdminForm: React.FC<{
       })
       .catch(handleError)
       .finally(() => setLoading(false))
-  }
-
-  const copyToClipboard = (str: string) => {
-    const el = document.createElement('textarea')
-    el.value = str
-    el.setAttribute('readonly', '')
-    el.style.position = 'absolute'
-    el.style.left = '-9999px'
-    document.body.appendChild(el)
-    el.select()
-    document.execCommand('copy')
-    document.body.removeChild(el)
-    message.success(formatMessage(commonMessages.text.copiedToClipboard))
   }
 
   return (
@@ -160,13 +147,14 @@ const ProgramSharingCodeAdminForm: React.FC<{
                   <Button
                     type="link"
                     size="small"
-                    onClick={() =>
+                    onClick={() => {
                       copyToClipboard(
                         `https://${settings['host']}/programs/${programId}?sharing=${
                           sharingCodeInputs[index]?.code || sharingCodes[index]?.code
                         }`,
                       )
-                    }
+                      message.success(formatMessage(commonMessages.text.copiedToClipboard))
+                    }}
                   >
                     {formatMessage(commonMessages.ui.copy)}
                   </Button>
@@ -205,8 +193,8 @@ const ProgramSharingCodeAdminForm: React.FC<{
 
 const useSharingCodeCollection = (path: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_SHARING_CODE_COLLECTION,
-    types.GET_SHARING_CODE_COLLECTIONVariables
+    hasura.GET_SHARING_CODE_COLLECTION,
+    hasura.GET_SHARING_CODE_COLLECTIONVariables
   >(
     gql`
       query GET_SHARING_CODE_COLLECTION($path: String!) {

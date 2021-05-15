@@ -16,9 +16,9 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../../types/program'
 import LoadingPage from './LoadingPage'
 
@@ -50,7 +50,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const [searchText, setSearchText] = useState('')
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
 
-  const [insertProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
+  const [insertProgram] = useMutation<hasura.INSERT_PROGRAM, hasura.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
 
   if (!currentMemberId || loading) {
     return <LoadingPage />
@@ -59,8 +59,8 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const tabContents: {
     key: string
     tab: string
-    condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
-    orderBy?: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy']
+    condition: hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
+    orderBy?: hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy']
     hidden?: boolean
     withSortingButton?: boolean
   }[] = [
@@ -111,7 +111,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
         is_private: { _eq: false },
         title: searchText ? { _like: `%${searchText}%` } : undefined,
       },
-      orderBy: [{ position: 'asc' as types.order_by }],
+      orderBy: [{ position: 'asc' as hasura.order_by }],
     },
     {
       key: 'privatelyPublish',
@@ -200,8 +200,8 @@ const ProgramCollectionAdminPage: React.FC = () => {
 
 const ProgramCollectionBlock: React.FC<{
   appId: string
-  condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
-  orderBy?: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy']
+  condition: hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
+  orderBy?: hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy']
   withSortingButton?: boolean
   memberId?: string
   onReady?: (count: number) => void
@@ -216,8 +216,8 @@ const ProgramCollectionBlock: React.FC<{
     loadMorePrograms,
   } = useProgramPreviewCollection(condition, orderBy, memberId)
   const [updatePositions] = useMutation<
-    types.UPDATE_PROGRAM_POSITION_COLLECTION,
-    types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
+    hasura.UPDATE_PROGRAM_POSITION_COLLECTION,
+    hasura.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_POSITION_COLLECTION)
   const [loading, setLoading] = useState(false)
   const { loadingProgramSorts, errorProgramSorts, programSorts, refetchProgramSorts } = useProgramSortCollection(
@@ -312,15 +312,15 @@ const ProgramCollectionBlock: React.FC<{
 }
 
 const useProgramPreviewCollection = (
-  condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition'],
-  orderBy: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy'] = [
-    { updated_at: 'desc_nulls_last' as types.order_by },
+  condition: hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition'],
+  orderBy: hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy'] = [
+    { updated_at: 'desc_nulls_last' as hasura.order_by },
   ],
   memberId?: string,
 ) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_PROGRAM_PREVIEW_COLLECTION,
-    types.GET_PROGRAM_PREVIEW_COLLECTIONVariables
+    hasura.GET_PROGRAM_PREVIEW_COLLECTION,
+    hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables
   >(GET_PROGRAM_PREVIEW_COLLECTION, {
     variables: {
       condition: memberId
@@ -400,10 +400,10 @@ const useProgramPreviewCollection = (
     loadMorePrograms,
   }
 }
-const useProgramSortCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']) => {
+const useProgramSortCollection = (condition: hasura.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_SORT_COLLECTION,
-    types.GET_PROGRAM_SORT_COLLECTIONVariables
+    hasura.GET_PROGRAM_SORT_COLLECTION,
+    hasura.GET_PROGRAM_SORT_COLLECTIONVariables
   >(GET_PROGRAM_SORT_COLLECTION, {
     variables: {
       condition,

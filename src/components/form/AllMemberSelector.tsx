@@ -1,18 +1,20 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
+import { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { MemberOptionProps } from '../../types/member'
 import MemberSelector from './MemberSelector'
 
 const AllMemberSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
+  onSelect?: SelectProps<string[]>['onSelect']
   allowClear?: boolean
-}> = ({ value, onChange, allowClear }) => {
+}> = ({ value, onChange, onSelect, allowClear }) => {
   const { formatMessage } = useIntl()
   const { loading, error, members } = useAllMemberCollection()
 
@@ -28,6 +30,7 @@ const AllMemberSelector: React.FC<{
     <MemberSelector
       members={members}
       value={value}
+      onSelect={onSelect}
       onChange={value => typeof value === 'string' && onChange && onChange(value)}
       allowClear={allowClear}
     />
@@ -35,7 +38,7 @@ const AllMemberSelector: React.FC<{
 }
 
 const useAllMemberCollection = () => {
-  const { data, loading, error } = useQuery<types.GET_ALL_MEMBER_COLLECTION>(
+  const { data, loading, error } = useQuery<hasura.GET_ALL_MEMBER_COLLECTION>(
     gql`
       query GET_ALL_MEMBER_COLLECTION {
         member {

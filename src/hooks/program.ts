@@ -3,11 +3,11 @@ import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import { useEffect, useState } from 'react'
 import { useApp } from '../contexts/AppContext'
-import types from '../types'
+import hasura from '../hasura'
 import { ProgramAdminProps, ProgramApprovalProps, ProgramContentBodyProps, ProgramRoleName } from '../types/program'
 
 export const useProgram = (programId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_PROGRAM, types.GET_PROGRAMVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_PROGRAM, hasura.GET_PROGRAMVariables>(
     gql`
       query GET_PROGRAM($programId: uuid!) {
         program_by_pk(id: $programId) {
@@ -42,6 +42,9 @@ export const useProgram = (programId: string) => {
               is_notify_update
               notified_at
               metadata
+              program_content_body {
+                data
+              }
               program_content_type {
                 id
                 type
@@ -151,6 +154,7 @@ export const useProgram = (programId: string) => {
                 title: programContentPlan.program_plan.title,
               })),
               metadata: programContent.metadata,
+              programContentBodyData: programContent.program_content_body.data,
               attachments: programContent.program_content_attachments.map(v => ({
                 id: v.attachment_id,
                 data: v.data,
@@ -209,8 +213,8 @@ export const useProgram = (programId: string) => {
 
 export const useProgramContentBody = (programContentId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_CONTENT_BODY,
-    types.GET_PROGRAM_CONTENT_BODYVariables
+    hasura.GET_PROGRAM_CONTENT_BODY,
+    hasura.GET_PROGRAM_CONTENT_BODYVariables
   >(
     gql`
       query GET_PROGRAM_CONTENT_BODY($programContentId: uuid!) {
@@ -259,64 +263,85 @@ export const useProgramContentBody = (programContentId: string) => {
   }
 }
 
-export const useOwnedPrograms = () => {
+export const usePrograms = (options?: {
+  allowContentType?: string
+  memberId?: string
+  isPublished?: boolean
+  withContentSection?: boolean
+  withContent?: boolean
+}) => {
   const { id: appId } = useApp()
-  const { loading, error, data, refetch } = useQuery<types.GET_OWNED_PROGRAMS, types.GET_OWNED_PROGRAMSVariables>(
-    gql`
-      query GET_OWNED_PROGRAMS($appId: String!) {
-        program(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
-          id
-          title
-        }
-      }
-    `,
-    { variables: { appId } },
-  )
 
-  const programs: {
-    id: string
-    title: string
-  }[] =
-    loading || !!error || !data
-      ? []
-      : data.program.map(program => ({
-          id: program.id,
-          title: program.title,
-        }))
-
-  return {
-    loadingPrograms: loading,
-    errorPrograms: error,
-    programs,
-    refetchPrograms: refetch,
+  const condition: hasura.GET_PROGRAMSVariables['condition'] = {
+    app_id: { _eq: appId },
+    published_at: options?.isPublished ? { _is_null: false } : undefined,
+    program_content_sections: {
+      program_contents: { program_content_type: { type: { _eq: options?.allowContentType } } },
+    },
+    editors: { member_id: { _eq: options?.memberId } },
   }
-}
 
-export const useEditablePrograms = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_EDITABLE_PROGRAMS, types.GET_EDITABLE_PROGRAMSVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAMS, hasura.GET_PROGRAMSVariables>(
     gql`
-      query GET_EDITABLE_PROGRAMS($memberId: String!) {
-        program(where: { editors: { member_id: { _eq: $memberId } } }) {
+      query GET_PROGRAMS(
+        $condition: program_bool_exp!
+        $contentSectionCondition: program_content_section_bool_exp
+        $contentCondition: program_content_bool_exp
+        $withContentSection: Boolean!
+        $withContent: Boolean!
+      ) {
+        program(where: $condition) {
           id
           title
+          program_content_sections(where: $contentSectionCondition, order_by: [{ position: asc }])
+            @include(if: $withContentSection) {
+            id
+            title
+            program_contents(where: $contentCondition, order_by: [{ position: asc }]) @include(if: $withContent) {
+              id
+              title
+            }
+          }
         }
       }
     `,
     {
-      variables: { memberId },
+      variables: {
+        condition,
+        contentSectionCondition: condition.program_content_sections,
+        contentCondition: condition.program_content_sections?.program_contents,
+        withContentSection: !!options?.withContentSection,
+        withContent: !!options?.withContent,
+      },
     },
   )
 
   const programs: {
     id: string
     title: string
+    contentSections: {
+      id: string
+      title: string
+      contents: {
+        id: string
+        title: string
+      }[]
+    }[]
   }[] =
-    loading || error || !data
-      ? []
-      : data.program.map(program => ({
-          id: program.id,
-          title: program.title,
-        }))
+    data?.program.map(program => ({
+      id: program.id,
+      title: program.title,
+      contentSections:
+        program.program_content_sections?.map(v => ({
+          id: v.id,
+          title: v.title,
+          contents:
+            v.program_contents?.map(w => ({
+              id: w.id,
+              title: w.title,
+            })) || [],
+        })) || [],
+    })) || []
 
   return {
     loadingPrograms: loading,
@@ -327,7 +352,11 @@ export const useEditablePrograms = (memberId: string) => {
 }
 
 export const useProgramContentEnrollment = () => {
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT)
+  const { loading, error, data } = useQuery<hasura.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT, {
+    context: {
+      important: true,
+    },
+  })
 
   return {
     loading,
@@ -353,9 +382,9 @@ const GET_PROGRAM_CONTENT_ENROLLMENT = gql`
 
 export const useProgramProgressCollection = (programId?: string | null) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_PROGRAM_PROGRESS,
-    types.GET_PROGRAM_PROGRESSVariables
-  >(GET_PROGRAM_PROGRESS, { variables: { programId } })
+    hasura.GET_PROGRAM_PROGRESS,
+    hasura.GET_PROGRAM_PROGRESSVariables
+  >(GET_PROGRAM_PROGRESS, { variables: { programId }, context: { important: true } })
   const [isNoMore, setIsNoMore] = useState(false)
 
   useEffect(() => {
@@ -477,14 +506,11 @@ const GET_PROGRAM_PROGRESS = gql`
 `
 
 export const useMutateProgramContent = () => {
-  const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
+  const [updateProgramContent] = useMutation<hasura.UPDATE_PROGRAM_CONTENT, hasura.UPDATE_PROGRAM_CONTENTVariables>(
     gql`
       mutation UPDATE_PROGRAM_CONTENT(
         $programContentId: uuid!
         $title: String
-        $description: String
-        $type: String
-        $data: jsonb
         $price: numeric
         $publishedAt: timestamptz
         $duration: numeric
@@ -505,20 +531,34 @@ export const useMutateProgramContent = () => {
         ) {
           affected_rows
         }
-        update_program_content_body(
-          where: { program_contents: { id: { _eq: $programContentId } } }
-          _set: { description: $description, type: $type }
-          _append: { data: $data }
-        ) {
-          affected_rows
-        }
       }
     `,
   )
 
-  const [deleteProgramContent] = useMutation<types.DELETE_PROGRAM_CONTENT, types.DELETE_PROGRAM_CONTENTVariables>(
+  const [updateProgramContentBody] = useMutation<
+    hasura.UPDATE_PROGRAM_CONTENT_BODY,
+    hasura.UPDATE_PROGRAM_CONTENT_BODYVariables
+  >(gql`
+    mutation UPDATE_PROGRAM_CONTENT_BODY($programContentId: uuid!, $description: String, $type: String, $data: jsonb) {
+      update_program_content_body(
+        where: { program_contents: { id: { _eq: $programContentId } } }
+        _set: { description: $description, type: $type }
+        _append: { data: $data }
+      ) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [deleteProgramContent] = useMutation<hasura.DELETE_PROGRAM_CONTENT, hasura.DELETE_PROGRAM_CONTENTVariables>(
     gql`
       mutation DELETE_PROGRAM_CONTENT($programContentId: uuid!) {
+        delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
         delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
@@ -531,6 +571,7 @@ export const useMutateProgramContent = () => {
 
   return {
     updateProgramContent,
+    updateProgramContentBody,
     deleteProgramContent,
   }
 }

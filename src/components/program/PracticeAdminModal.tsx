@@ -10,10 +10,11 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
-import types from '../../types'
+import { useMutateProgramContent } from '../../hooks/program'
 import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
@@ -21,19 +22,12 @@ import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const messages = defineMessages({
-  show: { id: 'program.ui.show', defaultMessage: '顯示' },
-  deleteContentWarning: {
-    id: 'program.text.deleteContentWarning',
-    defaultMessage: '你確定要刪除此內容？此動作無法還原',
-  },
-  deleteContent: { id: 'program.ui.deleteContent', defaultMessage: '刪除內容' },
-  contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
-  estimatedTime: { id: 'program.label.estimatedTime', defaultMessage: '估計時間（分鐘）' },
-  description: { id: 'program.label.description', defaultMessage: '描述' },
-  notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
-  displayPrivate: { id: 'program.ui.displayPrivate', defaultMessage: '私密成果' },
+  displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
   difficulty: { id: 'program.ui.difficulty', defaultMessage: '難易度' },
+  estimatedTime: { id: 'program.label.estimatedTime', defaultMessage: '估計時間（分鐘）' },
   uploadExample: { id: 'program.ui.uploadExample', defaultMessage: '範例素材' },
+  coverRequired: { id: 'program.label.coverRequired', defaultMessage: '上傳封面' },
+  coverRequiredTips: { id: 'program.text.coverRequiredTips', defaultMessage: '若作業形式以文件為主，建議不勾選' },
 })
 
 const StyledTitle = styled.div`
@@ -55,9 +49,10 @@ type FieldProps = {
   description: EditorState
   isPracticePrivate: boolean
   difficulty: number
+  isCoverRequired: boolean
 }
 
-const ProgramContentPracticeAdminModal: React.FC<{
+const PracticeAdminModal: React.FC<{
   programContent: ProgramContentProps
   programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
@@ -103,8 +98,8 @@ const PracticeForm: React.FC<{
   const [isSubmitting, setIsSubmitting] = useState(false)
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
-  const [updatePractice] = useMutation<types.UPDATE_PRACTICE, types.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
-  const [deletePractice] = useMutation<types.DELETE_PRACTICE, types.DELETE_PRACTICEVariables>(DELETE_PRACTICE)
+  const [updatePractice] = useMutation<hasura.UPDATE_PRACTICE, hasura.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
+  const { deleteProgramContent } = useMutateProgramContent()
 
   const handleSubmit = (values: FieldProps) => {
     setIsSubmitting(true)
@@ -118,7 +113,12 @@ const PracticeForm: React.FC<{
           duration: values.estimatedTime,
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
-          metadata: { ...programContent.metadata, difficulty: values.difficulty, private: values.isPracticePrivate },
+          metadata: {
+            ...programContent.metadata,
+            difficulty: values.difficulty,
+            private: values.isPracticePrivate,
+            isCoverRequired: values.isCoverRequired,
+          },
         },
       }),
     ])
@@ -185,19 +185,20 @@ const PracticeForm: React.FC<{
       layout="vertical"
       initialValues={{
         publishedAt: !!programContent.publishedAt,
-        isPracticePrivate: programContent.metadata && programContent.metadata.private,
+        isPracticePrivate: !!programContent.metadata?.private,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
         estimatedTime: programContent.duration,
         description: BraftEditor.createEditorState(programContentBody.description),
         difficulty: programContent.metadata?.difficulty || 1,
+        isCoverRequired: programContent.metadata?.isCoverRequired ?? true,
       }}
       onFinish={handleSubmit}
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
           <Form.Item name="publishedAt" valuePropName="checked" className="mr-3">
-            <Checkbox>{formatMessage(messages.show)}</Checkbox>
+            <Checkbox>{formatMessage(programMessages.label.show)}</Checkbox>
           </Form.Item>
 
           <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3">
@@ -212,8 +213,17 @@ const PracticeForm: React.FC<{
             </Checkbox>
           </Form.Item>
 
+          <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3">
+            <Checkbox>
+              {formatMessage(messages.coverRequired)}
+              <Tooltip placement="bottom" title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}>
+                <QuestionCircleFilled className="ml-1" />
+              </Tooltip>
+            </Checkbox>
+          </Form.Item>
+
           <Form.Item name="isNotifyUpdate" valuePropName="checked">
-            <Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>
+            <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
           </Form.Item>
         </div>
 
@@ -238,13 +248,13 @@ const PracticeForm: React.FC<{
               <Menu>
                 <Menu.Item
                   onClick={() =>
-                    window.confirm(formatMessage(messages.deleteContentWarning)) &&
-                    deletePractice({
-                      variables: { programContentId: programContent.id },
-                    }).then(() => onRefetch?.())
+                    window.confirm(formatMessage(programMessages.text.deletePracticeWarning)) &&
+                    deleteProgramContent({ variables: { programContentId: programContent.id } })
+                      .then(() => onRefetch?.())
+                      .catch(handleError)
                   }
                 >
-                  {formatMessage(messages.deleteContent)}
+                  {formatMessage(programMessages.ui.deleteContent)}
                 </Menu.Item>
               </Menu>
             }
@@ -256,7 +266,7 @@ const PracticeForm: React.FC<{
 
       <StyledTitle className="mb-3">{formatMessage(programMessages.label.practice)}</StyledTitle>
 
-      <Form.Item label={formatMessage(messages.contentTitle)} name="title">
+      <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
         <Input />
       </Form.Item>
 
@@ -286,7 +296,7 @@ const PracticeForm: React.FC<{
       >
         <FileUploader multiple showUploadList fileList={attachments} onChange={files => setAttachments(files)} />
       </Form.Item>
-      <Form.Item label={<span>{formatMessage(messages.description)}</span>} name="description">
+      <Form.Item label={<span>{formatMessage(programMessages.label.description)}</span>} name="description">
         <AdminBraftEditor />
       </Form.Item>
     </Form>
@@ -325,15 +335,4 @@ const UPDATE_PRACTICE = gql`
   }
 `
 
-const DELETE_PRACTICE = gql`
-  mutation DELETE_PRACTICE($programContentId: uuid!) {
-    delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
-      affected_rows
-    }
-    delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
-      affected_rows
-    }
-  }
-`
-
-export default ProgramContentPracticeAdminModal
+export default PracticeAdminModal

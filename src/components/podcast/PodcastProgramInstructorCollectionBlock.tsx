@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
@@ -24,8 +24,8 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [updatePodcastProgramRole] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_ROLE,
-    types.UPDATE_PODCAST_PROGRAM_ROLEVariables
+    hasura.UPDATE_PODCAST_PROGRAM_ROLE,
+    hasura.UPDATE_PODCAST_PROGRAM_ROLEVariables
   >(UPDATE_PODCAST_PROGRAM_ROLE)
 
   const [visible, setVisible] = useState(false)

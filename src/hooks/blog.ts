@@ -1,11 +1,11 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { uniq } from 'ramda'
-import types from '../types'
+import hasura from '../hasura'
 import { PostProps } from '../types/blog'
 
 export const usePost = (postId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_POST, types.GET_POSTVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_POST, hasura.GET_POSTVariables>(
     gql`
       query GET_POST($id: uuid!) {
         post_by_pk(id: $id) {
@@ -91,7 +91,7 @@ export const usePost = (postId: string) => {
 }
 
 export const usePostCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_POSTS>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_POSTS>(
     gql`
       query GET_POSTS {
         post(where: { is_deleted: { _eq: false } }, order_by: { updated_at: desc }) {

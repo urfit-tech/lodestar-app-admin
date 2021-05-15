@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
@@ -31,7 +31,7 @@ const BlogPostAuthorCollectionBlock: React.FC<{
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldPRops>()
-  const [updatePostRole] = useMutation<types.UPDATE_POST_ROLE, types.UPDATE_POST_ROLEVariables>(UPDATE_POST_ROLE)
+  const [updatePostRole] = useMutation<hasura.UPDATE_POST_ROLE, hasura.UPDATE_POST_ROLEVariables>(UPDATE_POST_ROLE)
   const [isVisible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
 

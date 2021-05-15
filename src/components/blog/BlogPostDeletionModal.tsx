@@ -3,9 +3,9 @@ import { Button, message, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../program/ProgramDeletionAdminCard'
 
@@ -25,7 +25,7 @@ const BlogPostDeletionModal: React.FC<{
   onRefetch?: () => void
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [archivePost] = useMutation<types.DELETE_POST, types.DELETE_POSTVariables>(DELETE_POST)
+  const [archivePost] = useMutation<hasura.DELETE_POST, hasura.DELETE_POSTVariables>(DELETE_POST)
   const [isVisible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -54,7 +54,7 @@ const BlogPostDeletionModal: React.FC<{
         <Typography.Text>{formatMessage(messages.deletePostWarning)}</Typography.Text>
       </div>
       {post.isDeleted ? (
-        <Button disabled>{formatMessage(commonMessages.ui.deleted)}</Button>
+        <Button disabled>{formatMessage(commonMessages.status.deleted)}</Button>
       ) : (
         <Button type="primary" danger onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.deletePost)}

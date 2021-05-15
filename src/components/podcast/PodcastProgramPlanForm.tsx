@@ -4,9 +4,9 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 
@@ -22,8 +22,8 @@ const PodcastProgramPlanForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updatePodcastProgramPlan] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_PLAN,
-    types.UPDATE_PODCAST_PROGRAM_PLANVariables
+    hasura.UPDATE_PODCAST_PROGRAM_PLAN,
+    hasura.UPDATE_PODCAST_PROGRAM_PLANVariables
   >(UPDATE_PODCAST_PROGRAM_PLAN)
   const [loading, setLoading] = useState(false)
 
@@ -67,7 +67,7 @@ const PodcastProgramPlanForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
+      <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
         <InputNumber
           min={0}
           formatter={value => `NT$ ${value}`}

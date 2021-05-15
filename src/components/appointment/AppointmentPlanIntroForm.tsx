@@ -5,9 +5,9 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
@@ -22,8 +22,8 @@ const AppointmentPlanIntroForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateAppointmentPlanDescription] = useMutation<
-    types.UPDATE_APPOINTMENT_PLAN_DESCRIPTION,
-    types.UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables
+    hasura.UPDATE_APPOINTMENT_PLAN_DESCRIPTION,
+    hasura.UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables
   >(UPDATE_APPOINTMENT_PLAN_DESCRIPTION)
   const [loading, setLoading] = useState(false)
 
@@ -66,7 +66,7 @@ const AppointmentPlanIntroForm: React.FC<{
               value.isEmpty()
                 ? callback(
                     formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.term.planTitle),
+                      field: formatMessage(commonMessages.label.planTitle),
                     }),
                   )
                 : callback()

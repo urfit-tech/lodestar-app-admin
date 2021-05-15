@@ -4,8 +4,8 @@ import { Button, Divider, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import ProgramContentSectionAdminCard from './ProgramContentSectionAdminCard'
 
@@ -20,8 +20,8 @@ const ProgramStructureAdminBlock: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [createProgramContentSection] = useMutation<
-    types.INSERT_PROGRAM_CONTENT_SECTION,
-    types.INSERT_PROGRAM_CONTENT_SECTIONVariables
+    hasura.INSERT_PROGRAM_CONTENT_SECTION,
+    hasura.INSERT_PROGRAM_CONTENT_SECTIONVariables
   >(INSERT_PROGRAM_CONTENT_SECTION)
   const [loading, setLoading] = useState(false)
 

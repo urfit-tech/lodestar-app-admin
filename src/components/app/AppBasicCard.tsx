@@ -6,9 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
+import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
@@ -29,7 +29,7 @@ const AppBasicCard: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { loading: loadingApp, refetch, ...app } = useApp()
-  const [updateAppBasic] = useMutation<types.UPDATE_APP_BASIC, types.UPDATE_APP_BASICVariables>(UPDATE_APP_BASIC)
+  const [updateAppBasic] = useMutation<hasura.UPDATE_APP_BASIC, hasura.UPDATE_APP_BASICVariables>(UPDATE_APP_BASIC)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {

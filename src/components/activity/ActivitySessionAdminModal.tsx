@@ -62,7 +62,7 @@ const ActivitySessionAdminModal: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(activityMessages.term.session)}
+      title={formatMessage(activityMessages.label.session)}
       maskClosable={false}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -91,13 +91,13 @@ const ActivitySessionAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(activityMessages.term.sessionTitle)}
+          label={formatMessage(activityMessages.label.sessionTitle)}
           name="title"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.title),
+                field: formatMessage(commonMessages.label.title),
               }),
             },
           ]}
@@ -105,13 +105,13 @@ const ActivitySessionAdminModal: React.FC<
           <Input />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.startedAt)}
+          label={formatMessage(commonMessages.label.startedAt)}
           name="startedAt"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.startedAt),
+                field: formatMessage(commonMessages.label.startedAt),
               }),
             },
           ]}
@@ -123,13 +123,13 @@ const ActivitySessionAdminModal: React.FC<
           />
         </Form.Item>
         <Form.Item
-          label={formatMessage(commonMessages.term.endedAt)}
+          label={formatMessage(commonMessages.label.endedAt)}
           name="endedAt"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.endedAt),
+                field: formatMessage(commonMessages.label.endedAt),
               }),
             },
           ]}
@@ -141,13 +141,13 @@ const ActivitySessionAdminModal: React.FC<
           />
         </Form.Item>
         <Form.Item
-          label={formatMessage(activityMessages.term.location)}
+          label={formatMessage(activityMessages.label.location)}
           name="location"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(activityMessages.term.location),
+                field: formatMessage(activityMessages.label.location),
               }),
             },
           ]}
@@ -156,7 +156,7 @@ const ActivitySessionAdminModal: React.FC<
         </Form.Item>
 
         <Checkbox defaultChecked={withThreshold} onChange={e => setWithThreshold(e.target.checked)}>
-          {formatMessage(activityMessages.term.threshold)}
+          {formatMessage(activityMessages.label.threshold)}
         </Checkbox>
         <Form.Item className={withThreshold ? 'd-block' : 'd-none'} name="threshold">
           <InputNumber min={0} />
