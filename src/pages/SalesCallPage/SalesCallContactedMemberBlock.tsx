@@ -167,6 +167,8 @@ const SalesCallContactedMemberBlock: React.FC<{
       key: 'lastContactAt',
       dataIndex: 'lastContactAt',
       title: formatMessage(salesMessages.label.lastContactAt),
+      defaultSortOrder: 'ascend',
+      sorter: (a, b) => (b.lastContactAt?.getTime() || 0) - (a.lastContactAt?.getTime() || 0),
       render: lastContactAt => <time>{moment(lastContactAt).fromNow()}</time>,
     },
     {
@@ -185,7 +187,6 @@ const SalesCallContactedMemberBlock: React.FC<{
       dataIndex: ['lastTask', 'dueAt'],
       title: formatMessage(messages.lastTaskDueAt),
       render: dueAt => dueAt && moment(dueAt).format('YYYY-MM-DD HH:mm'),
-      sorter: (a, b) => (b.lastTask?.dueAt?.getTime() || 0) - (a.lastTask?.dueAt?.getTime() || 0),
       showSorterTooltip: false,
     },
     {
