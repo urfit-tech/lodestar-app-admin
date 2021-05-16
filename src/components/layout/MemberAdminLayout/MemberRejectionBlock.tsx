@@ -1,5 +1,6 @@
 import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -115,16 +116,16 @@ export const MemberRejectionBlock: React.FC<{
 
       {
         // TODO: use custom permission
-        // lastRejectedMemberNote?.rejectedAt && (
-        //   <div className="mt-3">
-        //     <StyledTime className="mb-1 lh-1">
-        //       {moment(lastRejectedMemberNote.rejectedAt).format('YYYY-MM-DD HH:mm')}{' '}
-        //       {formatMessage(messages.markAsRejection)}
-        //     </StyledTime>
-        //     <StyledText>{lastRejectedMemberNote.description}</StyledText>
-        //     <StyledSubText>By. {lastRejectedMemberNote.author.name}</StyledSubText>
-        //   </div>
-        // )
+        lastRejectedMemberNote?.rejectedAt && lastRejectedMemberNote?.author && (
+          <div className="mt-3">
+            <StyledTime className="mb-1 lh-1">
+              {moment(lastRejectedMemberNote.rejectedAt).format('YYYY-MM-DD HH:mm')}{' '}
+              {formatMessage(messages.markAsRejection)}
+            </StyledTime>
+            <StyledText>{lastRejectedMemberNote.description}</StyledText>
+            <StyledSubText>By. {lastRejectedMemberNote.author.name}</StyledSubText>
+          </div>
+        )
       }
     </>
   )
