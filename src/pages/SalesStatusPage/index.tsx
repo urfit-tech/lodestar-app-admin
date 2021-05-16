@@ -16,6 +16,17 @@ import TotalRevenueBlock from './TotalRevenueBlock'
 
 const teamSettings = [
   {
+    name: '無名組',
+    sales: [
+      { name: 'rooney', id: '44649150-6f11-4b95-a9c8-7ff3530febc6' },
+      { name: 'ann', id: '32dfd15f-4e75-4fc5-a753-ef1ad349af4f' },
+      { name: 'julie', id: 'a0fef166-413f-4512-8bb0-633066fe135c' },
+      { name: 'shani', id: '1fc69bdc-519a-40fb-ab05-265a57dd2e0d' },
+      { name: 'apple', id: '335f04ae-eaf4-4da1-ae00-4d5fb6a62666' },
+      { name: 'ashley', id: '775d6a85-83f0-4226-949f-52ffc86bdabf' },
+    ],
+  },
+  {
     name: '今天吃什麼',
     sales: [
       { id: '67d897bb-d500-497f-b8a8-7ceb55227da4', name: 'alan' },
