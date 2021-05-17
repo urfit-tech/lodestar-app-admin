@@ -188,7 +188,7 @@ const SalesActivenessTable: React.FC<{
         loading={loading}
         dataSource={dataSource}
         rowKey="salesId"
-        scroll={{ x: 1000, y: 400 }}
+        scroll={{ x: 1000 }}
         bordered
         pagination={false}
       >
@@ -423,9 +423,7 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
           where: {
             event: { _eq: "note" }
             created_at: { _gt: $startedAt, _lte: $endedAt }
-            status: { _eq: "answered" }
             rejected_at: { _is_null: false }
-            type: { _eq: "outbound" }
           }
         ) {
           id
