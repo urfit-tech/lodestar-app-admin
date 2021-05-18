@@ -12,8 +12,8 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { MemberAdminProps } from '../../types/member'
-import AllMemberSelector from '../form/AllMemberSelector'
 import CategorySelector from '../form/CategorySelector'
+import { AllMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
 
 type FieldProps = {
@@ -44,52 +44,58 @@ const MemberProfileBasicForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: FieldProps) => {
-    setLoading(true)
-
-    updateMemberProfileBasic({
-      variables: {
-        name: values?.name || memberAdmin.name,
-        username: permissions['MEMBER_USERNAME_EDIT'] ? values?.username || memberAdmin.username : memberAdmin.username,
-        email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
-        memberId: memberAdmin.id,
-        phones: permissions['MEMBER_PHONE_ADMIN']
-          ? values.phones
-              .filter((phone: string) => !!phone)
-              .map((phone: string) => ({
+  const handleSubmit = async () => {
+    try {
+      setLoading(true)
+      const values = await form.validateFields()
+      updateMemberProfileBasic({
+        variables: {
+          name: values?.name || memberAdmin.name,
+          username: permissions['MEMBER_USERNAME_EDIT']
+            ? values?.username || memberAdmin.username
+            : memberAdmin.username,
+          email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
+          memberId: memberAdmin.id,
+          phones: permissions['MEMBER_PHONE_ADMIN']
+            ? values.phones
+                .filter((phone: string) => !!phone)
+                .map((phone: string) => ({
+                  member_id: memberAdmin.id,
+                  phone,
+                }))
+            : memberAdmin.phones.map((phone: string) => ({
                 member_id: memberAdmin.id,
                 phone,
-              }))
-          : memberAdmin.phones.map((phone: string) => ({
-              member_id: memberAdmin.id,
-              phone,
-            })),
-        managerId:
-          enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
-            ? values.managerId || null
-            : memberAdmin.manager?.id,
-        assignedAt: values.managerId ? new Date() : null,
-        tags: (values.tags || memberAdmin.tags).map(tag => ({
-          name: tag,
-          type: '',
-        })),
-        memberTags: (values.tags || memberAdmin.tags).map(tag => ({
-          member_id: memberAdmin.id,
-          tag_name: tag,
-        })),
-        memberCategories: values.categoryIds.map((categoryId: string, index: number) => ({
-          member_id: memberAdmin.id,
-          category_id: categoryId,
-          position: index,
-        })),
-      },
-    })
-      .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
+              })),
+          managerId:
+            enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN']
+              ? values.managerId || null
+              : memberAdmin.manager?.id,
+          assignedAt: values.managerId ? new Date() : null,
+          tags: (values.tags || memberAdmin.tags).map(tag => ({
+            name: tag,
+            type: '',
+          })),
+          memberTags: (values.tags || memberAdmin.tags).map(tag => ({
+            member_id: memberAdmin.id,
+            tag_name: tag,
+          })),
+          memberCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+            member_id: memberAdmin.id,
+            category_id: categoryId,
+            position: index,
+          })),
+        },
       })
-      .catch(handleError)
-      .finally(() => setLoading(false))
+        .then(() => {
+          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch?.()
+        })
+        .catch(handleError)
+        .finally(() => setLoading(false))
+    } catch {
+      setLoading(false)
+    }
   }
 
   return (
@@ -110,7 +116,6 @@ const MemberProfileBasicForm: React.FC<{
         categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
       }}
-      onFinish={handleSubmit}
     >
       {enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN'] && (
         <Form.Item
@@ -152,7 +157,7 @@ const MemberProfileBasicForm: React.FC<{
         <Button className="mr-2" onClick={() => form.resetFields()}>
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>

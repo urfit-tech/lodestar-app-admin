@@ -15,8 +15,8 @@ import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-l
 import { MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import AllMemberSelector from '../form/AllMemberSelector'
 import CategorySelector from '../form/CategorySelector'
+import { AllMemberSelector } from '../form/MemberSelector'
 
 const StyledLinkIconWrapper = styled.span`
   cursor: pointer;
