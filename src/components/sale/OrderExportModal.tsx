@@ -69,7 +69,7 @@ const OrderExportModal: React.FC = () => {
             status: {
               _in: orderStatuses,
             },
-            last_paid_at: {
+            created_at: {
               _gte: startedAt,
               _lte: endedAt,
             },
@@ -181,7 +181,7 @@ const OrderExportModal: React.FC = () => {
               status: {
                 _in: orderStatuses,
               },
-              last_paid_at: {
+              created_at: {
                 _gte: startedAt,
                 _lte: endedAt,
               },
@@ -258,7 +258,7 @@ const OrderExportModal: React.FC = () => {
               status: {
                 _in: orderStatuses,
               },
-              last_paid_at: {
+              created_at: {
                 _gte: startedAt,
                 _lte: endedAt,
               },
@@ -307,7 +307,7 @@ const OrderExportModal: React.FC = () => {
               status: {
                 _in: orderStatuses,
               },
-              last_paid_at: {
+              created_at: {
                 _gte: startedAt,
                 _lte: endedAt,
               },

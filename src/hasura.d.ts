@@ -5830,6 +5830,32 @@ export interface GET_PAYMENT_LOG_EXPORTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ALL_ORDER_LOG
+// ====================================================
+
+export interface GET_ALL_ORDER_LOG_order_log_aggregate_aggregate {
+  __typename: "order_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ALL_ORDER_LOG_order_log_aggregate {
+  __typename: "order_log_aggregate";
+  aggregate: GET_ALL_ORDER_LOG_order_log_aggregate_aggregate | null;
+}
+
+export interface GET_ALL_ORDER_LOG {
+  /**
+   * fetch aggregated fields from the table: "order_log"
+   */
+  order_log_aggregate: GET_ALL_ORDER_LOG_order_log_aggregate;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDERS
 // ====================================================
 

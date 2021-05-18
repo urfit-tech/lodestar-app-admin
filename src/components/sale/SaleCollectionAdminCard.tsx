@@ -48,7 +48,9 @@ const StyledCell = styled.div`
   `)}
 `
 
-const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) => {
+const SaleCollectionAdminCard: React.VFC<{
+  memberId?: string
+}> = ({ memberId }) => {
   const { formatMessage } = useIntl()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -122,7 +124,6 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
       key: 'updatedAt',
       render: (value: Date, record) => {
         const orderLogPaymentDate = moment(value || record.createdAt)
-
         return (
           <StyledCell>
             <div>{orderLogPaymentDate.format('YYYY-MM-DD')}</div>
@@ -146,10 +147,7 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
       }),
       render: (_, record) => (
         <StyledCell>
-          <div>
-            {record.name}
-            <span className="ml-2">/</span>
-          </div>
+          <div>{`${record.name} /`}</div>
           <div>{record.email}</div>
         </StyledCell>
       ),
@@ -331,30 +329,30 @@ const useOrderLog = (filters?: {
   memberId?: string
 }) => {
   const condition: hasura.GET_ORDERSVariables['condition'] = {
-    status: filters?.statuses
-      ? {
-          _in: filters.statuses,
-        }
-      : undefined,
-    id: { _ilike: filters?.orderId ? `%${filters.orderId}%` : undefined },
+    id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
+    status: filters?.statuses ? { _in: filters.statuses } : undefined,
     member: {
-      id: {
-        _like: filters?.memberId ? `%${filters.memberId}%` : undefined,
-      },
-      _or: [
-        {
-          name: {
-            _ilike: filters?.memberNameAndEmail ? `%${filters.memberNameAndEmail}%` : undefined,
-          },
-        },
-        {
-          email: {
-            _ilike: filters?.memberNameAndEmail ? `%${filters.memberNameAndEmail}%` : undefined,
-          },
-        },
-      ],
+      id: filters?.memberId ? { _like: `%${filters.memberId}%` } : undefined,
+      _or: filters?.memberNameAndEmail
+        ? [
+            { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
+            { username: { _ilike: `%${filters.memberNameAndEmail}%` } },
+            { email: { _ilike: `%${filters.memberNameAndEmail}%` } },
+          ]
+        : undefined,
     },
   }
+
+  const { data: allOrderLogs } = useQuery<hasura.GET_ALL_ORDER_LOG>(gql`
+    query GET_ALL_ORDER_LOG {
+      order_log_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  `)
+  const totalCount = allOrderLogs?.order_log_aggregate.aggregate?.count || 0
 
   const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDERS, hasura.GET_ORDERSVariables>(
     GET_ORDERS,
@@ -371,12 +369,22 @@ const useOrderLog = (filters?: {
 
   const loadMoreOrderLogs =
     (data?.order_log_aggregate.aggregate?.count || 0) > 20
-      ? () =>
-          fetchMore({
+      ? () => {
+          const lastOrderLog = data?.order_log[data.order_log.length - 1]
+          return fetchMore({
             variables: {
               condition: {
-                ...condition,
-                created_at: { _lt: data?.order_log.slice(-1)[0]?.created_at },
+                _and: [
+                  condition,
+                  {
+                    created_at: {
+                      _lte: lastOrderLog?.created_at,
+                    },
+                    id: {
+                      _nin: data?.order_log.filter(v => v.created_at === lastOrderLog?.created_at).map(v => v.id) || [],
+                    },
+                  },
+                ],
               },
               limit: 20,
             },
@@ -384,12 +392,13 @@ const useOrderLog = (filters?: {
               if (!fetchMoreResult) {
                 return prev
               }
-              return Object.assign({}, prev, {
+              return {
                 order_log_aggregate: fetchMoreResult.order_log_aggregate,
                 order_log: [...prev.order_log, ...fetchMoreResult.order_log],
-              })
+              }
             },
           })
+        }
       : undefined
 
   const orderLogs: OrderLogProps[] =
@@ -427,13 +436,11 @@ const useOrderLog = (filters?: {
       orderExecutors: v.order_executors.map(w => w.member.name),
     })) || []
 
-  const totalCount = data?.order_log_aggregate.aggregate?.count || 0
-
   return {
+    totalCount,
     loadingOrderLogs: loading,
     errorOrderLogs: error,
     orderLogs,
-    totalCount,
     refetchOrderLogs: refetch,
     loadMoreOrderLogs,
   }
