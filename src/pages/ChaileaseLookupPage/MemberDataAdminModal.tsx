@@ -114,11 +114,9 @@ const MemberDataAdminModal: React.FC<
                       : profile.idImage?.back,
                   },
                   signature: {
-                    own: attachments.ownSignature
-                      ? await getFileDownloadableLink(`chailease/${imageId}-03`, authToken, apiHost)
-                      : profile.signature?.own,
+                    own: attachments.ownSignature ? attachments.ownSignature.name : profile.signature?.own,
                     contact: attachments.contactSignature
-                      ? await getFileDownloadableLink(`chailease/${imageId}-04`, authToken, apiHost)
+                      ? attachments.contactSignature.name
                       : profile.signature?.contact,
                   },
                 },

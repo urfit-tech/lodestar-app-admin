@@ -270,9 +270,9 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
             <p>本人親簽</p>
             {profile?.signature?.own && (
               <FileItem
-                fileName="親簽"
+                fileName={`${profile?.signature?.own}`}
                 onDownload={() =>
-                  downloadFile(`${member.name}_親簽`, {
+                  downloadFile(`${profile?.signature?.own}`, {
                     url: attachmentsLink.ownSignature,
                   })
                 }
@@ -283,9 +283,9 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
             <StyledInfoItem>
               <p>聯絡人親簽</p>
               <FileItem
-                fileName="親簽"
+                fileName={`${profile?.signature?.contact}`}
                 onDownload={() =>
-                  downloadFile(`${member.name}_聯絡人親簽`, {
+                  downloadFile(`${profile?.signature?.contact}`, {
                     url: attachmentsLink.contactSignature,
                   })
                 }
