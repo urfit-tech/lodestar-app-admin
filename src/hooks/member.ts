@@ -150,10 +150,10 @@ export const useMemberAdmin = (memberId: string) => {
             id
             permission_id
           }
-          coin_logs_aggregate {
+          coin_statuses_aggregate {
             aggregate {
               sum {
-                amount
+                remaining
               }
             }
           }
@@ -252,7 +252,7 @@ export const useMemberAdmin = (memberId: string) => {
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
           ),
-          coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
+          coins: data.member_by_pk.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
           categories: data.member_by_pk.member_categories.map(v => ({
             id: v.category.id,
             name: v.category.name,
@@ -609,7 +609,10 @@ export const usePublicMember = (memberId: string) => {
 }
 
 export const useMemberRoleCount = (appId: string, filter?: { name?: string; email?: string }) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_ROLE_COUNT, hasura.GET_MEMBER_ROLE_COUNTVariables>(
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_MEMBER_ROLE_COUNT,
+    hasura.GET_MEMBER_ROLE_COUNTVariables
+  >(
     gql`
       query GET_MEMBER_ROLE_COUNT($appId: String, $email: String, $name: String) {
         all: member_aggregate(
