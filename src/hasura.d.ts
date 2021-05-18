@@ -323,6 +323,81 @@ export interface GET_SALE_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL query operation: GET_PROPERTY
+// ====================================================
+
+export interface GET_PROPERTY_property {
+  __typename: "property";
+  id: any;
+  name: string;
+  placeholder: string | null;
+}
+
+export interface GET_PROPERTY {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_PROPERTY_property[];
+}
+
+export interface GET_PROPERTYVariables {
+  type: string;
+  propertyNames?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ADVERTISING_MEMBER
+// ====================================================
+
+export interface GET_ADVERTISING_MEMBER_member_member_properties {
+  __typename: "member_property";
+  id: any;
+  v: string;
+}
+
+export interface GET_ADVERTISING_MEMBER_member_material {
+  __typename: "member_property";
+  id: any;
+  v: string;
+}
+
+export interface GET_ADVERTISING_MEMBER_member {
+  __typename: "member";
+  id: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_ADVERTISING_MEMBER_member_member_properties[];
+  /**
+   * An array relationship
+   */
+  material: GET_ADVERTISING_MEMBER_member_material[];
+}
+
+export interface GET_ADVERTISING_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_ADVERTISING_MEMBER_member[];
+}
+
+export interface GET_ADVERTISING_MEMBERVariables {
+  categoryId: string;
+  propertyId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_METADATA
 // ====================================================
 

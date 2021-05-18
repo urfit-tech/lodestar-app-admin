@@ -7,6 +7,7 @@ import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
+import AdvertisingAudiencePage from './pages/AdvertisingAudiencePage'
 import ChaileaseLookupPage from './pages/ChaileaseLookupPage/index'
 import CustomScriptsPage from './pages/CustomScriptsPage'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
@@ -77,6 +78,11 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'analytics_sales_activeness',
                   name: '活動量',
+                },
+                {
+                  permissionIsAllowed: true,
+                  key: 'analytics_advertising_audience',
+                  name: '廣告受眾',
                 },
               ],
             },
@@ -160,6 +166,11 @@ const App: React.FC = () => {
         analytics_sales_activeness: {
           path: '/analytics/sales-activeness',
           pageName: <SalesActivenessPage />,
+          authenticated: true,
+        },
+        analytics_advertising_audience: {
+          path: '/analytics/advertising-audience',
+          pageName: <AdvertisingAudiencePage />,
           authenticated: true,
         },
         member_contract_creation: {
