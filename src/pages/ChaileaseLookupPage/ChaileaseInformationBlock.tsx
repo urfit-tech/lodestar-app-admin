@@ -92,7 +92,7 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
   if (!member) {
-    return <div>查無會員</div>
+    return <div>查無資料</div>
   }
   const {
     chailease,
