@@ -1,5 +1,5 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
+import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import { AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
 import moment from 'moment'
@@ -21,7 +21,7 @@ const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
     projectPlans: ContractInfo['projectPlans']
-    startedAt: Date | null
+    startedAt: Date
     endedAt: Date | null
     products: ContractInfo['products']
     contractProducts: NonNullable<FieldProps['contractProducts']>
@@ -91,10 +91,7 @@ const MemberContractCreationForm: React.FC<
             </div>
           </Descriptions.Item>
 
-          <Descriptions.Item label="服務開始日">
-            {startedAt ? moment(startedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
-          </Descriptions.Item>
-
+          <Descriptions.Item label="服務開始日">{moment(startedAt).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
           <Descriptions.Item label="服務結束日">
             {endedAt ? moment(endedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
           </Descriptions.Item>
@@ -208,6 +205,25 @@ const MemberContractCreationForm: React.FC<
             <Form.Item name="hasDeposit" valuePropName="checked" noStyle>
               <Checkbox>扣除訂金 $1000</Checkbox>
             </Form.Item>
+          </Descriptions.Item>
+          <Descriptions.Item label="鑑賞期">
+            <div className="d-flex align-items-center">
+              <div className="flex-shrink-0">
+                <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
+                  <Checkbox>使用鑑賞期</Checkbox>
+                </Form.Item>
+              </div>
+              <div className="flex-grow-1 ml-2">
+                <Form.Item name="productStartedAt" noStyle>
+                  <DatePicker
+                    disabledDate={date =>
+                      date.isBefore(moment().add(1, 'day').startOf('day')) ||
+                      date.isAfter(moment().add(14, 'day').startOf('day'))
+                    }
+                  />
+                </Form.Item>
+              </div>
+            </div>
           </Descriptions.Item>
         </Descriptions>
 
