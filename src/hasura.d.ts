@@ -1463,31 +1463,6 @@ export interface DELETE_CREATOR_DISPLAYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_MEMBER_COLLECTION
-// ====================================================
-
-export interface GET_ALL_MEMBER_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-}
-
-export interface GET_ALL_MEMBER_COLLECTION {
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_ALL_MEMBER_COLLECTION_member[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_CONTENT_CREATOR_COLLECTION
 // ====================================================
 
@@ -1509,6 +1484,35 @@ export interface GET_CONTENT_CREATOR_COLLECTION {
 
 export interface GET_CONTENT_CREATOR_COLLECTIONVariables {
   condition: member_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ALL_MEMBER_COLLECTION
+// ====================================================
+
+export interface GET_ALL_MEMBER_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_ALL_MEMBER_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_ALL_MEMBER_COLLECTION_member[];
+}
+
+export interface GET_ALL_MEMBER_COLLECTIONVariables {
+  search: string;
 }
 
 /* tslint:disable */
