@@ -7,7 +7,6 @@ import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-admin/src/helpers'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
-import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
 import { ReactComponent as UserOIcon } from 'lodestar-app-admin/src/images/icon/user-o.svg'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -120,20 +119,6 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[] }> = ({ sales
               setVisible(true)
             }}
           />
-          <StyledButton
-            disabled={!record.phones[0] || !sales.telephone}
-            icon={<Icon component={() => <CallOutIcon />} />}
-            type="primary"
-            onClick={() =>
-              call({
-                appId,
-                apiHost,
-                authToken,
-                phone: record.phones[0],
-                salesTelephone: sales.telephone || '',
-              })
-            }
-          />
         </div>
       ),
     },
@@ -166,9 +151,22 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[] }> = ({ sales
       title: formatMessage(salesMessages.label.tel),
       render: (phones: string[]) =>
         phones.map((phone, idx) => (
-          <address key={idx} className="m-0">
+          <a
+            key={idx}
+            href="#!"
+            className="m-0 cursor-pointer"
+            onClick={() => {
+              call({
+                appId,
+                apiHost,
+                authToken,
+                phone,
+                salesTelephone: sales.telephone || '',
+              })
+            }}
+          >
             {phone}
-          </address>
+          </a>
         )),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
