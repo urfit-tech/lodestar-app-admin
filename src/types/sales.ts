@@ -20,3 +20,14 @@ export type SalesStatus = {
     }
   }[]
 }[]
+
+export type Lead = {
+  id: string
+  name: string
+  email: string
+  phones: string[]
+  categoryNames: string[]
+  paid: number
+  star: number
+  createdAt: Date
+}

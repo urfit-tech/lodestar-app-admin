@@ -492,6 +492,11 @@ export interface UPDATE_MEMBERVariables {
   phone: member_phone_insert_input;
 }
 
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
 // ====================================================
 // GraphQL query operation: GET_IMPLEMENT_PRACTICES
 // ====================================================
@@ -1742,6 +1747,81 @@ export interface GET_SALES_CALL_MEMBERVariables {
   hasContacted: boolean;
   hasTransacted: boolean;
   now?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_LEADS
+// ====================================================
+
+export interface GET_SALES_LEADS_leads_member_member_phones {
+  __typename: "member_phone";
+  phone: string;
+}
+
+export interface GET_SALES_LEADS_leads_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_SALES_LEADS_leads_member_member_categories {
+  __typename: "member_category";
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_LEADS_leads_member_member_categories_category;
+}
+
+export interface GET_SALES_LEADS_leads_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  star: any | null;
+  created_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_SALES_LEADS_leads_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_LEADS_leads_member_member_categories[];
+}
+
+export interface GET_SALES_LEADS_leads {
+  __typename: "xuemi_member_paid";
+  paid: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_SALES_LEADS_leads_member | null;
+}
+
+export interface GET_SALES_LEADS_handled_members {
+  __typename: "member";
+  id: string;
+}
+
+export interface GET_SALES_LEADS {
+  /**
+   * fetch data from the table: "xuemi.member_paid"
+   */
+  leads: GET_SALES_LEADS_leads[];
+  /**
+   * fetch data from the table: "member"
+   */
+  handled_members: GET_SALES_LEADS_handled_members[];
+}
+
+export interface GET_SALES_LEADSVariables {
+  salesId: string;
+  startedAt: any;
+  endedAt: any;
 }
 
 /* tslint:disable */
@@ -6920,22 +7000,6 @@ export interface coin_log_on_conflict {
 }
 
 /**
- * ordering options when selecting data from "coin_log"
- */
-export interface coin_log_order_by {
-  amount?: order_by | null;
-  created_at?: order_by | null;
-  description?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member?: member_order_by | null;
-  member_id?: order_by | null;
-  note?: order_by | null;
-  started_at?: order_by | null;
-  title?: order_by | null;
-}
-
-/**
  * order by stddev() on columns of table "coin_log"
  */
 export interface coin_log_stddev_order_by {
@@ -6985,6 +7049,32 @@ export interface coin_log_variance_order_by {
 }
 
 /**
+ * order by aggregate values of table "coin_status"
+ */
+export interface coin_status_aggregate_order_by {
+  avg?: coin_status_avg_order_by | null;
+  count?: order_by | null;
+  max?: coin_status_max_order_by | null;
+  min?: coin_status_min_order_by | null;
+  stddev?: coin_status_stddev_order_by | null;
+  stddev_pop?: coin_status_stddev_pop_order_by | null;
+  stddev_samp?: coin_status_stddev_samp_order_by | null;
+  sum?: coin_status_sum_order_by | null;
+  var_pop?: coin_status_var_pop_order_by | null;
+  var_samp?: coin_status_var_samp_order_by | null;
+  variance?: coin_status_variance_order_by | null;
+}
+
+/**
+ * order by avg() on columns of table "coin_status"
+ */
+export interface coin_status_avg_order_by {
+  amount?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "coin_status". All fields are combined with a logical 'AND'.
  */
 export interface coin_status_bool_exp {
@@ -7000,13 +7090,86 @@ export interface coin_status_bool_exp {
 }
 
 /**
- * ordering options when selecting data from "coin_status"
+ * order by max() on columns of table "coin_status"
  */
-export interface coin_status_order_by {
+export interface coin_status_max_order_by {
   amount?: order_by | null;
   coin_id?: order_by | null;
-  coin_log?: coin_log_order_by | null;
   member_id?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "coin_status"
+ */
+export interface coin_status_min_order_by {
+  amount?: order_by | null;
+  coin_id?: order_by | null;
+  member_id?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by stddev() on columns of table "coin_status"
+ */
+export interface coin_status_stddev_order_by {
+  amount?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "coin_status"
+ */
+export interface coin_status_stddev_pop_order_by {
+  amount?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "coin_status"
+ */
+export interface coin_status_stddev_samp_order_by {
+  amount?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "coin_status"
+ */
+export interface coin_status_sum_order_by {
+  amount?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "coin_status"
+ */
+export interface coin_status_var_pop_order_by {
+  amount?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "coin_status"
+ */
+export interface coin_status_var_samp_order_by {
+  amount?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "coin_status"
+ */
+export interface coin_status_variance_order_by {
+  amount?: order_by | null;
   remaining?: order_by | null;
   used_coins?: order_by | null;
 }
@@ -8640,7 +8803,7 @@ export interface member_bool_exp {
   assigned_at?: timestamptz_comparison_exp | null;
   attends?: attend_bool_exp | null;
   coin_logs?: coin_log_bool_exp | null;
-  coin_status?: coin_status_bool_exp | null;
+  coin_statuses?: coin_status_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
   comment_replies?: comment_reply_bool_exp | null;
   comment_reply_reactions?: comment_reply_reaction_bool_exp | null;
@@ -9472,7 +9635,7 @@ export interface member_order_by {
   assigned_at?: order_by | null;
   attends_aggregate?: attend_aggregate_order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
-  coin_status?: coin_status_order_by | null;
+  coin_statuses_aggregate?: coin_status_aggregate_order_by | null;
   comment_reactions_aggregate?: comment_reaction_aggregate_order_by | null;
   comment_replies_aggregate?: comment_reply_aggregate_order_by | null;
   comment_reply_reactions_aggregate?: comment_reply_reaction_aggregate_order_by | null;
