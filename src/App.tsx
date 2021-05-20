@@ -52,7 +52,7 @@ const App: React.FC = () => {
                   name: '業務狀況',
                 },
                 {
-                  permissionIsAllowed: settings['feature.chailease_lookup'] === 'enabled',
+                  permissionIsAllowed: true,
                   key: 'chailease_lookup',
                   name: '資融查詢',
                 },
@@ -80,7 +80,7 @@ const App: React.FC = () => {
                   name: '活動量',
                 },
                 {
-                  permissionIsAllowed: true,
+                  permissionIsAllowed: settings['feature.advertising_audience'] === 'enabled',
                   key: 'analytics_advertising_audience',
                   name: '廣告受眾',
                 },
