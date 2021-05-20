@@ -195,9 +195,6 @@ const MemberContractCreationBlock: React.FC<{
 
   const contractItems = [...contractProducts, ...contractDiscounts]
   const totalPrice = sum(contractItems.map(v => v.price * v.amount))
-  const productStartedAt = fieldValue.withProductStartedAt
-    ? fieldValue.productStartedAt.toISOString()
-    : startedAt.toISOString()
 
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
@@ -255,8 +252,8 @@ const MemberContractCreationBlock: React.FC<{
           product_id: product.preview.productId,
           name: product.preview.title,
           price: 225,
-          started_at: productStartedAt,
-          ended_at: endedAt,
+          started_at: startedAt.toISOString(),
+          ended_at: endedAt?.toISOString(),
         }
       })
       .filter(notEmpty)
@@ -287,8 +284,8 @@ const MemberContractCreationBlock: React.FC<{
                     amount: 100,
                     title: `學米諮詢券`,
                     description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
-                    started_at: productStartedAt,
-                    ended_at: endedAt,
+                    started_at: startedAt.toISOString(),
+                    ended_at: endedAt?.toISOString(),
                     scope: ['AppointmentPlan'],
                   },
                 }
@@ -330,7 +327,7 @@ const MemberContractCreationBlock: React.FC<{
               description: '搶先看學習禮包',
               amount: 5 * previewProducts.length,
               started_at: null,
-              ended_at: endedAt,
+              ended_at: endedAt?.toISOString(),
             },
             {
               id: v4(),
@@ -338,8 +335,8 @@ const MemberContractCreationBlock: React.FC<{
               title: `${selectedProjectPlan?.title}`,
               description: '私塾課代幣',
               amount: totalCoins,
-              started_at: productStartedAt,
-              ended_at: endedAt,
+              started_at: startedAt.toISOString(),
+              ended_at: endedAt?.toISOString(),
             },
           ],
           coupons: [
@@ -356,15 +353,15 @@ const MemberContractCreationBlock: React.FC<{
               product_id: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
               name: selectedProjectPlan?.title,
               price: 0,
-              started_at: productStartedAt,
-              ended_at: endedAt,
+              started_at: startedAt.toISOString(),
+              ended_at: endedAt?.toISOString(),
             },
             ...contractProducts.map(v => ({
               product_id: `ProjectPlan_${v.id}`,
               name: v.name,
               price: v.price * v.amount,
-              started_at: productStartedAt,
-              ended_at: endedAt,
+              started_at: startedAt.toISOString(),
+              ended_at: endedAt?.toISOString(),
               options:
                 v.amount > 1
                   ? {
@@ -377,8 +374,8 @@ const MemberContractCreationBlock: React.FC<{
               product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
               name: '學米 VIP 會員卡',
               price: 0,
-              started_at: productStartedAt,
-              ended_at: endedAt,
+              started_at: startedAt.toISOString(),
+              ended_at: endedAt?.toISOString(),
             },
           ],
           orderDiscounts: [

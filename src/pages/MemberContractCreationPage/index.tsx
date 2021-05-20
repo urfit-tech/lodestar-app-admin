@@ -120,13 +120,13 @@ const MemberContractCreationPage: React.VFC = () => {
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
+  const [startedAt, setStartedAt] = useState(moment().add(1, 'days').startOf('day').toDate())
 
   if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />
   }
 
   const selectedProjectPlan = projectPlans.find(v => v.id === fieldValue.selectedProjectPlanId) || null
-  const startedAt = moment().add(1, 'days').startOf('day').toDate()
   const endedAt = selectedProjectPlan
     ? moment(startedAt)
         .add(
@@ -162,7 +162,14 @@ const MemberContractCreationPage: React.VFC = () => {
               withProductStartedAt: false,
               productStartedAt: moment(startedAt),
             }}
-            onValuesChange={() => setReRender(prev => prev + 1)}
+            onValuesChange={(_, values) => {
+              setReRender(prev => prev + 1)
+              setStartedAt(
+                values.withProductStartedAt
+                  ? values.productStartedAt.toDate()
+                  : moment().add(1, 'days').startOf('day').toDate(),
+              )
+            }}
             memberId={memberId}
             startedAt={startedAt}
             endedAt={endedAt}
