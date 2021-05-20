@@ -2468,6 +2468,7 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   email?: string | null;
   memberId: string;
   managerId?: string | null;
+  star?: any | null;
   assignedAt?: any | null;
   tags: tag_insert_input[];
   memberTags: member_tag_insert_input[];
@@ -8522,6 +8523,7 @@ export interface GET_MEMBER_ADMIN_member_by_pk {
   username: string;
   name: string;
   email: string;
+  star: any | null;
   /**
    * app-owner / content-creator
    */

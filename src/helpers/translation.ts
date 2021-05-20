@@ -185,6 +185,7 @@ export const commonMessages = {
     countdown: { id: 'common.label.countdown', defaultMessage: '優惠倒數' },
     assign: { id: 'common.label.assign', defaultMessage: '指派' },
     instructor: { id: 'common.label.instructor', defaultMessage: '老師' },
+    star: { id: 'common.label.star', defaultMessage: '星等' },
     price: { id: 'common.label.price', defaultMessage: '售價' },
     teachingAssistant: { id: 'common.label.teachingAssistant', defaultMessage: '助教' },
     cover: { id: 'common.label.cover', defaultMessage: '封面' },

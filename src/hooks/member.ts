@@ -87,6 +87,7 @@ export const useMemberAdmin = (memberId: string) => {
           username
           name
           email
+          star
           role
           created_at
           logined_at
@@ -204,6 +205,7 @@ export const useMemberAdmin = (memberId: string) => {
           username: data.member_by_pk.username,
           name: data.member_by_pk.name,
           email: data.member_by_pk.email,
+          star: data.member_by_pk.star,
           role: data.member_by_pk.role as UserRole,
           createdAt: new Date(data.member_by_pk.created_at),
           loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),

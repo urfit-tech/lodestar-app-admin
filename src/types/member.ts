@@ -76,6 +76,7 @@ export type MemberAdminProps = {
   username: string
   name: string
   email: string
+  star: number
   role: UserRole
   createdAt: Date | null
   loginedAt: Date | null

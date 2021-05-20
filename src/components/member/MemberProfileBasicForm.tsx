@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Input, InputNumber, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -20,6 +20,7 @@ type FieldProps = {
   name: string
   username: string
   email: string
+  star: number
   phones: string[]
   categoryIds: string[]
   tags?: string[]
@@ -55,6 +56,7 @@ const MemberProfileBasicForm: React.FC<{
             ? values?.username || memberAdmin.username
             : memberAdmin.username,
           email: permissions['MEMBER_EMAIL_EDIT'] ? values?.email || memberAdmin.email : memberAdmin.email,
+          star: permissions['MEMBER_STAR_ADMIN'] ? values?.star || memberAdmin.star : memberAdmin.star,
           memberId: memberAdmin.id,
           phones: permissions['MEMBER_PHONE_ADMIN']
             ? values.phones
@@ -111,6 +113,7 @@ const MemberProfileBasicForm: React.FC<{
         name: memberAdmin.name,
         username: memberAdmin.username,
         email: memberAdmin.email,
+        star: memberAdmin.star,
         phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
         specialities: memberAdmin.specialities,
         categoryIds: memberAdmin.categories.map(category => category.id),
@@ -139,6 +142,11 @@ const MemberProfileBasicForm: React.FC<{
       {permissions['MEMBER_PHONE_ADMIN'] && (
         <Form.Item label={formatMessage(commonMessages.label.phone)} name="phones">
           <PhoneCollectionInput />
+        </Form.Item>
+      )}
+      {permissions['MEMBER_STAR_ADMIN'] && (
+        <Form.Item label={formatMessage(commonMessages.label.star)} name="star">
+          <InputNumber />
         </Form.Item>
       )}
       <Form.Item label={formatMessage(commonMessages.label.speciality)} name="specialities">
@@ -194,6 +202,7 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $email: String
     $memberId: String!
     $managerId: String
+    $star: numeric
     $assignedAt: timestamptz
     $tags: [tag_insert_input!]!
     $memberTags: [member_tag_insert_input!]!
@@ -202,7 +211,14 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
   ) {
     update_member(
       where: { id: { _eq: $memberId } }
-      _set: { name: $name, username: $username, email: $email, manager_id: $managerId, assigned_at: $assignedAt }
+      _set: {
+        name: $name
+        username: $username
+        email: $email
+        star: $star
+        manager_id: $managerId
+        assigned_at: $assignedAt
+      }
     ) {
       affected_rows
     }
