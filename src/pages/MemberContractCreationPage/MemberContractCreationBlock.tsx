@@ -252,7 +252,7 @@ const MemberContractCreationBlock: React.FC<{
           product_id: product.preview.productId,
           name: product.preview.title,
           price: 225,
-          started_at: startedAt.toISOString(),
+          started_at: fieldValue.withProductStartedAt ? startedAt.toISOString() : null,
           ended_at: endedAt?.toISOString(),
         }
       })
