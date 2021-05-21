@@ -5711,7 +5711,8 @@ export interface GET_ORDER_LOG_EXPORT {
 }
 
 export interface GET_ORDER_LOG_EXPORTVariables {
-  condition?: order_log_export_bool_exp | null;
+  condition: order_log_export_bool_exp;
+  orderBy: order_log_export_order_by[];
 }
 
 /* tslint:disable */
@@ -5745,7 +5746,8 @@ export interface GET_ORDER_PRODUCT_EXPORT {
 }
 
 export interface GET_ORDER_PRODUCT_EXPORTVariables {
-  condition?: order_product_export_bool_exp | null;
+  condition: order_product_export_bool_exp;
+  orderBy: order_log_order_by;
 }
 
 /* tslint:disable */
@@ -5790,7 +5792,8 @@ export interface GET_ORDER_DISCOUNT_COLLECTION {
 }
 
 export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
-  condition?: order_discount_bool_exp | null;
+  condition: order_discount_bool_exp;
+  orderBy: order_log_order_by;
 }
 
 /* tslint:disable */
@@ -5826,7 +5829,8 @@ export interface GET_PAYMENT_LOG_EXPORT {
 }
 
 export interface GET_PAYMENT_LOG_EXPORTVariables {
-  condition?: payment_log_export_bool_exp | null;
+  condition: payment_log_export_bool_exp;
+  orderBy: order_log_order_by;
 }
 
 /* tslint:disable */
@@ -22676,6 +22680,34 @@ export interface order_log_export_bool_exp {
   sharing_notes?: String_comparison_exp | null;
   status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "order_log_export"
+ */
+export interface order_log_export_order_by {
+  app_id?: order_by | null;
+  created_at?: order_by | null;
+  invoice?: order_by | null;
+  last_paid_at?: order_by | null;
+  member_email?: order_by | null;
+  member_id?: order_by | null;
+  member_name?: order_by | null;
+  order_discount_total_price?: order_by | null;
+  order_discounts?: order_by | null;
+  order_executors?: order_by | null;
+  order_log_id?: order_by | null;
+  order_product_num?: order_by | null;
+  order_product_total_price?: order_by | null;
+  order_products?: order_by | null;
+  paid_at?: order_by | null;
+  payment_no?: order_by | null;
+  payment_options?: order_by | null;
+  referrer_email?: order_by | null;
+  sharing_codes?: order_by | null;
+  sharing_notes?: order_by | null;
+  status?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
