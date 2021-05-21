@@ -42,11 +42,11 @@ const App: React.FC = () => {
               icon: () => <PhoneIcon />,
               name: '業務專區',
               subMenuItems: [
-                {
-                  permissionIsAllowed: true,
-                  key: 'sales_lead',
-                  name: '業務名單',
-                },
+                // {
+                //   permissionIsAllowed: true,
+                //   key: 'sales_lead',
+                //   name: '業務名單',
+                // },
                 {
                   permissionIsAllowed: true,
                   key: 'sales_call',
