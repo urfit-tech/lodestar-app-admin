@@ -16,6 +16,7 @@ import MemberContractCreationPage from './pages/MemberContractCreationPage'
 import NoteCollectionPage from './pages/NoteCollectionPage'
 import SalesActivenessPage from './pages/SalesActivenessPage'
 import SalesCallPage from './pages/SalesCallPage'
+import SalesLeadPage from './pages/SalesLeadPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
 import SalesStatusPage from './pages/SalesStatusPage'
@@ -41,6 +42,11 @@ const App: React.FC = () => {
               icon: () => <PhoneIcon />,
               name: '業務專區',
               subMenuItems: [
+                {
+                  permissionIsAllowed: true,
+                  key: 'sales_lead',
+                  name: '業務名單',
+                },
                 {
                   permissionIsAllowed: true,
                   key: 'sales_call',
@@ -141,6 +147,11 @@ const App: React.FC = () => {
         note_collection: {
           path: '/notes',
           pageName: <NoteCollectionPage />,
+          authenticated: true,
+        },
+        sales_lead: {
+          path: '/sales-lead',
+          pageName: <SalesLeadPage />,
           authenticated: true,
         },
         sales_call: {
