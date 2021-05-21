@@ -1,5 +1,5 @@
 import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
@@ -7,7 +7,8 @@ import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
-import React from 'react'
+import { prop, sortBy } from 'ramda'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
@@ -27,7 +28,11 @@ const SalesLeadPage: React.VFC = () => {
         <span>{formatMessage(salesMessages.label.salesLead)}</span>
       </AdminPageTitle>
       {currentMemberId ? (
-        <SalesLeadTabs activeKey={activeKey || 'current'} salesId={currentMemberId} onActiveKeyChanged={setActiveKey} />
+        <SalesLeadTabs
+          activeKey={activeKey || 'unhandled'}
+          salesId={currentMemberId}
+          onActiveKeyChanged={setActiveKey}
+        />
       ) : (
         <Skeleton active />
       )}
@@ -41,14 +46,31 @@ const SalesLeadTabs: React.VFC<{
   onActiveKeyChanged?: (activeKey: string) => void
 }> = ({ activeKey, salesId, onActiveKeyChanged }) => {
   const { formatMessage } = useIntl()
+  const [resetLead] = useMutation(RESET_LEADS)
   const { sales } = useSales(salesId)
-  const { loading, refetch, unhandledLeads, currentLeads, priorLeads, closedLeads, paidLeads } = useSalesLeads(salesId)
+  const {
+    loading,
+    refetch,
+    hotLeads,
+    unhandledRecentLeads,
+    unhandledLeads,
+    currentLeads,
+    priorLeads,
+    closedLeads,
+    paidLeads,
+  } = useSalesLeads(salesId)
+
+  // FIXME: this side effect is not so good
+  useEffect(() => {
+    resetLead({ variables: { memberIds: unhandledRecentLeads.map(lead => lead.id) } }).then(() => refetch?.())
+  }, [refetch, JSON.stringify(unhandledRecentLeads)])
+
   if (loading) {
     return <Skeleton active />
   }
   return (
     <Tabs
-      activeKey={activeKey || 'unhandled'}
+      activeKey={activeKey}
       onChange={onActiveKeyChanged}
       tabBarExtraContent={
         <Button onClick={() => refetch()}>
@@ -60,19 +82,24 @@ const SalesLeadTabs: React.VFC<{
         key="unhandled"
         tab={`${formatMessage(salesMessages.label.unhandledLead)} (${unhandledLeads.length})`}
       >
-        {sales && <SalesLeadTable sales={sales} leads={unhandledLeads} />}
+        {sales && <SalesLeadTable sales={sales} leads={unhandledLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
+      {hotLeads.length > 0 && (
+        <Tabs.TabPane key="hot" tab={`${formatMessage(salesMessages.label.hotLead)} (${hotLeads.length})`}>
+          {sales && <SalesLeadTable sales={sales} leads={hotLeads} onRefetch={refetch} />}
+        </Tabs.TabPane>
+      )}
       <Tabs.TabPane key="current" tab={`${formatMessage(salesMessages.label.currentLead)} (${currentLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={currentLeads} />}
+        {sales && <SalesLeadTable sales={sales} leads={currentLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
       <Tabs.TabPane key="prior" tab={`${formatMessage(salesMessages.label.priorLead)} (${priorLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={priorLeads} />}
+        {sales && <SalesLeadTable sales={sales} leads={priorLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
       <Tabs.TabPane key="closed" tab={`${formatMessage(salesMessages.label.closedLead)} (${closedLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={closedLeads} />}
+        {sales && <SalesLeadTable sales={sales} leads={closedLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
       <Tabs.TabPane key="paid" tab={`${formatMessage(salesMessages.label.paidLead)} (${paidLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={paidLeads} />}
+        {sales && <SalesLeadTable sales={sales} leads={paidLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
     </Tabs>
   )
@@ -82,7 +109,12 @@ const useSalesLeads = (salesId: string) => {
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
     {
-      variables: { salesId, startedAt: moment().startOf('day'), endedAt: moment().endOf('day') },
+      variables: {
+        salesId,
+        startOfRecent: moment().subtract(3, 'week').startOf('day'),
+        startOfToday: moment().startOf('day'),
+        endOfToday: moment().endOf('day'),
+      },
     },
   )
   const threshold = moment().startOf('day').subtract(1, 'month')
@@ -100,38 +132,33 @@ const useSalesLeads = (salesId: string) => {
       categoryNames: v.member.member_categories.map(_v => _v.category.name),
       paid: v.paid,
     }
-  const unhandledLeads: Lead[] =
-    data?.leads
-      .map(convertToLead)
-      .filter(notEmpty)
-      .filter(lead => !isPaid(lead))
-      .filter(lead => !isClosed(lead))
-      .filter(lead => !data.handled_members.map(v => v.id).includes(lead.id)) || []
-  const currentLeads: Lead[] =
-    data?.leads
-      .map(convertToLead)
-      .filter(notEmpty)
-      .filter(lead => !isPaid(lead))
-      .filter(lead => !isClosed(lead))
-      .filter(isCurrent) || []
-  const priorLeads: Lead[] =
-    data?.leads
-      .map(convertToLead)
-      .filter(notEmpty)
-      .filter(v => !isPaid(v))
-      .filter(v => !isClosed(v))
-      .filter(v => !isCurrent(v)) || []
-  const closedLeads: Lead[] =
-    data?.leads
-      .map(convertToLead)
-      .filter(notEmpty)
-      .filter(v => !isPaid(v))
-      .filter(isClosed) || []
-  const paidLeads: Lead[] = data?.leads.map(convertToLead).filter(notEmpty).filter(isPaid) || []
+  const leads = sortBy(prop('id'))(data?.leads.map(convertToLead).filter(notEmpty) || [])
+  const hotLeads: Lead[] = leads.filter(lead => lead.createdAt >= moment().startOf('day').toDate())
+  const unhandledLeads: Lead[] = leads
+    .filter(lead => !isPaid(lead))
+    .filter(lead => !isClosed(lead))
+    .filter(lead => !data?.handled_members_today.map(v => v.id).includes(lead.id))
+  const currentLeads: Lead[] = leads
+    .filter(lead => !isPaid(lead))
+    .filter(lead => !isClosed(lead))
+    .filter(isCurrent)
+  const priorLeads: Lead[] = leads
+    .filter(v => !isPaid(v))
+    .filter(v => !isClosed(v))
+    .filter(v => !isCurrent(v))
+  const closedLeads: Lead[] = leads.filter(v => !isPaid(v)).filter(isClosed)
+  const paidLeads: Lead[] = leads.filter(notEmpty).filter(isPaid)
+  const unhandledRecentLeads: Lead[] = leads
+    .filter(lead => !isPaid(lead))
+    .filter(lead => !isClosed(lead))
+    .filter(lead => !data?.handled_members_recent.map(v => v.id).includes(lead.id))
+
   return {
     loading,
     error,
     refetch,
+    hotLeads,
+    unhandledRecentLeads,
     unhandledLeads,
     currentLeads,
     priorLeads,
@@ -141,7 +168,12 @@ const useSalesLeads = (salesId: string) => {
 }
 
 const GET_SALES_LEADS = gql`
-  query GET_SALES_LEADS($salesId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+  query GET_SALES_LEADS(
+    $salesId: String!
+    $startOfRecent: timestamptz!
+    $startOfToday: timestamptz!
+    $endOfToday: timestamptz!
+  ) {
     leads: xuemi_member_paid(where: { member: { manager_id: { _eq: $salesId } } }) {
       paid
       member {
@@ -160,13 +192,35 @@ const GET_SALES_LEADS = gql`
         }
       }
     }
-    handled_members: member(
+    handled_members_today: member(
       where: {
         manager_id: { _eq: $salesId }
-        member_notes: { author_id: { _eq: $salesId }, created_at: { _gte: $startedAt, _lt: $endedAt } }
+        _or: [
+          { member_notes: { author_id: { _eq: $salesId }, created_at: { _gte: $startOfToday, _lt: $endOfToday } } }
+          { member_tasks: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfToday, _lt: $endOfToday } } }
+        ]
       }
     ) {
       id
+    }
+    handled_members_recent: member(
+      where: {
+        manager_id: { _eq: $salesId }
+        _or: [
+          { member_notes: { author_id: { _eq: $salesId }, created_at: { _gte: $startOfRecent, _lt: $endOfToday } } }
+          { member_tasks: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfRecent, _lt: $endOfToday } } }
+        ]
+      }
+    ) {
+      id
+    }
+  }
+`
+
+const RESET_LEADS = gql`
+  mutation RESET_LEADS($memberIds: [String!]!) {
+    update_member(_set: { manager_id: null }, where: { id: { _in: $memberIds } }) {
+      affected_rows
     }
   }
 `

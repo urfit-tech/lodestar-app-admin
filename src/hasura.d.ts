@@ -1802,7 +1802,12 @@ export interface GET_SALES_LEADS_leads {
   member: GET_SALES_LEADS_leads_member | null;
 }
 
-export interface GET_SALES_LEADS_handled_members {
+export interface GET_SALES_LEADS_handled_members_today {
+  __typename: "member";
+  id: string;
+}
+
+export interface GET_SALES_LEADS_handled_members_recent {
   __typename: "member";
   id: string;
 }
@@ -1815,13 +1820,74 @@ export interface GET_SALES_LEADS {
   /**
    * fetch data from the table: "member"
    */
-  handled_members: GET_SALES_LEADS_handled_members[];
+  handled_members_today: GET_SALES_LEADS_handled_members_today[];
+  /**
+   * fetch data from the table: "member"
+   */
+  handled_members_recent: GET_SALES_LEADS_handled_members_recent[];
 }
 
 export interface GET_SALES_LEADSVariables {
   salesId: string;
-  startedAt: any;
-  endedAt: any;
+  startOfRecent: any;
+  startOfToday: any;
+  endOfToday: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: RESET_LEADS
+// ====================================================
+
+export interface RESET_LEADS_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface RESET_LEADS {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: RESET_LEADS_update_member | null;
+}
+
+export interface RESET_LEADSVariables {
+  memberIds: string[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CLOSE_LEAD
+// ====================================================
+
+export interface CLOSE_LEAD_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CLOSE_LEAD {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: CLOSE_LEAD_update_member | null;
+}
+
+export interface CLOSE_LEADVariables {
+  memberId: string;
 }
 
 /* tslint:disable */

@@ -66,6 +66,7 @@ export const salesMessages = {
     chaileaseLookup: { id: 'sales.label.chaileaseLookup', defaultMessage: '資融查詢' },
     chaileaseApply: { id: 'sales.label.chaileaseApply', defaultMessage: '申請資融' },
     autoStartCalls: { id: 'sales.label.autoStartCalls', defaultMessage: '自動撥號' },
+    hotLead: { id: 'sales.label.hotLead', defaultMessage: '新名單' },
     unhandledLead: { id: 'sales.label.unhandledLead', defaultMessage: '未處理名單' },
     currentLead: { id: 'sales.label.currentLead', defaultMessage: '當期名單' },
     priorLead: { id: 'sales.label.priorLead', defaultMessage: '前期名單' },

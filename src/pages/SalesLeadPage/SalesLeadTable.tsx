@@ -1,6 +1,8 @@
-import Icon, { SearchOutlined } from '@ant-design/icons'
+import Icon, { SearchOutlined, StopOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
+import gql from 'graphql-tag'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
@@ -12,6 +14,7 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
 import { ReactComponent as DemoIcon } from '../../images/icons/demo.svg'
@@ -40,18 +43,24 @@ const TableWrapper = styled.div`
   }
 `
 
-const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[] }> = ({ sales, leads }) => {
+const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: () => void }> = ({
+  sales,
+  leads,
+  onRefetch,
+}) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
 
   const { insertMemberNote } = useMutateMemberNote()
+  const [closeLead] = useMutation<hasura.CLOSE_LEAD, hasura.CLOSE_LEADVariables>(CLOSE_LEAD)
 
   const [filters, setFilters] = useState<{
     studentName?: string
     email?: string
     phone?: string
     lastTaskCategoryName?: string
+    categoryNames?: string
   }>({})
   const [visible, setVisible] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string } | null>(null)
@@ -117,6 +126,14 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[] }> = ({ sales
                 name: record.name,
               })
               setVisible(true)
+            }}
+          />
+          <StyledButton
+            icon={<StopOutlined style={{ color: 'red' }} />}
+            onClick={() => {
+              if (window.confirm('你確定要放棄此筆名單？')) {
+                closeLead({ variables: { memberId } }).then(onRefetch)
+              }
             }}
           />
         </div>
@@ -250,5 +267,13 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[] }> = ({ sales
     </StyledAdminCard>
   )
 }
+
+const CLOSE_LEAD = gql`
+  mutation CLOSE_LEAD($memberId: String!) {
+    update_member(_set: { manager_id: null, star: -999 }, where: { id: { _eq: $memberId } }) {
+      affected_rows
+    }
+  }
+`
 
 export default SalesLeadTable
