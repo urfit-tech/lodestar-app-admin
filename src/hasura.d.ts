@@ -1758,108 +1758,63 @@ export interface GET_SALES_CALL_MEMBERVariables {
 // GraphQL query operation: GET_SALES_LEADS
 // ====================================================
 
-export interface GET_SALES_LEADS_leads_member_member_phones {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_phones {
   __typename: "member_phone";
   phone: string;
 }
 
-export interface GET_SALES_LEADS_leads_member_member_categories_category {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_categories_category {
   __typename: "category";
   name: string;
 }
 
-export interface GET_SALES_LEADS_leads_member_member_categories {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_categories {
   __typename: "member_category";
   /**
    * An object relationship
    */
-  category: GET_SALES_LEADS_leads_member_member_categories_category;
+  category: GET_SALES_LEADS_xuemi_lead_status_member_member_categories_category;
 }
 
-export interface GET_SALES_LEADS_leads_member {
+export interface GET_SALES_LEADS_xuemi_lead_status_member {
   __typename: "member";
   id: string;
   name: string;
   email: string;
   star: any | null;
   created_at: any | null;
+  assigned_at: any | null;
   /**
    * An array relationship
    */
-  member_phones: GET_SALES_LEADS_leads_member_member_phones[];
+  member_phones: GET_SALES_LEADS_xuemi_lead_status_member_member_phones[];
   /**
    * An array relationship
    */
-  member_categories: GET_SALES_LEADS_leads_member_member_categories[];
+  member_categories: GET_SALES_LEADS_xuemi_lead_status_member_member_categories[];
 }
 
-export interface GET_SALES_LEADS_leads {
-  __typename: "xuemi_member_paid";
-  paid: any | null;
+export interface GET_SALES_LEADS_xuemi_lead_status {
+  __typename: "xuemi_lead_status";
   /**
    * An object relationship
    */
-  member: GET_SALES_LEADS_leads_member | null;
-}
-
-export interface GET_SALES_LEADS_handled_members_today {
-  __typename: "member";
-  id: string;
-}
-
-export interface GET_SALES_LEADS_handled_members_recent {
-  __typename: "member";
-  id: string;
+  member: GET_SALES_LEADS_xuemi_lead_status_member | null;
+  status: string | null;
+  paid: any | null;
+  recent_contacted_at: any | null;
+  recent_tasked_at: any | null;
 }
 
 export interface GET_SALES_LEADS {
   /**
-   * fetch data from the table: "xuemi.member_paid"
+   * fetch data from the table: "xuemi.lead_status"
    */
-  leads: GET_SALES_LEADS_leads[];
-  /**
-   * fetch data from the table: "member"
-   */
-  handled_members_today: GET_SALES_LEADS_handled_members_today[];
-  /**
-   * fetch data from the table: "member"
-   */
-  handled_members_recent: GET_SALES_LEADS_handled_members_recent[];
+  xuemi_lead_status: GET_SALES_LEADS_xuemi_lead_status[];
 }
 
 export interface GET_SALES_LEADSVariables {
-  salesId: string;
-  startOfRecent: any;
-  startOfToday: any;
-  endOfToday: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: RESET_LEADS
-// ====================================================
-
-export interface RESET_LEADS_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface RESET_LEADS {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: RESET_LEADS_update_member | null;
-}
-
-export interface RESET_LEADSVariables {
-  memberIds: string[];
+  managerId: string;
 }
 
 /* tslint:disable */

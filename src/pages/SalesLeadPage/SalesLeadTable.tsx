@@ -1,15 +1,15 @@
-import Icon, { SearchOutlined, StopOutlined } from '@ant-design/icons'
+import Icon, { FileAddOutlined, SearchOutlined, StopOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
+import MemberTaskAdminModal from 'lodestar-app-admin/src/components/member/MemberTaskAdminModal'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-admin/src/helpers'
-import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
+import { commonMessages, memberMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
-import { ReactComponent as UserOIcon } from 'lodestar-app-admin/src/images/icon/user-o.svg'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -41,6 +41,11 @@ const TableWrapper = styled.div`
     white-space: nowrap;
     color: var(--gray-darker);
   }
+  tr {
+    &.notified td:first-child {
+      border-left: 4px solid var(--error);
+    }
+  }
 `
 
 const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: () => void }> = ({
@@ -61,6 +66,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
     phone?: string
     lastTaskCategoryName?: string
     categoryNames?: string
+    status?: string
   }>({})
   const [visible, setVisible] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string } | null>(null)
@@ -114,9 +120,19 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
       title: '',
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
-          <a href={`admin/members/${memberId}`} target="_blank" rel="noreferrer">
-            <StyledButton icon={<Icon component={() => <UserOIcon />} />} className="mr-2" />
-          </a>
+          <MemberTaskAdminModal
+            renderTrigger={({ setVisible }) => (
+              <StyledButton
+                type="primary"
+                icon={<FileAddOutlined />}
+                className="mr-2"
+                onClick={() => setVisible(true)}
+              />
+            )}
+            title={formatMessage(memberMessages.ui.newTask)}
+            initialMemberId={memberId}
+            initialExecutorId={sales.id}
+          />
           <StyledButton
             icon={<Icon component={() => <DemoIcon />} />}
             className="mr-2"
@@ -161,6 +177,13 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
           studentName: value,
         }),
       ),
+      render: (name, lead) => {
+        return (
+          <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer">
+            {name}
+          </a>
+        )
+      },
     },
     {
       key: 'phones',
@@ -217,6 +240,17 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
       title: formatMessage(salesMessages.label.paidPrice),
       sorter: (a, b) => a.paid - b.paid,
     },
+    {
+      key: 'status',
+      dataIndex: 'status',
+      title: formatMessage(salesMessages.label.status),
+      ...getColumnSearchProps((value?: string) =>
+        setFilters({
+          ...filters,
+          status: value,
+        }),
+      ),
+    },
   ]
   const dataSource = leads.filter(
     v =>
@@ -228,7 +262,13 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
   return (
     <StyledAdminCard>
       <TableWrapper>
-        <Table<Lead> rowKey="memberId" columns={columns} dataSource={dataSource} className="mb-3" />
+        <Table<Lead>
+          rowClassName={row => (row.notified ? 'notified' : '')}
+          rowKey="memberId"
+          columns={columns}
+          dataSource={dataSource}
+          className="mb-3"
+        />
       </TableWrapper>
       {sales && (
         <JitsiDemoModal

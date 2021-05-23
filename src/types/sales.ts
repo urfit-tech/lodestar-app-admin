@@ -30,4 +30,6 @@ export type Lead = {
   paid: number
   star: number
   createdAt: Date
+  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'PAID' | 'CLOSED'
+  notified: Boolean
 }
