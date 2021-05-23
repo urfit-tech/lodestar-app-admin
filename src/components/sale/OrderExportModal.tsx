@@ -6,7 +6,6 @@ import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
@@ -25,21 +24,8 @@ const messages = defineMessages({
   invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
 })
 
-const StyledRangePicker = styled(props => <DatePicker.RangePicker {...props} />)`
-  input {
-    width: 38%;
-    text-align: left;
-    &:placeholder-shown {
-      text-align: left;
-    }
-  }
-  .ant-calendar-range-picker-separator {
-    min-width: 32px;
-    vertical-align: unset;
-  }
-`
-
 type FieldProps = {
+  selectedField: 'createdAt' | 'lastPaidAt'
   timeRange: [Moment, Moment]
   orderStatuses: ('UNPAID' | 'SUCCESS' | 'FAILED' | 'REFUND')[]
 }
@@ -48,8 +34,9 @@ const OrderExportModal: React.FC = () => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
-  const { data: allOrderStatuses } = useOrderStatuses()
   const { enabledModules } = useApp()
+  const { data: allOrderStatuses } = useOrderStatuses()
+  const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
 
   const [loading, setLoading] = useState(false)
 
@@ -69,11 +56,16 @@ const OrderExportModal: React.FC = () => {
             status: {
               _in: orderStatuses,
             },
-            created_at: {
+            [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: {
               _gte: startedAt,
               _lte: endedAt,
             },
           },
+          orderBy: [
+            {
+              [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: 'asc_nulls_last' as hasura.order_by,
+            },
+          ],
         },
       })
 
@@ -86,7 +78,6 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.paymentLogNo),
           formatMessage(orderMessages.label.orderLogStatus),
           formatMessage(orderMessages.label.orderLogCreatedAt),
-          formatMessage(orderMessages.label.orderLogUpdatedAt),
           formatMessage(orderMessages.label.paymentLogPaidAt),
           formatMessage(orderMessages.label.memberName),
           formatMessage(orderMessages.label.memberEmail),
@@ -112,56 +103,50 @@ const OrderExportModal: React.FC = () => {
           enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
           formatMessage(orderMessages.label.invoiceStatus),
         ].filter(v => typeof v !== 'undefined'),
-        ...orderLogs
-          .sort(
-            (a, b) =>
-              new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime(),
-          )
-          .map(orderLog =>
-            [
-              orderLog.order_log_id,
-              orderLog.payment_no?.split('\\n').join('\n') || '',
-              orderLog.status,
-              dateFormatter(orderLog.created_at),
-              orderLog.updated_at ? dateFormatter(orderLog.updated_at) : '',
-              orderLog.paid_at
-                ?.split('\\n')
-                .map(v => (v ? dateFormatter(v) : ''))
-                .join('\n') || '',
-              orderLog.member_name,
-              orderLog.member_email,
-              orderLog.order_products?.split('\\n').join('\n') || '',
-              orderLog.order_discounts?.split('\\n').join('\n') || '',
-              orderLog.order_product_num || 0,
-              orderLog.order_product_total_price || 0,
-              orderLog.order_discount_total_price || 0,
-              (orderLog.order_product_total_price || 0) - (orderLog.order_discount_total_price || 0),
-              orderLog.payment_options?.split('\\n').join('\n') || '',
-              enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
-              enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
-              enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
-              orderLog.invoice?.name || '',
-              orderLog.invoice?.email || '',
-              orderLog.invoice?.phone || orderLog.invoice?.buyerPhone || '',
-              orderLog.invoice?.donationCode ? '捐贈' : orderLog.invoice?.uniformNumber ? '公司' : '個人',
-              orderLog.invoice?.donationCode || '',
-              orderLog.invoice?.phoneBarCode ? '手機' : orderLog.invoice?.citizenCode ? '自然人憑證' : '',
-              orderLog.invoice?.uniformNumber || '',
-              orderLog.invoice?.uniformTitle || '',
-              `${orderLog.invoice?.postCode || ''} ${orderLog.invoice?.address || ''}`,
-              enabledModules.invoice ? orderLog.invoice?.id || '' : undefined,
-              !orderLog.invoice?.status
-                ? formatMessage(messages.invoicePending)
-                : orderLog.invoice?.status === 'SUCCESS'
-                ? formatMessage(messages.invoiceSuccess)
-                : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice?.status }),
-            ].filter(v => typeof v !== 'undefined'),
-          ),
+        ...orderLogs.map(orderLog =>
+          [
+            orderLog.order_log_id,
+            orderLog.payment_no?.split('\\n').join('\n') || '',
+            orderLog.status,
+            dateFormatter(orderLog.created_at),
+            orderLog.paid_at
+              ?.split('\\n')
+              .map(v => (v ? dateFormatter(v) : ''))
+              .join('\n') || '',
+            orderLog.member_name,
+            orderLog.member_email,
+            orderLog.order_products?.split('\\n').join('\n') || '',
+            orderLog.order_discounts?.split('\\n').join('\n') || '',
+            orderLog.order_product_num || 0,
+            orderLog.order_product_total_price || 0,
+            orderLog.order_discount_total_price || 0,
+            (orderLog.order_product_total_price || 0) - (orderLog.order_discount_total_price || 0),
+            orderLog.payment_options?.split('\\n').join('\n') || '',
+            enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
+            enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
+            enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
+            orderLog.invoice?.name || '',
+            orderLog.invoice?.email || '',
+            orderLog.invoice?.phone || orderLog.invoice?.buyerPhone || '',
+            orderLog.invoice?.donationCode ? '捐贈' : orderLog.invoice?.uniformNumber ? '公司' : '個人',
+            orderLog.invoice?.donationCode || '',
+            orderLog.invoice?.phoneBarCode ? '手機' : orderLog.invoice?.citizenCode ? '自然人憑證' : '',
+            orderLog.invoice?.uniformNumber || '',
+            orderLog.invoice?.uniformTitle || '',
+            `${orderLog.invoice?.postCode || ''} ${orderLog.invoice?.address || ''}`,
+            enabledModules.invoice ? orderLog.invoice?.id || '' : undefined,
+            !orderLog.invoice?.status
+              ? formatMessage(messages.invoicePending)
+              : orderLog.invoice?.status === 'SUCCESS'
+              ? formatMessage(messages.invoiceSuccess)
+              : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice?.status }),
+          ].filter(v => typeof v !== 'undefined'),
+        ),
       ]
 
       return data
     },
-    [client, enabledModules, formatMessage],
+    [client, enabledModules, formatMessage, selectedField],
   )
 
   const getOrderProductContent: (
@@ -181,11 +166,14 @@ const OrderExportModal: React.FC = () => {
               status: {
                 _in: orderStatuses,
               },
-              created_at: {
+              [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: {
                 _gte: startedAt,
                 _lte: endedAt,
               },
             },
+          },
+          orderBy: {
+            [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: 'asc_nulls_last' as hasura.order_by,
           },
         },
       })
@@ -238,7 +226,7 @@ const OrderExportModal: React.FC = () => {
 
       return data
     },
-    [client, enabledModules, formatMessage],
+    [client, enabledModules, formatMessage, selectedField],
   )
 
   const getOrderDiscountContent: (
@@ -258,11 +246,14 @@ const OrderExportModal: React.FC = () => {
               status: {
                 _in: orderStatuses,
               },
-              created_at: {
+              [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: {
                 _gte: startedAt,
                 _lte: endedAt,
               },
             },
+          },
+          orderBy: {
+            [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: 'asc_nulls_last' as hasura.order_by,
           },
         },
       })
@@ -287,7 +278,7 @@ const OrderExportModal: React.FC = () => {
 
       return data
     },
-    [client, formatMessage],
+    [client, formatMessage, selectedField],
   )
 
   const getPaymentLogContent: (
@@ -312,6 +303,9 @@ const OrderExportModal: React.FC = () => {
                 _lte: endedAt,
               },
             },
+          },
+          orderBy: {
+            [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: 'asc_nulls_last' as hasura.order_by,
           },
         },
       })
@@ -360,7 +354,7 @@ const OrderExportModal: React.FC = () => {
 
       return data
     },
-    [client, enabledModules, formatMessage],
+    [client, enabledModules, formatMessage, selectedField],
   )
 
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
@@ -435,13 +429,19 @@ const OrderExportModal: React.FC = () => {
             overlay={
               <Menu>
                 <Menu.Item key="order-product" onClick={() => handleExport('orderProduct')}>
-                  <Button type="link">{formatMessage(messages.exportOrderProduct)}</Button>
+                  <Button type="link" size="small">
+                    {formatMessage(messages.exportOrderProduct)}
+                  </Button>
                 </Menu.Item>
                 <Menu.Item key="order-discount" onClick={() => handleExport('orderDiscount')}>
-                  <Button type="link">{formatMessage(messages.exportOrderDiscount)}</Button>
+                  <Button type="link" size="small">
+                    {formatMessage(messages.exportOrderDiscount)}
+                  </Button>
                 </Menu.Item>
                 <Menu.Item key="payment-log" onClick={() => handleExport('paymentLog')}>
-                  <Button type="link">{formatMessage(messages.exportPaymentLog)}</Button>
+                  <Button type="link" size="small">
+                    {formatMessage(messages.exportPaymentLog)}
+                  </Button>
                 </Menu.Item>
               </Menu>
             }
@@ -457,30 +457,50 @@ const OrderExportModal: React.FC = () => {
         form={form}
         colon={false}
         hideRequiredMark
+        layout="vertical"
         initialValues={{
+          selectedField: 'createdAt',
+          timeRange: [moment().startOf('month'), moment().endOf('day')],
           orderStatuses: [],
         }}
+        onValuesChange={(_, values) => {
+          setSelectedField(values.selectedField)
+          if (values.selectedField === 'lastPaidAt') {
+            form.setFieldsValue({ orderStatuses: values.orderStatuses.filter(v => v !== 'UNPAID' && v !== 'FAILED') })
+          }
+        }}
       >
-        <Form.Item
-          label={formatMessage(commonMessages.label.dateRange)}
-          name="timeRange"
-          rules={[
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.label.timeRange),
-              }),
-            },
-          ]}
-        >
-          <StyledRangePicker
-            style={{ width: '100%' }}
-            format="YYYY-MM-DD HH:mm:ss"
-            showTime={{
-              format: 'YYYY-MM-DD HH:mm:ss',
-              defaultValue: [moment().startOf('day'), moment().endOf('day')],
-            }}
-          />
+        <Form.Item label={formatMessage(commonMessages.label.dateRange)}>
+          <div className="d-flex">
+            <div className="flex-shrink-0">
+              <Form.Item name="selectedField" noStyle>
+                <Select>
+                  <Select.Option value="createdAt">
+                    {formatMessage(commonMessages.label.orderLogCreatedDate)}
+                  </Select.Option>
+                  <Select.Option value="lastPaidAt">
+                    {formatMessage(commonMessages.label.orderLogPaymentDate)}
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="flex-grow-1">
+              <Form.Item
+                name="timeRange"
+                rules={[
+                  {
+                    required: true,
+                    message: formatMessage(errorMessages.form.isRequired, {
+                      field: formatMessage(commonMessages.label.timeRange),
+                    }),
+                  },
+                ]}
+                noStyle
+              >
+                <DatePicker.RangePicker style={{ width: '100%' }} format="YYYY-MM-DD" showTime={false} />
+              </Form.Item>
+            </div>
+          </div>
         </Form.Item>
 
         <Form.Item
@@ -496,9 +516,13 @@ const OrderExportModal: React.FC = () => {
           ]}
         >
           <Select mode="multiple" placeholder={formatMessage(commonMessages.label.orderLogStatus)}>
-            <Select.Option value="UNPAID">{formatMessage(commonMessages.status.orderUnpaid)}</Select.Option>
+            <Select.Option value="UNPAID" disabled={selectedField === 'lastPaidAt'}>
+              {formatMessage(commonMessages.status.orderUnpaid)}
+            </Select.Option>
             <Select.Option value="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
-            <Select.Option value="FAILED">{formatMessage(commonMessages.status.orderFailed)}</Select.Option>
+            <Select.Option value="FAILED" disabled={selectedField === 'lastPaidAt'}>
+              {formatMessage(commonMessages.status.orderFailed)}
+            </Select.Option>
             <Select.Option value="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
           </Select>
         </Form.Item>
@@ -508,8 +532,8 @@ const OrderExportModal: React.FC = () => {
 }
 
 const GET_ORDER_LOG_EXPORT = gql`
-  query GET_ORDER_LOG_EXPORT($condition: order_log_export_bool_exp) {
-    order_log_export(where: $condition) {
+  query GET_ORDER_LOG_EXPORT($condition: order_log_export_bool_exp!, $orderBy: [order_log_export_order_by!]!) {
+    order_log_export(where: $condition, order_by: $orderBy) {
       order_log_id
       status
       created_at
@@ -534,8 +558,8 @@ const GET_ORDER_LOG_EXPORT = gql`
   }
 `
 const GET_ORDER_PRODUCT_EXPORT = gql`
-  query GET_ORDER_PRODUCT_EXPORT($condition: order_product_export_bool_exp) {
-    order_product_export(where: $condition) {
+  query GET_ORDER_PRODUCT_EXPORT($condition: order_product_export_bool_exp!, $orderBy: order_log_order_by!) {
+    order_product_export(where: $condition, order_by: [{ order_log: $orderBy }]) {
       order_product_id
       name
       quantity
@@ -550,8 +574,8 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
   }
 `
 const GET_ORDER_DISCOUNT_COLLECTION = gql`
-  query GET_ORDER_DISCOUNT_COLLECTION($condition: order_discount_bool_exp) {
-    order_discount(where: $condition, order_by: { order_log: { updated_at: desc } }) {
+  query GET_ORDER_DISCOUNT_COLLECTION($condition: order_discount_bool_exp!, $orderBy: order_log_order_by!) {
+    order_discount(where: $condition, order_by: [{ order_log: $orderBy }]) {
       id
       order_log {
         id
@@ -565,8 +589,8 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
   }
 `
 const GET_PAYMENT_LOG_EXPORT = gql`
-  query GET_PAYMENT_LOG_EXPORT($condition: payment_log_export_bool_exp) {
-    payment_log_export(where: $condition) {
+  query GET_PAYMENT_LOG_EXPORT($condition: payment_log_export_bool_exp!, $orderBy: order_log_order_by!) {
+    payment_log_export(where: $condition, order_by: [{ order_log: $orderBy }]) {
       payment_log_no
       paid_at
       order_log_id

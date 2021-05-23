@@ -269,11 +269,13 @@ const NoteCollectionPage: React.FC = () => {
       title: formatMessage(memberMessages.label.audioRecordFile),
       render: (text, record, index) =>
         record.metadata?.recordfile && (
-          <LoadRecordFileButton
-            memberName={record.member?.name || ''}
-            startTime={record.metadata?.starttime || ''}
-            filePath={record.metadata.recordfile}
-          />
+          <div onClick={event => event.stopPropagation()}>
+            <LoadRecordFileButton
+              memberName={record.member?.name || ''}
+              startTime={record.metadata?.starttime || ''}
+              filePath={record.metadata.recordfile}
+            />
+          </div>
         ),
     },
     {
