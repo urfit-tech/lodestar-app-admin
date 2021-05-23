@@ -59,7 +59,12 @@ export const LanguageProvider: React.FC = ({ children }) => {
 
   return (
     <LanguageContext.Provider value={language}>
-      <IntlProvider defaultLocale="zh" locale={currentLanguage} messages={messages}>
+      <IntlProvider
+        defaultLocale="zh"
+        locale={currentLanguage}
+        messages={messages}
+        onError={error => process.env.VERBOSE && console.error(error)}
+      >
         {children}
       </IntlProvider>
     </LanguageContext.Provider>
