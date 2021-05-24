@@ -47,11 +47,11 @@ const App: React.FC = () => {
                   key: 'sales_lead',
                   name: '業務名單',
                 },
-                {
-                  permissionIsAllowed: true,
-                  key: 'sales_call',
-                  name: '業務撥打',
-                },
+                // {
+                //   permissionIsAllowed: true,
+                //   key: 'sales_call',
+                //   name: '業務撥打',
+                // },
                 {
                   permissionIsAllowed: true,
                   key: 'sales_status',
