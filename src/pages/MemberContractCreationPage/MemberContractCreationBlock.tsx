@@ -44,6 +44,7 @@ const MemberContractCreationBlock: React.FC<{
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
   selectedProducts: NonNullable<FieldProps['contractProducts']>
   form: FormInstance<FieldProps>
+  coinExchangeRage: number
 }> = ({
   member,
   products,
@@ -55,6 +56,7 @@ const MemberContractCreationBlock: React.FC<{
   form,
   selectedProducts,
   contracts,
+  coinExchangeRage,
 }) => {
   const fieldValue = form.getFieldsValue()
 
@@ -331,7 +333,7 @@ const MemberContractCreationBlock: React.FC<{
               member_id: member.id,
               title: '學習禮包',
               description: '搶先看學習禮包',
-              amount: 5 * previewProducts.length,
+              amount: Math.ceil(sum(previewProducts.map(v => v.price)) / coinExchangeRage),
               started_at: null,
               ended_at: endedAt?.toISOString(),
             },

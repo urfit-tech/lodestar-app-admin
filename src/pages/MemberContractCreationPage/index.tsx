@@ -99,6 +99,7 @@ type ContractInfo = {
     name: string
     username: string
   }[]
+  coinExchangeRage: number
 }
 type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
 
@@ -116,6 +117,7 @@ const MemberContractCreationPage: React.VFC = () => {
     projectPlans,
     appointmentPlanCreators,
     sales,
+    coinExchangeRage,
     ...contractInfoStatus
   } = usePrivateTeachContractInfo(appId, memberId)
 
@@ -199,6 +201,7 @@ const MemberContractCreationPage: React.VFC = () => {
             selectedProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
             memberBlockRef={memberBlockRef}
+            coinExchangeRage={coinExchangeRage}
           />
         </AdminBlock>
       </div>
@@ -281,6 +284,9 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             username
           }
         }
+        app_setting(where: { app_id: { _eq: $appId }, key: { _eq: "coin.exchange_rate" } }) {
+          value
+        }
       }
     `,
     {
@@ -299,6 +305,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
     products: [],
     appointmentPlanCreators: [],
     sales: [],
+    coinExchangeRage: 0,
   }
 
   if (!loading && !error && data) {
@@ -346,6 +353,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
       )
       .filter(notEmpty)
     info.sales = data.xuemi_sales.map(v => v.member).filter(notEmpty)
+    info.coinExchangeRage = Number(data.app_setting[0].value) || 0
   }
 
   return {

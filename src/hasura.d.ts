@@ -700,6 +700,11 @@ export interface GET_CONTRACT_INFO_xuemi_sales {
   member: GET_CONTRACT_INFO_xuemi_sales_member | null;
 }
 
+export interface GET_CONTRACT_INFO_app_setting {
+  __typename: "app_setting";
+  value: string;
+}
+
 export interface GET_CONTRACT_INFO {
   /**
    * fetch data from the table: "member" using primary key columns
@@ -729,6 +734,10 @@ export interface GET_CONTRACT_INFO {
    * fetch data from the table: "xuemi.sales"
    */
   xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
+  /**
+   * fetch data from the table: "app_setting"
+   */
+  app_setting: GET_CONTRACT_INFO_app_setting[];
 }
 
 export interface GET_CONTRACT_INFOVariables {
