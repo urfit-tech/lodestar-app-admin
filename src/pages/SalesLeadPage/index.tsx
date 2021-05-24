@@ -23,10 +23,13 @@ const SalesLeadPage: React.VFC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   return (
     <AdminLayout>
-      <AdminPageTitle className="mb-4">
-        <Icon className="mr-3" component={() => <PhoneOutlined />} />
-        <span>{formatMessage(salesMessages.label.salesLead)}</span>
-      </AdminPageTitle>
+      <div className="mb-3 d-flex justify-content-between align-items-center">
+        <AdminPageTitle className="d-flex align-items-center">
+          <Icon className="mr-3" component={() => <PhoneOutlined />} />
+          <span>{formatMessage(salesMessages.label.salesLead)}</span>
+        </AdminPageTitle>
+        <div>承辦編號：{currentMemberId}</div>
+      </div>
       {currentMemberId ? (
         <SalesLeadTabs activeKey={activeKey || 'idled'} managerId={currentMemberId} onActiveKeyChanged={setActiveKey} />
       ) : (

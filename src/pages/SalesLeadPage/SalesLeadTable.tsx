@@ -1,4 +1,4 @@
-import Icon, { FileAddOutlined, SearchOutlined, StopOutlined } from '@ant-design/icons'
+import Icon, { FileAddOutlined, SearchOutlined, StopOutlined, SwapOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
@@ -59,6 +59,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
 
   const { insertMemberNote } = useMutateMemberNote()
   const [closeLead] = useMutation<hasura.CLOSE_LEAD, hasura.CLOSE_LEADVariables>(CLOSE_LEAD)
+  const [transferLead] = useMutation<hasura.TRANSFER_LEAD, hasura.TRANSFER_LEADVariables>(TRANSFER_LEAD)
 
   const [filters, setFilters] = useState<{
     studentName?: string
@@ -144,14 +145,6 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
               setVisible(true)
             }}
           />
-          <StyledButton
-            icon={<StopOutlined style={{ color: 'red' }} />}
-            onClick={() => {
-              if (window.confirm('你確定要放棄此筆名單？')) {
-                closeLead({ variables: { memberId } }).then(onRefetch)
-              }
-            }}
-          />
         </div>
       ),
     },
@@ -165,7 +158,8 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
       key: 'categoryNames',
       dataIndex: 'categoryNames',
       title: formatMessage(commonMessages.label.category),
-      render: categoryNames => categoryNames.map((v: string) => <div>{v}</div>),
+      render: (categoryNames: string[]) =>
+        categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
     },
     {
       key: 'studentName',
@@ -251,6 +245,47 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
         }),
       ),
     },
+    {
+      key: 'action',
+      dataIndex: 'id',
+      title: '',
+      render: (memberId, record) => (
+        <div className="d-flex flex-row justify-content-end">
+          <StyledButton
+            icon={<SwapOutlined />}
+            className="mr-2"
+            onClick={() => {
+              const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')
+              if (managerId) {
+                transferLead({ variables: { memberId, managerId } }).then(({ data }) => {
+                  if (data?.update_member?.affected_rows) {
+                    window.alert('已成功轉移此名單！')
+                    onRefetch?.()
+                  } else {
+                    window.alert('轉移失敗ＱＱ')
+                  }
+                })
+              }
+            }}
+          />
+          <StyledButton
+            icon={<StopOutlined style={{ color: 'red' }} />}
+            onClick={() => {
+              if (window.confirm('你確定要放棄此筆名單？')) {
+                closeLead({ variables: { memberId } }).then(({ data }) => {
+                  if (data?.update_member?.affected_rows) {
+                    window.alert('已成功放棄此名單！')
+                    onRefetch?.()
+                  } else {
+                    window.alert('系統錯誤ＱＱ')
+                  }
+                })
+              }
+            }}
+          />
+        </div>
+      ),
+    },
   ]
   const dataSource = leads.filter(
     v =>
@@ -311,6 +346,14 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
 const CLOSE_LEAD = gql`
   mutation CLOSE_LEAD($memberId: String!) {
     update_member(_set: { manager_id: null, star: -999 }, where: { id: { _eq: $memberId } }) {
+      affected_rows
+    }
+  }
+`
+
+const TRANSFER_LEAD = gql`
+  mutation TRANSFER_LEAD($memberId: String!, $managerId: String!) {
+    update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: $managerId }) {
       affected_rows
     }
   }

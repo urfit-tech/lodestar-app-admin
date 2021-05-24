@@ -1851,6 +1851,35 @@ export interface CLOSE_LEADVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: TRANSFER_LEAD
+// ====================================================
+
+export interface TRANSFER_LEAD_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface TRANSFER_LEAD {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: TRANSFER_LEAD_update_member | null;
+}
+
+export interface TRANSFER_LEADVariables {
+  memberId: string;
+  managerId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_MATERIALS
 // ====================================================
 
