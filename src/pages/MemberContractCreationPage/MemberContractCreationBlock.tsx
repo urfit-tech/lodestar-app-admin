@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter, notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
-import { range, sum } from 'ramda'
+import { flatten, range, sum, uniqBy } from 'ramda'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
@@ -241,22 +241,28 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
-    const previewProducts = selectedProducts
-      .map(contractProduct => {
-        const product = products.find(product => product.id === contractProduct.id)
-        if (!product?.preview) {
-          return null
-        }
+    const previewProducts = uniqBy(
+      v => v.product_id,
+      flatten(
+        selectedProducts
+          .map(contractProduct => {
+            const product = products.find(product => product.id === contractProduct.id)
 
-        return {
-          product_id: product.preview.productId,
-          name: product.preview.title,
-          price: 225,
-          started_at: fieldValue.withProductStartedAt ? startedAt.toISOString() : null,
-          ended_at: endedAt?.toISOString(),
-        }
-      })
-      .filter(notEmpty)
+            if (!product?.previews) {
+              return null
+            }
+
+            return product.previews.map(v => ({
+              product_id: v.productId,
+              name: v.title,
+              price: v.price ?? 225,
+              started_at: fieldValue.withProductStartedAt ? startedAt.toISOString() : null,
+              ended_at: endedAt?.toISOString(),
+            }))
+          })
+          .filter(notEmpty),
+      ),
+    )
 
     const previewProductCoinLogId = v4()
 
