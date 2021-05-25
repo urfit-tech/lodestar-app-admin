@@ -388,7 +388,7 @@ export interface GET_ADVERTISING_MEMBER {
 }
 
 export interface GET_ADVERTISING_MEMBERVariables {
-  categoryId: string;
+  condition?: member_bool_exp | null;
   propertyId: any;
 }
 
