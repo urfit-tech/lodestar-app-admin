@@ -24,11 +24,14 @@ const SalesLeadPage: React.VFC = () => {
   return (
     <AdminLayout>
       <div className="mb-3 d-flex justify-content-between align-items-center">
-        <AdminPageTitle className="d-flex align-items-center">
+        <AdminPageTitle className="d-flex align-items-center mb-0">
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.label.salesLead)}</span>
         </AdminPageTitle>
-        <div>承辦編號：{currentMemberId}</div>
+        <div className="d-flex flex-column align-items-end">
+          {currentMemberId && <div>承辦編號：{currentMemberId}</div>}
+          {currentMemberId && <ManagerScoreBlock managerId={currentMemberId} />}
+        </div>
       </div>
       {currentMemberId ? (
         <SalesLeadTabs activeKey={activeKey || 'idled'} managerId={currentMemberId} onActiveKeyChanged={setActiveKey} />
@@ -37,6 +40,22 @@ const SalesLeadPage: React.VFC = () => {
       )}
     </AdminLayout>
   )
+}
+
+const ManagerScoreBlock: React.VFC<{ managerId: string }> = ({ managerId }) => {
+  const { data } = useQuery<hasura.GET_MANAGER_SCORE, hasura.GET_MANAGER_SCOREVariables>(GET_MANAGER_SCORE, {
+    variables: { managerId },
+  })
+  const managerScoreData = data?.xuemi_manager_score.pop()
+
+  return managerScoreData ? (
+    <div>
+      分數：
+      <span className="mr-2">通時通次({managerScoreData.effort_score})</span>
+      <span className="mr-2">邀約({managerScoreData.invitations_score})</span>
+      <span>業績({managerScoreData.performance_score})</span>
+    </div>
+  ) : null
 }
 
 const SalesLeadTabs: React.VFC<{
@@ -248,6 +267,16 @@ const GET_SALES_LEADS = gql`
       paid
       recent_contacted_at
       recent_tasked_at
+    }
+  }
+`
+
+const GET_MANAGER_SCORE = gql`
+  query GET_MANAGER_SCORE($managerId: String!) {
+    xuemi_manager_score(where: { manager_id: { _eq: $managerId } }) {
+      performance_score
+      effort_score
+      invitations_score
     }
   }
 `

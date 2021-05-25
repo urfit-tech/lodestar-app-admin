@@ -1823,6 +1823,33 @@ export interface GET_SALES_LEADSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MANAGER_SCORE
+// ====================================================
+
+export interface GET_MANAGER_SCORE_xuemi_manager_score {
+  __typename: "xuemi_manager_score";
+  performance_score: number | null;
+  effort_score: any | null;
+  invitations_score: any | null;
+}
+
+export interface GET_MANAGER_SCORE {
+  /**
+   * fetch data from the table: "xuemi.manager_score"
+   */
+  xuemi_manager_score: GET_MANAGER_SCORE_xuemi_manager_score[];
+}
+
+export interface GET_MANAGER_SCOREVariables {
+  managerId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: CLOSE_LEAD
 // ====================================================
 
