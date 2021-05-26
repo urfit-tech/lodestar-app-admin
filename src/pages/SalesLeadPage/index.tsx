@@ -214,20 +214,20 @@ const useSalesLeads = (managerId: string) => {
         !v.recent_tasked_at ||
         (v.recent_contacted_at && moment(v.recent_contacted_at) <= moment().startOf('day').subtract(2, 'weeks')) ||
         (v.recent_tasked_at && moment(v.recent_tasked_at) <= moment().startOf('day').subtract(1, 'days')))
-    return (
-      v.member && {
-        id: v.member.id,
-        star: v.member.star,
-        name: v.member.name,
-        email: v.member.email,
-        createdAt: moment(v.member.created_at).toDate(),
-        phones: v.member.member_phones.map(_v => _v.phone),
-        categoryNames: v.member.member_categories.map(_v => _v.category.name),
-        paid: v.paid,
-        status: v.status as Lead['status'],
-        notified,
-      }
-    )
+    return v.member && v.member.member_phones.length > 0
+      ? {
+          id: v.member.id,
+          star: v.member.star,
+          name: v.member.name,
+          email: v.member.email,
+          createdAt: moment(v.member.created_at).toDate(),
+          phones: v.member.member_phones.map(_v => _v.phone),
+          categoryNames: v.member.member_categories.map(_v => _v.category.name),
+          paid: v.paid,
+          status: v.status as Lead['status'],
+          notified,
+        }
+      : null
   }
 
   const leads = sortBy(prop('id'))(data?.xuemi_lead_status.map(convertToLead).filter(notEmpty) || [])

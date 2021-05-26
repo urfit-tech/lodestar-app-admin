@@ -188,7 +188,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
           <a
             key={idx}
             href="#!"
-            className="m-0 cursor-pointer"
+            className="m-0 mr-1 cursor-pointer"
             onClick={() => {
               call({
                 appId,
