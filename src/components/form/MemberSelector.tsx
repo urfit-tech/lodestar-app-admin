@@ -76,7 +76,7 @@ export const AllMemberSelector: React.FC<
     onChange?: (value: string | null) => void
   } & SelectProps<string>
 > = ({ value, onChange, ...props }) => {
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(value || '')
   const { members } = useAllMemberCollection(search)
 
   const handleSearch = (value: string) => {
@@ -128,7 +128,12 @@ const useAllMemberCollection = (search: string) => {
       query GET_ALL_MEMBER_COLLECTION($search: String!) {
         member(
           where: {
-            _or: [{ name: { _ilike: $search } }, { username: { _ilike: $search } }, { email: { _ilike: $search } }]
+            _or: [
+              { id: { _ilike: $search } }
+              { name: { _ilike: $search } }
+              { username: { _ilike: $search } }
+              { email: { _ilike: $search } }
+            ]
           }
         ) {
           id
