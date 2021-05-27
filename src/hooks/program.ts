@@ -562,6 +562,9 @@ export const useMutateProgramContent = () => {
         delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
+        delete_program_content_log(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
         delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
           affected_rows
         }
