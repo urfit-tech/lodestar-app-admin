@@ -43,24 +43,26 @@ const messages = defineMessages({
 const HomePage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { isAuthenticated, currentUserRole, permissions, logout } = useAuth()
-  const { id: appId, settings } = useApp()
+  const { currentMemberId, currentUserRole, permissions, logout } = useAuth()
+  const { loading, id: appId, settings } = useApp()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
+    if (loading || !currentMemberId) {
+      return
+    }
+
     if (currentUserRole === 'app-owner') {
       history.push(settings['admin.app_owner.redirect'] || '/admin')
     } else if (currentUserRole === 'content-creator') {
       history.push(settings['admin.content_creator.redirect'] || '/programs')
-    } else if (isAuthenticated) {
-      if (!permissions.BACKSTAGE_ENTER) {
-        message.error(formatMessage(messages.deniedRolePermission))
-        logout?.()
-      } else {
-        history.push('/settings')
-      }
+    } else if (!permissions.BACKSTAGE_ENTER) {
+      message.error(formatMessage(messages.deniedRolePermission))
+      logout?.()
+    } else {
+      history.push('/settings')
     }
-  }, [currentUserRole, formatMessage, history, isAuthenticated, logout, permissions.BACKSTAGE_ENTER, settings])
+  }, [currentMemberId, currentUserRole, formatMessage, history, loading, logout, permissions.BACKSTAGE_ENTER, settings])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
