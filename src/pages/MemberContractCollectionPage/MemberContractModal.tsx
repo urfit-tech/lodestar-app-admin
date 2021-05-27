@@ -465,11 +465,9 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                       />
                     </Form.Item>
 
-                    <MinusCircleOutlined
-                      disabled={!permissions.CONTRACT_REVENUE_SHARING_EDIT}
-                      className="mb-3"
-                      onClick={() => remove(field.name)}
-                    />
+                    {!!permissions.CONTRACT_REVENUE_SHARING_EDIT && (
+                      <MinusCircleOutlined className="mb-3" onClick={() => remove(field.name)} />
+                    )}
                   </div>
                 ))}
 
