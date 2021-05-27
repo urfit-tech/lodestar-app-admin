@@ -65,7 +65,8 @@ const ShippingInfoModal: React.FC<{
               {formatMessage(merchandiseMessages.label.shippingAddress)}
             </StyledShippingInfoSubtitle>
             <StyledShippingInfoContent className="mb-3">
-              {shipping?.address} {shipping?.storeName}
+              {shipping?.address}
+              {shipping?.storeName ? `（${shipping.storeName}）` : ''}
             </StyledShippingInfoContent>
           </div>
           <div className="col-12">
