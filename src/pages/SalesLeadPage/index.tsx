@@ -1,6 +1,6 @@
 import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Skeleton, Tabs } from 'antd'
+import { useQuery } from '@apollo/react-hooks'
+import { Badge, Button, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
@@ -8,7 +8,7 @@ import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
 import { prop, sortBy } from 'ramda'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
@@ -23,16 +23,18 @@ const SalesLeadPage: React.VFC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   return (
     <AdminLayout>
-      <AdminPageTitle className="mb-4">
-        <Icon className="mr-3" component={() => <PhoneOutlined />} />
-        <span>{formatMessage(salesMessages.label.salesLead)}</span>
-      </AdminPageTitle>
+      <div className="mb-3 d-flex justify-content-between align-items-center">
+        <AdminPageTitle className="d-flex align-items-center mb-0">
+          <Icon className="mr-3" component={() => <PhoneOutlined />} />
+          <span>{formatMessage(salesMessages.label.salesLead)}</span>
+        </AdminPageTitle>
+        <div className="d-flex flex-column align-items-end">
+          {currentMemberId && <div>承辦編號：{currentMemberId}</div>}
+          {currentMemberId && <ManagerScoreBlock managerId={currentMemberId} />}
+        </div>
+      </div>
       {currentMemberId ? (
-        <SalesLeadTabs
-          activeKey={activeKey || 'unhandled'}
-          salesId={currentMemberId}
-          onActiveKeyChanged={setActiveKey}
-        />
+        <SalesLeadTabs activeKey={activeKey || 'idled'} managerId={currentMemberId} onActiveKeyChanged={setActiveKey} />
       ) : (
         <Skeleton active />
       )}
@@ -40,32 +42,41 @@ const SalesLeadPage: React.VFC = () => {
   )
 }
 
+const ManagerScoreBlock: React.VFC<{ managerId: string }> = ({ managerId }) => {
+  const { data } = useQuery<hasura.GET_MANAGER_SCORE, hasura.GET_MANAGER_SCOREVariables>(GET_MANAGER_SCORE, {
+    variables: { managerId },
+  })
+  const managerScoreData = data?.xuemi_manager_score.pop()
+
+  return managerScoreData ? (
+    <div>
+      分數：
+      <span className="mr-2">通時通次({managerScoreData.effort_score})</span>
+      <span className="mr-2">邀約({managerScoreData.invitations_score})</span>
+      <span>業績({managerScoreData.performance_score})</span>
+    </div>
+  ) : null
+}
+
 const SalesLeadTabs: React.VFC<{
   activeKey: string
-  salesId: string
+  managerId: string
   onActiveKeyChanged?: (activeKey: string) => void
-}> = ({ activeKey, salesId, onActiveKeyChanged }) => {
+}> = ({ activeKey, managerId, onActiveKeyChanged }) => {
   const { formatMessage } = useIntl()
-  const [resetLead] = useMutation(RESET_LEADS)
-  const { sales } = useSales(salesId)
+  const { sales } = useSales(managerId)
   const {
     loading,
     refetch,
-    hotLeads,
-    unhandledRecentLeads,
-    unhandledLeads,
-    currentLeads,
-    priorLeads,
-    closedLeads,
+    idledLeads,
+    contactedLeads,
+    invitedLeads,
+    presentedLeads,
     paidLeads,
-  } = useSalesLeads(salesId)
+    closedLeads,
+  } = useSalesLeads(managerId)
 
-  // FIXME: this side effect is not so good
-  useEffect(() => {
-    resetLead({ variables: { memberIds: unhandledRecentLeads.map(lead => lead.id) } }).then(() => refetch?.())
-  }, [refetch, JSON.stringify(unhandledRecentLeads)])
-
-  if (loading) {
+  if (loading || !sales) {
     return <Skeleton active />
   }
   return (
@@ -73,115 +84,176 @@ const SalesLeadTabs: React.VFC<{
       activeKey={activeKey}
       onChange={onActiveKeyChanged}
       tabBarExtraContent={
-        <Button onClick={() => refetch()}>
+        <Button onClick={() => refetch?.()}>
           <RedoOutlined />
         </Button>
       }
     >
       <Tabs.TabPane
-        key="unhandled"
-        tab={`${formatMessage(salesMessages.label.unhandledLead)} (${unhandledLeads.length})`}
+        key="idled"
+        tab={
+          <Badge
+            size="small"
+            offset={[10, -10]}
+            count={idledLeads.filter(lead => lead.notified).length}
+            overflowCount={999}
+          >
+            {formatMessage(salesMessages.label.idledLead)}
+            <span>({idledLeads.length})</span>
+          </Badge>
+        }
       >
-        {sales && <SalesLeadTable sales={sales} leads={unhandledLeads} onRefetch={refetch} />}
+        {<SalesLeadTable sales={sales} leads={idledLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
-      {hotLeads.length > 0 && (
-        <Tabs.TabPane key="hot" tab={`${formatMessage(salesMessages.label.hotLead)} (${hotLeads.length})`}>
-          {sales && <SalesLeadTable sales={sales} leads={hotLeads} onRefetch={refetch} />}
+
+      <Tabs.TabPane
+        key="contacted"
+        tab={
+          <Badge
+            size="small"
+            offset={[10, -10]}
+            count={contactedLeads.filter(lead => lead.notified).length}
+            overflowCount={999}
+          >
+            {formatMessage(salesMessages.label.contactedLead)}
+            <span>({contactedLeads.length})</span>
+          </Badge>
+        }
+      >
+        {<SalesLeadTable sales={sales} leads={contactedLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="invited"
+        tab={
+          <Badge
+            size="small"
+            offset={[10, -10]}
+            count={invitedLeads.filter(lead => lead.notified).length}
+            overflowCount={999}
+          >
+            {formatMessage(salesMessages.label.invitedLead)}
+            <span>({invitedLeads.length})</span>
+          </Badge>
+        }
+      >
+        {<SalesLeadTable sales={sales} leads={invitedLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="presented"
+        tab={
+          <Badge
+            size="small"
+            offset={[10, -10]}
+            count={presentedLeads.filter(lead => lead.notified).length}
+            overflowCount={999}
+          >
+            {formatMessage(salesMessages.label.presentedLead)}
+            <span>({presentedLeads.length})</span>
+          </Badge>
+        }
+      >
+        {<SalesLeadTable sales={sales} leads={presentedLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="paid"
+        tab={
+          <Badge
+            size="small"
+            offset={[10, -10]}
+            count={paidLeads.filter(lead => lead.notified).length}
+            overflowCount={999}
+          >
+            {formatMessage(salesMessages.label.paidLead)}
+            <span>({paidLeads.length})</span>
+          </Badge>
+        }
+      >
+        {<SalesLeadTable sales={sales} leads={paidLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+
+      {closedLeads.length > 0 && (
+        <Tabs.TabPane
+          key="closed"
+          tab={
+            <Badge
+              size="small"
+              offset={[10, -10]}
+              count={closedLeads.filter(lead => lead.notified).length}
+              overflowCount={999}
+            >
+              {formatMessage(salesMessages.label.closedLead)}
+              <span>({closedLeads.length})</span>
+            </Badge>
+          }
+        >
+          {<SalesLeadTable sales={sales} leads={closedLeads} onRefetch={refetch} />}
         </Tabs.TabPane>
       )}
-      <Tabs.TabPane key="current" tab={`${formatMessage(salesMessages.label.currentLead)} (${currentLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={currentLeads} onRefetch={refetch} />}
-      </Tabs.TabPane>
-      <Tabs.TabPane key="prior" tab={`${formatMessage(salesMessages.label.priorLead)} (${priorLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={priorLeads} onRefetch={refetch} />}
-      </Tabs.TabPane>
-      <Tabs.TabPane key="closed" tab={`${formatMessage(salesMessages.label.closedLead)} (${closedLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={closedLeads} onRefetch={refetch} />}
-      </Tabs.TabPane>
-      <Tabs.TabPane key="paid" tab={`${formatMessage(salesMessages.label.paidLead)} (${paidLeads.length})`}>
-        {sales && <SalesLeadTable sales={sales} leads={paidLeads} onRefetch={refetch} />}
-      </Tabs.TabPane>
     </Tabs>
   )
 }
 
-const useSalesLeads = (salesId: string) => {
+const useSalesLeads = (managerId: string) => {
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
     {
-      variables: {
-        salesId,
-        startOfRecent: moment().subtract(3, 'week').startOf('day'),
-        startOfToday: moment().startOf('day'),
-        endOfToday: moment().endOf('day'),
+      variables: { managerId },
+      context: {
+        important: true,
       },
     },
   )
-  const threshold = moment().startOf('day').subtract(1, 'month')
-  const isClosed = (lead: Lead) => lead.star === -999
-  const isCurrent = (lead: Lead) => moment(lead.createdAt) >= threshold
-  const isPaid = (lead: Lead) => lead.paid > 0
-  const convertToLead = (v: hasura.GET_SALES_LEADS_leads): Lead | null =>
-    v.member && {
-      id: v.member.id,
-      star: v.member.star,
-      name: v.member.name,
-      email: v.member.email,
-      createdAt: moment(v.member.created_at).toDate(),
-      phones: v.member.member_phones.map(_v => _v.phone),
-      categoryNames: v.member.member_categories.map(_v => _v.category.name),
-      paid: v.paid,
-    }
-  const leads = sortBy(prop('id'))(data?.leads.map(convertToLead).filter(notEmpty) || [])
-  const hotLeads: Lead[] = leads.filter(lead => lead.createdAt >= moment().startOf('day').toDate())
-  const unhandledLeads: Lead[] = leads
-    .filter(lead => !isPaid(lead))
-    .filter(lead => !isClosed(lead))
-    .filter(lead => !data?.handled_members_today.map(v => v.id).includes(lead.id))
-  const currentLeads: Lead[] = leads
-    .filter(lead => !isPaid(lead))
-    .filter(lead => !isClosed(lead))
-    .filter(isCurrent)
-  const priorLeads: Lead[] = leads
-    .filter(v => !isPaid(v))
-    .filter(v => !isClosed(v))
-    .filter(v => !isCurrent(v))
-  const closedLeads: Lead[] = leads.filter(v => !isPaid(v)).filter(isClosed)
-  const paidLeads: Lead[] = leads.filter(notEmpty).filter(isPaid)
-  const unhandledRecentLeads: Lead[] = leads
-    .filter(lead => !isPaid(lead))
-    .filter(lead => !isClosed(lead))
-    .filter(lead => !data?.handled_members_recent.map(v => v.id).includes(lead.id))
+  const convertToLead = (v: hasura.GET_SALES_LEADS_xuemi_lead_status): Lead | null => {
+    const notified =
+      v.paid <= 0 &&
+      v.member &&
+      (!v.recent_contacted_at ||
+        !v.recent_tasked_at ||
+        (v.recent_contacted_at && moment(v.recent_contacted_at) <= moment().startOf('day').subtract(2, 'weeks')) ||
+        (v.recent_tasked_at && moment(v.recent_tasked_at) <= moment().startOf('day').subtract(1, 'days')))
+    return v.member && v.member.member_phones.length > 0
+      ? {
+          id: v.member.id,
+          star: v.member.star,
+          name: v.member.name,
+          email: v.member.email,
+          createdAt: moment(v.member.created_at).toDate(),
+          phones: v.member.member_phones.map(_v => _v.phone),
+          categoryNames: v.member.member_categories.map(_v => _v.category.name),
+          paid: v.paid,
+          status: v.status as Lead['status'],
+          notified,
+        }
+      : null
+  }
 
+  const leads = sortBy(prop('id'))(data?.xuemi_lead_status.map(convertToLead).filter(notEmpty) || [])
   return {
     loading,
     error,
     refetch,
-    hotLeads,
-    unhandledRecentLeads,
-    unhandledLeads,
-    currentLeads,
-    priorLeads,
-    closedLeads,
-    paidLeads,
+    idledLeads: leads.filter(lead => lead.status === 'IDLED'),
+    contactedLeads: leads.filter(lead => lead.status === 'CONTACTED'),
+    invitedLeads: leads.filter(lead => lead.status === 'INVITED'),
+    presentedLeads: leads.filter(lead => lead.status === 'PRESENTED'),
+    paidLeads: leads.filter(lead => lead.status === 'PAID'),
+    closedLeads: leads.filter(lead => lead.status === 'CLOSED'),
   }
 }
 
 const GET_SALES_LEADS = gql`
-  query GET_SALES_LEADS(
-    $salesId: String!
-    $startOfRecent: timestamptz!
-    $startOfToday: timestamptz!
-    $endOfToday: timestamptz!
-  ) {
-    leads: xuemi_member_paid(where: { member: { manager_id: { _eq: $salesId } } }) {
-      paid
+  query GET_SALES_LEADS($managerId: String!) {
+    xuemi_lead_status(where: { member: { manager_id: { _eq: $managerId } } }) {
       member {
         id
         name
         email
         star
         created_at
+        assigned_at
         member_phones {
           phone
         }
@@ -191,37 +263,22 @@ const GET_SALES_LEADS = gql`
           }
         }
       }
-    }
-    handled_members_today: member(
-      where: {
-        manager_id: { _eq: $salesId }
-        _or: [
-          { member_notes: { author_id: { _eq: $salesId }, created_at: { _gte: $startOfToday, _lt: $endOfToday } } }
-          { member_tasks: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfToday, _lt: $endOfToday } } }
-        ]
-      }
-    ) {
-      id
-    }
-    handled_members_recent: member(
-      where: {
-        manager_id: { _eq: $salesId }
-        _or: [
-          { member_notes: { author_id: { _eq: $salesId }, created_at: { _gte: $startOfRecent, _lt: $endOfToday } } }
-          { member_tasks: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfRecent, _lt: $endOfToday } } }
-        ]
-      }
-    ) {
-      id
+      status
+      paid
+      recent_contacted_at
+      recent_tasked_at
     }
   }
 `
 
-const RESET_LEADS = gql`
-  mutation RESET_LEADS($memberIds: [String!]!) {
-    update_member(_set: { manager_id: null }, where: { id: { _in: $memberIds } }) {
-      affected_rows
+const GET_MANAGER_SCORE = gql`
+  query GET_MANAGER_SCORE($managerId: String!) {
+    xuemi_manager_score(where: { manager_id: { _eq: $managerId } }) {
+      performance_score
+      effort_score
+      invitations_score
     }
   }
 `
+
 export default SalesLeadPage
