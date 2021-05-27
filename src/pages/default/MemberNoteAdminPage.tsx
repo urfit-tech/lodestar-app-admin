@@ -89,7 +89,7 @@ const MemberProfileAdminPage: React.FC = () => {
             <Button
               onClick={() => {
                 setLoading(true)
-                loadMoreNotes().finally(() => setLoading(true))
+                loadMoreNotes().finally(() => setLoading(false))
               }}
               loading={loading}
             >
