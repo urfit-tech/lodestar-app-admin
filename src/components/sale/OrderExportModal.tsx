@@ -363,8 +363,8 @@ const OrderExportModal: React.FC = () => {
       .then(async () => {
         setLoading(true)
         const values = form.getFieldsValue()
-        const startedAt = values.timeRange[0].toDate()
-        const endedAt = values.timeRange[1].toDate()
+        const startedAt = values.timeRange[0].startOf('day').toDate()
+        const endedAt = values.timeRange[1].endOf('day').toDate()
         const orderStatuses: string[] = values.orderStatuses.includes('FAILED')
           ? [
               ...values.orderStatuses,

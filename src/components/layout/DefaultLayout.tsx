@@ -7,7 +7,7 @@ import { footerHeight } from '.'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import LanguageContext from '../../contexts/LanguageContext'
-import settings from '../../settings'
+import defaultSettings from '../../settings'
 import AttendButton from '../attend/AttendButton'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
 import Footer from '../common/Footer'
@@ -88,8 +88,16 @@ export const DefaultLayoutHeader: React.FC<{
   renderTitle?: () => React.ReactNode
 }> = ({ renderTitle }) => {
   const { currentMemberId, permissions } = useAuth()
-  const { enabledModules, id: appId } = useApp()
+  const { enabledModules, id: appId, settings } = useApp()
   const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
+
+  const languageOptions: string[] = (() => {
+    try {
+      return JSON.parse(settings['locale.languages'])
+    } catch {
+      return []
+    }
+  })()
 
   let Logo: string | undefined
   try {
@@ -112,44 +120,38 @@ export const DefaultLayoutHeader: React.FC<{
         renderTitle()
       ) : (
         <Link to={`/`} className="d-flex align-items-center">
-          {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : settings.seo.name || 'Home'}
+          {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : defaultSettings.seo.name || 'Home'}
         </Link>
       )}
 
       <div className="d-flex align-items-center">
-        {enabledModules.locale && (
+        {enabledModules.locale && languageOptions.length > 0 && (
           <>
             <Dropdown
               trigger={['click']}
               overlay={
                 <Menu>
-                  <Menu.Item key="zh">
-                    <StyledButton
-                      type="link"
-                      size="small"
-                      onClick={() => setCurrentLanguage && setCurrentLanguage('zh')}
-                    >
-                      繁體中文
-                    </StyledButton>
-                  </Menu.Item>
-                  <Menu.Item key="en">
-                    <StyledButton
-                      type="link"
-                      size="small"
-                      onClick={() => setCurrentLanguage && setCurrentLanguage('en')}
-                    >
-                      English
-                    </StyledButton>
-                  </Menu.Item>
-                  <Menu.Item key="vi">
-                    <StyledButton
-                      type="link"
-                      size="small"
-                      onClick={() => setCurrentLanguage && setCurrentLanguage('vi')}
-                    >
-                      Tiếng việt
-                    </StyledButton>
-                  </Menu.Item>
+                  {languageOptions.includes('zh') && (
+                    <Menu.Item key="zh">
+                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('zh')}>
+                        繁體中文
+                      </StyledButton>
+                    </Menu.Item>
+                  )}
+                  {languageOptions.includes('en') && (
+                    <Menu.Item key="en">
+                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('en')}>
+                        English
+                      </StyledButton>
+                    </Menu.Item>
+                  )}
+                  {languageOptions.includes('vi') && (
+                    <Menu.Item key="vi">
+                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('vi')}>
+                        Tiếng việt
+                      </StyledButton>
+                    </Menu.Item>
+                  )}
                 </Menu>
               }
             >
