@@ -1,4 +1,4 @@
-import Icon, { GlobalOutlined, GoldenFilled, ShoppingFilled } from '@ant-design/icons'
+import Icon, { GlobalOutlined, GoldenFilled, RadarChartOutlined, ShoppingFilled } from '@ant-design/icons'
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { isEmpty } from 'ramda'
@@ -46,6 +46,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: string
     }[]
   }[] = [
+    {
+      permissionIsAllowed: true,
+      icon: () => <RadarChartOutlined />,
+      key: 'owner_learning_overview',
+      name: formatMessage(commonMessages.menu.learningOverviewAdmin),
+    },
     {
       permissionIsAllowed: permissions.SALES_ADMIN && currentUserRole === 'app-owner',
       icon: () => <MoneyCircleIcon />,

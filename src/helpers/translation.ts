@@ -305,6 +305,7 @@ export const commonMessages = {
     invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
   }),
   menu: defineMessages({
+    learningOverviewAdmin: { id: 'common.menu.learningOverviewAdmin', defaultMessage: '學習總覽' },
     salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
     programAdmin: { id: 'common.menu.programAdmin', defaultMessage: '線上課程' },
     programs: { id: 'common.menu.programs', defaultMessage: '課程管理' },
