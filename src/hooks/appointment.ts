@@ -159,13 +159,13 @@ export const useAppointmentEnrollmentCollection = (
     canceled_at: { _is_null: !isCanceled },
     ended_at: isCanceled
       ? {
-          _lte: endedAt,
-        }
+        _lte: endedAt,
+      }
       : isFinished
-      ? {
-          _lte: endedAt,
+        ? {
+          _lte: endedAt || moment().startOf('minute').toDate(),
         }
-      : {
+        : {
           _lte: endedAt,
           _gte: moment().startOf('minute').toDate(),
         },
