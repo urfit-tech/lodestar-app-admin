@@ -45,7 +45,7 @@ const LearningOverviewPage: React.VFC = () => {
         </div>
         <div className="col-12 col-md-6 col-lg-3">
           <Card className="mb-3">
-            <Statistic title="近七天學習時數" value={recentLearningDuration * 100} precision={2} suffix="%" />
+            <Statistic title="近七天學習時數" value={recentLearningDuration / 60 / 60} precision={0} suffix="小時" />
           </Card>
         </div>
         <div className="col-12 col-md-6 col-lg-3">
