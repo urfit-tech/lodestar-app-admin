@@ -3,11 +3,11 @@ import React, { HTMLAttributes } from 'react'
 import styled from 'styled-components'
 
 const StyledDraggableItem = styled.div`
-  padding: 20px;
-  background: #f7f8f8;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px;
+  background: #f7f8f8;
 `
 
 const StyledChildren = styled.div`
@@ -28,7 +28,7 @@ const DraggableItem: React.FC<
         <DragOutlined onClick={() => {}} className={handlerClassName + ' mr-3'} />
         <StyledChildren>{children}</StyledChildren>
       </div>
-      <div className="align-self-stretch">{actions}</div>
+      <div>{actions}</div>
     </StyledDraggableItem>
   )
 }

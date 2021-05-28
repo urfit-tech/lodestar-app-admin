@@ -54,7 +54,10 @@ const CategoryAdminCard: React.FC<{
                 position: index,
               })),
             },
-          }).then(() => refetch().then(() => setLoading(false)))
+          })
+            .then(() => refetch())
+            .catch(handleError)
+            .finally(() => setLoading(false))
         }}
       >
         {categories.map(category => (
@@ -84,7 +87,9 @@ const CategoryAdminCard: React.FC<{
                       name,
                       position: category.position,
                     },
-                  }).then(() => refetch())
+                  })
+                    .then(() => refetch())
+                    .catch(handleError)
                 },
               }}
             >
