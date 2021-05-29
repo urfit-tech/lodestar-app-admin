@@ -388,7 +388,7 @@ export interface GET_ADVERTISING_MEMBER {
 }
 
 export interface GET_ADVERTISING_MEMBERVariables {
-  categoryId: string;
+  condition?: member_bool_exp | null;
   propertyId: any;
 }
 
@@ -565,6 +565,99 @@ export interface GET_IMPLEMENT_PRACTICESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_EXPIRING_SOON_MEMBERS
+// ====================================================
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate_sum {
+  __typename: "coin_status_sum_fields";
+  remaining: any | null;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate {
+  __typename: "coin_status_aggregate_fields";
+  sum: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate_sum | null;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate {
+  __typename: "coin_status_aggregate";
+  aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate | null;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate_aggregate {
+  __typename: "coupon_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate {
+  __typename: "coupon_aggregate";
+  aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate_aggregate | null;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes_author {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes {
+  __typename: "member_note";
+  id: string;
+  /**
+   * An object relationship
+   */
+  author: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes_author;
+  created_at: any;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  picture_url: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  coin_statuses_aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  coupons_aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate;
+  /**
+   * An array relationship
+   */
+  member_notes: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes[];
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment {
+  __typename: "project_plan_enrollment";
+  /**
+   * An object relationship
+   */
+  member: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member | null;
+  started_at: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS {
+  /**
+   * fetch data from the table: "project_plan_enrollment"
+   */
+  project_plan_enrollment: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment[];
+}
+
+export interface GET_EXPIRING_SOON_MEMBERSVariables {
+  expiredAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_NAMES
 // ====================================================
 
@@ -700,6 +793,11 @@ export interface GET_CONTRACT_INFO_xuemi_sales {
   member: GET_CONTRACT_INFO_xuemi_sales_member | null;
 }
 
+export interface GET_CONTRACT_INFO_app_setting {
+  __typename: "app_setting";
+  value: string;
+}
+
 export interface GET_CONTRACT_INFO {
   /**
    * fetch data from the table: "member" using primary key columns
@@ -729,6 +827,10 @@ export interface GET_CONTRACT_INFO {
    * fetch data from the table: "xuemi.sales"
    */
   xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
+  /**
+   * fetch data from the table: "app_setting"
+   */
+  app_setting: GET_CONTRACT_INFO_app_setting[];
 }
 
 export interface GET_CONTRACT_INFOVariables {
@@ -4482,6 +4584,7 @@ export enum program_plan_update_column {
   discount_down_price = "discount_down_price",
   ended_at = "ended_at",
   gains = "gains",
+  group_buying_people = "group_buying_people",
   id = "id",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_participants_visible = "is_participants_visible",
@@ -15363,6 +15466,7 @@ export interface program_plan_bool_exp {
   discount_down_price?: numeric_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   gains?: jsonb_comparison_exp | null;
+  group_buying_people?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
@@ -15410,6 +15514,7 @@ export interface program_plan_insert_input {
   discount_down_price?: any | null;
   ended_at?: any | null;
   gains?: any | null;
+  group_buying_people?: any | null;
   id?: any | null;
   is_countdown_timer_visible?: boolean | null;
   is_participants_visible?: boolean | null;
@@ -15917,10 +16022,12 @@ export interface project_plan_enrollment_bool_exp {
   _and?: (project_plan_enrollment_bool_exp | null)[] | null;
   _not?: project_plan_enrollment_bool_exp | null;
   _or?: (project_plan_enrollment_bool_exp | null)[] | null;
+  ended_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   project_plan?: project_plan_bool_exp | null;
   project_plan_id?: uuid_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
 }
 
 /**

@@ -1,6 +1,6 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Input, message, Table, Tag } from 'antd'
+import { Button, Checkbox, DatePicker, Input, message, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import Axios from 'axios'
@@ -24,7 +24,7 @@ import { useMutateAttachment, useUploadAttachments } from 'lodestar-app-admin/sr
 import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../hasura'
@@ -146,6 +146,7 @@ const NoteCollectionPage: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [downloadingNoteIds, setDownloadingNoteIds] = useState<string[]>([])
   const [selectedNote, setSelectedNote] = useState<NoteAdminProps | null>(null)
+  const [playbackRate, setPlaybackRate] = useState(1)
 
   const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -334,14 +335,27 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'audioRecordFile',
-      title: formatMessage(memberMessages.label.audioRecordFile),
+      title: (
+        <>
+          <span className="mr-2">{formatMessage(memberMessages.label.audioRecordFile)}</span>
+          <Select<number> value={playbackRate} onChange={value => setPlaybackRate(value)}>
+            <Select.Option value={0.5}>0.5x</Select.Option>
+            <Select.Option value={1}>1x</Select.Option>
+            <Select.Option value={1.5}>1.5x</Select.Option>
+            <Select.Option value={2}>2x</Select.Option>
+          </Select>
+        </>
+      ),
       render: (text, record, index) =>
         record.metadata?.recordfile && (
-          <LoadRecordFileButton
-            memberName={record.member?.name || ''}
-            startTime={record.metadata?.starttime || ''}
-            filePath={record.metadata.recordfile}
-          />
+          <div onClick={event => event.stopPropagation()}>
+            <LoadRecordFileButton
+              memberName={record.member?.name || ''}
+              startTime={record.metadata?.starttime || ''}
+              filePath={record.metadata.recordfile}
+              playbackRate={playbackRate}
+            />
+          </div>
         ),
     },
     {
@@ -513,11 +527,21 @@ const LoadRecordFileButton: React.FC<{
   memberName: string
   startTime: string
   filePath: string
-}> = ({ memberName, startTime, filePath }) => {
+  playbackRate: number
+}> = ({ memberName, startTime, filePath, playbackRate }) => {
   const { formatMessage } = useIntl()
   const { authToken, apiHost } = useAuth()
   const { id: appId } = useApp()
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    if (!audioRef.current || audioRef.current.playbackRate === playbackRate) {
+      return
+    }
+
+    audioRef.current.playbackRate = playbackRate
+  }, [playbackRate])
 
   if (!authToken || !apiHost || !appId) {
     return (
@@ -552,7 +576,7 @@ const LoadRecordFileButton: React.FC<{
       <a href={audioUrl} download={`${memberName}_${startTime.replace(/:/g, '')}.wav`} className="flex-shrink-0 mr-2">
         <Button type="primary">{formatMessage(commonMessages.ui.download)}</Button>
       </a>
-      <audio src={audioUrl} controls />
+      <audio ref={audioRef} src={audioUrl} controls />
     </div>
   ) : (
     <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>

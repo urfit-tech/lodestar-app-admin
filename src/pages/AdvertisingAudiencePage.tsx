@@ -1,13 +1,12 @@
 import { Bar } from '@ant-design/charts'
 import { BarConfig } from '@ant-design/charts/es/bar'
-import { BarChartOutlined } from '@ant-design/icons'
+import { BarChartOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Form, Select } from 'antd'
+import { Form, Input, Select } from 'antd'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import CategorySelector from 'lodestar-app-admin/src/components/form/CategorySelector'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
-import { countBy, map, pipe, toPairs } from 'ramda'
+import { countBy, groupBy, map, pipe, toPairs } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import hasura from '../hasura'
@@ -25,15 +24,18 @@ const memberPropertySelectNames = [
 const StyledSelectorWrapper = styled.div`
   width: 300px;
 `
+const StyledSearchIcon = styled(SearchOutlined)`
+  color: var(--gray);
+`
 
 const AdvertisingAudiencePage: React.FC = () => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState('')
   const [selectedPropertyId, setSelectedPropertyId] = useState('')
+  const [learningAreaSearchTexts, setLearningAreaSearchTexts] = useState<string[]>([])
   const { loadingProperties, errorProperties, properties } = useProperty({
     propertyNames: memberPropertySelectNames,
   })
   const { members } = useAdvertisingMembers({
-    categoryId: selectedCategoryId,
+    learningAreaSearchTexts,
     propertyId: selectedPropertyId,
   })
 
@@ -43,7 +45,7 @@ const AdvertisingAudiencePage: React.FC = () => {
     map(v => ({
       propertyValue: v[0].split(',')[0],
       materialValue: v[0].split(',')[1],
-      count: v[1],
+      count: v[1] as number,
     })),
   )
 
@@ -56,6 +58,8 @@ const AdvertisingAudiencePage: React.FC = () => {
       })),
     ) || [],
   )
+    .filter(v => learningAreaSearchTexts?.some(t => v.materialValue.toLowerCase().includes(t)))
+    .sort((a, b) => b.count - a.count)
 
   const config: BarConfig = {
     data,
@@ -63,6 +67,8 @@ const AdvertisingAudiencePage: React.FC = () => {
     yField: 'materialValue',
     isStack: true,
     seriesField: 'propertyValue',
+    autoFit: false,
+    height: Object.keys(groupBy(v => v.materialValue, data)).length * 80,
     label: {
       position: 'middle',
       layout: [{ type: 'interval-adjust-position' }, { type: 'interval-hide-overlap' }, { type: 'adjust-color' }],
@@ -76,18 +82,23 @@ const AdvertisingAudiencePage: React.FC = () => {
         <span>廣告受眾</span>
       </AdminPageTitle>
       <Form colon={false} labelAlign="left">
-        <Form.Item label="領域">
+        <Form.Item label="領域" name="learningArea">
           <StyledSelectorWrapper>
-            <CategorySelector
-              single={true}
-              classType="member"
-              onChange={category => {
-                setSelectedCategoryId(category)
-              }}
+            <Input
+              suffix={<StyledSearchIcon />}
+              placeholder="關鍵字搜尋"
+              onChange={e =>
+                setLearningAreaSearchTexts(
+                  e.target.value
+                    .toLowerCase()
+                    .split(' ')
+                    .filter(v => v),
+                )
+              }
             />
           </StyledSelectorWrapper>
         </Form.Item>
-        <Form.Item label="資料類別">
+        <Form.Item label="資料類別" name="memberProperty">
           <StyledSelectorWrapper>
             <Select
               loading={loadingProperties || !!errorProperties}
@@ -102,7 +113,7 @@ const AdvertisingAudiencePage: React.FC = () => {
           </StyledSelectorWrapper>
         </Form.Item>
       </Form>
-      {members?.length && <Bar {...config} />}
+      {!!members?.length && <Bar {...config} />}
     </AdminLayout>
   )
 }
@@ -141,22 +152,29 @@ const useProperty = (options?: { propertyNames?: string[] }) => {
   }
 }
 
-const useAdvertisingMembers = (filter?: { categoryId?: string; propertyId?: string }) => {
+const useAdvertisingMembers = (filter?: { learningAreaSearchTexts?: string[]; propertyId?: string }) => {
+  const condition: hasura.GET_ADVERTISING_MEMBERVariables['condition'] = {
+    _and: [
+      { member_properties: { property_id: { _eq: filter?.propertyId || undefined }, value: { _neq: '' } } },
+      {
+        _or:
+          filter?.learningAreaSearchTexts?.map(v => ({
+            member_properties: {
+              property: { name: { _eq: '廣告素材' } },
+              value: { _ilike: `%${v}%` },
+            },
+          })) || [],
+      },
+    ],
+  }
+
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_ADVERTISING_MEMBER,
     hasura.GET_ADVERTISING_MEMBERVariables
   >(
     gql`
-      query GET_ADVERTISING_MEMBER($categoryId: String!, $propertyId: uuid!) {
-        member(
-          where: {
-            _and: [
-              { member_properties: { property_id: { _eq: $propertyId }, value: { _neq: "" } } }
-              { member_properties: { property: { name: { _eq: "廣告素材" } }, value: { _is_null: false } } }
-              { member_categories: { category_id: { _eq: $categoryId } } }
-            ]
-          }
-        ) {
+      query GET_ADVERTISING_MEMBER($condition: member_bool_exp, $propertyId: uuid!) {
+        member(where: $condition) {
           id
           member_properties(where: { property_id: { _eq: $propertyId } }) {
             id
@@ -171,8 +189,8 @@ const useAdvertisingMembers = (filter?: { categoryId?: string; propertyId?: stri
     `,
     {
       variables: {
-        categoryId: filter?.categoryId || '',
-        propertyId: filter?.propertyId || '',
+        condition,
+        propertyId: filter?.propertyId || undefined,
       },
     },
   )
