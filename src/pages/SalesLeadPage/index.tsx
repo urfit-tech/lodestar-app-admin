@@ -42,12 +42,11 @@ const SalesLeadPage: React.VFC = () => {
   )
 }
 
-const ManagerScoreBlock: React.VFC<{ managerId: string }> = ({ managerId }) => {
+const ManagerScoreBlock: React.VFC<{ managerId: string }> = React.memo(({ managerId }) => {
   const { data } = useQuery<hasura.GET_MANAGER_SCORE, hasura.GET_MANAGER_SCOREVariables>(GET_MANAGER_SCORE, {
     variables: { managerId },
   })
   const managerScoreData = data?.xuemi_manager_score.pop()
-
   return managerScoreData ? (
     <div>
       分數：
@@ -56,7 +55,7 @@ const ManagerScoreBlock: React.VFC<{ managerId: string }> = ({ managerId }) => {
       <span>業績({managerScoreData.performance_score})</span>
     </div>
   ) : null
-}
+})
 
 const SalesLeadTabs: React.VFC<{
   activeKey: string

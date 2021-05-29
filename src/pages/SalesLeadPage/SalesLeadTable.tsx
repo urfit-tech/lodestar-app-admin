@@ -66,7 +66,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
     email?: string
     phone?: string
     lastTaskCategoryName?: string
-    categoryNames?: string
+    categoryName?: string
     status?: string
   }>({})
   const [visible, setVisible] = useState(false)
@@ -158,6 +158,12 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
       key: 'categoryNames',
       dataIndex: 'categoryNames',
       title: formatMessage(commonMessages.label.category),
+      ...getColumnSearchProps((value?: string) =>
+        setFilters({
+          ...filters,
+          categoryName: value,
+        }),
+      ),
       render: (categoryNames: string[]) =>
         categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
     },
@@ -235,17 +241,6 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
       sorter: (a, b) => a.paid - b.paid,
     },
     {
-      key: 'status',
-      dataIndex: 'status',
-      title: formatMessage(salesMessages.label.status),
-      ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
-          status: value,
-        }),
-      ),
-    },
-    {
       key: 'action',
       dataIndex: 'id',
       title: '',
@@ -291,7 +286,9 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
     v =>
       (!filters.studentName || v.name.toLowerCase().includes(filters.studentName.toLowerCase())) &&
       (!filters.email || v.email.toLowerCase().includes(filters.email.toLowerCase())) &&
-      (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))),
+      (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))) &&
+      (!filters.categoryName ||
+        v.categoryNames.find(categoryName => categoryName.includes(filters.categoryName || ''))),
   )
 
   return (
