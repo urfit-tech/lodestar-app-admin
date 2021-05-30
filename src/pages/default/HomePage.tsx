@@ -43,24 +43,26 @@ const messages = defineMessages({
 const HomePage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { isAuthenticated, currentUserRole, permissions, logout } = useAuth()
-  const app = useApp()
+  const { currentMemberId, currentUserRole, permissions, logout } = useAuth()
+  const { loading, id: appId, settings } = useApp()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    if (currentUserRole === 'app-owner') {
-      history.push('/admin')
-    } else if (currentUserRole === 'content-creator') {
-      history.push('/programs')
-    } else if (isAuthenticated) {
-      if (!permissions.BACKSTAGE_ENTER) {
-        message.error(formatMessage(messages.deniedRolePermission))
-        logout && logout()
-      } else {
-        history.push('/settings')
-      }
+    if (loading || !currentMemberId) {
+      return
     }
-  }, [currentUserRole, formatMessage, history, isAuthenticated, logout, permissions.BACKSTAGE_ENTER])
+
+    if (currentUserRole === 'app-owner') {
+      history.push(settings['admin.app_owner.redirect'] || '/admin')
+    } else if (currentUserRole === 'content-creator') {
+      history.push(settings['admin.content_creator.redirect'] || '/programs')
+    } else if (!permissions.BACKSTAGE_ENTER) {
+      message.error(formatMessage(messages.deniedRolePermission))
+      logout?.()
+    } else {
+      history.push('/settings')
+    }
+  }, [currentMemberId, currentUserRole, formatMessage, history, loading, logout, permissions.BACKSTAGE_ENTER, settings])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
@@ -69,7 +71,7 @@ const HomePage: React.FC = () => {
       <StyledWrapper>
         <div className="container">
           <StyledLogoBlock>
-            <img src={`https://static.kolable.com/images/${app.id}/logo.png`} alt="logo" />
+            <img src={`https://static.kolable.com/images/${appId}/logo.png`} alt="logo" />
           </StyledLogoBlock>
           <StyledTitle>{formatMessage(messages.adminBackstage)}</StyledTitle>
           <div className="row justify-content-center">

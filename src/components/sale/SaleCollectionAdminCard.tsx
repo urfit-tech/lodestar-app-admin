@@ -258,10 +258,8 @@ const SaleCollectionAdminCard: React.VFC<{
         </div>
       </div>
 
-      {orderProducts.some(
-        v =>
-          (v.endedAt?.getTime() || 0) > Date.now() &&
-          ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.product.type),
+      {orderProducts.some(v =>
+        ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.product.type),
       ) &&
         (orderProducts.some(v => v.options?.unsubscribedAt) ? (
           <div className="row col-12 align-items-center pt-3">

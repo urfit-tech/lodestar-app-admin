@@ -47,8 +47,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     }[]
   }[] = [
     {
-      permissionIsAllowed: true,
-      icon: () => <RadarChartOutlined />,
+      permissionIsAllowed: !!enabledModules.learning_statistics_advanced,
+      icon: () => <RadarChartOutlined className="m-0" />,
       key: 'owner_learning_overview',
       name: formatMessage(commonMessages.menu.learningOverviewAdmin),
     },
