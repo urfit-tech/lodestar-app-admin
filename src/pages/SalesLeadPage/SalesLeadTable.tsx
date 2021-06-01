@@ -1,14 +1,22 @@
-import Icon, { FileAddOutlined, SearchOutlined, StopOutlined, SwapOutlined } from '@ant-design/icons'
+import Icon, {
+  CheckSquareOutlined,
+  FileAddOutlined,
+  SearchOutlined,
+  StopOutlined,
+  SwapOutlined,
+} from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
+import MemberNoteAdminModal from 'lodestar-app-admin/src/components/member/MemberNoteAdminModal'
 import MemberTaskAdminModal from 'lodestar-app-admin/src/components/member/MemberTaskAdminModal'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages } from 'lodestar-app-admin/src/helpers/translation'
+import { useUploadAttachments } from 'lodestar-app-admin/src/hooks/data'
 import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -61,6 +69,8 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
   const [closeLead] = useMutation<hasura.CLOSE_LEAD, hasura.CLOSE_LEADVariables>(CLOSE_LEAD)
   const [transferLead] = useMutation<hasura.TRANSFER_LEAD, hasura.TRANSFER_LEADVariables>(TRANSFER_LEAD)
 
+  const uploadAttachments = useUploadAttachments()
+
   const [filters, setFilters] = useState<{
     studentName?: string
     email?: string
@@ -69,7 +79,9 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
     categoryName?: string
     status?: string
   }>({})
-  const [visible, setVisible] = useState(false)
+  const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
+  const [taskModalVisible, setTaskModalVisible] = useState(false)
+  const [memberNoteModalVisible, setMemberNoteModalVisible] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string } | null>(null)
 
   const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<Lead> = onSetFilter => ({
@@ -121,18 +133,27 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
       title: '',
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
-          <MemberTaskAdminModal
-            renderTrigger={({ setVisible }) => (
-              <StyledButton
-                type="primary"
-                icon={<FileAddOutlined />}
-                className="mr-2"
-                onClick={() => setVisible(true)}
-              />
-            )}
-            title={formatMessage(memberMessages.ui.newTask)}
-            initialMemberId={memberId}
-            initialExecutorId={sales.id}
+          <StyledButton
+            icon={<CheckSquareOutlined />}
+            className="mr-2"
+            onClick={() => {
+              setSelectedMember({
+                id: record.id,
+                name: record.name,
+              })
+              setTaskModalVisible(true)
+            }}
+          />
+          <StyledButton
+            className="mr-2"
+            icon={<FileAddOutlined />}
+            onClick={() => {
+              setSelectedMember({
+                id: record.id,
+                name: record.name,
+              })
+              setMemberNoteModalVisible(true)
+            }}
           />
           <StyledButton
             icon={<Icon component={() => <DemoIcon />} />}
@@ -142,7 +163,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
                 id: record.id,
                 name: record.name,
               })
-              setVisible(true)
+              setJitsiModalVisible(true)
             }}
           />
         </div>
@@ -293,6 +314,46 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
 
   return (
     <StyledAdminCard>
+      {selectedMember && (
+        <MemberTaskAdminModal
+          key={selectedMember.id}
+          visible={taskModalVisible}
+          onCancel={() => setTaskModalVisible(false)}
+          title={formatMessage(memberMessages.ui.newTask)}
+          initialMemberId={selectedMember.id}
+          initialExecutorId={sales.id}
+        />
+      )}
+      {selectedMember && (
+        <MemberNoteAdminModal
+          key={selectedMember.id}
+          visible={memberNoteModalVisible}
+          onCancel={() => setMemberNoteModalVisible(false)}
+          title={formatMessage(memberMessages.label.createMemberNote)}
+          onSubmit={({ type, status, duration, description, attachments }) =>
+            insertMemberNote({
+              variables: {
+                memberId: selectedMember.id,
+                authorId: sales.id,
+                type,
+                status,
+                duration,
+                description,
+              },
+            })
+              .then(async ({ data }) => {
+                const memberNoteId = data?.insert_member_note_one?.id
+                if (memberNoteId && attachments.length) {
+                  await uploadAttachments('MemberNote', memberNoteId, attachments)
+                }
+                message.success(formatMessage(commonMessages.event.successfullyCreated))
+                onRefetch?.()
+              })
+              .catch(handleError)
+              .finally(() => setMemberNoteModalVisible(false))
+          }
+        />
+      )}
       <TableWrapper>
         <Table<Lead>
           rowClassName={row => (row.notified ? 'notified' : '')}
@@ -310,8 +371,8 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
             name: sales.name,
             email: sales.email,
           }}
-          visible={visible}
-          onCancel={() => setVisible(false)}
+          visible={jitsiModalVisible}
+          onCancel={() => setJitsiModalVisible(false)}
           onFinishCall={(duration: number) => {
             if (!selectedMember) {
               return
@@ -330,7 +391,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
             })
               .then(() => {
                 message.success(formatMessage(commonMessages.event.successfullySaved))
-                setVisible(false)
+                setJitsiModalVisible(false)
               })
               .catch(handleError)
           }}
