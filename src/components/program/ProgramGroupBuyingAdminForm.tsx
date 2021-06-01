@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Form, InputNumber, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
@@ -38,8 +38,9 @@ type FieldProps = {
 
 const ProgramGroupBuyingAdminForm: React.FC<{
   program: ProgramAdminProps
+  updatedSoldAt?: Date | null
   onRefetch?: () => void
-}> = ({ program, onRefetch }) => {
+}> = ({ program, updatedSoldAt, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
@@ -47,6 +48,22 @@ const ProgramGroupBuyingAdminForm: React.FC<{
     hasura.UPSERT_PROGRAM_GROUP_BUYING_PLAN,
     hasura.UPSERT_PROGRAM_GROUP_BUYING_PLANVariables
   >(UPSERT_PROGRAM_GROUP_BUYING_PLAN)
+
+  const [updateProgramPlanSoldAt] = useMutation<
+    hasura.UPDATE_PROGRAM_PLAN_SOLD_AT,
+    hasura.UPDATE_PROGRAM_PLAN_SOLD_ATVariables
+  >(UPDATE_PROGRAM_PLAN_SOLD_AT)
+
+  useEffect(() => {
+    if (updatedSoldAt !== null) {
+      updateProgramPlanSoldAt({
+        variables: {
+          programId: program.id,
+          soldAt: updatedSoldAt ?? null,
+        },
+      })
+    }
+  }, [updatedSoldAt])
 
   const handleSubmit = (values: FieldProps) => {
     form.validateFields().then(() => {
@@ -61,7 +78,7 @@ const ProgramGroupBuyingAdminForm: React.FC<{
               amount: groupBuy.people.toString(),
             }),
             list_price: groupBuy.listPrice,
-            sale_price: program.soldAt ? groupBuy.salePrice : null,
+            sale_price: groupBuy.salePrice ?? null,
             period_type: null,
             auto_renewed: false,
             sold_at: program.soldAt,
@@ -203,6 +220,13 @@ const UPSERT_PROGRAM_GROUP_BUYING_PLAN = gql`
       affected_rows
     }
     update_program_plan(where: { id: { _in: $archivedProgramPlanIds } }, _set: { published_at: null }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PROGRAM_PLAN_SOLD_AT = gql`
+  mutation UPDATE_PROGRAM_PLAN_SOLD_AT($programId: uuid!, $soldAt: timestamptz) {
+    update_program_plan(where: { program_id: { _eq: $programId } }, _set: { sold_at: $soldAt }) {
       affected_rows
     }
   }

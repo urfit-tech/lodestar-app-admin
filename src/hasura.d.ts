@@ -4496,6 +4496,35 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PLAN_SOLD_AT
+// ====================================================
+
+export interface UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PLAN_SOLD_AT {
+  /**
+   * update data of the table: "program_plan"
+   */
+  update_program_plan: UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan | null;
+}
+
+export interface UPDATE_PROGRAM_PLAN_SOLD_ATVariables {
+  programId: any;
+  soldAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_COVER
 // ====================================================
 

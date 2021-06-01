@@ -17,8 +17,9 @@ type FieldProps = {
 
 const ProgramPerpetualPlanAdminCard: React.FC<{
   program: ProgramAdminProps
+  onSubmit?: (values: FieldProps) => void
   onRefetch?: () => void
-}> = ({ program, onRefetch }) => {
+}> = ({ program, onSubmit, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [updateProgram] = useMutation<
@@ -41,6 +42,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
+        onSubmit?.(values)
       })
       .catch(handleError)
       .finally(() => setLoading(false))
