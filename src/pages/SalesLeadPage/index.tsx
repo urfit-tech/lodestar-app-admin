@@ -211,8 +211,8 @@ const useSalesLeads = (managerId: string) => {
       v.member &&
       (!v.recent_contacted_at ||
         !v.recent_tasked_at ||
-        (v.recent_contacted_at && moment(v.recent_contacted_at) <= moment().startOf('day').subtract(2, 'weeks')) ||
-        (v.recent_tasked_at && moment(v.recent_tasked_at) <= moment().startOf('day').subtract(1, 'days')))
+        (v.recent_contacted_at && moment(v.recent_contacted_at) <= moment().startOf('day').subtract(3, 'weeks')) ||
+        (v.recent_tasked_at && moment(v.recent_tasked_at) <= moment().startOf('day').subtract(3, 'days')))
     return v.member && v.member.member_phones.length > 0
       ? {
           id: v.member.id,
