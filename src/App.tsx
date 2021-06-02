@@ -86,7 +86,7 @@ const App: React.FC = () => {
                   name: '活動量',
                 },
                 {
-                  permissionIsAllowed: settings['feature.advertising_audience'] === 'enabled',
+                  permissionIsAllowed: true,
                   key: 'analytics_advertising_audience',
                   name: '廣告受眾',
                 },
