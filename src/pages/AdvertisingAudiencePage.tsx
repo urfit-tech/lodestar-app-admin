@@ -6,7 +6,7 @@ import { Form, Input, Select } from 'antd'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
-import { countBy, groupBy, map, pipe, toPairs } from 'ramda'
+import { countBy, map, pipe, toPairs } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import hasura from '../hasura'
@@ -67,8 +67,6 @@ const AdvertisingAudiencePage: React.FC = () => {
     yField: 'materialValue',
     isStack: true,
     seriesField: 'propertyValue',
-    autoFit: false,
-    height: Object.keys(groupBy(v => v.materialValue, data)).length * 80,
     label: {
       position: 'middle',
       layout: [{ type: 'interval-adjust-position' }, { type: 'interval-hide-overlap' }, { type: 'adjust-color' }],
