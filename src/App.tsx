@@ -53,14 +53,14 @@ const App: React.FC = () => {
                 //   name: '業務撥打',
                 // },
                 {
-                  permissionIsAllowed: true,
+                  permissionIsAllowed: role === 'app-owner',
                   key: 'sales_status',
                   name: '業務狀況',
                 },
                 {
                   permissionIsAllowed: true,
                   key: 'chailease_lookup',
-                  name: '資融查詢',
+                  name: '報名查詢',
                 },
               ],
             },
