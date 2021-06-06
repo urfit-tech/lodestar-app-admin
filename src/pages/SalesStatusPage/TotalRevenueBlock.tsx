@@ -5,7 +5,7 @@ import { flatten, sum } from 'ramda'
 import React from 'react'
 import { SalesStatus } from '../../types/sales'
 
-const TARGET_REVENUE = 7000000
+const TARGET_REVENUE = 10000000
 const TotalRevenueBlock: React.VFC<{
   salesStatus: SalesStatus
   loading?: boolean
