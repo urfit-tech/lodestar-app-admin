@@ -1,6 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button, Skeleton } from 'antd'
-import React, { useState } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
@@ -17,7 +17,6 @@ const ProgramPlanAdminBlock: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const [updatedSoldAt, setUpdatedSoldAt] = useState<Date | null | undefined>(null)
 
   if (!program) {
     return <Skeleton active />
@@ -49,16 +48,12 @@ const ProgramPlanAdminBlock: React.FC<{
     <>
       <AdminBlock>
         <AdminBlockTitle>售價設定</AdminBlockTitle>
-        <ProgramPerpetualPlanAdminCard
-          program={program}
-          onRefetch={onRefetch}
-          onSubmit={({ sale }) => setUpdatedSoldAt(sale?.soldAt)}
-        />
+        <ProgramPerpetualPlanAdminCard program={program} onRefetch={onRefetch} />
       </AdminBlock>
       {enabledModules['group_buying'] && (
         <AdminBlock>
           <AdminBlockTitle>多人方案</AdminBlockTitle>
-          <ProgramGroupBuyingAdminForm program={program} onRefetch={onRefetch} updatedSoldAt={updatedSoldAt} />
+          <ProgramGroupBuyingAdminForm program={program} onRefetch={onRefetch} />
         </AdminBlock>
       )}
     </>

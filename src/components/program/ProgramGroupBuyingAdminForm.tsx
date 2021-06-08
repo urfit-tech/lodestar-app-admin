@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Form, InputNumber, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
@@ -38,9 +38,8 @@ type FieldProps = {
 
 const ProgramGroupBuyingAdminForm: React.FC<{
   program: ProgramAdminProps
-  updatedSoldAt?: Date | null
   onRefetch?: () => void
-}> = ({ program, updatedSoldAt, onRefetch }) => {
+}> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
@@ -53,17 +52,6 @@ const ProgramGroupBuyingAdminForm: React.FC<{
     hasura.UPDATE_PROGRAM_PLAN_SOLD_AT,
     hasura.UPDATE_PROGRAM_PLAN_SOLD_ATVariables
   >(UPDATE_PROGRAM_PLAN_SOLD_AT)
-
-  useEffect(() => {
-    if (updatedSoldAt !== null) {
-      updateProgramPlanSoldAt({
-        variables: {
-          programId: program.id,
-          soldAt: updatedSoldAt ?? null,
-        },
-      })
-    }
-  }, [updatedSoldAt])
 
   const handleSubmit = (values: FieldProps) => {
     form.validateFields().then(() => {

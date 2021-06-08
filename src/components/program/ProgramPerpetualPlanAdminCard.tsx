@@ -123,6 +123,9 @@ const UPDATE_PROGRAM_PERPETUAL_PLAN = gql`
     ) {
       affected_rows
     }
+    update_program_plan(where: { program_id: { _eq: $programId } }, _set: { sold_at: $soldAt }) {
+      affected_rows
+    }
   }
 `
 
