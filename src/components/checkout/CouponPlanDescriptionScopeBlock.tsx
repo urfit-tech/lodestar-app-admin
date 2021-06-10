@@ -1,9 +1,9 @@
 import Icon from '@ant-design/icons'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
-import { promotionMessages } from '../../helpers/translation'
+import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { ReactComponent as CheckIcon } from '../../images/icon/check.svg'
 import { CouponPlanType } from '../../types/checkout'
 import { ProductType } from '../../types/general'
@@ -17,19 +17,6 @@ const StyledTitle = styled.div`
   color: var(--gray-darker);
 `
 
-const messages = defineMessages({
-  allScope: { id: 'common.product.allScope', defaultMessage: '全站折抵' },
-  allProgram: { id: 'common.product.allProgram', defaultMessage: '全部單次課程' },
-  allProgramPlan: { id: 'common.product.allProgramPlan', defaultMessage: '全部訂閱課程' },
-  allActivityTicket: { id: 'common.product.allActivityTicket', defaultMessage: '全部線下實體' },
-  allPodcastProgram: { id: 'common.product.allPodcastProgram', defaultMessage: '全部廣播' },
-  allPodcastPlan: { id: 'common.product.allPodcastPlan', defaultMessage: '全部廣播訂閱頻道' },
-  allAppointmentPlan: { id: 'common.product.allAppointmentPlan', defaultMessage: '全部預約' },
-  allMerchandise: { id: 'common.product.allMerchandise', defaultMessage: '全部商品' },
-  allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
-  allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
-  otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
-})
 const CouponPlanDescriptionScopeBlock: React.FC<{
   constraint: number | null
   type: CouponPlanType | null
@@ -54,66 +41,66 @@ const CouponPlanDescriptionScopeBlock: React.FC<{
 
       <StyledTitle>{formatMessage(promotionMessages.label.discountTarget)}</StyledTitle>
       <div className="mb-4">
-        {scope === null && <div>{formatMessage(messages.allScope)}</div>}
+        {scope === null && <div>{formatMessage(commonMessages.product.allScope)}</div>}
         {scope?.includes('Program') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allProgram)}</span>
+            <span>{formatMessage(commonMessages.product.allProgram)}</span>
           </div>
         )}
         {scope?.includes('ProgramPlan') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allProgramPlan)}</span>
+            <span>{formatMessage(commonMessages.product.allProgramPlan)}</span>
           </div>
         )}
         {scope?.includes('ActivityTicket') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allActivityTicket)}</span>
+            <span>{formatMessage(commonMessages.product.allActivityTicket)}</span>
           </div>
         )}
         {scope?.includes('PodcastProgram') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allPodcastProgram)}</span>
+            <span>{formatMessage(commonMessages.product.allPodcastProgram)}</span>
           </div>
         )}
         {scope?.includes('PodcastPlan') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allPodcastPlan)}</span>
+            <span>{formatMessage(commonMessages.product.allPodcastPlan)}</span>
           </div>
         )}
         {scope?.includes('AppointmentPlan') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allAppointmentPlan)}</span>
+            <span>{formatMessage(commonMessages.product.allAppointmentPlan)}</span>
           </div>
         )}
         {scope?.includes('MerchandiseSpec') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allMerchandise)}</span>
+            <span>{formatMessage(commonMessages.product.allMerchandise)}</span>
           </div>
         )}
         {scope?.includes('ProjectPlan') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allProjectPlan)}</span>
+            <span>{formatMessage(commonMessages.product.allProjectPlan)}</span>
           </div>
         )}
         {scope?.includes('ProgramPackagePlan') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(messages.allProgramPackagePlan)}</span>
+            <span>{formatMessage(commonMessages.product.allProgramPackagePlan)}</span>
           </div>
         )}
         {productIds && productIds.length > 0 && (
           <>
             <div className="mb-2">
               <Icon component={() => <CheckIcon />} className="mr-2" />
-              <span>{formatMessage(messages.otherSpecificProduct)}</span>
+              <span>{formatMessage(commonMessages.product.otherSpecificProduct)}</span>
             </div>
             <div className="pl-4">
               {productIds.map(productId => (

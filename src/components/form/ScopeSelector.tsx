@@ -2,28 +2,13 @@ import { useQuery } from '@apollo/react-hooks'
 import { Checkbox, Radio, TreeSelect } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
+import { commonMessages } from '../../helpers/translation'
 import { ProductType } from '../../types/general'
 import ProductTypeLabel from '../common/ProductTypeLabel'
-
-const messages = defineMessages({
-  allItem: { id: 'common.product.allItem', defaultMessage: '全部項目' },
-  specificItem: { id: 'common.product.specificItem', defaultMessage: '指定項目' },
-  otherItem: { id: 'common.product.otherItem', defaultMessage: '其他指定項目' },
-  allProgram: { id: 'common.product.allProgram', defaultMessage: '全部單次課程' },
-  allProgramPlan: { id: 'common.product.allProgramPlan', defaultMessage: '全部訂閱課程' },
-  allActivityTicket: { id: 'common.product.allActivityTicket', defaultMessage: '全部線下實體' },
-  allPodcastProgram: { id: 'common.product.allPodcastProgram', defaultMessage: '全部廣播' },
-  allPodcastPlan: { id: 'common.product.allPodcastPlan', defaultMessage: '全部廣播訂閱頻道' },
-  allAppointmentPlan: { id: 'common.product.allAppointmentPlan', defaultMessage: '全部預約' },
-  allMerchandise: { id: 'common.product.allMerchandise', defaultMessage: '全部商品' },
-  allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
-  allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
-  selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
-})
 
 const StyledLabel = styled.div`
   color: var(--gray-darker);
@@ -93,10 +78,10 @@ const ScopeSelector: React.FC<{
       }}
     >
       <Radio value="all" className="d-block mb-4">
-        {allText || formatMessage(messages.allItem)}
+        {allText || formatMessage(commonMessages.product.allItem)}
       </Radio>
       <Radio value="specific" className="d-block">
-        {specificTypeText || formatMessage(messages.specificItem)}
+        {specificTypeText || formatMessage(commonMessages.product.specificItem)}
       </Radio>
 
       <div className={`mt-3 pl-3 ${scopeType === 'all' ? 'd-none' : ''}`}>
@@ -115,54 +100,56 @@ const ScopeSelector: React.FC<{
         >
           <StyledColumns>
             <div className="mb-3">
-              <Checkbox value="Program">{formatMessage(messages.allProgram)}</Checkbox>
+              <Checkbox value="Program">{formatMessage(commonMessages.product.allProgram)}</Checkbox>
             </div>
             <div className="mb-3">
-              <Checkbox value="ProgramPlan">{formatMessage(messages.allProgramPlan)}</Checkbox>
+              <Checkbox value="ProgramPlan">{formatMessage(commonMessages.product.allProgramPlan)}</Checkbox>
             </div>
             {enabledModules.activity && (
               <div className="mb-3">
-                <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
+                <Checkbox value="ActivityTicket">{formatMessage(commonMessages.product.allActivityTicket)}</Checkbox>
               </div>
             )}
             {enabledModules.podcast && (
               <div className="mb-3">
-                <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
+                <Checkbox value="PodcastProgram">{formatMessage(commonMessages.product.allPodcastProgram)}</Checkbox>
               </div>
             )}
             {enabledModules.podcast && (
               <div className="mb-3">
-                <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
+                <Checkbox value="PodcastPlan">{formatMessage(commonMessages.product.allPodcastPlan)}</Checkbox>
               </div>
             )}
             {enabledModules.appointment && (
               <div className="mb-3">
-                <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
+                <Checkbox value="AppointmentPlan">{formatMessage(commonMessages.product.allAppointmentPlan)}</Checkbox>
               </div>
             )}
             {enabledModules.merchandise && (
               <div className="mb-3">
-                <Checkbox value="MerchandiseSpec">{formatMessage(messages.allMerchandise)}</Checkbox>
+                <Checkbox value="MerchandiseSpec">{formatMessage(commonMessages.product.allMerchandise)}</Checkbox>
               </div>
             )}
             <div className="mb-3">
-              <Checkbox value="ProjectPlan">{formatMessage(messages.allProjectPlan)}</Checkbox>
+              <Checkbox value="ProjectPlan">{formatMessage(commonMessages.product.allProjectPlan)}</Checkbox>
             </div>
             {enabledModules.program_package && (
               <div className="mb-3">
-                <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
+                <Checkbox value="ProgramPackagePlan">
+                  {formatMessage(commonMessages.product.allProgramPackagePlan)}
+                </Checkbox>
               </div>
             )}
           </StyledColumns>
         </Checkbox.Group>
 
-        <StyledLabel>{otherProductText || formatMessage(messages.otherItem)}</StyledLabel>
+        <StyledLabel>{otherProductText || formatMessage(commonMessages.product.otherItem)}</StyledLabel>
         <TreeSelect
           showSearch
           multiple
           allowClear
           treeCheckable
-          placeholder={formatMessage(messages.selectProducts)}
+          placeholder={formatMessage(commonMessages.product.selectProducts)}
           style={{ width: '100%' }}
           dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
           value={selectedProductIds}
