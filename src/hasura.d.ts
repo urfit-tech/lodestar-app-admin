@@ -4455,6 +4455,76 @@ export interface UPDATE_PROGRAM_IS_DELETEDVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPSERT_PROGRAM_GROUP_BUYING_PLAN
+// ====================================================
+
+export interface UPSERT_PROGRAM_GROUP_BUYING_PLAN_insert_program_plan {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROGRAM_GROUP_BUYING_PLAN_update_program_plan {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROGRAM_GROUP_BUYING_PLAN {
+  /**
+   * insert data into the table: "program_plan"
+   */
+  insert_program_plan: UPSERT_PROGRAM_GROUP_BUYING_PLAN_insert_program_plan | null;
+  /**
+   * update data of the table: "program_plan"
+   */
+  update_program_plan: UPSERT_PROGRAM_GROUP_BUYING_PLAN_update_program_plan | null;
+}
+
+export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
+  programPlans: program_plan_insert_input[];
+  archivedProgramPlanIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PLAN_SOLD_AT
+// ====================================================
+
+export interface UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PLAN_SOLD_AT {
+  /**
+   * update data of the table: "program_plan"
+   */
+  update_program_plan: UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan | null;
+}
+
+export interface UPDATE_PROGRAM_PLAN_SOLD_ATVariables {
+  programId: any;
+  soldAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_COVER
 // ====================================================
 
@@ -10074,6 +10144,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   auto_renewed: boolean;
   is_countdown_timer_visible: boolean;
   published_at: any | null;
+  group_buying_people: any | null;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_categories_category {
