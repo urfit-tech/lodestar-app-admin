@@ -53,7 +53,7 @@ const App: React.FC = () => {
                 //   name: '業務撥打',
                 // },
                 {
-                  permissionIsAllowed: role === 'app-owner',
+                  permissionIsAllowed: true,
                   key: 'sales_status',
                   name: '業務狀況',
                 },
