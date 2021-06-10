@@ -48,11 +48,6 @@ const ProgramGroupBuyingAdminForm: React.FC<{
     hasura.UPSERT_PROGRAM_GROUP_BUYING_PLANVariables
   >(UPSERT_PROGRAM_GROUP_BUYING_PLAN)
 
-  const [updateProgramPlanSoldAt] = useMutation<
-    hasura.UPDATE_PROGRAM_PLAN_SOLD_AT,
-    hasura.UPDATE_PROGRAM_PLAN_SOLD_ATVariables
-  >(UPDATE_PROGRAM_PLAN_SOLD_AT)
-
   const handleSubmit = (values: FieldProps) => {
     form.validateFields().then(() => {
       setLoading(true)
@@ -208,13 +203,6 @@ const UPSERT_PROGRAM_GROUP_BUYING_PLAN = gql`
       affected_rows
     }
     update_program_plan(where: { id: { _in: $archivedProgramPlanIds } }, _set: { published_at: null }) {
-      affected_rows
-    }
-  }
-`
-const UPDATE_PROGRAM_PLAN_SOLD_AT = gql`
-  mutation UPDATE_PROGRAM_PLAN_SOLD_AT($programId: uuid!, $soldAt: timestamptz) {
-    update_program_plan(where: { program_id: { _eq: $programId } }, _set: { sold_at: $soldAt }) {
       affected_rows
     }
   }
