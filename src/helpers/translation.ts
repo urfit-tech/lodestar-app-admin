@@ -291,7 +291,7 @@ export const commonMessages = {
     notComplete: { id: 'common.status.notComplete', defaultMessage: '尚有未完成項目' },
     unpublished: { id: 'common.status.unpublished', defaultMessage: '尚未發佈' },
     published: { id: 'common.status.published', defaultMessage: '已發佈' },
-    notPublished: { id: 'common.status.notPublished', defaultMessage: '為發佈' },
+    notPublished: { id: 'common.status.notPublished', defaultMessage: '未發佈' },
     publiclyPublished: { id: 'common.status.publicyPublished', defaultMessage: '已公開發佈' },
     privatelyPublished: { id: 'common.status.privatelyPublished', defaultMessage: '已私密發佈' },
     publiclyPublish: { id: 'common.status.publicyPublish', defaultMessage: '公開發佈' },

@@ -472,7 +472,7 @@
   "common.status.finished": "已結束",
   "common.status.invisible": "隱藏",
   "common.status.notComplete": "尚有未完成項目",
-  "common.status.notPublished": "為發佈",
+  "common.status.notPublished": "未發佈",
   "common.status.notSold": "尚未發售",
   "common.status.orderDeleted": "已刪除",
   "common.status.orderExpired": "已失效",
