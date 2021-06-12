@@ -2,9 +2,11 @@ import { PlusOutlined } from '@ant-design/icons'
 import { Button, Skeleton } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
-import { AdminBlock } from '../admin'
+import { AdminBlock, AdminBlockTitle } from '../admin'
+import ProgramGroupBuyingAdminForm from './ProgramGroupBuyingAdminForm'
 import ProgramPerpetualPlanAdminCard from './ProgramPerpetualPlanAdminCard'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 import ProgramSubscriptionPlanAdminCard from './ProgramSubscriptionPlanAdminCard'
@@ -14,6 +16,7 @@ const ProgramPlanAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
 
   if (!program) {
     return <Skeleton active />
@@ -42,9 +45,18 @@ const ProgramPlanAdminBlock: React.FC<{
   }
 
   return (
-    <AdminBlock>
-      <ProgramPerpetualPlanAdminCard program={program} onRefetch={onRefetch} />
-    </AdminBlock>
+    <>
+      <AdminBlock>
+        <AdminBlockTitle>售價設定</AdminBlockTitle>
+        <ProgramPerpetualPlanAdminCard program={program} onRefetch={onRefetch} />
+      </AdminBlock>
+      {enabledModules['group_buying'] && (
+        <AdminBlock>
+          <AdminBlockTitle>多人方案</AdminBlockTitle>
+          <ProgramGroupBuyingAdminForm program={program} onRefetch={onRefetch} />
+        </AdminBlock>
+      )}
+    </>
   )
 }
 

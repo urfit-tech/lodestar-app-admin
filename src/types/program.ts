@@ -112,6 +112,7 @@ export type ProgramPlanProps = {
   autoRenewed: boolean
   publishedAt: Date | null
   isCountdownTimerVisible?: boolean
+  groupBuyingPeople?: number | null
 }
 
 export type ProgramRoleProps = {

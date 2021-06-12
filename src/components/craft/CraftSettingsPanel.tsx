@@ -3,7 +3,7 @@ import { Button } from 'antd'
 import React from 'react'
 
 const CraftSettingsPanel: React.VFC = () => {
-  const { selected, query, actions } = useEditor(state => {
+  const { selected, actions } = useEditor(state => {
     const currentNodeId = state.events.selected
     let selected
     if (currentNodeId) {

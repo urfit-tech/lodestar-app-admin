@@ -15,7 +15,7 @@ import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessages({
   exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
-  exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出訂單' },
+  exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出總表' },
   exportOrderProduct: { id: 'common.ui.exportOrderProduct', defaultMessage: '訂單明細' },
   exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
   exportPaymentLog: { id: 'common.ui.exportPaymentLog', defaultMessage: '交易明細' },
@@ -438,11 +438,11 @@ const OrderExportModal: React.FC = () => {
                     {formatMessage(messages.exportOrderDiscount)}
                   </Button>
                 </Menu.Item>
-                <Menu.Item key="payment-log" onClick={() => handleExport('paymentLog')}>
+                {/* <Menu.Item key="payment-log" onClick={() => handleExport('paymentLog')}>
                   <Button type="link" size="small">
                     {formatMessage(messages.exportPaymentLog)}
                   </Button>
-                </Menu.Item>
+                </Menu.Item> */}
               </Menu>
             }
             onClick={() => !loading && handleExport('orderLog')}

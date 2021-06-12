@@ -88,6 +88,7 @@ export const useProgram = (programId: string) => {
             auto_renewed
             is_countdown_timer_visible
             published_at
+            group_buying_people
           }
           program_categories(order_by: { position: asc }) {
             category {
@@ -187,6 +188,7 @@ export const useProgram = (programId: string) => {
             autoRenewed: programPlan.auto_renewed,
             publishedAt: programPlan.published_at && new Date(programPlan.published_at),
             isCountdownTimerVisible: programPlan.is_countdown_timer_visible,
+            groupBuyingPeople: programPlan.group_buying_people,
           })),
           categories: data.program_by_pk.program_categories.map(programCategory => ({
             id: programCategory.category.id,
