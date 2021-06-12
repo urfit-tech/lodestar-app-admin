@@ -8,6 +8,7 @@ import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
@@ -50,6 +51,7 @@ const MemberTaskAdminModal: React.FC<
     onRefetch?: () => void
   } & AdminModalProps
 > = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
+  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [insertTask] = useMutation<hasura.INSERT_TASK, hasura.INSERT_TASKVariables>(INSERT_TASK)
@@ -76,6 +78,7 @@ const MemberTaskAdminModal: React.FC<
                   status: values.status,
                   due_at: values.dueAt?.toDate(),
                   description: values.description,
+                  author_id: currentMemberId,
                 },
               ],
             },
@@ -99,6 +102,7 @@ const MemberTaskAdminModal: React.FC<
                   status: values.status,
                   due_at: values.dueAt?.toDate(),
                   description: values.description,
+                  author_id: currentMemberId,
                 },
               ],
             },

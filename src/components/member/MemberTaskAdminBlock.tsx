@@ -22,7 +22,8 @@ import MemberTaskAdminModal from './MemberTaskAdminModal'
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
   switchTable: { id: 'member.ui.switchTable', defaultMessage: '切換列表模式' },
-  manager: { id: 'member.label.manager', defaultMessage: '執行者' },
+  executor: { id: 'member.label.executor', defaultMessage: '執行者' },
+  author: { id: 'member.label.author', defaultMessage: '建立者' },
 })
 
 const StyledTitle = styled.span`
@@ -93,6 +94,7 @@ const MemberTaskAdminBlock: React.FC<{
     title?: string
     categoryIds?: string[]
     executor?: string
+    author?: string
     dueAt?: Date[]
     status?: string
   }>({})
@@ -101,6 +103,7 @@ const MemberTaskAdminBlock: React.FC<{
   const {
     loadingMemberTasks,
     executors,
+    authors,
     memberTasks,
     loadMoreMemberTasks,
     refetchMemberTasks,
@@ -322,12 +325,23 @@ const MemberTaskAdminBlock: React.FC<{
     },
     {
       dataIndex: 'executor',
-      title: formatMessage(messages.manager),
+      title: formatMessage(messages.executor),
       render: (text, record, index) =>
         record.executor ? (
           <div className="d-flex align-items-center justify-content-start">
             <AvatarImage src={record.executor.avatarUrl} size="28px" className="mr-2" />
             <StyledName>{record.executor.name}</StyledName>
+          </div>
+        ) : null,
+    },
+    {
+      dataIndex: 'author',
+      title: formatMessage(messages.author),
+      render: (text, record, index) =>
+        record.author ? (
+          <div className="d-flex align-items-center justify-content-start">
+            <AvatarImage src={record.author?.avatarUrl} size="28px" className="mr-2" />
+            <StyledName>{record.author.name}</StyledName>
           </div>
         ) : null,
     },
@@ -376,7 +390,7 @@ const MemberTaskAdminBlock: React.FC<{
           <Select
             allowClear
             showSearch
-            placeholder={formatMessage(messages.manager)}
+            placeholder={formatMessage(messages.executor)}
             filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             className="mr-3"
             style={{ width: '150px' }}
@@ -396,6 +410,32 @@ const MemberTaskAdminBlock: React.FC<{
             {executors.map(executor => (
               <Select.Option key={executor.id} value={executor.name}>
                 {executor.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            allowClear
+            showSearch
+            placeholder={formatMessage(messages.author)}
+            filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            className="mr-3"
+            style={{ width: '150px' }}
+            onSelect={value => {
+              setFilter(filter => ({
+                ...filter,
+                author: `${value}` || undefined,
+              }))
+            }}
+            onClear={() => {
+              setFilter(filter => ({
+                ...filter,
+                author: undefined,
+              }))
+            }}
+          >
+            {authors.map(author => (
+              <Select.Option key={author.id} value={author.name}>
+                {author.name}
               </Select.Option>
             ))}
           </Select>
@@ -500,6 +540,7 @@ const useMemberTaskCollection = (options?: {
   title?: string
   categoryIds?: string[]
   executor?: string
+  author?: string
   dueAt?: Date[]
   status?: string
   limit?: number
@@ -510,6 +551,9 @@ const useMemberTaskCollection = (options?: {
     category: options?.categoryIds ? { id: { _in: options.categoryIds } } : undefined,
     executor: options?.executor
       ? { _or: [{ name: { _ilike: `%${options.executor}%` } }, { username: { _ilike: `%${options.executor}%` } }] }
+      : undefined,
+    author: options?.author
+      ? { _or: [{ name: { _ilike: `%${options.author}%` } }, { username: { _ilike: `%${options.author}%` } }] }
       : undefined,
     due_at: options?.dueAt ? { _gte: options?.dueAt[0], _lte: options?.dueAt[1] } : undefined,
     status: options?.status ? { _ilike: options.status } : undefined,
@@ -524,6 +568,13 @@ const useMemberTaskCollection = (options?: {
         executors: member_task(where: { executor_id: { _is_null: false } }, distinct_on: [executor_id]) {
           id
           executor {
+            id
+            name
+          }
+        }
+        authors: member_task(where: { author_id: { _is_null: false } }, distinct_on: [author_id]) {
+          id
+          author {
             id
             name
           }
@@ -556,6 +607,12 @@ const useMemberTaskCollection = (options?: {
             username
             picture_url
           }
+          author {
+            id
+            name
+            username
+            picture_url
+          }
         }
       }
     `,
@@ -574,6 +631,15 @@ const useMemberTaskCollection = (options?: {
     data?.executors.map(v => ({
       id: v.executor?.id || '',
       name: v.executor?.name || '',
+    })) || []
+
+  const authors: {
+    id: string
+    name: string
+  }[] =
+    data?.authors.map(v => ({
+      id: v.author?.id || '',
+      name: v.author?.name || '',
     })) || []
 
   const memberTasks: MemberTaskProps[] =
@@ -602,6 +668,13 @@ const useMemberTaskCollection = (options?: {
                 id: v.executor.id,
                 name: v.executor.name || v.executor.username,
                 avatarUrl: v.executor.picture_url,
+              }
+            : null,
+          author: v.author
+            ? {
+                id: v.author.id,
+                name: v.author.name || v.author.username,
+                avatarUrl: v.author.picture_url,
               }
             : null,
         }))
@@ -633,6 +706,7 @@ const useMemberTaskCollection = (options?: {
     loadingMemberTasks: loading,
     errorMemberTasks: error,
     executors,
+    authors,
     memberTasks,
     refetchMemberTasks: refetch,
     loadMoreMemberTasks,
