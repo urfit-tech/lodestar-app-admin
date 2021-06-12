@@ -17,7 +17,10 @@ import TotalRevenueBlock from './TotalRevenueBlock'
 const teamSettings = [
   {
     name: '無名組',
-    sales: [],
+    sales: [
+      { id: '5785af74-a3a5-4910-86af-f37b54c21fc3', name: 'winston' },
+      { id: 'xuemi-edison', name: 'edison' },
+    ],
   },
   {
     name: '今天吃什麼',
