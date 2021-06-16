@@ -366,7 +366,11 @@ const MemberCollectionAdminPage: React.FC = () => {
             {formatMessage(memberMessages.label.field)}
           </StyledButton>
         </Popover>
-        <MemberExportModal roleSelector={roleSelector} filter={fieldFilter} />
+        <MemberExportModal
+          roleSelector={roleSelector}
+          filter={fieldFilter}
+          membersCount={menu.filter(item => item.role === (fieldFilter.role || null))[0].count}
+        />
       </div>
 
       <AdminCard className="mb-5">

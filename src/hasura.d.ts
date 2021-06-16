@@ -2283,6 +2283,144 @@ export interface REVOKE_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_COLLECTION_member_aggregate_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_COLLECTION_member_aggregate {
+  __typename: "member_aggregate";
+  aggregate: GET_MEMBER_COLLECTION_member_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_COLLECTION_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_COLLECTION_member_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_MEMBER_COLLECTION_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_COLLECTION_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_MEMBER_COLLECTION_member_member_categories_category;
+}
+
+export interface GET_MEMBER_COLLECTION_member_member_tags {
+  __typename: "member_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_MEMBER_COLLECTION_member_member_properties {
+  __typename: "member_property";
+  id: any;
+  property_id: any;
+  value: string;
+}
+
+export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_COLLECTION_member_order_logs {
+  __typename: "order_log";
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate;
+}
+
+export interface GET_MEMBER_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  created_at: any | null;
+  logined_at: any | null;
+  /**
+   * app-owner / content-creator
+   */
+  role: string;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_COLLECTION_member_manager | null;
+  assigned_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_MEMBER_COLLECTION_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_MEMBER_COLLECTION_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_COLLECTION_member_member_tags[];
+  /**
+   * An array relationship
+   */
+  member_properties: GET_MEMBER_COLLECTION_member_member_properties[];
+  /**
+   * An array relationship
+   */
+  order_logs: GET_MEMBER_COLLECTION_member_order_logs[];
+}
+
+export interface GET_MEMBER_COLLECTION {
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  member_aggregate: GET_MEMBER_COLLECTION_member_aggregate;
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_MEMBER_COLLECTION_member[];
+}
+
+export interface GET_MEMBER_COLLECTIONVariables {
+  condition?: member_bool_exp | null;
+  limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_ROLE
 // ====================================================
 
@@ -4527,35 +4665,6 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_PLAN_SOLD_AT
-// ====================================================
-
-export interface UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan {
-  __typename: "program_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_PLAN_SOLD_AT {
-  /**
-   * update data of the table: "program_plan"
-   */
-  update_program_plan: UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan | null;
-}
-
-export interface UPDATE_PROGRAM_PLAN_SOLD_ATVariables {
-  programId: any;
-  soldAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_COVER
 // ====================================================
 
@@ -4627,11 +4736,23 @@ export interface UPDATE_PROGRAM_PERPETUAL_PLAN_update_program {
   affected_rows: number;
 }
 
+export interface UPDATE_PROGRAM_PERPETUAL_PLAN_update_program_plan {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_PROGRAM_PERPETUAL_PLAN {
   /**
    * update data of the table: "program"
    */
   update_program: UPDATE_PROGRAM_PERPETUAL_PLAN_update_program | null;
+  /**
+   * update data of the table: "program_plan"
+   */
+  update_program_plan: UPDATE_PROGRAM_PERPETUAL_PLAN_update_program_plan | null;
 }
 
 export interface UPDATE_PROGRAM_PERPETUAL_PLANVariables {
@@ -9209,143 +9330,6 @@ export interface GET_PAGE_MEMBER_COLLECTION {
 export interface GET_PAGE_MEMBER_COLLECTIONVariables {
   condition?: member_bool_exp | null;
   limit: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MEMBER_COLLECTION
-// ====================================================
-
-export interface GET_MEMBER_COLLECTION_member_aggregate_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_aggregate {
-  __typename: "member_aggregate";
-  aggregate: GET_MEMBER_COLLECTION_member_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_manager {
-  __typename: "member";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_phones {
-  __typename: "member_phone";
-  id: any;
-  phone: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_categories {
-  __typename: "member_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_MEMBER_COLLECTION_member_member_categories_category;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_tags {
-  __typename: "member_tag";
-  id: any;
-  tag_name: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_properties {
-  __typename: "member_property";
-  id: any;
-  property_id: any;
-  value: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs {
-  __typename: "order_log";
-  /**
-   * An aggregated array relationship
-   */
-  order_products_aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate;
-}
-
-export interface GET_MEMBER_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  created_at: any | null;
-  logined_at: any | null;
-  /**
-   * app-owner / content-creator
-   */
-  role: string;
-  /**
-   * An object relationship
-   */
-  manager: GET_MEMBER_COLLECTION_member_manager | null;
-  assigned_at: any | null;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_MEMBER_COLLECTION_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_MEMBER_COLLECTION_member_member_categories[];
-  /**
-   * An array relationship
-   */
-  member_tags: GET_MEMBER_COLLECTION_member_member_tags[];
-  /**
-   * An array relationship
-   */
-  member_properties: GET_MEMBER_COLLECTION_member_member_properties[];
-  /**
-   * An array relationship
-   */
-  order_logs: GET_MEMBER_COLLECTION_member_order_logs[];
-}
-
-export interface GET_MEMBER_COLLECTION {
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  member_aggregate: GET_MEMBER_COLLECTION_member_aggregate;
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_MEMBER_COLLECTION_member[];
-}
-
-export interface GET_MEMBER_COLLECTIONVariables {
-  condition?: member_bool_exp | null;
 }
 
 /* tslint:disable */

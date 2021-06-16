@@ -1,13 +1,15 @@
 import { ExportOutlined } from '@ant-design/icons'
+import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Checkbox, Col, Form, Row } from 'antd'
+import gql from 'graphql-tag'
 import moment from 'moment'
-import { repeat } from 'ramda'
+import { repeat, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useMemberAllCollection } from '../../hooks/member'
-import { UserRole } from '../../types/member'
+import { MemberInfoProps, UserRole } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 
 const MemberExportModal: React.FC<{
@@ -18,12 +20,13 @@ const MemberExportModal: React.FC<{
     email?: string
     managerId?: string
   }
-}> = ({ roleSelector, filter }) => {
+  membersCount: number
+}> = ({ roleSelector, filter, membersCount }) => {
   const { formatMessage } = useIntl()
-  const { loadingMembers, members } = useMemberAllCollection(filter)
+  const client = useApolloClient()
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
-
-  const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
+  const [loadingMembers, setLoadingMembers] = useState(false)
+  let members: any[] = []
 
   const options = [
     { label: formatMessage(commonMessages.label.memberName), value: 'name' },
@@ -36,7 +39,124 @@ const MemberExportModal: React.FC<{
     { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },
   ]
 
-  const exportMemberList = () => {
+  const fetchAllMembers = async (filter?: {
+    role?: UserRole
+    name?: string
+    email?: string
+    phone?: string
+    category?: string
+    managerName?: string
+    managerId?: string
+    tag?: string
+    properties?: {
+      id: string
+      value?: string
+    }[]
+  }) => {
+    const condition: hasura.GET_MEMBER_COLLECTIONVariables['condition'] = {
+      role: filter?.role ? { _eq: filter.role } : undefined,
+      name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+      email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+      manager: filter?.managerName
+        ? {
+            name: { _ilike: `%${filter.managerName}%` },
+          }
+        : undefined,
+      manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
+      member_phones: filter?.phone
+        ? {
+            phone: { _ilike: `%${filter.phone}%` },
+          }
+        : undefined,
+      member_categories: filter?.category
+        ? {
+            category: {
+              name: {
+                _ilike: `%${filter.category}%`,
+              },
+            },
+          }
+        : undefined,
+      member_tags: filter?.tag
+        ? {
+            tag_name: {
+              _ilike: filter.tag,
+            },
+          }
+        : undefined,
+      member_properties: filter?.properties?.length
+        ? {
+            _and: filter.properties
+              .filter(property => property.value)
+              .map(property => ({
+                property_id: { _eq: property.id },
+                value: { _ilike: `%${property.value}%` },
+              })),
+          }
+        : undefined,
+    }
+    const { data } = await client.query({
+      query: GET_MEMBER_COLLECTION,
+      variables: {
+        condition: {
+          ...condition,
+          created_at: { _gt: members.length !== 0 ? members.slice(-1)[0].created_at : undefined },
+        },
+        limit: 10000,
+      },
+    })
+    members = [
+      ...members,
+      ...data.member.map(
+        (v: {
+          id: string
+          name: string
+          username: string
+          email: string
+          role: string
+          created_at: Date
+          logined_at: Date
+          member_phones: { id: string; phone: string }[]
+          order_logs: hasura.GET_MEMBER_COLLECTION_member_order_logs[] | []
+          member_categories: { category: { id: string; name: string } }[]
+          member_tags: { tag_name: string }[]
+          member_properties: { id: string; property_id: string; value: string }[]
+        }) => ({
+          id: v.id,
+          name: v.name || v.username,
+          email: v.email,
+          role: v.role as UserRole,
+          createdAt: v.created_at ? new Date(v.created_at) : null,
+          loginedAt: v.logined_at,
+          phones: v.member_phones.map(v => v.phone),
+          consumption: sum(
+            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+          ),
+          categories: v.member_categories.map(w => ({
+            id: w.category.id,
+            name: w.category.name,
+          })),
+          tags: v.member_tags.map(w => w.tag_name),
+          properties: v.member_properties.reduce((accumulator, currentValue) => {
+            return {
+              ...accumulator,
+              [currentValue.property_id]: currentValue.value,
+            }
+          }, {} as MemberInfoProps['properties']),
+        }),
+      ),
+    ]
+  }
+
+  const exportMemberList = async () => {
+    setLoadingMembers(true)
+    do {
+      await fetchAllMembers(filter)
+      if (members.length >= membersCount) {
+        setLoadingMembers(false)
+      }
+    } while (members.length < membersCount)
+    const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
     const columns = options
       .filter(option => selectedExportFields.some(field => field === option.value))
       .map(option => {
@@ -56,7 +176,7 @@ const MemberExportModal: React.FC<{
         selectedExportFields.some(field => field === 'phone') &&
           row.push(...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length))
         selectedExportFields.some(field => field === 'category') &&
-          row.push(member.categories.map(v => v.name).toString())
+          row.push(member.categories.map((v: { name: string }) => v.name).toString())
         selectedExportFields.some(field => field === 'orderLogCreatedDate') &&
           row.push(member.createdAt ? moment(member.createdAt).format('YYYYMMDD HH:mm') : '')
         selectedExportFields.some(field => field === 'lastLogin') &&
@@ -65,7 +185,6 @@ const MemberExportModal: React.FC<{
         return row
       }),
     ]
-
     downloadCSV('members', toCSV(data))
   }
 
@@ -102,5 +221,53 @@ const MemberExportModal: React.FC<{
     </AdminModal>
   )
 }
+
+const GET_MEMBER_COLLECTION = gql`
+  query GET_MEMBER_COLLECTION($condition: member_bool_exp, $limit: Int) {
+    member_aggregate(where: $condition) {
+      aggregate {
+        count
+      }
+    }
+    member(where: $condition, order_by: { created_at: asc_nulls_last }, limit: $limit) {
+      id
+      name
+      username
+      email
+      created_at
+      logined_at
+      role
+      member_phones {
+        id
+        phone
+      }
+      member_categories {
+        id
+        category {
+          id
+          name
+        }
+      }
+      member_tags {
+        id
+        tag_name
+      }
+      member_properties {
+        id
+        property_id
+        value
+      }
+      order_logs(where: { status: { _eq: "SUCCESS" } }) {
+        order_products_aggregate {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 export default MemberExportModal
