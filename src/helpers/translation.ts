@@ -366,6 +366,9 @@ export const commonMessages = {
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
     practice: { id: 'common.menu.practice', defaultMessage: '作業管理' },
     exerciseResult: { id: 'common.menu.exerciseResult', defaultMessage: '測驗成果' },
+    craftAdmin: { id: 'common.menu.pageAdmin', defaultMessage: '頁面管理' },
+    craftSetup: { id: 'common.menu.craftSetup', defaultMessage: '頁面設定' },
+    menuSetup: { id: 'common.menu.menuSetup', defaultMessage: '選單設定' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },

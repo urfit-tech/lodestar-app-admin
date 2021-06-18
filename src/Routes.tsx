@@ -321,14 +321,14 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'MemberPermissionAdminPage',
     authenticated: true,
   },
-
-  // app owner admin
+  // craft page
   owner_craft_setup: {
     path: '/admin/craft_setup',
     pageName: 'owner/CraftPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  // app owner admin
   owner_learning_overview: {
     path: '/admin/learning_overview',
     pageName: 'owner/LearningOverviewPage',

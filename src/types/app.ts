@@ -45,6 +45,7 @@ export type Module =
   | 'voucher'
   | 'xuemi_pt'
   | 'group_buying'
+  | 'craft_page'
 
 export type Currency = {
   name: string
