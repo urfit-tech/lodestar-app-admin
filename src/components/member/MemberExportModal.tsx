@@ -9,9 +9,21 @@ import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { MemberInfoProps, UserRole } from '../../types/member'
+import { UserRole } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 
+type ExportMemberProps = {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+  createdAt: Date | null
+  loginedAt: Date
+  phones: string[]
+  consumption: number
+  categories: { id: string; name: string }[]
+  tags: string[]
+}
 const MemberExportModal: React.FC<{
   roleSelector?: React.ReactNode
   filter?: {
@@ -26,7 +38,6 @@ const MemberExportModal: React.FC<{
   const client = useApolloClient()
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
   const [loadingMembers, setLoadingMembers] = useState(false)
-  let members: any[] = []
 
   const options = [
     { label: formatMessage(commonMessages.label.memberName), value: 'name' },
@@ -39,20 +50,23 @@ const MemberExportModal: React.FC<{
     { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },
   ]
 
-  const fetchAllMembers = async (filter?: {
-    role?: UserRole
-    name?: string
-    email?: string
-    phone?: string
-    category?: string
-    managerName?: string
-    managerId?: string
-    tag?: string
-    properties?: {
-      id: string
-      value?: string
-    }[]
-  }) => {
+  const getPartialMembers = async (
+    filter?: {
+      role?: UserRole
+      name?: string
+      email?: string
+      phone?: string
+      category?: string
+      managerName?: string
+      managerId?: string
+      tag?: string
+      properties?: {
+        id: string
+        value?: string
+      }[]
+    },
+    createdAt?: Date | null,
+  ) => {
     const condition: hasura.GET_MEMBER_COLLECTIONVariables['condition'] = {
       role: filter?.role ? { _eq: filter.role } : undefined,
       name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
@@ -95,67 +109,59 @@ const MemberExportModal: React.FC<{
           }
         : undefined,
     }
-    const { data } = await client.query({
+    const { loading, data } = await client.query<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>({
       query: GET_MEMBER_COLLECTION,
       variables: {
         condition: {
           ...condition,
-          created_at: { _gt: members.length !== 0 ? members.slice(-1)[0].created_at : undefined },
+          created_at: { _lt: createdAt },
         },
         limit: 10000,
       },
     })
-    members = [
-      ...members,
-      ...data.member.map(
-        (v: {
-          id: string
-          name: string
-          username: string
-          email: string
-          role: string
-          created_at: Date
-          logined_at: Date
-          member_phones: { id: string; phone: string }[]
-          order_logs: hasura.GET_MEMBER_COLLECTION_member_order_logs[] | []
-          member_categories: { category: { id: string; name: string } }[]
-          member_tags: { tag_name: string }[]
-          member_properties: { id: string; property_id: string; value: string }[]
-        }) => ({
-          id: v.id,
-          name: v.name || v.username,
-          email: v.email,
-          role: v.role as UserRole,
-          createdAt: v.created_at ? new Date(v.created_at) : null,
-          loginedAt: v.logined_at,
-          phones: v.member_phones.map(v => v.phone),
-          consumption: sum(
-            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-          ),
-          categories: v.member_categories.map(w => ({
-            id: w.category.id,
-            name: w.category.name,
-          })),
-          tags: v.member_tags.map(w => w.tag_name),
-          properties: v.member_properties.reduce((accumulator, currentValue) => {
-            return {
-              ...accumulator,
-              [currentValue.property_id]: currentValue.value,
-            }
-          }, {} as MemberInfoProps['properties']),
-        }),
-      ),
-    ]
+
+    const members: ExportMemberProps[] =
+      loading || !data
+        ? []
+        : data.member.map(v => ({
+            id: v.id,
+            name: v.name || v.username,
+            email: v.email,
+            role: v.role as UserRole,
+            createdAt: v.created_at ? new Date(v.created_at) : null,
+            loginedAt: v.logined_at,
+            phones: v.member_phones.map(v => v.phone),
+            consumption: sum(
+              v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+            ),
+            categories: v.member_categories.map(w => ({
+              id: w.category.id,
+              name: w.category.name,
+            })),
+            tags: v.member_tags.map(w => w.tag_name),
+          }))
+    return {
+      partialMembers: members,
+    }
+  }
+
+  const fetchAllMembers = async () => {
+    const members: ExportMemberProps[] = []
+
+    do {
+      const { partialMembers } = await getPartialMembers(
+        filter,
+        members.slice(-1)[0] ? members.slice(-1)[0].createdAt : undefined,
+      )
+      members.push(...partialMembers)
+    } while (members.length < membersCount)
+    return members
   }
 
   const exportMemberList = async () => {
     setLoadingMembers(true)
-    do {
-      await fetchAllMembers(filter)
-      if (members.length >= membersCount) {
-        setLoadingMembers(false)
-      }
-    } while (members.length < membersCount)
+    const members = await fetchAllMembers()
+    setLoadingMembers(false)
     const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
     const columns = options
       .filter(option => selectedExportFields.some(field => field === option.value))
@@ -229,7 +235,7 @@ const GET_MEMBER_COLLECTION = gql`
         count
       }
     }
-    member(where: $condition, order_by: { created_at: asc_nulls_last }, limit: $limit) {
+    member(where: $condition, order_by: { created_at: desc_nulls_last }, limit: $limit) {
       id
       name
       username
