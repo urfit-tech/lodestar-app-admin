@@ -93,21 +93,20 @@ const ActivityBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="activity" />
       </Form.Item>
-      {enabledModules.locale && (
-        <Form.Item
-          label={
-            <span>
-              {formatMessage(commonMessages.label.languages)}
-              <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
-                <QuestionCircleFilled className="ml-2" />
-              </Tooltip>
-            </span>
-          }
-          name="languages"
-        >
-          <LanguageSelector />
-        </Form.Item>
-      )}
+      <Form.Item
+        label={
+          <span>
+            {formatMessage(commonMessages.label.languages)}
+            <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
+              <QuestionCircleFilled className="ml-2" />
+            </Tooltip>
+          </span>
+        }
+        name="languages"
+        className={enabledModules.locale ? '' : 'd-none'}
+      >
+        <LanguageSelector />
+      </Form.Item>
       <Form.Item label={formatMessage(activityMessages.label.showParticipantsNumber)} name="isParticipantsVisible">
         <Radio.Group>
           <Radio value="public">{formatMessage(activityMessages.status.public)}</Radio>

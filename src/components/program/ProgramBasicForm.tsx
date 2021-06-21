@@ -45,7 +45,7 @@ const ProgramBasicForm: React.FC<{
       variables: {
         programId: program.id,
         title: values.title,
-        supportLocales: values.languages?.length === 0 ? values.languages : null,
+        supportLocales: values.languages?.length ? values.languages : null,
         isIssuesOpen: values.isIssuesOpen,
         programCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           program_id: program.id,
@@ -96,22 +96,20 @@ const ProgramBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
         <TagSelector />
       </Form.Item>
-
-      {enabledModules.locale && (
-        <Form.Item
-          label={
-            <span>
-              {formatMessage(commonMessages.label.languages)}
-              <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
-                <QuestionCircleFilled className="ml-2" />
-              </Tooltip>
-            </span>
-          }
-          name="languages"
-        >
-          <LanguageSelector />
-        </Form.Item>
-      )}
+      <Form.Item
+        label={
+          <span>
+            {formatMessage(commonMessages.label.languages)}
+            <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
+              <QuestionCircleFilled className="ml-2" />
+            </Tooltip>
+          </span>
+        }
+        name="languages"
+        className={enabledModules.locale ? '' : 'd-none'}
+      >
+        <LanguageSelector />
+      </Form.Item>
       <Form.Item label={formatMessage(programMessages.label.isIssuesOpen)} name="isIssuesOpen">
         <Radio.Group>
           <Radio value={true}>{formatMessage(programMessages.status.active)}</Radio>

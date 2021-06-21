@@ -4,13 +4,13 @@ import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 
 const LanguageSelector: React.FC<{
-  value?: string
-  onChange?: (value: string) => void
+  value?: string[]
+  onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
 
   return (
-    <Select
+    <Select<string[]>
       mode="multiple"
       value={value}
       onChange={onChange}

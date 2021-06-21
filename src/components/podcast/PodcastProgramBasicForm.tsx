@@ -119,22 +119,20 @@ const PodcastProgramBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.tags)} name="tags">
         <TagSelector />
       </Form.Item>
-      {enabledModules.locale && (
-        <Form.Item
-          label={
-            <span>
-              {formatMessage(commonMessages.label.languages)}
-              <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
-                <QuestionCircleFilled className="ml-2" />
-              </Tooltip>
-            </span>
-          }
-          name="languages"
-        >
-          <LanguageSelector />
-        </Form.Item>
-      )}
-
+      <Form.Item
+        label={
+          <span>
+            {formatMessage(commonMessages.label.languages)}
+            <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
+              <QuestionCircleFilled className="ml-2" />
+            </Tooltip>
+          </span>
+        }
+        name="languages"
+        className={enabledModules.locale ? '' : 'd-none'}
+      >
+        <LanguageSelector />
+      </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
