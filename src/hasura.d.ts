@@ -4527,35 +4527,6 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_PLAN_SOLD_AT
-// ====================================================
-
-export interface UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan {
-  __typename: "program_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_PLAN_SOLD_AT {
-  /**
-   * update data of the table: "program_plan"
-   */
-  update_program_plan: UPDATE_PROGRAM_PLAN_SOLD_AT_update_program_plan | null;
-}
-
-export interface UPDATE_PROGRAM_PLAN_SOLD_ATVariables {
-  programId: any;
-  soldAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_COVER
 // ====================================================
 
@@ -4627,11 +4598,23 @@ export interface UPDATE_PROGRAM_PERPETUAL_PLAN_update_program {
   affected_rows: number;
 }
 
+export interface UPDATE_PROGRAM_PERPETUAL_PLAN_update_program_plan {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_PROGRAM_PERPETUAL_PLAN {
   /**
    * update data of the table: "program"
    */
   update_program: UPDATE_PROGRAM_PERPETUAL_PLAN_update_program | null;
+  /**
+   * update data of the table: "program_plan"
+   */
+  update_program_plan: UPDATE_PROGRAM_PERPETUAL_PLAN_update_program_plan | null;
 }
 
 export interface UPDATE_PROGRAM_PERPETUAL_PLANVariables {
@@ -5769,6 +5752,88 @@ export interface PUBLISH_PROJECT {
 export interface PUBLISH_PROJECTVariables {
   projectId: any;
   publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PAYMENT_LOG
+// ====================================================
+
+export interface INSERT_PAYMENT_LOG_insert_payment_log_one {
+  __typename: "payment_log";
+  no: any;
+}
+
+export interface INSERT_PAYMENT_LOG {
+  /**
+   * insert a single row into the table: "payment_log"
+   */
+  insert_payment_log_one: INSERT_PAYMENT_LOG_insert_payment_log_one | null;
+}
+
+export interface INSERT_PAYMENT_LOGVariables {
+  data: payment_log_insert_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_PAYMENT_STATUS
+// ====================================================
+
+export interface GET_ORDER_PAYMENT_STATUS_order_payment_status {
+  __typename: "order_payment_status";
+  order_id: string | null;
+  status: string | null;
+  last_paid_at: any | null;
+}
+
+export interface GET_ORDER_PAYMENT_STATUS {
+  /**
+   * fetch data from the table: "order_payment_status"
+   */
+  order_payment_status: GET_ORDER_PAYMENT_STATUS_order_payment_status[];
+}
+
+export interface GET_ORDER_PAYMENT_STATUSVariables {
+  orderLogId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_LOG_STATUS
+// ====================================================
+
+export interface UPDATE_ORDER_LOG_STATUS_update_order_log {
+  __typename: "order_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_LOG_STATUS {
+  /**
+   * update data of the table: "order_log"
+   */
+  update_order_log: UPDATE_ORDER_LOG_STATUS_update_order_log | null;
+}
+
+export interface UPDATE_ORDER_LOG_STATUSVariables {
+  orderLogId: string;
+  status: string;
+  lastPaidAt: any;
 }
 
 /* tslint:disable */

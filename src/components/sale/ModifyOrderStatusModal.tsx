@@ -1,7 +1,13 @@
+import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import { Button, DatePicker, Form, InputNumber, Select } from 'antd'
-import moment from 'moment'
-import React from 'react'
+import { useForm } from 'antd/lib/form/Form'
+import gql from 'graphql-tag'
+import moment, { Moment } from 'moment'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useAuth } from '../../contexts/AuthContext'
+import hasura from '../../hasura'
+import { handleError } from '../../helpers'
 import { commonMessages, orderMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
 
@@ -16,13 +22,73 @@ const messages = defineMessages({
   hasRefunded: { id: 'order.label.hasRefunded', defaultMessage: '已退款' },
 })
 
+type FieldProps = {
+  type: 'paid' | 'refunded'
+  price: number
+  paidAt: Moment
+}
+
 const ModifyOrderStatusModal: React.VFC<{
   orderLogId: string
   defaultPrice?: number
-}> = ({ orderLogId, defaultPrice = 0 }) => {
+  onRefetch?: (status: string) => void
+}> = ({ orderLogId, defaultPrice = 0, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm<FieldProps>()
+  const apolloClient = useApolloClient()
+  const { currentMemberId } = useAuth()
+  const [insertPaymentLog] = useMutation<hasura.INSERT_PAYMENT_LOG, hasura.INSERT_PAYMENT_LOGVariables>(
+    INSERT_PAYMENT_LOG,
+  )
+  const [updateOrderLogStatus] = useMutation<hasura.UPDATE_ORDER_LOG_STATUS, hasura.UPDATE_ORDER_LOG_STATUSVariables>(
+    UPDATE_ORDER_LOG_STATUS,
+  )
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async () => {}
+  const handleSubmit = async (onFinished?: () => void) => {
+    try {
+      setLoading(true)
+      const values = await form.validateFields()
+      await insertPaymentLog({
+        variables: {
+          data: {
+            order_id: orderLogId,
+            no: `${Date.now()}`,
+            status: values.type === 'paid' ? 'SUCCESS' : 'REFUND',
+            price: values.price,
+            gateway: 'lodestar',
+            options: {
+              authorId: currentMemberId,
+            },
+            paid_at: values.paidAt.toISOString(true),
+          },
+        },
+      })
+
+      const { data } = await apolloClient.query<
+        hasura.GET_ORDER_PAYMENT_STATUS,
+        hasura.GET_ORDER_PAYMENT_STATUSVariables
+      >({
+        query: GET_ORDER_PAYMENT_STATUS,
+        variables: {
+          orderLogId,
+        },
+      })
+      const status = data.order_payment_status?.[0].status || 'UNPAID'
+      await updateOrderLogStatus({
+        variables: {
+          orderLogId,
+          status: status,
+          lastPaidAt: data.order_payment_status?.[0].last_paid_at,
+        },
+      })
+      onRefetch?.(status)
+      onFinished?.()
+    } catch (error) {
+      handleError(error)
+    }
+    setLoading(false)
+  }
 
   return (
     <AdminModal
@@ -36,7 +102,7 @@ const ModifyOrderStatusModal: React.VFC<{
           <Button onClick={() => setVisible(false)} className="mr-2">
             {formatMessage(commonMessages.ui.back)}
           </Button>
-          <Button type="primary" onClick={async () => await handleSubmit()}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </>
@@ -44,6 +110,7 @@ const ModifyOrderStatusModal: React.VFC<{
     >
       <div className="mb-5">{formatMessage(messages.modifyOrderStatusDescription)}</div>
       <Form
+        form={form}
         layout="vertical"
         initialValues={{
           type: 'paid',
@@ -84,5 +151,29 @@ const ModifyOrderStatusModal: React.VFC<{
     </AdminModal>
   )
 }
+
+const INSERT_PAYMENT_LOG = gql`
+  mutation INSERT_PAYMENT_LOG($data: payment_log_insert_input!) {
+    insert_payment_log_one(object: $data) {
+      no
+    }
+  }
+`
+const GET_ORDER_PAYMENT_STATUS = gql`
+  query GET_ORDER_PAYMENT_STATUS($orderLogId: String!) {
+    order_payment_status(where: { order_id: { _eq: $orderLogId } }) {
+      order_id
+      status
+      last_paid_at
+    }
+  }
+`
+const UPDATE_ORDER_LOG_STATUS = gql`
+  mutation UPDATE_ORDER_LOG_STATUS($orderLogId: String!, $status: String!, $lastPaidAt: timestamptz!) {
+    update_order_log(where: { id: { _eq: $orderLogId } }, _set: { status: $status, last_paid_at: $lastPaidAt }) {
+      affected_rows
+    }
+  }
+`
 
 export default ModifyOrderStatusModal

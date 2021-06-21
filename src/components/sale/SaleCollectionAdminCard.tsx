@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -55,11 +56,13 @@ const SaleCollectionAdminCard: React.VFC<{
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
+  const { currentUserRole } = useAuth()
 
   const [isLoading, setIsLoading] = useState(false)
   const [statuses, setStatuses] = useState<string[] | null>(null)
   const [orderId, setOrderId] = useState<string | null>(null)
   const [memberNameAndEmail, setMemberNameAndEmail] = useState<string | null>(null)
+  const [tmpOrderLogStatus, setTmpOrderLogStatus] = useState<{ [OrderId in string]?: string }>({})
 
   const { loadingOrderLogs, errorOrderLogs, orderLogs, totalCount, refetchOrderLogs, loadMoreOrderLogs } = useOrderLog({
     statuses,
@@ -122,15 +125,14 @@ const SaleCollectionAdminCard: React.VFC<{
       }),
     },
     {
-      title: formatMessage(commonMessages.label.orderLogPaymentDate),
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
-      render: (value: Date, record) => {
-        const orderLogPaymentDate = moment(value || record.createdAt)
+      title: formatMessage(commonMessages.label.orderLogCreatedDate),
+      key: 'createdAt',
+      render: (_, record) => {
+        const orderLogCreatedMoment = moment(record.createdAt)
         return (
           <StyledCell>
-            <div>{orderLogPaymentDate.format('YYYY-MM-DD')}</div>
-            <div>{orderLogPaymentDate.format('HH:mm')}</div>
+            <div>{orderLogCreatedMoment.format('YYYY-MM-DD')}</div>
+            <div>{orderLogCreatedMoment.format('HH:mm')}</div>
           </StyledCell>
         )
       },
@@ -159,7 +161,7 @@ const SaleCollectionAdminCard: React.VFC<{
       title: formatMessage(commonMessages.label.orderLogStatus),
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => <OrderStatusTag status={status} />,
+      render: (_, record) => <OrderStatusTag status={tmpOrderLogStatus[record.id] || record.status} />,
       filters: [
         {
           text: formatMessage(commonMessages.status.orderSuccess),
@@ -263,8 +265,17 @@ const SaleCollectionAdminCard: React.VFC<{
       </div>
 
       <div className="row col-12 align-items-center pt-3">
-        {settings['feature.modify_order_status'] === 'enabled' && (
-          <ModifyOrderStatusModal orderLogId={orderLogId} defaultPrice={totalPrice} />
+        {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
+          <ModifyOrderStatusModal
+            orderLogId={orderLogId}
+            defaultPrice={totalPrice}
+            onRefetch={status =>
+              setTmpOrderLogStatus(prev => ({
+                ...prev,
+                [orderLogId]: status,
+              }))
+            }
+          />
         )}
 
         {orderProducts.some(v =>
