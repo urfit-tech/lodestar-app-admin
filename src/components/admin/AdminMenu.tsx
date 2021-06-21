@@ -359,14 +359,14 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed: !!enabledModules.craft_page,
-      key: 'owner_craft_admin',
+      key: 'owner_craft_page_admin',
       icon: () => <PageIcon />,
-      name: formatMessage(commonMessages.menu.craftAdmin),
+      name: formatMessage(commonMessages.menu.pageAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: true,
-          key: 'owner_craft_setup',
-          name: formatMessage(commonMessages.menu.craftSetup),
+          key: 'owner_craft_pages',
+          name: formatMessage(commonMessages.menu.pageSetup),
         },
         {
           permissionIsAllowed: true,

@@ -1,6 +1,7 @@
-import Icon, { RadarChartOutlined } from '@ant-design/icons'
+import Icon from '@ant-design/icons'
 import { Editor, Element, Frame } from '@craftjs/core'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../../components/admin'
 import CraftActionsPanel from '../../../components/craft/CraftActionsPannel'
 import CraftCard from '../../../components/craft/CraftCard'
@@ -8,14 +9,18 @@ import CraftContainer from '../../../components/craft/CraftContainer'
 import CraftSettingsPanel from '../../../components/craft/CraftSettingsPanel'
 import CraftToolbox from '../../../components/craft/CraftToolbox'
 import AdminLayout from '../../../components/layout/AdminLayout'
+import { commonMessages } from '../../../helpers/translation'
+import { ReactComponent as PageIcon } from '../../../images/icon/page.svg'
 
 const CraftPage: React.VFC = () => {
+  const { formatMessage } = useIntl()
+
   return (
     <AdminLayout>
       <div className="mb-3 d-flex justify-content-between align-items-center">
         <AdminPageTitle className="d-flex align-items-center mb-0">
-          <Icon className="mr-3" component={() => <RadarChartOutlined />} />
-          <span>Craft Page</span>
+          <Icon className="mr-3" component={() => <PageIcon />} />
+          <span>{formatMessage(commonMessages.menu.pageSetup)}</span>
         </AdminPageTitle>
       </div>
       <Editor resolver={{ CraftCard, CraftContainer }}>

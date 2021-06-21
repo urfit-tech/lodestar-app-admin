@@ -366,8 +366,8 @@ export const commonMessages = {
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
     practice: { id: 'common.menu.practice', defaultMessage: '作業管理' },
     exerciseResult: { id: 'common.menu.exerciseResult', defaultMessage: '測驗成果' },
-    craftAdmin: { id: 'common.menu.pageAdmin', defaultMessage: '頁面管理' },
-    craftSetup: { id: 'common.menu.craftSetup', defaultMessage: '頁面設定' },
+    pageAdmin: { id: 'common.menu.pageAdmin', defaultMessage: '頁面管理' },
+    pageSetup: { id: 'common.menu.pageSetup', defaultMessage: '頁面設定' },
     menuSetup: { id: 'common.menu.menuSetup', defaultMessage: '選單設定' },
   }),
   product: defineMessages({
@@ -1189,6 +1189,17 @@ export const orderMessages = {
     invoiceAddress: { id: 'order.label.invoiceAddress', defaultMessage: '發票地址' },
     invoiceId: { id: 'order.label.invoiceId', defaultMessage: '發票編號' },
     invoiceStatus: { id: 'order.label.invoiceStatus', defaultMessage: '發票狀態' },
+  }),
+}
+
+export const craftPageMessages = {
+  ui: defineMessages({
+    createPage: { id: 'craft.ui.createPage', defaultMessage: '建立頁面' },
+  }),
+  label: defineMessages({
+    choiceTemplate: { id: 'craft.label.choiceTemplate', defaultMessage: '選擇版型' },
+    pageName: { id: 'craft.label.pageName', defaultMessage: '頁面名稱' },
+    urlPath: { id: 'craft.label.UrlPath', defaultMessage: '網址路徑' },
   }),
 }
 

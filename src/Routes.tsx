@@ -322,8 +322,14 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   // craft page
-  owner_craft_setup: {
-    path: '/admin/craft_setup',
+  owner_craft_pages: {
+    path: '/admin/craft_page',
+    pageName: 'owner/CraftCollectionPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_craft_page_setup: {
+    path: '/admin/craft_page/:pageId',
     pageName: 'owner/CraftPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
