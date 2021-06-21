@@ -8,6 +8,7 @@ import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -15,6 +16,7 @@ import { OrderLogProps } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
+import ModifyOrderStatusModal from './ModifyOrderStatusModal'
 import OrderStatusTag from './OrderStatusTag'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
 
@@ -52,6 +54,7 @@ const SaleCollectionAdminCard: React.VFC<{
   memberId?: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
+  const { settings } = useApp()
 
   const [isLoading, setIsLoading] = useState(false)
   const [statuses, setStatuses] = useState<string[] | null>(null)
@@ -186,6 +189,7 @@ const SaleCollectionAdminCard: React.VFC<{
   ]
 
   const expandedRow = ({
+    id: orderLogId,
     orderProducts,
     orderDiscounts,
     orderExecutors,
@@ -258,19 +262,21 @@ const SaleCollectionAdminCard: React.VFC<{
         </div>
       </div>
 
-      {orderProducts.some(v =>
-        ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.product.type),
-      ) &&
-        (orderProducts.some(v => v.options?.unsubscribedAt) ? (
-          <div className="row col-12 align-items-center pt-3">
+      <div className="row col-12 align-items-center pt-3">
+        {settings['feature.modify_order_status'] === 'enabled' && (
+          <ModifyOrderStatusModal orderLogId={orderLogId} defaultPrice={totalPrice} />
+        )}
+
+        {orderProducts.some(v =>
+          ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.product.type),
+        ) &&
+          (orderProducts.some(v => v.options?.unsubscribedAt) ? (
             <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
               {formatMessage(commonMessages.text.cancelSubscriptionDate, {
                 date: dateFormatter(orderProducts.find(v => v.options?.unsubscribedAt)?.options?.unsubscribedAt),
               })}
             </span>
-          </div>
-        ) : (
-          <div className="row col-12 align-items-center pt-3">
+          ) : (
             <SubscriptionCancelModal
               orderProducts={orderProducts.map(v => ({
                 id: v.id,
@@ -278,8 +284,8 @@ const SaleCollectionAdminCard: React.VFC<{
               }))}
               onRefetch={refetchOrderLogs}
             />
-          </div>
-        ))}
+          ))}
+      </div>
     </div>
   )
 
