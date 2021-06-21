@@ -618,7 +618,7 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
     gql`
       query GET_MEMBER_ROLE_COUNT($appId: String, $email: String, $name: String) {
         all: member_aggregate(
-          where: { _and: [{ app_id: { _eq: $appId } }, { name: { _like: $name } }, { email: { _like: $email } }] }
+          where: { _and: [{ app_id: { _eq: $appId } }, { name: { _ilike: $name } }, { email: { _ilike: $email } }] }
         ) {
           aggregate {
             count
