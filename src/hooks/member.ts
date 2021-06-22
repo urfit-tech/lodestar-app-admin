@@ -4,8 +4,8 @@ import { isEmpty } from 'lodash'
 import { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useAuth } from '../contexts/AuthContext'
-import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
+import { commonMessages } from '../helpers/translation'
 import { CouponPlanProps } from '../types/checkout'
 import {
   MemberAdminProps,
@@ -618,7 +618,7 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
     gql`
       query GET_MEMBER_ROLE_COUNT($appId: String, $email: String, $name: String) {
         all: member_aggregate(
-          where: { _and: [{ app_id: { _eq: $appId } }, { name: { _like: $name } }, { email: { _like: $email } }] }
+          where: { _and: [{ app_id: { _eq: $appId } }, { name: { _ilike: $name } }, { email: { _ilike: $email } }] }
         ) {
           aggregate {
             count
@@ -677,46 +677,37 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
     },
   )
 
-  const count =
-    loading || error || !data
-      ? {
-          all: 0,
-          appOwner: 0,
-          contentCreator: 0,
-          generalMember: 0,
-        }
-      : {
-          all: data?.all?.aggregate?.count || 0,
-          appOwner: data?.app_owner?.aggregate?.count || 0,
-          contentCreator: data?.content_creator?.aggregate?.count || 0,
-          generalMember: data?.general_member?.aggregate?.count || 0,
-        }
+  const menu: {
+    role: string | null
+    count: number
+    intlKey: { id: string; defaultMessage: string }
+  }[] = [
+    {
+      role: null,
+      count: data?.all?.aggregate?.count || 0,
+      intlKey: commonMessages.label.allMembers,
+    },
+    {
+      role: 'app-owner',
+      count: data?.app_owner?.aggregate?.count || 0,
+      intlKey: commonMessages.label.appOwner,
+    },
+    {
+      role: 'content-creator',
+      count: data?.content_creator?.aggregate?.count || 0,
+      intlKey: commonMessages.label.contentCreator,
+    },
+    {
+      role: 'general-member',
+      count: data?.general_member?.aggregate?.count || 0,
+      intlKey: commonMessages.label.generalMember,
+    },
+  ]
 
   return {
     loading,
     error,
-    menu: [
-      {
-        role: null,
-        count: count.all,
-        intlKey: commonMessages.label.allMembers,
-      },
-      {
-        role: 'app-owner',
-        count: count.appOwner,
-        intlKey: commonMessages.label.appOwner,
-      },
-      {
-        role: 'content-creator',
-        count: count.contentCreator,
-        intlKey: commonMessages.label.contentCreator,
-      },
-      {
-        role: 'general-member',
-        count: count.generalMember,
-        intlKey: commonMessages.label.generalMember,
-      },
-    ],
+    menu,
     refetch,
   }
 }
@@ -905,164 +896,6 @@ export const useMemberCollection = (filter?: {
   }
 }
 
-export const useMemberAllCollection = (filter?: {
-  role?: UserRole
-  name?: string
-  email?: string
-  phone?: string
-  category?: string
-  managerName?: string
-  managerId?: string
-  tag?: string
-  properties?: {
-    id: string
-    value?: string
-  }[]
-}) => {
-  const condition: hasura.GET_MEMBER_COLLECTIONVariables['condition'] = {
-    role: filter?.role ? { _eq: filter.role } : undefined,
-    name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
-    email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
-    manager: filter?.managerName
-      ? {
-          name: { _ilike: `%${filter.managerName}%` },
-        }
-      : undefined,
-    manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
-    member_phones: filter?.phone
-      ? {
-          phone: { _ilike: `%${filter.phone}%` },
-        }
-      : undefined,
-    member_categories: filter?.category
-      ? {
-          category: {
-            name: {
-              _ilike: `%${filter.category}%`,
-            },
-          },
-        }
-      : undefined,
-    member_tags: filter?.tag
-      ? {
-          tag_name: {
-            _ilike: filter.tag,
-          },
-        }
-      : undefined,
-    member_properties: filter?.properties?.length
-      ? {
-          _and: filter.properties
-            .filter(property => property.value)
-            .map(property => ({
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            })),
-        }
-      : undefined,
-  }
-
-  const { loading, error, data } = useQuery<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>(
-    gql`
-      query GET_MEMBER_COLLECTION($condition: member_bool_exp) {
-        member_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-        member(where: $condition, order_by: { created_at: desc_nulls_last }) {
-          id
-          picture_url
-          name
-          username
-          email
-          created_at
-          logined_at
-          role
-          manager {
-            id
-            name
-          }
-          assigned_at
-          member_phones {
-            id
-            phone
-          }
-          member_categories {
-            id
-            category {
-              id
-              name
-            }
-          }
-          member_tags {
-            id
-            tag_name
-          }
-          member_properties {
-            id
-            property_id
-            value
-          }
-          order_logs(where: { status: { _eq: "SUCCESS" } }) {
-            order_products_aggregate {
-              aggregate {
-                sum {
-                  price
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        condition,
-      },
-      context: {
-        important: true,
-      },
-    },
-  )
-
-  const members: MemberInfoProps[] =
-    loading || error || !data
-      ? []
-      : data.member.map(v => ({
-          id: v.id,
-          avatarUrl: v.picture_url,
-          name: v.name || v.username,
-          email: v.email,
-          role: v.role as UserRole,
-          createdAt: v.created_at ? new Date(v.created_at) : null,
-          loginedAt: v.logined_at,
-          manager: v.manager,
-          assignedAt: v.assigned_at,
-          phones: v.member_phones.map(v => v.phone),
-          consumption: sum(
-            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-          ),
-          categories: v.member_categories.map(w => ({
-            id: w.category.id,
-            name: w.category.name,
-          })),
-          tags: v.member_tags.map(w => w.tag_name),
-          properties: v.member_properties.reduce((accumulator, currentValue) => {
-            return {
-              ...accumulator,
-              [currentValue.property_id]: currentValue.value,
-            }
-          }, {} as MemberInfoProps['properties']),
-        }))
-
-  return {
-    loadingMembers: loading,
-    errorMembers: error,
-    members,
-  }
-}
-
 export const useMemberSummaryCollection = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MEMBER_SUMMARY_COLLECTION>(
     gql`
@@ -1112,13 +945,11 @@ export const useProperty = () => {
   )
 
   const properties =
-    loading || error || !data
-      ? []
-      : data.property.map(v => ({
-          id: v.id,
-          name: v.name,
-          placeholder: v.placeholder?.replaceAll(/[()]/g, ''),
-        }))
+    data?.property.map(v => ({
+      id: v.id,
+      name: v.name,
+      placeholder: v.placeholder?.replace(/[()]/g, ''),
+    })) || []
 
   return {
     loadingProperties: loading,

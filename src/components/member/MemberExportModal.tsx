@@ -1,15 +1,29 @@
 import { ExportOutlined } from '@ant-design/icons'
+import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Checkbox, Col, Form, Row } from 'antd'
+import gql from 'graphql-tag'
 import moment from 'moment'
-import { repeat } from 'ramda'
+import { repeat, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { downloadCSV, toCSV } from '../../helpers'
+import hasura from '../../hasura'
+import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useMemberAllCollection } from '../../hooks/member'
 import { UserRole } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 
+type ExportMemberProps = {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+  createdAt: Date | null
+  loginedAt: Date
+  phones: string[]
+  consumption: number
+  categories: { id: string; name: string }[]
+  tags: string[]
+}
 const MemberExportModal: React.FC<{
   roleSelector?: React.ReactNode
   filter?: {
@@ -20,10 +34,9 @@ const MemberExportModal: React.FC<{
   }
 }> = ({ roleSelector, filter }) => {
   const { formatMessage } = useIntl()
-  const { loadingMembers, members } = useMemberAllCollection(filter)
+  const client = useApolloClient()
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
-
-  const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
+  const [loadingMembers, setLoadingMembers] = useState(false)
 
   const options = [
     { label: formatMessage(commonMessages.label.memberName), value: 'name' },
@@ -36,7 +49,121 @@ const MemberExportModal: React.FC<{
     { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },
   ]
 
-  const exportMemberList = () => {
+  const getPartialMembers = async (
+    filter?: {
+      role?: UserRole
+      name?: string
+      email?: string
+      phone?: string
+      category?: string
+      managerName?: string
+      managerId?: string
+      tag?: string
+      properties?: {
+        id: string
+        value?: string
+      }[]
+    },
+    createdAt?: Date | null,
+  ) => {
+    const condition: hasura.GET_MEMBER_COLLECTIONVariables['condition'] = {
+      role: filter?.role ? { _eq: filter.role } : undefined,
+      name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+      email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+      manager: filter?.managerName
+        ? {
+            name: { _ilike: `%${filter.managerName}%` },
+          }
+        : undefined,
+      manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
+      member_phones: filter?.phone
+        ? {
+            phone: { _ilike: `%${filter.phone}%` },
+          }
+        : undefined,
+      member_categories: filter?.category
+        ? {
+            category: {
+              name: {
+                _ilike: `%${filter.category}%`,
+              },
+            },
+          }
+        : undefined,
+      member_tags: filter?.tag
+        ? {
+            tag_name: {
+              _ilike: filter.tag,
+            },
+          }
+        : undefined,
+      member_properties: filter?.properties?.length
+        ? {
+            _and: filter.properties
+              .filter(property => property.value)
+              .map(property => ({
+                property_id: { _eq: property.id },
+                value: { _ilike: `%${property.value}%` },
+              })),
+          }
+        : undefined,
+    }
+    const { data } = await client.query<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>({
+      query: GET_MEMBER_COLLECTION,
+      variables: {
+        condition: {
+          ...condition,
+          created_at: { _lt: createdAt },
+        },
+        limit: 10000,
+      },
+    })
+
+    const partialMembers: ExportMemberProps[] =
+      data?.member.map(v => ({
+        id: v.id,
+        name: v.name || v.username,
+        email: v.email,
+        role: v.role as UserRole,
+        createdAt: v.created_at ? new Date(v.created_at) : null,
+        loginedAt: v.logined_at,
+        phones: v.member_phones.map(v => v.phone),
+        consumption: sum(
+          v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+        ),
+        categories: v.member_categories.map(w => ({
+          id: w.category.id,
+          name: w.category.name,
+        })),
+        tags: v.member_tags.map(w => w.tag_name),
+      })) || []
+
+    return {
+      partialMembers,
+      hasMore: partialMembers.length === 10000,
+    }
+  }
+
+  const exportMemberList = async () => {
+    setLoadingMembers(true)
+    const members: ExportMemberProps[] = []
+    try {
+      while (1) {
+        const { partialMembers, hasMore } = await getPartialMembers(
+          filter,
+          members.length ? members[members.length - 1].createdAt : undefined,
+        )
+        members.push(...partialMembers)
+        if (!hasMore) {
+          break
+        }
+      }
+    } catch (error) {
+      handleError(error)
+    }
+    setLoadingMembers(false)
+
+    const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
     const columns = options
       .filter(option => selectedExportFields.some(field => field === option.value))
       .map(option => {
@@ -46,6 +173,7 @@ const MemberExportModal: React.FC<{
         return option.label
       })
       .flat()
+
     const data: string[][] = [
       columns,
       ...members.map(member => {
@@ -56,7 +184,7 @@ const MemberExportModal: React.FC<{
         selectedExportFields.some(field => field === 'phone') &&
           row.push(...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length))
         selectedExportFields.some(field => field === 'category') &&
-          row.push(member.categories.map(v => v.name).toString())
+          row.push(member.categories.map((v: { name: string }) => v.name).toString())
         selectedExportFields.some(field => field === 'orderLogCreatedDate') &&
           row.push(member.createdAt ? moment(member.createdAt).format('YYYYMMDD HH:mm') : '')
         selectedExportFields.some(field => field === 'lastLogin') &&
@@ -65,8 +193,7 @@ const MemberExportModal: React.FC<{
         return row
       }),
     ]
-
-    downloadCSV('members', toCSV(data))
+    downloadCSV('members.csv', toCSV(data))
   }
 
   return (
@@ -102,5 +229,53 @@ const MemberExportModal: React.FC<{
     </AdminModal>
   )
 }
+
+const GET_MEMBER_COLLECTION = gql`
+  query GET_MEMBER_COLLECTION($condition: member_bool_exp, $limit: Int) {
+    member_aggregate(where: $condition) {
+      aggregate {
+        count
+      }
+    }
+    member(where: $condition, order_by: { created_at: desc_nulls_last }, limit: $limit) {
+      id
+      name
+      username
+      email
+      created_at
+      logined_at
+      role
+      member_phones {
+        id
+        phone
+      }
+      member_categories {
+        id
+        category {
+          id
+          name
+        }
+      }
+      member_tags {
+        id
+        tag_name
+      }
+      member_properties {
+        id
+        property_id
+        value
+      }
+      order_logs(where: { status: { _eq: "SUCCESS" } }) {
+        order_products_aggregate {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 export default MemberExportModal
