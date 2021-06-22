@@ -4,8 +4,8 @@ import { isEmpty } from 'lodash'
 import { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useAuth } from '../contexts/AuthContext'
-import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
+import { commonMessages } from '../helpers/translation'
 import { CouponPlanProps } from '../types/checkout'
 import {
   MemberAdminProps,
@@ -677,46 +677,37 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
     },
   )
 
-  const count =
-    loading || error || !data
-      ? {
-          all: 0,
-          appOwner: 0,
-          contentCreator: 0,
-          generalMember: 0,
-        }
-      : {
-          all: data?.all?.aggregate?.count || 0,
-          appOwner: data?.app_owner?.aggregate?.count || 0,
-          contentCreator: data?.content_creator?.aggregate?.count || 0,
-          generalMember: data?.general_member?.aggregate?.count || 0,
-        }
+  const menu: {
+    role: string | null
+    count: number
+    intlKey: { id: string; defaultMessage: string }
+  }[] = [
+    {
+      role: null,
+      count: data?.all?.aggregate?.count || 0,
+      intlKey: commonMessages.label.allMembers,
+    },
+    {
+      role: 'app-owner',
+      count: data?.app_owner?.aggregate?.count || 0,
+      intlKey: commonMessages.label.appOwner,
+    },
+    {
+      role: 'content-creator',
+      count: data?.content_creator?.aggregate?.count || 0,
+      intlKey: commonMessages.label.contentCreator,
+    },
+    {
+      role: 'general-member',
+      count: data?.general_member?.aggregate?.count || 0,
+      intlKey: commonMessages.label.generalMember,
+    },
+  ]
 
   return {
     loading,
     error,
-    menu: [
-      {
-        role: null,
-        count: count.all,
-        intlKey: commonMessages.label.allMembers,
-      },
-      {
-        role: 'app-owner',
-        count: count.appOwner,
-        intlKey: commonMessages.label.appOwner,
-      },
-      {
-        role: 'content-creator',
-        count: count.contentCreator,
-        intlKey: commonMessages.label.contentCreator,
-      },
-      {
-        role: 'general-member',
-        count: count.generalMember,
-        intlKey: commonMessages.label.generalMember,
-      },
-    ],
+    menu,
     refetch,
   }
 }
@@ -954,13 +945,11 @@ export const useProperty = () => {
   )
 
   const properties =
-    loading || error || !data
-      ? []
-      : data.property.map(v => ({
-          id: v.id,
-          name: v.name,
-          placeholder: v.placeholder?.replaceAll(/[()]/g, ''),
-        }))
+    data?.property.map(v => ({
+      id: v.id,
+      name: v.name,
+      placeholder: v.placeholder?.replace(/[()]/g, ''),
+    })) || []
 
   return {
     loadingProperties: loading,

@@ -7,7 +7,7 @@ import { repeat, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-import { downloadCSV, toCSV } from '../../helpers'
+import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { UserRole } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
@@ -32,8 +32,7 @@ const MemberExportModal: React.FC<{
     email?: string
     managerId?: string
   }
-  membersCount: number
-}> = ({ roleSelector, filter, membersCount }) => {
+}> = ({ roleSelector, filter }) => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
@@ -109,7 +108,7 @@ const MemberExportModal: React.FC<{
           }
         : undefined,
     }
-    const { loading, data } = await client.query<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>({
+    const { data } = await client.query<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>({
       query: GET_MEMBER_COLLECTION,
       variables: {
         condition: {
@@ -120,48 +119,50 @@ const MemberExportModal: React.FC<{
       },
     })
 
-    const members: ExportMemberProps[] =
-      loading || !data
-        ? []
-        : data.member.map(v => ({
-            id: v.id,
-            name: v.name || v.username,
-            email: v.email,
-            role: v.role as UserRole,
-            createdAt: v.created_at ? new Date(v.created_at) : null,
-            loginedAt: v.logined_at,
-            phones: v.member_phones.map(v => v.phone),
-            consumption: sum(
-              v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-            ),
-            categories: v.member_categories.map(w => ({
-              id: w.category.id,
-              name: w.category.name,
-            })),
-            tags: v.member_tags.map(w => w.tag_name),
-          }))
+    const partialMembers: ExportMemberProps[] =
+      data?.member.map(v => ({
+        id: v.id,
+        name: v.name || v.username,
+        email: v.email,
+        role: v.role as UserRole,
+        createdAt: v.created_at ? new Date(v.created_at) : null,
+        loginedAt: v.logined_at,
+        phones: v.member_phones.map(v => v.phone),
+        consumption: sum(
+          v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+        ),
+        categories: v.member_categories.map(w => ({
+          id: w.category.id,
+          name: w.category.name,
+        })),
+        tags: v.member_tags.map(w => w.tag_name),
+      })) || []
+
     return {
-      partialMembers: members,
+      partialMembers,
+      hasMore: partialMembers.length === 10000,
     }
-  }
-
-  const fetchAllMembers = async () => {
-    const members: ExportMemberProps[] = []
-
-    do {
-      const { partialMembers } = await getPartialMembers(
-        filter,
-        members.slice(-1)[0] ? members.slice(-1)[0].createdAt : undefined,
-      )
-      members.push(...partialMembers)
-    } while (members.length < membersCount)
-    return members
   }
 
   const exportMemberList = async () => {
     setLoadingMembers(true)
-    const members = await fetchAllMembers()
+    const members: ExportMemberProps[] = []
+    try {
+      while (1) {
+        const { partialMembers, hasMore } = await getPartialMembers(
+          filter,
+          members.length ? members[members.length - 1].createdAt : undefined,
+        )
+        members.push(...partialMembers)
+        if (!hasMore) {
+          break
+        }
+      }
+    } catch (error) {
+      handleError(error)
+    }
     setLoadingMembers(false)
+
     const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
     const columns = options
       .filter(option => selectedExportFields.some(field => field === option.value))
@@ -172,6 +173,7 @@ const MemberExportModal: React.FC<{
         return option.label
       })
       .flat()
+
     const data: string[][] = [
       columns,
       ...members.map(member => {
@@ -191,7 +193,7 @@ const MemberExportModal: React.FC<{
         return row
       }),
     ]
-    downloadCSV('members', toCSV(data))
+    downloadCSV('members.csv', toCSV(data))
   }
 
   return (
