@@ -73,6 +73,7 @@ const ModifyOrderStatusModal: React.VFC<{
         variables: {
           orderLogId,
         },
+        fetchPolicy: 'no-cache',
       })
       const status = data.order_payment_status?.[0].status || 'UNPAID'
       await updateOrderLogStatus({
@@ -93,7 +94,9 @@ const ModifyOrderStatusModal: React.VFC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button onClick={() => setVisible(true)}>{formatMessage(messages.modifyOrderStatus)}</Button>
+        <Button size="middle" onClick={() => setVisible(true)}>
+          {formatMessage(messages.modifyOrderStatus)}
+        </Button>
       )}
       title={formatMessage(messages.modifyOrderStatus)}
       footer={null}
