@@ -69,11 +69,8 @@ const MemberPermissionForm: React.FC<{
       colon={false}
       hideRequiredMark
       initialValues={{
-        roleId: memberAdmin.role || 'general-member',
-        permissionIds: [
-          ...(defaultRolePermissions[memberAdmin.role || 'general-member'] || []),
-          ...memberAdmin.permissionIds,
-        ],
+        roleId: memberAdmin.role,
+        permissionIds: [...(defaultRolePermissions[memberAdmin.role] || []), ...memberAdmin.permissionIds],
       }}
       onValuesChange={values => {
         if (values.roleId) {
@@ -148,13 +145,15 @@ const useDefaultPermissions = () => {
     }
   `)
 
-  const defaultRolePermissions: {
-    [roleId in UserRole]?: string[]
-  } =
-    data?.role_permission.reduce(
-      (accumulator: { [roleId in UserRole]?: string[] }, currentValue) => ({
+  const defaultRolePermissions =
+    data?.role_permission.reduce<
+      {
+        [roleId in string]?: string[]
+      }
+    >(
+      (accumulator, currentValue) => ({
         ...accumulator,
-        [currentValue.role_id]: [...(accumulator[currentValue.role_id as UserRole] || []), currentValue.permission_id],
+        [currentValue.role_id]: [...(accumulator[currentValue.role_id] || []), currentValue.permission_id],
       }),
       {},
     ) || {}
