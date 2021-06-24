@@ -658,6 +658,60 @@ export interface GET_EXPIRING_SOON_MEMBERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_EXTRA_PERMISSIONS_MEMBERS
+// ====================================================
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_generalMember_member_permission_extras {
+  __typename: "member_permission_extra";
+  permission_id: string;
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_generalMember {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  username: string;
+  /**
+   * An array relationship
+   */
+  member_permission_extras: GET_EXTRA_PERMISSIONS_MEMBERS_generalMember_member_permission_extras[];
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator_member_permission_extras {
+  __typename: "member_permission_extra";
+  permission_id: string;
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  username: string;
+  /**
+   * An array relationship
+   */
+  member_permission_extras: GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator_member_permission_extras[];
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS {
+  /**
+   * fetch data from the table: "member"
+   */
+  generalMember: GET_EXTRA_PERMISSIONS_MEMBERS_generalMember[];
+  /**
+   * fetch data from the table: "member"
+   */
+  contentCreator: GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_NAMES
 // ====================================================
 
@@ -3408,6 +3462,7 @@ export enum member_task_constraint {
  * update columns of table "member_task"
  */
 export enum member_task_update_column {
+  author_id = "author_id",
   category_id = "category_id",
   created_at = "created_at",
   description = "description",
@@ -3734,10 +3789,13 @@ export enum order_log_update_column {
   last_paid_at = "last_paid_at",
   member_id = "member_id",
   message = "message",
+  options = "options",
+  parent_order_id = "parent_order_id",
   payment_model = "payment_model",
   retried_at = "retried_at",
   shipping = "shipping",
   status = "status",
+  transferred_at = "transferred_at",
   updated_at = "updated_at",
 }
 
@@ -3876,6 +3934,7 @@ export enum payment_log_constraint {
 export enum payment_log_update_column {
   created_at = "created_at",
   gateway = "gateway",
+  method = "method",
   no = "no",
   options = "options",
   order_id = "order_id",
@@ -10586,6 +10645,8 @@ export interface member_task_bool_exp {
   _and?: (member_task_bool_exp | null)[] | null;
   _not?: member_task_bool_exp | null;
   _or?: (member_task_bool_exp | null)[] | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
   category?: category_bool_exp | null;
   category_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -10606,6 +10667,8 @@ export interface member_task_bool_exp {
  * input type for inserting data into table "member_task"
  */
 export interface member_task_insert_input {
+  author?: member_obj_rel_insert_input | null;
+  author_id?: string | null;
   category?: category_obj_rel_insert_input | null;
   category_id?: string | null;
   created_at?: any | null;
@@ -10626,6 +10689,7 @@ export interface member_task_insert_input {
  * order by max() on columns of table "member_task"
  */
 export interface member_task_max_order_by {
+  author_id?: order_by | null;
   category_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -10643,6 +10707,7 @@ export interface member_task_max_order_by {
  * order by min() on columns of table "member_task"
  */
 export interface member_task_min_order_by {
+  author_id?: order_by | null;
   category_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -11723,15 +11788,20 @@ export interface order_log_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   order_contacts?: order_contact_bool_exp | null;
   order_discounts?: order_discount_bool_exp | null;
   order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
+  parent_order_id?: String_comparison_exp | null;
+  parent_order_log?: order_log_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
   retried_at?: timestamptz_comparison_exp | null;
   shipping?: jsonb_comparison_exp | null;
   status?: String_comparison_exp | null;
+  sub_order_logs?: order_log_bool_exp | null;
+  transferred_at?: timestamptz_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -11756,15 +11826,20 @@ export interface order_log_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
+  options?: any | null;
   order_contacts?: order_contact_arr_rel_insert_input | null;
   order_discounts?: order_discount_arr_rel_insert_input | null;
   order_executors?: order_executor_arr_rel_insert_input | null;
   order_products?: order_product_arr_rel_insert_input | null;
+  parent_order_id?: string | null;
+  parent_order_log?: order_log_obj_rel_insert_input | null;
   payment_logs?: payment_log_arr_rel_insert_input | null;
   payment_model?: any | null;
   retried_at?: any | null;
   shipping?: any | null;
   status?: string | null;
+  sub_order_logs?: order_log_arr_rel_insert_input | null;
+  transferred_at?: any | null;
   updated_at?: any | null;
 }
 
@@ -11785,8 +11860,10 @@ export interface order_log_max_order_by {
   last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
+  parent_order_id?: order_by | null;
   retried_at?: order_by | null;
   status?: order_by | null;
+  transferred_at?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -11807,8 +11884,10 @@ export interface order_log_min_order_by {
   last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
+  parent_order_id?: order_by | null;
   retried_at?: order_by | null;
   status?: order_by | null;
+  transferred_at?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -12274,6 +12353,7 @@ export interface payment_log_bool_exp {
   _or?: (payment_log_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
   gateway?: String_comparison_exp | null;
+  method?: String_comparison_exp | null;
   no?: numeric_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   order_id?: String_comparison_exp | null;
@@ -12291,6 +12371,7 @@ export interface payment_log_bool_exp {
 export interface payment_log_insert_input {
   created_at?: any | null;
   gateway?: string | null;
+  method?: string | null;
   no?: any | null;
   options?: any | null;
   order_id?: string | null;

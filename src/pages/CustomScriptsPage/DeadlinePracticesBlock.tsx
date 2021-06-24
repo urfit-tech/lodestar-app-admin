@@ -1,7 +1,7 @@
 import { ExportOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Skeleton, Table } from 'antd'
-import { ColumnType } from 'antd/es/table'
+import { ColumnsType } from 'antd/es/table'
 import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
 import { ProgramTreeSelector } from 'lodestar-app-admin/src/components/program/ProgramSelector'
@@ -52,7 +52,7 @@ const ResultBlock: React.VFC<{
     return <div>讀取錯誤</div>
   }
 
-  const columns: ColumnType<ImplementPracticeProps>[] = [
+  const columns: ColumnsType<ImplementPracticeProps> = [
     {
       title: '作業名稱',
       dataIndex: 'title',
