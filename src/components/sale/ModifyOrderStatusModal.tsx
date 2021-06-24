@@ -94,7 +94,7 @@ const ModifyOrderStatusModal: React.VFC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button size="middle" onClick={() => setVisible(true)}>
+        <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
           {formatMessage(messages.modifyOrderStatus)}
         </Button>
       )}

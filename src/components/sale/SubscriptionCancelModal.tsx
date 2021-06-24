@@ -40,12 +40,6 @@ const StyledSaleAdminModal = styled(AdminModal)`
     }
   }
 `
-const StyledSaleAdminButton = styled(Button)`
-  font-size: 14px;
-  border-radius: 4px;
-  height: 36px;
-  padding: 8px 16px;
-`
 
 const SubscriptionCancelModal: React.FC<{
   orderProducts: {
@@ -88,18 +82,18 @@ const SubscriptionCancelModal: React.FC<{
       width="384px"
       bodyStyle={{ padding: '32px 32px 0px 32px', height: '223px' }}
       renderTrigger={({ setVisible }) => (
-        <StyledSaleAdminButton type="default" onClick={() => setVisible(true)} size="middle">
+        <Button size="middle" onClick={() => setVisible(true)}>
           {formatMessage(messages.cancelSubscription)}
-        </StyledSaleAdminButton>
+        </Button>
       )}
       title={formatMessage(messages.cancelSubscriptionTitle)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
-          <StyledSaleAdminButton onClick={() => setVisible(false)} style={{ marginRight: '12px' }}>
+          <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.back)}
-          </StyledSaleAdminButton>
-          <StyledSaleAdminButton
+          </Button>
+          <Button
             danger
             type="primary"
             onClick={async () => {
@@ -108,7 +102,7 @@ const SubscriptionCancelModal: React.FC<{
             }}
           >
             {formatMessage(messages.cancelSubscription)}
-          </StyledSaleAdminButton>
+          </Button>
         </>
       )}
     >
