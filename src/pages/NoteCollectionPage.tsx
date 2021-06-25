@@ -346,17 +346,21 @@ const NoteCollectionPage: React.FC = () => {
           </Select>
         </>
       ),
-      render: (text, record, index) =>
-        record.metadata?.recordfile && (
-          <div onClick={event => event.stopPropagation()}>
-            <LoadRecordFileButton
-              memberName={record.member?.name || ''}
-              startTime={record.metadata?.starttime || ''}
-              filePath={record.metadata.recordfile}
-              playbackRate={playbackRate}
-            />
-          </div>
-        ),
+      render: (text, record, index) => {
+        const recordAttachmentId = record.attachments.find(v => v.data.name.includes('recordFile'))?.id
+        return (
+          recordAttachmentId && (
+            <div onClick={event => event.stopPropagation()}>
+              <LoadRecordFileButton
+                memberName={record.member?.name || ''}
+                startTime={record.metadata?.starttime || ''}
+                playbackRate={playbackRate}
+                attachmentId={recordAttachmentId}
+              />
+            </div>
+          )
+        )
+      },
     },
     {
       key: 'attachments',
@@ -526,9 +530,9 @@ const NoteCollectionPage: React.FC = () => {
 const LoadRecordFileButton: React.FC<{
   memberName: string
   startTime: string
-  filePath: string
   playbackRate: number
-}> = ({ memberName, startTime, filePath, playbackRate }) => {
+  attachmentId: string
+}> = ({ memberName, startTime, playbackRate, attachmentId }) => {
   const { formatMessage } = useIntl()
   const { authToken, apiHost } = useAuth()
   const { id: appId } = useApp()
@@ -554,15 +558,10 @@ const LoadRecordFileButton: React.FC<{
   const loadAudioData = async () => {
     setAudioUrl('')
     try {
-      const response = await Axios.post(
-        `${apiHost}/call/download-record`,
-        { appId, filePath },
-        {
-          headers: { authorization: `Bearer ${authToken}` },
-          responseType: 'blob',
-        },
-      )
-
+      const link: string = await getFileDownloadableLink(`attachments/${attachmentId}`, authToken, apiHost)
+      const response = await Axios.get(link, {
+        responseType: 'blob',
+      })
       const blob = new Blob([response.data], { type: 'audio/wav' })
       setAudioUrl(window.URL.createObjectURL(blob))
     } catch (error) {

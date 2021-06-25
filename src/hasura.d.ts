@@ -658,6 +658,60 @@ export interface GET_EXPIRING_SOON_MEMBERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_EXTRA_PERMISSIONS_MEMBERS
+// ====================================================
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_generalMember_member_permission_extras {
+  __typename: "member_permission_extra";
+  permission_id: string;
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_generalMember {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  username: string;
+  /**
+   * An array relationship
+   */
+  member_permission_extras: GET_EXTRA_PERMISSIONS_MEMBERS_generalMember_member_permission_extras[];
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator_member_permission_extras {
+  __typename: "member_permission_extra";
+  permission_id: string;
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  username: string;
+  /**
+   * An array relationship
+   */
+  member_permission_extras: GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator_member_permission_extras[];
+}
+
+export interface GET_EXTRA_PERMISSIONS_MEMBERS {
+  /**
+   * fetch data from the table: "member"
+   */
+  generalMember: GET_EXTRA_PERMISSIONS_MEMBERS_generalMember[];
+  /**
+   * fetch data from the table: "member"
+   */
+  contentCreator: GET_EXTRA_PERMISSIONS_MEMBERS_contentCreator[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_NAMES
 // ====================================================
 
