@@ -443,8 +443,10 @@ const useOrderLog = (filters?: {
         price: w.price,
       })),
 
-      totalPrice:
+      totalPrice: Math.max(
         sum(v.order_products.map(prop('price'))) - sum(v.order_discounts.map(prop('price'))) + (v.shipping?.fee || 0),
+        0,
+      ),
 
       expiredAt: v.expired_at,
       paymentMethod: v.payment_logs[0]?.gateway,
