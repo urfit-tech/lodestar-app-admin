@@ -1,6 +1,6 @@
 import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Badge, Button, Skeleton, Tabs } from 'antd'
+import { Badge, Button, notification, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
@@ -8,7 +8,7 @@ import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
 import { prop, sortBy } from 'ramda'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
@@ -21,6 +21,7 @@ const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  useMemberContractNotification()
   return (
     <AdminLayout>
       <div className="mb-3 d-flex justify-content-between align-items-center">
@@ -195,6 +196,67 @@ const SalesLeadTabs: React.VFC<{
   )
 }
 
+const useMemberContractNotification = () => {
+  const { data } = useQuery<hasura.GET_TODAY_MEMBER_CONTRACT, hasura.GET_TODAY_MEMBER_CONTRACTVariables>(
+    gql`
+      query GET_TODAY_MEMBER_CONTRACT($today: timestamptz!) {
+        order_executor_sharing(where: { created_at: { _gte: $today } }) {
+          created_at
+          order_id
+          executor {
+            name
+          }
+          total_price
+          order_log {
+            order_products(where: { price: { _gte: 10000 } }) {
+              name
+            }
+          }
+        }
+      }
+    `,
+    {
+      pollInterval: 30000,
+      variables: { today: moment().subtract(1, 'day').startOf('day') },
+    },
+  )
+  useEffect(() => {
+    const notifications =
+      data?.order_executor_sharing.reduce((accum, v) => {
+        if (!v.order_id) {
+          return accum
+        }
+        if (!accum[v.order_id]) {
+          accum[v.order_id] = {
+            names: [],
+            products: [],
+            createdAt: new Date(),
+            totalPrice: 0,
+          }
+        }
+        accum[v.order_id].createdAt = v.created_at
+        accum[v.order_id].totalPrice = v.total_price
+        v.executor?.name && accum[v.order_id].names.push(v.executor.name)
+        accum[v.order_id].products = v.order_log?.order_products.map(v => v.name) || []
+        return accum
+      }, {} as { [orderId: string]: { createdAt: Date; totalPrice: number; names: string[]; products: string[] } }) ||
+      {}
+    Object.values(notifications).forEach(v => {
+      notification.success({
+        duration: 0,
+        message: `${v.names.join('、')} 喜提 ${new Intl.NumberFormat('zh').format(v.totalPrice)}`,
+        description: (
+          <div>
+            {v.products.map(product => (
+              <div key={product}>{product}</div>
+            ))}
+            <small>{moment(v.createdAt).format('HH:mm:ss')}</small>
+          </div>
+        ),
+      })
+    })
+  }, [data])
+}
 const useSalesLeads = (managerId: string) => {
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
