@@ -217,7 +217,7 @@ const useMemberContractNotification = () => {
     `,
     {
       pollInterval: 30000,
-      variables: { today: moment().subtract(1, 'day').startOf('day') },
+      variables: { today: moment().startOf('day') },
     },
   )
   useEffect(() => {
