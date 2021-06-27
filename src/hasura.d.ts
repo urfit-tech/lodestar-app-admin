@@ -2301,6 +2301,73 @@ export interface GET_ASSIGNED_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_CONTRACT
+// ====================================================
+
+export interface GET_MEMBER_CONTRACT_xuemi_sales_member {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_CONTRACT_xuemi_sales {
+  __typename: "xuemi_sales";
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_CONTRACT_xuemi_sales_member | null;
+}
+
+export interface GET_MEMBER_CONTRACT_member_contract_member {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_CONTRACT_member_contract_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_CONTRACT_member_contract {
+  __typename: "member_contract";
+  id: any;
+  agreed_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_CONTRACT_member_contract_member;
+  /**
+   * An object relationship
+   */
+  author: GET_MEMBER_CONTRACT_member_contract_author | null;
+  options: any | null;
+  values: any | null;
+}
+
+export interface GET_MEMBER_CONTRACT {
+  /**
+   * fetch data from the table: "xuemi.sales"
+   */
+  xuemi_sales: GET_MEMBER_CONTRACT_xuemi_sales[];
+  /**
+   * fetch data from the table: "member_contract"
+   */
+  member_contract: GET_MEMBER_CONTRACT_member_contract[];
+}
+
+export interface GET_MEMBER_CONTRACTVariables {
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_STATUS
 // ====================================================
 
@@ -3330,6 +3397,7 @@ export enum member_contract_update_column {
   agreed_options = "agreed_options",
   author_id = "author_id",
   contract_id = "contract_id",
+  created_at = "created_at",
   ended_at = "ended_at",
   id = "id",
   member_id = "member_id",
@@ -3337,6 +3405,7 @@ export enum member_contract_update_column {
   revocation_values = "revocation_values",
   revoked_at = "revoked_at",
   started_at = "started_at",
+  updated_at = "updated_at",
   values = "values",
 }
 
@@ -9411,6 +9480,7 @@ export interface member_contract_bool_exp {
   author_id?: String_comparison_exp | null;
   contract?: contract_bool_exp | null;
   contract_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -9419,6 +9489,7 @@ export interface member_contract_bool_exp {
   revocation_values?: jsonb_comparison_exp | null;
   revoked_at?: timestamptz_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
   values?: jsonb_comparison_exp | null;
 }
 
@@ -9433,6 +9504,7 @@ export interface member_contract_insert_input {
   author_id?: string | null;
   contract?: contract_obj_rel_insert_input | null;
   contract_id?: any | null;
+  created_at?: any | null;
   ended_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
@@ -9441,6 +9513,7 @@ export interface member_contract_insert_input {
   revocation_values?: any | null;
   revoked_at?: any | null;
   started_at?: any | null;
+  updated_at?: any | null;
   values?: any | null;
 }
 
@@ -9452,11 +9525,13 @@ export interface member_contract_max_order_by {
   agreed_ip?: order_by | null;
   author_id?: order_by | null;
   contract_id?: order_by | null;
+  created_at?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   revoked_at?: order_by | null;
   started_at?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -9467,11 +9542,13 @@ export interface member_contract_min_order_by {
   agreed_ip?: order_by | null;
   author_id?: order_by | null;
   contract_id?: order_by | null;
+  created_at?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   revoked_at?: order_by | null;
   started_at?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**

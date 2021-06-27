@@ -19,6 +19,7 @@ import SalesCallPage from './pages/SalesCallPage'
 import SalesLeadPage from './pages/SalesLeadPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
+import SalesPerformancePage from './pages/SalesPerformancePage'
 import SalesStatusPage from './pages/SalesStatusPage'
 import TermsPtPage from './pages/TermsPtPage'
 
@@ -44,8 +45,13 @@ const App: React.FC = () => {
               subMenuItems: [
                 {
                   permissionIsAllowed: true,
+                  key: 'sales_performance',
+                  name: '業績總表',
+                },
+                {
+                  permissionIsAllowed: true,
                   key: 'sales_lead',
-                  name: '業務名單',
+                  name: '名單撥打',
                 },
                 // {
                 //   permissionIsAllowed: true,
@@ -55,7 +61,7 @@ const App: React.FC = () => {
                 {
                   permissionIsAllowed: true,
                   key: 'sales_status',
-                  name: '業務狀況',
+                  name: '即時戰況',
                 },
                 {
                   permissionIsAllowed: true,
@@ -152,6 +158,11 @@ const App: React.FC = () => {
         sales_lead: {
           path: '/sales-lead',
           pageName: <SalesLeadPage />,
+          authenticated: true,
+        },
+        sales_performance: {
+          path: '/sales-performance',
+          pageName: <SalesPerformancePage />,
           authenticated: true,
         },
         sales_call: {
