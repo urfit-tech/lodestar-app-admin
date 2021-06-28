@@ -1,4 +1,4 @@
-import Axios from 'axios'
+import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import React, { useContext, useState } from 'react'
 import { UserRole } from '../types/member'
@@ -64,14 +64,15 @@ export const AuthProvider: React.FC<{
           : {},
         apiHost,
         refreshToken: async () =>
-          Axios.post(
-            `${apiHost}/auth/refresh-token`,
-            { appId },
-            {
-              method: 'POST',
-              withCredentials: true,
-            },
-          )
+          axios
+            .post(
+              `https://${apiHost}/auth/refresh-token`,
+              { appId },
+              {
+                method: 'POST',
+                withCredentials: true,
+              },
+            )
             .then(({ data: { code, message, result } }) => {
               if (code === 'SUCCESS') {
                 setAuthToken(result.authToken)
@@ -81,26 +82,29 @@ export const AuthProvider: React.FC<{
             })
             .finally(() => setIsAuthenticating(false)),
         register: async ({ username, email, password }) =>
-          Axios.post(
-            `${apiHost}/auth/register`,
-            {
-              appId,
-              username,
-              email,
-              password,
-            },
-            { withCredentials: true },
-          ).then(({ data: { code, message, result } }) => {
-            if (code === 'SUCCESS') {
-              setAuthToken(result.authToken)
-            } else {
-              setAuthToken(null)
-              throw new Error(code)
-            }
-          }),
+          axios
+            .post(
+              `https://${apiHost}/auth/register`,
+              {
+                appId,
+                username,
+                email,
+                password,
+              },
+              { withCredentials: true },
+            )
+            .then(({ data: { code, message, result } }) => {
+              if (code === 'SUCCESS') {
+                setAuthToken(result.authToken)
+              } else {
+                setAuthToken(null)
+                throw new Error(code)
+              }
+            }),
         login: async ({ account, password }) =>
-          Axios.post(`${apiHost}/auth/general-login`, { appId, account, password }, { withCredentials: true }).then(
-            ({ data: { code, result } }) => {
+          axios
+            .post(`https://${apiHost}/auth/general-login`, { appId, account, password }, { withCredentials: true })
+            .then(({ data: { code, result } }) => {
               if (code !== 'SUCCESS') {
                 setAuthToken(null)
                 throw new Error(code)
@@ -109,28 +113,29 @@ export const AuthProvider: React.FC<{
               } else {
                 setAuthToken(result.authToken)
               }
-            },
-          ),
+            }),
         socialLogin: async ({ provider, providerToken }) =>
-          Axios.post(
-            `${apiHost}/auth/social-login`,
-            {
-              appId,
-              provider,
-              providerToken,
-            },
-            { withCredentials: true },
-          ).then(({ data: { code, message, result } }) => {
-            if (code === 'SUCCESS') {
-              setAuthToken(result.authToken)
-            } else {
-              setAuthToken(null)
-              throw new Error(code)
-            }
-          }),
+          axios
+            .post(
+              `https://${apiHost}/auth/social-login`,
+              {
+                appId,
+                provider,
+                providerToken,
+              },
+              { withCredentials: true },
+            )
+            .then(({ data: { code, message, result } }) => {
+              if (code === 'SUCCESS') {
+                setAuthToken(result.authToken)
+              } else {
+                setAuthToken(null)
+                throw new Error(code)
+              }
+            }),
         logout: async () => {
           localStorage.clear()
-          Axios(`${apiHost}/auth/logout`, {
+          axios(`https://${apiHost}/auth/logout`, {
             method: 'post',
             withCredentials: true,
           }).then(({ data: { code, message, result } }) => {

@@ -1,4 +1,4 @@
-import Axios from 'axios'
+import axios from 'axios'
 import { filter } from 'ramda'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteMatch } from 'react-router-dom'
@@ -41,15 +41,21 @@ export const useAppAdmin = (host: string) => {
     if (appAdmin) {
       return
     }
-    Axios.post(`${process.env.REACT_APP_GRAPHQL_ENDPOINT}`, {
-      operationName: 'GET_APP_ADMIN',
-      query: `query GET_APP_ADMIN($host: String!) {\n  app_admin_by_pk(host: $host) {\n    app_id\n    api_host\n  }\n}`,
-      variables: { host },
-    })
+
+    const defaultApiHost =
+      process.env.REACT_APP_API_HOST ||
+      (process.env.NODE_ENV === 'development' ? 'rest-dev.lodestar.cc/v1' : 'rest.lodestar.cc/v1')
+
+    axios
+      .post(`${process.env.REACT_APP_GRAPHQL_ENDPOINT}`, {
+        operationName: 'GET_APP_ADMIN',
+        query: `query GET_APP_ADMIN($host: String!) {\n  app_admin_by_pk(host: $host) {\n    app_id\n    api_host\n  }\n}`,
+        variables: { host },
+      })
       .then(({ data }) => {
         setAppAdmin({
           appId: data.data.app_admin_by_pk.app_id,
-          apiHost: `https://${data.data.app_admin_by_pk.api_host || process.env.REACT_APP_API_HOST || null}`,
+          apiHost: data.data.app_admin_by_pk.api_host || defaultApiHost || null,
         })
       })
       .catch(handleError)
@@ -60,21 +66,28 @@ export const useAppAdmin = (host: string) => {
 
 export const useApiHost = (appId: string) => {
   const [apiHost, setApiHost] = useState<string | null>(null)
+
   useEffect(() => {
     if (apiHost) {
       return
     }
-    Axios.post(`${process.env.REACT_APP_GRAPHQL_ENDPOINT}`, {
-      operationName: 'GET_API_HOST',
-      query:
-        'query GET_API_HOST($appId: String!) { app_admin(where: { app_id: { _eq: $appId } }, order_by: { position: asc_nulls_last }, limit: 1) { api_host } }',
-      variables: { appId },
-    })
+
+    const defaultApiHost =
+      process.env.REACT_APP_API_HOST ||
+      (process.env.NODE_ENV === 'development' ? 'rest-dev.lodestar.cc/v1' : 'rest.lodestar.cc/v1')
+
+    axios
+      .post(`${process.env.REACT_APP_GRAPHQL_ENDPOINT}`, {
+        operationName: 'GET_API_HOST',
+        query:
+          'query GET_API_HOST($appId: String!) { app_admin(where: { app_id: { _eq: $appId } }, order_by: { position: asc_nulls_last }, limit: 1) { api_host } }',
+        variables: { appId },
+      })
       .then(({ data }) => {
-        setApiHost(`https://${data?.data?.app_admin[0]?.api_host || process.env.REACT_APP_API_HOST || null}`)
+        setApiHost(data?.data?.app_admin[0]?.api_host || defaultApiHost)
       })
       .catch(() => {
-        setApiHost(`https://${process.env.REACT_APP_API_HOST || null}`)
+        setApiHost(defaultApiHost)
       })
   }, [apiHost, appId])
 

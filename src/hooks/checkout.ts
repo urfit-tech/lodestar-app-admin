@@ -14,7 +14,7 @@ import {
   VoucherProps,
 } from '../types/checkout'
 
-import Axios from 'axios'
+import axios from 'axios'
 import { prop, sum } from 'ramda'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
@@ -378,7 +378,7 @@ export const useCheck = (
 
   useEffect(() => {
     setOrderChecking(true)
-    Axios.post<{
+    axios.post<{
       code: string
       message: string
       result: {
@@ -423,7 +423,7 @@ export const useCheck = (
   const placeOrder = useCallback(
     async (paymentType: 'perpetual' | 'subscription' | 'groupBuying', invoice: InvoiceProps) => {
       setOrderPlacing(true)
-      return Axios.post<{ code: string; message: string; result: { id: string } }>(
+      return axios.post<{ code: string; message: string; result: { id: string } }>(
         `${apiHost}/tasks/order`,
         {
           paymentModel: { type: paymentType },

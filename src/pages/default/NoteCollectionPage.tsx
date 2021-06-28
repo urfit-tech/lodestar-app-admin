@@ -2,7 +2,7 @@ import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, DatePicker, Input, message, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
-import Axios from 'axios'
+import axios from 'axios'
 import moment, { Moment } from 'moment'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -469,7 +469,7 @@ const LoadRecordFileButton: React.FC<{
     setAudioUrl('')
     try {
       const link: string = await getFileDownloadableLink(`attachments/${attachmentId}`, authToken, apiHost)
-      const response = await Axios.get(link, {
+      const response = await axios.get(link, {
         responseType: 'blob',
       })
       const blob = new Blob([response.data], { type: 'audio/wav' })
