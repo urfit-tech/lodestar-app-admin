@@ -220,9 +220,8 @@ const ProgramCollectionBlock: React.FC<{
     hasura.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_POSITION_COLLECTION)
   const [loading, setLoading] = useState(false)
-  const { loadingProgramSorts, errorProgramSorts, programSorts, refetchProgramSorts } = useProgramSortCollection(
-    condition,
-  )
+  const { loadingProgramSorts, errorProgramSorts, programSorts, refetchProgramSorts } =
+    useProgramSortCollection(condition)
 
   useEffect(() => {
     onReady?.(programPreviewCount)

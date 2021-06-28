@@ -183,52 +183,50 @@ const MemberCollectionAdminPage: React.FC = () => {
       })
     }
   }
-  const getColumnSearchProps: (
-    field: keyof typeof fieldFilter,
-    isProperty?: boolean,
-  ) => ColumnProps<MemberInfoProps> = (columnId, isProperty) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div className="p-2">
-        <Input
-          ref={searchInputRef}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => {
-            confirm()
-            setFilter(columnId, selectedKeys[0] as string, isProperty)
-          }}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <div>
-          <Button
-            type="primary"
-            onClick={() => {
+  const getColumnSearchProps: (field: keyof typeof fieldFilter, isProperty?: boolean) => ColumnProps<MemberInfoProps> =
+    (columnId, isProperty) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <Input
+            ref={searchInputRef}
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => {
               confirm()
               setFilter(columnId, selectedKeys[0] as string, isProperty)
             }}
-            icon={<SearchOutlined />}
-            size="small"
-            className="mr-2"
-            style={{ width: 90 }}
-          >
-            {formatMessage(commonMessages.ui.search)}
-          </Button>
-          <Button
-            onClick={() => {
-              clearFilters && clearFilters()
-              setFilter(columnId, null, isProperty)
-            }}
-            size="small"
-            style={{ width: 90 }}
-          >
-            {formatMessage(commonMessages.ui.reset)}
-          </Button>
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                setFilter(columnId, selectedKeys[0] as string, isProperty)
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                setFilter(columnId, null, isProperty)
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
         </div>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
-  })
+      ),
+      filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+      onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
+    })
 
   const columns: ColumnProps<MemberInfoProps>[] = [
     {

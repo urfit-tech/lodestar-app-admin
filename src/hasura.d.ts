@@ -5993,6 +5993,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   order_discounts: string | null;
   order_discount_total_price: any | null;
   order_executors: string | null;
+  shipping: any | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {
@@ -6111,6 +6112,7 @@ export interface GET_PAYMENT_LOG_EXPORT_payment_log_export {
   order_product_num: any | null;
   order_product_total_price: any | null;
   order_discount_total_price: any | null;
+  shipping: any | null;
 }
 
 export interface GET_PAYMENT_LOG_EXPORT {
@@ -13676,6 +13678,7 @@ export enum member_contract_update_column {
   agreed_options = "agreed_options",
   author_id = "author_id",
   contract_id = "contract_id",
+  created_at = "created_at",
   ended_at = "ended_at",
   id = "id",
   member_id = "member_id",
@@ -13683,6 +13686,7 @@ export enum member_contract_update_column {
   revocation_values = "revocation_values",
   revoked_at = "revoked_at",
   started_at = "started_at",
+  updated_at = "updated_at",
   values = "values",
 }
 
@@ -20342,6 +20346,7 @@ export interface member_contract_bool_exp {
   author_id?: String_comparison_exp | null;
   contract?: contract_bool_exp | null;
   contract_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -20350,6 +20355,7 @@ export interface member_contract_bool_exp {
   revocation_values?: jsonb_comparison_exp | null;
   revoked_at?: timestamptz_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
   values?: jsonb_comparison_exp | null;
 }
 
@@ -20364,6 +20370,7 @@ export interface member_contract_insert_input {
   author_id?: string | null;
   contract?: contract_obj_rel_insert_input | null;
   contract_id?: any | null;
+  created_at?: any | null;
   ended_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
@@ -20372,6 +20379,7 @@ export interface member_contract_insert_input {
   revocation_values?: any | null;
   revoked_at?: any | null;
   started_at?: any | null;
+  updated_at?: any | null;
   values?: any | null;
 }
 
@@ -20383,11 +20391,13 @@ export interface member_contract_max_order_by {
   agreed_ip?: order_by | null;
   author_id?: order_by | null;
   contract_id?: order_by | null;
+  created_at?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   revoked_at?: order_by | null;
   started_at?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -20398,11 +20408,13 @@ export interface member_contract_min_order_by {
   agreed_ip?: order_by | null;
   author_id?: order_by | null;
   contract_id?: order_by | null;
+  created_at?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   revoked_at?: order_by | null;
   started_at?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -22955,6 +22967,7 @@ export interface order_log_export_bool_exp {
   referrer_email?: String_comparison_exp | null;
   sharing_codes?: String_comparison_exp | null;
   sharing_notes?: String_comparison_exp | null;
+  shipping?: jsonb_comparison_exp | null;
   status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -22983,6 +22996,7 @@ export interface order_log_export_order_by {
   referrer_email?: order_by | null;
   sharing_codes?: order_by | null;
   sharing_notes?: order_by | null;
+  shipping?: order_by | null;
   status?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -23853,6 +23867,7 @@ export interface payment_log_export_bool_exp {
   order_products?: String_comparison_exp | null;
   paid_at?: timestamptz_comparison_exp | null;
   payment_log_no?: numeric_comparison_exp | null;
+  shipping?: jsonb_comparison_exp | null;
   status?: String_comparison_exp | null;
 }
 

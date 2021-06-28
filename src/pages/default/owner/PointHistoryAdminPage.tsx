@@ -83,13 +83,8 @@ const PointHistoryAdminPage: React.FC = () => {
   const deletePointLog = useDeletePointLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
 
-  const {
-    loadingOrderLogs,
-    errorOrderLogs,
-    orderLogs,
-    refetchOrderLogs,
-    fetchMoreOrderLogs,
-  } = useOrderLogWithPointsCollection()
+  const { loadingOrderLogs, errorOrderLogs, orderLogs, refetchOrderLogs, fetchMoreOrderLogs } =
+    useOrderLogWithPointsCollection()
   const [loading, setLoading] = useState(false)
 
   const handleRevokePoint = (id: String) => {

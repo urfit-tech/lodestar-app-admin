@@ -390,7 +390,7 @@ export const useGetProgramPackage = (id: string) => {
               id: programPackageProgram.program.id,
               title: programPackageProgram.program.title,
               coverUrl: programPackageProgram.program.cover_url,
-              publishedAt:programPackageProgram.program.published_at
+              publishedAt: programPackageProgram.program.published_at,
             },
             position: programPackageProgram.position,
           })),

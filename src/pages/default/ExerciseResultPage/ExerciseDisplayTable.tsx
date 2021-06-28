@@ -49,40 +49,39 @@ const ExerciseDisplayTable: React.VFC<{
   const { settings } = useApp()
   const inputRef = useRef<Input>(null)
 
-  const getColumnSearchProps: (
-    dataIndex: keyof ExerciseDisplayProps,
-  ) => ColumnType<ExerciseDisplayProps> = dataIndex => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div className="p-2" style={{ width: '200px' }}>
-        <Input
-          ref={inputRef}
-          placeholder={formatMessage(programMessages.text.searchExerciseMember)}
-          value={selectedKeys[0]}
-          className="d-block mb-2"
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => confirm()}
-        />
-        <div className="d-flex justify-content-between">
-          <Button type="primary" icon={<SearchOutlined />} size="small" block onClick={() => confirm()}>
-            {formatMessage(commonMessages.ui.search)}
-          </Button>
-          <Button size="small" block className="ml-2" onClick={() => clearFilters?.()}>
-            {formatMessage(commonMessages.ui.reset)}
-          </Button>
+  const getColumnSearchProps: (dataIndex: keyof ExerciseDisplayProps) => ColumnType<ExerciseDisplayProps> =
+    dataIndex => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2" style={{ width: '200px' }}>
+          <Input
+            ref={inputRef}
+            placeholder={formatMessage(programMessages.text.searchExerciseMember)}
+            value={selectedKeys[0]}
+            className="d-block mb-2"
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => confirm()}
+          />
+          <div className="d-flex justify-content-between">
+            <Button type="primary" icon={<SearchOutlined />} size="small" block onClick={() => confirm()}>
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button size="small" block className="ml-2" onClick={() => clearFilters?.()}>
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
         </div>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? `${JSON.stringify(record[dataIndex])}`.toLowerCase().includes(`${value}`.toLowerCase())
-        : false,
-    onFilterDropdownVisibleChange: visible => {
-      if (visible) {
-        setTimeout(() => inputRef.current?.select(), 100)
-      }
-    },
-  })
+      ),
+      filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+      onFilter: (value, record) =>
+        record[dataIndex]
+          ? `${JSON.stringify(record[dataIndex])}`.toLowerCase().includes(`${value}`.toLowerCase())
+          : false,
+      onFilterDropdownVisibleChange: visible => {
+        if (visible) {
+          setTimeout(() => inputRef.current?.select(), 100)
+        }
+      },
+    })
 
   return (
     <StyledTableWrapper>

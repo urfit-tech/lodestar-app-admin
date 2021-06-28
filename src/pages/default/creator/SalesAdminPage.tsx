@@ -8,7 +8,7 @@ import SaleSummaryCreatorCard from '../../../components/sale/SaleSummaryCreatorC
 import { useAuth } from '../../../contexts/AuthContext'
 import { commonMessages } from '../../../helpers/translation'
 
-const SalesAdminPage = () => {
+const SalesAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 

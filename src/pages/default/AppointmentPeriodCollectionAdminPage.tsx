@@ -117,11 +117,8 @@ const AppointmentPlanPeriodTabContent: React.FC<{
 }> = ({ selectedCreatorId, startedAt, endedAt, isCanceled, isFinished }) => {
   const { formatMessage } = useIntl()
 
-  const {
-    loadingAppointmentEnrollments,
-    appointmentEnrollments,
-    loadMoreAppointmentEnrollments,
-  } = useAppointmentEnrollmentCollection(selectedCreatorId, startedAt, endedAt, isCanceled, isFinished)
+  const { loadingAppointmentEnrollments, appointmentEnrollments, loadMoreAppointmentEnrollments } =
+    useAppointmentEnrollmentCollection(selectedCreatorId, startedAt, endedAt, isCanceled, isFinished)
   const [isLoading, setIsLoading] = useState(false)
 
   if (loadingAppointmentEnrollments) {

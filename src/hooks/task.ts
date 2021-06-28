@@ -2,7 +2,6 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
-
 export const useTask = (queue: string | null, taskId: string | null) => {
   const { authToken, apiHost } = useAuth()
   const [retry, setRetry] = useState(0)
@@ -17,7 +16,9 @@ export const useTask = (queue: string | null, taskId: string | null) => {
 
   useEffect(() => {
     authToken &&
-      apiHost && taskId && queue &&
+      apiHost &&
+      taskId &&
+      queue &&
       axios
         .get(`${apiHost}/tasks/${queue}/${taskId}`, {
           headers: { authorization: `Bearer ${authToken}` },

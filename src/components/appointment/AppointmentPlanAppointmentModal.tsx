@@ -112,9 +112,8 @@ const AppointmentPlanAppointmentModal: React.FC<
   const [form] = useForm<FieldProps>()
   const { authToken, apiHost } = useAuth()
   const { settings } = useApp()
-  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(
-    appointmentPlanId,
-  )
+  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
+    useAppointmentPlanAdmin(appointmentPlanId)
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
     'period',
   )

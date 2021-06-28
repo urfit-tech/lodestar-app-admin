@@ -40,12 +40,8 @@ const ProgramProgressTable: React.FC<{
   onMemberListSet: Dispatch<SetStateAction<string[][]>>
 }> = ({ programId, onMemberListSet }) => {
   const { formatMessage } = useIntl()
-  const {
-    loadingProgramProgress,
-    errorProgramProgress,
-    memberProgramProgress,
-    fetchMoreProgramProgress,
-  } = useProgramProgressCollection(programId)
+  const { loadingProgramProgress, errorProgramProgress, memberProgramProgress, fetchMoreProgramProgress } =
+    useProgramProgressCollection(programId)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {

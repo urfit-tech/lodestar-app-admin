@@ -91,15 +91,8 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken, currentMemberId, apiHost } = useAuth()
-  const {
-    loading,
-    error,
-    orderContacts,
-    isUnread,
-    refetch,
-    insertOrderContact,
-    updateOrderContactReadAt,
-  } = useOrderContact(orderId, currentMemberId || '')
+  const { loading, error, orderContacts, isUnread, refetch, insertOrderContact, updateOrderContactReadAt } =
+    useOrderContact(orderId, currentMemberId || '')
   const [form] = useForm()
   const [isVisible, setVisible] = useState(false)
   const [isError, setIsError] = useState(false)

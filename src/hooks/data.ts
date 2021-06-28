@@ -13,7 +13,6 @@ import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
 
-
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
     gql`
@@ -132,7 +131,10 @@ export const useNotifications = (memberId: string, limit?: number) => {
 }
 
 export const useProductInventoryLog = (productId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_INVENTORY, hasura.GET_PRODUCT_INVENTORYVariables>(
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_PRODUCT_INVENTORY,
+    hasura.GET_PRODUCT_INVENTORYVariables
+  >(
     gql`
       query GET_PRODUCT_INVENTORY($productId: String!) {
         product_inventory(where: { product_id: { _eq: $productId } }, order_by: { created_at: desc }) {
@@ -702,7 +704,10 @@ export const useMutateAttachment = () => {
 }
 
 export const useCouponCollection = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_COUPON_COLLECTION, hasura.GET_COUPON_COLLECTIONVariables>(
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_COUPON_COLLECTION,
+    hasura.GET_COUPON_COLLECTIONVariables
+  >(
     gql`
       query GET_COUPON_COLLECTION($memberId: String!) {
         coupon(where: { member_id: { _eq: $memberId } }) {
@@ -739,44 +744,44 @@ export const useCouponCollection = (memberId: string) => {
     loading || error || !data
       ? []
       : data.coupon.map(coupon => ({
-        id: coupon.id,
-        member: {
-          id: '',
-          email: ''
-        },
-        status: {
-          used: !!coupon.status?.used,
-          outdated: !!coupon.status?.outdated,
-        },
-        couponCode: {
-          code: coupon.coupon_code.code,
-          couponPlan: {
-            id: coupon.coupon_code.coupon_plan.id,
-            startedAt: coupon.coupon_code.coupon_plan.started_at
-              ? new Date(coupon.coupon_code.coupon_plan.started_at)
-              : null,
-            endedAt: coupon.coupon_code.coupon_plan.ended_at
-              ? new Date(coupon.coupon_code.coupon_plan.ended_at)
-              : null,
-            type:
-              coupon.coupon_code.coupon_plan.type === 1
-                ? 'cash'
-                : coupon.coupon_code.coupon_plan.type === 2
+          id: coupon.id,
+          member: {
+            id: '',
+            email: '',
+          },
+          status: {
+            used: !!coupon.status?.used,
+            outdated: !!coupon.status?.outdated,
+          },
+          couponCode: {
+            code: coupon.coupon_code.code,
+            couponPlan: {
+              id: coupon.coupon_code.coupon_plan.id,
+              startedAt: coupon.coupon_code.coupon_plan.started_at
+                ? new Date(coupon.coupon_code.coupon_plan.started_at)
+                : null,
+              endedAt: coupon.coupon_code.coupon_plan.ended_at
+                ? new Date(coupon.coupon_code.coupon_plan.ended_at)
+                : null,
+              type:
+                coupon.coupon_code.coupon_plan.type === 1
+                  ? 'cash'
+                  : coupon.coupon_code.coupon_plan.type === 2
                   ? 'percent'
                   : 'cash',
-            constraint: coupon.coupon_code.coupon_plan.constraint,
-            amount: coupon.coupon_code.coupon_plan.amount,
-            title: coupon.coupon_code.coupon_plan.title,
-            description: coupon.coupon_code.coupon_plan.description,
-            count: 0,
-            remaining: 0,
-            scope: coupon.coupon_code.coupon_plan.scope,
-            productIds: coupon.coupon_code.coupon_plan.coupon_plan_products.map(
-              couponPlanProduct => couponPlanProduct.product_id,
-            ),
+              constraint: coupon.coupon_code.coupon_plan.constraint,
+              amount: coupon.coupon_code.coupon_plan.amount,
+              title: coupon.coupon_code.coupon_plan.title,
+              description: coupon.coupon_code.coupon_plan.description,
+              count: 0,
+              remaining: 0,
+              scope: coupon.coupon_code.coupon_plan.scope,
+              productIds: coupon.coupon_code.coupon_plan.coupon_plan_products.map(
+                couponPlanProduct => couponPlanProduct.product_id,
+              ),
+            },
           },
-        },
-      }))
+        }))
 
   return {
     loadingCoupons: loading,

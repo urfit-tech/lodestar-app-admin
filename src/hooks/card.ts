@@ -3,7 +3,10 @@ import gql from 'graphql-tag'
 import hasura from '../hasura'
 
 export const useEnrolledMembershipCardIds = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_ENROLLED_CARD_IDS, hasura.GET_ENROLLED_CARD_IDSVariables>(
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_ENROLLED_CARD_IDS,
+    hasura.GET_ENROLLED_CARD_IDSVariables
+  >(
     gql`
       query GET_ENROLLED_CARD_IDS($memberId: String!) {
         card_enrollment(where: { member_id: { _eq: $memberId } }) {
@@ -52,11 +55,11 @@ export const useMembershipCard = (cardId: string) => {
     loading || error || !data || !data.card_by_pk
       ? null
       : {
-        id: data.card_by_pk.id,
-        title: data.card_by_pk.title,
-        description: data.card_by_pk.description,
-        template: data.card_by_pk.template,
-      }
+          id: data.card_by_pk.id,
+          title: data.card_by_pk.title,
+          description: data.card_by_pk.description,
+          template: data.card_by_pk.template,
+        }
 
   return {
     loadingMembershipCard: loading,
@@ -98,14 +101,14 @@ export const useEnrolledMembershipCards = (memberId: string) => {
     loading || error || !data
       ? []
       : data.card_enrollment.map(cardEnrollment => ({
-        card: {
-          id: cardEnrollment.card?.id || '',
-          title: cardEnrollment.card?.title || '',
-          description: cardEnrollment.card?.description || '',
-          template: cardEnrollment.card?.template || '',
-        },
-        updatedAt: cardEnrollment.updated_at ? new Date(cardEnrollment.updated_at) : null,
-      }))
+          card: {
+            id: cardEnrollment.card?.id || '',
+            title: cardEnrollment.card?.title || '',
+            description: cardEnrollment.card?.description || '',
+            template: cardEnrollment.card?.template || '',
+          },
+          updatedAt: cardEnrollment.updated_at ? new Date(cardEnrollment.updated_at) : null,
+        }))
 
   return {
     loadingMembershipCards: loading,

@@ -22,7 +22,6 @@ import { InvoiceProps } from '../types/merchandise'
 import { ShippingProps } from '../types/merchandise'
 import { CheckProps, OrderDiscountProps, OrderProductProps, shippingOptionProps } from '../types/checkout'
 
-
 export const useCouponPlanCollection = () => {
   const app = useApp()
 
@@ -154,23 +153,23 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
     loading || error || !data
       ? []
       : data.coupon_code.map(couponCode => ({
-        id: couponCode.id,
-        code: couponCode.code,
-        count: couponCode.count,
-        remaining: couponCode.remaining,
-        used: couponCode.coupons_aggregate.aggregate?.count || 0,
-        coupons: couponCode.coupons.map(coupon => ({
-          id: coupon.id,
-          member: {
-            id: coupon.member.id,
-            email: coupon.member.email,
-          },
-          status: {
-            used: !!coupon.status?.used,
-            outdated: !!coupon.status?.outdated,
-          },
-        })),
-      }))
+          id: couponCode.id,
+          code: couponCode.code,
+          count: couponCode.count,
+          remaining: couponCode.remaining,
+          used: couponCode.coupons_aggregate.aggregate?.count || 0,
+          coupons: couponCode.coupons.map(coupon => ({
+            id: coupon.id,
+            member: {
+              id: coupon.member.id,
+              email: coupon.member.email,
+            },
+            status: {
+              used: !!coupon.status?.used,
+              outdated: !!coupon.status?.outdated,
+            },
+          })),
+        }))
 
   return {
     loadingCouponCodes: loading,

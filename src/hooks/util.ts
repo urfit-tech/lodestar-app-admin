@@ -64,15 +64,12 @@ export const useApiHost = (appId: string) => {
     if (apiHost) {
       return
     }
-    Axios.post(
-      `${process.env.REACT_APP_GRAPHQL_ENDPOINT}`,
-      {
-        operationName: 'GET_API_HOST',
-        query:
-          'query GET_API_HOST($appId: String!) { app_admin(where: { app_id: { _eq: $appId } }, order_by: { position: asc_nulls_last }, limit: 1) { api_host } }',
-        variables: { appId },
-      },
-    )
+    Axios.post(`${process.env.REACT_APP_GRAPHQL_ENDPOINT}`, {
+      operationName: 'GET_API_HOST',
+      query:
+        'query GET_API_HOST($appId: String!) { app_admin(where: { app_id: { _eq: $appId } }, order_by: { position: asc_nulls_last }, limit: 1) { api_host } }',
+      variables: { appId },
+    })
       .then(({ data }) => {
         setApiHost(`https://${data?.data?.app_admin[0]?.api_host || process.env.REACT_APP_API_HOST || null}`)
       })

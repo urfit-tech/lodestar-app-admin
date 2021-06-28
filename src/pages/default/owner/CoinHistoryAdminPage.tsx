@@ -119,20 +119,10 @@ const CoinHistoryAdminPage: React.FC = () => {
   const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, loadMoreCoinLogs } = useCoinLogCollection({
     ...fieldFilter,
   })
-  const {
-    loadingCoinFutureLogs,
-    errorCoinFutureLogs,
-    coinFutureLogs,
-    refetchCoinFutureLogs,
-    loadMoreCoinFutureLogs,
-  } = useFutureCoinLogCollection({ ...fieldFilter })
-  const {
-    loadingOrderLogs,
-    errorOrderLogs,
-    orderLogs,
-    refetchOrderLogs,
-    loadMoreOrderLogs,
-  } = useOrderLogWithCoinsCollection({ ...fieldFilter })
+  const { loadingCoinFutureLogs, errorCoinFutureLogs, coinFutureLogs, refetchCoinFutureLogs, loadMoreCoinFutureLogs } =
+    useFutureCoinLogCollection({ ...fieldFilter })
+  const { loadingOrderLogs, errorOrderLogs, orderLogs, refetchOrderLogs, loadMoreOrderLogs } =
+    useOrderLogWithCoinsCollection({ ...fieldFilter })
 
   const [loading, setLoading] = useState(false)
 

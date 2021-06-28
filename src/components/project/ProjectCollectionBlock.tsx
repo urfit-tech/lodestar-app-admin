@@ -23,13 +23,8 @@ const ProjectCollectionBlock: React.FC<{
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
-  const {
-    loadingProject,
-    projectPreview,
-    projectPreviewCount,
-    refetchProject,
-    loadMoreProjects,
-  } = useProjectPreviewCollection(condition, orderBy)
+  const { loadingProject, projectPreview, projectPreviewCount, refetchProject, loadMoreProjects } =
+    useProjectPreviewCollection(condition, orderBy)
 
   const { projectSorts, refetchProjectSorts } = useProjectSortCollection(condition)
   const [updatePositions] = useMutation<

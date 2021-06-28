@@ -100,18 +100,12 @@ const MemberTaskAdminBlock: React.FC<{
   }>({})
   const [display, setDisplay] = useState('table')
   const { loading: categoriesLoading, categories } = useCategory('task')
-  const {
-    loadingMemberTasks,
-    executors,
-    authors,
-    memberTasks,
-    loadMoreMemberTasks,
-    refetchMemberTasks,
-  } = useMemberTaskCollection({
-    memberId,
-    ...filter,
-    limit: display === 'table' ? 10 : undefined,
-  })
+  const { loadingMemberTasks, executors, authors, memberTasks, loadMoreMemberTasks, refetchMemberTasks } =
+    useMemberTaskCollection({
+      memberId,
+      ...filter,
+      limit: display === 'table' ? 10 : undefined,
+    })
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)

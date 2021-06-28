@@ -176,8 +176,9 @@ const MemberNoteAdminModal: React.FC<
                 downloadableLink={
                   note?.attachments &&
                   (file => {
-                    const attachmentId = note.attachments.find(v => v.data.name === file.name && v.data.lastModified)
-                      ?.id
+                    const attachmentId = note.attachments.find(
+                      v => v.data.name === file.name && v.data.lastModified,
+                    )?.id
                     return `attachments/${attachmentId}`
                   })
                 }
