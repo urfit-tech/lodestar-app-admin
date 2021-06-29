@@ -1197,9 +1197,15 @@ export const craftPageMessages = {
     createPage: { id: 'craft.ui.createPage', defaultMessage: '建立頁面' },
   }),
   label: defineMessages({
+    settings: { id: 'craft.label.settings', defaultMessage: '基本設定' },
+    craftPageEditor: { id: 'craft.label.craftPageEditor', defaultMessage: '首頁 - 編輯頁面' },
+    editPage: { id: 'craft.label.editPage', defaultMessage: '編輯頁面' },
     choiceTemplate: { id: 'craft.label.choiceTemplate', defaultMessage: '選擇版型' },
     pageName: { id: 'craft.label.pageName', defaultMessage: '頁面名稱' },
-    urlPath: { id: 'craft.label.UrlPath', defaultMessage: '網址路徑' },
+    urlPath: { id: 'craft.label.urlPath', defaultMessage: '網址路徑' },
+    url: { id: 'craft.label.url', defaultMessage: '網址' },
+    latestUpdatedAt: { id: 'craft.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
+    publish: { id: 'craft.label.publish', defaultMessage: '發佈' },
   }),
 }
 
