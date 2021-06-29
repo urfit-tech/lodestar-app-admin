@@ -45,6 +45,7 @@ const ResetPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [token] = useQueryParam('token', StringParam)
+  const [memberId] = useQueryParam('member', StringParam)
   const [form] = useForm<FieldProps>()
   const { apiHost } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -54,9 +55,9 @@ const ResetPasswordPage: React.FC = () => {
     axios
       .post(
         `https://${apiHost}/auth/reset-password`,
-        { newPassword: values.password },
+        { appId: window.location.host, memberId, newPassword: values.password },
         {
-          headers: { authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` },
         },
       )
       .then(({ data: { code } }) => {
