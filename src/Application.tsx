@@ -32,7 +32,7 @@ const Application: React.FC<{
   return (
     <BrowserRouter>
       <QueryParamProvider ReactRouterRoute={Route}>
-        <AuthProvider appId={appId || appAdmin.appId} apiHost={appId ? apiHost || appAdmin.apiHost : appAdmin.apiHost}>
+        <AuthProvider appId={appId || appAdmin.appId} apiHost={appAdmin.apiHost || apiHost || ''}>
           <ApiProvider>
             <AppProvider appId={appId || appAdmin.appId}>
               <LanguageProvider>

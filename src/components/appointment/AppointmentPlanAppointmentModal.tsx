@@ -177,7 +177,7 @@ const AppointmentPlanAppointmentModal: React.FC<
     if (taskType === 'order' && authToken && task?.finishedOn && task?.returnvalue?.orderId) {
       axios
         .post(
-          `${apiHost}/tasks/payment/`,
+          `https://${apiHost}/tasks/payment/`,
           { orderId: task.returnvalue.orderId },
           { headers: { authorization: `Bearer ${authToken}` } },
         )
