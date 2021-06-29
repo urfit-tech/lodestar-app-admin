@@ -1,8 +1,9 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { AdminPageTitle } from '../../../components/admin'
-import CraftPageCollectionBlock from '../../../components/craft/CraftPageCollectionBlock'
+import { AdminPageBlock, AdminPageTitle } from '../../../components/admin'
+import CraftPageCollectionTable from '../../../components/craft/CraftPageCollectionTable'
 import CraftPageCreationModel from '../../../components/craft/CraftPageCreationModel'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import { commonMessages } from '../../../helpers/translation'
@@ -12,19 +13,20 @@ const CraftCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  // const tabContents: {
-  //   key: string
-  //   tab: string
-  // }[] = [
-  //   {
-  //     key: 'published',
-  //     tab: formatMessage(commonMessages.status.published),
-  //   },
-  //   {
-  //     key: 'unpublished',
-  //     tab: formatMessage(commonMessages.status.unpublished),
-  //   },
-  // ]
+  const tabContents = [
+    {
+      key: 'published',
+      tab: formatMessage(commonMessages.status.published),
+      //TODO: pages filter published_at is not null
+      pages: [],
+    },
+    {
+      key: 'unpublished',
+      tab: formatMessage(commonMessages.status.unpublished),
+      //TODO: pages filter published_at is null
+      pages: [],
+    },
+  ]
 
   return (
     <AdminLayout>
@@ -43,7 +45,15 @@ const CraftCollectionPage: React.VFC = () => {
         />
       </div>
 
-      <CraftPageCollectionBlock />
+      <Tabs defaultActiveKey="selling">
+        {tabContents.map(tabContent => (
+          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.pages.length})`}>
+            <AdminPageBlock>
+              <CraftPageCollectionTable />
+            </AdminPageBlock>
+          </Tabs.TabPane>
+        ))}
+      </Tabs>
     </AdminLayout>
   )
 }
