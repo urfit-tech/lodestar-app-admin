@@ -2286,121 +2286,30 @@ export interface REVOKE_MEMBER_CONTRACTVariables {
 // GraphQL query operation: GET_MEMBER_COLLECTION
 // ====================================================
 
-export interface GET_MEMBER_COLLECTION_member_aggregate_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_aggregate {
-  __typename: "member_aggregate";
-  aggregate: GET_MEMBER_COLLECTION_member_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_phones {
-  __typename: "member_phone";
-  id: any;
-  phone: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_categories {
-  __typename: "member_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_MEMBER_COLLECTION_member_member_categories_category;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_tags {
-  __typename: "member_tag";
-  id: any;
-  tag_name: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_member_properties {
-  __typename: "member_property";
-  id: any;
-  property_id: any;
-  value: string;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs {
-  __typename: "order_log";
-  /**
-   * An aggregated array relationship
-   */
-  order_products_aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate;
-}
-
-export interface GET_MEMBER_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-  email: string;
+export interface GET_MEMBER_COLLECTION_member_export {
+  __typename: "member_export";
+  id: string | null;
+  app_id: string | null;
+  name: string | null;
+  username: string | null;
+  email: string | null;
   created_at: any | null;
   logined_at: any | null;
-  /**
-   * app-owner / content-creator
-   */
-  role: string;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_MEMBER_COLLECTION_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_MEMBER_COLLECTION_member_member_categories[];
-  /**
-   * An array relationship
-   */
-  member_tags: GET_MEMBER_COLLECTION_member_member_tags[];
-  /**
-   * An array relationship
-   */
-  member_properties: GET_MEMBER_COLLECTION_member_member_properties[];
-  /**
-   * An array relationship
-   */
-  order_logs: GET_MEMBER_COLLECTION_member_order_logs[];
+  role: string | null;
+  phones: string | null;
+  categories: string | null;
+  consumption: any | null;
 }
 
 export interface GET_MEMBER_COLLECTION {
   /**
-   * fetch aggregated fields from the table: "member"
+   * fetch data from the table: "member_export"
    */
-  member_aggregate: GET_MEMBER_COLLECTION_member_aggregate;
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_MEMBER_COLLECTION_member[];
+  member_export: GET_MEMBER_COLLECTION_member_export[];
 }
 
 export interface GET_MEMBER_COLLECTIONVariables {
-  condition?: member_bool_exp | null;
-  limit?: number | null;
+  condition: member_export_bool_exp;
 }
 
 /* tslint:disable */
@@ -20424,6 +20333,28 @@ export interface member_contract_on_conflict {
   constraint: member_contract_constraint;
   update_columns: member_contract_update_column[];
   where?: member_contract_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_export". All fields are combined with a logical 'AND'.
+ */
+export interface member_export_bool_exp {
+  _and?: (member_export_bool_exp | null)[] | null;
+  _not?: member_export_bool_exp | null;
+  _or?: (member_export_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  categories?: String_comparison_exp | null;
+  consumption?: numeric_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  email?: String_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  logined_at?: timestamptz_comparison_exp | null;
+  manager_id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  phones?: String_comparison_exp | null;
+  role?: String_comparison_exp | null;
+  tags?: String_comparison_exp | null;
+  username?: String_comparison_exp | null;
 }
 
 /**
