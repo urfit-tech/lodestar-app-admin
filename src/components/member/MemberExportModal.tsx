@@ -27,6 +27,9 @@ const MemberExportModal: React.FC<{
   filter?: {
     name?: string
     email?: string
+    phone?: string | undefined
+    category?: string | undefined
+    tag?: string | undefined
     managerId?: string
   }
 }> = ({ filter }) => {
@@ -50,68 +53,77 @@ const MemberExportModal: React.FC<{
   const exportMemberList = async () => {
     try {
       setLoadingMembers(true)
-      const condition: hasura.GET_MEMBER_COLLECTIONVariables['condition'] = {
-        role: selectedRole === 'all-members' ? undefined : { _eq: selectedRole },
-        name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
-        email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
-        manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
-      }
+
       const { data } = await client.query<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>({
         query: GET_MEMBER_COLLECTION,
-        variables: { condition },
+        variables: {
+          condition: {
+            role: selectedRole === 'all-members' ? undefined : { _eq: selectedRole },
+            name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+            email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+            phones: filter?.phone ? { _ilike: `%${filter.phone}%` } : undefined,
+            categories: filter?.category ? { _ilike: `%${filter.category}%` } : undefined,
+            tags: filter?.tag ? { _ilike: `%${filter.tag}%` } : undefined,
+            manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
+          },
+        },
       })
 
+      let maxPhoneAmounts = 1
       const members: ExportMemberProps[] =
-        data?.member_export.map(v => ({
-          id: v.id || '',
-          name: v.name || v.username || '',
-          email: v.email || '',
-          role: v.role as UserRole,
-          createdAt: v.created_at ? new Date(v.created_at) : null,
-          loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-          phones: v.phones?.split(',') || [],
-          consumption: v.consumption || 0,
-          categories: v.categories?.split(',') || [],
-        })) || []
-
-      const maxPhoneAmounts = Math.max(...members.map(v => v.phones.length))
-      const columns = options
-        .filter(option => selectedExportFields.some(field => field === option.value))
-        .map(option => {
-          if (option.value === 'phone') {
-            return repeat(option.label, maxPhoneAmounts)
+        data?.member_export.map(v => {
+          const phones = v.phones?.split(',') || []
+          if (phones.length > maxPhoneAmounts) {
+            maxPhoneAmounts = phones.length
           }
-          return option.label
-        })
-        .flat()
+          return {
+            id: v.id || '',
+            name: v.name || v.username || '',
+            email: v.email || '',
+            role: v.role as UserRole,
+            createdAt: v.created_at ? new Date(v.created_at) : null,
+            loginedAt: v.logined_at ? new Date(v.logined_at) : null,
+            phones,
+            consumption: v.consumption || 0,
+            categories: v.categories?.split(',') || [],
+          }
+        }) || []
 
       const csvData: string[][] = [
-        columns,
-        ...members.map(member => {
-          const row: string[] = []
-          selectedExportFields.some(field => field === 'name') && row.push(member.name)
-          selectedExportFields.some(field => field === 'memberIdentity') &&
-            row.push(
-              member.role === 'general-member'
-                ? formatMessage(commonMessages.label.generalMember)
-                : member.role === 'content-creator'
-                ? formatMessage(commonMessages.label.contentCreator)
-                : member.role === 'app-owner'
-                ? formatMessage(commonMessages.label.appOwner)
-                : formatMessage(commonMessages.label.anonymousUser),
-            )
-          selectedExportFields.some(field => field === 'email') && row.push(member.email)
-          selectedExportFields.some(field => field === 'phone') &&
-            row.push(...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length))
-          selectedExportFields.some(field => field === 'category') && row.push(member.categories.join(','))
-          selectedExportFields.some(field => field === 'orderLogCreatedDate') &&
-            row.push(member.createdAt ? moment(member.createdAt).format('YYYY-MM-DD HH:mm') : '')
-          selectedExportFields.some(field => field === 'lastLogin') &&
-            row.push(member.loginedAt ? moment(member.loginedAt).format('YYYY-MM-DD HH:mm') : '')
-          selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
-          return row
-        }),
+        options
+          .filter(option => selectedExportFields.some(field => field === option.value))
+          .map(option => {
+            if (option.value === 'phone') {
+              return repeat(option.label, maxPhoneAmounts)
+            }
+            return option.label
+          })
+          .flat(), // columns
       ]
+      members.forEach(member => {
+        const row: string[] = []
+        selectedExportFields.some(field => field === 'name') && row.push(member.name)
+        selectedExportFields.some(field => field === 'memberIdentity') &&
+          row.push(
+            member.role === 'general-member'
+              ? formatMessage(commonMessages.label.generalMember)
+              : member.role === 'content-creator'
+              ? formatMessage(commonMessages.label.contentCreator)
+              : member.role === 'app-owner'
+              ? formatMessage(commonMessages.label.appOwner)
+              : formatMessage(commonMessages.label.anonymousUser),
+          )
+        selectedExportFields.some(field => field === 'email') && row.push(member.email)
+        selectedExportFields.some(field => field === 'phone') &&
+          row.push(...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length))
+        selectedExportFields.some(field => field === 'category') && row.push(member.categories.join(','))
+        selectedExportFields.some(field => field === 'orderLogCreatedDate') &&
+          row.push(member.createdAt ? moment(member.createdAt).format('YYYY-MM-DD HH:mm') : '')
+        selectedExportFields.some(field => field === 'lastLogin') &&
+          row.push(member.loginedAt ? moment(member.loginedAt).format('YYYY-MM-DD HH:mm') : '')
+        selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
+        csvData.push(row)
+      })
       downloadCSV('members.csv', toCSV(csvData))
     } catch (error) {
       handleError(error)
