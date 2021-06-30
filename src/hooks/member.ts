@@ -629,8 +629,8 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
             _and: [
               { app_id: { _eq: $appId } }
               { role: { _eq: "app-owner" } }
-              { name: { _like: $name } }
-              { email: { _like: $email } }
+              { name: { _ilike: $name } }
+              { email: { _ilike: $email } }
             ]
           }
         ) {
@@ -643,8 +643,8 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
             _and: [
               { app_id: { _eq: $appId } }
               { role: { _eq: "content-creator" } }
-              { name: { _like: $name } }
-              { email: { _like: $email } }
+              { name: { _ilike: $name } }
+              { email: { _ilike: $email } }
             ]
           }
         ) {
@@ -657,8 +657,8 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
             _and: [
               { app_id: { _eq: $appId } }
               { role: { _eq: "general-member" } }
-              { name: { _like: $name } }
-              { email: { _like: $email } }
+              { name: { _ilike: $name } }
+              { email: { _ilike: $email } }
             ]
           }
         ) {
