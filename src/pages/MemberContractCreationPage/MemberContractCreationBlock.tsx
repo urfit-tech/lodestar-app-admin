@@ -301,6 +301,7 @@ const MemberContractCreationBlock: React.FC<{
               {item.type === 'addonProduct' && '【加購項目】'}
               {item.type === 'referralDiscount' && '【介紹折抵】'}
               {item.type === 'promotionDiscount' && '【促銷折抵】'}
+              {item.type === 'rebateDiscount' && '【滿額折抵】'}
             </div>
             <div className="col-3">
               <span>{item.name}</span>

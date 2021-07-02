@@ -48,6 +48,7 @@ type FieldProps = {
   hasDeposit?: boolean[]
   withProductStartedAt: boolean
   productStartedAt: Moment
+  rebateGift?: string
 }
 
 type ContractInfo = {
@@ -290,14 +291,25 @@ const MemberContractCreationPage: React.VFC = () => {
           selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
         )
         .add(fieldValue.selectedGiftDays, 'days')
+        .add(Math.floor(totalCoins / 1200) / 2, 'years')
         .toDate()
     : null
 
-  // calculate contract items results
-  const selectedProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
-  const selectedMainProducts = selectedProducts.filter(contractProduct =>
-    products.find(product => product.id === contractProduct.id && product.price),
-  )
+  const totalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
+
+  // calculate rebateGift
+  if (fieldValue.rebateGift) {
+    const [couponPlanId, price, name] = fieldValue.rebateGift.split('_')
+    contractDiscounts.push({
+      id: couponPlanId,
+      type: 'rebateDiscount',
+      name: `滿額學習工具 - ${name}`,
+      price: Number(price),
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
 
   const finalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
 
@@ -339,6 +351,8 @@ const MemberContractCreationPage: React.VFC = () => {
             projectPlans={projectPlans}
             sales={sales}
             appointmentPlanCreators={appointmentPlanCreators}
+            totalPrice={totalPrice}
+            rebateGift={contractsOptions?.['rebateGift']}
           />
 
           <MemberContractCreationBlock
