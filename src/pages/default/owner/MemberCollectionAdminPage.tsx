@@ -364,7 +364,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             {formatMessage(memberMessages.label.field)}
           </StyledButton>
         </Popover>
-        <MemberExportModal filter={fieldFilter} />
+        <MemberExportModal appId={appId} filter={fieldFilter} />
       </div>
 
       <AdminCard className="mb-5">

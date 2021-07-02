@@ -181,14 +181,18 @@ export const toCSV: (data: string[][]) => string = data => {
     return ''
   }
 
-  return `data:text/csv;charset=utf-8,${columns.map(column => `"${column}"`).join(',')}\n${data
-    .map(row => row.map(col => `"${col}"`).join(','))
-    .join('\n')}`
+  return (
+    `${columns.map(column => `"${column}"`).join(',')}\n` +
+    data.map(row => row.map(col => `"${col}"`).join(',')).join('\n')
+  )
 }
 
-export const downloadCSV = (fileName: string, data: string) => {
+export const downloadCSV = (fileName: string, csvString: string) => {
+  const csvData = new Blob([csvString], { type: 'text/csv' })
+  var csvUrl = URL.createObjectURL(csvData)
+
   const downloadLink = document.createElement('a')
-  downloadLink.setAttribute('href', encodeURI(data))
+  downloadLink.setAttribute('href', csvUrl)
   downloadLink.setAttribute('download', fileName)
   document.body.appendChild(downloadLink)
   downloadLink.click()

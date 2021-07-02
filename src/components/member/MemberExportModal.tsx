@@ -24,6 +24,7 @@ type ExportMemberProps = {
   consumption: number
 }
 const MemberExportModal: React.FC<{
+  appId: string
   filter?: {
     name?: string
     email?: string
@@ -32,7 +33,7 @@ const MemberExportModal: React.FC<{
     tag?: string | undefined
     managerId?: string
   }
-}> = ({ filter }) => {
+}> = ({ appId, filter }) => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [selectedRole, setSelectedRole] = useState('all-members')
@@ -124,7 +125,7 @@ const MemberExportModal: React.FC<{
         selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
         csvData.push(row)
       })
-      downloadCSV('members.csv', toCSV(csvData))
+      downloadCSV(`members-${appId}.csv`, toCSV(csvData))
     } catch (error) {
       handleError(error)
     }
