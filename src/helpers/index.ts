@@ -20,7 +20,7 @@ export const call = async ({
 
   axios
     .post(
-      `${apiHost}/call`,
+      `https://${apiHost}/call`,
       {
         appId,
         callFrom: salesTelephone,
