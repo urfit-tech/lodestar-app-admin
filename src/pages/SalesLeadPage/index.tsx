@@ -65,16 +65,8 @@ const SalesLeadTabs: React.VFC<{
 }> = ({ activeKey, managerId, onActiveKeyChanged }) => {
   const { formatMessage } = useIntl()
   const { sales } = useSales(managerId)
-  const {
-    loading,
-    refetch,
-    idledLeads,
-    contactedLeads,
-    invitedLeads,
-    presentedLeads,
-    paidLeads,
-    closedLeads,
-  } = useSalesLeads(managerId)
+  const { loading, refetch, idledLeads, contactedLeads, invitedLeads, presentedLeads, paidLeads, closedLeads } =
+    useSalesLeads(managerId)
 
   if (loading || !sales) {
     return <Skeleton active />
@@ -265,6 +257,7 @@ const useSalesLeads = (managerId: string) => {
       context: {
         important: true,
       },
+      pollInterval: 5 * 60 * 1000,
     },
   )
   const convertToLead = (v: hasura.GET_SALES_LEADS_xuemi_lead_status): Lead | null => {
