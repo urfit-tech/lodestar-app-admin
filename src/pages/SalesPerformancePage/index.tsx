@@ -20,7 +20,12 @@ type MemberContract = {
   id: string
   agreedAt: Date
   approvedAt?: Date
+  canceledAt?: Date
   author: {
+    id: string
+    name: string
+  }
+  executor: {
     id: string
     name: string
   }
@@ -28,7 +33,6 @@ type MemberContract = {
     id: string
     name: string
   }
-  status: string
   performance: number
   products: string[]
   paymentMethod: string
@@ -62,15 +66,21 @@ const SalesPerformancePage: React.VFC = () => {
       render: v => v && moment(v).format('MM/DD'),
     },
     {
-      title: '審核通過日',
+      title: '通過日',
       dataIndex: 'approvedAt',
       key: 'approvedAt',
       render: v => v && moment(v).format('MM/DD'),
     },
     {
+      title: '取消日',
+      dataIndex: 'canceledAt',
+      key: 'canceledAt',
+      render: v => v && moment(v).format('MM/DD'),
+    },
+    {
       title: '顧問',
-      dataIndex: 'author',
-      key: 'author',
+      dataIndex: 'executor',
+      key: 'executor',
       render: v => v.name,
     },
     {
@@ -84,19 +94,16 @@ const SalesPerformancePage: React.VFC = () => {
       ),
     },
     {
-      title: '狀態',
-      dataIndex: 'status',
-      key: 'status',
-    },
-    {
       title: '業績',
       dataIndex: 'performance',
       key: 'performance',
+      render: v => v.toFixed(0),
     },
     {
       title: '產品',
       dataIndex: 'products',
       key: 'products',
+      render: v => v?.join('、'),
     },
     {
       title: '付款方式',
@@ -116,10 +123,11 @@ const SalesPerformancePage: React.VFC = () => {
   ]
 
   const filteredMemberContracts = activeManagerId
-    ? memberContracts.filter(memberContract => memberContract.author.id === activeManagerId)
+    ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
     : memberContracts
   const agreedPerformance = sum(filteredMemberContracts.filter(mc => mc.agreedAt).map(mc => mc.performance))
   const approvedPerformance = sum(filteredMemberContracts.filter(mc => mc.approvedAt).map(mc => mc.performance))
+  const canceledPerformance = sum(filteredMemberContracts.filter(mc => mc.canceledAt).map(mc => mc.performance))
 
   return (
     <AdminLayout>
@@ -130,6 +138,7 @@ const SalesPerformancePage: React.VFC = () => {
         {currentMemberId && (
           <Select
             className="mr-3"
+            style={{ width: 200 }}
             showSearch
             allowClear
             placeholder="業務顧問"
@@ -144,11 +153,28 @@ const SalesPerformancePage: React.VFC = () => {
             ))}
           </Select>
         )}
-        <span className="mr-3">進件：{new Intl.NumberFormat('zh').format(agreedPerformance)}</span>
-        <span>完款：{new Intl.NumberFormat('zh').format(approvedPerformance)}</span>
       </AdminPageTitle>
+
       <TableWrapper>
-        <Table loading={loading} pagination={false} dataSource={filteredMemberContracts} columns={columns} />
+        <Table
+          title={() => (
+            <div className="d-flex">
+              <span className="mr-3">
+                總共：{new Intl.NumberFormat('zh').format(approvedPerformance - canceledPerformance)}
+              </span>
+              <span className="mr-3">進件：{new Intl.NumberFormat('zh').format(agreedPerformance)}</span>
+              <span className="mr-3">過件：{new Intl.NumberFormat('zh').format(approvedPerformance)}</span>
+              <span className="mr-3">
+                退件：{new Intl.NumberFormat('zh').format(canceledPerformance)} (
+                {approvedPerformance ? ((canceledPerformance / approvedPerformance) * 100).toFixed(0) : 0}%)
+              </span>
+            </div>
+          )}
+          loading={loading}
+          pagination={false}
+          dataSource={filteredMemberContracts}
+          columns={columns}
+        />
       </TableWrapper>
     </AdminLayout>
   )
@@ -175,6 +201,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
         ) {
           id
           agreed_at
+          revoked_at
           member {
             id
             name
@@ -195,36 +222,47 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
       },
     },
   )
+  const managers = useMemo(() => data?.xuemi_sales.map(v => v.member).filter(notEmpty) || [], [data?.xuemi_sales])
   const memberContracts: MemberContract[] = useMemo(
     () =>
       data?.member_contract
-        .map(v =>
-          v.values.orderExecutors.map((orderExecutor: any) => {
-            return {
-              id: v.id,
-              author: {
-                id: v.author?.id,
-                name: v.author?.name,
-              },
-              member: {
-                id: v.member.id,
-                name: v.member.name,
-              },
-              agreedAt: v.agreed_at,
-              approvedAt: v.options?.approvedAt,
-              status: '',
-              performance: orderExecutor.ratio * v.values.price,
-              products: v.values.orderProducts?.filter((op: any) => op.price >= 10000).map((op: any) => op.name),
-              paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
-              paymentNumber: v.values.paymentOptions.paymentNumber,
-              note: v.options?.note,
-            }
-          }),
+        .map(
+          v =>
+            v.values.orderExecutors?.map((orderExecutor: any) => {
+              const executor = managers.find(v => v.id === orderExecutor.member_id)
+              const isGuaranteed = v.options?.note?.includes('保買') || false
+              const performance = orderExecutor.ratio * v.values.price
+              return {
+                id: v.id,
+                author: {
+                  id: v.author?.id,
+                  name: v.author?.name,
+                },
+                executor: {
+                  id: executor?.id,
+                  name: executor?.name,
+                },
+                member: {
+                  id: v.member.id,
+                  name: v.member.name,
+                },
+                agreedAt: v.agreed_at,
+                revokedAt: v.revoked_at,
+                approvedAt: v.options?.approvedAt,
+                canceledAt: v.options?.loanCanceledAt || v.options?.refundAppliedAt,
+                performance: isGuaranteed ? performance * 0.7 : performance,
+                products: v.values.orderProducts
+                  ?.filter((op: any) => op.price >= 1500)
+                  .map((op: any) => op.name + (op.options ? `(${op.options.quantity})` : '')),
+                paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
+                paymentNumber: v.values.paymentOptions.paymentNumber,
+                note: v.options?.note,
+              }
+            }) || [],
         )
         .flat() || [],
     [data?.member_contract],
   )
-  const managers = useMemo(() => data?.xuemi_sales.map(v => v.member).filter(notEmpty) || [], [data?.xuemi_sales])
   return { loading, memberContracts, managers }
 }
 export default SalesPerformancePage

@@ -2334,6 +2334,7 @@ export interface GET_MEMBER_CONTRACT_member_contract {
   __typename: "member_contract";
   id: any;
   agreed_at: any | null;
+  revoked_at: any | null;
   /**
    * An object relationship
    */
