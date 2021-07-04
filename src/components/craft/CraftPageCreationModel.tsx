@@ -77,11 +77,11 @@ const StyledFormItem = styled(Form.Item)`
 `
 
 type FieldProps = {
-  title: string
-  url: string
+  pageName: string
+  path: string
 }
 
-const ProductCreationModal: React.FC<
+const ProductCreationModal: React.VFC<
   AdminModalProps & {
     setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
   }
@@ -97,9 +97,8 @@ const ProductCreationModal: React.FC<
     setCreateStep('page')
     setCurrentTemplate('A')
   }
-  const handleSubmit = () => {
-    const pageName = form.getFieldValue('pageName')
-    const urlPath = form.getFieldValue('urlPath')
+  const handleSubmit = (values: FieldProps) => {
+    setLoading(true)
     //TODO: insert page
     setLoading(false)
     setModalVisible(false)
@@ -126,7 +125,7 @@ const ProductCreationModal: React.FC<
       }}
       {...props}
     >
-      <Form form={form} layout="vertical" colon={false} hideRequiredMark initialValues={{}}>
+      <Form form={form} layout="vertical" colon={false} hideRequiredMark initialValues={{}} onFinish={handleSubmit}>
         {createStep === 'template' ? (
           <>
             <StyledFormItemWrapper currentTemplate={currentTemplate}>
@@ -167,20 +166,18 @@ const ProductCreationModal: React.FC<
                 >
                   <div className="content">
                     <PlusIcon />
-                    <div>空白頁</div>
+                    <div>{formatMessage(craftPageMessages.label.emptyPage)}</div>
                   </div>
                 </AdminCard>
               </StyledFormItem>
             </StyledFormItemWrapper>
             <div className="text-right">
-              <div>
-                <Button className="mr-2" onClick={() => setCreateStep('page')}>
-                  {formatMessage(commonMessages.ui.previousStep)}
-                </Button>
-                <Button type="primary" onClick={() => handleSubmit()}>
-                  {formatMessage(commonMessages.ui.create)}
-                </Button>
-              </div>
+              <Button className="mr-2" onClick={() => setCreateStep('page')}>
+                {formatMessage(commonMessages.ui.previousStep)}
+              </Button>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                {formatMessage(commonMessages.ui.create)}
+              </Button>
             </div>
           </>
         ) : (
@@ -205,13 +202,13 @@ const ProductCreationModal: React.FC<
             <Form.Item
               label={
                 <span>
-                  {formatMessage(craftPageMessages.label.urlPath)}
+                  {formatMessage(craftPageMessages.label.path)}
                   <Tooltip
                     placement="top"
                     title={
                       <StyledTips>
                         {
-                          // TODO: fill the url tip
+                          // TODO: fill the url tip, zeplin didn't labeled
                         }
                       </StyledTips>
                     }
@@ -222,13 +219,13 @@ const ProductCreationModal: React.FC<
               }
             >
               <Form.Item
-                name="urlPath"
+                name="path"
                 noStyle
                 rules={[
                   {
                     required: true,
                     message: formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(craftPageMessages.label.urlPath),
+                      field: formatMessage(craftPageMessages.label.path),
                     }),
                   },
                 ]}
@@ -251,10 +248,9 @@ const ProductCreationModal: React.FC<
                 </Button>
                 <Button
                   type="primary"
-                  loading={loading}
                   onClick={() => {
                     form
-                      .validateFields(['pageName', 'urlPath'])
+                      .validateFields(['pageName', 'path'])
                       .then(() => setCreateStep('template'))
                       .catch(err => {
                         if (process.env.NODE_ENV === 'development') console.log(err)

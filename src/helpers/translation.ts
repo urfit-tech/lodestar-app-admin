@@ -1194,18 +1194,57 @@ export const orderMessages = {
 
 export const craftPageMessages = {
   ui: defineMessages({
-    createPage: { id: 'craft.ui.createPage', defaultMessage: '建立頁面' },
+    createPage: { id: 'craftPage.ui.createPage', defaultMessage: '建立頁面' },
+    deleteAllBlock: { id: 'craftPage.ui.deleteAllBlock', defaultMessage: '刪除整個區塊' },
+    deleteBlock: { id: 'craftPage.ui.deleteBlock', defaultMessage: '刪除區塊' },
+    deletePage: { id: 'craftPage.ui.deletePage', defaultMessage: '刪除頁面' },
   }),
   label: defineMessages({
-    settings: { id: 'craft.label.settings', defaultMessage: '基本設定' },
-    craftPageEditor: { id: 'craft.label.craftPageEditor', defaultMessage: '首頁 - 編輯頁面' },
-    editPage: { id: 'craft.label.editPage', defaultMessage: '編輯頁面' },
-    choiceTemplate: { id: 'craft.label.choiceTemplate', defaultMessage: '選擇版型' },
-    pageName: { id: 'craft.label.pageName', defaultMessage: '頁面名稱' },
-    urlPath: { id: 'craft.label.urlPath', defaultMessage: '網址路徑' },
-    url: { id: 'craft.label.url', defaultMessage: '網址' },
-    latestUpdatedAt: { id: 'craft.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
-    publish: { id: 'craft.label.publish', defaultMessage: '發佈' },
+    emptyPage: { id: 'craftPage.label.emptyPage', defaultMessage: '空白頁' },
+    settings: { id: 'craftPage.label.settings', defaultMessage: '基本設定' },
+    pageEditor: { id: 'craftPage.label.pageEditor', defaultMessage: '首頁 - 編輯頁面' },
+    editPage: { id: 'craftPage.label.editPage', defaultMessage: '編輯頁面' },
+    choiceTemplate: { id: 'craftPage.label.choiceTemplate', defaultMessage: '選擇版型' },
+    pageName: { id: 'craftPage.label.pageName', defaultMessage: '頁面名稱' },
+    path: { id: 'craftPage.label.urlPath', defaultMessage: '網址路徑' },
+    url: { id: 'craftPage.label.url', defaultMessage: '網址' },
+    latestUpdatedAt: { id: 'craftPage.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
+    publish: { id: 'craftPage.label.publish', defaultMessage: '發佈' },
+    margin: { id: 'craftPage.label.margin', defaultMessage: '邊界' },
+    containerComponent: { id: 'craftPage.label.containerComponent', defaultMessage: '區塊元件' },
+    cover: { id: 'craftPage.label.cover', defaultMessage: '輪播' },
+    programSection: { id: 'craftPage.label.programSection', defaultMessage: '課程區塊' },
+    activitySection: { id: 'craftPage.label.activitySection', defaultMessage: '活動區塊' },
+  }),
+  text: defineMessages({
+    deletePageConfirmation: {
+      id: 'Page.text.deletePageConfirmation',
+      defaultMessage: '頁面一經刪除即不可恢復，確定要刪除嗎？',
+    },
+    deletePageWarning: {
+      id: 'Page.text.deletePageWarning',
+      defaultMessage: '請仔細確認是否真的要刪除頁面，因為一旦刪除就無法恢復。',
+    },
+    noPageName: {
+      id: 'craftPage.text.noPageName',
+      defaultMessage: '尚未填寫頁面名稱',
+    },
+    noPath: {
+      id: 'craftPage.text.noPath',
+      defaultMessage: '尚未填寫網址路徑',
+    },
+    notCompleteNotation: {
+      id: 'craftPage.text.notCompleteNotation',
+      defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
+    },
+    unpublishedNotation: {
+      id: 'craftPage.text.unpublishedNotation',
+      defaultMessage: '因你的頁面未發佈，此頁面並不會顯示。',
+    },
+    publishedNotation: {
+      id: 'craftPage.text.publishedNotation',
+      defaultMessage: '現在你的頁面已經發佈，此頁面將會顯示。',
+    },
   }),
 }
 

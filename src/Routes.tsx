@@ -324,13 +324,13 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   // craft page
   owner_craft_pages: {
     path: '/admin/craft_page',
-    pageName: 'owner/CraftCollectionPage',
+    pageName: 'owner/CraftPageCollectionPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
   owner_craft_page_setup: {
     path: '/admin/craft_page/:pageId',
-    pageName: 'owner/CraftPage',
+    pageName: 'owner/CraftPageAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },

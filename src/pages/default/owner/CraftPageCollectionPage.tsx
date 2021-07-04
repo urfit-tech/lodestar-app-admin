@@ -9,7 +9,7 @@ import AdminLayout from '../../../components/layout/AdminLayout'
 import { commonMessages } from '../../../helpers/translation'
 import { ReactComponent as PageIcon } from '../../../images/icon/page.svg'
 
-const CraftCollectionPage: React.VFC = () => {
+const CraftPageCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
@@ -18,7 +18,15 @@ const CraftCollectionPage: React.VFC = () => {
       key: 'published',
       tab: formatMessage(commonMessages.status.published),
       //TODO: pages filter published_at is not null
-      pages: [],
+      pages: [
+        {
+          id: '123',
+          pageName: 'pageName',
+          path: '/demo',
+          updatedAt: new Date('2021-06-26T14:55:47.665035+00:00'),
+          editor: '修改人員',
+        },
+      ],
     },
     {
       key: 'unpublished',
@@ -45,11 +53,11 @@ const CraftCollectionPage: React.VFC = () => {
         />
       </div>
 
-      <Tabs defaultActiveKey="selling">
+      <Tabs defaultActiveKey="published">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.pages.length})`}>
             <AdminPageBlock>
-              <CraftPageCollectionTable />
+              <CraftPageCollectionTable pages={tabContent.pages} />
             </AdminPageBlock>
           </Tabs.TabPane>
         ))}
@@ -58,4 +66,4 @@ const CraftCollectionPage: React.VFC = () => {
   )
 }
 
-export default CraftCollectionPage
+export default CraftPageCollectionPage
