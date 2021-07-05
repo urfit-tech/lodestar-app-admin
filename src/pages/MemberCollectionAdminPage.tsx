@@ -367,6 +367,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           </StyledButton>
         </Popover>
         <MemberExportModal
+          appId="xuemi"
           filter={{
             ...fieldFilter,
             managerId: currentUserRole === 'general-member' ? currentMemberId || '' : undefined,
