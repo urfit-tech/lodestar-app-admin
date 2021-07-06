@@ -209,9 +209,10 @@ const MemberContractCreationPage: React.VFC = () => {
     discountAmount['referral'] = 2000 * -1
   }
   if (fieldValue.identity === 'student' && fieldValue?.certification?.file.name) {
-    discountAmount['studentPromotion'] =
+    discountAmount['studentPromotion'] = Math.floor(
       (sum(mainProducts.map(mainProduct => mainProduct.price)) + discountAmount['referral'] * mainProducts.length) *
-      -0.1
+        -(1 - 0.65 / 0.75),
+    )
   }
   discountAmount['groupPromotion'] =
     (sum(mainProducts.map(mainProduct => mainProduct.price)) +
