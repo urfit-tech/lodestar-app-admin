@@ -8,7 +8,7 @@ import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import LoadingPage from 'lodestar-app-admin/src/pages/default/LoadingPage'
 import { PeriodType } from 'lodestar-app-admin/src/types/general'
 import moment, { Moment } from 'moment'
-import { uniqBy } from 'ramda'
+import { sum, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import hasura from '../../hasura'
@@ -48,6 +48,7 @@ type FieldProps = {
   hasDeposit?: boolean[]
   withProductStartedAt: boolean
   productStartedAt: Moment
+  rebateGift?: string
 }
 
 type ContractInfo = {
@@ -101,6 +102,16 @@ type ContractInfo = {
   }[]
   coinExchangeRage: number
 }
+type ContractItem = {
+  id: string
+  type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount' | 'rebateDiscount'
+  name: string
+  price: number
+  appointments: number
+  coins: number
+  amount: number
+}
+
 type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
 
 const MemberContractCreationPage: React.VFC = () => {
@@ -130,15 +141,6 @@ const MemberContractCreationPage: React.VFC = () => {
   }
 
   const selectedProjectPlan = projectPlans.find(v => v.id === fieldValue.selectedProjectPlanId) || null
-  const endedAt = selectedProjectPlan
-    ? moment(startedAt)
-        .add(
-          selectedProjectPlan.periodAmount || 0,
-          selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
-        )
-        .add(fieldValue.selectedGiftDays, 'days')
-        .toDate()
-    : null
 
   // calculate contract items results
   const selectedProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
@@ -149,6 +151,167 @@ const MemberContractCreationPage: React.VFC = () => {
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
     products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
+
+  // calculate contract products
+  const contractProducts: ContractItem[] = selectedProducts
+    .map(contractProduct => {
+      const product = products.find(product => product.id === contractProduct.id)
+      if (!product) {
+        return null
+      }
+      const productType: 'mainProduct' | 'addonProduct' =
+        product.name === '業師諮詢' && isAppointmentOnly
+          ? 'mainProduct'
+          : product.addonPrice
+          ? 'addonProduct'
+          : 'mainProduct'
+
+      return {
+        id: contractProduct.id,
+        name: product.name,
+        type: productType,
+        price: productType === 'mainProduct' ? product.price : product.addonPrice || 0,
+        appointments:
+          productType === 'mainProduct' && fieldValue?.identity === 'student'
+            ? product.appointments / 2
+            : product.appointments,
+        coins: product.coins,
+        amount: contractProduct.amount,
+      }
+    })
+    .filter(notEmpty)
+  const mainProducts = contractProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
+  const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
+  const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
+  const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
+  if (fieldValue.withCreatorId && totalAppointments > 0) {
+    contractProducts.push({
+      id: contractsOptions.projectPlanId['designatedIndustryTeacher'],
+      type: 'addonProduct',
+      name: '指定業師',
+      price: 1000,
+      appointments: 0,
+      coins: 0,
+      amount: totalAppointments,
+    })
+  }
+
+  // calculate contract discounts
+  const contractDiscounts: ContractItem[] = []
+  const discountAmount = {
+    referral: 0,
+    deposit: -1000,
+    studentPromotion: 0,
+    groupPromotion: 0,
+  }
+
+  if (fieldValue.referralMemberId) {
+    discountAmount['referral'] = 2000 * -1
+  }
+  if (fieldValue.identity === 'student' && fieldValue?.certification?.file.name) {
+    discountAmount['studentPromotion'] =
+      (sum(mainProducts.map(mainProduct => mainProduct.price)) + discountAmount['referral'] * mainProducts.length) *
+      -0.1
+  }
+  discountAmount['groupPromotion'] =
+    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
+      discountAmount['referral'] * mainProducts.length +
+      discountAmount['studentPromotion']) *
+    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
+
+  if (discountAmount['referral']) {
+    contractDiscounts.push({
+      id: contractsOptions.couponPlanId['referral'],
+      type: 'referralDiscount',
+      name: '被介紹人折抵',
+      price: discountAmount['referral'],
+      appointments: 0,
+      coins: 0,
+      amount: mainProducts.length,
+    })
+  }
+  if (discountAmount['studentPromotion']) {
+    contractDiscounts.push({
+      id: contractsOptions.couponPlanId['student'],
+      type: 'promotionDiscount',
+      name: '學生方案',
+      price: discountAmount['studentPromotion'],
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+  if (Math.ceil(discountAmount['groupPromotion'])) {
+    const promotionDiscount: Omit<ContractItem, 'id' | 'name'> = {
+      price: Math.ceil(discountAmount['groupPromotion']),
+      type: 'promotionDiscount',
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    }
+
+    if (mainProducts.length === 2) {
+      contractDiscounts.push({
+        id: contractsOptions.couponPlanId['tenPercentOff'],
+        name: '任選兩件折抵',
+        ...promotionDiscount,
+      })
+    }
+    if (mainProducts.length === 3) {
+      contractDiscounts.push({
+        id: contractsOptions.couponPlanId['fifteenPercentOff'],
+        name: '任選三件折抵',
+        ...promotionDiscount,
+      })
+    }
+    if (mainProducts.length >= 4) {
+      contractDiscounts.push({
+        id: contractsOptions.couponPlanId['twentyPercentOff'],
+        name: '任選四件折抵',
+        ...promotionDiscount,
+      })
+    }
+  }
+  if (fieldValue.hasDeposit) {
+    contractDiscounts.push({
+      id: contractsOptions.couponPlanId['deposit'],
+      type: 'depositDiscount',
+      name: '扣除訂金',
+      price: discountAmount['deposit'],
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+
+  const endedAt = selectedProjectPlan
+    ? moment(startedAt)
+        .add(
+          selectedProjectPlan.periodAmount || 0,
+          selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
+        )
+        .add(fieldValue.selectedGiftDays, 'days')
+        .add(Math.floor(totalCoins / 1200) / 2, 'years')
+        .toDate()
+    : null
+
+  const totalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
+
+  // calculate rebateGift
+  if (fieldValue.rebateGift) {
+    const [couponPlanId, price, name] = fieldValue.rebateGift.split('_')
+    contractDiscounts.push({
+      id: couponPlanId,
+      type: 'rebateDiscount',
+      name: `滿額學習工具 - ${name}`,
+      price: Number(price),
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+
+  const finalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
 
   return (
     <DefaultLayout>
@@ -188,20 +351,25 @@ const MemberContractCreationPage: React.VFC = () => {
             projectPlans={projectPlans}
             sales={sales}
             appointmentPlanCreators={appointmentPlanCreators}
+            totalPrice={totalPrice}
+            rebateGift={contractsOptions?.['rebateGift']}
           />
 
           <MemberContractCreationBlock
             form={form}
             member={member}
             products={products}
-            contracts={contracts}
             selectedProjectPlan={selectedProjectPlan}
             startedAt={startedAt}
             endedAt={endedAt}
             selectedProducts={selectedProducts}
-            isAppointmentOnly={isAppointmentOnly}
             memberBlockRef={memberBlockRef}
             coinExchangeRage={coinExchangeRage}
+            contractProducts={contractProducts}
+            contractDiscounts={contractDiscounts}
+            finalPrice={finalPrice}
+            totalAppointments={totalAppointments}
+            totalCoins={totalCoins}
           />
         </AdminBlock>
       </div>
@@ -363,7 +531,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
   }
 }
 
-export type { ContractInfo, FieldProps }
+export type { ContractInfo, ContractItem, FieldProps }
 export { paymentMethods, installmentPlans }
 
 export default MemberContractCreationPage

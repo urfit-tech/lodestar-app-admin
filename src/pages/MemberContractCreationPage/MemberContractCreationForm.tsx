@@ -3,7 +3,7 @@ import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, R
 import { FormProps } from 'antd/lib/form/Form'
 import { AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
 import moment from 'moment'
-import { last } from 'ramda'
+import { keys, last } from 'ramda'
 import React, { memo, useState } from 'react'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps, installmentPlans, paymentMethods } from '.'
@@ -29,6 +29,14 @@ const MemberContractCreationForm: React.FC<
     memberId: string
     isAppointmentOnly: boolean
     sales: ContractInfo['sales']
+    totalPrice: number
+    rebateGift?: {
+      [rebatePrice: string]: {
+        couponPlanId: string
+        price: number
+        name: string
+      }[]
+    }
   }
 > = memo(
   ({
@@ -42,11 +50,23 @@ const MemberContractCreationForm: React.FC<
     memberId,
     isAppointmentOnly,
     sales,
+    totalPrice,
+    rebateGift,
     form,
     ...formProps
   }) => {
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
+
+    const minRebatePrice = Math.min(...keys(rebateGift).map(Number))
+    const targetRebateGiftList =
+      rebateGift?.[
+        Math.max(
+          ...keys(rebateGift)
+            .map(Number)
+            .filter(rebatePrice => totalPrice >= rebatePrice),
+        )
+      ] || []
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
@@ -225,6 +245,20 @@ const MemberContractCreationForm: React.FC<
               </div>
             </div>
           </Descriptions.Item>
+
+          {totalPrice >= minRebatePrice && targetRebateGiftList.length > 0 && (
+            <Descriptions.Item label="滿額學習工具">
+              <Form.Item name="rebateGift" style={{ width: '300px' }}>
+                <Select<string>>
+                  {targetRebateGiftList?.map(v => (
+                    <Select.Option key={v.name} value={`${v.couponPlanId}_${-v.price}_${v.name}`}>
+                      {v.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Descriptions.Item>
+          )}
         </Descriptions>
 
         <Descriptions title="付款方式" bordered className="mb-5">
