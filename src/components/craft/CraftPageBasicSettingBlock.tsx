@@ -13,7 +13,7 @@ type FieldProps = {
   path: string
 }
 
-const CraftGeneralSettingBlock: React.VFC<{
+const CraftPageBasicSettingBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps | null
   onRefetch?: () => void
 }> = ({ pageAdmin }) => {
@@ -35,12 +35,11 @@ const CraftGeneralSettingBlock: React.VFC<{
         <Form
           form={form}
           colon={false}
-          hideRequiredMark
+          requiredMark={false}
           labelAlign="left"
           labelCol={{ md: { span: 4 } }}
           wrapperCol={{ md: { span: 8 } }}
           initialValues={{
-            //TODO: init
             pageName: pageAdmin?.pageName,
             path: pageAdmin?.path,
           }}
@@ -124,4 +123,4 @@ const CraftGeneralSettingBlock: React.VFC<{
   )
 }
 
-export default CraftGeneralSettingBlock
+export default CraftPageBasicSettingBlock
