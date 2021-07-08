@@ -19,9 +19,9 @@ const SalesMemberInput: React.FC<{
   if (error || !data) {
     return <div>讀取錯誤</div>
   }
-
   return (
     <MemberSelector
+      allowClear
       members={data.member.map(v => ({
         id: v.id,
         avatarUrl: v.picture_url,

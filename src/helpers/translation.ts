@@ -61,6 +61,7 @@ export const memberContractMessages = {
 export const salesMessages = {
   label: defineMessages({
     salesLead: { id: 'sales.label.salesLead', defaultMessage: '名單撥打' },
+    salesLeadDelivery: { id: 'sales.label.salesLeadDelivery', defaultMessage: '名單派發' },
     salesPerformance: { id: 'sales.label.salesPerformance', defaultMessage: '業績總表' },
     salesCall: { id: 'sales.label.salesCall', defaultMessage: '業務撥打' },
     salesStatus: { id: 'sales.label.salesStatus', defaultMessage: '即時戰況' },

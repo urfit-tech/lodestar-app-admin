@@ -4,6 +4,32 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CATEGORY_LIST
+// ====================================================
+
+export interface GET_CATEGORY_LIST_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_CATEGORY_LIST {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_CATEGORY_LIST_category[];
+}
+
+export interface GET_CATEGORY_LISTVariables {
+  class: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_CATEGORY
 // ====================================================
 
@@ -1911,6 +1937,86 @@ export interface GET_SALES_CALL_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_LEAD_CANDIDATES
+// ====================================================
+
+export interface GET_LEAD_CANDIDATES_member {
+  __typename: "member";
+  id: string;
+}
+
+export interface GET_LEAD_CANDIDATES {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_LEAD_CANDIDATES_member[];
+}
+
+export interface GET_LEAD_CANDIDATESVariables {
+  condition?: member_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ASSIGNED_LEADS
+// ====================================================
+
+export interface GET_ASSIGNED_LEADS_audit_log {
+  __typename: "audit_log";
+  member_id: string | null;
+}
+
+export interface GET_ASSIGNED_LEADS {
+  /**
+   * fetch data from the table: "audit_log"
+   */
+  audit_log: GET_ASSIGNED_LEADS_audit_log[];
+}
+
+export interface GET_ASSIGNED_LEADSVariables {
+  memberIds?: string[] | null;
+  assignedAtCondition?: timestamptz_comparison_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_LEAD_MANAGER
+// ====================================================
+
+export interface UPDATE_LEAD_MANAGER_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_LEAD_MANAGER {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_LEAD_MANAGER_update_member | null;
+}
+
+export interface UPDATE_LEAD_MANAGERVariables {
+  memberIds?: string[] | null;
+  managerId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_TODAY_MEMBER_CONTRACT
 // ====================================================
 
@@ -2609,6 +2715,7 @@ export enum activity_session_update_column {
   ended_at = "ended_at",
   id = "id",
   location = "location",
+  location_online = "location_online",
   started_at = "started_at",
   threshold = "threshold",
   title = "title",
@@ -5602,6 +5709,7 @@ export interface activity_session_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   location?: String_comparison_exp | null;
+  location_online?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   threshold?: numeric_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -5619,6 +5727,7 @@ export interface activity_session_insert_input {
   ended_at?: any | null;
   id?: any | null;
   location?: string | null;
+  location_online?: string | null;
   started_at?: any | null;
   threshold?: any | null;
   title?: string | null;
@@ -12103,6 +12212,20 @@ export interface order_log_variance_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "order_payment_status". All fields are combined with a logical 'AND'.
+ */
+export interface order_payment_status_bool_exp {
+  _and?: (order_payment_status_bool_exp | null)[] | null;
+  _not?: order_payment_status_bool_exp | null;
+  _or?: (order_payment_status_bool_exp | null)[] | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  status?: String_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "order_product"
  */
 export interface order_product_arr_rel_insert_input {
@@ -12489,6 +12612,7 @@ export interface payment_log_bool_exp {
   options?: jsonb_comparison_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
+  order_payment_status?: order_payment_status_bool_exp | null;
   paid_at?: timestamptz_comparison_exp | null;
   payment_due_at?: timestamptz_comparison_exp | null;
   price?: numeric_comparison_exp | null;

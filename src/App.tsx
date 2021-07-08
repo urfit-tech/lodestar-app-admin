@@ -16,6 +16,7 @@ import MemberContractCreationPage from './pages/MemberContractCreationPage'
 import NoteCollectionPage from './pages/NoteCollectionPage'
 import SalesActivenessPage from './pages/SalesActivenessPage'
 import SalesCallPage from './pages/SalesCallPage'
+import SalesLeadDeliveryPage from './pages/SalesLeadDeliveryPage'
 import SalesLeadPage from './pages/SalesLeadPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
@@ -52,6 +53,11 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'sales_lead',
                   name: '名單撥打',
+                },
+                {
+                  permissionIsAllowed: role === 'app-owner',
+                  key: 'sales_lead_delivery',
+                  name: '名單派發',
                 },
                 // {
                 //   permissionIsAllowed: true,
@@ -158,6 +164,12 @@ const App: React.FC = () => {
         sales_lead: {
           path: '/sales-lead',
           pageName: <SalesLeadPage />,
+          authenticated: true,
+        },
+        sales_lead_delivery: {
+          path: '/sales-lead-delivery',
+          pageName: <SalesLeadDeliveryPage />,
+          allowedUserRole: 'app-owner',
           authenticated: true,
         },
         sales_performance: {

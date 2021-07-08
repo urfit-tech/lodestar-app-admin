@@ -124,7 +124,6 @@ const MemberCollectionAdminPage: React.FC = () => {
       id: propertyId,
       value: propertyFilter[propertyId],
     })),
-    managerId: currentUserRole === 'general-member' ? currentMemberId || '' : undefined,
   })
   const [loading, setLoading] = useState(false)
 
