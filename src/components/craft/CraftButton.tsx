@@ -179,14 +179,15 @@ const TitleSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
         type="primary"
         block
         onClick={() => {
-          //   setProp((props: CraftButtonProps) => {
-          //     props.titleContent = titleContent
-          //     props.fontSize = titleStyle.fontSize
-          //     props.padding = titleStyle.padding
-          //     props.textAlign = titleStyle.textAlign
-          //     props.fontWeight = titleStyle.fontWeight
-          //     props.color = titleStyle.color
-          //   })
+          setProp((props: CraftButtonProps) => {
+            props.title = button.title
+            props.link = button.link
+            props.openNewTab = button.openNewTab
+            props.size = button.size
+            props.block = button.block
+            props.variant = button.variant
+            props.color = button.color
+          })
         }}
       >
         {formatMessage(commonMessages.ui.save)}
