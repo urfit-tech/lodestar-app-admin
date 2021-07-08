@@ -13,7 +13,7 @@ import {
   StyledUnderLineInput,
 } from '../admin'
 
-const CraftStyleBlock: React.VFC<
+const CraftTextStyleBlock: React.VFC<
   {
     type: 'title' | 'paragraph'
     title: string
@@ -87,11 +87,10 @@ const CraftStyleBlock: React.VFC<
         </>
         <div className="d-flex mb-3">
           <div>
-            <StyledCraftSettingLabel className="mb-2">
-              {formatMessage(craftPageMessages.label.textAlign)}
-            </StyledCraftSettingLabel>
+            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.textAlign)}</StyledCraftSettingLabel>
             <div>
               <Radio.Group
+                className="mt-2"
                 value={textStyle.textAlign}
                 onChange={value => setTextStyle({ ...textStyle, textAlign: value.target.value })}
               >
@@ -104,11 +103,10 @@ const CraftStyleBlock: React.VFC<
             </div>
           </div>
           <div className="ml-4">
-            <StyledCraftSettingLabel className="mb-2">
-              {formatMessage(craftPageMessages.label.fontWeight)}
-            </StyledCraftSettingLabel>
+            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.fontWeight)}</StyledCraftSettingLabel>
             <div>
               <Radio.Group
+                className="mt-2"
                 value={textStyle.fontWeight}
                 onChange={value => setTextStyle({ ...textStyle, fontWeight: value.target.value })}
               >
@@ -122,9 +120,7 @@ const CraftStyleBlock: React.VFC<
           </div>
         </div>
         <>
-          <StyledCraftSettingLabel className="mb-2">
-            {formatMessage(craftPageMessages.label.color)}
-          </StyledCraftSettingLabel>
+          <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.color)}</StyledCraftSettingLabel>
           <StyledUnderLineInput
             className="mb-3"
             bordered={false}
@@ -158,4 +154,4 @@ const CraftStyleBlock: React.VFC<
   )
 }
 
-export default CraftStyleBlock
+export default CraftTextStyleBlock
