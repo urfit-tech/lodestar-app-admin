@@ -11,7 +11,7 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../../components/admin'
-import CraftGeneralSettingBlock from '../../../components/craft/CraftGeneralSettingBlock'
+import CraftPageBasicSettingBlock from '../../../components/craft/CraftPageBasicSettingBlock'
 import CraftPagePublishAdminBlock from '../../../components/craft/CraftPagePublishAdminBlock'
 import CraftPageSettingBlock from '../../../components/craft/CraftPageSettingBlock'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
@@ -56,7 +56,7 @@ const CraftPageAdminPage: React.VFC = () => {
             <CraftPageSettingBlock />
           </Tabs.TabPane>
           <Tabs.TabPane key="general" tab={formatMessage(craftPageMessages.label.settings)}>
-            <CraftGeneralSettingBlock pageAdmin={page} />
+            <CraftPageBasicSettingBlock pageAdmin={page} />
           </Tabs.TabPane>
           <Tabs.TabPane key="publish" tab={formatMessage(craftPageMessages.label.publish)}>
             <div className="container py-5">
