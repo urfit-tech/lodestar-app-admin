@@ -1,8 +1,11 @@
 import { useEditor } from '@craftjs/core'
 import { Button } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import { craftPageMessages } from '../../helpers/translation'
 
 const CraftSettingsPanel: React.VFC = () => {
+  const { formatMessage } = useIntl()
   const { selected, actions } = useEditor(state => {
     const currentNodeId = state.events.selected
     let selected
@@ -11,19 +14,28 @@ const CraftSettingsPanel: React.VFC = () => {
         id: currentNodeId,
         name: state.nodes[currentNodeId].data.name,
         settings: state.nodes[currentNodeId].related && state.nodes[currentNodeId].related.settings,
+        labelName: state.nodes[currentNodeId].data?.custom?.button?.label,
       }
     }
-
     return {
       selected,
     }
   })
+
   return (
-    <div className="px-3">
+    <div className="px-3 mb-4">
       {selected && selected.settings && React.createElement(selected.settings)}
-      {selected && (
-        <Button danger block onClick={() => actions.delete(selected.id)}>
-          DELETE
+      {selected && selected.labelName && (
+        <Button
+          block
+          onClick={() => {
+            window.alert(formatMessage(craftPageMessages.text.deleteWarning))
+            actions.delete(selected.id)
+          }}
+        >
+          {selected.labelName === 'deleteBlock'
+            ? formatMessage(craftPageMessages.ui.deleteBlock)
+            : formatMessage(craftPageMessages.ui.deleteAllBlock)}
         </Button>
       )}
     </div>
