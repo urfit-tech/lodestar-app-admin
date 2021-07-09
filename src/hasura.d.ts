@@ -2283,6 +2283,43 @@ export interface REVOKE_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_MEMBER
+// ====================================================
+
+export interface INSERT_MEMBER_insert_member_returning {
+  __typename: "member";
+  id: string;
+}
+
+export interface INSERT_MEMBER_insert_member {
+  __typename: "member_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_MEMBER_insert_member_returning[];
+}
+
+export interface INSERT_MEMBER {
+  /**
+   * insert data into the table: "member"
+   */
+  insert_member: INSERT_MEMBER_insert_member | null;
+}
+
+export interface INSERT_MEMBERVariables {
+  id: string;
+  appId: string;
+  role: string;
+  username: string;
+  email: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_COLLECTION
 // ====================================================
 

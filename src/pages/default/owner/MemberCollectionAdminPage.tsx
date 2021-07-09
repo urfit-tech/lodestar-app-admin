@@ -10,6 +10,7 @@ import AdminCard from '../../../components/admin/AdminCard'
 import { AvatarImage } from '../../../components/common/Image'
 import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
+import MemberCreationModal from '../../../components/member/MemberCreationModal'
 import MemberExportModal from '../../../components/member/MemberExportModal'
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
@@ -117,7 +118,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const [propertyFilter, setPropertyFilter] = useState<{
     [propertyId: string]: string | undefined
   }>({})
-  const { loadingMembers, members, loadMoreMembers } = useMemberCollection({
+  const { loadingMembers, members, loadMoreMembers, refetchMembers } = useMemberCollection({
     ...fieldFilter,
     properties: Object.keys(propertyFilter).map(propertyId => ({
       id: propertyId,
@@ -365,6 +366,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           </StyledButton>
         </Popover>
         <MemberExportModal appId={appId} filter={fieldFilter} />
+        {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
       </div>
 
       <AdminCard className="mb-5">
