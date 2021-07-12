@@ -122,14 +122,14 @@ const ProgramContentAdminModal: React.FC<{
       }
     }
     // upload materials
-    const pendingFiles = materialFiles.filter(
+    const newFiles = materialFiles.filter(
       file =>
         !programContentBody.materials.some(
           material => material.data.name === file.name && material.data.lastModified === file.lastModified,
         ),
     )
-    if (pendingFiles.length) {
-      for (const file of pendingFiles) {
+    if (newFiles.length) {
+      for (const file of newFiles) {
         await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {

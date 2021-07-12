@@ -2,16 +2,13 @@ import { EditOutlined, MoreOutlined, QuestionCircleFilled } from '@ant-design/ic
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useApp } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
-import { handleError, uploadFile } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateProgramContent } from '../../hooks/program'
@@ -89,17 +86,14 @@ const PracticeForm: React.FC<{
   onCancel?: () => void
 }> = ({ programContent, programContentBody, onRefetch, onCancel }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
-  const { authToken, apiHost } = useAuth()
   const [form] = useForm<FieldProps>()
-  const uploadCanceler = useRef<Canceler>()
-  const [attachments, setAttachments] = useState<File[]>(programContent.attachments.map(v => v.data) || [])
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
-  const [updatePractice] = useMutation<hasura.UPDATE_PRACTICE, hasura.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
   const { deleteProgramContent } = useMutateProgramContent()
+  const [updatePractice] = useMutation<hasura.UPDATE_PRACTICE, hasura.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
+
+  const [attachments, setAttachments] = useState<File[]>(programContent.attachments.map(v => v.data) || [])
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {
     setIsSubmitting(true)
@@ -124,42 +118,32 @@ const PracticeForm: React.FC<{
     ])
       .then(async () => {
         try {
-          const existedFiles: File[] = programContentBody.materials.map(material => material.data).flat()
-          for (const file of attachments) {
-            if (
-              existedFiles.some(
-                existedFile => existedFile.name === file.name && existedFile.lastModified === file.lastModified,
-              )
-            ) {
-              continue
-            }
-            await uploadFile(`programContent/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
-              cancelToken: new axios.CancelToken(canceler => {
-                uploadCanceler.current = canceler
-              }),
-            })
-          }
-          const programContentId = programContent.id
           const deletedAttachmentIds = programContent.attachments
-            .filter(programContentAttachment =>
-              attachments.every(
-                attachment =>
-                  attachment.name !== programContentAttachment.data.name &&
-                  attachment.lastModified !== programContentAttachment.data.lastModified,
-              ),
+            .filter(
+              programContentAttachment =>
+                !attachments.some(
+                  attachment =>
+                    attachment.name === programContentAttachment.data.name &&
+                    attachment.lastModified === programContentAttachment.data.lastModified,
+                ),
             )
             .map(attachment => attachment.id)
-          const newAttachments = attachments.filter(attachment =>
-            programContent.attachments.every(
-              programContentAttachment =>
-                programContentAttachment.data.name !== attachment.name &&
-                programContentAttachment.data.lastModified !== attachment.lastModified,
-            ),
+          const newAttachments = attachments.filter(
+            attachment =>
+              !programContent.attachments.some(
+                programContentAttachment =>
+                  programContentAttachment.data.name === attachment.name &&
+                  programContentAttachment.data.lastModified === attachment.lastModified,
+              ),
           )
-          if (programContentId && attachments.length) {
+
+          if (deletedAttachmentIds.length) {
             await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
-            await uploadAttachments('ProgramContent', programContentId, newAttachments)
           }
+          if (newAttachments.length) {
+            await uploadAttachments('ProgramContent', programContent.id, newAttachments)
+          }
+
           message.success(formatMessage(commonMessages.event.successfullySaved))
           onRefetch?.()
         } catch (error) {
@@ -302,6 +286,7 @@ const PracticeForm: React.FC<{
     </Form>
   )
 }
+
 const UPDATE_PRACTICE = gql`
   mutation UPDATE_PRACTICE(
     $programContentId: uuid!
