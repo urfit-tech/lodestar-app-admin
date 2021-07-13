@@ -306,6 +306,16 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'MemberCouponAdminPage',
     authenticated: true,
   },
+  owner_member_voucher: {
+    path: '/admin/members/:memberId/voucher',
+    pageName: 'MemberVoucherAdminPage',
+    authenticated: true,
+  },
+  owner_member_coin: {
+    path: '/admin/members/:memberId/coin',
+    pageName: 'MemberCoinAdminPage',
+    authenticated: true,
+  },
   owner_member_contract: {
     path: '/admin/members/:memberId/contract',
     pageName: 'MemberContractAdminPage',

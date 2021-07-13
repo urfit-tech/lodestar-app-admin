@@ -573,6 +573,7 @@ export const promotionMessages = {
     coupon: { id: 'promotion.label.coupon', defaultMessage: '折價券' },
     couponPlanTitle: { id: 'promotion.label.couponPlanTitle', defaultMessage: '折價方案名稱' },
     couponCode: { id: 'promotion.label.couponCode', defaultMessage: '折扣代碼' },
+    voucher: {id: 'promotion.label.voucher', defaultMessage: '兌換券'},
     voucherCode: { id: 'promotion.label.voucherCode', defaultMessage: '兌換代碼' },
     couponCodes: { id: 'promotion.label.couponCodes', defaultMessage: '折扣碼' },
     voucherCodes: { id: 'promotion.label.voucherCodes', defaultMessage: '兌換碼' },

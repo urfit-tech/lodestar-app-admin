@@ -179,33 +179,52 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
   }
 }
 
-export const useVoucherPlanCollection = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_VOUCHER_PLAN_COLLECTION>(GET_VOUCHER_PLAN_COLLECTION)
-  const voucherPlanCollection: VoucherPlanProps[] =
-    loading || error || !data
-      ? []
-      : reverse(data.voucher_plan).map(voucherPlan => {
-          const [count, remaining] =
-            voucherPlan.voucher_codes_aggregate.aggregate && voucherPlan.voucher_codes_aggregate.aggregate.sum
-              ? [
-                  voucherPlan.voucher_codes_aggregate.aggregate.sum.count || 0,
-                  voucherPlan.voucher_codes_aggregate.aggregate.sum.remaining || 0,
-                ]
-              : [0, 0]
+export const useVoucherPlanCollection = (memberId?: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_VOUCHER_PLAN_COLLECTION>(
+    gql`
+      query GET_VOUCHER_PLAN_COLLECTION($memberId: String) {
+        voucher_plan(where: { voucher_codes: { vouchers: { member_id: { _eq: $memberId } } } }) {
+          id
+          title
+          description
+          started_at
+          ended_at
+          product_quantity_limit
 
-          return {
-            ...voucherPlan,
-            startedAt: voucherPlan?.started_at || null,
-            endedAt: voucherPlan?.ended_at || null,
-            productQuantityLimit: voucherPlan.product_quantity_limit,
-            available:
-              remaining > 0 && (voucherPlan.ended_at ? new Date(voucherPlan.ended_at).getTime() > Date.now() : true),
-            description: decodeURI(voucherPlan.description || ''),
-            count: count,
-            remaining,
-            productIds: voucherPlan.voucher_plan_products.map(product => product.product_id),
+          voucher_codes_aggregate {
+            aggregate {
+              sum {
+                count
+                remaining
+              }
+            }
           }
-        })
+          voucher_plan_products {
+            id
+            product_id
+          }
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const voucherPlanCollection: VoucherPlanProps[] = reverse(data?.voucher_plan || []).map(v => {
+    const remaining = v.voucher_codes_aggregate.aggregate?.sum?.remaining || 0
+
+    return {
+      id: v.id,
+      title: v.title,
+      startedAt: v?.started_at || null,
+      endedAt: v?.ended_at || null,
+      productQuantityLimit: v.product_quantity_limit,
+      available: remaining > 0 && (v.ended_at ? new Date(v.ended_at).getTime() > Date.now() : true),
+      description: decodeURI(v.description || ''),
+      count: v.voucher_codes_aggregate.aggregate?.sum?.count || 0,
+      remaining,
+      productIds: v.voucher_plan_products.map(product => product.product_id),
+    }
+  })
 
   return {
     loading,
@@ -378,28 +397,29 @@ export const useCheck = (
 
   useEffect(() => {
     setOrderChecking(true)
-    axios.post<{
-      code: string
-      message: string
-      result: {
-        orderProducts: OrderProductProps[]
-        orderDiscounts: OrderDiscountProps[]
-        shippingOption: shippingOptionProps
-      }
-    }>(
-      `https://${apiHost}/payment/checkout-order`,
-      {
-        appId,
-        memberId,
-        productIds,
-        discountId,
-        shipping,
-        options,
-      },
-      {
-        headers: { authorization: `Bearer ${authToken}` },
-      },
-    )
+    axios
+      .post<{
+        code: string
+        message: string
+        result: {
+          orderProducts: OrderProductProps[]
+          orderDiscounts: OrderDiscountProps[]
+          shippingOption: shippingOptionProps
+        }
+      }>(
+        `https://${apiHost}/payment/checkout-order`,
+        {
+          appId,
+          memberId,
+          productIds,
+          discountId,
+          shipping,
+          options,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
       .then(({ data: { code, message, result } }) => {
         if (code === 'SUCCESS') {
           setCheck(result)
@@ -423,21 +443,22 @@ export const useCheck = (
   const placeOrder = useCallback(
     async (paymentType: 'perpetual' | 'subscription' | 'groupBuying', invoice: InvoiceProps) => {
       setOrderPlacing(true)
-      return axios.post<{ code: string; message: string; result: { id: string } }>(
-        `https://${apiHost}/tasks/order`,
-        {
-          paymentModel: { type: paymentType },
-          productIds,
-          discountId,
-          memberId,
-          shipping,
-          invoice,
-          options,
-        },
-        {
-          headers: { authorization: `Bearer ${authToken}` },
-        },
-      )
+      return axios
+        .post<{ code: string; message: string; result: { id: string } }>(
+          `https://${apiHost}/tasks/order`,
+          {
+            paymentModel: { type: paymentType },
+            productIds,
+            discountId,
+            memberId,
+            shipping,
+            invoice,
+            options,
+          },
+          {
+            headers: { authorization: `Bearer ${authToken}` },
+          },
+        )
         .then(({ data: { code, result, message } }) => {
           if (code === 'SUCCESS') {
             return result.id
@@ -462,32 +483,6 @@ export const useCheck = (
       (check.shippingOption?.fee || 0),
   }
 }
-
-const GET_VOUCHER_PLAN_COLLECTION = gql`
-  query GET_VOUCHER_PLAN_COLLECTION {
-    voucher_plan {
-      id
-      title
-      description
-      started_at
-      ended_at
-      product_quantity_limit
-
-      voucher_codes_aggregate {
-        aggregate {
-          sum {
-            count
-            remaining
-          }
-        }
-      }
-      voucher_plan_products {
-        id
-        product_id
-      }
-    }
-  }
-`
 
 const GET_VOUCHER_CODE = gql`
   query GET_VOUCHER_CODE($voucherPlanId: uuid!) {
