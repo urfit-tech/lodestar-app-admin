@@ -1256,6 +1256,237 @@ export interface UPDATE_POST_VIDEO_URLVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_COIN_RELEASE_HISTORY
+// ====================================================
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate | null;
+}
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log {
+  __typename: "coin_log";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_COIN_RELEASE_HISTORY_coin_log_member;
+  title: string;
+  description: string;
+  note: string | null;
+  created_at: any;
+  started_at: any | null;
+  ended_at: any | null;
+  amount: any;
+}
+
+export interface GET_COIN_RELEASE_HISTORY {
+  /**
+   * fetch aggregated fields from the table: "coin_log"
+   */
+  coin_log_aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate;
+  /**
+   * fetch data from the table: "coin_log"
+   */
+  coin_log: GET_COIN_RELEASE_HISTORY_coin_log[];
+}
+
+export interface GET_COIN_RELEASE_HISTORYVariables {
+  condition?: coin_log_bool_exp | null;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_COIN_ABOUT_TO_SEND
+// ====================================================
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate | null;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log {
+  __typename: "coin_log";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_COIN_ABOUT_TO_SEND_coin_log_member;
+  title: string;
+  description: string;
+  note: string | null;
+  created_at: any;
+  started_at: any | null;
+  ended_at: any | null;
+  amount: any;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND {
+  /**
+   * fetch aggregated fields from the table: "coin_log"
+   */
+  coin_log_aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate;
+  /**
+   * fetch data from the table: "coin_log"
+   */
+  coin_log: GET_COIN_ABOUT_TO_SEND_coin_log[];
+}
+
+export interface GET_COIN_ABOUT_TO_SENDVariables {
+  condition?: coin_log_bool_exp | null;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_LOG_WITH_COINS_COLLECTION
+// ====================================================
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate {
+  __typename: "order_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate {
+  __typename: "order_log_aggregate";
+  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts {
+  __typename: "order_discount";
+  id: any;
+  name: string;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member;
+  /**
+   * An array relationship
+   */
+  order_discounts: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts[];
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION {
+  /**
+   * fetch aggregated fields from the table: "order_log"
+   */
+  order_log_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate;
+  /**
+   * fetch data from the table: "order_log"
+   */
+  order_log: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log[];
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables {
+  condition?: order_log_bool_exp | null;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_COIN_LOG
+// ====================================================
+
+export interface DELETE_COIN_LOG_delete_coin_log {
+  __typename: "coin_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_COIN_LOG {
+  /**
+   * delete data from the table: "coin_log"
+   */
+  delete_coin_log: DELETE_COIN_LOG_delete_coin_log | null;
+}
+
+export interface DELETE_COIN_LOGVariables {
+  coinLogId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_COUPON_PLAN
 // ====================================================
 
@@ -6090,7 +6321,7 @@ export interface GET_ORDERS_order_log_member {
 export interface GET_ORDERS_order_log_payment_logs {
   __typename: "payment_log";
   /**
-   * spgateway, tappay, ezfund
+   * spgateway, tappay, ezfund,paypal
    */
   gateway: string | null;
 }
@@ -7577,6 +7808,66 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
+// ====================================================
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
+  __typename: "voucher_code_sum_fields";
+  count: number | null;
+  remaining: number | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate {
+  __typename: "voucher_code_aggregate_fields";
+  sum: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate {
+  __typename: "voucher_code_aggregate";
+  aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products {
+  __typename: "voucher_plan_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  title: string;
+  description: string | null;
+  started_at: any | null;
+  ended_at: any | null;
+  product_quantity_limit: number;
+  /**
+   * An aggregated array relationship
+   */
+  voucher_codes_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate;
+  /**
+   * An array relationship
+   */
+  voucher_plan_products: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products[];
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION {
+  /**
+   * fetch data from the table: "voucher_plan"
+   */
+  voucher_plan: GET_VOUCHER_PLAN_COLLECTION_voucher_plan[];
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTIONVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_VOUCHER_PLAN
 // ====================================================
 
@@ -7663,62 +7954,6 @@ export interface UPDATE_VOUCHER_PLANVariables {
   endedAt?: any | null;
   productQuantityLimit: number;
   voucherPlanProducts: voucher_plan_product_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
-// ====================================================
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
-  __typename: "voucher_code_sum_fields";
-  count: number | null;
-  remaining: number | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate {
-  __typename: "voucher_code_aggregate_fields";
-  sum: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate {
-  __typename: "voucher_code_aggregate";
-  aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products {
-  __typename: "voucher_plan_product";
-  id: any;
-  product_id: string;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
-  __typename: "voucher_plan";
-  id: any;
-  title: string;
-  description: string | null;
-  started_at: any | null;
-  ended_at: any | null;
-  product_quantity_limit: number;
-  /**
-   * An aggregated array relationship
-   */
-  voucher_codes_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate;
-  /**
-   * An array relationship
-   */
-  voucher_plan_products: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products[];
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION {
-  /**
-   * fetch data from the table: "voucher_plan"
-   */
-  voucher_plan: GET_VOUCHER_PLAN_COLLECTION_voucher_plan[];
 }
 
 /* tslint:disable */
@@ -10124,7 +10359,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   __typename: "program_plan";
   id: any;
   /**
-   * 1 - subscribe from now / 2 - subscribe all / 3 - all
+   * 1 - subscribe all / 2 - subscribe from now / 3 - all
    */
   type: number;
   title: string;
@@ -11236,6 +11471,75 @@ export interface GET_EXERCISE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_VOUCHER_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_VOUCHER_COLLECTION_voucher_status {
+  __typename: "voucher_status";
+  outdated: boolean | null;
+  used: boolean | null;
+}
+
+export interface GET_MEMBER_VOUCHER_COLLECTION_voucher_voucher_code_voucher_plan_voucher_plan_products {
+  __typename: "voucher_plan_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_MEMBER_VOUCHER_COLLECTION_voucher_voucher_code_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  title: string;
+  description: string | null;
+  started_at: any | null;
+  ended_at: any | null;
+  product_quantity_limit: number;
+  /**
+   * An array relationship
+   */
+  voucher_plan_products: GET_MEMBER_VOUCHER_COLLECTION_voucher_voucher_code_voucher_plan_voucher_plan_products[];
+}
+
+export interface GET_MEMBER_VOUCHER_COLLECTION_voucher_voucher_code {
+  __typename: "voucher_code";
+  id: any;
+  code: string;
+  /**
+   * An object relationship
+   */
+  voucher_plan: GET_MEMBER_VOUCHER_COLLECTION_voucher_voucher_code_voucher_plan;
+}
+
+export interface GET_MEMBER_VOUCHER_COLLECTION_voucher {
+  __typename: "voucher";
+  id: any;
+  /**
+   * An object relationship
+   */
+  status: GET_MEMBER_VOUCHER_COLLECTION_voucher_status | null;
+  /**
+   * An object relationship
+   */
+  voucher_code: GET_MEMBER_VOUCHER_COLLECTION_voucher_voucher_code;
+}
+
+export interface GET_MEMBER_VOUCHER_COLLECTION {
+  /**
+   * fetch data from the table: "voucher"
+   */
+  voucher: GET_MEMBER_VOUCHER_COLLECTION_voucher[];
+}
+
+export interface GET_MEMBER_VOUCHER_COLLECTIONVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
@@ -11260,237 +11564,6 @@ export interface INSERT_MERCHANDISEVariables {
   isPhysical?: boolean | null;
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_COIN_RELEASE_HISTORY
-// ====================================================
-
-export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate {
-  __typename: "coin_log_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate {
-  __typename: "coin_log_aggregate";
-  aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate | null;
-}
-
-export interface GET_COIN_RELEASE_HISTORY_coin_log_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-}
-
-export interface GET_COIN_RELEASE_HISTORY_coin_log {
-  __typename: "coin_log";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_COIN_RELEASE_HISTORY_coin_log_member;
-  title: string;
-  description: string;
-  note: string | null;
-  created_at: any;
-  started_at: any | null;
-  ended_at: any | null;
-  amount: any;
-}
-
-export interface GET_COIN_RELEASE_HISTORY {
-  /**
-   * fetch aggregated fields from the table: "coin_log"
-   */
-  coin_log_aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate;
-  /**
-   * fetch data from the table: "coin_log"
-   */
-  coin_log: GET_COIN_RELEASE_HISTORY_coin_log[];
-}
-
-export interface GET_COIN_RELEASE_HISTORYVariables {
-  condition?: coin_log_bool_exp | null;
-  limit: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_COIN_ABOUT_TO_SEND
-// ====================================================
-
-export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate {
-  __typename: "coin_log_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate {
-  __typename: "coin_log_aggregate";
-  aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate | null;
-}
-
-export interface GET_COIN_ABOUT_TO_SEND_coin_log_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-}
-
-export interface GET_COIN_ABOUT_TO_SEND_coin_log {
-  __typename: "coin_log";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_COIN_ABOUT_TO_SEND_coin_log_member;
-  title: string;
-  description: string;
-  note: string | null;
-  created_at: any;
-  started_at: any | null;
-  ended_at: any | null;
-  amount: any;
-}
-
-export interface GET_COIN_ABOUT_TO_SEND {
-  /**
-   * fetch aggregated fields from the table: "coin_log"
-   */
-  coin_log_aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate;
-  /**
-   * fetch data from the table: "coin_log"
-   */
-  coin_log: GET_COIN_ABOUT_TO_SEND_coin_log[];
-}
-
-export interface GET_COIN_ABOUT_TO_SENDVariables {
-  condition?: coin_log_bool_exp | null;
-  limit: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDER_LOG_WITH_COINS_COLLECTION
-// ====================================================
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate {
-  __typename: "order_log_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate {
-  __typename: "order_log_aggregate";
-  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts {
-  __typename: "order_discount";
-  id: any;
-  name: string;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
-  __typename: "order_discount_sum_fields";
-  price: any | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate {
-  __typename: "order_discount_aggregate_fields";
-  sum: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate {
-  __typename: "order_discount_aggregate";
-  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
-  __typename: "order_log";
-  id: string;
-  created_at: any;
-  /**
-   * An object relationship
-   */
-  member: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member;
-  /**
-   * An array relationship
-   */
-  order_discounts: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts[];
-  /**
-   * An aggregated array relationship
-   */
-  order_discounts_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION {
-  /**
-   * fetch aggregated fields from the table: "order_log"
-   */
-  order_log_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate;
-  /**
-   * fetch data from the table: "order_log"
-   */
-  order_log: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log[];
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables {
-  condition?: order_log_bool_exp | null;
-  limit: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_COIN_LOG
-// ====================================================
-
-export interface DELETE_COIN_LOG_delete_coin_log {
-  __typename: "coin_log_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_COIN_LOG {
-  /**
-   * delete data from the table: "coin_log"
-   */
-  delete_coin_log: DELETE_COIN_LOG_delete_coin_log | null;
-}
-
-export interface DELETE_COIN_LOGVariables {
-  coinLogId: any;
 }
 
 /* tslint:disable */
@@ -12798,6 +12871,7 @@ export enum activity_session_update_column {
   ended_at = "ended_at",
   id = "id",
   location = "location",
+  location_online = "location_online",
   started_at = "started_at",
   threshold = "threshold",
   title = "title",
@@ -15820,6 +15894,7 @@ export interface activity_session_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   location?: String_comparison_exp | null;
+  location_online?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   threshold?: numeric_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -15837,6 +15912,7 @@ export interface activity_session_insert_input {
   ended_at?: any | null;
   id?: any | null;
   location?: string | null;
+  location_online?: string | null;
   started_at?: any | null;
   threshold?: any | null;
   title?: string | null;
@@ -23137,6 +23213,20 @@ export interface order_log_variance_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "order_payment_status". All fields are combined with a logical 'AND'.
+ */
+export interface order_payment_status_bool_exp {
+  _and?: (order_payment_status_bool_exp | null)[] | null;
+  _not?: order_payment_status_bool_exp | null;
+  _or?: (order_payment_status_bool_exp | null)[] | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  status?: String_comparison_exp | null;
+}
+
+/**
  * order by aggregate values of table "order_product"
  */
 export interface order_product_aggregate_order_by {
@@ -23772,6 +23862,7 @@ export interface payment_log_bool_exp {
   options?: jsonb_comparison_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
+  order_payment_status?: order_payment_status_bool_exp | null;
   paid_at?: timestamptz_comparison_exp | null;
   payment_due_at?: timestamptz_comparison_exp | null;
   price?: numeric_comparison_exp | null;
