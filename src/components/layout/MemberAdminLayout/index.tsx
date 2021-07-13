@@ -119,12 +119,12 @@ const MemberAdminLayout: React.FC<{
     <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
       {activeKey === 'coupon' && children}
     </Tabs.TabPane>,
-    enabledModules.voucher && (
+    currentUserRole === 'app-owner' && enabledModules.voucher && (
       <Tabs.TabPane key="voucher" tab={formatMessage(promotionMessages.label.voucher)}>
         {activeKey === 'voucher' && children}
       </Tabs.TabPane>
     ),
-    enabledModules.coin && (
+    currentUserRole === 'app-owner' && enabledModules.coin && (
       <Tabs.TabPane key="coin" tab={formatMessage(commonMessages.menu.coinHistory)}>
         {activeKey === 'coin' && children}
       </Tabs.TabPane>
