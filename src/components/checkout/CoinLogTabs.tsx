@@ -98,7 +98,8 @@ const StyledSearchOutlined = styled(SearchOutlined)`
 
 const CoinLogTabs: React.VFC<{
   memberId?: string
-}> = ({ memberId }) => {
+  withSendingModal?: boolean
+}> = ({ memberId, withSendingModal = true }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
   const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
@@ -191,9 +192,11 @@ const CoinLogTabs: React.VFC<{
 
   return (
     <>
-      <div className="mb-5">
-        <CoinSendingModal onRefetch={refetchCoinLogs} />
-      </div>
+      {withSendingModal && (
+        <div className="mb-5">
+          <CoinSendingModal onRefetch={refetchCoinLogs} />
+        </div>
+      )}
       <Tabs
         defaultActiveKey="coin-log"
         onChange={() => {

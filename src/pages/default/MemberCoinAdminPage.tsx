@@ -16,7 +16,7 @@ const MemberCoinAdminPage: React.VFC = () => {
   return (
     <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
       <div className="p-5">
-        <CoinLogTabs memberId={memberId} />
+        <CoinLogTabs memberId={memberId} withSendingModal={false} />
       </div>
     </MemberAdminLayout>
   )
