@@ -3,9 +3,14 @@ import { Image, Select } from 'antd'
 import { SelectValue } from 'antd/lib/select'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { craftPageMessages } from '../../helpers/translation'
 import { StyledFullWidthSelect } from '../admin'
 import CraftCarousel from './CraftCarousel'
+
+const StyledBoxWrapper = styled.div`
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+`
 
 const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({ setActiveKey }) => {
   const { connectors } = useEditor()
@@ -13,11 +18,12 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
   const [selected, setSelected] = useState<SelectValue | undefined>(undefined)
 
   return (
-    <div className="px-3 mt-2">
+    <div className="px-3 mt-4">
       <StyledFullWidthSelect
         defaultValue="cover"
         className="mb-4"
         showSearch
+        allowClear
         placeholder={formatMessage(craftPageMessages.label.allTemplate)}
         value={selected}
         onChange={(value: SelectValue) => setSelected(value)}
@@ -26,25 +32,34 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
           {formatMessage(craftPageMessages.label.cover)}
         </Select.Option>
         <Select.Option key="program" value="program">
-          {formatMessage(craftPageMessages.label.program)}
+          {formatMessage(craftPageMessages.label.programBlock)}
         </Select.Option>
         <Select.Option key="activity" value="activity">
-          {formatMessage(craftPageMessages.label.activity)}
+          {formatMessage(craftPageMessages.label.activityBlock)}
         </Select.Option>
         <Select.Option key="podcast" value="podcast">
-          {formatMessage(craftPageMessages.label.podcast)}
+          {formatMessage(craftPageMessages.label.podcastBlock)}
         </Select.Option>
         <Select.Option key="lecturer" value="lecturer">
-          {formatMessage(craftPageMessages.label.lecturer)}
+          {formatMessage(craftPageMessages.label.lecturerBlock)}
         </Select.Option>
         <Select.Option key="fundraising" value="fundraising">
           {formatMessage(craftPageMessages.label.fundraising)}
         </Select.Option>
-        <Select.Option key="preOrderBlock" value="preOrderBlock">
+        <Select.Option key="preOrder" value="preOrder">
           {formatMessage(craftPageMessages.label.preOrderBlock)}
         </Select.Option>
         <Select.Option key="statistics" value="statistics">
           {formatMessage(craftPageMessages.label.statistics)}
+        </Select.Option>
+        <Select.Option key="description" value="description">
+          {formatMessage(craftPageMessages.label.description)}
+        </Select.Option>
+        <Select.Option key="feature" value="feature">
+          {formatMessage(craftPageMessages.label.feature)}
+        </Select.Option>
+        <Select.Option key="callToAction" value="callToAction">
+          {formatMessage(craftPageMessages.label.callToAction)}
         </Select.Option>
         <Select.Option key="referrerEvaluation" value="referrerEvaluation">
           {formatMessage(craftPageMessages.label.referrerEvaluation)}
@@ -55,216 +70,260 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
         <Select.Option key="commonProblem" value="commonProblem">
           {formatMessage(craftPageMessages.label.commonProblem)}
         </Select.Option>
-        <Select.Option key="imageBlock" value="imageBlock">
+        <Select.Option key="image" value="image">
           {formatMessage(craftPageMessages.label.imageBlock)}
         </Select.Option>
-        <Select.Option key="textBlock" value="textBlock">
+        <Select.Option key="text" value="text">
           {formatMessage(craftPageMessages.label.textBlock)}
         </Select.Option>
       </StyledFullWidthSelect>
 
-      <div
-        className="mb-3"
-        ref={ref =>
-          ref &&
-          connectors.create(
-            ref,
-            <CraftCarousel
-              type="normal"
-              covers={[
-                {
-                  title: '讓你更輕易學習',
-                  paragraph: '建立您的絕佳品牌，擁有專屬會員一站式變現的最佳方案',
-                  desktopCoverUrl: 'desktop',
-                  mobileCoverUrl: 'mobile',
-                  link: 'link',
-                  openNewTab: false,
-                },
-              ]}
-              titleStyle={{
-                fontSize: 40,
-                padding: 0,
-                textAlign: 'center',
-                fontWeight: 'bold',
-                color: '#cccccc',
-              }}
-              paragraphStyle={{
-                fontSize: 20,
-                padding: 0,
-                lineHeight: 27,
-                textAlign: 'center',
-                fontWeight: 'normal',
-                color: '#cccccc',
-              }}
-              setActiveKey={setActiveKey}
-            />,
-          )
-        }
-      >
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title.png" />
-      </div>
+      {(selected === 'cover' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper
+            className="mb-3"
+            ref={ref =>
+              ref &&
+              connectors.create(
+                ref,
+                <CraftCarousel
+                  type="normal"
+                  covers={[
+                    {
+                      title: '讓你更輕易學習',
+                      paragraph: '建立您的絕佳品牌，擁有專屬會員一站式變現的最佳方案',
+                      desktopCoverUrl: 'desktop',
+                      mobileCoverUrl: 'mobile',
+                      link: 'link',
+                      openNewTab: false,
+                    },
+                  ]}
+                  titleStyle={{
+                    fontSize: 40,
+                    padding: 0,
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    color: '#cccccc',
+                  }}
+                  paragraphStyle={{
+                    fontSize: 20,
+                    padding: 0,
+                    lineHeight: 27,
+                    textAlign: 'center',
+                    fontWeight: 'normal',
+                    color: '#cccccc',
+                  }}
+                  setActiveKey={setActiveKey}
+                />,
+              )
+            }
+          >
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title.png" />
+          </StyledBoxWrapper>
 
-      <div
-        className="mb-3"
-        ref={ref =>
-          ref &&
-          connectors.create(
-            ref,
-            <Element
-              is={CraftCarousel}
-              type="normal"
-              covers={[
-                {
-                  title: '輪播 banner01',
-                  paragraph: 'content',
-                  desktopCoverUrl: 'desktop',
-                  mobileCoverUrl: 'mobile',
-                  link: 'link',
-                  openNewTab: false,
-                },
-              ]}
-              titleStyle={{
-                fontSize: 10,
-                padding: 3,
-                textAlign: 'center',
-                fontWeight: 'bold',
-                color: '#c8c858',
-              }}
-              paragraphStyle={{
-                fontSize: 14,
-                padding: 0,
-                lineHeight: 1,
-                textAlign: 'left',
-                fontWeight: 'normal',
-                color: '#cccdff',
-              }}
-              setActiveKey={setActiveKey}
-            />,
-          )
-        }
-      >
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title-dark.png" />
-      </div>
+          <StyledBoxWrapper
+            className="mb-3"
+            ref={ref =>
+              ref &&
+              connectors.create(
+                ref,
+                <Element
+                  is={CraftCarousel}
+                  type="normal"
+                  covers={[
+                    {
+                      title: '輪播 banner01',
+                      paragraph: 'content',
+                      desktopCoverUrl: 'desktop',
+                      mobileCoverUrl: 'mobile',
+                      link: 'link',
+                      openNewTab: false,
+                    },
+                  ]}
+                  titleStyle={{
+                    fontSize: 10,
+                    padding: 3,
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    color: '#c8c858',
+                  }}
+                  paragraphStyle={{
+                    fontSize: 14,
+                    padding: 0,
+                    lineHeight: 1,
+                    textAlign: 'left',
+                    fontWeight: 'normal',
+                    color: '#cccdff',
+                  }}
+                  setActiveKey={setActiveKey}
+                />,
+              )
+            }
+          >
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title-dark.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-image.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-image.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/program.png" />
-      </div>
+      {(selected === 'program' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/program.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/program-participate.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/program-participate.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/activity.png" />
-      </div>
+      {(selected === 'activity' || selected === undefined) && (
+        <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+          <Image preview={false} src="https://static.kolable.com/images/default/craft/activity.png" />
+        </StyledBoxWrapper>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/podcast.png" />
-      </div>
+      {(selected === 'podcast' || selected === undefined) && (
+        <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+          <Image preview={false} src="https://static.kolable.com/images/default/craft/podcast.png" />
+        </StyledBoxWrapper>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/creator.png" />
-      </div>
+      {(selected === 'lecturer' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/creator.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/creator-introduction.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/creator-introduction.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/fundraising.png" />
-      </div>
+      {(selected === 'fundraising' || selected === undefined) && (
+        <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+          <Image preview={false} src="https://static.kolable.com/images/default/craft/fundraising.png" />
+        </StyledBoxWrapper>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/pre-order.png" />
-      </div>
+      {(selected === 'preOrder' || selected === undefined) && (
+        <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+          <Image preview={false} src="https://static.kolable.com/images/default/craft/pre-order.png" />
+        </StyledBoxWrapper>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/statistics.png" />
-      </div>
+      {(selected === 'statistics' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/statistics.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/statistics-dark.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/statistics-dark.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/statistics-image.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/statistics-image.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/description.png" />
-      </div>
+      {(selected === 'description' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/description.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/description-dark.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/description-dark.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/description-background.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/description-background.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
+      {(selected === 'feature' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/feature.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/feature.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/feature-dark.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/feature-dark.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/feature-title.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/feature-title.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/feature-title-dark.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/feature-title-dark.png" />
-      </div>
+      {(selected === 'callToAction' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/cta.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/cta.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/cta-dark.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/cta-dark.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/cta-vertical.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/cta-vertical.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/cta-vertical-dark.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/cta-vertical-dark.png" />
-      </div>
+      {(selected === 'referrerEvaluation' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/recommend-dialogue.png" />
+          </StyledBoxWrapper>
 
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/recommend-dialogue.png" />
-      </div>
-
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/recommend.png" />
-      </div>
-
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/partner.png" />
-      </div>
-
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/faq-accordion.png" />
-      </div>
-
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/faq-column.png" />
-      </div>
-
-      <div className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/image.png" />
-      </div>
-
-      <div ref={ref => ref && connectors.create(ref, <></>)}>
-        <Image preview={false} src="https://static.kolable.com/images/default/craft/text.png" />
-      </div>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/recommend.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
+      {(selected === 'partner' || selected === undefined) && (
+        <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+          <Image preview={false} src="https://static.kolable.com/images/default/craft/partner.png" />
+        </StyledBoxWrapper>
+      )}
+      {(selected === 'commonProblem' || selected === undefined) && (
+        <>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/faq-accordion.png" />
+          </StyledBoxWrapper>
+          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+            <Image preview={false} src="https://static.kolable.com/images/default/craft/faq-column.png" />
+          </StyledBoxWrapper>
+        </>
+      )}
+      {(selected === 'image' || selected === undefined) && (
+        <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
+          <Image preview={false} src="https://static.kolable.com/images/default/craft/image.png" />
+        </StyledBoxWrapper>
+      )}
+      {(selected === 'text' || selected === undefined) && (
+        <StyledBoxWrapper ref={ref => ref && connectors.create(ref, <></>)}>
+          <Image preview={false} src="https://static.kolable.com/images/default/craft/text.png" />
+        </StyledBoxWrapper>
+      )}
     </div>
   )
 }
