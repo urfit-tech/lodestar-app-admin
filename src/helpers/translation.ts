@@ -285,6 +285,7 @@ export const commonMessages = {
     orderSuccess: { id: 'common.status.orderSuccess', defaultMessage: '已完成' },
     orderUnpaid: { id: 'common.status.orderUnpaid', defaultMessage: '待付款' },
     orderRefund: { id: 'common.status.orderRefund', defaultMessage: '已退款' },
+    orderPartialRefund: {id: 'common.status.orderPartialRefund', defaultMessage: '部分退款'},
     orderExpired: { id: 'common.status.orderExpired', defaultMessage: '已失效' },
     orderFailed: { id: 'common.status.orderFailed', defaultMessage: '付款失敗' },
     orderDeleted: { id: 'common.status.orderDeleted', defaultMessage: '已刪除' },
@@ -303,6 +304,7 @@ export const commonMessages = {
     finished: { id: 'common.status.finished', defaultMessage: '已結束' },
     visible: { id: 'common.status.visible', defaultMessage: '顯示' },
     invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
+    orderPartialPaid: {id: 'common.status.orderPartialPaid', defaultMessage: '部分付款'}
   }),
   menu: defineMessages({
     learningOverviewAdmin: { id: 'common.menu.learningOverviewAdmin', defaultMessage: '學習總覽' },
