@@ -1,11 +1,18 @@
 import { useNode, UserComponent } from '@craftjs/core'
-import { Button } from 'antd'
-import React, { useState } from 'react'
+import { Button, Form } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import { CraftTitleProps } from '../../types/craft'
-import CraftStyleBlock from './CraftStyleBlock'
+import { CraftTextStyleProps, CraftTitleProps } from '../../types/craft'
+import { StyledSettingButtonWrapper } from '../admin'
+import CraftTextStyleBlock from './CraftTextStyleBlock'
 import CraftTitleContentBlock from './CraftTitleContentBlock'
+
+type FieldProps = {
+  titleContent: string
+  titleStyle: CraftTextStyleProps
+}
 
 const CraftTitle: UserComponent<CraftTitleProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
   titleContent,
@@ -15,63 +22,77 @@ const CraftTitle: UserComponent<CraftTitleProps & { setActiveKey: React.Dispatch
   fontWeight,
   color,
   setActiveKey,
-  children,
 }) => {
   const {
     connectors: { connect, drag },
   } = useNode()
 
   return (
-    <div ref={ref => ref && connect(drag(ref))} onClick={() => setActiveKey('settings')}>
-      {children}
+    <div
+      ref={ref => ref && connect(drag(ref))}
+      style={{ color, padding: `${padding}px`, fontSize, textAlign, fontWeight }}
+      onClick={() => setActiveKey('settings')}
+    >
+      {titleContent}
     </div>
   )
 }
 
 const TitleSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
+  const [form] = useForm<FieldProps>()
   const {
     actions: { setProp },
     props,
+    selected,
   } = useNode(node => ({
     props: node.data.props as CraftTitleProps,
+    selected: node.events.selected,
   }))
-  const [titleContent, setTitleContent] = useState(props.titleContent || '')
-  const [titleStyle, setTitleStyle] = useState({
-    fontSize: props.fontSize || 16,
-    padding: props.padding || 0,
-    textAlign: props.textAlign || 'left',
-    fontWeight: props.fontWeight || 'normal',
-    color: props.color || '#585858',
-  })
+
+  const handleSubmit = (values: FieldProps) => {
+    setProp(prop => {
+      prop.titleContent = values.titleContent
+      prop.fontSize = values.titleStyle.fontSize
+      prop.padding = values.titleStyle.padding
+      prop.textAlign = values.titleStyle.textAlign
+      prop.fontWeight = values.titleStyle.fontWeight
+      prop.color = values.titleStyle.color
+    })
+  }
 
   return (
-    <>
-      <CraftTitleContentBlock titleContent={titleContent} setTitleContent={setTitleContent} />
-      <CraftStyleBlock
-        type="title"
-        title={formatMessage(craftPageMessages.label.titleStyle)}
-        textStyle={titleStyle}
-        setTextStyle={setTitleStyle}
-      />
-      <Button
-        className="mb-3"
-        type="primary"
-        block
-        onClick={() => {
-          setProp((props: CraftTitleProps) => {
-            props.titleContent = titleContent
-            props.fontSize = titleStyle.fontSize
-            props.padding = titleStyle.padding
-            props.textAlign = titleStyle.textAlign
-            props.fontWeight = titleStyle.fontWeight
-            props.color = titleStyle.color
-          })
-        }}
-      >
-        {formatMessage(commonMessages.ui.save)}
-      </Button>
-    </>
+    <Form
+      form={form}
+      layout="vertical"
+      colon={false}
+      requiredMark={false}
+      initialValues={{
+        titleContent: props.titleContent || '',
+        titleStyle: {
+          fontSize: props.fontSize || 16,
+          padding: props.padding || 0,
+          textAlign: props.textAlign || 'left',
+          fontWeight: props.fontWeight || 'normal',
+          color: props.color || '#585858',
+        },
+      }}
+      onFinish={handleSubmit}
+    >
+      <Form.Item name="titleContent">
+        <CraftTitleContentBlock />
+      </Form.Item>
+      <Form.Item name="titleStyle">
+        <CraftTextStyleBlock type="title" title={`${formatMessage(craftPageMessages.label.title)}`} />
+      </Form.Item>
+      {selected && (
+        <StyledSettingButtonWrapper>
+          <Button className="mb-3" type="primary" htmlType="submit" block>
+            {formatMessage(commonMessages.ui.save)}
+          </Button>
+        </StyledSettingButtonWrapper>
+      )}
+    </Form>
   )
 }
 

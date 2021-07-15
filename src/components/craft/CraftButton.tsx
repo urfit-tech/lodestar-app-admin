@@ -1,18 +1,28 @@
 import { useNode, UserComponent } from '@craftjs/core'
-import { Button, Checkbox, Input, Radio, Space } from 'antd'
+import { Button as AntdButton, Checkbox, Form, Input, Radio, Space } from 'antd'
 import Collapse, { CollapseProps } from 'antd/lib/collapse'
-import React, { useState } from 'react'
+import { useForm } from 'antd/lib/form/Form'
+import Button from 'lodestar-app-element/src/components/Button'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { CraftButtonProps } from '../../types/craft'
 import {
   AdminHeaderTitle,
-  StyleCircleColorInput,
   StyledCollapsePanel,
   StyledCraftSettingLabel,
-  StyledSketchPicker,
+  StyledSettingButtonWrapper,
   StyledUnderLineInput,
 } from '../admin'
+import CraftColorPickerBlock from './CraftColorPickerBlock'
+
+const StyledButtonWrapper = styled.div<{ block: boolean; variant: string }>`
+  display: ${props => (props.block ? 'block' : 'inline-block')};
+  background-color: ${props => (props.variant === 'solid' ? props.theme['@primary-color'] : '')};
+  text-align: center;
+`
+
+type FieldProps = CraftButtonProps
 
 const CraftButton: UserComponent<CraftButtonProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
   title,
@@ -28,35 +38,65 @@ const CraftButton: UserComponent<CraftButtonProps & { setActiveKey: React.Dispat
   const {
     connectors: { connect, drag },
   } = useNode()
-
+  console.log(block)
   return (
-    <div ref={ref => ref && connect(drag(ref))} onClick={() => setActiveKey('settings')}>
-      {children}
-    </div>
+    <StyledButtonWrapper
+      ref={ref => ref && connect(drag(ref))}
+      block={block}
+      variant={variant}
+      onClick={() => setActiveKey('settings')}
+    >
+      {
+        //TODO: colorScheme didn't work
+      }
+      <Button size={size} block={block} colorScheme={color}>
+        {title}
+      </Button>
+    </StyledButtonWrapper>
   )
 }
 
-const TitleSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
+const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm<FieldProps>()
   const {
     actions: { setProp },
     props,
+    selected,
   } = useNode(node => ({
     props: node.data.props as CraftButtonProps,
+    selected: node.events.selected,
   }))
 
-  const [button, setButton] = useState<CraftButtonProps>({
-    title: props.title || '',
-    link: props.link,
-    openNewTab: props.openNewTab || false,
-    size: props.size || 'md',
-    block: props.block || false,
-    variant: props.variant || 'solid',
-    color: props.color || '#585858',
-  })
+  const handleSubmit = (values: FieldProps) => {
+    setProp((props: CraftButtonProps) => {
+      props.title = values.title
+      props.link = values.link
+      props.openNewTab = values.openNewTab
+      props.size = values.size
+      props.block = values.block
+      props.variant = values.variant
+      props.color = values.color
+    })
+  }
 
   return (
-    <>
+    <Form
+      form={form}
+      layout="vertical"
+      colon={false}
+      requiredMark={false}
+      initialValues={{
+        title: props.title || '',
+        link: props.link || '',
+        openNewTab: props.openNewTab || false,
+        size: props.size || 'md',
+        block: props.block || false,
+        variant: props.variant || 'solid',
+        color: props.color || '#585858',
+      }}
+      onFinish={handleSubmit}
+    >
       <Collapse
         {...collapseProps}
         className="mt-2 p-0"
@@ -69,29 +109,23 @@ const TitleSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
           key="buttonSetting"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonSetting)}</AdminHeaderTitle>}
         >
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</StyledCraftSettingLabel>
-            <Input
-              className="mt-2"
-              value={button.title}
-              onChange={e => setButton({ ...button, title: e.target.value })}
-            />
-          </div>
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.link)}</StyledCraftSettingLabel>
-            <StyledUnderLineInput
-              className="mb-2"
-              value={button.link}
-              placeholder="https://"
-              onChange={e => setButton({ ...button, link: e.target.value })}
-            />
-            <Checkbox
-              checked={button.openNewTab}
-              onChange={e => setButton({ ...button, openNewTab: e.target.checked })}
-            >
-              {formatMessage(craftPageMessages.label.openNewTab)}
-            </Checkbox>
-          </div>
+          <Form.Item
+            name="title"
+            label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</StyledCraftSettingLabel>}
+          >
+            <Input className="mt-2" value={props.title} />
+          </Form.Item>
+
+          <Form.Item
+            className="m-0"
+            name="link"
+            label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.link)}</StyledCraftSettingLabel>}
+          >
+            <StyledUnderLineInput className="mb-2" placeholder="https://" />
+          </Form.Item>
+          <Form.Item name="openNewTab" valuePropName="checked">
+            <Checkbox>{formatMessage(craftPageMessages.label.openNewTab)}</Checkbox>
+          </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
 
@@ -107,98 +141,67 @@ const TitleSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
           key="buttonStyle"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonStyle)}</AdminHeaderTitle>}
         >
-          <div>
-            <StyledCraftSettingLabel className="mb-2">
-              {formatMessage(craftPageMessages.label.textAlign)}
-            </StyledCraftSettingLabel>
-            <div>
-              <Radio.Group value={button.size} onChange={value => setButton({ ...button, size: value.target.value })}>
-                <Space direction="vertical">
-                  <Radio value="large">{formatMessage(craftPageMessages.label.large)}</Radio>
-                  <Radio value="middle">{formatMessage(craftPageMessages.label.middle)}</Radio>
-                  <Radio value="small">{formatMessage(craftPageMessages.label.small)}</Radio>
-                </Space>
-              </Radio.Group>
-            </div>
-
-            <Checkbox checked={button.block} onChange={e => setButton({ ...button, block: e.target.checked })}>
-              {formatMessage(craftPageMessages.label.width)}
-            </Checkbox>
-
-            <div className="">
+          <Form.Item
+            name="size"
+            label={
               <StyledCraftSettingLabel className="mb-2">
-                {formatMessage(craftPageMessages.label.variant)}
+                {formatMessage(craftPageMessages.label.size)}
               </StyledCraftSettingLabel>
-              <div>
-                <Radio.Group
-                  value={button.variant}
-                  onChange={value => setButton({ ...button, variant: value.target.value })}
-                >
-                  <Space direction="vertical">
-                    <Radio value="text">{formatMessage(craftPageMessages.label.plainText)}</Radio>
-                    <Radio value="solid">{formatMessage(craftPageMessages.label.coloring)}</Radio>
-                    <Radio value="outline">{formatMessage(craftPageMessages.label.outline)}</Radio>
-                  </Space>
-                </Radio.Group>
-              </div>
-            </div>
-          </div>
-          <>
-            <StyledCraftSettingLabel className="mb-2">
-              {formatMessage(craftPageMessages.label.color)}
-            </StyledCraftSettingLabel>
-            <StyledUnderLineInput
-              className="mb-3"
-              bordered={false}
-              value={button.color}
-              onChange={e => setButton({ ...button, color: e.target.value })}
-            />
-            <div className="d-flex mb-3">
-              <StyleCircleColorInput background="#e1614b" onClick={() => setButton({ ...button, color: '#e1614b' })} />
-              <StyleCircleColorInput
-                className="ml-2"
-                background="#585858"
-                onClick={() => setButton({ ...button, color: '#585858' })}
-              />
-              <StyleCircleColorInput
-                className="ml-2"
-                background="#ffffff"
-                onClick={() => setButton({ ...button, color: '#ffffff' })}
-              />
-            </div>
-            <StyledSketchPicker
-              className="mb-3"
-              color={button.color}
-              onChange={e => setButton({ ...button, color: e.hex })}
-            />
-          </>
+            }
+          >
+            <Radio.Group>
+              <Space direction="vertical">
+                <Radio value="lg">{formatMessage(craftPageMessages.label.large)}</Radio>
+                <Radio value="md">{formatMessage(craftPageMessages.label.middle)}</Radio>
+                <Radio value="sl">{formatMessage(craftPageMessages.label.small)}</Radio>
+              </Space>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            name="block"
+            valuePropName="checked"
+            label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.width)}</StyledCraftSettingLabel>}
+          >
+            <Checkbox
+              onChange={e => {
+                setProp((props: CraftButtonProps) => (props.openNewTab = e.target.checked))
+              }}
+            >
+              {formatMessage(craftPageMessages.label.buttonBlock)}
+            </Checkbox>
+          </Form.Item>
+          <Form.Item
+            name="variant"
+            label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.variant)}</StyledCraftSettingLabel>}
+          >
+            <Radio.Group>
+              <Space direction="vertical">
+                <Radio value="text">{formatMessage(craftPageMessages.label.plainText)}</Radio>
+                <Radio value="solid">{formatMessage(craftPageMessages.label.coloring)}</Radio>
+                <Radio value="outline">{formatMessage(craftPageMessages.label.outline)}</Radio>
+              </Space>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item name="color">
+            <CraftColorPickerBlock />
+          </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
-      <Button
-        className="mb-3"
-        type="primary"
-        block
-        onClick={() => {
-          setProp((props: CraftButtonProps) => {
-            props.title = button.title
-            props.link = button.link
-            props.openNewTab = button.openNewTab
-            props.size = button.size
-            props.block = button.block
-            props.variant = button.variant
-            props.color = button.color
-          })
-        }}
-      >
-        {formatMessage(commonMessages.ui.save)}
-      </Button>
-    </>
+      {selected && (
+        <StyledSettingButtonWrapper>
+          <AntdButton className="mb-3" type="primary" block htmlType="submit">
+            {formatMessage(commonMessages.ui.save)}
+          </AntdButton>
+        </StyledSettingButtonWrapper>
+      )}
+    </Form>
   )
 }
 
 CraftButton.craft = {
   related: {
-    settings: TitleSettings,
+    settings: ButtonSetting,
   },
   custom: {
     button: {

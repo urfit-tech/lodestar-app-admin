@@ -1,4 +1,4 @@
-import { Collapse, InputNumber, Select } from 'antd'
+import { Collapse, InputNumber, Select, Slider } from 'antd'
 import input from 'antd/lib/input'
 import { SketchPicker } from 'react-color'
 import styled from 'styled-components'
@@ -172,4 +172,14 @@ export const StyleCircleColorInput = styled.div<{ background: string }>`
   width: 16px;
   height: 16px;
   border: 1px solid #d8d8d8;
+`
+export const StyledCraftSlider = styled(Slider)`
+  .ant-slider-track {
+    background-color: ${props => props.theme['@primary-color'] || '#4c5b8f'};
+  }
+`
+export const StyledSettingButtonWrapper = styled.div`
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
 `

@@ -1,245 +1,115 @@
 import { useNode, UserComponent } from '@craftjs/core'
-import { Button, Collapse, Input, InputNumber, Select, Slider } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
-import { replace, split } from 'ramda'
-import React, { useState } from 'react'
+import { Button, Form } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import React from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import {
-  AdminHeaderTitle,
-  StyledCollapsePanel,
-  StyledCraftSettingLabel,
-  StyledFullWidthSelect,
-  StyledInputNumber,
-} from '../admin'
+import { CraftLayoutProps } from '../../types/craft'
+import { StyledSettingButtonWrapper } from '../admin'
+import { BREAK_POINT } from '../common/Responsive'
+import CraftLayoutBlock from './CraftLayoutBlock'
 
-type layoutProps = {
-  padding: number
-  columnAmount: number
-  columnRatio: number[]
-  displayAmount: number
+const StyledContainer = styled.div<{ mobile: CraftLayoutProps; desktop: CraftLayoutProps }>`
+  padding: ${props => `${props.mobile.padding}px`};
+
+  @media (min-width: ${BREAK_POINT}px) {
+    padding: ${props => `${props.desktop.padding}px`};
+  }
+`
+
+type FieldProps = {
+  desktop: CraftLayoutProps
+  mobile: CraftLayoutProps
 }
 
-type CraftLayoutProps = {
-  mobile: layoutProps
-  desktop: layoutProps
-}
-
-const CraftLayout: UserComponent<CraftLayoutProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
-  mobile,
-  desktop,
-  setActiveKey,
-  children,
-}) => {
+const CraftLayout: UserComponent<{
+  mobile: CraftLayoutProps
+  desktop: CraftLayoutProps
+  setActiveKey: React.Dispatch<React.SetStateAction<string>>
+}> = ({ mobile, desktop, setActiveKey }) => {
   const {
     connectors: { connect, drag },
   } = useNode()
 
   return (
-    <div ref={ref => ref && connect(drag(ref))} onClick={() => setActiveKey('settings')}>
-      {children}
-    </div>
+    <StyledContainer
+      ref={ref => ref && connect(drag(ref))}
+      mobile={mobile}
+      desktop={desktop}
+      onClick={() => setActiveKey('settings')}
+    >
+      layout
+    </StyledContainer>
   )
 }
 
-const LayoutSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
+const LayoutSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
+  const [form] = useForm<FieldProps>()
+
   const {
     actions: { setProp },
     props,
+    selected,
   } = useNode(node => ({
-    props: node.data.props as CraftLayoutProps,
+    props: node.data.props as FieldProps,
+    selected: node.events.selected,
   }))
 
-  const [desktopSetting, setDesktopSetting] = useState({
-    padding: props.desktop?.padding || 0,
-    columnAmount: props.desktop?.columnAmount || 0,
-    columnRatio: props.desktop?.columnRatio || [],
-    displayAmount: props.desktop?.displayAmount || 0,
-  })
-  const [mobileSetting, setMobileSetting] = useState({
-    padding: props.mobile?.padding || 0,
-    columnAmount: props.mobile?.columnAmount || 0,
-    columnRatio: props.mobile?.columnRatio || [],
-    displayAmount: props.mobile?.displayAmount || 0,
-  })
+  const handleSubmit = (value: FieldProps) => {
+    setProp((props: FieldProps) => {
+      props.desktop = {
+        padding: value.desktop.padding,
+        columnAmount: value.desktop.columnAmount,
+        columnRatio: value.desktop.columnRatio,
+        displayAmount: value.desktop.displayAmount,
+      }
+      props.mobile = {
+        padding: value.mobile.padding,
+        columnAmount: value.mobile.columnAmount,
+        columnRatio: value.mobile.columnRatio,
+        displayAmount: value.mobile.displayAmount,
+      }
+    })
+  }
 
   return (
-    <>
-      <Collapse
-        {...collapseProps}
-        className="mt-2 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['desktopLayoutComponent']}
-      >
-        <StyledCollapsePanel
-          key="desktopLayoutComponent"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.desktopLayoutComponent)}</AdminHeaderTitle>}
-        >
-          <>
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.padding)}</StyledCraftSettingLabel>
-            <div className="col-12 mb-3 p-0 d-flex justify-content-center align-items-center ">
-              <div className="col-8 p-0">
-                <Slider
-                  value={typeof desktopSetting.padding === 'number' ? desktopSetting.padding : 0}
-                  onChange={(value: number) => setDesktopSetting({ ...desktopSetting, padding: value })}
-                />
-              </div>
-              <InputNumber
-                className="col-4"
-                value={desktopSetting.padding || 0}
-                onChange={value => setDesktopSetting({ ...desktopSetting, padding: Number(value) })}
-              />
-            </div>
-          </>
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.columnAmount)}</StyledCraftSettingLabel>
-            <StyledFullWidthSelect
-              className="mt-2"
-              value={desktopSetting.columnAmount || 3}
-              onChange={value => setDesktopSetting({ ...desktopSetting, columnAmount: Number(value) })}
-            >
-              <Select.Option key="1" value="1">
-                1
-              </Select.Option>
-              <Select.Option key="2" value="2">
-                2
-              </Select.Option>
-              <Select.Option key="3" value="3">
-                3
-              </Select.Option>
-              <Select.Option key="4" value="4">
-                4
-              </Select.Option>
-              <Select.Option key="6" value="6">
-                6
-              </Select.Option>
-              <Select.Option key="12" value="12">
-                12
-              </Select.Option>
-            </StyledFullWidthSelect>
-          </div>
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ratio)}</StyledCraftSettingLabel>
-            <Input
-              className="mt-2"
-              defaultValue={replace(/,/g, ':', desktopSetting.columnRatio.toString() || '3,3,3')}
-              onChange={e =>
-                setDesktopSetting({
-                  ...desktopSetting,
-                  columnRatio: split(':', e.target.value).map(v => parseInt(v)),
-                })
-              }
-            />
-          </div>
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</StyledCraftSettingLabel>
-            <div>
-              <StyledInputNumber
-                className="mt-2"
-                value={desktopSetting.displayAmount}
-                onChange={value => setDesktopSetting({ ...desktopSetting, displayAmount: Number(value) })}
-              />
-            </div>
-          </div>
-        </StyledCollapsePanel>
-      </Collapse>
-
-      <Collapse
-        {...collapseProps}
-        className="mt-4 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['mobileLayoutComponent']}
-      >
-        <StyledCollapsePanel
-          key="mobileLayoutComponent"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.mobileLayoutComponent)}</AdminHeaderTitle>}
-        >
-          <>
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.padding)}</StyledCraftSettingLabel>
-            <div className="col-12 mb-3 p-0 d-flex justify-content-center align-items-center">
-              <div className="col-8 p-0">
-                <Slider
-                  value={typeof mobileSetting.padding === 'number' ? mobileSetting.padding : 0}
-                  onChange={(value: number) => setMobileSetting({ ...mobileSetting, padding: value })}
-                />
-              </div>
-              <InputNumber
-                className="col-4"
-                value={mobileSetting.padding}
-                onChange={value => setMobileSetting({ ...mobileSetting, padding: Number(value) })}
-              />
-            </div>
-          </>
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.columnAmount)}</StyledCraftSettingLabel>
-            <StyledFullWidthSelect
-              className="mt-2"
-              value={mobileSetting.columnAmount || 3}
-              onChange={value => setMobileSetting({ ...mobileSetting, columnAmount: Number(value) })}
-            >
-              <Select.Option key="1" value="1">
-                1
-              </Select.Option>
-              <Select.Option key="2" value="2">
-                2
-              </Select.Option>
-              <Select.Option key="3" value="3">
-                3
-              </Select.Option>
-              <Select.Option key="4" value="4">
-                4
-              </Select.Option>
-              <Select.Option key="6" value="16">
-                6
-              </Select.Option>
-              <Select.Option key="12" value="12">
-                12
-              </Select.Option>
-            </StyledFullWidthSelect>
-          </div>
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ratio)}</StyledCraftSettingLabel>
-            <Input
-              className="mt-2"
-              value={replace(/,/g, ':', desktopSetting.columnRatio.toString() || '3,3,3')}
-              onChange={e =>
-                setMobileSetting({
-                  ...mobileSetting,
-                  columnRatio: split(':', e.target.value).map(v => parseInt(v)),
-                })
-              }
-            />
-          </div>
-          <div className="mb-3">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</StyledCraftSettingLabel>
-            <div>
-              <StyledInputNumber
-                className="mt-2"
-                value={mobileSetting.displayAmount || 0}
-                onChange={value => setMobileSetting({ ...mobileSetting, displayAmount: Number(value) })}
-              />
-            </div>
-          </div>
-        </StyledCollapsePanel>
-      </Collapse>
-      <Button
-        className="mt-3"
-        type="primary"
-        block
-        onClick={() => {
-          setProp((props: CraftLayoutProps) => (props.desktop = desktopSetting))
-          setProp((props: CraftLayoutProps) => (props.mobile = mobileSetting))
-        }}
-      >
-        {formatMessage(commonMessages.ui.save)}
-      </Button>
-      <div>1</div>
-    </>
+    <Form
+      form={form}
+      layout="vertical"
+      colon={false}
+      requiredMark={false}
+      initialValues={{
+        desktop: {
+          padding: props.desktop.padding || 0,
+          columnAmount: props.desktop.columnAmount || 3,
+          columnRatio: props.desktop.columnRatio || [3, 3, 3],
+          displayAmount: props.desktop.displayAmount || 3,
+        },
+        mobile: {
+          padding: props.mobile.padding || 0,
+          columnAmount: props.mobile.columnAmount || 3,
+          columnRatio: props.mobile.columnRatio || [3, 3, 3],
+          displayAmount: props.mobile.displayAmount || 3,
+        },
+      }}
+      onFinish={handleSubmit}
+    >
+      <Form.Item name="desktop">
+        <CraftLayoutBlock title={formatMessage(craftPageMessages.label.desktopLayoutComponent)} />
+      </Form.Item>
+      <Form.Item name="mobile">
+        <CraftLayoutBlock title={formatMessage(craftPageMessages.label.mobileLayoutComponent)} />
+      </Form.Item>
+      {selected && (
+        <StyledSettingButtonWrapper>
+          <Button className="mt-3" type="primary" block htmlType="submit">
+            {formatMessage(commonMessages.ui.save)}
+          </Button>
+        </StyledSettingButtonWrapper>
+      )}
+    </Form>
   )
 }
 
