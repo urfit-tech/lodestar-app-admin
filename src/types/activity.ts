@@ -35,6 +35,7 @@ export type ActivitySessionProps = {
   startedAt: Date
   endedAt: Date
   location: string | null
+  onlineLink: string | null
   threshold: number | null
   description: string | null
   enrollmentsCount?: number

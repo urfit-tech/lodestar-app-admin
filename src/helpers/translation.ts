@@ -464,12 +464,22 @@ export const activityMessages = {
     session: { id: 'activity.label.session', defaultMessage: '場次' },
     sessionTitle: { id: 'common.label.sessionTitle', defaultMessage: '場次名稱' },
     location: { id: 'activity.label.location', defaultMessage: '地址' },
+    activityLocation: { id: 'activity.label.location', defaultMessage: '活動地址' },
+    offlineActivityLocation: {
+      id: 'activity.label.offlineActivityLocation',
+      defaultMessage: '實體活動地址（若非實體活動則留空）',
+    },
+    onlineActivityLink: {
+      id: 'activity.label.onlineActivityLocation',
+      defaultMessage: '線上直播連結（若非線上直播則留空）',
+    },
     threshold: { id: 'activity.label.threshold', defaultMessage: '最少人數' },
     includingSessions: { id: 'activity.label.includingSessions', defaultMessage: '包含場次' },
     description: { id: 'activity.label.description', defaultMessage: '備註說明' },
     sellingTime: { id: 'activity.label.sellingTime', defaultMessage: '售票時間' },
     ticketPlan: { id: 'activity.label.ticketPlan', defaultMessage: '票券方案' },
     ticketPlanTitle: { id: 'activity.label.ticketPlanTitle', defaultMessage: '票券名稱' },
+    generateBySystem: { id: 'activity.label.generateBySystem', defaultMessage: '系統產生' },
   }),
   status: defineMessages({
     public: { id: 'activity.status.public', defaultMessage: '公開' },

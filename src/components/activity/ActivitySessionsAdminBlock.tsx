@@ -69,7 +69,7 @@ const ActivitySessionsAdminBlock: React.FC<{
           </Button>
         )}
         icon={<FileAddOutlined />}
-        onSubmit={values =>
+        onSubmit={(values, reset) =>
           insertActivitySession({
             variables: {
               activityId: activityAdmin.id,
@@ -77,9 +77,10 @@ const ActivitySessionsAdminBlock: React.FC<{
               startedAt: values.startedAt,
               endedAt: values.endedAt,
               location: values.location,
+              onlineLink: values.onlineLink,
               threshold: values.threshold,
             },
-          })
+          }).then(reset)
         }
         onRefetch={onRefetch}
       />
@@ -148,6 +149,7 @@ const ActivitySessionsAdminBlock: React.FC<{
                               startedAt: values.startedAt,
                               endedAt: values.endedAt,
                               location: values.location,
+                              onlineLink: values.onlineLink,
                               threshold: values.threshold,
                             },
                           })
@@ -175,7 +177,8 @@ const INSERT_ACTIVITY_SESSION = gql`
     $title: String!
     $startedAt: timestamptz
     $endedAt: timestamptz
-    $location: String!
+    $location: String
+    $onlineLink: String
     $description: String
     $threshold: numeric
   ) {
@@ -186,6 +189,7 @@ const INSERT_ACTIVITY_SESSION = gql`
         started_at: $startedAt
         ended_at: $endedAt
         location: $location
+        online_link: $onlineLink
         description: $description
         threshold: $threshold
       }
@@ -200,7 +204,8 @@ const UPDATE_ACTIVITY_SESSION = gql`
     $title: String!
     $startedAt: timestamptz
     $endedAt: timestamptz
-    $location: String!
+    $location: String
+    $onlineLink: String
     $description: String
     $threshold: numeric
   ) {
@@ -211,6 +216,7 @@ const UPDATE_ACTIVITY_SESSION = gql`
         started_at: $startedAt
         ended_at: $endedAt
         location: $location
+        online_link: $onlineLink
         description: $description
         threshold: $threshold
       }

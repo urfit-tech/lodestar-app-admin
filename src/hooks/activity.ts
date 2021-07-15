@@ -109,6 +109,7 @@ export const useActivityAdmin = (activityId: string) => {
             started_at
             ended_at
             location
+            online_link
             threshold
             description
             activity_enrollments_aggregate {
@@ -161,6 +162,7 @@ export const useActivityAdmin = (activityId: string) => {
             startedAt: new Date(session.started_at),
             endedAt: new Date(session.ended_at),
             location: session.location,
+            onlineLink: session.online_link,
             threshold: session.threshold,
             description: session.description,
             enrollmentsCount: session.activity_enrollments_aggregate.aggregate?.count || 0,

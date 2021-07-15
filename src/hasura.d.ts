@@ -222,7 +222,8 @@ export interface INSERT_ACTIVITY_SESSIONVariables {
   title: string;
   startedAt?: any | null;
   endedAt?: any | null;
-  location: string;
+  location?: string | null;
+  onlineLink?: string | null;
   description?: string | null;
   threshold?: any | null;
 }
@@ -256,7 +257,8 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
   title: string;
   startedAt?: any | null;
   endedAt?: any | null;
-  location: string;
+  location?: string | null;
+  onlineLink?: string | null;
   description?: string | null;
   threshold?: any | null;
 }
@@ -1633,6 +1635,35 @@ export interface INSERT_POINT_LOG_COLLECTION {
 
 export interface INSERT_POINT_LOG_COLLECTIONVariables {
   data: point_log_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_CRAFT_PAGE
+// ====================================================
+
+export interface PUBLISH_CRAFT_PAGE_update_app_page {
+  __typename: "app_page_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_CRAFT_PAGE {
+  /**
+   * update data of the table: "app_page"
+   */
+  update_app_page: PUBLISH_CRAFT_PAGE_update_app_page | null;
+}
+
+export interface PUBLISH_CRAFT_PAGEVariables {
+  pageId: any;
+  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -7054,6 +7085,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
   started_at: any;
   ended_at: any;
   location: string | null;
+  online_link: string | null;
   threshold: any | null;
   description: string | null;
   /**
@@ -12896,6 +12928,7 @@ export enum activity_session_ticket_constraint {
  */
 export enum activity_session_ticket_update_column {
   activity_session_id = "activity_session_id",
+  activity_session_type = "activity_session_type",
   activity_ticket_id = "activity_ticket_id",
   id = "id",
 }
@@ -12909,7 +12942,7 @@ export enum activity_session_update_column {
   ended_at = "ended_at",
   id = "id",
   location = "location",
-  location_online = "location_online",
+  online_link = "online_link",
   started_at = "started_at",
   threshold = "threshold",
   title = "title",
@@ -12950,7 +12983,6 @@ export enum activity_ticket_update_column {
   id = "id",
   is_published = "is_published",
   price = "price",
-  session_type = "session_type",
   started_at = "started_at",
   title = "title",
 }
@@ -15774,6 +15806,7 @@ export interface activity_bool_exp {
   package_items?: package_item_bool_exp | null;
   position?: Int_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  session_ticket_enrollment_count?: activity_session_ticket_enrollment_count_bool_exp | null;
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
 }
@@ -15933,9 +15966,10 @@ export interface activity_session_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   location?: String_comparison_exp | null;
-  location_online?: String_comparison_exp | null;
+  online_link?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   threshold?: numeric_comparison_exp | null;
+  ticket_enrollment_count?: activity_session_ticket_enrollment_count_bool_exp | null;
   title?: String_comparison_exp | null;
 }
 
@@ -15951,7 +15985,7 @@ export interface activity_session_insert_input {
   ended_at?: any | null;
   id?: any | null;
   location?: string | null;
-  location_online?: string | null;
+  online_link?: string | null;
   started_at?: any | null;
   threshold?: any | null;
   title?: string | null;
@@ -15991,9 +16025,24 @@ export interface activity_session_ticket_bool_exp {
   _or?: (activity_session_ticket_bool_exp | null)[] | null;
   activity_session?: activity_session_bool_exp | null;
   activity_session_id?: uuid_comparison_exp | null;
+  activity_session_type?: String_comparison_exp | null;
   activity_ticket?: activity_ticket_bool_exp | null;
   activity_ticket_id?: uuid_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_session_ticket_enrollment_count". All fields are combined with a logical 'AND'.
+ */
+export interface activity_session_ticket_enrollment_count_bool_exp {
+  _and?: (activity_session_ticket_enrollment_count_bool_exp | null)[] | null;
+  _not?: activity_session_ticket_enrollment_count_bool_exp | null;
+  _or?: (activity_session_ticket_enrollment_count_bool_exp | null)[] | null;
+  activity?: activity_bool_exp | null;
+  activity_id?: uuid_comparison_exp | null;
+  activity_offline_session_ticket_count?: numeric_comparison_exp | null;
+  activity_online_session_ticket_count?: numeric_comparison_exp | null;
+  activity_session_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -16002,6 +16051,7 @@ export interface activity_session_ticket_bool_exp {
 export interface activity_session_ticket_insert_input {
   activity_session?: activity_session_obj_rel_insert_input | null;
   activity_session_id?: any | null;
+  activity_session_type?: string | null;
   activity_ticket?: activity_ticket_obj_rel_insert_input | null;
   activity_ticket_id?: any | null;
   id?: any | null;
@@ -16114,7 +16164,6 @@ export interface activity_ticket_bool_exp {
   id?: uuid_comparison_exp | null;
   is_published?: Boolean_comparison_exp | null;
   price?: numeric_comparison_exp | null;
-  session_type?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
 }
@@ -16146,7 +16195,6 @@ export interface activity_ticket_insert_input {
   id?: any | null;
   is_published?: boolean | null;
   price?: any | null;
-  session_type?: string | null;
   started_at?: any | null;
   title?: string | null;
 }
