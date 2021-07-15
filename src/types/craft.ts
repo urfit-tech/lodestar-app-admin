@@ -1,3 +1,18 @@
+export type CraftMarginProps = {
+  m?: string
+  mt?: string
+  mr?: string
+  mb?: string
+  ml?: string
+}
+
+export type CraftLayoutProps = {
+  padding: number
+  columnAmount: number
+  columnRatio: number[]
+  displayAmount: number
+}
+
 export type CraftPageAdminProps = {
   id: string
   pageName: string
@@ -37,4 +52,14 @@ export type CraftButtonProps = {
   block: boolean
   variant: 'text' | 'solid' | 'outline'
   color: string
+}
+
+export type CraftBoxModelProps = {
+  padding: number
+  margin: CraftMarginProps
+}
+
+export type CraftImageProps = {
+  type?: 'empty' | 'image'
+  coverUrl: string | null
 }
