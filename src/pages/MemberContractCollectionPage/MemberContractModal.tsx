@@ -395,7 +395,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               <span>{formatMessage(memberContractMessages.label.installmentPlan)}</span>
               <Form.Item name="installmentPlan" initialValue={paymentOptions?.installmentPlan}>
                 <StyledSelect disabled={!permissions.CONTRACT_INSTALLMENT_PLAN_EDIT}>
-                  {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
+                  {[1, 3, 6, 8, 9, 12, 18, 24, 30, 36].map((installmentPlan: number) => (
                     <Select.Option key={installmentPlan} value={installmentPlan}>
                       {installmentPlan}
                     </Select.Option>
