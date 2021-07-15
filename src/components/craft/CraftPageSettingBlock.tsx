@@ -60,6 +60,9 @@ const StyledBrushIcon = styled(BrushIcon)<{ active: string }>`
 
 const StyledTabsPane = styled(Tabs.TabPane)`
   background: #ffffff;
+  .ant-tabs-content-holder {
+    background: #ffffff;
+  }
 `
 const StyledTabBarWrapper = styled.div`
   background: #ffffff;
