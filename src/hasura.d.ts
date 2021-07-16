@@ -7016,7 +7016,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
   title: string;
   started_at: any;
   ended_at: any;
-  location: string;
+  location: string | null;
   threshold: any | null;
   description: string | null;
   /**
@@ -7859,7 +7859,7 @@ export interface GET_VOUCHER_PLAN_COLLECTION {
 }
 
 export interface GET_VOUCHER_PLAN_COLLECTIONVariables {
-  memberId?: string | null;
+  appId?: string | null;
 }
 
 /* tslint:disable */
@@ -12912,6 +12912,7 @@ export enum activity_ticket_update_column {
   id = "id",
   is_published = "is_published",
   price = "price",
+  session_type = "session_type",
   started_at = "started_at",
   title = "title",
 }
@@ -16075,6 +16076,7 @@ export interface activity_ticket_bool_exp {
   id?: uuid_comparison_exp | null;
   is_published?: Boolean_comparison_exp | null;
   price?: numeric_comparison_exp | null;
+  session_type?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
 }
@@ -16106,6 +16108,7 @@ export interface activity_ticket_insert_input {
   id?: any | null;
   is_published?: boolean | null;
   price?: any | null;
+  session_type?: string | null;
   started_at?: any | null;
   title?: string | null;
 }

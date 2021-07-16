@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import VoucherPlanAdminModal, { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanDetailModal from '../../components/voucher/VoucherPlanDetailModal'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { useMutateVoucherPlan, useVoucherPlanCollection } from '../../hooks/checkout'
@@ -11,8 +12,9 @@ import VoucherPlanCard from './VoucherPlanCard'
 
 const VoucherPlanCollectionBlock: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
   const { insertVoucherPlan, updateVoucherPlan } = useMutateVoucherPlan()
-  const { loading, error, voucherPlanCollection, refetch } = useVoucherPlanCollection()
+  const { loading, error, voucherPlanCollection, refetch } = useVoucherPlanCollection(appId)
 
   const [activeKey, setActiveKey] = useState('available')
 

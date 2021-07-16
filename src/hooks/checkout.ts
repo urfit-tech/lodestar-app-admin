@@ -179,11 +179,11 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
   }
 }
 
-export const useVoucherPlanCollection = (memberId?: string) => {
+export const useVoucherPlanCollection = (appId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_VOUCHER_PLAN_COLLECTION>(
     gql`
-      query GET_VOUCHER_PLAN_COLLECTION($memberId: String) {
-        voucher_plan(where: { voucher_codes: { vouchers: { member_id: { _eq: $memberId } } } }) {
+      query GET_VOUCHER_PLAN_COLLECTION($appId: String) {
+        voucher_plan(where: { app_id: { _eq: $appId } }) {
           id
           title
           description
@@ -206,7 +206,7 @@ export const useVoucherPlanCollection = (memberId?: string) => {
         }
       }
     `,
-    { variables: { memberId } },
+    { variables: { appId } },
   )
 
   const voucherPlanCollection: VoucherPlanProps[] = reverse(data?.voucher_plan || []).map(v => {
