@@ -50,6 +50,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
     createdAt: Date
     updatedAt: Date
     deliveredAt: Date
+    lastPaidAt: Date
     deliverMessage: string | null
     shipping: ShippingProps | null
     invoice: InvoiceProps
@@ -78,10 +79,10 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
                   {`${formatMessage(commonMessages.label.orderLogId)} ${orderLog.id}`}
                 </StyledOrderTitle>
 
-                {orderLog.updatedAt && (
+                {orderLog.lastPaidAt && (
                   <StyledDate className="mb-4 d-flex align-items-center">
                     <CalendarOIcon className="mr-2" />
-                    {`${moment(orderLog.updatedAt).format('YYYY-MM-DD HH:mm')} ${formatMessage(messages.purchase)}`}
+                    {`${moment(orderLog.lastPaidAt).format('YYYY-MM-DD HH:mm')} ${formatMessage(messages.purchase)}`}
                   </StyledDate>
                 )}
 

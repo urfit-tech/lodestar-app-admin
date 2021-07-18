@@ -8285,6 +8285,7 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
   id: string;
   created_at: any;
   updated_at: any | null;
+  last_paid_at: any | null;
   delivered_at: any | null;
   deliver_message: string | null;
   shipping: any | null;
