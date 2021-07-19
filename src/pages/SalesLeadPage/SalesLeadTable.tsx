@@ -322,6 +322,9 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
           title={formatMessage(memberMessages.ui.newTask)}
           initialMemberId={selectedMember.id}
           initialExecutorId={sales.id}
+          onRefetch={() => {
+            setTaskModalVisible(false)
+          }}
         />
       )}
       {selectedMember && (
