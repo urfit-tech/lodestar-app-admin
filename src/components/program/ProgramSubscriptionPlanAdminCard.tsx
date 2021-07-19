@@ -26,7 +26,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   onRefetch?: () => void
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { salePrice, listPrice, discountDownPrice, periodType } = programPlan
+  const { salePrice, listPrice, discountDownPrice, periodType, periodAmount } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
@@ -37,7 +37,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         listPrice={listPrice}
         salePrice={isOnSale ? salePrice : undefined}
         downPrice={discountDownPrice || undefined}
-        periodAmount={1}
+        periodAmount={periodAmount || 1}
         periodType={periodType as ProgramPlanPeriodType}
       />
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
