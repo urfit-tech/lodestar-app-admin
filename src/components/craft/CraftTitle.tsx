@@ -30,7 +30,7 @@ const CraftTitle: UserComponent<CraftTitleProps & { setActiveKey: React.Dispatch
   return (
     <div
       ref={ref => ref && connect(drag(ref))}
-      style={{ color, padding: `${padding}px`, fontSize, textAlign, fontWeight }}
+      style={{ color, padding: `${padding}px`, fontSize, textAlign, fontWeight, cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {titleContent}

@@ -38,12 +38,13 @@ const CraftButton: UserComponent<CraftButtonProps & { setActiveKey: React.Dispat
   const {
     connectors: { connect, drag },
   } = useNode()
-  console.log(block)
+
   return (
     <StyledButtonWrapper
       ref={ref => ref && connect(drag(ref))}
       block={block}
       variant={variant}
+      style={{ cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {

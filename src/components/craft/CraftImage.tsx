@@ -34,6 +34,7 @@ const CraftImage: UserComponent<
         p: padding,
       }}
       src={coverUrl}
+      style={{ cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     />
   )
@@ -56,8 +57,8 @@ const ImageSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
   const handleSubmit = (values: FieldProps) => {
     setProp(props => {
       props.type = values.type
-      props.boxModel.padding = values.boxModel.padding
-      props.boxModel.margin = {
+      props.padding = values.boxModel.padding
+      props.margin = {
         m: values.boxModel.margin.m,
         mt: values.boxModel.margin.mt,
         mr: values.boxModel.margin.mr,

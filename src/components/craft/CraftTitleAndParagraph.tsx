@@ -44,7 +44,7 @@ const CraftTitleAndParagraph: UserComponent<
   } = useNode()
 
   return (
-    <div ref={ref => ref && connect(drag(ref))} onClick={() => setActiveKey('settings')}>
+    <div ref={ref => ref && connect(drag(ref))} style={{ cursor: 'pointer' }} onClick={() => setActiveKey('settings')}>
       <StyledTitle customStyle={title}>{title.titleContent}</StyledTitle>
       <StyledParagraph customStyle={paragraph}>{paragraph.paragraphContent}</StyledParagraph>
     </div>

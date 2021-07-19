@@ -50,6 +50,7 @@ const CraftBackground: UserComponent<
         p: padding,
       }}
       background-image={coverUrl}
+      style={{ cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       背景

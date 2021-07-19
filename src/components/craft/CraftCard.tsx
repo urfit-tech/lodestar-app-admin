@@ -88,6 +88,7 @@ const CraftCard: UserComponent<CraftCardProps & { setActiveKey: React.Dispatch<R
         titleStyle,
         solidColor,
       }}
+      style={{ cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {title}

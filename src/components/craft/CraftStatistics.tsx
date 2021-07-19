@@ -42,6 +42,7 @@ const CraftStatistics: UserComponent<
       style={{
         padding: `${padding}px`,
         margin: margin.m ? margin.m : `${margin.mt}px ${margin.mr}px ${margin.mb}px ${margin.ml}px`,
+        cursor: 'pointer',
       }}
       onClick={() => setActiveKey('settings')}
     >

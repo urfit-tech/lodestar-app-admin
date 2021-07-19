@@ -37,6 +37,7 @@ const CraftLayout: UserComponent<{
       ref={ref => ref && connect(drag(ref))}
       mobile={mobile}
       desktop={desktop}
+      style={{ cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       layout
@@ -104,7 +105,7 @@ const LayoutSettings: React.VFC = () => {
       </Form.Item>
       {selected && (
         <StyledSettingButtonWrapper>
-          <Button className="mt-3" type="primary" block htmlType="submit">
+          <Button type="primary" block htmlType="submit">
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </StyledSettingButtonWrapper>

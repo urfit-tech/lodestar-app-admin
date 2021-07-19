@@ -21,7 +21,7 @@ const CraftParagraph: UserComponent<
   return (
     <div
       ref={ref => ref && connect(drag(ref))}
-      style={{ fontSize, padding: `${padding}px`, textAlign, fontWeight, color }}
+      style={{ fontSize, padding: `${padding}px`, textAlign, fontWeight, color, cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {paragraphContent}

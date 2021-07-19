@@ -20,7 +20,7 @@ const CraftContainer: UserComponent<{
   return (
     <div
       ref={ref => ref && connect(drag(ref))}
-      style={{ padding: `${padding}px` }}
+      style={{ padding: `${padding}px`, cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {children}

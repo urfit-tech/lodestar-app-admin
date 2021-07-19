@@ -91,6 +91,7 @@ const CraftCarousel: UserComponent<FieldProps & { setActiveKey: React.Dispatch<R
           ref={ref => ref && connect(drag(ref))}
           titleStyle={titleStyle}
           paragraphStyle={paragraphStyle}
+          style={{ cursor: 'pointer' }}
           onClick={() => setActiveKey('settings')}
         >
           <Carousel dots infinite arrows={false} autoplay autoplaySpeed={5000} variant="cover">

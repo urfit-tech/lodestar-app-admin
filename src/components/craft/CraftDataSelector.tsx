@@ -23,7 +23,7 @@ const CraftDataSelector: UserComponent<{ setActiveKey: React.Dispatch<React.SetS
   return (
     <div
       ref={ref => ref && connect(ref)}
-      style={{ padding: '20px', background: '#dfa' }}
+      style={{ padding: '20px', background: '#dfa', cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {children}
