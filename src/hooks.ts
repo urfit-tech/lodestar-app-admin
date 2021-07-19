@@ -175,6 +175,10 @@ export const useMemberContractCollection = ({
         (coupon: any) => coupon?.coupon_code?.data?.coupon_plan?.data?.title === '學米諮詢券',
       )?.coupon_code.data.coupon_plan.data.id
 
+      const rebateGift: string | undefined = v.values?.coupons?.find(
+        (v: any) => v.name && v.name.includes('滿額學習工具 - '),
+      )?.name
+
       return {
         id: v.id,
         authorName: v.author_name,
@@ -237,6 +241,7 @@ export const useMemberContractCollection = ({
         lastAdMaterial: v.last_ad_material,
         firstFilledAt: v.first_fill_in_date,
         lastFilledAt: v.last_fill_in_date,
+        rebateGift: rebateGift,
       }
     }) || []
 

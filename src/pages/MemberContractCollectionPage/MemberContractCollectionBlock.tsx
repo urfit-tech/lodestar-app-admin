@@ -500,6 +500,7 @@ export const MemberContractCollectionBlock: React.FC<{
             startedAt: activeMemberContract?.startedAt,
             endedAt: activeMemberContract?.endedAt,
           }}
+          rebateGift={activeMemberContract?.rebateGift}
           status={{
             approvedAt: activeMemberContract?.approvedAt,
             loanCanceledAt: activeMemberContract?.loanCanceledAt,

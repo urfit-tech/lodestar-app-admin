@@ -211,6 +211,7 @@ const MemberContractCreationBlock: React.FC<{
               id: v.id,
               member_id: v.member_id,
               coupon_code: v.coupon_code,
+              name: v?.name,
             })),
             ...coupons,
           ],
