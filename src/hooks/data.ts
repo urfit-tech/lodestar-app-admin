@@ -239,6 +239,7 @@ export const useOrderPhysicalProductLog = (memberId?: string | null) => {
           id
           created_at
           updated_at
+          last_paid_at
           delivered_at
           deliver_message
           shipping
@@ -281,6 +282,7 @@ export const useOrderPhysicalProductLog = (memberId?: string | null) => {
     member: string
     createdAt: Date
     updatedAt: Date
+    lastPaidAt: Date
     deliveredAt: Date
     deliverMessage: string | null
     shipping: ShippingProps | null
@@ -305,6 +307,7 @@ export const useOrderPhysicalProductLog = (memberId?: string | null) => {
             member: v.member?.name || v.invoice?.name || '',
             createdAt: v.created_at,
             updatedAt: v.updated_at,
+            lastPaidAt: v.last_paid_at,
             deliveredAt: v.delivered_at,
             deliverMessage: v.deliver_message,
             shipping: v.shipping,

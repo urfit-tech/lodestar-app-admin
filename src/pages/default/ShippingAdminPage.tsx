@@ -30,7 +30,7 @@ const ShippingAdminPage: React.FC = () => {
   const [searchText, setSearchText] = useState('')
   const [selectedShopId, setSelectedShopId] = useState('')
   const [activeKey, setActiveKey] = useState('shipping')
-  const [isCreatedAtDesc, setIsCreatedAtDesc] = useState(false)
+  const [isPaidAtDesc, setIsPaidAtDesc] = useState(false)
 
   const filteredProductLogs = orderPhysicalProductLogs
     .filter(orderPhysicalProductLog =>
@@ -40,7 +40,7 @@ const ShippingAdminPage: React.FC = () => {
           (selectedShopId ? orderPhysicalProduct.memberShopId === selectedShopId : true),
       ),
     )
-    .sort(() => (isCreatedAtDesc ? 1 : -1))
+    .sort((a: any, b: any) => (a.lastPaidAt > b.lastPaidAt && isPaidAtDesc ? 1 : -1))
 
   const tabContents = [
     {
@@ -146,10 +146,10 @@ const ShippingAdminPage: React.FC = () => {
         </Button>
       </div>
       <div className="d-flex flex-row-reverse mb-4">
-        <div className="cursor-pointer" onClick={() => setIsCreatedAtDesc(!isCreatedAtDesc)}>
+        <div className="cursor-pointer" onClick={() => setIsPaidAtDesc(!isPaidAtDesc)}>
           {formatMessage(messages.orderLogsTimeSort)}
           <span className="mr-2"></span>
-          {isCreatedAtDesc ? <CaretDownOutlined /> : <CaretUpOutlined />}
+          {isPaidAtDesc ? <CaretDownOutlined /> : <CaretUpOutlined />}
         </div>
       </div>
 
