@@ -1,6 +1,5 @@
 import { Bar, Gauge } from '@ant-design/charts'
-import { BarConfig } from '@ant-design/charts/es/plots/bar'
-import { GaugeConfig } from '@ant-design/charts/es/plots/gauge'
+import { BarConfig, GaugeConfig } from '@ant-design/charts/es/index'
 import { flatten, sum } from 'ramda'
 import React from 'react'
 import { SalesStatus } from '../../types/sales'
