@@ -1,6 +1,6 @@
 import { DualAxes, Liquid } from '@ant-design/charts'
-import { DualAxesConfig } from '@ant-design/charts/es/dualAxes'
-import { LiquidConfig } from '@ant-design/charts/es/liquid'
+import { DualAxesConfig } from '@ant-design/charts/es/plots/dualAxes'
+import { LiquidConfig } from '@ant-design/charts/es/plots/liquid'
 import { flatten, sum } from 'ramda'
 import React, { useRef } from 'react'
 import { SalesStatus } from '../../types/sales'

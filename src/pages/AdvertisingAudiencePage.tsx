@@ -1,5 +1,5 @@
 import { Bar } from '@ant-design/charts'
-import { BarConfig } from '@ant-design/charts/es/bar'
+import { BarConfig } from '@ant-design/charts/es/plots/bar'
 import { BarChartOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Form, Input, Select } from 'antd'
