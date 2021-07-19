@@ -1,31 +1,22 @@
-import { Button, DatePicker, Form, Input, InputNumber, Radio, Select } from 'antd'
+import { Button, Cascader, DatePicker, Form, Input, InputNumber, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import moment, { Moment } from 'moment'
+import { toPairs } from 'ramda'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
-import { handleError } from '../../helpers'
+import { useIntl } from 'react-intl'
+import { useApp } from '../../contexts/AppContext'
+import { handleError, notEmpty } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import { ActivityTicketProps } from '../../types/activity'
+import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
+import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
+import { ActivitySessionProps, ActivityTicketProps, ActivityTicketSessionProps } from '../../types/activity'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
-const messages = defineMessages({
-  published: { id: 'activity.label.published', defaultMessage: '是否開賣' },
-  publishedTicket: { id: 'activity.status.publishedTicket', defaultMessage: '發售，活動上架後立即開賣' },
-  notPublishedTicket: {
-    id: 'activity.status.notPublishedTicket',
-    defaultMessage: '停售，該票券暫停對外銷售，並從購票頁中隱藏',
-  },
-  ticketStartedAt: { id: 'activity.label.ticketStartedAt', defaultMessage: '售票開始時間' },
-  ticketEndedAt: { id: 'activity.label.ticketEndedAt', defaultMessage: '售票結束時間' },
-  limit: { id: 'activity.label.limit', defaultMessage: '張數限制' },
-  selectSession: { id: 'activity.warning.selectSession', defaultMessage: '選擇場次' },
-})
-
 type FieldProps = {
   title: string
-  sessionIds: string[]
+  sessions: string[][]
   isPublished: 'public' | 'private'
   startedAt: Moment
   endedAt: Moment
@@ -37,18 +28,12 @@ type FieldProps = {
 const ActivityTicketAdminModal: React.FC<
   AdminModalProps & {
     activityTicket?: ActivityTicketProps & {
-      sessions: {
-        id: string
-        title: string
-      }[]
+      sessions: ActivityTicketSessionProps[]
     }
-    activitySessions: {
-      id: string
-      title: string
-    }[]
+    activitySessions: Pick<ActivitySessionProps, 'id' | 'title' | 'location' | 'onlineLink'>[]
     onSubmit?: (values: {
       title: string
-      sessionIds: string[]
+      sessions: string[][]
       isPublished: boolean
       startedAt: Date | null
       endedAt: Date | null
@@ -60,8 +45,19 @@ const ActivityTicketAdminModal: React.FC<
   }
 > = ({ activityTicket, activitySessions, onSubmit, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
+
+  const activitySessionOptions = generateSessionOptions({
+    activitySessions,
+    translation: {
+      online: formatMessage(activityMessages.label.onlineActivity),
+      offline: formatMessage(activityMessages.label.offlineActivity),
+      both: formatMessage(activityMessages.label.onlineAndOfflineActivity),
+    },
+    isOnlineActivity: !!enabledModules.activity_online,
+  })
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -74,7 +70,7 @@ const ActivityTicketAdminModal: React.FC<
         const values = form.getFieldsValue()
         onSubmit({
           title: values.title,
-          sessionIds: values.sessionIds,
+          sessions: values.sessions.filter(notEmpty).map(v => (v.length === 1 ? v[0].split('_') : v)),
           isPublished: values.isPublished === 'public',
           startedAt: values.startedAt.toDate(),
           endedAt: values.endedAt.toDate(),
@@ -120,6 +116,7 @@ const ActivityTicketAdminModal: React.FC<
           isPublished: activityTicket?.isPublished ? 'public' : 'private',
           startedAt: activityTicket ? moment(activityTicket.startedAt) : null,
           endedAt: activityTicket ? moment(activityTicket.endedAt) : null,
+          sessions: activityTicket?.sessions ? generateInitialSessions(activityTicket.sessions) : null,
           price: activityTicket?.price || 0,
           count: activityTicket?.count || 0,
           description: activityTicket ? BraftEditor.createEditorState(activityTicket.description) : null,
@@ -139,33 +136,55 @@ const ActivityTicketAdminModal: React.FC<
         >
           <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(activityMessages.label.includingSessions)} name="sessionIds">
-          <Select
-            mode="multiple"
-            style={{ width: '100%' }}
-            placeholder={formatMessage(messages.selectSession)}
-            onChange={() => {}}
-          >
-            {activitySessions.map(session => (
-              <Select.Option key={session.id} value={session.id}>
-                {session.title}
-              </Select.Option>
-            ))}
-          </Select>
+
+        <Form.Item label={formatMessage(activityMessages.label.selectSession)}>
+          <Form.List name="sessions">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(field => (
+                  <div key={field.key} className="d-flex">
+                    <Form.Item className="flex-grow-1" {...field}>
+                      <Cascader
+                        options={activitySessionOptions}
+                        placeholder={formatMessage(activityMessages.label.selectSessionAndType)}
+                      />
+                    </Form.Item>
+                    {fields.length > 0 && (
+                      <Button
+                        type="link"
+                        onClick={() => remove(field.name)}
+                        className="flex-shrink-0 d-flex"
+                        icon={<TrashOIcon className="m-auto" />}
+                      />
+                    )}
+                  </div>
+                ))}
+
+                <Form.Item>
+                  <Button type="link" icon={<PlusIcon className="mr-2" />} className="p-0" onClick={() => add()}>
+                    {formatMessage(activityMessages.ui.addTicketSession)}
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
         </Form.Item>
-        <Form.Item label={formatMessage(messages.published)} name="isPublished">
+
+        <Form.Item label={formatMessage(activityMessages.label.published)} name="isPublished">
           <Radio.Group>
-            <Radio value="public">{formatMessage(messages.publishedTicket)}</Radio>
-            <Radio value="private">{formatMessage(messages.notPublishedTicket)}</Radio>
+            <Radio value="public">{formatMessage(activityMessages.status.publishedTicket)}</Radio>
+            <Radio value="private">{formatMessage(activityMessages.status.notPublishedTicket)}</Radio>
           </Radio.Group>
         </Form.Item>
         <Form.Item
-          label={formatMessage(messages.ticketStartedAt)}
+          label={formatMessage(activityMessages.label.ticketStartedAt)}
           name="startedAt"
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, { field: formatMessage(messages.ticketStartedAt) }),
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(activityMessages.label.ticketStartedAt),
+              }),
             },
           ]}
         >
@@ -176,12 +195,14 @@ const ActivityTicketAdminModal: React.FC<
           />
         </Form.Item>
         <Form.Item
-          label={formatMessage(messages.ticketEndedAt)}
+          label={formatMessage(activityMessages.label.ticketEndedAt)}
           name="endedAt"
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, { field: formatMessage(messages.ticketEndedAt) }),
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(activityMessages.label.ticketEndedAt),
+              }),
             },
           ]}
         >
@@ -194,7 +215,7 @@ const ActivityTicketAdminModal: React.FC<
         <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="price">
           <InputNumber min={0} formatter={value => `NT$ ${value}`} parser={value => value?.replace(/\D/g, '') || ''} />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.limit)} name="count">
+        <Form.Item label={formatMessage(activityMessages.label.limit)} name="count">
           <InputNumber min={1} />
         </Form.Item>
         <Form.Item label={formatMessage(activityMessages.label.description)} name="description">
@@ -204,5 +225,94 @@ const ActivityTicketAdminModal: React.FC<
     </AdminModal>
   )
 }
+
+const generateInitialSessions = (sessions: ActivityTicketSessionProps[]) =>
+  sessions
+    .map(({ id, type, location, onlineLink }) => {
+      const existingSessionTypes = toPairs({
+        location,
+        onlineLink,
+      })
+        .filter(([, value]) => value)
+        .map(
+          ([key]) =>
+            ({
+              location: 'offline',
+              onlineLink: 'online',
+            }[key]),
+        )
+
+      if (['online', 'offline'].every(v => existingSessionTypes.includes(v))) {
+        return [id, type]
+      }
+
+      if (['online', 'offline'].some(v => existingSessionTypes.includes(v))) {
+        return [`${id}_${type}`]
+      }
+
+      return undefined
+    })
+    .filter(notEmpty)
+
+const generateSessionOptions = ({
+  activitySessions,
+  translation,
+  isOnlineActivity,
+}: {
+  activitySessions: Pick<ActivitySessionProps, 'id' | 'title' | 'location' | 'onlineLink'>[]
+  translation: {
+    [key: string]: string
+  }
+  isOnlineActivity: boolean
+}) =>
+  activitySessions
+    .map(({ id, title, ...address }) => {
+      const existingSessionTypes = toPairs(address)
+        .filter(([, value]) => value)
+        .map(
+          ([key]) =>
+            ({
+              location: 'offline',
+              onlineLink: 'online',
+            }[key]),
+        )
+
+      if (['online', 'offline'].every(v => existingSessionTypes.includes(v))) {
+        return {
+          value: id,
+          label: title,
+          children: [
+            {
+              value: 'online',
+              label: translation['online'],
+            },
+            {
+              value: 'offline',
+              label: translation['offline'],
+            },
+            {
+              value: 'both',
+              label: translation['both'],
+            },
+          ],
+        }
+      }
+
+      if (['online', 'offline'].some(v => existingSessionTypes.includes(v))) {
+        const [sessionType] = existingSessionTypes
+        const sessionTypeLabel = {
+          offline: translation['offline'],
+          online: translation['online'],
+        }[sessionType]
+
+        return {
+          value: `${id}_${sessionType}`,
+          label: isOnlineActivity ? `${title} / ${sessionTypeLabel}` : title,
+        }
+      }
+
+      return undefined
+    })
+    .filter(notEmpty)
 
 export default ActivityTicketAdminModal

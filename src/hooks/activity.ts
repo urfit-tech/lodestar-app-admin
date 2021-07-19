@@ -92,9 +92,12 @@ export const useActivityAdmin = (activityId: string) => {
             is_published
             activity_session_tickets {
               id
+              activity_session_type
               activity_session {
                 id
                 title
+                location
+                location_online
               }
             }
             activity_ticket_enrollments_aggregate {
@@ -152,7 +155,10 @@ export const useActivityAdmin = (activityId: string) => {
             isPublished: ticket.is_published,
             sessions: ticket.activity_session_tickets.map(sessionTicket => ({
               id: sessionTicket.activity_session.id,
+              type: sessionTicket.activity_session_type,
               title: sessionTicket.activity_session.title,
+              location: sessionTicket.activity_session.location,
+              onlineLink: sessionTicket.activity_session.location_online,
             })),
             enrollmentsCount: ticket.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
           })),

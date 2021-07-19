@@ -41,13 +41,18 @@ export type ActivitySessionProps = {
   enrollmentsCount?: number
 }
 
+export type ActivityTicketSessionProps = {
+  id: string
+  type: string
+  title: string
+  location: string | null
+  onlineLink: string | null
+}
+
 export type ActivityAdminProps = ActivityProps & {
   categories: CategoryProps[]
   tickets: (ActivityTicketProps & {
-    sessions: {
-      id: string
-      title: string
-    }[]
+    sessions: ActivityTicketSessionProps[]
   })[]
   sessions: ActivitySessionProps[]
 }

@@ -7024,11 +7024,17 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ses
   __typename: "activity_session";
   id: any;
   title: string;
+  location: string | null;
+  location_online: string | null;
 }
 
 export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets {
   __typename: "activity_session_ticket";
   id: any;
+  /**
+   * offline | online | both
+   */
+  activity_session_type: string;
   /**
    * An object relationship
    */

@@ -26,11 +26,6 @@ const ActivityTicketsAdminBlock: React.FC<{
     return <Skeleton active />
   }
 
-  const activitySessions = activityAdmin.sessions.map(session => ({
-    id: session.id,
-    title: session.title,
-  }))
-
   return (
     <>
       <ActivityTicketAdminModal
@@ -40,14 +35,20 @@ const ActivityTicketsAdminBlock: React.FC<{
           </Button>
         )}
         icon={<FileAddOutlined />}
-        activitySessions={activitySessions}
+        activitySessions={activityAdmin.sessions.map(v => ({
+          id: v.id,
+          title: v.title,
+          location: v.location,
+          onlineLink: v.onlineLink,
+        }))}
         onSubmit={values =>
           insertActivityTicket({
             variables: {
               activityId: activityAdmin.id,
               title: values.title,
-              activitySessionTickets: values.sessionIds.map(sessionId => ({
+              activitySessionTickets: values.sessions.map(([sessionId, sessionType]) => ({
                 activity_session_id: sessionId,
+                activity_session_type: sessionType,
               })),
               isPublished: values.isPublished,
               startedAt: values.startedAt,
@@ -77,15 +78,21 @@ const ActivityTicketsAdminBlock: React.FC<{
                           )}
                           icon={<FileTextOutlined />}
                           activityTicket={ticket}
-                          activitySessions={activitySessions}
+                          activitySessions={activityAdmin.sessions.map(v => ({
+                            id: v.id,
+                            title: v.title,
+                            location: v.location,
+                            onlineLink: v.onlineLink,
+                          }))}
                           onSubmit={values =>
                             updateActivityTicket({
                               variables: {
                                 activityTicketId: ticket.id,
                                 title: values.title,
-                                activitySessionTickets: values.sessionIds.map(sessionId => ({
+                                activitySessionTickets: values.sessions.map(([sessionId, sessionType]) => ({
                                   activity_ticket_id: ticket.id,
                                   activity_session_id: sessionId,
+                                  activity_session_type: sessionType,
                                 })),
                                 isPublished: values.isPublished,
                                 startedAt: values.startedAt,
