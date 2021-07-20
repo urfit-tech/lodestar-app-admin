@@ -358,19 +358,20 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.craft_page,
-      key: 'owner_craft_page_admin',
+      permissionIsAllowed:
+        !!enabledModules.craft_page && (permissions.CRAFT_PAGE_ADMIN || permissions.CRAFT_MENU_ADMIN),
+      key: 'craft_page_admin',
       icon: () => <PageIcon />,
       name: formatMessage(commonMessages.menu.pageAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: true,
-          key: 'owner_craft_pages',
+          permissionIsAllowed: permissions.CRAFT_PAGE_ADMIN,
+          key: 'craft_pages',
           name: formatMessage(commonMessages.menu.pageSetup),
         },
         {
-          permissionIsAllowed: true,
-          key: 'owner_menu_Setup',
+          permissionIsAllowed: permissions.CRAFT_MENU_ADMIN,
+          key: 'menu_Setup',
           name: formatMessage(commonMessages.menu.menuSetup),
         },
       ],

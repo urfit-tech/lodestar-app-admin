@@ -332,15 +332,15 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   // craft page
-  owner_craft_pages: {
+  craft_pages: {
     path: '/admin/craft_page',
-    pageName: 'owner/CraftPageCollectionPage',
+    pageName: 'CraftPage/CraftPageCollectionPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_craft_page_setup: {
+  craft_page_setup: {
     path: '/admin/craft_page/:pageId',
-    pageName: 'owner/CraftPageAdminPage',
+    pageName: 'CraftPage/CraftPageAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },

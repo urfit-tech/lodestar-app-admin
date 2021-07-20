@@ -6,7 +6,7 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { craftPageMessages } from '../../helpers/translation'
+import { craftPageMessages } from '../../../helpers/translation'
 
 const StyledText = styled.div`
   color: var(--gray-darker);

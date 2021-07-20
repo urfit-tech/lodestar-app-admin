@@ -3,11 +3,11 @@ import { Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageBlock, AdminPageTitle } from '../../../components/admin'
-import CraftPageCollectionTable from '../../../components/craft/CraftPageCollectionTable'
-import CraftPageCreationModel from '../../../components/craft/CraftPageCreationModel'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import { commonMessages } from '../../../helpers/translation'
 import { ReactComponent as PageIcon } from '../../../images/icon/page.svg'
+import CraftPageCollectionTable from './CraftPageCollectionTable'
+import CraftPageCreationModel from './CraftPageCreationModel'
 
 const CraftPageCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
