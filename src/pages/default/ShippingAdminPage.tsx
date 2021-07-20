@@ -40,7 +40,10 @@ const ShippingAdminPage: React.FC = () => {
           (selectedShopId ? orderPhysicalProduct.memberShopId === selectedShopId : true),
       ),
     )
-    .sort((a: any, b: any) => (a.lastPaidAt > b.lastPaidAt && isPaidAtDesc ? 1 : -1))
+    .sort((a: any, b: any) => {
+      const condition = +new Date(a.lastPaidAt) - +new Date(b.lastPaidAt)
+      return isPaidAtDesc ? condition : -condition
+    })
 
   const tabContents = [
     {
@@ -117,6 +120,7 @@ const ShippingAdminPage: React.FC = () => {
       })
     downloadCSV(`${activeKey}_.csv`, toCSV(data))
   }
+  console.log(filteredProductLogs)
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
