@@ -1465,6 +1465,7 @@ export const permissionMessages = defineMessages({
   VIEW_ALL_MEMBER_NOTE: { id: 'permission.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡記錄' },
   MEMBER_EMAIL_EDIT: { id: 'permission.MEMBER_EMAIL_EDIT', defaultMessage: '編輯信箱' },
   MEMBER_USERNAME_EDIT: { id: 'permission.MEMBER_USERNAME_EDIT', defaultMessage: '編輯帳號' },
+  MEMBER_CREATE: { id: 'permission.MEMBER_CREATE', defaultMessage: '添加會員' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
