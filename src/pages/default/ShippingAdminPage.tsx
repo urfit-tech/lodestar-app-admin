@@ -120,7 +120,6 @@ const ShippingAdminPage: React.FC = () => {
       })
     downloadCSV(`${activeKey}_.csv`, toCSV(data))
   }
-
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
