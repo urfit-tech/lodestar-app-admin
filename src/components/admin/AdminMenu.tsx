@@ -15,6 +15,7 @@ import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-al
 import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
+import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
 import { ReactComponent as PointIcon } from '../../images/icon/point.svg'
 import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
@@ -353,6 +354,24 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           permissionIsAllowed: permissions.TASK_CATEGORY_ADMIN,
           key: 'task_category_collection',
           name: formatMessage(commonMessages.menu.taskCategory),
+        },
+      ],
+    },
+    {
+      permissionIsAllowed: !!enabledModules.craft_page,
+      key: 'owner_craft_page_admin',
+      icon: () => <PageIcon />,
+      name: formatMessage(commonMessages.menu.pageAdmin),
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'owner_craft_pages',
+          name: formatMessage(commonMessages.menu.pageSetup),
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'owner_menu_Setup',
+          name: formatMessage(commonMessages.menu.menuSetup),
         },
       ],
     },
