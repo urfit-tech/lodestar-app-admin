@@ -29,7 +29,7 @@ const MemberCreationModal: React.FC<
   AdminModalProps & {
     onRefetch?: () => void
   }
-> = ({ onRefetch, ...props }) => {
+> = ({ onRefetch, ...restProps }) => {
   const { formatMessage } = useIntl()
   const { currentUserRole } = useAuth()
   const { id: appId } = useApp()
@@ -37,7 +37,7 @@ const MemberCreationModal: React.FC<
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
-  const handleCreate = async (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+  const handleCreate = async (onSuccess: () => void) => {
     form.validateFields().then(values => {
       setLoading(true)
       insertMember({
@@ -50,9 +50,7 @@ const MemberCreationModal: React.FC<
         },
       })
         .then(() => {
-          message.success(formatMessage(commonMessages.event.successfullyCreated))
-          onRefetch?.()
-          setVisible(false)
+          onSuccess()
           form.resetFields()
         })
         .catch(handleError)
@@ -74,12 +72,22 @@ const MemberCreationModal: React.FC<
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleCreate(setVisible)}>
+          <Button
+            type="primary"
+            loading={loading}
+            onClick={() =>
+              handleCreate(() => {
+                message.success(formatMessage(commonMessages.event.successfullyCreated))
+                onRefetch?.()
+                setVisible(false)
+              })
+            }
+          >
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
       )}
-      {...props}
+      {...restProps}
     >
       <Form
         form={form}
