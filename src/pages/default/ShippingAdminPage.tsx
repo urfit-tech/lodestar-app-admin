@@ -40,8 +40,8 @@ const ShippingAdminPage: React.FC = () => {
           (selectedShopId ? orderPhysicalProduct.memberShopId === selectedShopId : true),
       ),
     )
-    .sort((a: any, b: any) => {
-      const condition = +new Date(a.lastPaidAt) - +new Date(b.lastPaidAt)
+    .sort((a, b) => {
+      const condition = new Date(a.lastPaidAt).valueOf() - new Date(b.lastPaidAt).valueOf()
       return isPaidAtDesc ? condition : -condition
     })
 
