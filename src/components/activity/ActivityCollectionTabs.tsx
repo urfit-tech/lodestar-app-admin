@@ -46,7 +46,15 @@ const ActivityCollectionTabs: React.FC<{
             {loadingActivities && <Skeleton active />}
             {tabContent.activities.map(activity => (
               <div key={activity.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                <Activity {...activity} />
+                <Activity
+                  id={activity.id}
+                  coverUrl={activity.coverUrl}
+                  title={activity.title}
+                  includeSessionTypes={activity.includeSessionTypes}
+                  participantsCount={activity.participantsCount}
+                  startedAt={activity.startedAt}
+                  endedAt={activity.endedAt}
+                />
               </div>
             ))}
           </div>

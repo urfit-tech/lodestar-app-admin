@@ -6938,6 +6938,12 @@ export interface GET_APPLICATIONVariables {
 // GraphQL query operation: GET_ACTIVITY_COLLECTION_ADMIN
 // ====================================================
 
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions {
+  __typename: "activity_session";
+  location: string | null;
+  online_link: string | null;
+}
+
 export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate {
   __typename: "activity_enrollment_aggregate_fields";
   count: number | null;
@@ -6969,12 +6975,22 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggreg
   aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate | null;
 }
 
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_session_ticket_enrollment_count {
+  __typename: "activity_session_ticket_enrollment_count";
+  activity_online_session_ticket_count: any | null;
+  activity_offline_session_ticket_count: any | null;
+}
+
 export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
   __typename: "activity";
   id: any;
   cover_url: string | null;
   title: string;
   published_at: any | null;
+  /**
+   * An array relationship
+   */
+  activity_sessions: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions[];
   /**
    * An aggregated array relationship
    */
@@ -6983,6 +6999,10 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
    * An aggregated array relationship
    */
   activity_sessions_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate;
+  /**
+   * An array relationship
+   */
+  session_ticket_enrollment_count: GET_ACTIVITY_COLLECTION_ADMIN_activity_session_ticket_enrollment_count[];
 }
 
 export interface GET_ACTIVITY_COLLECTION_ADMIN {
@@ -7025,7 +7045,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ses
   id: any;
   title: string;
   location: string | null;
-  location_online: string | null;
+  online_link: string | null;
 }
 
 export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets {
@@ -7084,6 +7104,32 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_en
   aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate_aggregate | null;
 }
 
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets_activity_ticket {
+  __typename: "activity_ticket";
+  /**
+   * unlimited as 99999999
+   */
+  count: number;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets {
+  __typename: "activity_session_ticket";
+  /**
+   * offline | online | both
+   */
+  activity_session_type: string;
+  /**
+   * An object relationship
+   */
+  activity_ticket: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets_activity_ticket;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_ticket_enrollment_count {
+  __typename: "activity_session_ticket_enrollment_count";
+  offline_session_ticket_count: any | null;
+  online_session_ticket_count: any | null;
+}
+
 export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
   __typename: "activity_session";
   id: any;
@@ -7098,6 +7144,14 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
    * An aggregated array relationship
    */
   activity_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate;
+  /**
+   * An array relationship
+   */
+  activity_session_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets[];
+  /**
+   * An object relationship
+   */
+  ticket_enrollment_count: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_ticket_enrollment_count | null;
 }
 
 export interface GET_ACTIVITY_ADMIN_activity_by_pk {
