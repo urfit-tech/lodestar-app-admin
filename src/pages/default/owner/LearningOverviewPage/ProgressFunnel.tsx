@@ -1,5 +1,4 @@
-import { Funnel } from '@ant-design/charts'
-import { FunnelConfig } from '@ant-design/charts/es/funnel'
+import { Funnel, FunnelConfig } from '@ant-design/charts'
 import React from 'react'
 
 type ProgressFunnelValue = {

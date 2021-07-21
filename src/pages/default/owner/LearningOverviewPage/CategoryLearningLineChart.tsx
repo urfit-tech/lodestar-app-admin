@@ -1,5 +1,4 @@
-import { Line } from '@ant-design/charts'
-import { LineConfig } from '@ant-design/charts/lib/line'
+import { Line, LineConfig } from '@ant-design/charts'
 import React, { useEffect, useState } from 'react'
 
 const CategoryLearningLineChart: React.FC = () => {

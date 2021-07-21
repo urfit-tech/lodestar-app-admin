@@ -1,5 +1,4 @@
-import { DualAxes } from '@ant-design/charts'
-import { DualAxesConfig } from '@ant-design/charts/es/dualAxes'
+import { DualAxes, DualAxesConfig } from '@ant-design/charts'
 import * as Moment from 'moment'
 import { extendMoment } from 'moment-range'
 import React from 'react'
