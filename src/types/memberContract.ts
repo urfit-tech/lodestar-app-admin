@@ -62,4 +62,5 @@ export type MemberContractProps = {
   lastAdMaterial: string | null
   firstFilledAt: string | null
   lastFilledAt: string | null
+  rebateGift?: string | null
 }

@@ -97,6 +97,7 @@ type MemberContractModalProps = {
   }[]
   studentAttachments?: { id: string; data: any; options: any }[] | null
   studentCertification?: string | null
+  rebateGift?: string | null
   onSuccess?: () => void
 } & AdminModalProps
 
@@ -112,6 +113,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   orderExecutors,
   studentCertification,
   studentAttachments,
+  rebateGift,
   onSuccess,
   ...props
 }) => {
@@ -621,6 +623,11 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               'YYYY-MM-DD HH:MM',
             )}`}
           </StyledText>
+          {rebateGift && (
+            <StyledText className="mb-2">
+              {formatMessage(memberContractMessages.label.rebateGift)}： {rebateGift?.split('-').slice(1).join('-')}
+            </StyledText>
+          )}
         </div>
       </div>
       {sheet}
