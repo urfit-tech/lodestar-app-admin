@@ -625,7 +625,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           </StyledText>
           {rebateGift && (
             <StyledText className="mb-2">
-              {formatMessage(memberContractMessages.label.rebateGift)}： {rebateGift?.replace('滿額學習工具 - ', '')}
+              {formatMessage(memberContractMessages.label.rebateGift)}： {rebateGift?.split('-').slice(1).join('-')}
             </StyledText>
           )}
         </div>
