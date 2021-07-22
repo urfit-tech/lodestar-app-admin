@@ -366,12 +366,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       subMenuItems: [
         {
           permissionIsAllowed: permissions.CRAFT_PAGE_ADMIN,
-          key: 'craft_pages',
+          key: 'craft_page_collection',
           name: formatMessage(commonMessages.menu.pageSetup),
         },
         {
           permissionIsAllowed: permissions.CRAFT_MENU_ADMIN,
-          key: 'menu_Setup',
+          key: 'craft_menu',
           name: formatMessage(commonMessages.menu.menuSetup),
         },
       ],

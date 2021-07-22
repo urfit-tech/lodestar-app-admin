@@ -332,7 +332,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   // craft page
-  craft_pages: {
+  craft_page_collection: {
     path: '/admin/craft_page',
     pageName: 'CraftPage/CraftPageCollectionPage',
     authenticated: true,
