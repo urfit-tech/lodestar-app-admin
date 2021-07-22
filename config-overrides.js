@@ -8,6 +8,7 @@ module.exports = override(
   babelInclude([
     path.resolve('src'),
     path.resolve('node_modules/lodestar-app-admin/src'), // (2)
+    path.resolve('node_modules/lodestar-app-element/src')
   ]),
   fixBabelImports('import', {
     libraryName: 'antd',
