@@ -2,7 +2,7 @@ import { Button, Cascader, DatePicker, Form, Input, InputNumber, Radio } from 'a
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import moment, { Moment } from 'moment'
-import { toPairs } from 'ramda'
+import { equals, uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
@@ -54,7 +54,6 @@ const ActivityTicketAdminModal: React.FC<
     translation: {
       online: formatMessage(activityMessages.label.onlineActivity),
       offline: formatMessage(activityMessages.label.offlineActivity),
-      both: formatMessage(activityMessages.label.onlineAndOfflineActivity),
     },
     isOnlineActivity: !!enabledModules.activity_online,
   })
@@ -70,7 +69,11 @@ const ActivityTicketAdminModal: React.FC<
         const values = form.getFieldsValue()
         onSubmit({
           title: values.title,
-          sessions: values.sessions.filter(notEmpty).map(v => (v.length === 1 ? v[0].split('_') : v)),
+          sessions: uniq(
+            values.sessions
+              .filter(notEmpty)
+              .map(([session, sessionType]) => (session.includes('_') ? session.split('_') : [session, sessionType])),
+          ),
           isPublished: values.isPublished === 'public',
           startedAt: values.startedAt.toDate(),
           endedAt: values.endedAt.toDate(),
@@ -229,24 +232,13 @@ const ActivityTicketAdminModal: React.FC<
 const generateInitialSessions = (sessions: ActivityTicketSessionProps[]) =>
   sessions
     .map(({ id, type, location, onlineLink }) => {
-      const existingSessionTypes = toPairs({
-        location,
-        onlineLink,
-      })
-        .filter(([, value]) => value)
-        .map(
-          ([key]) =>
-            ({
-              location: 'offline',
-              onlineLink: 'online',
-            }[key]),
-        )
+      const existingSessionTypes = [location && 'offline', onlineLink && 'online'].filter(Boolean).filter(notEmpty)
 
-      if (['online', 'offline'].every(v => existingSessionTypes.includes(v))) {
+      if (equals(existingSessionTypes, ['offline', 'online'])) {
         return [id, type]
       }
 
-      if (['online', 'offline'].some(v => existingSessionTypes.includes(v))) {
+      if (type) {
         return [`${id}_${type}`]
       }
 
@@ -266,18 +258,10 @@ const generateSessionOptions = ({
   isOnlineActivity: boolean
 }) =>
   activitySessions
-    .map(({ id, title, ...address }) => {
-      const existingSessionTypes = toPairs(address)
-        .filter(([, value]) => value)
-        .map(
-          ([key]) =>
-            ({
-              location: 'offline',
-              onlineLink: 'online',
-            }[key]),
-        )
+    .map(({ id, title, location, onlineLink }) => {
+      const existingSessionTypes = [location && 'offline', onlineLink && 'online'].filter(Boolean).filter(notEmpty)
 
-      if (['online', 'offline'].every(v => existingSessionTypes.includes(v))) {
+      if (equals(existingSessionTypes, ['offline', 'online'])) {
         return {
           value: id,
           label: title,
@@ -290,16 +274,12 @@ const generateSessionOptions = ({
               value: 'offline',
               label: translation['offline'],
             },
-            {
-              value: 'both',
-              label: translation['both'],
-            },
           ],
         }
       }
 
-      if (['online', 'offline'].some(v => existingSessionTypes.includes(v))) {
-        const [sessionType] = existingSessionTypes
+      const [sessionType] = existingSessionTypes
+      if (sessionType) {
         const sessionTypeLabel = {
           offline: translation['offline'],
           online: translation['online'],
