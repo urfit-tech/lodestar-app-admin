@@ -11,30 +11,21 @@ import { AppProvider } from './contexts/AppContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { CustomRendererProps, CustomRendererProvider } from './contexts/CustomRendererContext'
 import { LanguageProvider } from './contexts/LanguageContext'
-import { useApiHost, useAppAdmin } from './hooks/util'
-import LoadingPage from './pages/default/LoadingPage'
 import Routes, { RouteProps } from './Routes'
 import './styles/default/index.scss'
 import theme from './theme/default.json'
 
 const Application: React.FC<{
-  appId?: string
+  appId: string
   extraRouteProps?: { [routeKey: string]: RouteProps }
   customRender?: CustomRendererProps
 }> = ({ appId, extraRouteProps, customRender }) => {
-  const apiHost = useApiHost(appId || '')
-  const appAdmin = useAppAdmin(window.location.host)
-
-  if (!appAdmin || !appAdmin.apiHost) {
-    return <LoadingPage />
-  }
-
   return (
     <BrowserRouter>
       <QueryParamProvider ReactRouterRoute={Route}>
-        <AuthProvider appId={appId || appAdmin.appId} apiHost={appAdmin.apiHost || apiHost || ''}>
+        <AuthProvider appId={appId}>
           <ApiProvider>
-            <AppProvider appId={appId || appAdmin.appId}>
+            <AppProvider appId={appId}>
               <LanguageProvider>
                 <ThemeProvider theme={theme}>
                   <ConfigProvider locale={zhTW}>

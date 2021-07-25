@@ -2,12 +2,11 @@ import axios from 'axios'
 
 export async function exportPodcastProgram(
   authToken: string | null,
-  backendEndpoint: string | null,
   appId: string,
   podcastProgramId: string,
 ): Promise<void> {
   await axios.post(
-    `${backendEndpoint}/podcast/export`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/podcast/export`,
     {
       appId,
       podcastProgramId,
@@ -20,12 +19,11 @@ export async function exportPodcastProgram(
 
 export async function mergePodcastProgram(
   authToken: string | null,
-  backendEndpoint: string | null,
   appId: string,
   podcastProgramId: string,
 ): Promise<void> {
   await axios.post(
-    `${backendEndpoint}/podcast/merge`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/podcast/merge`,
     {
       appId,
       podcastProgramId,
@@ -38,7 +36,6 @@ export async function mergePodcastProgram(
 
 export async function appendPodcastProgramAudio(
   authToken: string | null,
-  apiHost: string,
   appId: string,
   podcastProgramId: string,
   key: string,
@@ -46,7 +43,7 @@ export async function appendPodcastProgramAudio(
   duration: number,
 ): Promise<void> {
   await axios.post(
-    `https://${apiHost}/podcast/append`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/podcast/append`,
     {
       appId,
       podcastProgramId,
@@ -60,14 +57,13 @@ export async function appendPodcastProgramAudio(
 
 export async function splitPodcastProgramAudio(
   authToken: string | null,
-  backendEndpoint: string | null,
   appId: string,
   podcastProgramAudioId: string,
   atSec: number,
   options?: { filenames: string[] },
 ): Promise<string[]> {
   const resp = await axios.post(
-    `${backendEndpoint}/podcast/split`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/podcast/split`,
     {
       appId,
       podcastProgramAudioId,
@@ -84,13 +80,12 @@ export async function splitPodcastProgramAudio(
 
 export async function movePodcastProgramAudio(
   authToken: string | null,
-  backendEndpoint: string | null,
   appId: string,
   podcastProgramAudioId: string,
   toPosition: number,
 ): Promise<void> {
   await axios.post(
-    `${backendEndpoint}/podcast/move`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/podcast/move`,
     {
       appId,
       podcastProgramAudioId,
@@ -104,12 +99,11 @@ export async function movePodcastProgramAudio(
 
 export async function deletePodcastProgramAudio(
   authToken: string | null,
-  backendEndpoint: string | null,
   appId: string,
   podcastProgramAudioId: string,
 ): Promise<void> {
   await axios.post(
-    `${backendEndpoint}/podcast/delete`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/podcast/delete`,
     {
       appId,
       podcastProgramAudioId,

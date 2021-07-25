@@ -60,7 +60,7 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState<boolean>(false)
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const uploadCanceler = useRef<Canceler>()
 
   const duplicateName = (file: UploadFile) => {
@@ -113,7 +113,7 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
       setLoading(true)
       onChange && onChange(file)
 
-      uploadFile(`${path}_${duplicateName(file)}`, file, authToken, apiHost, {
+      uploadFile(`${path}_${duplicateName(file)}`, file, authToken, {
         cancelToken: new axios.CancelToken(canceler => {
           uploadCanceler.current = canceler
         }),

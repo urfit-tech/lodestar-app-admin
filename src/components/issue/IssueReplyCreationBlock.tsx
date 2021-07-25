@@ -34,7 +34,7 @@ const IssueReplyCreationBlock: React.FC<{
 }> = ({ memberId, issueId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { id: appId } = useApp()
   const [insertIssueReply] = useMutation<hasura.INSERT_ISSUE_REPLY, hasura.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
@@ -77,7 +77,7 @@ const IssueReplyCreationBlock: React.FC<{
         <StyledEditor
           language="zh-hant"
           controls={['bold', 'italic', 'underline', 'separator', 'media']}
-          media={{ uploadFn: createUploadFn(appId, authToken, apiHost) }}
+          media={{ uploadFn: createUploadFn(appId, authToken) }}
         />
       </Form.Item>
       <Form.Item className="text-right">

@@ -13,7 +13,7 @@ const CertificationUploader: React.VFC<
   }
 > = ({ memberId, onFinish, ...uploadProps }) => {
   const { id: appId } = useApp()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
 
   const [uploading, setUploading] = useState(false)
 
@@ -22,7 +22,7 @@ const CertificationUploader: React.VFC<
       showUploadList={false}
       customRequest={({ file }) => {
         setUploading(true)
-        uploadFile(`certification/${appId}/student_${memberId}`, file, authToken, apiHost)
+        uploadFile(`certification/${appId}/student_${memberId}`, file, authToken)
           .then(() => onFinish?.(file.name))
           .catch(handleError)
           .finally(() => setUploading(false))

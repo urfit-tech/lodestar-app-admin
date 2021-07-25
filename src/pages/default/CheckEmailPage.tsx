@@ -6,7 +6,6 @@ import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import { useApp } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { codeMessages } from '../../helpers/translation'
 import { ReactComponent as CheckEmailIcon } from '../../images/default/check-email.svg'
@@ -40,7 +39,6 @@ const CheckEmailPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const [email] = useQueryParam('email', StringParam)
   const [type] = useQueryParam('type', StringParam)
-  const { apiHost } = useAuth()
   const app = useApp()
   const [loading, setLoading] = useState(false)
 
@@ -53,7 +51,7 @@ const CheckEmailPage: React.FC = () => {
       return
     }
     axios
-      .post(`https://${apiHost}/auth/forgot-password`, {
+      .post(`${process.env.REACT_APP_API_BASE_ROOT}/auth/forgot-password`, {
         appId: app.id,
         account: email,
       })

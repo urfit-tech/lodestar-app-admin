@@ -4,9 +4,12 @@ import App from './Application'
 import { unregister } from './serviceWorker'
 import './styles/default/index.scss'
 
-// const Application = process.env.NODE_ENV === 'development' ? hot(App) : App
-const Application = App
 const rootElement = document.getElementById('root')
-render(<Application />, rootElement)
+const appId: string = process.env.REACT_APP_ID || (window as any).APP_ID
+if (!appId) {
+  render(<div>Application cannot be loaded</div>, rootElement)
+} else {
+  render(<App appId={appId} />, rootElement)
+}
 
 unregister()

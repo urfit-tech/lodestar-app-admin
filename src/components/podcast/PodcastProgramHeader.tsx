@@ -18,7 +18,7 @@ const PodcastProgramHeader: React.FC<{
 }> = ({ podcastProgramId, title, noPreview, goBackLink }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { settings, id: appId } = useApp()
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
 
@@ -36,7 +36,7 @@ const PodcastProgramHeader: React.FC<{
             const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
             const windowReference = isSafari ? window.open() : null
             setIsGeneratingAudio(true)
-            mergePodcastProgram(authToken, apiHost, appId, podcastProgramId)
+            mergePodcastProgram(authToken, appId, podcastProgramId)
               .then(() => {
                 setIsGeneratingAudio(false)
                 if (windowReference) {

@@ -47,11 +47,10 @@ interface SignedPodCastProgramAudio {
 
 async function signPodCastProgramAudios(
   authToken: string,
-  apiHost: string,
   audios: PodcastProgramAudio[],
 ): Promise<SignedPodCastProgramAudio[]> {
   const audioKeys = audios.map(audio => audio.key)
-  const audioUrls = await Promise.all(audioKeys.map(key => getFileDownloadableLink(key, authToken, apiHost)))
+  const audioUrls = await Promise.all(audioKeys.map(key => getFileDownloadableLink(key, authToken)))
 
   const signedAudios: SignedPodCastProgramAudio[] = []
   for (let i = 0; i < audios.length; i++) {
@@ -71,7 +70,7 @@ async function signPodCastProgramAudios(
 const RecordingPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { id: appId } = useApp()
   const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
 
@@ -118,9 +117,9 @@ const RecordingPage: React.FC = () => {
       const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 
       setIsGeneratingAudio(true)
-      uploadFile(audioKey, blob, authToken, apiHost, {})
+      uploadFile(audioKey, blob, authToken, {})
         .then(async () => {
-          await appendPodcastProgramAudio(authToken, apiHost, appId, podcastProgramId, audioKey, filename, duration)
+          await appendPodcastProgramAudio(authToken, appId, podcastProgramId, audioKey, filename, duration)
           await refetchPodcastProgramAdmin()
           await updatePodcastProgramDuration({
             variables: {
@@ -139,7 +138,6 @@ const RecordingPage: React.FC = () => {
         })
     },
     [
-      apiHost,
       appId,
       authToken,
       podcastProgramId,
@@ -161,11 +159,7 @@ const RecordingPage: React.FC = () => {
       setIsGeneratingAudio(true)
 
       try {
-        const signedPodCastProgramAudios = await signPodCastProgramAudios(
-          authToken,
-          apiHost,
-          podcastProgramAdmin.audios,
-        )
+        const signedPodCastProgramAudios = await signPodCastProgramAudios(authToken, podcastProgramAdmin.audios)
         setSignedPodCastProgramAudios(signedPodCastProgramAudios)
         if (signedPodCastProgramAudios.length) {
           setCurrentAudioId(currentAudioId => currentAudioId || signedPodCastProgramAudios[0].id)
@@ -178,7 +172,7 @@ const RecordingPage: React.FC = () => {
     }
 
     signAudios()
-  }, [authToken, apiHost, podcastProgramAdmin])
+  }, [authToken, podcastProgramAdmin])
 
   const audioTrackRefMap: Map<string, React.RefObject<AudioTrackCardRef>> = useMemo(() => {
     if (podcastAudios == null) {
@@ -276,7 +270,7 @@ const RecordingPage: React.FC = () => {
     const totalDuration = Math.ceil(totalDurationSecond / 60 || 0)
 
     setIsGeneratingAudio(true)
-    deletePodcastProgramAudio(authToken, apiHost, appId, audio.id)
+    deletePodcastProgramAudio(authToken, appId, audio.id)
       .then(async () => {
         await refetchPodcastProgramAdmin()
         await updatePodcastProgramDuration({
@@ -297,7 +291,6 @@ const RecordingPage: React.FC = () => {
   }, [
     appId,
     authToken,
-    apiHost,
     currentAudioIndex,
     podcastProgramId,
     refetchPodcastProgramAdmin,
@@ -332,7 +325,7 @@ const RecordingPage: React.FC = () => {
     setIsGeneratingAudio(true)
 
     try {
-      const [, audioId2] = await splitPodcastProgramAudio(authToken, apiHost, appId, audio.id, currentPlayingSecond, {
+      const [, audioId2] = await splitPodcastProgramAudio(authToken, appId, audio.id, currentPlayingSecond, {
         filenames: [filename, `${originalFileName}(${serialNumber})`],
       })
 
@@ -345,15 +338,7 @@ const RecordingPage: React.FC = () => {
     }
 
     setIsGeneratingAudio(false)
-  }, [
-    appId,
-    authToken,
-    apiHost,
-    currentAudioId,
-    currentPlayingSecond,
-    refetchPodcastProgramAdmin,
-    signedPodCastProgramAudios,
-  ])
+  }, [appId, authToken, currentAudioId, currentPlayingSecond, refetchPodcastProgramAdmin, signedPodCastProgramAudios])
 
   const onUploadAudio = useCallback(() => {
     const showUploadingModal = () => {
@@ -371,7 +356,7 @@ const RecordingPage: React.FC = () => {
     }
 
     const modal = showUploadingModal()
-    exportPodcastProgram(authToken, apiHost, appId, podcastProgramId)
+    exportPodcastProgram(authToken, appId, podcastProgramId)
       .then(async () => {
         const totalDurationSecond = signedPodCastProgramAudios.reduce((sum, audio) => (sum += audio.duration), 0)
         const totalDuration = Math.ceil(totalDurationSecond / 60 || 0)
@@ -396,7 +381,6 @@ const RecordingPage: React.FC = () => {
   }, [
     appId,
     authToken,
-    apiHost,
     formatMessage,
     history,
     podcastProgramId,

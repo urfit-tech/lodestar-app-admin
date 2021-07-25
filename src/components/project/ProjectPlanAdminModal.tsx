@@ -64,7 +64,7 @@ const ProjectPlanAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const uploadCanceler = useRef<Canceler>()
   const [upsertProjectPlan] = useMutation<hasura.UPSERT_PROJECT_PLAN, hasura.UPSERT_PROJECT_PLANVariables>(
     UPSERT_PROJECT_PLAN,
@@ -115,7 +115,7 @@ const ProjectPlanAdminModal: React.FC<
             const id = data?.insert_project_plan?.returning.map(v => v.id)[0]
             if (coverImage) {
               try {
-                await uploadFile(`project_covers/${appId}/${projectId}/${id}`, coverImage, authToken, apiHost, {
+                await uploadFile(`project_covers/${appId}/${projectId}/${id}`, coverImage, authToken, {
                   cancelToken: new axios.CancelToken(canceler => {
                     uploadCanceler.current = canceler
                   }),

@@ -60,7 +60,7 @@ const IssueReplyItem: React.FC<{
 }> = ({ programRoles, issueReplyId, content, reactedMemberIds, createdAt, memberId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const { currentMemberId, authToken, apiHost } = useAuth()
+  const { currentMemberId, authToken } = useAuth()
   const { id: appId } = useApp()
   const theme = useContext(ThemeContext)
 
@@ -175,7 +175,7 @@ const IssueReplyItem: React.FC<{
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                media={{ uploadFn: createUploadFn(appId, authToken, apiHost) }}
+                media={{ uploadFn: createUploadFn(appId, authToken) }}
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>

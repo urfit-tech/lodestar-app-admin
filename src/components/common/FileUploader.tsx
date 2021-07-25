@@ -38,7 +38,7 @@ const FileUploader: React.FC<{
   onDownload,
 }) => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [uploadFiles, setUploadFiles] = useState<File[]>([])
 
@@ -95,7 +95,6 @@ const FileUploader: React.FC<{
                     const link = await getFileDownloadableLink(
                       `${typeof downloadableLink === 'string' ? downloadableLink : downloadableLink?.(v)}`,
                       authToken,
-                      apiHost,
                     )
                     return downloadFile(v.name, {
                       url: link,

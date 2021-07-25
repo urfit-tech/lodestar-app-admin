@@ -11,7 +11,6 @@ type AuthProps = {
   authToken: string | null
   currentMember: { name: string; username: string; email: string; pictureUrl: string } | null
   permissions: { [key: string]: boolean }
-  apiHost: string
   refreshToken?: () => Promise<void>
   register?: (data: { username: string; email: string; password: string }) => Promise<void>
   login?: (data: { account: string; password: string }) => Promise<void>
@@ -27,15 +26,13 @@ const defaultAuthContext: AuthProps = {
   authToken: null,
   currentMember: null,
   permissions: {},
-  apiHost: '',
 }
 
 const AuthContext = React.createContext<AuthProps>(defaultAuthContext)
 
 export const AuthProvider: React.FC<{
   appId: string
-  apiHost: string
-}> = ({ appId, apiHost, children }) => {
+}> = ({ appId, children }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(defaultAuthContext.isAuthenticating)
   const [authToken, setAuthToken] = useState<string | null>(null)
 
@@ -62,11 +59,10 @@ export const AuthProvider: React.FC<{
               return accumulator
             }, {})
           : {},
-        apiHost,
         refreshToken: async () =>
           axios
             .post(
-              `https://${apiHost}/auth/refresh-token`,
+              `${process.env.REACT_APP_API_BASE_ROOT}/auth/refresh-token`,
               { appId },
               {
                 method: 'POST',
@@ -84,7 +80,7 @@ export const AuthProvider: React.FC<{
         register: async ({ username, email, password }) =>
           axios
             .post(
-              `https://${apiHost}/auth/register`,
+              `${process.env.REACT_APP_API_BASE_ROOT}/auth/register`,
               {
                 appId,
                 username,
@@ -103,7 +99,11 @@ export const AuthProvider: React.FC<{
             }),
         login: async ({ account, password }) =>
           axios
-            .post(`https://${apiHost}/auth/general-login`, { appId, account, password }, { withCredentials: true })
+            .post(
+              `${process.env.REACT_APP_API_BASE_ROOT}/auth/general-login`,
+              { appId, account, password },
+              { withCredentials: true },
+            )
             .then(({ data: { code, result } }) => {
               if (code !== 'SUCCESS') {
                 setAuthToken(null)
@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<{
         socialLogin: async ({ provider, providerToken }) =>
           axios
             .post(
-              `https://${apiHost}/auth/social-login`,
+              `${process.env.REACT_APP_API_BASE_ROOT}/auth/social-login`,
               {
                 appId,
                 provider,
@@ -135,7 +135,7 @@ export const AuthProvider: React.FC<{
             }),
         logout: async () => {
           localStorage.clear()
-          axios(`https://${apiHost}/auth/logout`, {
+          axios(`${process.env.REACT_APP_API_BASE_ROOT}/auth/logout`, {
             method: 'post',
             withCredentials: true,
           }).then(({ data: { code, message, result } }) => {

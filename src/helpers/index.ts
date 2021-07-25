@@ -27,16 +27,10 @@ export const validateImage = (file: RcFile, fileSize?: number) => {
   return isImage && inSize
 }
 
-export const uploadFile = async (
-  key: string,
-  file: Blob,
-  authToken: string | null,
-  apiHost: string,
-  config?: AxiosRequestConfig,
-) =>
+export const uploadFile = async (key: string, file: Blob, authToken: string | null, config?: AxiosRequestConfig) =>
   await axios
     .post(
-      `https://${apiHost}/sys/sign-url`,
+      `${process.env.REACT_APP_API_BASE_ROOT}/sys/sign-url`,
       {
         operation: 'putObject',
         params: {
@@ -60,9 +54,9 @@ export const uploadFile = async (
       })
     })
 
-export const getFileDownloadableLink = async (key: string, authToken: string | null, apiHost: string) => {
+export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
   const { data } = await axios.post(
-    `https://${apiHost}/sys/sign-url`,
+    `${process.env.REACT_APP_API_BASE_ROOT}/sys/sign-url`,
     {
       operation: 'getObject',
       params: {

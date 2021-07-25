@@ -639,7 +639,7 @@ export const useSimpleProduct = (
 }
 
 export const useUploadAttachments = () => {
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { id: appId } = useApp()
   const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(gql`
     mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
@@ -668,7 +668,7 @@ export const useUploadAttachments = () => {
       for (let index = 0; files[index]; index++) {
         const attachmentId = attachmentIds[index]
         const file = files[index]
-        await uploadFile(`attachments/${attachmentId}`, file, authToken, apiHost, uploadFileConfig?.(file))
+        await uploadFile(`attachments/${attachmentId}`, file, authToken, uploadFileConfig?.(file))
         await insertAttachment({
           variables: {
             attachments: [

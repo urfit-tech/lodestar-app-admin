@@ -47,7 +47,7 @@ const ProgramContentAdminModal: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
 
   const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
   const [updateProgramContentPlan] = useMutation<
@@ -94,7 +94,7 @@ const ProgramContentAdminModal: React.FC<{
         videoFile?.lastModified !== programContentBody.data?.video?.lastModified)
     ) {
       try {
-        await uploadFile(`videos/${appId}/${programContentBody.id}`, videoFile, authToken, apiHost, {
+        await uploadFile(`videos/${appId}/${programContentBody.id}`, videoFile, authToken, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [videoFile.name]: Math.floor((loaded / total) * 100) }))
@@ -111,7 +111,7 @@ const ProgramContentAdminModal: React.FC<{
         captionFile.lastModified !== programContentBody.data?.texttrack?.lastModified)
     ) {
       try {
-        await uploadFile(`texttracks/${appId}/${programContentBody.id}`, captionFile, authToken, apiHost, {
+        await uploadFile(`texttracks/${appId}/${programContentBody.id}`, captionFile, authToken, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [captionFile.name]: Math.floor((loaded / total) * 100) }))
@@ -130,7 +130,7 @@ const ProgramContentAdminModal: React.FC<{
     )
     if (newFiles.length) {
       for (const file of newFiles) {
-        await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
+        await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [file.name]: Math.floor((loaded / total) * 100) }))

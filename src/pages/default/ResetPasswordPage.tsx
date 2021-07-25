@@ -8,7 +8,6 @@ import { useHistory } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import { useAuth } from '../../contexts/AuthContext'
 import { desktopViewMixin, handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
@@ -47,14 +46,13 @@ const ResetPasswordPage: React.FC = () => {
   const [token] = useQueryParam('token', StringParam)
   const [memberId] = useQueryParam('member', StringParam)
   const [form] = useForm<FieldProps>()
-  const { apiHost } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
       .post(
-        `https://${apiHost}/auth/reset-password`,
+        `${process.env.REACT_APP_API_BASE_ROOT}/auth/reset-password`,
         { appId: window.location.host, memberId, newPassword: values.password },
         {
           headers: { Authorization: `Bearer ${token}` },

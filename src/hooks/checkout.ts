@@ -388,7 +388,7 @@ export const useCheck = (
   shipping: ShippingProps | null,
   options: { [ProductId: string]: any },
 ) => {
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { id: appId } = useApp()
   const [check, setCheck] = useState<CheckProps>({ orderProducts: [], orderDiscounts: [], shippingOption: null })
   const [orderChecking, setOrderChecking] = useState(false)
@@ -407,7 +407,7 @@ export const useCheck = (
           shippingOption: shippingOptionProps
         }
       }>(
-        `https://${apiHost}/payment/checkout-order`,
+        `${process.env.REACT_APP_API_BASE_ROOT}/payment/checkout-order`,
         {
           appId,
           memberId,
@@ -433,7 +433,6 @@ export const useCheck = (
     appId,
     memberId,
     authToken,
-    apiHost,
     discountId,
     JSON.stringify(options),
     JSON.stringify(productIds),
@@ -445,7 +444,7 @@ export const useCheck = (
       setOrderPlacing(true)
       return axios
         .post<{ code: string; message: string; result: { id: string } }>(
-          `https://${apiHost}/tasks/order`,
+          `${process.env.REACT_APP_API_BASE_ROOT}/tasks/order`,
           {
             paymentModel: { type: paymentType },
             productIds,
@@ -468,7 +467,7 @@ export const useCheck = (
         })
         .finally(() => setOrderPlacing(false))
     },
-    [authToken, apiHost, discountId, memberId, options, productIds, shipping],
+    [authToken, discountId, memberId, options, productIds, shipping],
   )
 
   return {

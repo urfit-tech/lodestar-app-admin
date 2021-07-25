@@ -56,7 +56,7 @@ const MerchandiseSpecForm: React.FC<{
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { id: appId } = useApp()
   const [insertMerchandiseSpecCollection] = useMutation<
     hasura.INSERT_MERCHANDISE_SPEC_COLLECTION,
@@ -109,7 +109,7 @@ const MerchandiseSpecForm: React.FC<{
               ) {
                 continue
               }
-              await uploadFile(`merchandise_files/${appId}/${merchandiseId}_${file.name}`, file, authToken, apiHost, {
+              await uploadFile(`merchandise_files/${appId}/${merchandiseId}_${file.name}`, file, authToken, {
                 cancelToken: new axios.CancelToken(canceler => {
                   uploadCanceler.current = canceler
                 }),

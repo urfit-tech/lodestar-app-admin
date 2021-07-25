@@ -110,7 +110,7 @@ const AppointmentPlanAppointmentModal: React.FC<
 > = ({ appointmentPlanId, creator, onSuccess, setModalVisible, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { settings } = useApp()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
     useAppointmentPlanAdmin(appointmentPlanId)
@@ -177,7 +177,7 @@ const AppointmentPlanAppointmentModal: React.FC<
     if (taskType === 'order' && authToken && task?.finishedOn && task?.returnvalue?.orderId) {
       axios
         .post(
-          `https://${apiHost}/tasks/payment/`,
+          `${process.env.REACT_APP_API_BASE_ROOT}/tasks/payment/`,
           { orderId: task.returnvalue.orderId },
           { headers: { authorization: `Bearer ${authToken}` } },
         )
@@ -203,7 +203,7 @@ const AppointmentPlanAppointmentModal: React.FC<
       setLoading(false)
       setAppointmentStep('success')
     }
-  }, [authToken, apiHost, formatMessage, taskType, task])
+  }, [authToken, formatMessage, taskType, task])
 
   const handleMemberSubmit = () => {
     if (!appointmentValues.member || !appointmentValues.member.id) {

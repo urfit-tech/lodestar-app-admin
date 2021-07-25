@@ -74,7 +74,7 @@ type FiltersProps = {
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
 
   const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
     created_at: 'desc' as hasura.order_by,
@@ -297,7 +297,7 @@ const NoteCollectionPage: React.FC = () => {
               let downloadedCount = 0
               record.attachments.forEach(async attachment => {
                 try {
-                  const link: string = await getFileDownloadableLink(`attachments/${attachment.id}`, authToken, apiHost)
+                  const link: string = await getFileDownloadableLink(`attachments/${attachment.id}`, authToken)
                   if (link && attachment.data?.name) {
                     await downloadFile(attachment.data.name, { url: link })
                     downloadedCount++
@@ -453,11 +453,11 @@ const LoadRecordFileButton: React.FC<{
   attachmentId: string
 }> = ({ memberName, startTime, attachmentId }) => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const { id: appId } = useApp()
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
 
-  if (!authToken || !apiHost || !appId) {
+  if (!authToken || !appId) {
     return (
       <Button type="primary" loading>
         {formatMessage(podcastMessages.ui.play)}
@@ -468,7 +468,7 @@ const LoadRecordFileButton: React.FC<{
   const loadAudioData = async () => {
     setAudioUrl('')
     try {
-      const link: string = await getFileDownloadableLink(`attachments/${attachmentId}`, authToken, apiHost)
+      const link: string = await getFileDownloadableLink(`attachments/${attachmentId}`, authToken)
       const response = await axios.get(link, {
         responseType: 'blob',
       })

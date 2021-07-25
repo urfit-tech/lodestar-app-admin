@@ -8,7 +8,6 @@ import { useHistory } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import { useApp } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { desktopViewMixin, handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
@@ -49,14 +48,13 @@ const ForgotPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [form] = useForm<FieldProps>()
-  const { apiHost } = useAuth()
   const app = useApp()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
-      .post(`https://${apiHost}/auth/forgot-password`, {
+      .post(`${process.env.REACT_APP_API_BASE_ROOT}/auth/forgot-password`, {
         appId: app.id,
         account: values.email,
       })
