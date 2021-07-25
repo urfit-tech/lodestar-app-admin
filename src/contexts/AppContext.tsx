@@ -30,10 +30,10 @@ export const AppProvider: React.FC<{
   const { refreshToken, authToken } = useAuth()
   const { loading, error, data, refetch } = useQuery<hasura.GET_APPLICATION, hasura.GET_APPLICATIONVariables>(
     GET_APPLICATION,
-    { variables: { host: window.location.host } },
+    { variables: { appId } },
   )
 
-  const settings = Object.fromEntries(data?.app_admin_by_pk?.app.app_settings.map(v => [v.key, v.value]) || [])
+  const settings = Object.fromEntries(data?.app_by_pk?.app_settings.map(v => [v.key, v.value]) || [])
 
   const contextValue = {
     ...defaultContextValue,
@@ -41,13 +41,11 @@ export const AppProvider: React.FC<{
     error,
     refetch,
     id: appId,
-    name: data?.app_admin_by_pk?.app.name || '',
-    title: data?.app_admin_by_pk?.app.title || '',
-    description: data?.app_admin_by_pk?.app.description || '',
-    vimeoProjectId: data?.app_admin_by_pk?.app.vimeo_project_id,
-    enabledModules: Object.fromEntries(
-      data?.app_admin_by_pk?.app.app_modules.map(v => [v.module_id as Module, true]) || [],
-    ),
+    name: data?.app_by_pk?.name || '',
+    title: data?.app_by_pk?.title || '',
+    description: data?.app_by_pk?.description || '',
+    vimeoProjectId: data?.app_by_pk?.vimeo_project_id,
+    enabledModules: Object.fromEntries(data?.app_by_pk?.app_modules.map(v => [v.module_id as Module, true]) || []),
     settings,
     currencies:
       data?.currency.reduce((accumulator, currency) => {
@@ -70,29 +68,26 @@ export const AppProvider: React.FC<{
 }
 
 const GET_APPLICATION = gql`
-  query GET_APPLICATION($host: String!) {
+  query GET_APPLICATION($appId: String!) {
     currency {
       id
       name
       label
       unit
     }
-    app_admin_by_pk(host: $host) {
-      host
-      app {
+    app_by_pk(id: $appId) {
+      id
+      name
+      title
+      description
+      vimeo_project_id
+      app_modules {
         id
-        name
-        title
-        description
-        vimeo_project_id
-        app_modules {
-          id
-          module_id
-        }
-        app_settings {
-          key
-          value
-        }
+        module_id
+      }
+      app_settings {
+        key
+        value
       }
     }
   }
