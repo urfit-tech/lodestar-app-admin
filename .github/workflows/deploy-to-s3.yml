@@ -9,8 +9,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      PUBLIC_URL: /admin
     steps:
       - uses: actions/checkout@main
       - uses: jeanlescure/react-deploy-to-s3-action@main
