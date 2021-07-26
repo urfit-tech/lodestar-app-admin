@@ -44,7 +44,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
 }> = ({ programId }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId, settings } = useApp()
+  const { id: appId, host } = useApp()
   const pathKey = `/programs/${programId}`
   const { loadingSharingCodes, sharingCodes, refetchSharingCodes } = useSharingCodeCollection(pathKey)
   const [insertSharingCode] = useMutation<hasura.INSERT_SHARING_CODE, hasura.INSERT_SHARING_CODEVariables>(
@@ -141,7 +141,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 <StyledDeleteButton type="link" icon={<TrashOIcon />} onClick={() => remove(field.name)} />
                 <StyledDescription className="mt-1">
                   <span>
-                    https://{settings['host']}/programs/{programId}?sharing=
+                    https://{host}/programs/{programId}?sharing=
                     {sharingCodeInputs[index]?.code || sharingCodes[index]?.code}
                   </span>
                   <Button
@@ -149,7 +149,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
                     size="small"
                     onClick={() => {
                       copyToClipboard(
-                        `https://${settings['host']}/programs/${programId}?sharing=${
+                        `https://${host}/programs/${programId}?sharing=${
                           sharingCodeInputs[index]?.code || sharingCodes[index]?.code
                         }`,
                       )

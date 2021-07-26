@@ -33,7 +33,7 @@ const ActivityAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { activityId } = useParams<{ activityId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { settings } = useApp()
+  const { host } = useApp()
   const { loadingActivityAdmin, activityAdmin, refetchActivityAdmin } = useActivityAdmin(activityId)
 
   return (
@@ -46,7 +46,7 @@ const ActivityAdminPage: React.FC = () => {
         </Link>
 
         <AdminHeaderTitle>{activityAdmin?.title || activityId}</AdminHeaderTitle>
-        <a href={`//${settings['host']}/activities/${activityId}`} target="_blank" rel="noopener noreferrer">
+        <a href={`//${host}/activities/${activityId}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>

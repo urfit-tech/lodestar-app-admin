@@ -35,7 +35,7 @@ const BlogPostBasicForm: React.FC<{
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { settings } = useApp()
+  const { host } = useApp()
   const [updatePostBasic] = useMutation<hasura.UPDATE_POST_BASIC, hasura.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
   const [codeName, setCodeName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -117,11 +117,7 @@ const BlogPostBasicForm: React.FC<{
         }
         hasFeedback
         validateStatus={codeName.length ? (canCodeNameUse ? 'success' : 'error') : ''}
-        extra={
-          <StyledText className="mt-2">{`https://${settings['host']}/posts/${
-            codeName || post.codeName || ''
-          }`}</StyledText>
-        }
+        extra={<StyledText className="mt-2">{`https://${host}/posts/${codeName || post.codeName || ''}`}</StyledText>}
       >
         <Input maxLength={20} placeholder={post.codeName || ''} onChange={e => setCodeName(e.target.value)} />
       </Form.Item>

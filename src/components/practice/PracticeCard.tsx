@@ -119,7 +119,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   ...props
 }) => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
+  const { host } = useApp()
   const [reviewed, setReviewed] = useState(isReviewed)
   const [reacted, setReacted] = useState(false)
   const { currentMemberId, currentUserRole } = useAuth()
@@ -136,7 +136,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   >(DELETE_PRACTICE_REACTION)
   const { practiceAmount } = usePracticeIssueAmount(id)
 
-  const practiceUrl = `https://${settings['host']}/practices/${id}`
+  const practiceUrl = `https://${host}/practices/${id}`
 
   const toggleReaction = async (reacted: boolean) => {
     reacted

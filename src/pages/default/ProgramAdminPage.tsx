@@ -31,7 +31,7 @@ import { useProgram } from '../../hooks/program'
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programId } = useParams<{ programId: string }>()
-  const { settings, enabledModules } = useApp()
+  const { host, enabledModules } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
 
@@ -49,7 +49,7 @@ const ProgramAdminPage: React.FC = () => {
           trigger={['click']}
           placement="bottomRight"
           overlay={
-            <Menu onClick={({ key }) => window.open(`//${settings['host']}${key}`, '_blank')}>
+            <Menu onClick={({ key }) => window.open(`//${host}${key}`, '_blank')}>
               <Menu.Item className="py-2 px-3" key={`/programs/${programId}`}>
                 {formatMessage(commonMessages.ui.previewIntroduction)}
               </Menu.Item>

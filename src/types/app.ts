@@ -55,6 +55,7 @@ export type Currency = {
 
 export type AppProps = {
   id: string
+  host: string
   name: string | null
   title: string | null
   description: string | null

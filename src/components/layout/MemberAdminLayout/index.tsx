@@ -79,7 +79,7 @@ const MemberAdminLayout: React.FC<{
   const location = useLocation()
   const match = useRouteMatch(routesProps.owner_member.path)
   const { currentMemberId, currentUserRole, permissions } = useAuth()
-  const { enabledModules, settings } = useApp()
+  const { enabledModules, settings, host } = useApp()
   const { formatMessage } = useIntl()
   const { renderMemberAdminLayout } = useCustomRenderer()
   const [insertMemberNoteRejectedAt] = useMutation<
@@ -157,7 +157,7 @@ const MemberAdminLayout: React.FC<{
 
         <AdminHeaderTitle>{member?.name || member?.username || member.id}</AdminHeaderTitle>
 
-        <a href={`//${settings['host']}/members/${member.id}`} target="_blank" rel="noopener noreferrer">
+        <a href={`//${host}/members/${member.id}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(memberMessages.ui.memberPage)}</Button>
         </a>
       </AdminHeader>

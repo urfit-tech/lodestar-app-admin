@@ -28,7 +28,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { projectId } = useParams<{ projectId: string }>()
   const [projectKey, setProjectKey] = useQueryParam('tab', StringParam)
-  const { settings } = useApp()
+  const { host } = useApp()
   const { loadingProjectAdmin, projectAdmin, refetchProjectAdmin } = useProjectAdmin(projectId)
 
   return (
@@ -49,7 +49,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
         </Link>
 
         <AdminHeaderTitle>{projectAdmin?.title || projectId}</AdminHeaderTitle>
-        <a href={`//${settings['host']}/projects/${projectId}`} target="_blank" rel="noopener noreferrer">
+        <a href={`//${host}/projects/${projectId}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>

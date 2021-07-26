@@ -14,6 +14,7 @@ type AppContextProps = AppProps & {
 const defaultContextValue: AppContextProps = {
   loading: true,
   id: '',
+  host: '',
   name: '',
   title: null,
   description: null,
@@ -41,6 +42,7 @@ export const AppProvider: React.FC<{
     error,
     refetch,
     id: appId,
+    host: data?.app_by_pk?.app_hosts.shift()?.host || '',
     name: data?.app_by_pk?.name || '',
     title: data?.app_by_pk?.title || '',
     description: data?.app_by_pk?.description || '',
@@ -84,6 +86,9 @@ const GET_APPLICATION = gql`
       app_modules {
         id
         module_id
+      }
+      app_hosts(order_by: { priority: asc }) {
+        host
       }
       app_settings {
         key

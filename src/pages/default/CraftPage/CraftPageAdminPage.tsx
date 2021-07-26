@@ -20,7 +20,7 @@ import { commonMessages, craftPageMessages } from '../../../helpers/translation'
 
 const CraftPageAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
+  const { host } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   //TODO: get page data
@@ -37,7 +37,7 @@ const CraftPageAdminPage: React.VFC = () => {
 
         <AdminHeaderTitle>{formatMessage(craftPageMessages.label.pageEditor)}</AdminHeaderTitle>
 
-        <a href={`https://${settings['host']}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${host}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>

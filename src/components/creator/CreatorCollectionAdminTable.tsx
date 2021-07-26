@@ -58,7 +58,7 @@ const CreatorCollectionAdminTable: React.FC<{
   onRefetch?: () => void
 }> = ({ creators, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
+  const { host } = useApp()
   const [filter, setFilter] = useState<{
     name: string | null
     field: string | null
@@ -200,10 +200,7 @@ const CreatorCollectionAdminTable: React.FC<{
       width: '5%',
       render: (creatorId, { isPublished }) => (
         <div className="d-flex align-items-center">
-          <Button
-            type="link"
-            onClick={() => window.open(`https://${settings['host']}/creators/${creatorId}`, '_blank')}
-          >
+          <Button type="link" onClick={() => window.open(`https://${host}/creators/${creatorId}`, '_blank')}>
             <Icon component={() => <ExternalLinkIcon />} />
           </Button>
           <Dropdown

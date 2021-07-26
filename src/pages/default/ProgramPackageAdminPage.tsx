@@ -33,7 +33,7 @@ const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programPackageId } = useParams<{ programPackageId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { settings } = useApp()
+  const { host } = useApp()
   const { programPackage, refetch } = useGetProgramPackage(programPackageId)
   const [updatePosition] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
@@ -51,11 +51,7 @@ const ProgramPackageAdminPage: React.FC = () => {
 
         <AdminHeaderTitle>{programPackage?.title || programPackageId}</AdminHeaderTitle>
 
-        <a
-          href={`//${settings['host']}/program-packages/${programPackageId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={`//${host}/program-packages/${programPackageId}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>

@@ -48,7 +48,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { merchandiseId } = useParams<{ merchandiseId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { settings } = useApp()
+  const { host } = useApp()
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     isLimited: true,
@@ -82,7 +82,7 @@ const MerchandiseAdminPage: React.FC = () => {
 
         <AdminHeaderTitle>{merchandise?.title || merchandiseId}</AdminHeaderTitle>
 
-        <a href={`https://${settings['host']}/merchandises/${merchandiseId}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${host}/merchandises/${merchandiseId}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>

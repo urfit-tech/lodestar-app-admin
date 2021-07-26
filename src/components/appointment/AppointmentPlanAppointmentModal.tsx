@@ -111,7 +111,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { authToken } = useAuth()
-  const { settings } = useApp()
+  const { host } = useApp()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
     useAppointmentPlanAdmin(appointmentPlanId)
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
@@ -432,7 +432,7 @@ const AppointmentPlanAppointmentModal: React.FC<
               <StyledButton
                 type="primary"
                 onClick={() => {
-                  window.open(`//${settings['host']}/members/${appointmentValues.member?.id}`)
+                  window.open(`//${host}/members/${appointmentValues.member?.id}`)
                 }}
               >
                 {formatMessage(messages.checkMemberPage)}

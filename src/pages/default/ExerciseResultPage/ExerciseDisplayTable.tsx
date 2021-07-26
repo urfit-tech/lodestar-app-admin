@@ -46,7 +46,7 @@ const ExerciseDisplayTable: React.VFC<{
   programContentId: string
 }> = ({ totalPoints, exercises, programId, programContentId }) => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
+  const { host } = useApp()
   const inputRef = useRef<Input>(null)
 
   const getColumnSearchProps: (dataIndex: keyof ExerciseDisplayProps) => ColumnType<ExerciseDisplayProps> =
@@ -91,7 +91,7 @@ const ExerciseDisplayTable: React.VFC<{
         onRow={record => ({
           onClick: () =>
             window.open(
-              `//${settings['host']}/programs/${programId}/contents/${programContentId}?exerciseId=${record.id}`,
+              `//${host}/programs/${programId}/contents/${programContentId}?exerciseId=${record.id}`,
               '_blank',
             ),
         })}

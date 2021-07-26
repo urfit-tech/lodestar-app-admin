@@ -36,7 +36,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { settings } = useApp()
+  const { host } = useApp()
   const { currentUserRole, currentMemberId } = useAuth()
   const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
 
@@ -54,7 +54,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
           <Button
             onClick={() =>
               window.open(
-                `//${settings['host']}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments&appointment_plan=${appointmentPlanId}`,
+                `//${host}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments&appointment_plan=${appointmentPlanId}`,
                 '_blank',
               )
             }
@@ -64,10 +64,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
         ) : (
           <Button
             onClick={() =>
-              window.open(
-                `//${settings['host']}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments`,
-                '_blank',
-              )
+              window.open(`//${host}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments`, '_blank')
             }
           >
             {formatMessage(commonMessages.ui.preview)}

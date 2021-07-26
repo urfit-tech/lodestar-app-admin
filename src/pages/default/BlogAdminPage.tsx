@@ -29,7 +29,7 @@ import { usePublicMember } from '../../hooks/member'
 const BlogAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { postId } = useParams<{ postId: string }>()
-  const { settings } = useApp()
+  const { host } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   const { post, refetchPost } = usePost(postId)
@@ -46,7 +46,7 @@ const BlogAdminPage: React.FC = () => {
 
         <AdminHeaderTitle>{post?.title || postId}</AdminHeaderTitle>
 
-        <a href={`https://${settings['host']}/posts/${postId}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${host}/posts/${postId}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>

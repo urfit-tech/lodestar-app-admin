@@ -19,7 +19,7 @@ const PodcastProgramHeader: React.FC<{
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { authToken } = useAuth()
-  const { settings, id: appId } = useApp()
+  const { host, id: appId } = useApp()
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
 
   return (
@@ -40,9 +40,9 @@ const PodcastProgramHeader: React.FC<{
               .then(() => {
                 setIsGeneratingAudio(false)
                 if (windowReference) {
-                  ;(windowReference.location as any) = `https://${settings['host']}/podcasts/${podcastProgramId}`
+                  ;(windowReference.location as any) = `https://${host}/podcasts/${podcastProgramId}`
                 } else {
-                  window.open(`https://${settings['host']}/podcasts/${podcastProgramId}`, '_blank')
+                  window.open(`https://${host}/podcasts/${podcastProgramId}`, '_blank')
                 }
               })
               .catch(handleError)

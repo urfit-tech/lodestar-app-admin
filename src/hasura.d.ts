@@ -6880,6 +6880,11 @@ export interface GET_APPLICATION_app_by_pk_app_modules {
   module_id: string;
 }
 
+export interface GET_APPLICATION_app_by_pk_app_hosts {
+  __typename: "app_host";
+  host: string;
+}
+
 export interface GET_APPLICATION_app_by_pk_app_settings {
   __typename: "app_setting";
   key: string;
@@ -6897,6 +6902,10 @@ export interface GET_APPLICATION_app_by_pk {
    * An array relationship
    */
   app_modules: GET_APPLICATION_app_by_pk_app_modules[];
+  /**
+   * An array relationship
+   */
+  app_hosts: GET_APPLICATION_app_by_pk_app_hosts[];
   /**
    * An array relationship
    */
@@ -13788,7 +13797,7 @@ export enum member_oauth_update_column {
   id = "id",
   member_id = "member_id",
   provider = "provider",
-  user_id = "user_id",
+  provider_user_id = "provider_user_id",
 }
 
 /**
@@ -21144,7 +21153,7 @@ export interface member_oauth_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   provider?: String_comparison_exp | null;
-  user_id?: String_comparison_exp | null;
+  provider_user_id?: String_comparison_exp | null;
 }
 
 /**
@@ -21155,7 +21164,7 @@ export interface member_oauth_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   provider?: string | null;
-  user_id?: string | null;
+  provider_user_id?: string | null;
 }
 
 /**
@@ -21165,7 +21174,7 @@ export interface member_oauth_max_order_by {
   id?: order_by | null;
   member_id?: order_by | null;
   provider?: order_by | null;
-  user_id?: order_by | null;
+  provider_user_id?: order_by | null;
 }
 
 /**
@@ -21175,7 +21184,7 @@ export interface member_oauth_min_order_by {
   id?: order_by | null;
   member_id?: order_by | null;
   provider?: order_by | null;
-  user_id?: order_by | null;
+  provider_user_id?: order_by | null;
 }
 
 /**

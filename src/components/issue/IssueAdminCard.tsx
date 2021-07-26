@@ -63,7 +63,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
-  const { settings } = useApp()
+  const { host } = useApp()
   const { program } = useProgram(programId)
   const [updateIssueStatus] = useMutation<hasura.UPDATE_ISSUE_STATUS, hasura.UPDATE_ISSUE_STATUSVariables>(
     UPDATE_ISSUE_STATUS,
@@ -128,7 +128,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
         title={
           <>
             <span>{programTitle}</span>
-            <Button type="link" onClick={() => window.open(`//${settings['host']}${threadId}`)}>
+            <Button type="link" onClick={() => window.open(`//${host}${threadId}`)}>
               {formatMessage(programMessages.ui.checkProgramContent)}
             </Button>
           </>
