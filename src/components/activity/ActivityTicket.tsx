@@ -3,10 +3,11 @@ import { Divider, Tag } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import { currencyFormatter, dateRangeFormatter } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
-import { ActivityTicketProps } from '../../types/activity'
+import { ActivityTicketProps, ActivityTicketSessionProps } from '../../types/activity'
 import { BraftContent } from '../common/StyledBraftEditor'
 
 const StyledWrapper = styled.div`
@@ -77,13 +78,11 @@ const StyledExtraAdmin = styled.div`
 
 const ActivityTicket: React.FC<
   ActivityTicketProps & {
-    sessions: {
-      id: string
-      title: string
-    }[]
+    sessions: ActivityTicketSessionProps[]
     extra?: React.ReactNode
   }
 > = ({ title, description, price, count, startedAt, endedAt, isPublished, sessions, enrollmentsCount, extra }) => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
 
   const status =
@@ -108,7 +107,14 @@ const ActivityTicket: React.FC<
       <StyledSubTitle>{formatMessage(activityMessages.label.includingSessions)}</StyledSubTitle>
       {sessions.map(session => (
         <StyledTag key={session.id} color="#585858" className="mb-2">
-          {session.title}
+          {enabledModules.activity_online
+            ? `${session.title} - ${
+                {
+                  online: formatMessage(activityMessages.label.online),
+                  offline: formatMessage(activityMessages.label.offline),
+                }[session.type]
+              }`
+            : session.title}
         </StyledTag>
       ))}
 

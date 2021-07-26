@@ -1,10 +1,12 @@
 import { CalendarOutlined, UserOutlined } from '@ant-design/icons'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import { dateRangeFormatter } from '../../helpers'
+import { activityMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ActivityBriefProps } from '../../types/activity'
 import ActivityParticipantCollectionModal from './ActivityParticipantCollectionModal'
 
 const StyledWrapper = styled.div`
@@ -46,7 +48,20 @@ const StyledAction = styled.div`
   background-color: var(--gray-lighter);
 `
 
-const Activity: React.FC<ActivityBriefProps> = ({ id, coverUrl, title, participantsCount, startedAt, endedAt }) => {
+const Activity: React.VFC<{
+  id: string
+  coverUrl: string | null
+  title: string
+  participantsCount: {
+    online: number
+    offline: number
+  }
+  includeSessionTypes: ('offline' | 'online')[]
+  startedAt: Date | null
+  endedAt: Date | null
+}> = ({ id, coverUrl, title, participantsCount, includeSessionTypes, startedAt, endedAt }) => {
+  const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   return (
     <StyledWrapper>
       <Link to={`/activities/${id}`}>
@@ -57,7 +72,15 @@ const Activity: React.FC<ActivityBriefProps> = ({ id, coverUrl, title, participa
 
           <StyledMeta className="mb-2">
             <UserOutlined className="mr-2" />
-            <span>{participantsCount}</span>
+            {enabledModules.activity_online ? (
+              includeSessionTypes.map(sessionType => (
+                <span className="mr-1">
+                  {formatMessage(activityMessages.label[sessionType])} {participantsCount[sessionType]}
+                </span>
+              ))
+            ) : (
+              <span>{participantsCount['offline']}</span>
+            )}
           </StyledMeta>
 
           <StyledMeta>
