@@ -64,9 +64,6 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
         <Select.Option key="referrerEvaluation" value="referrerEvaluation">
           {formatMessage(craftPageMessages.label.referrerEvaluation)}
         </Select.Option>
-        <Select.Option key="partner" value="partner">
-          {formatMessage(craftPageMessages.label.partner)}
-        </Select.Option>
         <Select.Option key="commonProblem" value="commonProblem">
           {formatMessage(craftPageMessages.label.commonProblem)}
         </Select.Option>
@@ -80,47 +77,6 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
 
       {(selected === 'cover' || selected === undefined) && (
         <>
-          <StyledBoxWrapper
-            className="mb-3"
-            ref={ref =>
-              ref &&
-              connectors.create(
-                ref,
-                <CraftCarousel
-                  type="normal"
-                  covers={[
-                    {
-                      title: '讓你更輕易學習',
-                      paragraph: '建立您的絕佳品牌，擁有專屬會員一站式變現的最佳方案',
-                      desktopCoverUrl: 'desktop',
-                      mobileCoverUrl: 'mobile',
-                      link: 'link',
-                      openNewTab: false,
-                    },
-                  ]}
-                  titleStyle={{
-                    fontSize: 40,
-                    padding: 0,
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    color: '#cccccc',
-                  }}
-                  paragraphStyle={{
-                    fontSize: 20,
-                    padding: 0,
-                    lineHeight: 27,
-                    textAlign: 'center',
-                    fontWeight: 'normal',
-                    color: '#cccccc',
-                  }}
-                  setActiveKey={setActiveKey}
-                />,
-              )
-            }
-          >
-            <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title.png" />
-          </StyledBoxWrapper>
-
           <StyledBoxWrapper
             className="mb-3"
             ref={ref =>
@@ -174,10 +130,6 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
           <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
             <Image preview={false} src="https://static.kolable.com/images/default/craft/program.png" />
           </StyledBoxWrapper>
-
-          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-            <Image preview={false} src="https://static.kolable.com/images/default/craft/program-participate.png" />
-          </StyledBoxWrapper>
         </>
       )}
 
@@ -197,10 +149,6 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
         <>
           <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
             <Image preview={false} src="https://static.kolable.com/images/default/craft/creator.png" />
-          </StyledBoxWrapper>
-
-          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-            <Image preview={false} src="https://static.kolable.com/images/default/craft/creator-introduction.png" />
           </StyledBoxWrapper>
         </>
       )}
@@ -237,14 +185,6 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
         <>
           <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
             <Image preview={false} src="https://static.kolable.com/images/default/craft/description.png" />
-          </StyledBoxWrapper>
-
-          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-            <Image preview={false} src="https://static.kolable.com/images/default/craft/description-dark.png" />
-          </StyledBoxWrapper>
-
-          <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-            <Image preview={false} src="https://static.kolable.com/images/default/craft/description-background.png" />
           </StyledBoxWrapper>
         </>
       )}
@@ -298,11 +238,6 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
             <Image preview={false} src="https://static.kolable.com/images/default/craft/recommend.png" />
           </StyledBoxWrapper>
         </>
-      )}
-      {(selected === 'partner' || selected === undefined) && (
-        <StyledBoxWrapper className="mb-3" ref={ref => ref && connectors.create(ref, <></>)}>
-          <Image preview={false} src="https://static.kolable.com/images/default/craft/partner.png" />
-        </StyledBoxWrapper>
       )}
       {(selected === 'commonProblem' || selected === undefined) && (
         <>
