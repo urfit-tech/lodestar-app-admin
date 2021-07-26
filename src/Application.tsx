@@ -21,7 +21,7 @@ const Application: React.FC<{
   customRender?: CustomRendererProps
 }> = ({ appId, extraRouteProps, customRender }) => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <QueryParamProvider ReactRouterRoute={Route}>
         <AuthProvider appId={appId}>
           <ApiProvider>

@@ -60,7 +60,7 @@ const ResetPasswordPage: React.FC = () => {
       )
       .then(({ data: { code } }) => {
         if (code === 'SUCCESS') {
-          history.push('/reset-password-success')
+          history.push(`${process.env.PUBLIC_URL}/reset-password-success`)
         } else {
           message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
         }

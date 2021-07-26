@@ -83,7 +83,7 @@ const NotificationDropdown: React.FC<{
         ))}
       </StyledList>
       <StyledAction>
-        <Button type="link" block onClick={() => history.push('/notifications')}>
+        <Button type="link" block onClick={() => history.push(`${process.env.PUBLIC_URL}/notifications`)}>
           {formatMessage(messages.checkNotifications)}
         </Button>
       </StyledAction>

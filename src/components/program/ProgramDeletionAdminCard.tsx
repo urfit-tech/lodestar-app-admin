@@ -74,7 +74,7 @@ const ProgramDeletionAdminCard: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullyDeleted))
-        history.push('/programs')
+        history.push(`${process.env.PUBLIC_URL}/programs`)
       })
       .catch(handleError)
   }

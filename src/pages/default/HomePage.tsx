@@ -53,14 +53,14 @@ const HomePage: React.FC = () => {
     }
 
     if (currentUserRole === 'app-owner') {
-      history.push(settings['admin.app_owner.redirect'] || '/admin')
+      history.push(settings['admin.app_owner.redirect'] || `${process.env.PUBLIC_URL}/admin`)
     } else if (currentUserRole === 'content-creator') {
-      history.push(settings['admin.content_creator.redirect'] || '/programs')
+      history.push(settings['admin.content_creator.redirect'] || `${process.env.PUBLIC_URL}/programs`)
     } else if (!permissions.BACKSTAGE_ENTER) {
       message.error(formatMessage(messages.deniedRolePermission))
       logout?.()
     } else {
-      history.push('/settings')
+      history.push(`${process.env.PUBLIC_URL}/settings`)
     }
   }, [currentMemberId, currentUserRole, formatMessage, history, loading, logout, permissions.BACKSTAGE_ENTER, settings])
 
