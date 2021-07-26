@@ -1,6 +1,6 @@
 import { CategoryProps } from './general'
 
-export type ActivityBriefProps = {
+export type ActivityProps = {
   id: string
   coverUrl: string | null
   title: string
@@ -8,9 +8,6 @@ export type ActivityBriefProps = {
   participantsCount?: number
   startedAt?: Date | null
   endedAt?: Date | null
-}
-
-type ActivityProps = ActivityBriefProps & {
   description: string | null
   isParticipantsVisible: boolean
   organizerId: string
@@ -35,18 +32,34 @@ export type ActivitySessionProps = {
   startedAt: Date
   endedAt: Date
   location: string | null
+  onlineLink: string | null
   threshold: number | null
   description: string | null
-  enrollmentsCount?: number
+}
+
+export type ActivityTicketSessionType = 'offline' | 'online'
+
+export type ActivityTicketSessionProps = {
+  id: string
+  type: ActivityTicketSessionType
+  title: string
+  location: string | null
+  onlineLink: string | null
 }
 
 export type ActivityAdminProps = ActivityProps & {
   categories: CategoryProps[]
   tickets: (ActivityTicketProps & {
-    sessions: {
-      id: string
-      title: string
-    }[]
+    sessions: ActivityTicketSessionProps[]
   })[]
-  sessions: ActivitySessionProps[]
+  sessions: (ActivitySessionProps & {
+    maxAmount: {
+      offline: number
+      online: number
+    }
+    enrollmentsCount: {
+      offline: number
+      online: number
+    }
+  })[]
 }

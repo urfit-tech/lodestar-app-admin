@@ -3,6 +3,8 @@ import { useForm } from 'antd/lib/form/Form'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { ActivitySessionProps } from '../../types/activity'
@@ -12,24 +14,30 @@ type FieldProps = {
   title: string
   startedAt: Moment
   endedAt: Moment
-  location: string
+  offlineLocation: string | null
+  onlineLink: string | null
   threshold: number
 }
 
 const ActivitySessionAdminModal: React.FC<
   AdminModalProps & {
     activitySession?: ActivitySessionProps
-    onSubmit?: (values: {
-      title: string
-      startedAt: Date
-      endedAt: Date
-      location: string
-      threshold: number | null
-    }) => Promise<any>
+    onSubmit?: (
+      values: {
+        title: string
+        startedAt: Date
+        endedAt: Date
+        location: string | null
+        onlineLink: string | null
+        threshold: number | null
+      },
+      reset: () => void,
+    ) => Promise<any>
     onRefetch?: () => void
   }
 > = ({ activitySession, onSubmit, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
   const [withThreshold, setWithThreshold] = useState(typeof activitySession?.threshold === 'number')
@@ -43,13 +51,17 @@ const ActivitySessionAdminModal: React.FC<
         }
         setLoading(true)
         const values = form.getFieldsValue()
-        onSubmit({
-          title: values.title,
-          startedAt: values.startedAt.toDate(),
-          endedAt: values.endedAt.toDate(),
-          location: values.location,
-          threshold: withThreshold ? values.threshold : null,
-        })
+        onSubmit(
+          {
+            title: values.title,
+            startedAt: values.startedAt.toDate(),
+            endedAt: values.endedAt.toDate(),
+            location: values.offlineLocation,
+            onlineLink: values.onlineLink,
+            threshold: withThreshold ? values.threshold : null,
+          },
+          () => form.resetFields(),
+        )
           .then(() => {
             onSuccess()
             onRefetch?.()
@@ -86,7 +98,8 @@ const ActivitySessionAdminModal: React.FC<
           title: activitySession?.title || '',
           startedAt: activitySession ? moment(activitySession.startedAt) : null,
           endedAt: activitySession ? moment(activitySession.endedAt) : null,
-          location: activitySession?.location || '',
+          offlineLocation: activitySession?.location || '',
+          onlineLink: activitySession?.onlineLink || `meet.jit.si/${uuid()}`,
           threshold: activitySession?.threshold || null,
         }}
       >
@@ -141,19 +154,24 @@ const ActivitySessionAdminModal: React.FC<
           />
         </Form.Item>
         <Form.Item
-          label={formatMessage(activityMessages.label.location)}
-          name="location"
-          rules={[
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(activityMessages.label.location),
-              }),
-            },
-          ]}
+          label={formatMessage(
+            enabledModules.activity_online
+              ? activityMessages.label.offlineActivityLocation
+              : activityMessages.label.activityLocation,
+          )}
+          name="offlineLocation"
         >
           <Input />
         </Form.Item>
+        {enabledModules.activity_online && (
+          <Form.Item
+            className="mr-2"
+            label={formatMessage(activityMessages.label.onlineActivityLink)}
+            name="onlineLink"
+          >
+            <ActivityOnlineLinkInput />
+          </Form.Item>
+        )}
 
         <Checkbox defaultChecked={withThreshold} onChange={e => setWithThreshold(e.target.checked)}>
           {formatMessage(activityMessages.label.threshold)}
@@ -163,6 +181,41 @@ const ActivitySessionAdminModal: React.FC<
         </Form.Item>
       </Form>
     </AdminModal>
+  )
+}
+
+const ActivityOnlineLinkInput: React.VFC<{ value?: string; onChange?: (value: string) => void }> = ({
+  value = '',
+  onChange,
+}) => {
+  const { formatMessage } = useIntl()
+  const isSystemLink = value.includes('meet.jit.si')
+  const [systemLink] = useState(isSystemLink ? value : `meet.jit.si/${uuid()}`)
+  const [customLink, setCustomLink] = useState(isSystemLink ? '' : value)
+  const [check, setCheck] = useState(isSystemLink)
+
+  return (
+    <div className="d-flex align-items-center">
+      <Input
+        className="mr-3 flex-grow-1"
+        onChange={e => {
+          setCustomLink(e.target.value)
+          onChange?.(e.target.value)
+        }}
+        disabled={check}
+        value={check ? value : customLink}
+      />
+      <Checkbox
+        className="flex-shrink-0"
+        checked={check}
+        onClick={() => {
+          setCheck(!check)
+          onChange?.(check ? customLink : systemLink)
+        }}
+      >
+        {formatMessage(activityMessages.label.generateBySystem)}
+      </Checkbox>
+    </div>
   )
 }
 

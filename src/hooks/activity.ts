@@ -1,7 +1,9 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { sum } from 'ramda'
 import hasura from '../hasura'
-import { ActivityAdminProps, ActivityBriefProps } from '../types/activity'
+import { notEmpty } from '../helpers'
+import { ActivityAdminProps, ActivityTicketSessionType } from '../types/activity'
 
 export const useActivityCollection = (memberId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
@@ -15,6 +17,10 @@ export const useActivityCollection = (memberId: string | null) => {
           cover_url
           title
           published_at
+          activity_sessions {
+            location
+            online_link
+          }
           activity_enrollments_aggregate {
             aggregate {
               count
@@ -30,13 +36,29 @@ export const useActivityCollection = (memberId: string | null) => {
               }
             }
           }
+          session_ticket_enrollment_count {
+            activity_online_session_ticket_count
+            activity_offline_session_ticket_count
+          }
         }
       }
     `,
     { variables: { memberId } },
   )
 
-  const activities: ActivityBriefProps[] =
+  const activities: {
+    id: string
+    coverUrl: string | null
+    title: string
+    publishedAt: Date | null
+    includeSessionTypes: ('offline' | 'online')[]
+    participantsCount: {
+      online: number
+      offline: number
+    }
+    startedAt: Date | null
+    endedAt: Date | null
+  }[] =
     loading || error || !data
       ? []
       : data.activity.map(activity => ({
@@ -44,7 +66,16 @@ export const useActivityCollection = (memberId: string | null) => {
           coverUrl: activity.cover_url,
           title: activity.title,
           publishedAt: activity.published_at && new Date(activity.published_at),
-          participantsCount: activity.activity_enrollments_aggregate.aggregate?.count || 0,
+          participantsCount: {
+            online: sum(activity.session_ticket_enrollment_count.map(v => v.activity_online_session_ticket_count || 0)),
+            offline: sum(
+              activity.session_ticket_enrollment_count.map(v => v.activity_offline_session_ticket_count || 0),
+            ),
+          },
+          includeSessionTypes: [
+            activity.activity_sessions.find(v => v.location) ? ('offline' as const) : null,
+            activity.activity_sessions.find(v => v.online_link) ? ('online' as const) : null,
+          ].filter(notEmpty),
           startedAt:
             activity.activity_sessions_aggregate.aggregate?.min?.started_at &&
             new Date(activity.activity_sessions_aggregate.aggregate.min.started_at),
@@ -92,9 +123,12 @@ export const useActivityAdmin = (activityId: string) => {
             is_published
             activity_session_tickets {
               id
+              activity_session_type
               activity_session {
                 id
                 title
+                location
+                online_link
               }
             }
             activity_ticket_enrollments_aggregate {
@@ -109,12 +143,23 @@ export const useActivityAdmin = (activityId: string) => {
             started_at
             ended_at
             location
+            online_link
             threshold
             description
             activity_enrollments_aggregate {
               aggregate {
                 count
               }
+            }
+            activity_session_tickets {
+              activity_session_type
+              activity_ticket {
+                count
+              }
+            }
+            ticket_enrollment_count {
+              offline_session_ticket_count: activity_offline_session_ticket_count
+              online_session_ticket_count: activity_online_session_ticket_count
             }
           }
         }
@@ -151,7 +196,10 @@ export const useActivityAdmin = (activityId: string) => {
             isPublished: ticket.is_published,
             sessions: ticket.activity_session_tickets.map(sessionTicket => ({
               id: sessionTicket.activity_session.id,
+              type: sessionTicket.activity_session_type as ActivityTicketSessionType,
               title: sessionTicket.activity_session.title,
+              location: sessionTicket.activity_session.location,
+              onlineLink: sessionTicket.activity_session.online_link,
             })),
             enrollmentsCount: ticket.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
           })),
@@ -161,9 +209,25 @@ export const useActivityAdmin = (activityId: string) => {
             startedAt: new Date(session.started_at),
             endedAt: new Date(session.ended_at),
             location: session.location,
+            onlineLink: session.online_link,
             threshold: session.threshold,
             description: session.description,
-            enrollmentsCount: session.activity_enrollments_aggregate.aggregate?.count || 0,
+            maxAmount: {
+              online: sum(
+                session.activity_session_tickets
+                  .filter(v => ['online', 'both'].includes(v.activity_session_type))
+                  .map(sessionTicket => sessionTicket.activity_ticket?.count || 0),
+              ),
+              offline: sum(
+                session.activity_session_tickets
+                  .filter(v => ['offline', 'both'].includes(v.activity_session_type))
+                  .map(sessionTicket => sessionTicket.activity_ticket?.count || 0),
+              ),
+            },
+            enrollmentsCount: {
+              online: session.ticket_enrollment_count?.online_session_ticket_count || 0,
+              offline: session.ticket_enrollment_count?.offline_session_ticket_count || 0,
+            },
           })),
         }
 
