@@ -1,5 +1,4 @@
 import { CalendarOutlined, UserOutlined } from '@ant-design/icons'
-import { map } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -57,7 +56,7 @@ const Activity: React.VFC<{
     online: number
     offline: number
   }
-  includeSessionTypes: string[]
+  includeSessionTypes: ('offline' | 'online')[]
   startedAt: Date | null
   endedAt: Date | null
 }> = ({ id, coverUrl, title, participantsCount, includeSessionTypes, startedAt, endedAt }) => {
@@ -74,15 +73,11 @@ const Activity: React.VFC<{
           <StyledMeta className="mb-2">
             <UserOutlined className="mr-2" />
             {enabledModules.activity_online ? (
-              map(
-                sessionType =>
-                  includeSessionTypes.includes(sessionType) && (
-                    <span className="mr-1">
-                      {formatMessage(activityMessages.label[sessionType])} {participantsCount[sessionType]}
-                    </span>
-                  ),
-                ['offline', 'online'] as const,
-              )
+              includeSessionTypes.map(sessionType => (
+                <span className="mr-1">
+                  {formatMessage(activityMessages.label[sessionType])} {participantsCount[sessionType]}
+                </span>
+              ))
             ) : (
               <span>{participantsCount['offline']}</span>
             )}

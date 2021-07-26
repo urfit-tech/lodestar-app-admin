@@ -46,9 +46,9 @@ const ActivityTicketsAdminBlock: React.FC<{
             variables: {
               activityId: activityAdmin.id,
               title: values.title,
-              activitySessionTickets: values.sessions.map(([sessionId, sessionType]) => ({
-                activity_session_id: sessionId,
-                activity_session_type: sessionType,
+              activitySessionTickets: values.sessions.map(session => ({
+                activity_session_id: session.id,
+                activity_session_type: session.type,
               })),
               isPublished: values.isPublished,
               startedAt: values.startedAt,
@@ -89,10 +89,10 @@ const ActivityTicketsAdminBlock: React.FC<{
                               variables: {
                                 activityTicketId: ticket.id,
                                 title: values.title,
-                                activitySessionTickets: values.sessions.map(([sessionId, sessionType]) => ({
+                                activitySessionTickets: values.sessions.map(session => ({
                                   activity_ticket_id: ticket.id,
-                                  activity_session_id: sessionId,
-                                  activity_session_type: sessionType,
+                                  activity_session_id: session.id,
+                                  activity_session_type: session.type,
                                 })),
                                 isPublished: values.isPublished,
                                 startedAt: values.startedAt,

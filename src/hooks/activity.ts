@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import hasura from '../hasura'
 import { notEmpty } from '../helpers'
-import { ActivityAdminProps } from '../types/activity'
+import { ActivityAdminProps, ActivityTicketSessionType } from '../types/activity'
 
 export const useActivityCollection = (memberId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
@@ -51,7 +51,7 @@ export const useActivityCollection = (memberId: string | null) => {
     coverUrl: string | null
     title: string
     publishedAt: Date | null
-    includeSessionTypes: string[]
+    includeSessionTypes: ('offline' | 'online')[]
     participantsCount: {
       online: number
       offline: number
@@ -73,8 +73,8 @@ export const useActivityCollection = (memberId: string | null) => {
             ),
           },
           includeSessionTypes: [
-            activity.activity_sessions.find(v => v.location) ? 'offline' : null,
-            activity.activity_sessions.find(v => v.online_link) ? 'online' : null,
+            activity.activity_sessions.find(v => v.location) ? ('offline' as const) : null,
+            activity.activity_sessions.find(v => v.online_link) ? ('online' as const) : null,
           ].filter(notEmpty),
           startedAt:
             activity.activity_sessions_aggregate.aggregate?.min?.started_at &&
@@ -196,7 +196,7 @@ export const useActivityAdmin = (activityId: string) => {
             isPublished: ticket.is_published,
             sessions: ticket.activity_session_tickets.map(sessionTicket => ({
               id: sessionTicket.activity_session.id,
-              type: sessionTicket.activity_session_type,
+              type: sessionTicket.activity_session_type as ActivityTicketSessionType,
               title: sessionTicket.activity_session.title,
               location: sessionTicket.activity_session.location,
               onlineLink: sessionTicket.activity_session.online_link,

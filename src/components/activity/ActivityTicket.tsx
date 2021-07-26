@@ -112,7 +112,6 @@ const ActivityTicket: React.FC<
                 {
                   online: formatMessage(activityMessages.label.online),
                   offline: formatMessage(activityMessages.label.offline),
-                  both: formatMessage(activityMessages.label.onlineAndOfflineActivity),
                 }[session.type]
               }`
             : session.title}

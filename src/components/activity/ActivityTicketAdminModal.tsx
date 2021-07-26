@@ -33,7 +33,7 @@ const ActivityTicketAdminModal: React.FC<
     activitySessions: Pick<ActivitySessionProps, 'id' | 'title' | 'location' | 'onlineLink'>[]
     onSubmit?: (values: {
       title: string
-      sessions: string[][]
+      sessions: { id: string; type: string }[]
       isPublished: boolean
       startedAt: Date | null
       endedAt: Date | null
@@ -72,7 +72,11 @@ const ActivityTicketAdminModal: React.FC<
           sessions: uniq(
             values.sessions
               .filter(notEmpty)
-              .map(([session, sessionType]) => (session.includes('_') ? session.split('_') : [session, sessionType])),
+              .map(([session, sessionType]) =>
+                session.includes('_')
+                  ? { id: session.split('_')[0], type: session.split('_')[1] }
+                  : { id: session, type: sessionType },
+              ),
           ),
           isPublished: values.isPublished === 'public',
           startedAt: values.startedAt.toDate(),
@@ -229,8 +233,8 @@ const ActivityTicketAdminModal: React.FC<
   )
 }
 
-const generateInitialSessions = (sessions: ActivityTicketSessionProps[]) =>
-  sessions
+const generateInitialSessions = (ticketSessions: ActivityTicketSessionProps[]) =>
+  ticketSessions
     .map(({ id, type, location, onlineLink }) => {
       const existingSessionTypes = [location && 'offline', onlineLink && 'online'].filter(Boolean).filter(notEmpty)
 

@@ -37,9 +37,11 @@ export type ActivitySessionProps = {
   description: string | null
 }
 
+export type ActivityTicketSessionType = 'offline' | 'online'
+
 export type ActivityTicketSessionProps = {
   id: string
-  type: string
+  type: ActivityTicketSessionType
   title: string
   location: string | null
   onlineLink: string | null
