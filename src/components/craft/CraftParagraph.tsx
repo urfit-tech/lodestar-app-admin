@@ -19,13 +19,13 @@ const CraftParagraph: UserComponent<
   } = useNode()
 
   return (
-    <div
+    <textarea
       ref={ref => ref && connect(drag(ref))}
       style={{ fontSize, padding: `${padding}px`, textAlign, fontWeight, color, cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {paragraphContent}
-    </div>
+    </textarea>
   )
 }
 
