@@ -171,6 +171,9 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
               {formatMessage(craftPageMessages.label.buttonBlock)}
             </Checkbox>
           </Form.Item>
+
+          {/* 
+          //TODO: not display in the version, tbd 
           <Form.Item
             name="variant"
             label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.variant)}</StyledCraftSettingLabel>}
@@ -182,7 +185,7 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
                 <Radio value="outline">{formatMessage(craftPageMessages.label.outline)}</Radio>
               </Space>
             </Radio.Group>
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item name="color">
             <CraftColorPickerBlock />
