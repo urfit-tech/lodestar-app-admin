@@ -1,5 +1,4 @@
-import { Collapse, InputNumber, Select, Slider } from 'antd'
-import input from 'antd/lib/input'
+import { Collapse, Input, InputNumber, Select, Slider } from 'antd'
 import { SketchPicker } from 'react-color'
 import styled from 'styled-components'
 import { MemberTaskProps } from '../../types/member'
@@ -151,7 +150,7 @@ export const StyledFullWidthSelect = styled(Select)`
     margin-right: 0.5rem;
   }
 `
-export const StyledUnderLineInput = styled(input)`
+export const StyledUnderLineInput = styled(Input)`
   border-color: #d8d8d8;
   border-style: solid;
   border-top-width: 0px;

@@ -117,7 +117,13 @@ const CardSettings = ({ ...collapseProps }) => {
       props.imageType = values.imageType
       props.imageUrl = values.imageUrl
       props.boxModel = {
-        padding: values.boxModel?.padding || 0,
+        padding: {
+          p: values.boxModel?.padding.p,
+          pt: values.boxModel?.padding.pt,
+          pr: values.boxModel?.padding.pr,
+          pb: values.boxModel?.padding.pb,
+          pl: values.boxModel?.padding.pl,
+        },
         margin: {
           m: values.boxModel?.margin.m,
           mt: values.boxModel?.margin.mt,
