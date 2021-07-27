@@ -111,7 +111,7 @@ CraftContainer.craft = {
   },
   custom: {
     button: {
-      label: 'deleteAllBlock',
+      label: 'deleteBlock',
     },
   },
 }
