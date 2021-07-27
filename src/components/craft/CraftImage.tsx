@@ -31,7 +31,11 @@ const CraftImage: UserComponent<
         mr: margin.mr,
         mb: margin.mb,
         ml: margin.ml,
-        p: padding,
+        p: padding.p,
+        pt: padding.pt,
+        pr: padding.pt,
+        pb: padding.pb,
+        pl: padding.pl,
       }}
       src={coverUrl}
       style={{ cursor: 'pointer' }}

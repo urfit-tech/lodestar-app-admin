@@ -192,14 +192,14 @@ const CraftPageSettingBlock: React.VFC = () => {
                   />
                   <CraftImage
                     type="image"
-                    padding={0}
+                    padding={{ p: '2;5;3;2' }}
                     margin={{ m: '3;2;4;2' }}
                     coverUrl="https://static-dev.kolable.com/program_covers/demo/f2733181-180b-466a-8f10-555441679cd7?t=1625721391323"
                     setActiveKey={setActiveKey}
                   />
                   <CraftStatistics
                     type="image"
-                    padding={0}
+                    padding={{ p: '2;5;3;2' }}
                     margin={{ m: '3;2;4;2' }}
                     coverUrl="https://static-dev.kolable.com/program_covers/demo/f2733181-180b-466a-8f10-555441679cd7?t=1625721391323"
                     title={{
@@ -226,7 +226,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     imageType="empty"
                     imageUrl=""
                     boxModel={{
-                      padding: 6,
+                      padding: { p: '2;5;3;2' },
                       margin: { m: '4;3;2;3' },
                     }}
                     title="卡片 特色02"
@@ -249,7 +249,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     imageType="empty"
                     imageUrl=""
                     boxModel={{
-                      padding: 6,
+                      padding: { p: '2;5;3;2' },
                       margin: { m: '4;3;2;3' },
                     }}
                     title="卡片 特色01"
@@ -280,7 +280,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     imageType="empty"
                     imageUrl=""
                     boxModel={{
-                      padding: 6,
+                      padding: { p: '2;5;3;2' },
                       margin: { m: '4;3;2;3' },
                     }}
                     title="卡片 推薦評價01"
@@ -313,7 +313,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     imageType="empty"
                     imageUrl=""
                     boxModel={{
-                      padding: 6,
+                      padding: { p: '2;5;3;2' },
                       margin: { m: '4;3;2;3' },
                     }}
                     name=""

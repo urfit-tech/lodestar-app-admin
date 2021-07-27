@@ -6,6 +6,14 @@ export type CraftMarginProps = {
   ml?: string
 }
 
+export type CraftPaddingProps = {
+  p?: string
+  pt?: string
+  pr?: string
+  pb?: string
+  pl?: string
+}
+
 export type CraftLayoutProps = {
   padding: number
   columnAmount: number
@@ -55,7 +63,7 @@ export type CraftButtonProps = {
 }
 
 export type CraftBoxModelProps = {
-  padding: number
+  padding: CraftPaddingProps
   margin: CraftMarginProps
 }
 

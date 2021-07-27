@@ -1,4 +1,4 @@
-import { Collapse, Input, InputNumber } from 'antd'
+import { Collapse, Input } from 'antd'
 import { CollapseProps } from 'antd/lib/collapse'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -29,15 +29,39 @@ const CraftBoxModelBlock: React.VFC<
           <div className="col-8 p-0">
             <StyledCraftSlider
               min={0}
-              value={typeof value?.padding === 'number' ? value?.padding : 0}
-              onChange={(v: number) => onChange && value?.margin && onChange({ ...value, padding: v })}
+              defaultValue={
+                Array.from(new Set((value?.padding.p || '0;0;0;0').split(';'))).length > 1
+                  ? Number(value?.padding.p)
+                  : Number((value?.padding.p || '0;0;0;0')?.split(';')[0])
+              }
+              onChange={(v: number) =>
+                onChange &&
+                value?.padding &&
+                onChange({
+                  ...value,
+                  padding: { p: `${v};${v};${v};${v}`, pt: `${v}`, pr: `${v}`, pb: `${v}`, pl: `${v}` },
+                })
+              }
             />
           </div>
-          <InputNumber
+          <Input
             className="col-4"
             min={0}
-            value={value?.padding}
-            onChange={(v?: string | number) => onChange && value?.margin && onChange({ ...value, padding: Number(v) })}
+            value={value?.margin?.m}
+            onChange={e => {
+              onChange &&
+                value?.margin &&
+                onChange({
+                  ...value,
+                  margin: {
+                    m: e.target.value || '0;0;0;0',
+                    mt: e.target.value.split(';')[0],
+                    mr: e.target.value.split(';')[1],
+                    mb: e.target.value.split(';')[2],
+                    ml: e.target.value.split(';')[3],
+                  },
+                })
+            }}
           />
         </div>
 
