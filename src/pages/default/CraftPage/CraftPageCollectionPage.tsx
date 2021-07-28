@@ -22,7 +22,7 @@ const CraftPageCollectionPage: React.VFC = () => {
         {
           id: '123',
           pageName: 'pageName',
-          path: `${process.env.PUBLIC_URL}/demo`,
+          path: `/demo`,
           updatedAt: new Date('2021-06-26T14:55:47.665035+00:00'),
           editor: '修改人員',
         },

@@ -16,7 +16,7 @@ const defaultSettings = {
   navLinks: [
     {
       label: '探索課程',
-      href: `${process.env.PUBLIC_URL}/programs`,
+      href: `/programs`,
       icon: 'appstore',
       external: false,
       target: '_self',
@@ -28,12 +28,12 @@ const defaultSettings = {
     links: [
       {
         label: '使用條款',
-        href: `${process.env.PUBLIC_URL}/terms`,
+        href: `/terms`,
         external: false,
       },
       {
         label: '探索課程',
-        href: `${process.env.PUBLIC_URL}/programs`,
+        href: `/programs`,
         external: false,
       },
     ],
