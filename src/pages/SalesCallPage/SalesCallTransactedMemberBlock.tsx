@@ -48,7 +48,7 @@ const SalesCallTransactedMemberBlock: React.FC<{
 }> = ({ sales, members, loadingMembers }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
-  const { apiHost, authToken } = useAuth()
+  const { authToken } = useAuth()
 
   const [filters, setFilters] = useState<{
     studentName?: string
@@ -188,7 +188,6 @@ const SalesCallTransactedMemberBlock: React.FC<{
                     onClick={() =>
                       call({
                         appId,
-                        apiHost,
                         authToken,
                         phone: record.phones[0],
                         salesTelephone: sales?.telephone || '',

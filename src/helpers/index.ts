@@ -3,13 +3,12 @@ import axios from 'axios'
 
 export const call = async ({
   appId,
-  apiHost,
   authToken,
   phone,
   salesTelephone,
 }: {
   appId: string
-  apiHost: string
+
   authToken: string | null
   phone: string
   salesTelephone: string
@@ -20,7 +19,7 @@ export const call = async ({
 
   axios
     .post(
-      `https://${apiHost}/call`,
+      `https://${process.env.REACT_APP_API_BASE_ROOT}/call`,
       {
         appId,
         callFrom: salesTelephone,

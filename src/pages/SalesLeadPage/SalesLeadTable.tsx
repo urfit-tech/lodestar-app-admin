@@ -63,7 +63,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
-  const { apiHost, authToken } = useAuth()
+  const { authToken } = useAuth()
 
   const { insertMemberNote } = useMutateMemberNote()
   const [closeLead] = useMutation<hasura.CLOSE_LEAD, hasura.CLOSE_LEADVariables>(CLOSE_LEAD)
@@ -219,7 +219,6 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
             onClick={() => {
               call({
                 appId,
-                apiHost,
                 authToken,
                 phone,
                 salesTelephone: sales.telephone || '',

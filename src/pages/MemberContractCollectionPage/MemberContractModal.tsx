@@ -118,7 +118,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   ...props
 }) => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost, permissions } = useAuth()
+  const { authToken, permissions } = useAuth()
   const { id: appId } = useApp()
   const [form] = Form.useForm<{
     approvedAt: Moment | null
@@ -170,7 +170,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       .then(() => {
         setIsLoading(true)
         if (certification.length) {
-          return uploadFile(`certification/${appId}/student_${memberId}`, certification[0], authToken, apiHost, {
+          return uploadFile(`certification/${appId}/student_${memberId}`, certification[0], authToken, {
             onUploadProgress: ({ loaded, total }) => {
               setUploadProgress(prev => ({ ...prev, [certification[0].name]: Math.floor((loaded / total) * 100) }))
             },
@@ -252,7 +252,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   }
 
   const handleDownload = async (fileName: string, downloadableLink: string) => {
-    const link = await getFileDownloadableLink(`${downloadableLink}`, authToken, apiHost)
+    const link = await getFileDownloadableLink(`${downloadableLink}`, authToken)
     return downloadFile(fileName, {
       url: link,
     })

@@ -61,7 +61,7 @@ const SalesCallContactedMemberBlock: React.FC<{
 }> = ({ sales, members, loadingMembers }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
-  const { apiHost, authToken } = useAuth()
+  const { authToken } = useAuth()
 
   const { insertMemberNote } = useMutateMemberNote()
 
@@ -78,49 +78,48 @@ const SalesCallContactedMemberBlock: React.FC<{
     return <Skeleton active />
   }
 
-  const getColumnSearchProps: (
-    onSetFilter: (value?: string) => void,
-  ) => ColumnProps<SalesCallMemberProps> = onSetFilter => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div className="p-2">
-        <Input
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => {
-            confirm()
-            onSetFilter(selectedKeys[0] as string)
-          }}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <div>
-          <Button
-            type="primary"
-            onClick={() => {
+  const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<SalesCallMemberProps> =
+    onSetFilter => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <Input
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => {
               confirm()
               onSetFilter(selectedKeys[0] as string)
             }}
-            icon={<SearchOutlined />}
-            size="small"
-            className="mr-2"
-            style={{ width: 90 }}
-          >
-            {formatMessage(commonMessages.ui.search)}
-          </Button>
-          <Button
-            onClick={() => {
-              clearFilters && clearFilters()
-              onSetFilter(undefined)
-            }}
-            size="small"
-            style={{ width: 90 }}
-          >
-            {formatMessage(commonMessages.ui.reset)}
-          </Button>
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                onSetFilter(selectedKeys[0] as string)
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                onSetFilter(undefined)
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
         </div>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-  })
+      ),
+      filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    })
 
   const columns: ColumnsType<SalesCallMemberProps> = [
     {
@@ -216,7 +215,6 @@ const SalesCallContactedMemberBlock: React.FC<{
             onClick={() =>
               call({
                 appId,
-                apiHost,
                 authToken,
                 phone: record.phones[0],
                 salesTelephone: sales.telephone || '',

@@ -52,7 +52,7 @@ const StyledChaileaseRecordTag = styled.span<{ variant?: 'SUCCESS' | 'FAILED' }>
 
 const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
   const { formatMessage } = useIntl()
-  const { apiHost, authToken } = useAuth()
+  const { authToken } = useAuth()
   const [attachmentsLink, setAttachmentsLink] = useState<{
     idImageFront?: string
     idImageBack?: string
@@ -65,14 +65,10 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
     if (member?.metadata?.profile?.imageId) {
       const { profile } = member.metadata
       const getLink = async () => {
-        const frontIdImageLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-01`, authToken, apiHost)
-        const backIdImageLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-02`, authToken, apiHost)
-        const ownSignatureLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-03`, authToken, apiHost)
-        const contactSignatureLink = await getFileDownloadableLink(
-          `chailease/${profile?.imageId}-04`,
-          authToken,
-          apiHost,
-        )
+        const frontIdImageLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-01`, authToken)
+        const backIdImageLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-02`, authToken)
+        const ownSignatureLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-03`, authToken)
+        const contactSignatureLink = await getFileDownloadableLink(`chailease/${profile?.imageId}-04`, authToken)
         setAttachmentsLink({
           idImageFront: frontIdImageLink,
           idImageBack: backIdImageLink,
@@ -84,7 +80,7 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
     } else {
       setAttachmentsLink({})
     }
-  }, [email, member?.metadata, authToken, apiHost])
+  }, [email, member?.metadata, authToken])
   if (loadingMember) {
     return <Skeleton active />
   }

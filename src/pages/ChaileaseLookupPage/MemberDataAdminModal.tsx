@@ -72,7 +72,7 @@ const MemberDataAdminModal: React.FC<
     contactSignature: null,
   })
   const [form] = useForm<MemberDataFieldProps>()
-  const { authToken, apiHost } = useAuth()
+  const { authToken } = useAuth()
   const [updateMember] = useMutation<hasura.UPDATE_MEMBER, hasura.UPDATE_MEMBERVariables>(UPDATE_MEMBER)
   const { formatMessage } = useIntl()
 
@@ -82,14 +82,11 @@ const MemberDataAdminModal: React.FC<
       .then(async () => {
         setIsLoading(true)
         const imageId = profile.imageId || uuid()
-        attachments.idImageFront &&
-          (await uploadFile(`chailease/${imageId}-01`, attachments.idImageFront, authToken, apiHost))
-        attachments.idImageBack &&
-          (await uploadFile(`chailease/${imageId}-02`, attachments.idImageBack, authToken, apiHost))
-        attachments.ownSignature &&
-          (await uploadFile(`chailease/${imageId}-03`, attachments.ownSignature, authToken, apiHost))
+        attachments.idImageFront && (await uploadFile(`chailease/${imageId}-01`, attachments.idImageFront, authToken))
+        attachments.idImageBack && (await uploadFile(`chailease/${imageId}-02`, attachments.idImageBack, authToken))
+        attachments.ownSignature && (await uploadFile(`chailease/${imageId}-03`, attachments.ownSignature, authToken))
         attachments.contactSignature &&
-          (await uploadFile(`chailease/${imageId}-04`, attachments.contactSignature, authToken, apiHost))
+          (await uploadFile(`chailease/${imageId}-04`, attachments.contactSignature, authToken))
         return imageId
       })
       .then(async imageId => {
@@ -107,10 +104,10 @@ const MemberDataAdminModal: React.FC<
                   imageId,
                   idImage: {
                     front: attachments.idImageFront
-                      ? await getFileDownloadableLink(`chailease/${imageId}-01`, authToken, apiHost)
+                      ? await getFileDownloadableLink(`chailease/${imageId}-01`, authToken)
                       : profile.idImage?.front,
                     back: attachments.idImageBack
-                      ? await getFileDownloadableLink(`chailease/${imageId}-02`, authToken, apiHost)
+                      ? await getFileDownloadableLink(`chailease/${imageId}-02`, authToken)
                       : profile.idImage?.back,
                   },
                   signature: {

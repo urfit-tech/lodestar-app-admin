@@ -64,7 +64,7 @@ const CurrentLeadContactBlock: React.VFC<{
   onFinish?: () => void
 }> = ({ sales, onSubmit, onFinish }) => {
   const { formatMessage } = useIntl()
-  const { apiHost, authToken } = useAuth()
+  const { authToken } = useAuth()
   const { id: appId } = useApp()
 
   const [memberNoteForm] = useForm<memberNoteFieldProps>()
@@ -256,7 +256,6 @@ const CurrentLeadContactBlock: React.VFC<{
                       onClick={() =>
                         call({
                           appId,
-                          apiHost,
                           authToken,
                           phone,
                           salesTelephone: sales?.telephone || '',
