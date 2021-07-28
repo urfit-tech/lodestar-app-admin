@@ -37,9 +37,9 @@ const ProjectAdminPage: React.FC<{}> = () => {
         <Link
           to={
             projectAdmin?.projectType === 'funding'
-              ? `${process.env.PUBLIC_URL}/project-funding`
+              ? `/project-funding`
               : projectAdmin?.projectType === 'pre-order'
-              ? `${process.env.PUBLIC_URL}/project-pre-order`
+              ? `/project-pre-order`
               : ''
           }
         >

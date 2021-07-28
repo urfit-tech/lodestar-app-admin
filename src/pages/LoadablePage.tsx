@@ -19,7 +19,7 @@ const LoadablePage: React.FC<{
 
   // redirect to home page if not authenticated
   if (authenticated && !isAuthenticating && !isAuthenticated) {
-    return <Redirect to={{ pathname: `${process.env.PUBLIC_URL}/`, state: { from: location } }} />
+    return <Redirect to={{ pathname: `/`, state: { from: location } }} />
   }
 
   // load forbidden page if not allowed roles
