@@ -65,7 +65,9 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
       colon={false}
       requiredMark={false}
       initialValues={{
-        padding: `${props.padding.pt};${props.padding.pr};${props.padding.pb};${props.padding.pl};`,
+        padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+          props.padding?.pl || 0
+        };`,
       }}
       onFinish={handleSubmit}
     >
