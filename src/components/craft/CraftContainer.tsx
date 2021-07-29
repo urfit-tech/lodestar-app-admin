@@ -66,7 +66,7 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
       colon={false}
       requiredMark={false}
       initialValues={{
-        padding: props.padding,
+        padding: `${props.padding.pt};${props.padding.pr};${props.padding.pb};${props.padding.pl};`,
       }}
       onFinish={handleSubmit}
     >
@@ -82,8 +82,17 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
           key="container"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
         >
-          <Form.Item name="padding">
-            <CraftBoxModelInput edgeType="padding" />
+          <Form.Item
+            name="padding"
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+;$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <CraftBoxModelInput title={formatMessage(craftPageMessages.label.boundary)} />
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
