@@ -450,6 +450,7 @@ export const errorMessages = {
   }),
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
+    memberAlreadyExist: { id: 'error.text.memberAlreadyExist', defaultMessage: '會員已存在' },
   }),
 }
 
