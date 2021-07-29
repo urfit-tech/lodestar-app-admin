@@ -9,13 +9,12 @@ import { CraftPaddingProps } from '../../types/craft'
 import { AdminHeaderTitle, StyledCollapsePanel, StyledSettingButtonWrapper } from '../admin'
 import CraftBoxModelInput from './CraftBoxModelInput'
 
-type FieldProps = { padding: CraftPaddingProps }
+type FieldProps = { padding: string }
 
-const CraftContainer: UserComponent<
-  FieldProps & {
-    setActiveKey: React.Dispatch<React.SetStateAction<string>>
-  }
-> = ({ padding, setActiveKey, children }) => {
+const CraftContainer: UserComponent<{
+  padding: CraftPaddingProps
+  setActiveKey: React.Dispatch<React.SetStateAction<string>>
+}> = ({ padding, setActiveKey, children }) => {
   const {
     connectors: { connect, drag },
   } = useNode()
@@ -43,7 +42,7 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
     props,
     selected,
   } = useNode(node => ({
-    props: node.data.props as FieldProps,
+    props: node.data.props as { padding: CraftPaddingProps },
     button: node.data.custom.button,
     selected: node.events.selected,
   }))
@@ -51,10 +50,10 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
   const handleSubmit = (values: FieldProps) => {
     setProp(props => {
       props.padding = {
-        pt: values.padding.pt,
-        pr: values.padding.pr,
-        pb: values.padding.pb,
-        pl: values.padding.pl,
+        pt: values.padding.split(';')[0] || 0,
+        pr: values.padding.split(';')[1] || 0,
+        pb: values.padding.split(';')[2] || 0,
+        pl: values.padding.split(';')[3] || 0,
       }
     })
   }
