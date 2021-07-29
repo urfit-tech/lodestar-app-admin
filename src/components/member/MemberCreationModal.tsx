@@ -9,7 +9,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
@@ -37,7 +36,7 @@ const MemberCreationModal: React.FC<
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
-  const handleCreate = async (onSuccess: () => void) => {
+  const handleCreate = (callback?: { onSuccess?: () => void }) => {
     form.validateFields().then(values => {
       setLoading(true)
       insertMember({
@@ -50,10 +49,11 @@ const MemberCreationModal: React.FC<
         },
       })
         .then(() => {
-          onSuccess()
-          form.resetFields()
+          callback?.onSuccess?.()
         })
-        .catch(handleError)
+        .catch(() => {
+          message.error(formatMessage(errorMessages.text.memberAlreadyExist))
+        })
         .finally(() => setLoading(false))
     })
   }
@@ -76,10 +76,13 @@ const MemberCreationModal: React.FC<
             type="primary"
             loading={loading}
             onClick={() =>
-              handleCreate(() => {
-                message.success(formatMessage(commonMessages.event.successfullyCreated))
-                onRefetch?.()
-                setVisible(false)
+              handleCreate({
+                onSuccess: () => {
+                  message.success(formatMessage(commonMessages.event.successfullyCreated))
+                  onRefetch?.()
+                  setVisible(false)
+                  form.resetFields()
+                },
               })
             }
           >
