@@ -176,7 +176,7 @@ export const useMemberContractCollection = ({
       )?.coupon_code.data.coupon_plan.data.id
 
       const rebateGift: string | undefined =
-        v.values?.coupons?.find((v: any) => v.name && v.name.includes('滿額學習工具 - '))?.name || null
+        v.values?.orderDiscounts?.find((v: any) => v.name && v.name.includes('滿額學習工具'))?.name || null
 
       return {
         id: v.id,
