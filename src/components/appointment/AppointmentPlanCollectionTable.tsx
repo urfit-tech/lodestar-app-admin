@@ -170,7 +170,7 @@ const AppointmentPlanCollectionTable: React.FC<{
         loading={loadingAppointmentPlans}
         onRow={record => ({
           onClick: () => {
-            window.open(`/appointment-plans/${record.id}`)
+            window.open(`${process.env.PUBLIC_URL}/appointment-plans/${record.id}`)
           },
         })}
         columns={withAppointmentButton ? [...columns, appointmentButtonColumn] : columns}
