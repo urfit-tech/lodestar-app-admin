@@ -242,7 +242,7 @@ const MemberAdminLayout: React.FC<{
           <Tabs
             activeKey={activeKey}
             onChange={key => {
-              history.push(`/admin/members/${member.id}/${key}`)
+              history.push(`/members/${member.id}/${key}`)
             }}
             renderTabBar={(props, DefaultTabBar) => (
               <AdminTabBarWrapper>
