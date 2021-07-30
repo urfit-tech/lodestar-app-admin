@@ -379,9 +379,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             pagination={false}
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
-              onClick: () => {
-                window.open(`/members/${record.id}`, '_blank')
-              },
+              onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.id}`, '_blank'),
             })}
           />
         </TableWrapper>

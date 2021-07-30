@@ -204,7 +204,7 @@ const MemberTaskAdminModal: React.FC<
                   <StyledLinkIconWrapper
                     onClick={() => {
                       form.getFieldValue('memberId') &&
-                        window.open(`/members/${form.getFieldValue('memberId')}`, '_blank')
+                        window.open(`${process.env.PUBLIC_URL}/members/${form.getFieldValue('memberId')}`, '_blank')
                     }}
                   >
                     <Icon component={() => <ExternalLinkIcon />} className="mr-1" />
