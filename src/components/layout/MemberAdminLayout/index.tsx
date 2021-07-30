@@ -149,7 +149,7 @@ const MemberAdminLayout: React.FC<{
   return (
     <>
       <AdminHeader>
-        <Link to="/admin/members">
+        <Link to="/members">
           <Button type="link" className="mr-3">
             <CloseOutlined />
           </Button>
