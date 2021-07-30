@@ -102,7 +102,7 @@ const MemberContractAdminBlock: React.FC<{
   }
   return (
     <div className="container">
-      <a href={`/admin/members/${memberId}/contracts/new`} target="_blank" rel="noopener noreferrer">
+      <a href={`/members/${memberId}/contracts/new`} target="_blank" rel="noopener noreferrer">
         <Button type="primary" className="mb-5">
           {formatMessage(commonMessages.ui.createContract)}
         </Button>

@@ -380,9 +380,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
               onClick: () => {
-                process.env.NODE_ENV === 'development'
-                  ? window.open(`/members/${record.id}`, '_blank')
-                  : window.open(`/admin/members/${record.id}`, '_blank')
+                window.open(`/members/${record.id}`, '_blank')
               },
             })}
           />

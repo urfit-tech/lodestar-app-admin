@@ -170,9 +170,7 @@ const AppointmentPlanCollectionTable: React.FC<{
         loading={loadingAppointmentPlans}
         onRow={record => ({
           onClick: () => {
-            process.env.NODE_ENV === 'development'
-              ? window.open(`/appointment-plans/${record.id}`)
-              : window.open(`/admin/appointment-plans/${record.id}`)
+            window.open(`/appointment-plans/${record.id}`)
           },
         })}
         columns={withAppointmentButton ? [...columns, appointmentButtonColumn] : columns}
