@@ -169,7 +169,11 @@ const AppointmentPlanCollectionTable: React.FC<{
         rowClassName="cursor-pointer"
         loading={loadingAppointmentPlans}
         onRow={record => ({
-          onClick: () => window.open(`/appointment-plans/${record.id}`),
+          onClick: () => {
+            process.env.NODE_ENV === 'development'
+              ? window.open(`/appointment-plans/${record.id}`)
+              : window.open(`/admin/appointment-plans/${record.id}`)
+          },
         })}
         columns={withAppointmentButton ? [...columns, appointmentButtonColumn] : columns}
         dataSource={data}
