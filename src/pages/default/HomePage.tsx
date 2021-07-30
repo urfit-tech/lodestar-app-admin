@@ -53,7 +53,7 @@ const HomePage: React.FC = () => {
     }
 
     if (currentUserRole === 'app-owner') {
-      history.push(settings['admin.app_owner.redirect'] || `/admin/sales`)
+      history.push(settings['admin.app_owner.redirect'] || `/sales`)
     } else if (currentUserRole === 'content-creator') {
       history.push(settings['admin.content_creator.redirect'] || `/programs`)
     } else if (!permissions.BACKSTAGE_ENTER) {
