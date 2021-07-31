@@ -3,7 +3,7 @@ import { Redirect, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getUserRoleLevel } from '../helpers'
 import { UserRole } from '../types/member'
-import LoadingPage from './default/LoadingPage'
+import LoadingPage from './LoadingPage'
 
 const LoadablePage: React.FC<{
   pageName: string
@@ -25,8 +25,8 @@ const LoadablePage: React.FC<{
   // load forbidden page if not allowed roles
   const Page = lazy(() =>
     !isAuthenticating && allowedUserRole && getUserRoleLevel(allowedUserRole) > getUserRoleLevel(currentUserRole)
-      ? import(`./default/ForbiddenPage`)
-      : import(`./default/${pageName}`),
+      ? import(`./ForbiddenPage`)
+      : import(`./${pageName}`),
   )
 
   return <Page {...props} />

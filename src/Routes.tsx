@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import LoadingPage from './pages/default/LoadingPage'
-import NotFoundPage from './pages/default/NotFoundPage'
 import LoadablePage from './pages/LoadablePage'
+import LoadingPage from './pages/LoadingPage'
+import NotFoundPage from './pages/NotFoundPage'
 import { UserRole } from './types/member'
 
 export type RouteProps = {

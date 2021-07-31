@@ -7,7 +7,7 @@ import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { mergePodcastProgram } from '../../pages/default/RecordingPageHelpers'
+import { mergePodcastProgram } from '../../pages/RecordingPageHelpers'
 import { AdminHeader, AdminHeaderTitle } from '../admin'
 
 const PodcastProgramHeader: React.FC<{

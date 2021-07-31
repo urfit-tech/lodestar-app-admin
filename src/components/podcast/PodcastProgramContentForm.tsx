@@ -24,7 +24,7 @@ import {
 } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import { appendPodcastProgramAudio, deletePodcastProgramAudio } from '../../pages/default/RecordingPageHelpers'
+import { appendPodcastProgramAudio, deletePodcastProgramAudio } from '../../pages/RecordingPageHelpers'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
