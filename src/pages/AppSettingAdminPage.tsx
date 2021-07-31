@@ -1,18 +1,57 @@
-import { useMutation } from '@apollo/react-hooks'
+import { GlobalOutlined } from '@ant-design/icons'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, Input, InputNumber, message, Switch } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import { keys } from 'ramda'
+import { keys, trim } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { useApp } from '../../contexts/AppContext'
-import hasura from '../../hasura'
-import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
-import AdminCard from '../admin/AdminCard'
+import { AdminPageTitle } from '../components/admin'
+import AdminCard from '../components/admin/AdminCard'
+import AdminLayout from '../components/layout/AdminLayout'
+import { useApp } from '../contexts/AppContext'
+import * as hasura from '../hasura'
+import { handleError } from '../helpers'
+import { commonMessages } from '../helpers/translation'
 
-export type AppSettings = {
+const AppSettingAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
+  const { data: settingsData, loading } = useQuery<hasura.GET_SETTINGS, hasura.GET_SETTINGSVariables>(GET_SETTINGS, {
+    variables: { appId },
+  })
+  const settings =
+    settingsData?.setting.reduce((accum, v) => {
+      const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
+      if (!accum[namespace]) {
+        accum[namespace] = {}
+      }
+      accum[namespace][v.key] = {
+        value: v.app_settings.pop()?.value || '',
+        type: v.type,
+        options: v.options,
+        isProtected: v.is_protected,
+        isRequired: v.is_required,
+      }
+      return accum
+    }, {} as Record<string, AppSettings>) || {}
+
+  return (
+    <AdminLayout>
+      <AdminPageTitle className="mb-4">
+        <GlobalOutlined className="mr-3" />
+        <span>{formatMessage(commonMessages.menu.appSettingAdmin)}</span>
+      </AdminPageTitle>
+      {loading && <AppSettingCard appId={appId} title="---" settings={{}} loading className="mb-3" />}
+      {keys(settings).map(namespace => (
+        <AppSettingCard appId={appId} title={namespace} settings={settings[namespace]} className="mb-3" />
+      ))}
+    </AdminLayout>
+  )
+}
+
+type AppSettings = {
   [key: string]: {
     value: string
     type: string
@@ -47,7 +86,7 @@ const AppSettingCard: React.FC<
           .map(key => ({
             app_id: app.id,
             key,
-            value: values[key as keyof FieldProps],
+            value: trim(values[key as keyof FieldProps]),
           })),
       },
     })
@@ -71,29 +110,33 @@ const AppSettingCard: React.FC<
         onFinish={handleSubmit}
         initialValues={appSettings}
       >
-        {keys(settings).map(key => {
-          const setting = settings[key]
-          const label = formatMessage(messages[key as keyof typeof messages])
-          return (
-            <>
-              {setting.type === 'string' && (
-                <Form.Item key={key} label={label} name={key}>
-                  <Input disabled={setting.isProtected} />
-                </Form.Item>
-              )}
-              {setting.type === 'number' && (
-                <Form.Item key={key} label={label} name={key}>
-                  <InputNumber disabled={setting.isProtected} />
-                </Form.Item>
-              )}
-              {setting.type === 'boolean' && (
-                <Form.Item key={key} label={label} name={key}>
-                  <Switch disabled={setting.isProtected} />
-                </Form.Item>
-              )}
-            </>
-          )
-        })}
+        {keys(settings)
+          .sort()
+          .map(key => {
+            const setting = settings[key]
+            const label = messages[key as keyof typeof messages]
+              ? formatMessage(messages[key as keyof typeof messages])
+              : key
+            return (
+              <>
+                {setting.type === 'string' && (
+                  <Form.Item key={key} label={label} name={key}>
+                    <Input disabled={setting.isProtected} />
+                  </Form.Item>
+                )}
+                {setting.type === 'number' && (
+                  <Form.Item key={key} label={label} name={key}>
+                    <InputNumber disabled={setting.isProtected} />
+                  </Form.Item>
+                )}
+                {setting.type === 'boolean' && (
+                  <Form.Item key={key} label={label} name={key}>
+                    <Switch disabled={setting.isProtected} />
+                  </Form.Item>
+                )}
+              </>
+            )
+          })}
         <Form.Item wrapperCol={{ md: { offset: 6 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
@@ -119,56 +162,37 @@ const UPSERT_APP_SETTINGS = gql`
 `
 
 const messages = defineMessages({
-  'admin.app_owner.redirect': { id: 'admin.app_owner.redirect', defaultMessage: '首頁轉址' },
-  'admin_repo.branch': { id: 'admin_repo.branch', defaultMessage: 'admin_repo.branch' },
-  'app_repo.branch': { id: 'app_repo.branch', defaultMessage: 'app_repo.branch' },
-  'app_repo.name': { id: 'app_repo.name', defaultMessage: 'app_repo.name' },
-  'auth.commonhealth.client_id': { id: 'auth.commonhealth.client_id', defaultMessage: 'auth.commonhealth.client_id' },
-  'auth.commonhealth.endpoint': { id: 'auth.commonhealth.endpoint', defaultMessage: 'auth.commonhealth.endpoint' },
-  'auth.facebook_app_id': { id: 'auth.facebook_app_id', defaultMessage: 'auth.facebook_app_id' },
-  'auth.google_client_id': { id: 'auth.google_client_id', defaultMessage: 'auth.google_client_id' },
-  'auth.line_client_id': { id: 'auth.line_client_id', defaultMessage: 'auth.line_client_id' },
-  'auth.line_client_secret': { id: 'auth.line_client_secret', defaultMessage: 'auth.line_client_secret' },
-  'auth.parenting_client_id': { id: 'auth.parenting_client_id', defaultMessage: 'auth.parenting_client_id' },
-  'auth.parenting.endpoint': { id: 'auth.parenting.endpoint', defaultMessage: 'auth.parenting.endpoint' },
-  'call_server.origin': { id: 'call_server.origin', defaultMessage: 'call_server.origin' },
-  'chailease.api_key': { id: 'chailease.api_key', defaultMessage: 'chailease.api_key' },
-  'chakraTheme.colors.primary.500': {
-    id: 'chakraTheme.colors.primary.500',
-    defaultMessage: 'chakraTheme.colors.primary.500',
-  },
-  'chakraTheme.colors.primary.600': {
-    id: 'chakraTheme.colors.primary.600',
-    defaultMessage: 'chakraTheme.colors.primary.600',
-  },
-  'coin.exchange_rate': { id: 'coin.exchange_rate', defaultMessage: 'coin.exchange_rate' },
-  'coin.name': { id: 'coin.name', defaultMessage: 'coin.name' },
-  'coin.unit': { id: 'coin.unit', defaultMessage: 'coin.unit' },
-  currency_id: { id: 'currency_id', defaultMessage: 'currency_id' },
-  customer_support_link: { id: 'customer_support_link', defaultMessage: 'customer_support_link' },
-  'custom.project.plan_price_style': {
-    id: 'custom.project.plan_price_style',
-    defaultMessage: 'custom.project.plan_price_style',
-  },
-  default_group_buying_discount_ratio: {
-    id: 'default_group_buying_discount_ratio',
-    defaultMessage: 'default_group_buying_discount_ratio',
-  },
-  default_group_buying_limit: { id: 'default_group_buying_limit', defaultMessage: 'default_group_buying_limit' },
-  description: { id: 'description', defaultMessage: 'description' },
-  'extension.api': { id: 'extension.api', defaultMessage: 'extension.api' },
-  'facebook.domain.verification': {
-    id: 'facebook.domain.verification',
-    defaultMessage: 'facebook.domain.verification',
-  },
-  favicon: { id: 'favicon', defaultMessage: 'favicon' },
-  'feature.chailease_lookup': { id: 'feature.chailease_lookup', defaultMessage: 'feature.chailease_lookup' },
-  'feature.modify_order_status': { id: 'feature.modify_order_status', defaultMessage: 'feature.modify_order_status' },
-  'feature.swarmify.enabled': { id: 'feature.swarmify.enabled', defaultMessage: 'feature.swarmify.enabled' },
-  'footer.type': { id: 'footer.type', defaultMessage: 'footer.type' },
-  homepage_cover_slides: { id: 'homepage_cover_slides', defaultMessage: 'homepage_cover_slides' },
-  'home.redirect': { id: 'home.redirect', defaultMessage: 'home.redirect' },
-  host: { id: 'host', defaultMessage: 'host' },
+  'admin.app_owner.redirect': { id: 'admin.app_owner.redirect', defaultMessage: '管理後台首頁轉址' },
+  'admin_repo.branch': { id: 'admin_repo.branch', defaultMessage: '後台版本分支' },
+  'app_repo.branch': { id: 'app_repo.branch', defaultMessage: '前台版本分支' },
+  'app_repo.name': { id: 'app_repo.name', defaultMessage: '前台 Repo' },
+  'auth.commonhealth.client_id': { id: 'auth.commonhealth.client_id', defaultMessage: '康健 Client ID' },
+  'auth.commonhealth.endpoint': { id: 'auth.commonhealth.endpoint', defaultMessage: '康健 Oauth2 網址' },
+  'auth.facebook_app_id': { id: 'auth.facebook_app_id', defaultMessage: 'Facebook App ID' },
+  'auth.google_client_id': { id: 'auth.google_client_id', defaultMessage: 'Google client ID' },
+  'auth.line_client_id': { id: 'auth.line_client_id', defaultMessage: 'Line Client ID' },
+  'auth.line_client_secret': { id: 'auth.line_client_secret', defaultMessage: 'Line Client Secret' },
+  'auth.parenting_client_id': { id: 'auth.parenting_client_id', defaultMessage: '親子天下 Client ID' },
+  'auth.parenting.endpoint': { id: 'auth.parenting.endpoint', defaultMessage: '親子天下 Oauth2 網址' },
+  'call_server.origin': { id: 'call_server.origin', defaultMessage: '話機系統網址' },
+  'chailease.api_key': { id: 'chailease.api_key', defaultMessage: '仲信 API Key' },
+  'chakraTheme.colors.primary.500': { id: 'chakraTheme.colors.primary.500', defaultMessage: '主題色(500)' },
+  'chakraTheme.colors.primary.600': { id: 'chakraTheme.colors.primary.600', defaultMessage: '主題色(600)' },
+  'coin.exchange_rate': { id: 'coin.exchange_rate', defaultMessage: '代幣匯率' },
+  'coin.name': { id: 'coin.name', defaultMessage: '代幣名稱' },
+  'coin.unit': { id: 'coin.unit', defaultMessage: '代幣單位' },
+  currency_id: { id: 'currency_id', defaultMessage: '預設貨幣' },
+  customer_support_link: { id: 'customer_support_link', defaultMessage: '客服連結' },
+  'custom.project.plan_price_style': { id: 'custom.project.plan_price_style', defaultMessage: '客製方案價錢樣式' },
+  description: { id: 'description', defaultMessage: '網站描述' },
+  'extension.api': { id: 'extension.api', defaultMessage: 'Extension API' },
+  favicon: { id: 'favicon', defaultMessage: '網站標誌' },
+  'feature.chailease_lookup': { id: 'feature.chailease_lookup', defaultMessage: '啟用仲信查詢' },
+  'feature.modify_order_status': { id: 'feature.modify_order_status', defaultMessage: '啟用訂單修改' },
+  'feature.swarmify.enabled': { id: 'feature.swarmify.enabled', defaultMessage: '啟用 Swarmify' },
+  'footer.type': { id: 'footer.type', defaultMessage: '頁尾類別' },
+  homepage_cover_slides: { id: 'homepage_cover_slides', defaultMessage: '首頁投影片' },
+  'home.redirect': { id: 'home.redirect', defaultMessage: '首頁轉址' },
   'line.account_link.is_already_linked_message': {
     id: 'line.account_link.is_already_linked_message',
     defaultMessage: 'line.account_link.is_already_linked_message',
@@ -462,4 +486,18 @@ const messages = defineMessages({
   'tracking.hotjar_sv': { id: 'tracking.hotjar_sv', defaultMessage: 'tracking.hotjar_sv' },
 })
 
-export default AppSettingCard
+const GET_SETTINGS = gql`
+  query GET_SETTINGS($appId: String!) {
+    setting {
+      key
+      type
+      options
+      is_protected
+      is_required
+      app_settings(where: { app_id: { _eq: $appId } }) {
+        value
+      }
+    }
+  }
+`
+export default AppSettingAdminPage

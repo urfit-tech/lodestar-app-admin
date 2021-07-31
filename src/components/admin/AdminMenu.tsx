@@ -392,6 +392,18 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       key: 'app_admin',
       icon: () => <GlobalOutlined className="mr-0" />,
       name: formatMessage(commonMessages.menu.appAdmin),
+      subMenuItems: [
+        {
+          permissionIsAllowed: permissions.APP_SETTING_ADMIN,
+          key: 'app_basic',
+          name: formatMessage(commonMessages.menu.appBasicAdmin),
+        },
+        {
+          permissionIsAllowed: permissions.APP_SETTING_ADMIN,
+          key: 'app_setting',
+          name: formatMessage(commonMessages.menu.appSettingAdmin),
+        },
+      ],
     },
   ]
 

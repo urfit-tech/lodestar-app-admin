@@ -419,9 +419,15 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 
   // app settings admin
-  app_admin: {
-    path: '/app',
-    pageName: 'AppAdminPage',
+  app_basic: {
+    path: '/app/basic',
+    pageName: 'AppBasicAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  app_setting: {
+    path: '/app/setting',
+    pageName: 'AppSettingAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
