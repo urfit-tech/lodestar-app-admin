@@ -542,6 +542,45 @@ export interface UPSERT_APP_SETTINGSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SETTINGS
+// ====================================================
+
+export interface GET_SETTINGS_setting_app_settings {
+  __typename: "app_setting";
+  value: string;
+}
+
+export interface GET_SETTINGS_setting {
+  __typename: "setting";
+  key: string;
+  name: string;
+  type: string;
+  options: any | null;
+  is_protected: boolean;
+  is_required: boolean;
+  /**
+   * An array relationship
+   */
+  app_settings: GET_SETTINGS_setting_app_settings[];
+}
+
+export interface GET_SETTINGS {
+  /**
+   * fetch data from the table: "setting"
+   */
+  setting: GET_SETTINGS_setting[];
+}
+
+export interface GET_SETTINGSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
 // ====================================================
 
@@ -7052,7 +7091,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ses
   __typename: "activity_session_ticket";
   id: any;
   /**
-   * offline | online | both
+   * offline | online
    */
   activity_session_type: string;
   /**
@@ -7115,7 +7154,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_se
 export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets {
   __typename: "activity_session_ticket";
   /**
-   * offline | online | both
+   * offline | online
    */
   activity_session_type: string;
   /**
@@ -13184,6 +13223,7 @@ export enum app_setting_update_column {
  * update columns of table "app"
  */
 export enum app_update_column {
+  created_at = "created_at",
   description = "description",
   id = "id",
   name = "name",
@@ -13191,6 +13231,7 @@ export enum app_update_column {
   point_exchange_rate = "point_exchange_rate",
   point_validity_period = "point_validity_period",
   title = "title",
+  updated_at = "updated_at",
   vimeo_project_id = "vimeo_project_id",
 }
 
@@ -14216,6 +14257,8 @@ export enum module_constraint {
  * update columns of table "module"
  */
 export enum module_update_column {
+  abstract = "abstract",
+  category_name = "category_name",
   id = "id",
   name = "name",
 }
@@ -15517,6 +15560,25 @@ export enum role_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "setting"
+ */
+export enum setting_constraint {
+  setting_pkey = "setting_pkey",
+}
+
+/**
+ * update columns of table "setting"
+ */
+export enum setting_update_column {
+  is_protected = "is_protected",
+  is_required = "is_required",
+  key = "key",
+  name = "name",
+  options = "options",
+  type = "type",
+}
+
+/**
  * unique or primary key constraints on table "sharing_code"
  */
 export enum sharing_code_constraint {
@@ -16274,6 +16336,7 @@ export interface activity_ticket_enrollment_bool_exp {
   activity_ticket?: activity_ticket_bool_exp | null;
   activity_ticket_id?: uuid_comparison_exp | null;
   member_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
   order_log_id?: String_comparison_exp | null;
   order_product_id?: uuid_comparison_exp | null;
 }
@@ -16485,6 +16548,7 @@ export interface app_bool_exp {
   cards?: card_bool_exp | null;
   cart_items?: cart_item_bool_exp | null;
   comments?: comment_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   issues?: issue_bool_exp | null;
@@ -16502,6 +16566,7 @@ export interface app_bool_exp {
   properties?: property_bool_exp | null;
   sharing_codes?: sharing_code_bool_exp | null;
   title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
   vimeo_project_id?: String_comparison_exp | null;
   voucher_plans?: voucher_plan_bool_exp | null;
 }
@@ -16651,6 +16716,7 @@ export interface app_insert_input {
   cards?: card_arr_rel_insert_input | null;
   cart_items?: cart_item_arr_rel_insert_input | null;
   comments?: comment_arr_rel_insert_input | null;
+  created_at?: any | null;
   description?: string | null;
   id?: string | null;
   issues?: issue_arr_rel_insert_input | null;
@@ -16668,6 +16734,7 @@ export interface app_insert_input {
   properties?: property_arr_rel_insert_input | null;
   sharing_codes?: sharing_code_arr_rel_insert_input | null;
   title?: string | null;
+  updated_at?: any | null;
   vimeo_project_id?: string | null;
   voucher_plans?: voucher_plan_arr_rel_insert_input | null;
 }
@@ -16933,6 +17000,7 @@ export interface app_order_by {
   cards_aggregate?: card_aggregate_order_by | null;
   cart_items_aggregate?: cart_item_aggregate_order_by | null;
   comments_aggregate?: comment_aggregate_order_by | null;
+  created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
@@ -16950,6 +17018,7 @@ export interface app_order_by {
   properties_aggregate?: property_aggregate_order_by | null;
   sharing_codes_aggregate?: sharing_code_aggregate_order_by | null;
   title?: order_by | null;
+  updated_at?: order_by | null;
   vimeo_project_id?: order_by | null;
   voucher_plans_aggregate?: voucher_plan_aggregate_order_by | null;
 }
@@ -17053,6 +17122,7 @@ export interface app_setting_bool_exp {
   app_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   key?: String_comparison_exp | null;
+  setting?: setting_bool_exp | null;
   value?: String_comparison_exp | null;
 }
 
@@ -17064,6 +17134,7 @@ export interface app_setting_insert_input {
   app_id?: string | null;
   id?: any | null;
   key?: string | null;
+  setting?: setting_obj_rel_insert_input | null;
   value?: string | null;
 }
 
@@ -22753,7 +22824,9 @@ export interface module_bool_exp {
   _and?: (module_bool_exp | null)[] | null;
   _not?: module_bool_exp | null;
   _or?: (module_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
   app_modules?: app_module_bool_exp | null;
+  category_name?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
 }
@@ -22762,7 +22835,9 @@ export interface module_bool_exp {
  * input type for inserting data into table "module"
  */
 export interface module_insert_input {
+  abstract?: string | null;
   app_modules?: app_module_arr_rel_insert_input | null;
+  category_name?: string | null;
   id?: string | null;
   name?: string | null;
 }
@@ -30209,6 +30284,52 @@ export interface role_permission_on_conflict {
   constraint: role_permission_constraint;
   update_columns: role_permission_update_column[];
   where?: role_permission_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "setting". All fields are combined with a logical 'AND'.
+ */
+export interface setting_bool_exp {
+  _and?: (setting_bool_exp | null)[] | null;
+  _not?: setting_bool_exp | null;
+  _or?: (setting_bool_exp | null)[] | null;
+  app_settings?: app_setting_bool_exp | null;
+  is_protected?: Boolean_comparison_exp | null;
+  is_required?: Boolean_comparison_exp | null;
+  key?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "setting"
+ */
+export interface setting_insert_input {
+  app_settings?: app_setting_arr_rel_insert_input | null;
+  is_protected?: boolean | null;
+  is_required?: boolean | null;
+  key?: string | null;
+  name?: string | null;
+  options?: any | null;
+  type?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "setting"
+ */
+export interface setting_obj_rel_insert_input {
+  data: setting_insert_input;
+  on_conflict?: setting_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "setting"
+ */
+export interface setting_on_conflict {
+  constraint: setting_constraint;
+  update_columns: setting_update_column[];
+  where?: setting_bool_exp | null;
 }
 
 /**
