@@ -27,8 +27,9 @@ const AppSettingAdminPage: React.FC = () => {
       if (!accum[namespace]) {
         accum[namespace] = {}
       }
+      const value = v.app_settings.pop()?.value || ''
       accum[namespace][v.key] = {
-        value: v.app_settings.pop()?.value || '',
+        value,
         type: v.type,
         options: v.options,
         isProtected: v.is_protected,
@@ -176,13 +177,13 @@ const UPSERT_APP_SETTINGS = gql`
 
 const GET_SETTINGS = gql`
   query GET_SETTINGS($appId: String!) {
-    setting(where: { app_settings: { app_id: { _eq: $appId } } }) {
+    setting(where: { is_secret: { _eq: false } }) {
       key
       type
       options
       is_protected
       is_required
-      app_settings {
+      app_settings(where: { app_id: { _eq: $appId } }) {
         value
       }
     }

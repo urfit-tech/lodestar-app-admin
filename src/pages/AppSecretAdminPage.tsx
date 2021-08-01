@@ -27,8 +27,9 @@ const AppSecretAdminPage: React.FC = () => {
       if (!accum[namespace]) {
         accum[namespace] = {}
       }
+      const value = v.app_secrets.pop()?.value || ''
       accum[namespace][v.key] = {
-        value: v.app_secrets.pop()?.value || '',
+        value,
         type: v.type,
         options: v.options,
         isProtected: v.is_protected,
@@ -176,13 +177,13 @@ const UPSERT_APP_SECRETS = gql`
 
 const GET_SECRETS = gql`
   query GET_SECRETS($appId: String!) {
-    setting(where: { app_secrets: { app_id: { _eq: $appId } } }) {
+    setting(where: { is_secret: { _eq: true } }) {
       key
       type
       options
       is_protected
       is_required
-      app_secrets {
+      app_secrets(where: { app_id: { _eq: $appId } }) {
         value
       }
     }

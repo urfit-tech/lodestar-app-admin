@@ -6855,6 +6855,30 @@ export interface GET_APPLICATION_locale {
   vi: string;
 }
 
+export interface GET_APPLICATION_setting_app_settings {
+  __typename: "app_setting";
+  value: string;
+}
+
+export interface GET_APPLICATION_setting_app_secrets {
+  __typename: "app_secret";
+  value: string;
+}
+
+export interface GET_APPLICATION_setting {
+  __typename: "setting";
+  key: string;
+  is_secret: boolean;
+  /**
+   * An array relationship
+   */
+  app_settings: GET_APPLICATION_setting_app_settings[];
+  /**
+   * An array relationship
+   */
+  app_secrets: GET_APPLICATION_setting_app_secrets[];
+}
+
 export interface GET_APPLICATION_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
@@ -6915,6 +6939,10 @@ export interface GET_APPLICATION {
    * fetch data from the table: "locale"
    */
   locale: GET_APPLICATION_locale[];
+  /**
+   * fetch data from the table: "setting"
+   */
+  setting: GET_APPLICATION_setting[];
   /**
    * fetch data from the table: "app" using primary key columns
    */
@@ -15662,6 +15690,7 @@ export enum setting_constraint {
 export enum setting_update_column {
   is_protected = "is_protected",
   is_required = "is_required",
+  is_secret = "is_secret",
   key = "key",
   module_id = "module_id",
   options = "options",
@@ -30402,6 +30431,7 @@ export interface setting_bool_exp {
   app_settings?: app_setting_bool_exp | null;
   is_protected?: Boolean_comparison_exp | null;
   is_required?: Boolean_comparison_exp | null;
+  is_secret?: Boolean_comparison_exp | null;
   key?: String_comparison_exp | null;
   module?: module_bool_exp | null;
   module_id?: String_comparison_exp | null;
@@ -30417,6 +30447,7 @@ export interface setting_insert_input {
   app_settings?: app_setting_arr_rel_insert_input | null;
   is_protected?: boolean | null;
   is_required?: boolean | null;
+  is_secret?: boolean | null;
   key?: string | null;
   module?: module_obj_rel_insert_input | null;
   module_id?: string | null;

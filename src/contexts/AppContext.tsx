@@ -1,7 +1,10 @@
+import { ArrowRightOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
+import { notification } from 'antd'
 import gql from 'graphql-tag'
 import { keys } from 'ramda'
 import React, { createContext, useContext, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import hasura from '../hasura'
 import { AppProps, Module } from '../types/app'
 import { useAuth } from './AuthContext'
@@ -31,11 +34,45 @@ const AppContext = createContext<AppContextProps>(defaultContextValue)
 export const AppProvider: React.FC<{
   appId: string
 }> = ({ appId, children }) => {
+  const history = useHistory()
   const { refreshToken, authToken } = useAuth()
   const { loading, error, data, refetch } = useQuery<hasura.GET_APPLICATION, hasura.GET_APPLICATIONVariables>(
     GET_APPLICATION,
     { variables: { appId } },
   )
+
+  data?.setting
+    .filter(v => !v.is_secret && v.app_settings.length === 0)
+    .forEach(v => {
+      notification.error({
+        message: '請設定參數（No settings）',
+        description: (
+          <div className="d-flex align-items-center">
+            <div className="mr-3">{v.key}</div>
+            <a href="#!">
+              <ArrowRightOutlined onClick={() => history.push('/app/setting')} />
+            </a>
+          </div>
+        ),
+        duration: null,
+      })
+    })
+  data?.setting
+    .filter(v => v.is_secret && v.app_secrets.length === 0)
+    .forEach(v => {
+      notification.error({
+        message: '請設定金鑰（No secrets）',
+        description: (
+          <div className="d-flex align-items-center">
+            <div className="mr-3">{v.key}</div>
+            <a href="#!">
+              <ArrowRightOutlined onClick={() => history.push('/app/secret')} />
+            </a>
+          </div>
+        ),
+        duration: null,
+      })
+    })
 
   const settings = Object.fromEntries(data?.app_by_pk?.app_settings.map(v => [v.key, v.value]) || [])
   const secrets = Object.fromEntries(data?.app_by_pk?.app_secrets.map(v => [v.key, v.value]) || [])
@@ -104,6 +141,16 @@ const GET_APPLICATION = gql`
       zh_acsi
       en
       vi
+    }
+    setting(where: { is_required: { _eq: true } }) {
+      key
+      is_secret
+      app_settings(where: { app_id: { _eq: $appId } }) {
+        value
+      }
+      app_secrets(where: { app_id: { _eq: $appId } }) {
+        value
+      }
     }
     app_by_pk(id: $appId) {
       id
