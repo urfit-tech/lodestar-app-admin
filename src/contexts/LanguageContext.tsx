@@ -17,7 +17,7 @@ const defaultLanguage: LanguageProps = {
 const LanguageContext = createContext<LanguageProps>(defaultLanguage)
 
 export const LanguageProvider: React.FC = ({ children }) => {
-  const { enabledModules, settings } = useApp()
+  const { enabledModules, settings, locales } = useApp()
   const [currentLanguage, setCurrentLanguage] = useState('zh')
   const [locale, setLocale] = useState('zh')
   moment.locale('zh-tw')
@@ -39,7 +39,7 @@ export const LanguageProvider: React.FC = ({ children }) => {
   useEffect(() => {
     switch (currentLanguage) {
       case 'zh':
-      case 'acsi':
+      case 'zh-acsi':
         setLocale('zh')
         moment.locale('zh-tw')
         break
@@ -48,13 +48,6 @@ export const LanguageProvider: React.FC = ({ children }) => {
         moment.locale(currentLanguage)
     }
   }, [currentLanguage])
-
-  let messages: any = {}
-  try {
-    if (enabledModules.locale) {
-      messages = require(`../translations/locales/${currentLanguage}.json`)
-    }
-  } catch {}
 
   return (
     <LanguageContext.Provider
@@ -68,7 +61,7 @@ export const LanguageProvider: React.FC = ({ children }) => {
         },
       }}
     >
-      <IntlProvider defaultLocale="zh" locale={locale} messages={messages}>
+      <IntlProvider defaultLocale="zh" locale={locale} messages={locales[currentLanguage]}>
         {children}
       </IntlProvider>
     </LanguageContext.Provider>

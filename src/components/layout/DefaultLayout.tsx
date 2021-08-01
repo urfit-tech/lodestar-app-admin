@@ -138,6 +138,13 @@ export const DefaultLayoutHeader: React.FC<{
                       </StyledButton>
                     </Menu.Item>
                   )}
+                  {languageOptions.includes('zh-cn') && (
+                    <Menu.Item key="zh-cn">
+                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('zh-cn')}>
+                        简体中文
+                      </StyledButton>
+                    </Menu.Item>
+                  )}
                   {languageOptions.includes('en') && (
                     <Menu.Item key="en">
                       <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('en')}>

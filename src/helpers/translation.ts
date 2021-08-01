@@ -468,7 +468,7 @@ export const activityMessages = {
     session: { id: 'activity.label.session', defaultMessage: '場次' },
     sessionTitle: { id: 'common.label.sessionTitle', defaultMessage: '場次名稱' },
     location: { id: 'activity.label.location', defaultMessage: '地址' },
-    activityLocation: { id: 'activity.label.location', defaultMessage: '活動地址' },
+    activityLocation: { id: 'activity.label.activityLocation', defaultMessage: '活動地址' },
     offlineActivityLocation: {
       id: 'activity.label.offlineActivityLocation',
       defaultMessage: '實體活動地址（若非實體活動則留空）',

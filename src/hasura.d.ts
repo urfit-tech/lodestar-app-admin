@@ -514,73 +514,6 @@ export interface UPDATE_APP_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPSERT_APP_SETTINGS
-// ====================================================
-
-export interface UPSERT_APP_SETTINGS_insert_app_setting {
-  __typename: "app_setting_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_APP_SETTINGS {
-  /**
-   * insert data into the table: "app_setting"
-   */
-  insert_app_setting: UPSERT_APP_SETTINGS_insert_app_setting | null;
-}
-
-export interface UPSERT_APP_SETTINGSVariables {
-  appSettings: app_setting_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SETTINGS
-// ====================================================
-
-export interface GET_SETTINGS_setting_app_settings {
-  __typename: "app_setting";
-  value: string;
-}
-
-export interface GET_SETTINGS_setting {
-  __typename: "setting";
-  key: string;
-  name: string;
-  type: string;
-  options: any | null;
-  is_protected: boolean;
-  is_required: boolean;
-  /**
-   * An array relationship
-   */
-  app_settings: GET_SETTINGS_setting_app_settings[];
-}
-
-export interface GET_SETTINGS {
-  /**
-   * fetch data from the table: "setting"
-   */
-  setting: GET_SETTINGS_setting[];
-}
-
-export interface GET_SETTINGSVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
 // ====================================================
 
@@ -6912,6 +6845,16 @@ export interface GET_APPLICATION_currency {
   unit: string;
 }
 
+export interface GET_APPLICATION_locale {
+  __typename: "locale";
+  key: string;
+  zh: string;
+  zh_cn: string;
+  zh_acsi: string;
+  en: string;
+  vi: string;
+}
+
 export interface GET_APPLICATION_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
@@ -6958,6 +6901,10 @@ export interface GET_APPLICATION {
    * fetch data from the table: "currency"
    */
   currency: GET_APPLICATION_currency[];
+  /**
+   * fetch data from the table: "locale"
+   */
+  locale: GET_APPLICATION_locale[];
   /**
    * fetch data from the table: "app" using primary key columns
    */
@@ -11466,6 +11413,72 @@ export interface CREATE_APPOINTMENT_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPSERT_APP_SETTINGS
+// ====================================================
+
+export interface UPSERT_APP_SETTINGS_insert_app_setting {
+  __typename: "app_setting_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_APP_SETTINGS {
+  /**
+   * insert data into the table: "app_setting"
+   */
+  insert_app_setting: UPSERT_APP_SETTINGS_insert_app_setting | null;
+}
+
+export interface UPSERT_APP_SETTINGSVariables {
+  appSettings: app_setting_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SETTINGS
+// ====================================================
+
+export interface GET_SETTINGS_setting_app_settings {
+  __typename: "app_setting";
+  value: string;
+}
+
+export interface GET_SETTINGS_setting {
+  __typename: "setting";
+  key: string;
+  type: string;
+  options: any | null;
+  is_protected: boolean;
+  is_required: boolean;
+  /**
+   * An array relationship
+   */
+  app_settings: GET_SETTINGS_setting_app_settings[];
+}
+
+export interface GET_SETTINGS {
+  /**
+   * fetch data from the table: "setting"
+   */
+  setting: GET_SETTINGS_setting[];
+}
+
+export interface GET_SETTINGSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POST
 // ====================================================
 
@@ -15573,7 +15586,7 @@ export enum setting_update_column {
   is_protected = "is_protected",
   is_required = "is_required",
   key = "key",
-  name = "name",
+  module_id = "module_id",
   options = "options",
   type = "type",
 }
@@ -22829,6 +22842,7 @@ export interface module_bool_exp {
   category_name?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
+  settings?: setting_bool_exp | null;
 }
 
 /**
@@ -22840,6 +22854,7 @@ export interface module_insert_input {
   category_name?: string | null;
   id?: string | null;
   name?: string | null;
+  settings?: setting_arr_rel_insert_input | null;
 }
 
 /**
@@ -30287,6 +30302,14 @@ export interface role_permission_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "setting"
+ */
+export interface setting_arr_rel_insert_input {
+  data: setting_insert_input[];
+  on_conflict?: setting_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "setting". All fields are combined with a logical 'AND'.
  */
 export interface setting_bool_exp {
@@ -30297,7 +30320,8 @@ export interface setting_bool_exp {
   is_protected?: Boolean_comparison_exp | null;
   is_required?: Boolean_comparison_exp | null;
   key?: String_comparison_exp | null;
-  name?: String_comparison_exp | null;
+  module?: module_bool_exp | null;
+  module_id?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   type?: String_comparison_exp | null;
 }
@@ -30310,7 +30334,8 @@ export interface setting_insert_input {
   is_protected?: boolean | null;
   is_required?: boolean | null;
   key?: string | null;
-  name?: string | null;
+  module?: module_obj_rel_insert_input | null;
+  module_id?: string | null;
   options?: any | null;
   type?: string | null;
 }

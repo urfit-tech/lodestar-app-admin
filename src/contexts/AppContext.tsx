@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { keys } from 'ramda'
 import React, { createContext, useContext, useEffect } from 'react'
 import hasura from '../hasura'
 import { AppProps, Module } from '../types/app'
@@ -21,6 +22,7 @@ const defaultContextValue: AppContextProps = {
   enabledModules: {},
   settings: {},
   currencies: {},
+  locales: {},
 }
 
 const AppContext = createContext<AppContextProps>(defaultContextValue)
@@ -49,6 +51,21 @@ export const AppProvider: React.FC<{
     vimeoProjectId: data?.app_by_pk?.vimeo_project_id,
     enabledModules: Object.fromEntries(data?.app_by_pk?.app_modules.map(v => [v.module_id as Module, true]) || []),
     settings,
+    locales:
+      data?.locale.reduce((accum, v) => {
+        keys(v)
+          .filter(u => u !== 'key')
+          .forEach(u => {
+            // convert snake_case to dash-case
+            const locale = u.replaceAll('_', '-')
+            const value = v[u]
+            if (!accum[locale]) {
+              accum[locale] = {}
+            }
+            accum[locale][v.key] = value
+          })
+        return accum
+      }, {} as AppProps['locales']) || {},
     currencies:
       data?.currency.reduce((accumulator, currency) => {
         accumulator[currency.id] = {
@@ -76,6 +93,14 @@ const GET_APPLICATION = gql`
       name
       label
       unit
+    }
+    locale {
+      key
+      zh
+      zh_cn
+      zh_acsi
+      en
+      vi
     }
     app_by_pk(id: $appId) {
       id

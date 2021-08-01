@@ -68,4 +68,5 @@ export type AppProps = {
     [key: string]: string
   }
   currencies: { [currencyId: string]: Currency }
+  locales: { [locale: string]: Record<string, string> }
 }
