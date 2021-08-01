@@ -21,6 +21,7 @@ const defaultContextValue: AppContextProps = {
   description: null,
   enabledModules: {},
   settings: {},
+  secrets: {},
   currencies: {},
   locales: {},
 }
@@ -37,6 +38,7 @@ export const AppProvider: React.FC<{
   )
 
   const settings = Object.fromEntries(data?.app_by_pk?.app_settings.map(v => [v.key, v.value]) || [])
+  const secrets = Object.fromEntries(data?.app_by_pk?.app_secrets.map(v => [v.key, v.value]) || [])
 
   const contextValue = {
     ...defaultContextValue,
@@ -51,6 +53,7 @@ export const AppProvider: React.FC<{
     vimeoProjectId: data?.app_by_pk?.vimeo_project_id,
     enabledModules: Object.fromEntries(data?.app_by_pk?.app_modules.map(v => [v.module_id as Module, true]) || []),
     settings,
+    secrets,
     locales:
       data?.locale.reduce((accum, v) => {
         keys(v)
@@ -116,6 +119,10 @@ const GET_APPLICATION = gql`
         host
       }
       app_settings {
+        key
+        value
+      }
+      app_secrets {
         key
         value
       }

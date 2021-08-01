@@ -6875,6 +6875,12 @@ export interface GET_APPLICATION_app_by_pk_app_settings {
   value: string;
 }
 
+export interface GET_APPLICATION_app_by_pk_app_secrets {
+  __typename: "app_secret";
+  key: string;
+  value: string;
+}
+
 export interface GET_APPLICATION_app_by_pk {
   __typename: "app";
   id: string;
@@ -6894,6 +6900,10 @@ export interface GET_APPLICATION_app_by_pk {
    * An array relationship
    */
   app_settings: GET_APPLICATION_app_by_pk_app_settings[];
+  /**
+   * An array relationship
+   */
+  app_secrets: GET_APPLICATION_app_by_pk_app_secrets[];
 }
 
 export interface GET_APPLICATION {
@@ -11413,6 +11423,72 @@ export interface CREATE_APPOINTMENT_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPSERT_APP_SECRETS
+// ====================================================
+
+export interface UPSERT_APP_SECRETS_insert_app_secret {
+  __typename: "app_secret_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_APP_SECRETS {
+  /**
+   * insert data into the table: "app_secret"
+   */
+  insert_app_secret: UPSERT_APP_SECRETS_insert_app_secret | null;
+}
+
+export interface UPSERT_APP_SECRETSVariables {
+  appSecrets: app_secret_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SECRETS
+// ====================================================
+
+export interface GET_SECRETS_setting_app_secrets {
+  __typename: "app_secret";
+  value: string;
+}
+
+export interface GET_SECRETS_setting {
+  __typename: "setting";
+  key: string;
+  type: string;
+  options: any | null;
+  is_protected: boolean;
+  is_required: boolean;
+  /**
+   * An array relationship
+   */
+  app_secrets: GET_SECRETS_setting_app_secrets[];
+}
+
+export interface GET_SECRETS {
+  /**
+   * fetch data from the table: "setting"
+   */
+  setting: GET_SECRETS_setting[];
+}
+
+export interface GET_SECRETSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPSERT_APP_SETTINGS
 // ====================================================
 
@@ -13677,6 +13753,7 @@ export enum currency_constraint {
 export enum currency_update_column {
   id = "id",
   label = "label",
+  minor_units = "minor_units",
   name = "name",
   unit = "unit",
 }
@@ -17064,6 +17141,7 @@ export interface app_secret_bool_exp {
   app_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   key?: String_comparison_exp | null;
+  setting?: setting_bool_exp | null;
   value?: String_comparison_exp | null;
 }
 
@@ -17075,6 +17153,7 @@ export interface app_secret_insert_input {
   app_id?: string | null;
   id?: any | null;
   key?: string | null;
+  setting?: setting_obj_rel_insert_input | null;
   value?: string | null;
 }
 
@@ -19718,6 +19797,7 @@ export interface currency_bool_exp {
   appointment_plans?: appointment_plan_bool_exp | null;
   id?: String_comparison_exp | null;
   label?: String_comparison_exp | null;
+  minor_units?: Int_comparison_exp | null;
   name?: String_comparison_exp | null;
   order_products?: order_product_bool_exp | null;
   program_plans?: program_plan_bool_exp | null;
@@ -19731,6 +19811,7 @@ export interface currency_insert_input {
   appointment_plans?: appointment_plan_arr_rel_insert_input | null;
   id?: string | null;
   label?: string | null;
+  minor_units?: number | null;
   name?: string | null;
   order_products?: order_product_arr_rel_insert_input | null;
   program_plans?: program_plan_arr_rel_insert_input | null;
@@ -19761,6 +19842,7 @@ export interface currency_order_by {
   appointment_plans_aggregate?: appointment_plan_aggregate_order_by | null;
   id?: order_by | null;
   label?: order_by | null;
+  minor_units?: order_by | null;
   name?: order_by | null;
   order_products_aggregate?: order_product_aggregate_order_by | null;
   program_plans_aggregate?: program_plan_aggregate_order_by | null;
@@ -30316,6 +30398,7 @@ export interface setting_bool_exp {
   _and?: (setting_bool_exp | null)[] | null;
   _not?: setting_bool_exp | null;
   _or?: (setting_bool_exp | null)[] | null;
+  app_secrets?: app_secret_bool_exp | null;
   app_settings?: app_setting_bool_exp | null;
   is_protected?: Boolean_comparison_exp | null;
   is_required?: Boolean_comparison_exp | null;
@@ -30330,6 +30413,7 @@ export interface setting_bool_exp {
  * input type for inserting data into table "setting"
  */
 export interface setting_insert_input {
+  app_secrets?: app_secret_arr_rel_insert_input | null;
   app_settings?: app_setting_arr_rel_insert_input | null;
   is_protected?: boolean | null;
   is_required?: boolean | null;

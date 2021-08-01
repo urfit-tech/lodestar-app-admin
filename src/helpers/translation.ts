@@ -311,6 +311,7 @@ export const commonMessages = {
     salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
     appBasicAdmin: { id: 'common.menu.appBasicAdmin', defaultMessage: '基本設定' },
     appSettingAdmin: { id: 'common.menu.appSettingAdmin', defaultMessage: '參數設定' },
+    appSecretAdmin: { id: 'common.menu.appSecretAdmin', defaultMessage: '金鑰設定' },
     programAdmin: { id: 'common.menu.programAdmin', defaultMessage: '線上課程' },
     programs: { id: 'common.menu.programs', defaultMessage: '課程管理' },
     programIssues: { id: 'common.menu.programIssues', defaultMessage: '課程問題' },

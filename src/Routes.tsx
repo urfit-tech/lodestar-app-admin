@@ -431,6 +431,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  app_secret: {
+    path: '/app/secret',
+    pageName: 'AppSecretAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
 }
 
 export let routesMap = { ...routesProps }

@@ -64,9 +64,8 @@ export type AppProps = {
   enabledModules: {
     [key in Module]?: boolean
   }
-  settings: {
-    [key: string]: string
-  }
+  settings: Record<string, string>
+  secrets: Record<string, string>
   currencies: { [currencyId: string]: Currency }
   locales: { [locale: string]: Record<string, string> }
 }

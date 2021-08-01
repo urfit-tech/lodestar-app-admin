@@ -403,6 +403,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           key: 'app_setting',
           name: formatMessage(commonMessages.menu.appSettingAdmin),
         },
+        {
+          permissionIsAllowed: permissions.APP_SETTING_ADMIN,
+          key: 'app_secret',
+          name: formatMessage(commonMessages.menu.appSecretAdmin),
+        },
       ],
     },
   ]

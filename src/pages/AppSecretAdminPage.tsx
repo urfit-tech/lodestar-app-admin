@@ -15,43 +15,43 @@ import * as hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 
-const AppSettingAdminPage: React.FC = () => {
+const AppSecretAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId, settings: appSettings } = useApp()
-  const { data: settingsData, loading } = useQuery<hasura.GET_SETTINGS, hasura.GET_SETTINGSVariables>(GET_SETTINGS, {
+  const { id: appId, secrets: appSecrets } = useApp()
+  const { data: secretsData, loading } = useQuery<hasura.GET_SECRETS, hasura.GET_SECRETSVariables>(GET_SECRETS, {
     variables: { appId },
   })
-  const settings =
-    settingsData?.setting.reduce((accum, v) => {
+  const secrets =
+    secretsData?.setting.reduce((accum, v) => {
       const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
       if (!accum[namespace]) {
         accum[namespace] = {}
       }
       accum[namespace][v.key] = {
-        value: v.app_settings.pop()?.value || '',
+        value: v.app_secrets.pop()?.value || '',
         type: v.type,
         options: v.options,
         isProtected: v.is_protected,
         isRequired: v.is_required,
       }
       return accum
-    }, {} as Record<string, AppSettings>) || {}
+    }, {} as Record<string, AppSecrets>) || {}
 
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <GlobalOutlined className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.appSettingAdmin)}</span>
+        <span>{formatMessage(commonMessages.menu.appSecretAdmin)}</span>
       </AdminPageTitle>
       {loading && <AdminCard loading className="mb-3" />}
-      {keys(settings)
+      {keys(secrets)
         .sort()
         .map(namespace => (
-          <AppSettingCard
+          <AppSecretCard
             appId={appId}
             title={namespace}
-            settings={settings[namespace]}
-            appSettings={appSettings}
+            secrets={secrets[namespace]}
+            appSecrets={appSecrets}
             className="mb-3"
           />
         ))}
@@ -59,7 +59,7 @@ const AppSettingAdminPage: React.FC = () => {
   )
 }
 
-type AppSettings = {
+type AppSecrets = {
   [key: string]: {
     value: string
     type: string
@@ -71,26 +71,26 @@ type AppSettings = {
 
 type FieldProps = { [key: string]: string }
 
-const AppSettingCard: React.FC<
+const AppSecretCard: React.FC<
   CardProps & {
     appId: string
-    settings: AppSettings
-    appSettings: Record<string, string>
+    secrets: AppSecrets
+    appSecrets: Record<string, string>
   }
-> = ({ appId, settings, appSettings, ...cardProps }) => {
+> = ({ appId, secrets, appSecrets, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const [updateAppSettings] = useMutation<hasura.UPSERT_APP_SETTINGS, hasura.UPSERT_APP_SETTINGSVariables>(
-    UPSERT_APP_SETTINGS,
+  const [updateAppSecrets] = useMutation<hasura.UPSERT_APP_SECRETS, hasura.UPSERT_APP_SECRETSVariables>(
+    UPSERT_APP_SECRETS,
   )
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {
     form.validateFields().then(() => {
       setLoading(true)
-      updateAppSettings({
+      updateAppSecrets({
         variables: {
-          appSettings: Object.keys(values)
+          appSecrets: Object.keys(values)
             .filter(key => values[key as keyof FieldProps])
             .map(key => ({
               app_id: appId,
@@ -117,34 +117,34 @@ const AppSettingCard: React.FC<
         colon={false}
         hideRequiredMark
         onFinish={handleSubmit}
-        initialValues={appSettings}
+        initialValues={appSecrets}
         requiredMark
       >
-        {keys(settings)
+        {keys(secrets)
           .sort()
           .map(key => {
-            const setting = settings[key]
-            const label = formatMessage({ id: `setting.key.${key}`, defaultMessage: key.toString() })
+            const secret = secrets[key]
+            const label = formatMessage({ id: `secret.key.${key}`, defaultMessage: key.toString() })
             return (
               <>
-                {setting.type === 'string' && (
+                {secret.type === 'string' && (
                   <Form.Item
                     key={key}
                     label={label}
                     name={key}
-                    rules={[{ required: setting.isRequired, whitespace: true }]}
+                    rules={[{ required: secret.isRequired, whitespace: true }]}
                   >
-                    <Input disabled={setting.isProtected} />
+                    <Input disabled={secret.isProtected} />
                   </Form.Item>
                 )}
-                {setting.type === 'number' && (
-                  <Form.Item key={key} label={label} name={key} required={setting.isRequired}>
-                    <InputNumber disabled={setting.isProtected} />
+                {secret.type === 'number' && (
+                  <Form.Item key={key} label={label} name={key} required={secret.isRequired}>
+                    <InputNumber disabled={secret.isProtected} />
                   </Form.Item>
                 )}
-                {setting.type === 'boolean' && (
-                  <Form.Item key={key} label={label} name={key} required={setting.isRequired}>
-                    <Switch disabled={setting.isProtected} />
+                {secret.type === 'boolean' && (
+                  <Form.Item key={key} label={label} name={key} required={secret.isRequired}>
+                    <Switch disabled={secret.isProtected} />
                   </Form.Item>
                 )}
               </>
@@ -163,29 +163,29 @@ const AppSettingCard: React.FC<
   )
 }
 
-const UPSERT_APP_SETTINGS = gql`
-  mutation UPSERT_APP_SETTINGS($appSettings: [app_setting_insert_input!]!) {
-    insert_app_setting(
-      objects: $appSettings
-      on_conflict: { update_columns: value, constraint: app_setting_app_id_key_key }
+const UPSERT_APP_SECRETS = gql`
+  mutation UPSERT_APP_SECRETS($appSecrets: [app_secret_insert_input!]!) {
+    insert_app_secret(
+      objects: $appSecrets
+      on_conflict: { update_columns: value, constraint: app_secret_app_id_key_key }
     ) {
       affected_rows
     }
   }
 `
 
-const GET_SETTINGS = gql`
-  query GET_SETTINGS($appId: String!) {
-    setting(where: { app_settings: { app_id: { _eq: $appId } } }) {
+const GET_SECRETS = gql`
+  query GET_SECRETS($appId: String!) {
+    setting(where: { app_secrets: { app_id: { _eq: $appId } } }) {
       key
       type
       options
       is_protected
       is_required
-      app_settings {
+      app_secrets {
         value
       }
     }
   }
 `
-export default AppSettingAdminPage
+export default AppSecretAdminPage
