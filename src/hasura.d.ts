@@ -482,38 +482,6 @@ export interface DELETE_PROGRAM_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_APP_BASIC
-// ====================================================
-
-export interface UPDATE_APP_BASIC_update_app {
-  __typename: "app_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APP_BASIC {
-  /**
-   * update data of the table: "app"
-   */
-  update_app: UPDATE_APP_BASIC_update_app | null;
-}
-
-export interface UPDATE_APP_BASICVariables {
-  appId: string;
-  name?: string | null;
-  title?: string | null;
-  description?: string | null;
-  vimeoProjectId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
 // ====================================================
 
@@ -6893,6 +6861,16 @@ export interface GET_APPLICATION_app_by_pk_app_hosts {
   host: string;
 }
 
+export interface GET_APPLICATION_app_by_pk_app_navs {
+  __typename: "app_nav";
+  block: string;
+  label: string;
+  href: string;
+  external: boolean;
+  tag: string | null;
+  position: number;
+}
+
 export interface GET_APPLICATION_app_by_pk_app_settings {
   __typename: "app_setting";
   key: string;
@@ -6920,6 +6898,10 @@ export interface GET_APPLICATION_app_by_pk {
    * An array relationship
    */
   app_hosts: GET_APPLICATION_app_by_pk_app_hosts[];
+  /**
+   * An array relationship
+   */
+  app_navs: GET_APPLICATION_app_by_pk_app_navs[];
   /**
    * An array relationship
    */
@@ -11405,6 +11387,88 @@ export interface INSERT_ACTIVITYVariables {
   memberId: string;
   appId: string;
   activityCategories: activity_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APP_HOSTS
+// ====================================================
+
+export interface UPDATE_APP_HOSTS_delete_app_host {
+  __typename: "app_host_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_HOSTS_insert_app_host {
+  __typename: "app_host_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_HOSTS {
+  /**
+   * delete data from the table: "app_host"
+   */
+  delete_app_host: UPDATE_APP_HOSTS_delete_app_host | null;
+  /**
+   * insert data into the table: "app_host"
+   */
+  insert_app_host: UPDATE_APP_HOSTS_insert_app_host | null;
+}
+
+export interface UPDATE_APP_HOSTSVariables {
+  appId: string;
+  appHosts: app_host_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APP_NAVS
+// ====================================================
+
+export interface UPDATE_APP_NAVS_delete_app_nav {
+  __typename: "app_nav_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_NAVS_insert_app_nav {
+  __typename: "app_nav_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_NAVS {
+  /**
+   * delete data from the table: "app_nav"
+   */
+  delete_app_nav: UPDATE_APP_NAVS_delete_app_nav | null;
+  /**
+   * insert data into the table: "app_nav"
+   */
+  insert_app_nav: UPDATE_APP_NAVS_insert_app_nav | null;
+}
+
+export interface UPDATE_APP_NAVSVariables {
+  appId: string;
+  appNavs: app_nav_insert_input[];
 }
 
 /* tslint:disable */

@@ -19,6 +19,7 @@ const defaultContextValue: AppContextProps = {
   loading: true,
   id: '',
   host: '',
+  hosts: [],
   name: '',
   title: null,
   description: null,
@@ -27,6 +28,7 @@ const defaultContextValue: AppContextProps = {
   secrets: {},
   currencies: {},
   locales: {},
+  navs: [],
 }
 
 const AppContext = createContext<AppContextProps>(defaultContextValue)
@@ -83,6 +85,7 @@ export const AppProvider: React.FC<{
     error,
     refetch,
     id: appId,
+    hosts: data?.app_by_pk?.app_hosts.map(v => v.host) || [],
     host: data?.app_by_pk?.app_hosts.shift()?.host || '',
     name: data?.app_by_pk?.name || '',
     title: data?.app_by_pk?.title || '',
@@ -91,6 +94,15 @@ export const AppProvider: React.FC<{
     enabledModules: Object.fromEntries(data?.app_by_pk?.app_modules.map(v => [v.module_id as Module, true]) || []),
     settings,
     secrets,
+    navs:
+      data?.app_by_pk?.app_navs.map(v => ({
+        block: v.block as AppProps['navs'][number]['block'],
+        label: v.label,
+        href: v.href,
+        external: v.external,
+        tag: v.tag,
+        position: v.position,
+      })) || [],
     locales:
       data?.locale.reduce((accum, v) => {
         keys(v)
@@ -164,6 +176,14 @@ const GET_APPLICATION = gql`
       }
       app_hosts(order_by: { priority: asc }) {
         host
+      }
+      app_navs(order_by: { position: asc }) {
+        block
+        label
+        href
+        external
+        tag
+        position
       }
       app_settings {
         key

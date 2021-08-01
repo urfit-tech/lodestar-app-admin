@@ -57,6 +57,7 @@ export type Currency = {
 export type AppProps = {
   id: string
   host: string
+  hosts: string[]
   name: string | null
   title: string | null
   description: string | null
@@ -68,4 +69,12 @@ export type AppProps = {
   secrets: Record<string, string>
   currencies: { [currencyId: string]: Currency }
   locales: { [locale: string]: Record<string, string> }
+  navs: {
+    block: 'header' | 'footer' | 'social_media'
+    label: string
+    href: string
+    external: boolean
+    tag: string | null
+    position: number
+  }[]
 }
