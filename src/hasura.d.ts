@@ -11395,6 +11395,35 @@ export interface INSERT_ACTIVITYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_LOGO
+// ====================================================
+
+export interface UPDATE_LOGO_insert_app_setting {
+  __typename: "app_setting_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_LOGO {
+  /**
+   * insert data into the table: "app_setting"
+   */
+  insert_app_setting: UPDATE_LOGO_insert_app_setting | null;
+}
+
+export interface UPDATE_LOGOVariables {
+  appId: string;
+  logoUrl: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APP_HOSTS
 // ====================================================
 

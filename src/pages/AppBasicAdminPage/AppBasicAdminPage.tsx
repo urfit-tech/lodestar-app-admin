@@ -1,12 +1,11 @@
 import { GlobalOutlined } from '@ant-design/icons'
-import { CardProps } from 'antd/lib/card'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
-import AdminCard from '../../components/admin/AdminCard'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
+import AppBasicAdminCard from './AppBasicAdminCard'
 import AppHostAdminCard from './AppHostAdminCard'
 import AppNavAdminCard from './AppNavAdminCard'
 
@@ -25,10 +24,6 @@ const AppBasicAdminPage: React.FC = () => {
       <AppNavAdminCard className="mb-3" title="App Navs"></AppNavAdminCard>
     </AdminLayout>
   )
-}
-type AppBasicAdminCardProps = CardProps
-const AppBasicAdminCard: React.VFC<AppBasicAdminCardProps> = ({ ...cardProps }) => {
-  return <AdminCard {...cardProps}>logo</AdminCard>
 }
 
 export default AppBasicAdminPage
