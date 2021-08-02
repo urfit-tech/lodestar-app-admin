@@ -285,7 +285,7 @@ export const commonMessages = {
     orderSuccess: { id: 'common.status.orderSuccess', defaultMessage: '已完成' },
     orderUnpaid: { id: 'common.status.orderUnpaid', defaultMessage: '待付款' },
     orderRefund: { id: 'common.status.orderRefund', defaultMessage: '已退款' },
-    orderPartialRefund: {id: 'common.status.orderPartialRefund', defaultMessage: '部分退款'},
+    orderPartialRefund: { id: 'common.status.orderPartialRefund', defaultMessage: '部分退款' },
     orderExpired: { id: 'common.status.orderExpired', defaultMessage: '已失效' },
     orderFailed: { id: 'common.status.orderFailed', defaultMessage: '付款失敗' },
     orderDeleted: { id: 'common.status.orderDeleted', defaultMessage: '已刪除' },
@@ -304,7 +304,7 @@ export const commonMessages = {
     finished: { id: 'common.status.finished', defaultMessage: '已結束' },
     visible: { id: 'common.status.visible', defaultMessage: '顯示' },
     invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
-    orderPartialPaid: {id: 'common.status.orderPartialPaid', defaultMessage: '部分付款'}
+    orderPartialPaid: { id: 'common.status.orderPartialPaid', defaultMessage: '部分付款' },
   }),
   menu: defineMessages({
     learningOverviewAdmin: { id: 'common.menu.learningOverviewAdmin', defaultMessage: '學習總覽' },
@@ -610,7 +610,7 @@ export const promotionMessages = {
     coupon: { id: 'promotion.label.coupon', defaultMessage: '折價券' },
     couponPlanTitle: { id: 'promotion.label.couponPlanTitle', defaultMessage: '折價方案名稱' },
     couponCode: { id: 'promotion.label.couponCode', defaultMessage: '折扣代碼' },
-    voucher: {id: 'promotion.label.voucher', defaultMessage: '兌換券'},
+    voucher: { id: 'promotion.label.voucher', defaultMessage: '兌換券' },
     voucherCode: { id: 'promotion.label.voucherCode', defaultMessage: '兌換代碼' },
     couponCodes: { id: 'promotion.label.couponCodes', defaultMessage: '折扣碼' },
     voucherCodes: { id: 'promotion.label.voucherCodes', defaultMessage: '兌換碼' },
@@ -1248,8 +1248,6 @@ export const craftPageMessages = {
     url: { id: 'craft.label.url', defaultMessage: '網址' },
     latestUpdatedAt: { id: 'craft.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
     publish: { id: 'craft.label.publish', defaultMessage: '發佈' },
-    boundary: { id: 'craft.label.boundary', defaultMessage: '邊界' },
-    borderSpacing: { id: 'craft.label.borderSpacing', defaultMessage: '邊框間距' },
     columnAmount: { id: 'craft.label.columnAmount', defaultMessage: '欄數' },
     ratio: { id: 'craft.label.ratio', defaultMessage: '比例' },
     displayAmount: { id: 'craft.label.displayAmount', defaultMessage: '資料顯示數量' },
@@ -1263,8 +1261,8 @@ export const craftPageMessages = {
     paragraphStyle: { id: 'craft.label.paragraphStyle', defaultMessage: '段落樣式' },
     paragraphContent: { id: 'craft.label.paragraphContent', defaultMessage: '段落內容' },
     cardStyle: { id: 'craft.label.cardStyle', defaultMessage: '卡片樣式' },
-    padding: { id: 'craft.label.padding', defaultMessage: '內距' },
-    margin: { id: 'craft.label.margin', defaultMessage: '外距' },
+    boundary: { id: 'craft.label.boundary', defaultMessage: '邊界' },
+    borderSpacing: { id: 'craft.label.borderSpacing', defaultMessage: '邊框間距' },
     buttonSetting: { id: 'craft.label.buttonSetting', defaultMessage: '按鈕設定' },
     buttonStyle: { id: 'craft.label.buttonStyle', defaultMessage: '按鈕樣式' },
     carouselSetting: { id: 'craft.label.carouselSetting', defaultMessage: '輪播設定' },
@@ -1361,6 +1359,10 @@ export const craftPageMessages = {
     publishedNotation: {
       id: 'craft.text.publishedNotation',
       defaultMessage: '現在你的頁面已經發佈，此頁面將會顯示。',
+    },
+    boxModelInputWarning: {
+      id: 'craft.text.boxModelInputWarning',
+      defaultMessage: '請填入以下格式，5;3;5;3;',
     },
   }),
 }
