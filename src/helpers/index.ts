@@ -83,8 +83,21 @@ export const downloadFile = async (fileName: string, config: AxiosRequestConfig)
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
-export const currencyFormatter = (value?: number | string | null) =>
-  value !== null && value !== undefined && `NT$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+export const priceFormatter = (value?: number | string | null, currencyId?: string, locale?: string, unit?: string) => {
+  const newlocale = locale ? locale : undefined
+  const newCurrencyId = currencyId ? currencyId : 'TWD'
+  const newValue = value ? value : 0
+  if (newCurrencyId === 'LSC') {
+    return unit ? newValue + ' ' + unit : String(newValue)
+  }
+  return (
+    newValue.toLocaleString(newlocale, { style: 'currency', currency: newCurrencyId, maximumFractionDigits: 0 }) || ''
+  )
+}
+
+export const currencyFormatter = (value?: number | string | null) => {
+  return value !== null && value !== undefined && `NT$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
 
 export const dateFormatter = (value: Date | string, format?: string) =>
   moment(value).format(format || `YYYY/MM/DD HH:mm`)
