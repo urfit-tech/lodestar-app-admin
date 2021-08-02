@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
@@ -25,8 +26,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   programPlan: ProgramPlanProps
   onRefetch?: () => void
 }> = ({ programId, programPlan, onRefetch }) => {
-  const { formatMessage } = useIntl()
-  const { salePrice, listPrice, discountDownPrice, periodType, periodAmount } = programPlan
+  const { locale, formatMessage } = useIntl()
+  const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
+  const { settings } = useApp()
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
@@ -39,6 +41,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         downPrice={discountDownPrice || undefined}
         periodAmount={periodAmount || 1}
         periodType={periodType as ProgramPlanPeriodType}
+        currencyId={currencyId}
+        locale={locale}
+        unit={settings['coin.unit']}
       />
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>

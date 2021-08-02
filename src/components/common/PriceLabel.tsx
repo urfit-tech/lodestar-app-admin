@@ -1,7 +1,7 @@
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { currencyFormatter } from '../../helpers'
+import { priceFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 
@@ -46,7 +46,10 @@ const PriceLabel: React.FC<{
   downPrice?: number
   periodAmount?: number
   periodType?: PeriodType
-}> = ({ listPrice, salePrice, downPrice, periodAmount, periodType }) => {
+  currencyId?: string
+  locale?: string
+  unit?: string
+}> = ({ listPrice, salePrice, downPrice, periodAmount, periodType, currencyId, locale, unit }) => {
   const { formatMessage } = useIntl()
   const price = salePrice || listPrice
   const firstPeriodPrice = price - (downPrice || 0)
@@ -57,7 +60,7 @@ const PriceLabel: React.FC<{
         <StyledPriceLabel className="discount-down-price">
           {formatMessage(messages.firstPeriod)}
           {firstPeriodPrice <= 0 ? formatMessage(messages.free) : ''}
-          {' ' + currencyFormatter(firstPeriodPrice)}
+          {' ' + priceFormatter(firstPeriodPrice, currencyId, locale, unit)}
         </StyledPriceLabel>
       )}
 
@@ -66,7 +69,7 @@ const PriceLabel: React.FC<{
           <span className="mr-1">
             {typeof downPrice === 'number' ? formatMessage(messages.second) : ''}
             {salePrice === 0 ? formatMessage(messages.free) : ''}
-            {' ' + currencyFormatter(salePrice)}
+            {' ' + priceFormatter(salePrice, currencyId, locale, unit)}
           </span>
           <span>
             {periodType &&
@@ -92,7 +95,7 @@ const PriceLabel: React.FC<{
           {typeof downPrice === 'number' && typeof salePrice === 'undefined' ? formatMessage(messages.second) : ''}
           {typeof salePrice === 'number' ? formatMessage(messages.originalPrice) : ''}
           {listPrice === 0 ? formatMessage(messages.free) : ''}
-          {' ' + currencyFormatter(listPrice)}
+          {' ' + priceFormatter(listPrice, currencyId, locale, unit)}
         </span>
         <span>
           {periodType &&

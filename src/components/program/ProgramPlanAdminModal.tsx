@@ -150,9 +150,6 @@ const ProgramPlanAdminModal: React.FC<
           discountDownPrice: programPlan?.discountDownPrice,
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
         }}
-        onValuesChange={(values: any) => {
-          values.currencyId !== currencyId && setCurrencyId(values.currencyId)
-        }}
       >
         <Form.Item
           label={formatMessage(programMessages.label.planTitle)}
@@ -211,7 +208,7 @@ const ProgramPlanAdminModal: React.FC<
               },
             ]}
           >
-            <CurrencySelector />
+            <CurrencySelector onChange={value => setCurrencyId(value && value !== currencyId ? value : currencyId)} />
           </Form.Item>
         )}
 
