@@ -98,14 +98,14 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
                   ]}
                   titleStyle={{
                     fontSize: 10,
-                    padding: 3,
+                    padding: {},
                     textAlign: 'center',
                     fontWeight: 'bold',
                     color: '#c8c858',
                   }}
                   paragraphStyle={{
                     fontSize: 14,
-                    padding: 0,
+                    padding: {},
                     lineHeight: 1,
                     textAlign: 'left',
                     fontWeight: 'normal',
