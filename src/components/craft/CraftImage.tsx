@@ -1,6 +1,5 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Collapse } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import StyledImage from 'lodestar-app-element/src/components/Image'
@@ -10,9 +9,9 @@ import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { CraftBoxModelProps, CraftImageProps } from '../../types/craft'
 import { AdminHeaderTitle, StyledCollapsePanel, StyledSettingButtonWrapper } from '../admin'
 import ImageUploader from '../common/ImageUploader'
-import CraftBoxModelBlock from './CraftBoxModelBlock'
+import CraftBoxModelInput, { formatBoxModelValue } from './CraftBoxModelInput'
 
-type FieldProps = CraftImageProps & { boxModel: CraftBoxModelProps }
+type FieldProps = CraftImageProps & { padding: string; margin: string }
 
 const CraftImage: UserComponent<
   CraftImageProps &
@@ -26,16 +25,14 @@ const CraftImage: UserComponent<
     <StyledImage
       ref={ref => ref && connect(drag(ref))}
       customStyle={{
-        m: margin.m,
-        mt: margin.mt,
-        mr: margin.mr,
-        mb: margin.mb,
-        ml: margin.ml,
-        p: padding.p,
-        pt: padding.pt,
-        pr: padding.pt,
-        pb: padding.pb,
-        pl: padding.pl,
+        mt: margin?.mt,
+        mr: margin?.mr,
+        mb: margin?.mb,
+        ml: margin?.ml,
+        pt: padding?.pt,
+        pr: padding?.pt,
+        pb: padding?.pb,
+        pl: padding?.pl,
       }}
       src={coverUrl}
       style={{ cursor: 'pointer' }}
@@ -44,7 +41,7 @@ const CraftImage: UserComponent<
   )
 }
 
-const ImageSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
+const ImageSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
 
@@ -59,15 +56,22 @@ const ImageSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
   const [coverImage, setCoverImage] = useState<File | null>(null)
 
   const handleSubmit = (values: FieldProps) => {
+    const padding = formatBoxModelValue(values.padding)
+    const margin = formatBoxModelValue(values.margin)
+
     setProp(props => {
       props.type = values.type
-      props.padding = values.boxModel.padding
+      props.padding = {
+        pt: padding?.[0] || '0',
+        pr: padding?.[1] || '0',
+        pb: padding?.[2] || '0',
+        pl: padding?.[3] || '0',
+      }
       props.margin = {
-        m: values.boxModel.margin.m,
-        mt: values.boxModel.margin.mt,
-        mr: values.boxModel.margin.mr,
-        mb: values.boxModel.margin.mb,
-        ml: values.boxModel.margin.ml,
+        mt: margin?.[0] || '0',
+        mr: margin?.[1] || '0',
+        mb: margin?.[2] || '0',
+        ml: margin?.[3] || '0',
       }
     })
     //TODO: upload image
@@ -81,21 +85,14 @@ const ImageSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
       requiredMark={false}
       initialValues={{
         coverImage: props.coverUrl,
-        boxModel: {
-          padding: props.padding,
-          margin: {
-            m: props.margin.m,
-            mt: props.margin.mt,
-            mr: props.margin.mr,
-            mb: props.margin.mb,
-            ml: props.margin.ml,
-          },
-        },
+        padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+          props.padding?.pl || 0
+        }`,
+        margin: `${props.margin?.mt || 0};${props.margin?.mr || 0};${props.margin?.mb || 0};${props.margin?.ml || 0}`,
       }}
       onFinish={handleSubmit}
     >
       <Collapse
-        {...collapseProps}
         className="mt-2 p-0"
         bordered={false}
         expandIconPosition="right"
@@ -117,9 +114,39 @@ const ImageSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
-      <Form.Item name="boxModel">
-        <CraftBoxModelBlock />
-      </Form.Item>
+      <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['container']}>
+        <StyledCollapsePanel
+          key="container"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
+        >
+          <Form.Item
+            name="padding"
+            label={formatMessage(craftPageMessages.label.boundary)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <CraftBoxModelInput />
+          </Form.Item>
+          <Form.Item
+            name="margin"
+            label={formatMessage(craftPageMessages.label.borderSpacing)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <CraftBoxModelInput />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
       {selected && (
         <StyledSettingButtonWrapper>
           <Button className="mb-3" type="primary" block htmlType="submit">

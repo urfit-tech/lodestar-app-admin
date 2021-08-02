@@ -1,39 +1,30 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Collapse, Radio } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import StyledSection from 'lodestar-app-element/src/components/BackgroundSection'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import { CraftMarginProps } from '../../types/craft'
+import { CraftMarginProps, CraftPaddingProps } from '../../types/craft'
 import { AdminHeaderTitle, StyledCollapsePanel, StyledSettingButtonWrapper } from '../admin'
 import ImageUploader from '../common/ImageUploader'
-import CraftBoxModelBlock from './CraftBoxModelBlock'
+import CraftBoxModelInput, { formatBoxModelValue } from './CraftBoxModelInput'
 import CraftColorPickerBlock from './CraftColorPickerBlock'
-
-type FieldProps = {
-  backgroundType: 'none' | 'solidColor' | 'backgroundImage'
-  solidColor?: string
-  backgroundImageUrl?: string
-  boxModel: {
-    padding: number
-    margin: CraftMarginProps
-  }
-}
 
 type CraftBackgroundProps = {
   backgroundType: 'none' | 'solidColor' | 'backgroundImage'
   solidColor?: string
   coverUrl?: string
-  padding: number
+  padding: CraftPaddingProps
   margin: CraftMarginProps
 }
 
+type FieldProps = Omit<CraftBackgroundProps, 'padding' | 'margin'> & { padding: string; margin: string }
+
 const CraftBackground: UserComponent<
   { setActiveKey: React.Dispatch<React.SetStateAction<string>> } & CraftBackgroundProps
-> = ({ backgroundType, solidColor, padding, margin, coverUrl, setActiveKey, children }) => {
+> = ({ backgroundType, solidColor, padding, margin, coverUrl, setActiveKey }) => {
   const {
     connectors: { connect, drag },
   } = useNode()
@@ -42,12 +33,14 @@ const CraftBackground: UserComponent<
     <StyledSection
       ref={ref => ref && connect(drag(ref))}
       customStyle={{
-        m: margin.m,
+        pt: padding.pt,
+        pr: padding.pr,
+        pb: padding.pb,
+        pl: padding.pl,
         mt: margin.mt,
         mr: margin.mr,
         mb: margin.mb,
         ml: margin.ml,
-        p: padding,
       }}
       background-image={coverUrl}
       style={{ cursor: 'pointer' }}
@@ -58,7 +51,7 @@ const CraftBackground: UserComponent<
   )
 }
 
-const BackgroundSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
+const BackgroundSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
 
@@ -73,15 +66,22 @@ const BackgroundSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
   const [backgroundImage, setBackgroundImage] = useState<File | null>(null)
 
   const handleSubmit = (values: FieldProps) => {
+    const padding = formatBoxModelValue(values.padding)
+    const margin = formatBoxModelValue(values.margin)
+
     setProp(props => {
       props.backgroundType = values.backgroundType
-      props.padding = values.boxModel.padding
+      props.padding = {
+        pt: padding?.[0] || '0',
+        pr: padding?.[1] || '0',
+        pb: padding?.[2] || '0',
+        pl: padding?.[3] || '0',
+      }
       props.margin = {
-        m: values.boxModel.margin.m,
-        mt: values.boxModel.margin.mt,
-        mr: values.boxModel.margin.mr,
-        mb: values.boxModel.margin.mb,
-        ml: values.boxModel.margin.ml,
+        mt: margin?.[0] || '0',
+        mr: margin?.[1] || '0',
+        mb: margin?.[2] || '0',
+        ml: margin?.[3] || '0',
       }
     })
     //TODO: upload image
@@ -97,21 +97,14 @@ const BackgroundSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
         backgroundType: props.backgroundType || 'none',
         solidColor: props.solidColor || '#cccccc',
         backgroundImage: props.coverUrl || '',
-        boxModel: {
-          padding: props.padding,
-          margin: {
-            m: props.margin.m,
-            mt: props.margin.mt,
-            mr: props.margin.mr,
-            mb: props.margin.mb,
-            ml: props.margin.ml,
-          },
-        },
+        padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+          props.padding?.pl || 0
+        }`,
+        margin: `${props.margin?.mt || 0};${props.margin?.mr || 0};${props.margin?.mb || 0};${props.margin?.ml || 0}`,
       }}
       onFinish={handleSubmit}
     >
       <Collapse
-        {...collapseProps}
         className="mt-2 p-0"
         bordered={false}
         expandIconPosition="right"
@@ -177,9 +170,40 @@ const BackgroundSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
         </StyledCollapsePanel>
       </Collapse>
 
-      <Form.Item name="boxModel">
-        <CraftBoxModelBlock />
-      </Form.Item>
+      <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['container']}>
+        <StyledCollapsePanel
+          key="container"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
+        >
+          <Form.Item
+            name="padding"
+            label={formatMessage(craftPageMessages.label.boundary)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <CraftBoxModelInput />
+          </Form.Item>
+          <Form.Item
+            name="margin"
+            label={formatMessage(craftPageMessages.label.borderSpacing)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <CraftBoxModelInput />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
+
       {selected && (
         <StyledSettingButtonWrapper>
           <Button className="mb-3" type="primary" block htmlType="submit">

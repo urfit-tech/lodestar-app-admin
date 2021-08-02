@@ -5,12 +5,12 @@ import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
-import CraftPageBasicSettingBlock from '../../components/craft/CraftPageBasicSettingBlock'
-import CraftPagePublishAdminBlock from '../../components/craft/CraftPagePublishAdminBlock'
-import CraftPageSettingBlock from '../../components/craft/CraftPageSettingBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { useApp } from '../../contexts/AppContext'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import CraftPageBasicSettingBlock from './CraftPageBasicSettingBlock'
+import CraftPagePublishAdminBlock from './CraftPagePublishAdminBlock'
+import CraftPageSettingBlock from './CraftPageSettingBlock'
 
 const CraftPageAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()

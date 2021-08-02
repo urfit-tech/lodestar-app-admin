@@ -3,9 +3,9 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import AdminModal from '../../components/admin/AdminModal'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { CraftPageAdminProps } from '../../types/craft'
-import AdminModal from '../admin/AdminModal'
 
 const StyledConfirmation = styled.div`
   line-height: 24px;

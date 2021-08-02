@@ -3,7 +3,7 @@ import { Button } from 'antd'
 import TextArea from 'antd/lib/input/TextArea'
 import React, { useState } from 'react'
 
-const CraftActionsPanel = () => {
+const CraftActionsPanel: React.VFC = () => {
   const {
     query,
     actions: { deserialize },

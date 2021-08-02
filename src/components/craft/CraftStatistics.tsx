@@ -1,6 +1,5 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Collapse, Form, Radio } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -14,20 +13,22 @@ import {
 } from '../../types/craft'
 import { AdminHeaderTitle, StyledCollapsePanel, StyledSettingButtonWrapper } from '../admin'
 import ImageUploader from '../common/ImageUploader'
-import CraftBoxModelBlock from './CraftBoxModelBlock'
+import CraftBoxModelInput, { formatBoxModelValue } from './CraftBoxModelInput'
 import CraftTextStyleBlock from './CraftTextStyleBlock'
 import CraftTitleContentBlock from './CraftTitleContentBlock'
 
-type FieldProps = {
-  type: string
-  boxModel: CraftBoxModelProps
-  titleContent: string
-  titleStyle: CraftTextStyleProps
-  paragraphContent: string
-  paragraphStyle: CraftTextStyleProps
-}
 type CraftStatisticsProps = CraftImageProps &
   CraftBoxModelProps & { title: CraftTitleProps; paragraph: CraftParagraphProps }
+
+type FieldProps = {
+  type: string
+  padding: string
+  margin: string
+  titleContent: string
+  titleStyle: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
+  paragraphContent: string
+  paragraphStyle: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
+}
 
 const CraftStatistics: UserComponent<
   CraftStatisticsProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }
@@ -40,8 +41,8 @@ const CraftStatistics: UserComponent<
     <div
       ref={ref => ref && connect(drag(ref))}
       style={{
-        padding: `${padding}px`,
-        margin: margin.m ? margin.m : `${margin.mt}px ${margin.mr}px ${margin.mb}px ${margin.ml}px`,
+        padding: `${padding?.pt}px ${padding?.pr}px ${padding?.pb}px ${padding?.pl}px`,
+        margin: `${margin?.mt}px ${margin?.mr}px ${margin?.mb}px ${margin?.ml}px`,
         cursor: 'pointer',
       }}
       onClick={() => setActiveKey('settings')}
@@ -51,7 +52,7 @@ const CraftStatistics: UserComponent<
   )
 }
 
-const StatisticsSettings: React.VFC<CraftStatisticsProps & CollapseProps> = ({ ...collapseProps }) => {
+const StatisticsSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
 
@@ -60,21 +61,41 @@ const StatisticsSettings: React.VFC<CraftStatisticsProps & CollapseProps> = ({ .
     props,
     selected,
   } = useNode(node => ({
-    props: node.data.props as CraftStatisticsProps,
+    props: node.data.props as CraftBoxModelProps & CraftStatisticsProps,
     selected: node.events.selected,
   }))
   const [coverImage, setCoverImage] = useState<File | null>(null)
 
   const handleSubmit = (values: FieldProps) => {
+    const padding = formatBoxModelValue(values.padding)
+    const margin = formatBoxModelValue(values.margin)
+    const titlePadding = formatBoxModelValue(values.titleStyle.padding)
+    const paragraphPadding = formatBoxModelValue(values.paragraphStyle.padding)
+
     setProp(props => {
       props.type = values.type
       props.coverImage = coverImage
-      props.padding = values.boxModel.padding
-      props.margin = values.boxModel.margin
+      props.padding = {
+        pt: padding?.[0] || '0',
+        pr: padding?.[1] || '0',
+        pb: padding?.[2] || '0',
+        pl: padding?.[3] || '0',
+      }
+      props.margin = {
+        mt: margin?.[0] || '0',
+        mr: margin?.[1] || '0',
+        mb: margin?.[2] || '0',
+        ml: margin?.[3] || '0',
+      }
       props.title = {
         titleContent: values.titleContent,
         fontSize: values.titleStyle.fontSize,
-        padding: values.titleStyle.padding,
+        padding: {
+          pt: titlePadding?.[0] || '0',
+          pr: titlePadding?.[1] || '0',
+          pb: titlePadding?.[2] || '0',
+          pl: titlePadding?.[3] || '0',
+        },
         textAlign: values.titleStyle.textAlign,
         fontWeight: values.titleStyle.fontWeight,
         color: values.titleStyle.color,
@@ -82,7 +103,12 @@ const StatisticsSettings: React.VFC<CraftStatisticsProps & CollapseProps> = ({ .
       props.paragraph = {
         content: values.paragraphContent,
         fontSize: values.paragraphStyle.fontSize,
-        padding: values.paragraphStyle.padding,
+        padding: {
+          pt: paragraphPadding?.[0] || '0',
+          pr: paragraphPadding?.[1] || '0',
+          pb: paragraphPadding?.[2] || '0',
+          pl: paragraphPadding?.[3] || '0',
+        },
         textAlign: values.paragraphStyle.textAlign,
         fontWeight: values.paragraphStyle.fontWeight,
         color: values.paragraphStyle.color,
@@ -100,14 +126,16 @@ const StatisticsSettings: React.VFC<CraftStatisticsProps & CollapseProps> = ({ .
       initialValues={{
         type: props.type || 'image',
         coverImage: props.coverUrl,
-        boxModel: {
-          padding: props.padding,
-          margin: props.margin,
-        },
+        padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+          props.padding?.pl || 0
+        }`,
+        margin: `${props.margin?.mt || 0};${props.margin?.mr || 0};${props.margin?.mb || 0};${props.margin?.ml || 0}`,
         titleContent: props.title.titleContent || '',
         titleStyle: {
           fontSize: props.title.fontSize || 16,
-          padding: props.title.padding || 0,
+          padding: `${props.title.padding?.pt || 0};${props.title.padding?.pr || 0};${props.title.padding?.pb || 0};${
+            props.title.padding?.pl || 0
+          }`,
           textAlign: props.title.textAlign || 'left',
           fontWeight: props.title.fontWeight || 'normal',
           color: props.title.color || '#585858',
@@ -116,7 +144,9 @@ const StatisticsSettings: React.VFC<CraftStatisticsProps & CollapseProps> = ({ .
         paragraphStyle: {
           fontSize: props.paragraph.fontSize || 16,
           lineHeight: props.paragraph.lineHeight || 1,
-          padding: props.paragraph.padding || 0,
+          padding: `${props.paragraph.padding?.pt || 0};${props.paragraph.padding?.pr || 0};${
+            props.paragraph.padding?.pb || 0
+          };${props.paragraph.padding?.pl || 0}`,
           textAlign: props.paragraph.textAlign || 'left',
           fontWeight: props.paragraph.fontWeight || 'normal',
           color: props.paragraph.color || '#585858',
@@ -125,7 +155,6 @@ const StatisticsSettings: React.VFC<CraftStatisticsProps & CollapseProps> = ({ .
       onFinish={handleSubmit}
     >
       <Collapse
-        {...collapseProps}
         className="mt-2 p-0"
         bordered={false}
         expandIconPosition="right"
@@ -174,9 +203,45 @@ const StatisticsSettings: React.VFC<CraftStatisticsProps & CollapseProps> = ({ .
         </StyledCollapsePanel>
       </Collapse>
       {props.type === 'image' && (
-        <Form.Item name="boxModel">
-          <CraftBoxModelBlock />
-        </Form.Item>
+        <Collapse
+          className="mt-2 p-0"
+          bordered={false}
+          expandIconPosition="right"
+          ghost
+          defaultActiveKey={['container']}
+        >
+          <StyledCollapsePanel
+            key="container"
+            header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
+          >
+            <Form.Item
+              name="padding"
+              label={formatMessage(craftPageMessages.label.boundary)}
+              rules={[
+                {
+                  required: true,
+                  pattern: /^\d+;\d+;\d+;\d+;$/,
+                  message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+                },
+              ]}
+            >
+              <CraftBoxModelInput />
+            </Form.Item>
+            <Form.Item
+              name="margin"
+              label={formatMessage(craftPageMessages.label.borderSpacing)}
+              rules={[
+                {
+                  required: true,
+                  pattern: /^\d+;\d+;\d+;\d+;$/,
+                  message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+                },
+              ]}
+            >
+              <CraftBoxModelInput />
+            </Form.Item>
+          </StyledCollapsePanel>
+        </Collapse>
       )}
       <Form.Item name="titleContent">
         <CraftTitleContentBlock />
