@@ -52,6 +52,7 @@ export type Currency = {
   name: string
   label: string
   unit: string
+  minorUnits: number
 }
 
 export type AppProps = {
