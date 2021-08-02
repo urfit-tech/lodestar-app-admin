@@ -1,13 +1,12 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Collapse, Form } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import { useForm } from 'antd/lib/form/Form'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { CraftPaddingProps } from '../../types/craft'
 import { AdminHeaderTitle, StyledCollapsePanel, StyledSettingButtonWrapper } from '../admin'
-import CraftBoxModelInput from './CraftBoxModelInput'
+import CraftBoxModelInput, { formatBoxModelValue } from './CraftBoxModelInput'
 
 type FieldProps = { padding: string }
 
@@ -33,7 +32,7 @@ const CraftContainer: UserComponent<{
   )
 }
 
-const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
+const ContainerSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
 
@@ -48,12 +47,14 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
   }))
 
   const handleSubmit = (values: FieldProps) => {
+    const padding = formatBoxModelValue(values.padding)
+
     setProp(props => {
       props.padding = {
-        pt: values.padding.split(';')[0] || 0,
-        pr: values.padding.split(';')[1] || 0,
-        pb: values.padding.split(';')[2] || 0,
-        pl: values.padding.split(';')[3] || 0,
+        pt: padding?.[0] || '0',
+        pr: padding?.[1] || '0',
+        pb: padding?.[2] || '0',
+        pl: padding?.[3] || '0',
       }
     })
   }
@@ -67,18 +68,11 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
       initialValues={{
         padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
           props.padding?.pl || 0
-        };`,
+        }`,
       }}
       onFinish={handleSubmit}
     >
-      <Collapse
-        {...collapseProps}
-        className="mt-2 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['container']}
-      >
+      <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['container']}>
         <StyledCollapsePanel
           key="container"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
@@ -88,7 +82,7 @@ const ContainerSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
             rules={[
               {
                 required: true,
-                pattern: /^\d+;\d+;\d+;\d+;$/,
+                pattern: /^\d+;\d+;\d+;\d+$/,
                 message: formatMessage(craftPageMessages.text.boxModelInputWarning),
               },
             ]}
