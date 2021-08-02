@@ -1,6 +1,6 @@
 import { GlobalOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Form, Input, InputNumber, message, Switch } from 'antd'
+import { Button, Form, Input, InputNumber, message, Select } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
@@ -49,6 +49,7 @@ const AppSettingAdminPage: React.FC = () => {
         .sort()
         .map(namespace => (
           <AppSettingCard
+            key={namespace}
             appId={appId}
             title={namespace}
             settings={settings[namespace]}
@@ -128,7 +129,7 @@ const AppSettingCard: React.FC<
             const label = formatMessage({ id: `setting.key.${key}`, defaultMessage: key.toString() })
             return (
               <>
-                {setting.type === 'string' && (
+                {setting.type === 'string' && setting.options === null && (
                   <Form.Item
                     key={key}
                     label={label}
@@ -138,6 +139,22 @@ const AppSettingCard: React.FC<
                     <Input disabled={setting.isProtected} />
                   </Form.Item>
                 )}
+                {setting.type === 'string' && setting.options && (
+                  <Form.Item
+                    key={key}
+                    label={label}
+                    name={key}
+                    rules={[{ required: setting.isRequired, whitespace: true }]}
+                  >
+                    <Select disabled={setting.isProtected}>
+                      {setting.options.map((option: string) => (
+                        <Select.Option key={option} value={option}>
+                          {option}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                )}
                 {setting.type === 'number' && (
                   <Form.Item key={key} label={label} name={key} required={setting.isRequired}>
                     <InputNumber disabled={setting.isProtected} />
@@ -145,7 +162,10 @@ const AppSettingCard: React.FC<
                 )}
                 {setting.type === 'boolean' && (
                   <Form.Item key={key} label={label} name={key} required={setting.isRequired}>
-                    <Switch disabled={setting.isProtected} />
+                    <Select disabled={setting.isProtected}>
+                      <Select.Option value="1">True</Select.Option>
+                      <Select.Option value="0">False</Select.Option>
+                    </Select>
                   </Form.Item>
                 )}
               </>
