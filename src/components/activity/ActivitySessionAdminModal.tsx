@@ -99,7 +99,7 @@ const ActivitySessionAdminModal: React.FC<
           startedAt: activitySession ? moment(activitySession.startedAt) : null,
           endedAt: activitySession ? moment(activitySession.endedAt) : null,
           offlineLocation: activitySession?.location || '',
-          onlineLink: activitySession?.onlineLink || `meet.jit.si/${uuid()}`,
+          onlineLink: activitySession?.onlineLink || `https://meet.jit.si/${uuid()}`,
           threshold: activitySession?.threshold || null,
         }}
       >
@@ -189,8 +189,8 @@ const ActivityOnlineLinkInput: React.VFC<{ value?: string; onChange?: (value: st
   onChange,
 }) => {
   const { formatMessage } = useIntl()
-  const isSystemLink = value.includes('meet.jit.si')
-  const [systemLink] = useState(isSystemLink ? value : `meet.jit.si/${uuid()}`)
+  const isSystemLink = value.includes('https://meet.jit.si')
+  const [systemLink] = useState(isSystemLink ? value : `https://meet.jit.si/${uuid()}`)
   const [customLink, setCustomLink] = useState(isSystemLink ? '' : value)
   const [check, setCheck] = useState(isSystemLink)
 

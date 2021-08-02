@@ -2,23 +2,23 @@ import { Editor, Element, Frame } from '@craftjs/core'
 import { Tabs } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import CraftBackground from '../../components/craft/CraftBackground'
+import CraftButton from '../../components/craft/CraftButton'
+import CraftCard from '../../components/craft/CraftCard'
+import CraftCarousel from '../../components/craft/CraftCarousel'
+import CraftCollapse from '../../components/craft/CraftCollapse'
+import CraftContainer from '../../components/craft/CraftContainer'
+import CraftDataSelector from '../../components/craft/CraftDataSelector'
+import CraftImage from '../../components/craft/CraftImage'
+import CraftLayout from '../../components/craft/CraftLayout'
+import CraftParagraph from '../../components/craft/CraftParagraph'
+import CraftStatistics from '../../components/craft/CraftStatistics'
+import CraftTitle from '../../components/craft/CraftTitle'
+import CraftTitleAndParagraph from '../../components/craft/CraftTitleAndParagraph'
 import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
 import { ReactComponent as BrushIcon } from '../../images/icon/paintbrush.svg'
-import CraftActionsPanel from './CraftActionsPannel'
-import CraftBackground from './CraftBackground'
-import CraftButton from './CraftButton'
-import CraftCard from './CraftCard'
-import CraftCarousel from './CraftCarousel'
-import CraftCollapse from './CraftCollapse'
-import CraftContainer from './CraftContainer'
-import CraftDataSelector from './CraftDataSelector'
-import CraftImage from './CraftImage'
-import CraftLayout from './CraftLayout'
-import CraftParagraph from './CraftParagraph'
+import CraftActionsPanel from './CraftActionsPanel'
 import CraftSettingsPanel from './CraftSettingsPanel'
-import CraftStatistics from './CraftStatistics'
-import CraftTitle from './CraftTitle'
-import CraftTitleAndParagraph from './CraftTitleAndParagraph'
 import CraftToolbox from './CraftToolbox'
 
 const StyledScrollBar = styled.div`
@@ -99,16 +99,16 @@ const CraftPageSettingBlock: React.VFC = () => {
           <StyledScrollBar>
             <StyledContent>
               <Frame>
-                <Element is={CraftContainer} padding={10} canvas setActiveKey={setActiveKey}>
+                <Element is={CraftContainer} padding={{}} canvas setActiveKey={setActiveKey}>
                   <CraftLayout
-                    mobile={{ padding: 25, columnAmount: 5, columnRatio: [3, 3, 3], displayAmount: 6 }}
-                    desktop={{ padding: 50, columnAmount: 3, columnRatio: [2, 2, 2], displayAmount: 3 }}
+                    mobile={{ padding: {}, columnAmount: 5, columnRatio: [3, 3, 3], displayAmount: 6 }}
+                    desktop={{ padding: {}, columnAmount: 3, columnRatio: [2, 2, 2], displayAmount: 3 }}
                     setActiveKey={setActiveKey}
                   />
                   <CraftTitle
                     titleContent="文字標題"
                     fontSize={20}
-                    padding={5}
+                    padding={{}}
                     textAlign="center"
                     fontWeight="bold"
                     color="#585858"
@@ -117,7 +117,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                   <CraftParagraph
                     paragraphContent="文字段落"
                     fontSize={20}
-                    padding={5}
+                    padding={{}}
                     lineHeight={1}
                     textAlign="left"
                     fontWeight="bold"
@@ -168,14 +168,14 @@ const CraftPageSettingBlock: React.VFC = () => {
                     ]}
                     titleStyle={{
                       fontSize: 10,
-                      padding: 3,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: '#c8c858',
                     }}
                     paragraphStyle={{
                       fontSize: 14,
-                      padding: 0,
+                      padding: {},
                       lineHeight: 1,
                       textAlign: 'left',
                       fontWeight: 'normal',
@@ -199,13 +199,13 @@ const CraftPageSettingBlock: React.VFC = () => {
                   />
                   <CraftStatistics
                     type="image"
-                    padding={{ p: '2;5;3;2' }}
-                    margin={{ m: '3;2;4;2' }}
+                    padding={{}}
+                    margin={{}}
                     coverUrl="https://static-dev.kolable.com/program_covers/demo/f2733181-180b-466a-8f10-555441679cd7?t=1625721391323"
                     title={{
                       titleContent: '數值 (數值01、數值02)',
                       fontSize: 12,
-                      padding: 3,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: '#585858',
@@ -213,7 +213,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph={{
                       paragraphContent: '',
                       fontSize: 12,
-                      padding: 3,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: '#585858',
@@ -225,20 +225,18 @@ const CraftPageSettingBlock: React.VFC = () => {
                     backgroundImageUrl=""
                     imageType="empty"
                     imageUrl=""
-                    boxModel={{
-                      padding: { p: '2;5;3;2' },
-                      margin: { m: '4;3;2;3' },
-                    }}
+                    imagePadding={{}}
+                    imageMargin={{}}
                     title="卡片 特色02"
                     titleStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
                     }}
-                    cardPadding={20}
-                    cardMargin={{ m: '3;2;3;1' }}
+                    cardPadding={{}}
+                    cardMargin={{}}
                     variant="none"
                     backgroundType="none"
                     setActiveKey={setActiveKey}
@@ -248,14 +246,12 @@ const CraftPageSettingBlock: React.VFC = () => {
                     backgroundImageUrl=""
                     imageType="empty"
                     imageUrl=""
-                    boxModel={{
-                      padding: { p: '2;5;3;2' },
-                      margin: { m: '4;3;2;3' },
-                    }}
+                    imagePadding={{}}
+                    imageMargin={{}}
                     title="卡片 特色01"
                     titleStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -263,13 +259,13 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph="卡片 特色01"
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
                     }}
-                    cardPadding={20}
-                    cardMargin={{ m: '3;2;3;1' }}
+                    cardPadding={{}}
+                    cardMargin={{}}
                     variant="none"
                     backgroundType="none"
                     setActiveKey={setActiveKey}
@@ -279,14 +275,12 @@ const CraftPageSettingBlock: React.VFC = () => {
                     backgroundImageUrl=""
                     imageType="empty"
                     imageUrl=""
-                    boxModel={{
-                      padding: { p: '2;5;3;2' },
-                      margin: { m: '4;3;2;3' },
-                    }}
+                    imagePadding={{}}
+                    imageMargin={{}}
                     title="卡片 推薦評價01"
                     titleStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -294,13 +288,13 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph="卡片 推薦評價01"
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
                     }}
-                    cardPadding={20}
-                    cardMargin={{ m: '3;2;3;1' }}
+                    cardPadding={{}}
+                    cardMargin={{}}
                     variant="none"
                     outlineColor="green"
                     backgroundType="none"
@@ -312,15 +306,13 @@ const CraftPageSettingBlock: React.VFC = () => {
                     backgroundImageUrl=""
                     imageType="empty"
                     imageUrl=""
-                    boxModel={{
-                      padding: { p: '2;5;3;2' },
-                      margin: { m: '4;3;2;3' },
-                    }}
+                    imagePadding={{}}
+                    imageMargin={{}}
                     name=""
                     title="卡片 推薦評價02"
                     titleStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -328,13 +320,13 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph="卡片 推薦評價02"
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
                     }}
-                    cardPadding={20}
-                    cardMargin={{ m: '3;2;3;1' }}
+                    cardPadding={{}}
+                    cardMargin={{}}
                     variant="none"
                     backgroundType="none"
                     setActiveKey={setActiveKey}
@@ -343,7 +335,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title="手風琴"
                     titleStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -351,23 +343,18 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph=""
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: 5,
+                      padding: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
                     }}
-                    cardPadding={20}
-                    cardMargin={{ m: '3;2;3;1' }}
+                    cardPadding={{}}
+                    cardMargin={{}}
                     variant="none"
                     backgroundType="none"
                     setActiveKey={setActiveKey}
                   />
-                  <CraftBackground
-                    backgroundType="none"
-                    padding={4}
-                    margin={{ m: '3;4;2;2' }}
-                    setActiveKey={setActiveKey}
-                  />
+                  <CraftBackground backgroundType="none" padding={{}} margin={{}} setActiveKey={setActiveKey} />
                   <CraftDataSelector setActiveKey={setActiveKey}>資料選擇</CraftDataSelector>
                 </Element>
               </Frame>

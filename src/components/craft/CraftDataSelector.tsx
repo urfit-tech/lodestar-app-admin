@@ -1,6 +1,5 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Collapse, Select } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
@@ -31,7 +30,7 @@ const CraftDataSelector: UserComponent<{ setActiveKey: React.Dispatch<React.SetS
   )
 }
 
-const DataSelectorSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
+const DataSelectorSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [selectedValue, setSelectedValue] = useState('')
@@ -61,7 +60,6 @@ const DataSelectorSettings: React.VFC<CollapseProps> = ({ ...collapseProps }) =>
       onFinish={handleSubmit}
     >
       <Collapse
-        {...collapseProps}
         className="mt-2 p-0"
         bordered={false}
         expandIconPosition="right"

@@ -15,7 +15,7 @@ export type CraftPaddingProps = {
 }
 
 export type CraftLayoutProps = {
-  padding: number
+  padding: CraftPaddingProps
   columnAmount: number
   columnRatio: number[]
   displayAmount: number
@@ -38,7 +38,7 @@ export type CraftPageColumnProps = {
 export type CraftTextStyleProps = {
   fontSize: number
   lineHeight?: number
-  padding: number
+  padding: CraftPaddingProps
   textAlign: 'left' | 'right' | 'center'
   fontWeight: 'lighter' | 'normal' | 'bold'
   color: string
@@ -63,8 +63,8 @@ export type CraftButtonProps = {
 }
 
 export type CraftBoxModelProps = {
-  padding: CraftPaddingProps
-  margin: CraftMarginProps
+  padding?: CraftPaddingProps
+  margin?: CraftMarginProps
 }
 
 export type CraftImageProps = {

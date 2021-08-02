@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useApp } from '../../contexts/AppContext'
 import { craftPageMessages } from '../../helpers/translation'
 import { StyleCircleColorInput, StyledCraftSettingLabel, StyledSketchPicker, StyledUnderLineInput } from '../admin'
 
@@ -7,8 +8,22 @@ const CraftColorPickerBlock: React.VFC<{
   value?: string
   onChange?: (value: string) => void
 }> = ({ value, onChange }) => {
+  const { settings } = useApp()
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
+  const sketchPickerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (sketchPickerRef.current && !sketchPickerRef.current.contains(e.target as Node)) {
+        setVisible(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [sketchPickerRef])
 
   return (
     <>
@@ -17,17 +32,23 @@ const CraftColorPickerBlock: React.VFC<{
         className="mb-3"
         bordered={false}
         value={value}
-        onFocus={() => setVisible(true)}
-        onBlur={() => setVisible(false)}
-        onChange={e => onChange && onChange(e.target.value)}
+        onClick={() => setVisible(true)}
+        onChange={e => onChange?.(e.target.value)}
       />
 
       <div className="d-flex mb-3">
-        <StyleCircleColorInput background="#e1614b" onClick={() => onChange && onChange('#e1614b')} />
-        <StyleCircleColorInput className="ml-2" background="#585858" onClick={() => onChange && onChange('#585858')} />
-        <StyleCircleColorInput className="ml-2" background="#ffffff" onClick={() => onChange && onChange('#ffffff')} />
+        <StyleCircleColorInput
+          background={`${settings['theme.@primary-color']}`}
+          onClick={() => onChange?.(`${settings['theme.@primary-color']}`)}
+        />
+        <StyleCircleColorInput className="ml-2" background="#585858" onClick={() => onChange?.('#585858')} />
+        <StyleCircleColorInput className="ml-2" background="#ffffff" onClick={() => onChange?.('#ffffff')} />
       </div>
-      {visible && <StyledSketchPicker className="mb-3" color={value} onChange={e => onChange && onChange(e.hex)} />}
+      {visible && (
+        <div ref={sketchPickerRef}>
+          <StyledSketchPicker className="mb-3" color={value} onChange={e => onChange?.(e.hex)} />
+        </div>
+      )}
     </>
   )
 }

@@ -1,39 +1,34 @@
 import { Collapse, Input } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../helpers/translation'
 import { AdminHeaderTitle, StyledCollapsePanel, StyledCraftSettingLabel } from '../admin'
 
-const CraftParagraphContentBlock: React.VFC<{ value?: string; onChange?: (value?: string) => void } & CollapseProps> =
-  ({ value, onChange, ...collapseProps }) => {
-    const { formatMessage } = useIntl()
+const CraftParagraphContentBlock: React.VFC<{ value?: string; onChange?: (value?: string) => void }> = ({
+  value,
+  onChange,
+}) => {
+  const { formatMessage } = useIntl()
 
-    return (
-      <Collapse
-        {...collapseProps}
-        className="mt-2 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['paragraphContent']}
+  return (
+    <Collapse
+      className="mt-2 p-0"
+      bordered={false}
+      expandIconPosition="right"
+      ghost
+      defaultActiveKey={['paragraphContent']}
+    >
+      <StyledCollapsePanel
+        key="paragraphContent"
+        header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphContent)}</AdminHeaderTitle>}
       >
-        <StyledCollapsePanel
-          key="paragraphContent"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphContent)}</AdminHeaderTitle>}
-        >
-          <div className="mb-2">
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.content)}</StyledCraftSettingLabel>
-            <Input.TextArea
-              className="mt-2"
-              rows={5}
-              defaultValue={value}
-              onChange={e => onChange && onChange(e.target.value)}
-            />
-          </div>
-        </StyledCollapsePanel>
-      </Collapse>
-    )
-  }
+        <div className="mb-2">
+          <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.content)}</StyledCraftSettingLabel>
+          <Input.TextArea className="mt-2" rows={5} defaultValue={value} onChange={e => onChange?.(e.target.value)} />
+        </div>
+      </StyledCollapsePanel>
+    </Collapse>
+  )
+}
 
 export default CraftParagraphContentBlock

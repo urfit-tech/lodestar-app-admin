@@ -5,9 +5,10 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import { CraftMarginProps, CraftTextStyleProps } from '../../types/craft'
-import { AdminHeaderTitle, StyledCollapsePanel, StyledCraftSlider, StyledSettingButtonWrapper } from '../admin'
+import { CraftMarginProps, CraftPaddingProps, CraftTextStyleProps } from '../../types/craft'
+import { AdminHeaderTitle, StyledCollapsePanel, StyledSettingButtonWrapper } from '../admin'
 import ImageUploader from '../common/ImageUploader'
+import CraftBoxModelInput, { formatBoxModelValue } from './CraftBoxModelInput'
 import CraftColorPickerBlock from './CraftColorPickerBlock'
 import CraftParagraphContentBlock from './CraftParagraphContentBlock'
 import CraftTextStyleBlock from './CraftTextStyleBlock'
@@ -17,7 +18,7 @@ const StyledCollapse = styled.div<{
   customStyle: {
     title: string
     titleStyle: CraftTextStyleProps
-    cardPadding: number
+    cardPadding: CraftPaddingProps
     cardMargin: CraftMarginProps
     solidColor?: string
   }
@@ -33,12 +34,12 @@ const StyledCollapse = styled.div<{
   background-color: ${props => props.customStyle.solidColor || ''};
 `
 
-type FieldProps = {
+type CraftCollapseProps = {
   title: string
   titleStyle: CraftTextStyleProps
   paragraph: string
   paragraphStyle: CraftTextStyleProps
-  cardPadding: number
+  cardPadding: CraftPaddingProps
   cardMargin: CraftMarginProps
   variant: 'backgroundColor' | 'outline' | 'none'
   outlineColor?: string
@@ -47,7 +48,16 @@ type FieldProps = {
   backgroundImageUrl?: string
 }
 
-const CraftCollapse: UserComponent<FieldProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
+type FieldProps = Omit<CraftCollapseProps, 'titleStyle' | 'paragraphStyle' | 'cardPadding' | 'cardMargin'> & {
+  titleStyle: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
+  paragraphStyle: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
+  cardPadding: string
+  cardMargin: string
+}
+
+const CraftCollapse: UserComponent<
+  CraftCollapseProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }
+> = ({
   cardPadding,
   cardMargin,
   variant,
@@ -83,7 +93,7 @@ const CraftCollapse: UserComponent<FieldProps & { setActiveKey: React.Dispatch<R
   )
 }
 
-const CollapseSettings = ({ ...collapseProps }) => {
+const CollapseSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
 
@@ -92,33 +102,58 @@ const CollapseSettings = ({ ...collapseProps }) => {
     props,
     selected,
   } = useNode(node => ({
-    props: node.data.props as FieldProps,
+    props: node.data.props as CraftCollapseProps,
     selected: node.events.selected,
   }))
 
   const [backgroundImage, setBackgroundImage] = useState<File | null>(null)
 
   const handleSubmit = (values: FieldProps) => {
-    setProp((props: FieldProps) => {
-      props.cardPadding = values.cardPadding
-      props.cardMargin = values.cardMargin
+    const cardPadding = formatBoxModelValue(values.cardPadding)
+    const cardMargin = formatBoxModelValue(values.cardMargin)
+    const titlePadding = formatBoxModelValue(values.titleStyle?.padding)
+    const paragraphPadding = formatBoxModelValue(values.paragraphStyle?.padding)
+
+    setProp(props => {
+      props.cardPadding = {
+        pt: cardPadding?.[0] || '0',
+        pr: cardPadding?.[1] || '0',
+        pb: cardPadding?.[2] || '0',
+        pl: cardPadding?.[3] || '0',
+      }
+      props.cardMargin = {
+        mt: cardMargin?.[0] || '0',
+        mr: cardMargin?.[1] || '0',
+        mb: cardMargin?.[2] || '0',
+        ml: cardMargin?.[3] || '0',
+      }
       props.variant = values.variant
       props.outlineColor = values.outlineColor
       props.solidColor = values.solidColor
       props.backgroundImageUrl = values.backgroundImageUrl
       props.title = values.title
       props.titleStyle.fontSize = values.titleStyle.fontSize
-      props.titleStyle.padding = values.titleStyle.padding
+      props.titleStyle.padding = {
+        pt: titlePadding?.[0] || '0',
+        pr: titlePadding?.[1] || '0',
+        pb: titlePadding?.[2] || '0',
+        pl: titlePadding?.[3] || '0',
+      }
       props.titleStyle.textAlign = values.titleStyle.textAlign
       props.titleStyle.fontWeight = values.titleStyle.fontWeight
       props.titleStyle.color = values.titleStyle.color
       props.paragraph = values.paragraph
-      props.paragraphStyle.fontSize = values?.paragraphStyle.fontSize
-      props.paragraphStyle.lineHeight = values?.paragraphStyle.lineHeight
-      props.paragraphStyle.padding = values?.paragraphStyle.padding
-      props.paragraphStyle.textAlign = values?.paragraphStyle.textAlign
-      props.paragraphStyle.fontWeight = values?.paragraphStyle.fontWeight
-      props.paragraphStyle.color = values?.paragraphStyle.color
+      props.paragraphStyle.fontSize = values.paragraphStyle.fontSize
+      props.paragraphStyle.lineHeight = values.paragraphStyle.lineHeight
+      props.paragraphStyle.padding = {
+        pt: paragraphPadding?.[0] || '0',
+        pr: paragraphPadding?.[1] || '0',
+        pb: paragraphPadding?.[2] || '0',
+        pl: paragraphPadding?.[3] || '0',
+      }
+      props.paragraphStyle.textAlign = values.paragraphStyle.textAlign
+      props.paragraphStyle.fontWeight = values.paragraphStyle.fontWeight
+      props.paragraphStyle.color = values.paragraphStyle.color
     })
   }
 
@@ -129,8 +164,12 @@ const CollapseSettings = ({ ...collapseProps }) => {
       colon={false}
       requiredMark={false}
       initialValues={{
-        cardPadding: props.cardPadding || 0,
-        cardMargin: props.cardMargin || { m: '0;0;0;0' },
+        cardPadding: `${props.cardPadding?.pt || 0};${props.cardPadding?.pr || 0};${props.cardPadding?.pb || 0};${
+          props.cardPadding?.pl || 0
+        }`,
+        cardMargin: `${props.cardMargin?.mt || 0};${props.cardMargin?.mr || 0};${props.cardMargin?.mb || 0};${
+          props.cardMargin?.ml || 0
+        }`,
         variant: props.variant || 'none',
         outlineColor: props.outlineColor || '#585858',
         background: props.backgroundType || 'none',
@@ -139,7 +178,9 @@ const CollapseSettings = ({ ...collapseProps }) => {
         title: props.title || '',
         titleStyle: {
           fontSize: props.titleStyle.fontSize || 16,
-          padding: props.titleStyle.padding || 0,
+          padding: `${props.titleStyle.padding?.pt || 0};${props.titleStyle.padding?.pr || 0};${
+            props.titleStyle.padding?.pb || 0
+          };${props.titleStyle.padding?.pl || 0}`,
           textAlign: props.titleStyle.textAlign || 'left',
           fontWeight: props.titleStyle.fontWeight || 'normal',
           color: props.titleStyle.color || '#585858',
@@ -147,7 +188,9 @@ const CollapseSettings = ({ ...collapseProps }) => {
         paragraph: props.paragraph || '',
         paragraphStyle: {
           fontSize: props.paragraphStyle.fontSize || 16,
-          padding: props.paragraphStyle.padding || 0,
+          padding: `${props.paragraphStyle?.padding?.pt || 0};${props.paragraphStyle?.padding?.pr || 0};${
+            props.paragraphStyle?.padding?.pb || 0
+          };${props.paragraphStyle?.padding?.pl || 0}`,
           textAlign: props.paragraphStyle.textAlign || 'left',
           fontWeight: props.paragraphStyle.fontWeight || 'normal',
           color: props.paragraphStyle.color || '#585858',
@@ -168,24 +211,17 @@ const CollapseSettings = ({ ...collapseProps }) => {
         <CraftTextStyleBlock type="paragraph" title={formatMessage(craftPageMessages.label.paragraphStyle)} />
       </Form.Item>
 
-      <Collapse
-        {...collapseProps}
-        className="mt-2 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['cardStyle']}
-      >
+      <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['cardStyle']}>
         <StyledCollapsePanel
           key="cardStyle"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.cardStyle)}</AdminHeaderTitle>}
         >
-          <Form.Item name="cardPadding" label={formatMessage(craftPageMessages.label.padding)}>
-            <StyledCraftSlider />
+          <Form.Item name="cardPadding" label={formatMessage(craftPageMessages.label.boundary)}>
+            <CraftBoxModelInput />
           </Form.Item>
 
-          <Form.Item name="cardMargin" label={formatMessage(craftPageMessages.label.margin)}>
-            <StyledCraftSlider />
+          <Form.Item name="cardMargin" label={formatMessage(craftPageMessages.label.borderSpacing)}>
+            <CraftBoxModelInput />
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>

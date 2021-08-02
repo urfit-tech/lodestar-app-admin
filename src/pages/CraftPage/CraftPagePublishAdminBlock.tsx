@@ -3,9 +3,13 @@ import gql from 'graphql-tag'
 import { isEmpty } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import AdminPublishBlock, {
+  ChecklistItemProps,
+  PublishEvent,
+  PublishStatus,
+} from '../../components/admin/AdminPublishBlock'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { CraftPageAdminProps } from '../../types/craft'
-import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
 const CraftPagePublishAdminBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps | null

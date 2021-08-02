@@ -3,9 +3,15 @@ import { Button, Form, Input, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import {
+  AdminBlock,
+  AdminBlockTitle,
+  AdminPaneTitle,
+  StyledCraftSettingLabel,
+  StyledTips,
+} from '../../components/admin'
 import { commonMessages, craftPageMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { CraftPageAdminProps } from '../../types/craft'
-import { AdminBlock, AdminBlockTitle, AdminPaneTitle, StyledCraftSettingLabel, StyledTips } from '../admin'
 import CraftPageDeletionAdminCard from './CraftPageDeletionAdminCard'
 
 type FieldProps = {

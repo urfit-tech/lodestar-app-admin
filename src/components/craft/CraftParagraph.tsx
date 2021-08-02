@@ -1,31 +1,47 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { StyledParagraph } from 'lodestar-app-element/src/components/common'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { CraftParagraphProps, CraftTextStyleProps } from '../../types/craft'
 import { StyledSettingButtonWrapper } from '../admin'
+import { formatBoxModelValue } from './CraftBoxModelInput'
 import CraftParagraphContentBlock from './CraftParagraphContentBlock'
 import CraftTextStyleBlock from './CraftTextStyleBlock'
 
-type FieldProps = { paragraphContent: string; paragraphStyle: CraftTextStyleProps }
+type FieldProps = {
+  paragraphContent: string
+  paragraphStyle: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
+}
 
 const CraftParagraph: UserComponent<
   CraftParagraphProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }
-> = ({ paragraphContent, fontSize, padding, textAlign, fontWeight, color, setActiveKey, children }) => {
+> = ({ paragraphContent, fontSize, lineHeight, padding, textAlign, fontWeight, color, setActiveKey }) => {
   const {
     connectors: { connect, drag },
   } = useNode()
 
   return (
-    <textarea
+    <StyledParagraph
       ref={ref => ref && connect(drag(ref))}
-      style={{ fontSize, padding: `${padding}px`, textAlign, fontWeight, color, cursor: 'pointer' }}
+      customStyle={{
+        fontSize,
+        pt: padding.pt,
+        pr: padding.pr,
+        pb: padding.pb,
+        pl: padding.pl,
+        textAlign,
+        fontWeight,
+        color,
+        lineHeight: lineHeight || 1,
+      }}
+      style={{ cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {paragraphContent}
-    </textarea>
+    </StyledParagraph>
   )
 }
 
@@ -42,15 +58,22 @@ const ParagraphSettings: React.VFC = () => {
     selected: node.events.selected,
   }))
 
-  const handleSubmit = (value: FieldProps) => {
+  const handleSubmit = (values: FieldProps) => {
+    const paragraphPadding = formatBoxModelValue(values.paragraphStyle.padding)
+
     setProp(props => {
-      props.paragraphContent = value.paragraphContent
-      props.fontSize = value.paragraphStyle.fontSize
-      props.lineHeight = value.paragraphStyle.lineHeight
-      props.padding = value.paragraphStyle.padding
-      props.textAlign = value.paragraphStyle.textAlign
-      props.fontWeight = value.paragraphStyle.fontWeight
-      props.color = value.paragraphStyle.color
+      props.paragraphContent = values.paragraphContent
+      props.fontSize = values.paragraphStyle.fontSize
+      props.lineHeight = values.paragraphStyle.lineHeight
+      props.padding = {
+        pt: paragraphPadding?.[0] || '0',
+        pr: paragraphPadding?.[1] || '0',
+        pb: paragraphPadding?.[2] || '0',
+        pl: paragraphPadding?.[3] || '0',
+      }
+      props.textAlign = values.paragraphStyle.textAlign
+      props.fontWeight = values.paragraphStyle.fontWeight
+      props.color = values.paragraphStyle.color
     })
   }
 
@@ -64,8 +87,10 @@ const ParagraphSettings: React.VFC = () => {
         paragraphContent: props.paragraphContent || '',
         paragraphStyle: {
           fontSize: props.fontSize || 16,
-          padding: props.padding || 0,
-          lineHeight: props?.lineHeight || undefined,
+          padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+            props.padding?.pl || 0
+          }`,
+          lineHeight: props?.lineHeight || 1,
           textAlign: props.textAlign || 'left',
           fontWeight: props.fontWeight || 'normal',
           color: props.color || '#585858',
