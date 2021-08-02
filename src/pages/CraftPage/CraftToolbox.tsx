@@ -4,9 +4,9 @@ import { SelectValue } from 'antd/lib/select'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { StyledFullWidthSelect } from '../../components/admin'
+import CraftCarousel from '../../components/craft/CraftCarousel'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledFullWidthSelect } from '../admin'
-import CraftCarousel from './CraftCarousel'
 
 const StyledBoxWrapper = styled.div`
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);

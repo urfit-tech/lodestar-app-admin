@@ -1,4 +1,3 @@
-// components/user/Card.js
 import { SearchOutlined } from '@ant-design/icons'
 import { Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
