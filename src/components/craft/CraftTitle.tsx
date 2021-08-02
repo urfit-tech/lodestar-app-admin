@@ -1,17 +1,19 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { StyledTitle } from 'lodestar-app-element/src/components/common'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { CraftTextStyleProps, CraftTitleProps } from '../../types/craft'
 import { StyledSettingButtonWrapper } from '../admin'
+import { formatBoxModelValue } from './CraftBoxModelInput'
 import CraftTextStyleBlock from './CraftTextStyleBlock'
 import CraftTitleContentBlock from './CraftTitleContentBlock'
 
 type FieldProps = {
   titleContent: string
-  titleStyle: CraftTextStyleProps
+  titleStyle: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
 }
 
 const CraftTitle: UserComponent<CraftTitleProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
@@ -28,13 +30,23 @@ const CraftTitle: UserComponent<CraftTitleProps & { setActiveKey: React.Dispatch
   } = useNode()
 
   return (
-    <div
+    <StyledTitle
       ref={ref => ref && connect(drag(ref))}
-      style={{ color, padding: `${padding}px`, fontSize, textAlign, fontWeight, cursor: 'pointer' }}
+      customStyle={{
+        fontSize,
+        pt: padding.pt,
+        pr: padding.pr,
+        pb: padding.pb,
+        pl: padding.pl,
+        textAlign: textAlign,
+        fontWeight: fontWeight,
+        color: color,
+      }}
+      style={{ cursor: 'pointer' }}
       onClick={() => setActiveKey('settings')}
     >
       {titleContent}
-    </div>
+    </StyledTitle>
   )
 }
 
@@ -51,10 +63,17 @@ const TitleSettings: React.VFC = () => {
   }))
 
   const handleSubmit = (values: FieldProps) => {
+    const titlePadding = formatBoxModelValue(values.titleStyle.padding)
+
     setProp(prop => {
       prop.titleContent = values.titleContent
       prop.fontSize = values.titleStyle.fontSize
-      prop.padding = values.titleStyle.padding
+      prop.padding = {
+        pt: titlePadding?.[0] || '0',
+        pr: titlePadding?.[1] || '0',
+        pb: titlePadding?.[2] || '0',
+        pl: titlePadding?.[3] || '0',
+      }
       prop.textAlign = values.titleStyle.textAlign
       prop.fontWeight = values.titleStyle.fontWeight
       prop.color = values.titleStyle.color
@@ -71,7 +90,9 @@ const TitleSettings: React.VFC = () => {
         titleContent: props.titleContent || '',
         titleStyle: {
           fontSize: props.fontSize || 16,
-          padding: props.padding || 0,
+          padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+            props.padding?.pl || 0
+          }`,
           textAlign: props.textAlign || 'left',
           fontWeight: props.fontWeight || 'normal',
           color: props.color || '#585858',
@@ -83,7 +104,7 @@ const TitleSettings: React.VFC = () => {
         <CraftTitleContentBlock />
       </Form.Item>
       <Form.Item name="titleStyle">
-        <CraftTextStyleBlock type="title" title={`${formatMessage(craftPageMessages.label.title)}`} />
+        <CraftTextStyleBlock type="title" title={formatMessage(craftPageMessages.label.titleStyle)} />
       </Form.Item>
       {selected && (
         <StyledSettingButtonWrapper>

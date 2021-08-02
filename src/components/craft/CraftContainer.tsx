@@ -1,16 +1,17 @@
 import { useNode, UserComponent } from '@craftjs/core'
-import { Button, Collapse, Form, InputNumber, Slider } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
+import { Button, Collapse, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import { AdminHeaderTitle, StyledCollapsePanel, StyledCraftSettingLabel, StyledSettingButtonWrapper } from '../admin'
+import { CraftPaddingProps } from '../../types/craft'
+import { AdminHeaderTitle, StyledCollapsePanel, StyledSettingButtonWrapper } from '../admin'
+import CraftBoxModelInput, { formatBoxModelValue } from './CraftBoxModelInput'
 
-type FieldProps = { padding: number }
+type FieldProps = { padding: string }
 
 const CraftContainer: UserComponent<{
-  padding: number
+  padding: CraftPaddingProps
   setActiveKey: React.Dispatch<React.SetStateAction<string>>
 }> = ({ padding, setActiveKey, children }) => {
   const {
@@ -20,7 +21,10 @@ const CraftContainer: UserComponent<{
   return (
     <div
       ref={ref => ref && connect(drag(ref))}
-      style={{ padding: `${padding}px`, cursor: 'pointer' }}
+      style={{
+        padding: `${padding.pt}px ${padding.pr}px ${padding.pb}px ${padding.pl}px`,
+        cursor: 'pointer',
+      }}
       onClick={() => setActiveKey('settings')}
     >
       {children}
@@ -37,14 +41,21 @@ const ContainerSettings: React.VFC = () => {
     props,
     selected,
   } = useNode(node => ({
-    props: node.data.props as { padding: number },
+    props: node.data.props as { padding: CraftPaddingProps },
     button: node.data.custom.button,
     selected: node.events.selected,
   }))
 
-  const handleSubmit = (values: { padding: number }) => {
+  const handleSubmit = (values: FieldProps) => {
+    const padding = formatBoxModelValue(values.padding)
+
     setProp(props => {
-      props.padding = values.padding
+      props.padding = {
+        pt: padding?.[0] || '0',
+        pr: padding?.[1] || '0',
+        pb: padding?.[2] || '0',
+        pl: padding?.[3] || '0',
+      }
     })
   }
 
@@ -55,13 +66,33 @@ const ContainerSettings: React.VFC = () => {
       colon={false}
       requiredMark={false}
       initialValues={{
-        padding: props.padding,
+        padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+          props.padding?.pl || 0
+        }`,
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item name="padding">
-        <PaddingBlock />
-      </Form.Item>
+      <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['container']}>
+        <StyledCollapsePanel
+          key="container"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
+        >
+          <Form.Item
+            name="padding"
+            label={formatMessage(craftPageMessages.label.boundary)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <CraftBoxModelInput />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
+
       {selected && (
         <StyledSettingButtonWrapper>
           <Button className="mb-3" type="primary" htmlType="submit" block>
@@ -70,38 +101,6 @@ const ContainerSettings: React.VFC = () => {
         </StyledSettingButtonWrapper>
       )}
     </Form>
-  )
-}
-
-const PaddingBlock: React.VFC<{ value?: number; onChange?: (value?: number) => void } & CollapseProps> = ({
-  value,
-  onChange,
-  ...collapseProps
-}) => {
-  const { formatMessage } = useIntl()
-
-  return (
-    <Collapse
-      {...collapseProps}
-      className="mt-2 p-0"
-      bordered={false}
-      expandIconPosition="right"
-      ghost
-      defaultActiveKey={['container']}
-    >
-      <StyledCollapsePanel
-        key="container"
-        header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
-      >
-        <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.boundary)}</StyledCraftSettingLabel>
-        <div className="col-12 d-flex justify-content-center align-items-center mb-2 p-0">
-          <div className="col-8 p-0">
-            <Slider value={typeof value === 'number' ? value : 0} onChange={(v?: number) => onChange && onChange(v)} />
-          </div>
-          <InputNumber className="col-4" value={value} onChange={v => onChange && onChange(Number(v))} />
-        </div>
-      </StyledCollapsePanel>
-    </Collapse>
   )
 }
 

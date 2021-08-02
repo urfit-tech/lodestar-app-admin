@@ -1,8 +1,8 @@
 import { useNode, UserComponent } from '@craftjs/core'
 import { Button, Checkbox, Collapse, Form, Input } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import { useForm } from 'antd/lib/form/Form'
 import Carousel from 'lodestar-app-element/src/components/Carousel'
+import { StyledTitle } from 'lodestar-app-element/src/components/common'
 import React, { Fragment, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -19,6 +19,7 @@ import {
 } from '../admin'
 import ImageUploader from '../common/ImageUploader'
 import { BREAK_POINT } from '../common/Responsive'
+import { formatBoxModelValue } from './CraftBoxModelInput'
 import CraftTextStyleBlock from './CraftTextStyleBlock'
 
 const StyledDeleteButton = styled(Button)`
@@ -51,16 +52,22 @@ const StyledCraftCarousel = styled.div<{ desktopCoverUrl: string; mobileCoverUrl
   @media (min-width: ${BREAK_POINT}px) {
   }
 `
-const StyledTitle = styled.div<{ customStyle: CraftTextStyleProps }>`
-  font-size: ${props => `${props.customStyle.fontSize}px`};
-  padding: ${props => `${props.customStyle.padding}px`};
-  line-height: ${props => props.customStyle.fontSize};
-  text-align: ${props => props.customStyle.textAlign};
-  font-weight: ${props => props.customStyle.fontWeight};
-  color: ${props => props.customStyle.color};
-`
 
 type FieldProps = {
+  type: 'normal' | 'simply'
+  covers: {
+    title?: string
+    paragraph?: string
+    desktopCoverUrl: string
+    mobileCoverUrl: string
+    link: string
+    openNewTab: boolean
+  }[]
+  titleStyle?: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
+  paragraphStyle?: Omit<CraftTextStyleProps, 'padding'> & { padding: string }
+}
+
+type CraftCarouselProps = {
   type: 'normal' | 'simply'
   covers: {
     title?: string
@@ -74,12 +81,9 @@ type FieldProps = {
   paragraphStyle?: CraftTextStyleProps
 }
 
-const CraftCarousel: UserComponent<FieldProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
-  covers,
-  titleStyle,
-  paragraphStyle,
-  setActiveKey,
-}) => {
+const CraftCarousel: UserComponent<
+  CraftCarouselProps & { setActiveKey: React.Dispatch<React.SetStateAction<string>> }
+> = ({ covers, titleStyle, paragraphStyle, setActiveKey }) => {
   const {
     connectors: { connect, drag },
   } = useNode()
@@ -97,7 +101,20 @@ const CraftCarousel: UserComponent<FieldProps & { setActiveKey: React.Dispatch<R
           <Carousel dots infinite arrows={false} autoplay autoplaySpeed={5000} variant="cover">
             {covers.map(cover => (
               <StyledCraftCarousel desktopCoverUrl={cover.desktopCoverUrl} mobileCoverUrl={cover.mobileCoverUrl}>
-                <StyledTitle customStyle={titleStyle}>{cover.title}</StyledTitle>
+                <StyledTitle
+                  customStyle={{
+                    fontSize: titleStyle.fontSize,
+                    pt: titleStyle.padding.pt,
+                    pr: titleStyle.padding.pr,
+                    pb: titleStyle.padding.pb,
+                    pl: titleStyle.padding.pl,
+                    textAlign: titleStyle.textAlign,
+                    fontWeight: titleStyle.fontWeight,
+                    color: titleStyle.color,
+                  }}
+                >
+                  {cover.title}
+                </StyledTitle>
               </StyledCraftCarousel>
             ))}
           </Carousel>
@@ -118,7 +135,7 @@ const CraftCarousel: UserComponent<FieldProps & { setActiveKey: React.Dispatch<R
   )
 }
 
-const CarouselSettings: React.VFC<FieldProps & CollapseProps> = ({ ...collapseProps }) => {
+const CarouselSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
 
@@ -127,7 +144,7 @@ const CarouselSettings: React.VFC<FieldProps & CollapseProps> = ({ ...collapsePr
     props,
     selected,
   } = useNode(node => ({
-    props: node.data.props as FieldProps,
+    props: node.data.props as CraftCarouselProps,
     selected: node.events.selected,
   }))
 
@@ -135,10 +152,36 @@ const CarouselSettings: React.VFC<FieldProps & CollapseProps> = ({ ...collapsePr
   const [mobileCover, setMobileCover] = useState<File[]>([])
 
   const handleSubmit = (values: FieldProps) => {
+    const titlePadding = formatBoxModelValue(values.titleStyle?.padding)
+    const paragraphPadding = formatBoxModelValue(values.paragraphStyle?.padding)
+
     setProp(props => {
       props.covers = values.covers
-      props.titleStyle = values.titleStyle
-      props.paragraphStyle = values.paragraphStyle
+      props.titleStyle = {
+        fontSize: values.titleStyle?.fontSize,
+        padding: {
+          pt: titlePadding?.[0] || '0',
+          pr: titlePadding?.[1] || '0',
+          pb: titlePadding?.[2] || '0',
+          pl: titlePadding?.[3] || '0',
+        },
+        textAlign: values.titleStyle?.textAlign,
+        fontWeight: values.titleStyle?.fontWeight,
+        color: values.titleStyle?.color,
+      }
+      props.paragraphStyle = {
+        fontSize: values.paragraphStyle?.fontSize,
+        lineHeight: values.paragraphStyle?.lineHeight,
+        padding: {
+          pt: paragraphPadding?.[0] || '0',
+          pr: paragraphPadding?.[1] || '0',
+          pb: paragraphPadding?.[2] || '0',
+          pl: paragraphPadding?.[3] || '0',
+        },
+        textAlign: values.paragraphStyle?.textAlign,
+        fontWeight: values.paragraphStyle?.fontWeight,
+        color: values.paragraphStyle?.color,
+      }
     })
     //TODO: upload cover to s3
   }
@@ -158,14 +201,18 @@ const CarouselSettings: React.VFC<FieldProps & CollapseProps> = ({ ...collapsePr
         })),
         titleStyle: {
           fontSize: props.titleStyle?.fontSize || 16,
-          padding: props.titleStyle?.padding || 0,
+          padding: `${props.titleStyle?.padding?.pt || 0};${props.titleStyle?.padding?.pr || 0};${
+            props.titleStyle?.padding?.pb || 0
+          };${props.titleStyle?.padding?.pl || 0}`,
           textAlign: props.titleStyle?.textAlign || 'center',
           fontWeight: props.titleStyle?.fontWeight || 'bold',
           color: props.titleStyle?.color || '#585858',
         },
         paragraphStyle: {
           fontSize: props.paragraphStyle?.fontSize || 16,
-          padding: props.paragraphStyle?.padding || 0,
+          padding: `${props.paragraphStyle?.padding?.pt || 0};${props.paragraphStyle?.padding?.pr || 0};${
+            props.paragraphStyle?.padding?.pb || 0
+          };${props.paragraphStyle?.padding?.pl || 0}`,
           lineHeight: props.paragraphStyle?.lineHeight || 1,
           textAlign: props.paragraphStyle?.textAlign || 'center',
           fontWeight: props.paragraphStyle?.fontWeight || 'bold',
@@ -181,7 +228,6 @@ const CarouselSettings: React.VFC<FieldProps & CollapseProps> = ({ ...collapsePr
             {fields.map((field, index) => (
               <Fragment key={field.fieldKey}>
                 <Collapse
-                  {...collapseProps}
                   className="mt-2 p-0"
                   bordered={false}
                   expandIconPosition="right"

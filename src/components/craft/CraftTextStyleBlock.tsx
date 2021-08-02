@@ -1,25 +1,35 @@
 import { Collapse, InputNumber, Radio, Space } from 'antd'
-import { CollapseProps } from 'antd/lib/collapse'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftTextStyleProps } from '../../types/craft'
 import { AdminHeaderTitle, StyledCollapsePanel, StyledCraftSettingLabel, StyledCraftSlider } from '../admin'
+import CraftBoxModelInput from './CraftBoxModelInput'
 import CraftColorPickerBlock from './CraftColorPickerBlock'
 
-const CraftTextStyleBlock: React.VFC<
-  {
-    type: 'title' | 'paragraph'
-    title: string
-    value?: CraftTextStyleProps
-    onChange?: (value: CraftTextStyleProps) => void
-  } & CollapseProps
-> = ({ type, title, value, onChange, ...collapseProps }) => {
+const CraftTextStyleBlock: React.VFC<{
+  type: 'title' | 'paragraph'
+  title: string
+  value?: {
+    fontSize: number
+    lineHeight?: number
+    padding: string
+    textAlign: 'left' | 'right' | 'center'
+    fontWeight: 'lighter' | 'normal' | 'bold'
+    color: string
+  }
+  onChange?: (value: {
+    fontSize: number
+    lineHeight?: number
+    padding: string
+    textAlign: 'left' | 'right' | 'center'
+    fontWeight: 'lighter' | 'normal' | 'bold'
+    color: string
+  }) => void
+}> = ({ type, title, value, onChange, ...collapseProps }) => {
   const { formatMessage } = useIntl()
 
   return (
     <Collapse
-      {...collapseProps}
       className="mt-2 p-0"
       bordered={false}
       expandIconPosition="right"
@@ -35,7 +45,7 @@ const CraftTextStyleBlock: React.VFC<
                 <StyledCraftSlider
                   value={typeof value.fontSize === 'number' ? value.fontSize : 0}
                   onChange={(v: number) => {
-                    onChange && onChange({ ...value, fontSize: v })
+                    onChange?.({ ...value, fontSize: v })
                   }}
                 />
               </div>
@@ -44,7 +54,7 @@ const CraftTextStyleBlock: React.VFC<
                 min={0}
                 value={value.fontSize}
                 onChange={v => {
-                  onChange && onChange({ ...value, fontSize: Number(v) })
+                  onChange?.({ ...value, fontSize: Number(v) })
                 }}
               />
             </div>
@@ -57,36 +67,25 @@ const CraftTextStyleBlock: React.VFC<
                 <div className="col-8 p-0">
                   <StyledCraftSlider
                     value={typeof value.lineHeight === 'number' ? value?.lineHeight : 0}
-                    onChange={(v: number) => onChange && onChange({ ...value, lineHeight: v })}
+                    onChange={(v: number) => onChange?.({ ...value, lineHeight: v })}
                   />
                 </div>
                 <InputNumber
                   className="col-4"
                   min={0}
                   value={value.lineHeight}
-                  onChange={v => onChange && onChange({ ...value, lineHeight: Number(v) })}
+                  onChange={v => onChange?.({ ...value, lineHeight: Number(v) })}
                 />
               </div>
             </>
           )}
 
-          <>
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.boundary)}</StyledCraftSettingLabel>
-            <div className="col-12 mb-2 p-0 d-flex justify-content-center align-items-center ">
-              <div className="col-8 p-0">
-                <StyledCraftSlider
-                  value={typeof value?.padding === 'number' ? value?.padding : 0}
-                  onChange={(v: number) => onChange && onChange({ ...value, padding: v })}
-                />
-              </div>
-              <InputNumber
-                className="col-4"
-                min={0}
-                value={value.padding}
-                onChange={v => onChange && onChange({ ...value, padding: Number(v) })}
-              />
-            </div>
-          </>
+          <CraftBoxModelInput
+            title={formatMessage(craftPageMessages.label.boundary)}
+            value={value.padding}
+            onChange={v => onChange?.({ ...value, padding: v })}
+          />
+
           <div className="d-flex mb-3">
             <div>
               <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.textAlign)}</StyledCraftSettingLabel>
@@ -94,7 +93,7 @@ const CraftTextStyleBlock: React.VFC<
                 <Radio.Group
                   className="mt-2"
                   value={value.textAlign}
-                  onChange={e => onChange && onChange({ ...value, textAlign: e.target.value })}
+                  onChange={e => onChange?.({ ...value, textAlign: e.target.value })}
                 >
                   <Space direction="vertical">
                     <Radio value="left">{formatMessage(craftPageMessages.label.left)}</Radio>
@@ -110,7 +109,7 @@ const CraftTextStyleBlock: React.VFC<
                 <Radio.Group
                   className="mt-2"
                   value={value.fontWeight}
-                  onChange={e => onChange && onChange({ ...value, fontWeight: e.target.value })}
+                  onChange={e => onChange?.({ ...value, fontWeight: e.target.value })}
                 >
                   <Space direction="vertical">
                     <Radio value="lighter">{formatMessage(craftPageMessages.label.lighter)}</Radio>
@@ -121,7 +120,7 @@ const CraftTextStyleBlock: React.VFC<
               </div>
             </div>
           </div>
-          <CraftColorPickerBlock value={value.color} onChange={v => onChange && onChange({ ...value, color: v })} />
+          <CraftColorPickerBlock value={value.color} onChange={v => onChange?.({ ...value, color: v })} />
         </StyledCollapsePanel>
       )}
     </Collapse>
