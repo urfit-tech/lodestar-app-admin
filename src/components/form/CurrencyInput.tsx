@@ -21,7 +21,8 @@ const CurrencyInput: React.FC<{
       onChange={v => onChange && onChange(typeof v === 'number' ? v : undefined)}
       min={0}
       formatter={value => {
-        const formattedPrice = priceFormatter(value, currencyId, locale, settings['coin.unit'])
+        // TODO: base on noLabel and noUnit to define price format
+        const formattedPrice = priceFormatter(value, currencyId, locale, settings['coin.unit'], currency['minorUnits'])
         return formattedPrice
       }}
       parser={value => (value ? value.replace(/[^\d.]/g, '') : '')}

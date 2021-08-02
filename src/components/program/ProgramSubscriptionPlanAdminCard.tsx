@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
+import { Currency } from '../../types/app'
 import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
@@ -28,9 +29,10 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
 }> = ({ programId, programPlan, onRefetch }) => {
   const { locale, formatMessage } = useIntl()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
-  const { settings } = useApp()
+  const { currencies, settings } = useApp()
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
+  const currency: Currency = currencies[currencyId || settings['currency_id'] || 'TWD']
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
   return (
     <AdminBlock>
@@ -44,6 +46,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         currencyId={currencyId}
         locale={locale}
         unit={settings['coin.unit']}
+        minorUnits={currency['minorUnits']}
       />
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>
