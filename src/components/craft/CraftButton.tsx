@@ -44,13 +44,10 @@ const CraftButton: UserComponent<CraftButtonProps & { setActiveKey: React.Dispat
       ref={ref => ref && connect(drag(ref))}
       block={block}
       variant={variant}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer', background: `${color}` }}
       onClick={() => setActiveKey('settings')}
     >
-      {
-        //TODO: colorScheme didn't work
-      }
-      <Button size={size} block={block} colorScheme={color}>
+      <Button size={size} block={block}>
         {title}
       </Button>
     </StyledButtonWrapper>
