@@ -47,6 +47,7 @@ export type Module =
   | 'xuemi_pt'
   | 'group_buying'
   | 'craft_page'
+  | 'sku'
 
 export type Currency = {
   name: string

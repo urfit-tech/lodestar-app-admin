@@ -1,5 +1,5 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
@@ -21,6 +21,7 @@ type FieldProps = {
   tags: string[]
   languages?: string[]
   isIssuesOpen: boolean
+  sku?: string
 }
 
 const ProgramBasicForm: React.FC<{
@@ -33,9 +34,10 @@ const ProgramBasicForm: React.FC<{
   const [updateProgramBasic] = useMutation<hasura.UPDATE_PROGRAM_BASIC, hasura.UPDATE_PROGRAM_BASICVariables>(
     UPDATE_PROGRAM_BASIC,
   )
+  const { loadingProduct, product, refetchProduct } = useProduct(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
 
-  if (!program) {
+  if (!program || loadingProduct) {
     return <Skeleton active />
   }
 
@@ -61,10 +63,13 @@ const ProgramBasicForm: React.FC<{
           tag_name: programTag,
           position: index,
         })),
+        productId: `Program_${program.id}`,
+        sku: values.sku || null,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        refetchProduct()
         onRefetch?.()
       })
       .catch(handleError)
@@ -84,6 +89,7 @@ const ProgramBasicForm: React.FC<{
         tags: program.tags,
         languages: program.supportLocales,
         isIssuesOpen: program.isIssuesOpen,
+        sku: product?.sku,
       }}
       onFinish={handleSubmit}
     >
@@ -96,6 +102,11 @@ const ProgramBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
         <TagSelector />
       </Form.Item>
+      {enabledModules.sku && (
+        <Form.Item label={`${formatMessage(commonMessages.label.sku)}（SKU)`} name="sku">
+          <Input />
+        </Form.Item>
+      )}
       <Form.Item
         label={
           <span>
@@ -135,6 +146,8 @@ const UPDATE_PROGRAM_BASIC = gql`
     $title: String
     $supportLocales: jsonb
     $isIssuesOpen: Boolean
+    $productId: String
+    $sku: String
     $programCategories: [program_category_insert_input!]!
     $tags: [tag_insert_input!]!
     $programTags: [program_tag_insert_input!]!
@@ -145,7 +158,9 @@ const UPDATE_PROGRAM_BASIC = gql`
     ) {
       affected_rows
     }
-
+    update_product(where: { id: { _eq: $productId } }, _set: { sku: $sku }) {
+      affected_rows
+    }
     # update categories
     delete_program_category(where: { program_id: { _eq: $programId } }) {
       affected_rows
@@ -167,4 +182,29 @@ const UPDATE_PROGRAM_BASIC = gql`
   }
 `
 
+const useProduct = (productId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SKU, hasura.GET_PRODUCT_SKUVariables>(
+    gql`
+      query GET_PRODUCT_SKU($productId: String!) {
+        product_by_pk(id: $productId) {
+          sku
+        }
+      }
+    `,
+    {
+      variables: {
+        productId,
+      },
+    },
+  )
+
+  const product = data?.product_by_pk
+
+  return {
+    loadingProduct: loading,
+    errorProduct: error,
+    product,
+    refetchProduct: refetch,
+  }
+}
 export default ProgramBasicForm
