@@ -4407,6 +4407,14 @@ export interface UPDATE_PROGRAM_BASIC_update_program {
   affected_rows: number;
 }
 
+export interface UPDATE_PROGRAM_BASIC_update_product {
+  __typename: "product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_PROGRAM_BASIC_delete_program_category {
   __typename: "program_category_mutation_response";
   /**
@@ -4453,6 +4461,10 @@ export interface UPDATE_PROGRAM_BASIC {
    */
   update_program: UPDATE_PROGRAM_BASIC_update_program | null;
   /**
+   * update data of the table: "product"
+   */
+  update_product: UPDATE_PROGRAM_BASIC_update_product | null;
+  /**
    * delete data from the table: "program_category"
    */
   delete_program_category: UPDATE_PROGRAM_BASIC_delete_program_category | null;
@@ -4479,9 +4491,36 @@ export interface UPDATE_PROGRAM_BASICVariables {
   title?: string | null;
   supportLocales?: any | null;
   isIssuesOpen?: boolean | null;
+  productId?: string | null;
+  sku?: string | null;
   programCategories: program_category_insert_input[];
   tags: tag_insert_input[];
   programTags: program_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_SKU
+// ====================================================
+
+export interface GET_PRODUCT_SKU_product_by_pk {
+  __typename: "product";
+  sku: string | null;
+}
+
+export interface GET_PRODUCT_SKU {
+  /**
+   * fetch data from the table: "product" using primary key columns
+   */
+  product_by_pk: GET_PRODUCT_SKU_product_by_pk | null;
+}
+
+export interface GET_PRODUCT_SKUVariables {
+  productId: string;
 }
 
 /* tslint:disable */
