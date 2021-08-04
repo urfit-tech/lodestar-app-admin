@@ -3,7 +3,7 @@ import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
@@ -39,28 +39,13 @@ const MemberCreationModal: React.FC<
   const { formatMessage } = useIntl()
   const { currentUserRole, currentMemberId } = useAuth()
   const { id: appId } = useApp()
-  const searchMember = useSearchMember()
   const [insertMember] = useMutation<hasura.INSERT_MEMBER, hasura.INSERT_MEMBERVariables>(INSERT_MEMBER)
   const [form] = useForm<FieldProps>()
+  const [account, setAccount] = useState({ email: '', username: '' })
+  const status = useMember(account)
   const [loading, setLoading] = useState(false)
-  const [isExist, setIsExist] = useState({ username: false, email: false })
 
-  const handleCreateAsync = async (callback?: { onSuccess?: () => void }) => {
-    if (form.getFieldValue('username') || form.getFieldValue('email')) {
-      setLoading(true)
-      const usernameIsExist =
-        !!form.getFieldValue('username') && (await searchMember({ username: form.getFieldValue('username') }))
-      const EmailIsExist = !!form.getFieldValue('email') && (await searchMember({ email: form.getFieldValue('email') }))
-      setIsExist({
-        email: EmailIsExist,
-        username: usernameIsExist,
-      })
-      if (usernameIsExist || EmailIsExist) {
-        setLoading(false)
-        return
-      }
-    }
-
+  const handleCreate = async (callback?: { onSuccess?: () => void }) => {
     form
       .validateFields()
       .then(({ email, username, role, phone }) => {
@@ -87,6 +72,12 @@ const MemberCreationModal: React.FC<
       .finally(() => setLoading(false))
   }
 
+  useEffect(() => {
+    if (status === 'unavailable') {
+      message.error(formatMessage(errorMessages.text.memberAlreadyExist))
+    }
+  }, [status])
+
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
@@ -105,7 +96,7 @@ const MemberCreationModal: React.FC<
             type="primary"
             loading={loading}
             onClick={() =>
-              handleCreateAsync({
+              handleCreate({
                 onSuccess: () => {
                   message.success(formatMessage(commonMessages.event.successfullyCreated))
                   onRefetch?.()
@@ -140,22 +131,8 @@ const MemberCreationModal: React.FC<
               }),
             },
           ]}
-          validateStatus={isExist.username ? 'error' : undefined}
-          extra={
-            isExist.username && (
-              <StyledErrorMessage>
-                {formatMessage(messages.isExisted, {
-                  field: formatMessage(messages.username),
-                })}
-              </StyledErrorMessage>
-            )
-          }
         >
-          <Input
-            onFocus={e => {
-              setIsExist(props => ({ ...props, username: false }))
-            }}
-          />
+          <Input onBlur={e => setAccount(props => ({ ...props, username: e.target.value }))} />
         </Form.Item>
         <Form.Item
           label="Email"
@@ -168,22 +145,8 @@ const MemberCreationModal: React.FC<
               }),
             },
           ]}
-          validateStatus={isExist.email ? 'warning' : undefined}
-          extra={
-            isExist.email && (
-              <StyledErrorMessage>
-                {formatMessage(messages.isExisted, {
-                  field: formatMessage(commonMessages.label.email),
-                })}
-              </StyledErrorMessage>
-            )
-          }
         >
-          <Input
-            onFocus={e => {
-              setIsExist(props => ({ ...props, email: false }))
-            }}
-          />
+          <Input onBlur={e => setAccount(props => ({ ...props, email: e.target.value }))} />
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.phone)} name="phone">
           <Input />
@@ -238,38 +201,48 @@ const INSERT_MEMBER = gql`
 
 export default MemberCreationModal
 
-const useSearchMember = () => {
+const useMember = (account: { email: string; username: string }) => {
+  const { email, username } = account
   const apolloClient = useApolloClient()
   const { id: appId } = useApp()
-  const searchMember = async (props: { email?: string; username?: string }) => {
-    try {
-      const { data } = await apolloClient.query<hasura.SEARCH_MEMBERS, hasura.SEARCH_MEMBERSVariables>({
-        query: gql`
-          query SEARCH_MEMBERS($appId: String!, $email: String, $username: String) {
-            member_public_aggregate(
-              where: { email: { _eq: $email }, username: { _eq: $username }, app_id: { _eq: $appId } }
-            ) {
-              aggregate {
-                count
+  const [status, setStatus] = useState<'idle' | 'searching' | 'unavailable' | 'available'>('idle')
+
+  useEffect(() => {
+    if (email || username) {
+      setStatus('searching')
+      apolloClient
+        .query<hasura.SEARCH_MEMBERS, hasura.SEARCH_MEMBERSVariables>({
+          query: gql`
+            query SEARCH_MEMBERS($appId: String!, $email: String, $username: String) {
+              member_public_aggregate(
+                where: { _or: [{ email: { _eq: $email } }, { username: { _eq: $username } }], app_id: { _eq: $appId } }
+              ) {
+                aggregate {
+                  count
+                }
               }
             }
+          `,
+          variables: {
+            email,
+            username,
+            appId,
+          },
+          fetchPolicy: 'no-cache',
+        })
+        .then(({ data }) => {
+          const count = data?.member_public_aggregate.aggregate?.count || 0
+          if (count) {
+            setStatus('unavailable')
+            return
           }
-        `,
-        variables: {
-          email: props.email,
-          username: props.username,
-          appId,
-        },
-        fetchPolicy: 'no-cache',
-      })
-
-      const count = !!data?.member_public_aggregate.aggregate?.count || false
-
-      return count
-    } catch {
-      return false
+          setStatus('available')
+        })
+        .catch(() => {
+          setStatus('idle')
+        })
     }
-  }
+  }, [email, username])
 
-  return searchMember
+  return status
 }
