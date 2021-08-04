@@ -1,8 +1,8 @@
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { priceFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useCurrency } from '../../hooks/currency'
 import { PeriodType } from '../../types/general'
 
 const StyledPriceLabel = styled.div`
@@ -47,21 +47,19 @@ const PriceLabel: React.FC<{
   periodAmount?: number
   periodType?: PeriodType
   currencyId?: string
-  locale?: string
-  unit?: string
-  minorUnits?: number
-}> = ({ listPrice, salePrice, downPrice, periodAmount, periodType, currencyId, locale, unit, minorUnits }) => {
+}> = ({ listPrice, salePrice, downPrice, periodAmount, periodType, currencyId }) => {
   const { formatMessage } = useIntl()
   const price = salePrice || listPrice
   const firstPeriodPrice = price - (downPrice || 0)
 
+  const { currencyFormatter } = useCurrency(0, currencyId)
   return (
     <div>
       {typeof downPrice === 'number' && (
         <StyledPriceLabel className="discount-down-price">
           {formatMessage(messages.firstPeriod)}
           {firstPeriodPrice <= 0 ? formatMessage(messages.free) : ''}
-          {' ' + priceFormatter(firstPeriodPrice, currencyId, locale, unit, minorUnits)}
+          {' ' + currencyFormatter(firstPeriodPrice, currencyId)}
         </StyledPriceLabel>
       )}
 
@@ -70,7 +68,7 @@ const PriceLabel: React.FC<{
           <span className="mr-1">
             {typeof downPrice === 'number' ? formatMessage(messages.second) : ''}
             {salePrice === 0 ? formatMessage(messages.free) : ''}
-            {' ' + priceFormatter(salePrice, currencyId, locale, unit, minorUnits)}
+            {' ' + currencyFormatter(salePrice, currencyId)}
           </span>
           <span>
             {periodType &&
@@ -96,7 +94,7 @@ const PriceLabel: React.FC<{
           {typeof downPrice === 'number' && typeof salePrice === 'undefined' ? formatMessage(messages.second) : ''}
           {typeof salePrice === 'number' ? formatMessage(messages.originalPrice) : ''}
           {listPrice === 0 ? formatMessage(messages.free) : ''}
-          {' ' + priceFormatter(listPrice, currencyId, locale, unit, minorUnits)}
+          {' ' + currencyFormatter(listPrice, currencyId)}
         </span>
         <span>
           {periodType &&

@@ -1,9 +1,6 @@
 import { InputNumber } from 'antd'
 import React from 'react'
-import { useIntl } from 'react-intl'
-import { useApp } from '../../contexts/AppContext'
-import { priceFormatter } from '../../helpers'
-import { Currency } from '../../types/app'
+import { useCurrency } from '../../hooks/currency'
 
 const CurrencyInput: React.FC<{
   currencyId?: string
@@ -12,9 +9,7 @@ const CurrencyInput: React.FC<{
   noUnit?: boolean
   noLabel?: boolean
 }> = ({ currencyId, value, onChange, noLabel, noUnit }) => {
-  const { locale } = useIntl()
-  const { currencies, settings } = useApp()
-  const currency: Currency = currencies[currencyId || settings['currency_id'] || 'TWD']
+  const { currencyFormatter } = useCurrency(value ? +value : 0, currencyId)
   return (
     <InputNumber
       value={value}
@@ -22,8 +17,7 @@ const CurrencyInput: React.FC<{
       min={0}
       formatter={value => {
         // TODO: base on noLabel and noUnit to define price format
-        const formattedPrice = priceFormatter(value, currencyId, locale, settings['coin.unit'], currency['minorUnits'])
-        return formattedPrice
+        return currencyFormatter(value ? +value : 0, currencyId)
       }}
       parser={value => (value ? value.replace(/[^\d.]/g, '') : '')}
     />
