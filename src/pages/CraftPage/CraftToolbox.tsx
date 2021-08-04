@@ -1,11 +1,11 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image, Select } from 'antd'
 import { SelectValue } from 'antd/lib/select'
+import CraftCarousel from 'lodestar-app-element/src/components/craft/CraftCarousel'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StyledFullWidthSelect } from '../../components/admin'
-import CraftCarousel from '../../components/craft/CraftCarousel'
 import { craftPageMessages } from '../../helpers/translation'
 
 const StyledBoxWrapper = styled.div`
