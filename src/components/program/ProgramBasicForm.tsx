@@ -103,7 +103,7 @@ const ProgramBasicForm: React.FC<{
         <TagSelector />
       </Form.Item>
       {enabledModules.sku && (
-        <Form.Item label={`${formatMessage(commonMessages.label.sku)}（SKU)`} name="sku">
+        <Form.Item label={formatMessage(commonMessages.label.sku)} name="sku">
           <Input />
         </Form.Item>
       )}
