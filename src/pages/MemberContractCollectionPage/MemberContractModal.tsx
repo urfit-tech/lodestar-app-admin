@@ -18,6 +18,7 @@ import MemberNameLabel from '../../components/common/MemberNameLabel'
 import { memberContractMessages } from '../../helpers/translation'
 import { useMutateMemberContract, useXuemiSales } from '../../hooks'
 import { ReactComponent as PlusIcon } from '../../images/icons/plus.svg'
+import { paymentMethods } from '../MemberContractCreationPage'
 
 const StyledAreaTitle = styled.h3`
   font-size: 16px;
@@ -385,7 +386,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 initialValue={paymentOptions?.paymentMethod || null}
               >
                 <StyledSelect disabled={!permissions.CONTRACT_PAYMENT_METHOD_EDIT}>
-                  {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
+                  {paymentMethods.map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
                       {payment}
                     </Select.Option>
