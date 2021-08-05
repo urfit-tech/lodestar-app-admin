@@ -147,7 +147,7 @@ const App: React.FC = () => {
       }}
       extraRouteProps={{
         owner_members: {
-          path: '/admin/members',
+          path: '/members',
           pageName: <MemberCollectionAdminPage />,
           authenticated: true,
         },
@@ -208,7 +208,7 @@ const App: React.FC = () => {
           authenticated: true,
         },
         member_contract_creation: {
-          path: '/admin/members/:memberId/contracts/new',
+          path: '/members/:memberId/contracts/new',
           pageName: <MemberContractCreationPage />,
           authenticated: true,
         },
