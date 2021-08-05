@@ -9,7 +9,7 @@ const CurrencyInput: React.FC<{
   noUnit?: boolean
   noLabel?: boolean
 }> = ({ currencyId, value, onChange, noLabel, noUnit }) => {
-  const { currencyFormatter } = useCurrency(value ? +value : 0, currencyId)
+  const { currencyFormatter } = useCurrency()
   return (
     <InputNumber
       value={value}

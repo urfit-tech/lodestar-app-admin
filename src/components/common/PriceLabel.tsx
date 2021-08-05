@@ -52,7 +52,7 @@ const PriceLabel: React.FC<{
   const price = salePrice || listPrice
   const firstPeriodPrice = price - (downPrice || 0)
 
-  const { currencyFormatter } = useCurrency(0, currencyId)
+  const { currencyFormatter } = useCurrency()
   return (
     <div>
       {typeof downPrice === 'number' && (
