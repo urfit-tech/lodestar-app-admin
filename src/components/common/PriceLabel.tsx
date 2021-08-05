@@ -49,17 +49,18 @@ const PriceLabel: React.FC<{
   currencyId?: string
 }> = ({ listPrice, salePrice, downPrice, periodAmount, periodType, currencyId }) => {
   const { formatMessage } = useIntl()
+  const { formatCurrency } = useCurrency(currencyId)
+
   const price = salePrice || listPrice
   const firstPeriodPrice = price - (downPrice || 0)
 
-  const { currencyFormatter } = useCurrency()
   return (
     <div>
       {typeof downPrice === 'number' && (
         <StyledPriceLabel className="discount-down-price">
           {formatMessage(messages.firstPeriod)}
           {firstPeriodPrice <= 0 ? formatMessage(messages.free) : ''}
-          {' ' + currencyFormatter(firstPeriodPrice, currencyId)}
+          {' ' + formatCurrency(firstPeriodPrice)}
         </StyledPriceLabel>
       )}
 
@@ -68,7 +69,7 @@ const PriceLabel: React.FC<{
           <span className="mr-1">
             {typeof downPrice === 'number' ? formatMessage(messages.second) : ''}
             {salePrice === 0 ? formatMessage(messages.free) : ''}
-            {' ' + currencyFormatter(salePrice, currencyId)}
+            {' ' + formatCurrency(salePrice)}
           </span>
           <span>
             {periodType &&
@@ -94,7 +95,7 @@ const PriceLabel: React.FC<{
           {typeof downPrice === 'number' && typeof salePrice === 'undefined' ? formatMessage(messages.second) : ''}
           {typeof salePrice === 'number' ? formatMessage(messages.originalPrice) : ''}
           {listPrice === 0 ? formatMessage(messages.free) : ''}
-          {' ' + currencyFormatter(listPrice, currencyId)}
+          {' ' + formatCurrency(listPrice)}
         </span>
         <span>
           {periodType &&
