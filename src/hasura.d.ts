@@ -2514,6 +2514,9 @@ export interface INSERT_MEMBERVariables {
   role: string;
   username: string;
   email: string;
+  managerId?: string | null;
+  assignedAt?: any | null;
+  phones: member_phone_insert_input[];
 }
 
 /* tslint:disable */
@@ -9773,6 +9776,38 @@ export interface GET_PROPERTY {
 
 export interface GET_PROPERTYVariables {
   type: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: SEARCH_MEMBERS
+// ====================================================
+
+export interface SEARCH_MEMBERS_member_public_aggregate_aggregate {
+  __typename: "member_public_aggregate_fields";
+  count: number | null;
+}
+
+export interface SEARCH_MEMBERS_member_public_aggregate {
+  __typename: "member_public_aggregate";
+  aggregate: SEARCH_MEMBERS_member_public_aggregate_aggregate | null;
+}
+
+export interface SEARCH_MEMBERS {
+  /**
+   * fetch aggregated fields from the table: "member_public"
+   */
+  member_public_aggregate: SEARCH_MEMBERS_member_public_aggregate;
+}
+
+export interface SEARCH_MEMBERSVariables {
+  appId: string;
+  email?: string | null;
+  username?: string | null;
 }
 
 /* tslint:disable */

@@ -1,10 +1,11 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -16,11 +17,17 @@ const messages = defineMessages({
   createMember: { id: 'memberMessages.label.createMember', defaultMessage: '添加會員' },
   roleSettings: { id: 'memberMessages.label.roleSettings', defaultMessage: '添加身份' },
   username: { id: 'memberMessages.label.username', defaultMessage: '使用者名稱' },
+  isExisted: { id: 'error.form.isExisted', defaultMessage: '{field}已存在' },
 })
+
+const StyledErrorMessage = styled.span`
+  color: ${props => props.theme['@error-color']};
+`
 
 type FieldProps = {
   username: string
   email: string
+  phone?: string
   role?: string
 }
 
@@ -28,35 +35,48 @@ const MemberCreationModal: React.FC<
   AdminModalProps & {
     onRefetch?: () => void
   }
-> = ({ onRefetch, ...restProps }) => {
+> = ({ onRefetch, ...modalProps }) => {
   const { formatMessage } = useIntl()
-  const { currentUserRole } = useAuth()
+  const { currentUserRole, currentMemberId } = useAuth()
   const { id: appId } = useApp()
   const [insertMember] = useMutation<hasura.INSERT_MEMBER, hasura.INSERT_MEMBERVariables>(INSERT_MEMBER)
   const [form] = useForm<FieldProps>()
+  const [account, setAccount] = useState({ email: '', username: '' })
+  const status = useMember(account)
   const [loading, setLoading] = useState(false)
 
-  const handleCreate = (callback?: { onSuccess?: () => void }) => {
-    form.validateFields().then(values => {
-      setLoading(true)
-      insertMember({
-        variables: {
-          id: uuidv4(),
-          email: values.email,
-          username: values.username,
-          role: values.role || 'general-member',
-          appId,
-        },
+  const handleCreate = async (callback?: { onSuccess?: () => void }) => {
+    form
+      .validateFields()
+      .then(({ email, username, role, phone }) => {
+        setLoading(true)
+        insertMember({
+          variables: {
+            appId,
+            id: uuidv4(),
+            email,
+            username,
+            role: role || 'general-member',
+            managerId: currentUserRole === 'general-member' ? currentMemberId : null,
+            assignedAt: currentUserRole === 'general-member' ? new Date() : null,
+            phones: phone ? [{ phone, is_primary: true }] : [],
+          },
+        })
+          .then(() => {
+            callback?.onSuccess?.()
+          })
+          .catch(() => {
+            message.error(formatMessage(errorMessages.text.memberAlreadyExist))
+          })
       })
-        .then(() => {
-          callback?.onSuccess?.()
-        })
-        .catch(() => {
-          message.error(formatMessage(errorMessages.text.memberAlreadyExist))
-        })
-        .finally(() => setLoading(false))
-    })
+      .finally(() => setLoading(false))
   }
+
+  useEffect(() => {
+    if (status === 'unavailable') {
+      message.error(formatMessage(errorMessages.text.memberAlreadyExist))
+    }
+  }, [status])
 
   return (
     <AdminModal
@@ -90,13 +110,12 @@ const MemberCreationModal: React.FC<
           </Button>
         </>
       )}
-      {...restProps}
+      {...modalProps}
     >
       <Form
         form={form}
         layout="vertical"
         colon={false}
-        hideRequiredMark
         initialValues={{
           role: 'general-member',
         }}
@@ -113,7 +132,7 @@ const MemberCreationModal: React.FC<
             },
           ]}
         >
-          <Input />
+          <Input onBlur={e => setAccount(props => ({ ...props, username: e.target.value }))} />
         </Form.Item>
         <Form.Item
           label="Email"
@@ -127,8 +146,12 @@ const MemberCreationModal: React.FC<
             },
           ]}
         >
+          <Input onBlur={e => setAccount(props => ({ ...props, email: e.target.value }))} />
+        </Form.Item>
+        <Form.Item label={formatMessage(commonMessages.label.phone)} name="phone">
           <Input />
         </Form.Item>
+
         {currentUserRole === 'app-owner' && (
           <Form.Item label={formatMessage(messages.roleSettings)} name="role">
             <Select<string>>
@@ -146,9 +169,28 @@ const MemberCreationModal: React.FC<
 }
 
 const INSERT_MEMBER = gql`
-  mutation INSERT_MEMBER($id: String!, $appId: String!, $role: String!, $username: String!, $email: String!) {
+  mutation INSERT_MEMBER(
+    $id: String!
+    $appId: String!
+    $role: String!
+    $username: String!
+    $email: String!
+    $managerId: String
+    $assignedAt: timestamptz
+    $phones: [member_phone_insert_input!]!
+  ) {
     insert_member(
-      objects: { id: $id, app_id: $appId, role: $role, username: $username, name: $username, email: $email }
+      objects: {
+        id: $id
+        app_id: $appId
+        role: $role
+        username: $username
+        name: $username
+        email: $email
+        manager_id: $managerId
+        assigned_at: $assignedAt
+        member_phones: { data: $phones }
+      }
     ) {
       returning {
         id
@@ -158,3 +200,49 @@ const INSERT_MEMBER = gql`
 `
 
 export default MemberCreationModal
+
+const useMember = (account: { email: string; username: string }) => {
+  const { email, username } = account
+  const apolloClient = useApolloClient()
+  const { id: appId } = useApp()
+  const [status, setStatus] = useState<'idle' | 'searching' | 'unavailable' | 'available'>('idle')
+
+  useEffect(() => {
+    if (email || username) {
+      setStatus('searching')
+      apolloClient
+        .query<hasura.SEARCH_MEMBERS, hasura.SEARCH_MEMBERSVariables>({
+          query: gql`
+            query SEARCH_MEMBERS($appId: String!, $email: String, $username: String) {
+              member_public_aggregate(
+                where: { _or: [{ email: { _eq: $email } }, { username: { _eq: $username } }], app_id: { _eq: $appId } }
+              ) {
+                aggregate {
+                  count
+                }
+              }
+            }
+          `,
+          variables: {
+            email,
+            username,
+            appId,
+          },
+          fetchPolicy: 'no-cache',
+        })
+        .then(({ data }) => {
+          const count = data?.member_public_aggregate.aggregate?.count || 0
+          if (count) {
+            setStatus('unavailable')
+            return
+          }
+          setStatus('available')
+        })
+        .catch(() => {
+          setStatus('idle')
+        })
+    }
+  }, [email, username])
+
+  return status
+}
