@@ -1,12 +1,13 @@
-import { useIntl } from 'react-intl'
+import { useContext } from 'react'
 import { useApp } from '../contexts/AppContext'
+import LanguageContext from '../contexts/LanguageContext'
 import { Currency } from '../types/app'
 
-export const useCurrency = () => {
-  const { locale } = useIntl()
+export const useCurrency = (currencyId?: string) => {
   const { currencies, settings } = useApp()
+  const { locale } = useContext(LanguageContext)
 
-  const currencyFormatter = (value: number, currencyId?: string) => {
+  const formatCurrency = (value: number) => {
     const currentCurrencyId = currencyId || settings['currency_id'] || 'TWD'
     const currency: Currency = currencies[currentCurrencyId]
 
@@ -24,6 +25,7 @@ export const useCurrency = () => {
   }
 
   return {
-    currencyFormatter,
+    formatCurrency,
   }
 }
+// TODO: create useFormatter containing other formatter in helpers and replace it
