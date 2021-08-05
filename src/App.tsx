@@ -208,11 +208,7 @@ const App: React.FC = () => {
           authenticated: true,
         },
         member_contract_creation: {
-          path: '/members/:memberId/new-contract',
           pageName: <MemberContractCreationPage />,
-          authenticated: true,
-        },
-        terms: {
           path: '/terms',
           pageName: <TermsPtPage />,
           authenticated: false,
