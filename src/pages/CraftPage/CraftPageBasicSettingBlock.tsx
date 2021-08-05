@@ -10,7 +10,7 @@ import {
   StyledCraftSettingLabel,
   StyledTips,
 } from '../../components/admin'
-import { commonMessages, craftPageMessages, errorMessages, programMessages } from '../../helpers/translation'
+import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/translation'
 import { CraftPageAdminProps } from '../../types/craft'
 import CraftPageDeletionAdminCard from './CraftPageDeletionAdminCard'
 
@@ -119,7 +119,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
         </Form>
       </AdminBlock>
       <AdminBlock>
-        <AdminBlockTitle>{formatMessage(programMessages.label.deleteProgram)}</AdminBlockTitle>
+        <AdminBlockTitle>{formatMessage(craftPageMessages.label.deletePage)}</AdminBlockTitle>
         <CraftPageDeletionAdminCard
           page={pageAdmin}
           // onRefetch={refetchCraftPage}

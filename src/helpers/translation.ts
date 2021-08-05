@@ -1327,6 +1327,7 @@ export const craftPageMessages = {
     lecturer: { id: 'craft.label.lecturer', defaultMessage: '講師' },
     fundraising: { id: 'craft.label.fundraising', defaultMessage: '募資' },
     preOrder: { id: 'craft.label.preOrder', defaultMessage: '預購' },
+    deletePage: { id: 'craft.label.deletePage', defaultMessage: '刪除頁面' },
   }),
   text: defineMessages({
     deleteWarning: {
