@@ -44,7 +44,7 @@ const ProgramPackageBasicForm: React.FC<{
     updateProgramPackageCover({
       variables: {
         programPackageId: programPackage.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}/400?t=${uploadTime}`,
       },
     })
       .then(() => {

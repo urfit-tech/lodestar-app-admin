@@ -59,7 +59,7 @@ const MemberShopBasicForm: React.FC<{
         memberShopId: memberShop.id,
         coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/member_shop_covers/${appId}/${
           memberShop.id
-        }?t=${Date.now()}`,
+        }/400?t=${Date.now()}`,
       },
     })
       .then(() => {

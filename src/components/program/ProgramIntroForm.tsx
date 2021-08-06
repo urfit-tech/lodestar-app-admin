@@ -47,7 +47,7 @@ const ProgramIntroForm: React.FC<{
     updateProgramCover({
       variables: {
         programId: program.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}/400?t=${uploadTime}`,
       },
     })
       .then(() => {

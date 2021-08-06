@@ -48,7 +48,7 @@ const VideoInput: React.FC<{
         onChange={(value: any) => setFile(value as UploadFile)}
         onSuccess={() =>
           onChange &&
-          onChange(`https://${process.env.REACT_APP_S3_BUCKET}/${productType}_covers/${appId}/${productId}_video`)
+          onChange(`https://${process.env.REACT_APP_S3_BUCKET}/${productType}_covers/${appId}/${productId}_video/600`)
         }
       />
     </StyleInputGroup>
