@@ -5,7 +5,6 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -20,9 +19,7 @@ const messages = defineMessages({
   isExisted: { id: 'error.form.isExisted', defaultMessage: '{field}已存在' },
 })
 
-const StyledErrorMessage = styled.span`
-  color: ${props => props.theme['@error-color']};
-`
+type MemberStatusType = 'idle' | 'searching' | 'unavailable' | 'available'
 
 type FieldProps = {
   username: string
@@ -201,11 +198,11 @@ const INSERT_MEMBER = gql`
 
 export default MemberCreationModal
 
-const useMember = (account: { email: string; username: string }) => {
+const useMember = (account: { email: string; username: string }): MemberStatusType => {
   const { email, username } = account
   const apolloClient = useApolloClient()
   const { id: appId } = useApp()
-  const [status, setStatus] = useState<'idle' | 'searching' | 'unavailable' | 'available'>('idle')
+  const [status, setStatus] = useState<MemberStatusType>('idle')
 
   useEffect(() => {
     if (email || username) {
