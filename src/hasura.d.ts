@@ -6853,6 +6853,7 @@ export interface GET_APPLICATION_currency {
   name: string;
   label: string;
   unit: string;
+  minor_units: number | null;
 }
 
 export interface GET_APPLICATION_locale {
@@ -11657,6 +11658,9 @@ export interface GET_SECRETS_setting_app_secrets {
 export interface GET_SECRETS_setting {
   __typename: "setting";
   key: string;
+  /**
+   * string | number | boolean
+   */
   type: string;
   options: any | null;
   is_protected: boolean;
@@ -11723,6 +11727,9 @@ export interface GET_SETTINGS_setting_app_settings {
 export interface GET_SETTINGS_setting {
   __typename: "setting";
   key: string;
+  /**
+   * string | number | boolean
+   */
   type: string;
   options: any | null;
   is_protected: boolean;

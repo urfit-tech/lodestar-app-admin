@@ -1,8 +1,8 @@
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { currencyFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useCurrency } from '../../hooks/currency'
 import { PeriodType } from '../../types/general'
 
 const StyledPriceLabel = styled.div`
@@ -46,8 +46,11 @@ const PriceLabel: React.FC<{
   downPrice?: number
   periodAmount?: number
   periodType?: PeriodType
-}> = ({ listPrice, salePrice, downPrice, periodAmount, periodType }) => {
+  currencyId?: string
+}> = ({ listPrice, salePrice, downPrice, periodAmount, periodType, currencyId }) => {
   const { formatMessage } = useIntl()
+  const { formatCurrency } = useCurrency(currencyId)
+
   const price = salePrice || listPrice
   const firstPeriodPrice = price - (downPrice || 0)
 
@@ -57,7 +60,7 @@ const PriceLabel: React.FC<{
         <StyledPriceLabel className="discount-down-price">
           {formatMessage(messages.firstPeriod)}
           {firstPeriodPrice <= 0 ? formatMessage(messages.free) : ''}
-          {' ' + currencyFormatter(firstPeriodPrice)}
+          {' ' + formatCurrency(firstPeriodPrice)}
         </StyledPriceLabel>
       )}
 
@@ -66,7 +69,7 @@ const PriceLabel: React.FC<{
           <span className="mr-1">
             {typeof downPrice === 'number' ? formatMessage(messages.second) : ''}
             {salePrice === 0 ? formatMessage(messages.free) : ''}
-            {' ' + currencyFormatter(salePrice)}
+            {' ' + formatCurrency(salePrice)}
           </span>
           <span>
             {periodType &&
@@ -92,7 +95,7 @@ const PriceLabel: React.FC<{
           {typeof downPrice === 'number' && typeof salePrice === 'undefined' ? formatMessage(messages.second) : ''}
           {typeof salePrice === 'number' ? formatMessage(messages.originalPrice) : ''}
           {listPrice === 0 ? formatMessage(messages.free) : ''}
-          {' ' + currencyFormatter(listPrice)}
+          {' ' + formatCurrency(listPrice)}
         </span>
         <span>
           {periodType &&

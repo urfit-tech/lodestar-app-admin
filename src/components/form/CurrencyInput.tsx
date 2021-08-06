@@ -1,7 +1,7 @@
 import { InputNumber } from 'antd'
-import React from 'react'
-import { useApp } from '../../contexts/AppContext'
-import { Currency } from '../../types/app'
+import React, { useContext } from 'react'
+import LanguageContext from '../../contexts/LanguageContext'
+import { useCurrency } from '../../hooks/currency'
 
 const CurrencyInput: React.FC<{
   currencyId?: string
@@ -10,20 +10,18 @@ const CurrencyInput: React.FC<{
   noUnit?: boolean
   noLabel?: boolean
 }> = ({ currencyId, value, onChange, noLabel, noUnit }) => {
-  const { currencies, settings } = useApp()
-  const currency: Currency = currencies[currencyId || settings['currency_id'] || 'TWD']
-
+  const { locale } = useContext(LanguageContext)
+  const { formatCurrency } = useCurrency(currencyId)
   return (
     <InputNumber
       value={value}
       onChange={v => onChange && onChange(typeof v === 'number' ? v : undefined)}
       min={0}
       formatter={value => {
-        const label = noLabel ? '' : currency.label + ' '
-        const unit = noUnit ? '' : ' ' + currency.unit
-        return label + value + unit
+        const formattedNumber = (value ? +value : 0).toLocaleString(locale || navigator.language)
+        return noUnit || noLabel ? formattedNumber : formatCurrency(value ? +value : 0)
       }}
-      parser={value => (value ? value.replace(/\D/g, '') : '')}
+      parser={value => (value ? value.replace(/[^\d.]/g, '') : '')}
     />
   )
 }

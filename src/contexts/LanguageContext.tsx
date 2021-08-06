@@ -7,10 +7,12 @@ import { useApp } from './AppContext'
 const supportedLanguages = ['zh', 'zh-cn', 'en', 'vi', 'acsi']
 
 type LanguageProps = {
+  locale: string
   currentLanguage: string
   setCurrentLanguage?: (language: string) => void
 }
 const defaultLanguage: LanguageProps = {
+  locale: 'zh',
   currentLanguage: 'zh',
 }
 
@@ -52,6 +54,7 @@ export const LanguageProvider: React.FC = ({ children }) => {
   return (
     <LanguageContext.Provider
       value={{
+        locale,
         currentLanguage,
         setCurrentLanguage: (newLanguage: string) => {
           if (supportedLanguages.includes(newLanguage)) {

@@ -124,6 +124,7 @@ export const AppProvider: React.FC<{
           name: currency.id === 'LSC' && settings['coin.name'] ? settings['coin.name'] : currency.name,
           label: currency.id === 'LSC' && settings['coin.label'] ? settings['coin.label'] : currency.label,
           unit: currency.id === 'LSC' && settings['coin.unit'] ? settings['coin.unit'] : currency.unit,
+          minorUnits: currency.minor_units ? currency.minor_units : 0,
         }
         return accumulator
       }, {} as AppProps['currencies']) || {},
@@ -145,6 +146,7 @@ const GET_APPLICATION = gql`
       name
       label
       unit
+      minor_units
     }
     locale {
       key

@@ -15,7 +15,7 @@ const CurrencySelector: React.FC<{
         .map(currencyId => {
           return (
             <Select.Option key={currencyId} value={currencyId}>
-              {(currencyId === 'LSC' && settings['coin.name']) || currencies[currencyId].name}
+              {(currencyId === 'LSC' && settings['coin.name']) || currencyId}
             </Select.Option>
           )
         })}
