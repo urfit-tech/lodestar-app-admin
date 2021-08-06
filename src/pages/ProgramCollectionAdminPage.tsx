@@ -483,7 +483,7 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
 `
 const GET_PROGRAM_SORT_COLLECTION = gql`
   query GET_PROGRAM_SORT_COLLECTION($condition: program_bool_exp!) {
-    program(where: $condition, order_by: [{ position: asc }]) {
+    program(where: $condition, order_by: { position: asc }) {
       id
       title
       is_subscription
