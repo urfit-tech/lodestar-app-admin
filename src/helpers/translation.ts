@@ -49,7 +49,7 @@ export const memberContractMessages = {
     price: { id: 'memberContract.label.price', defaultMessage: '金額' },
     coins: { id: 'memberContract.label.coins', defaultMessage: '代幣' },
 
-    rebateGift: { id: 'memberContract.label.rebateGift', defaultMessage: '滿額禮' },
+    rebateGift: { id: 'memberContract.label.rebateGift', defaultMessage: '滿額學習工具' },
   }),
   status: defineMessages({
     all: { id: 'memberContract.status.all', defaultMessage: '所有狀態' },
