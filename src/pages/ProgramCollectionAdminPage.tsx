@@ -111,7 +111,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
         is_private: { _eq: false },
         title: searchText ? { _like: `%${searchText}%` } : undefined,
       },
-      orderBy: [{ position: 'asc' as hasura.order_by }],
+      orderBy: [{ position: 'asc' as hasura.order_by }, { id: 'asc' as hasura.order_by }],
     },
     {
       key: 'privatelyPublish',
@@ -373,7 +373,17 @@ const useProgramPreviewCollection = (
               condition: {
                 ...condition,
                 ...(Object.keys(orderBy ? orderBy[0] : {})[0] === 'position'
-                  ? { position: { _gt: data?.program.slice(-1)[0]?.position } }
+                  ? {
+                      _or: [
+                        {
+                          _and: [
+                            { position: { _eq: data?.program.slice(-1)[0]?.position } },
+                            { id: { _gt: data?.program.slice(-1)[0]?.id } },
+                          ],
+                        },
+                        { position: { _gt: data?.program.slice(-1)[0]?.position } },
+                      ],
+                    }
                   : { updated_at: { _lt: data?.program.slice(-1)[0]?.updated_at } }),
               },
               limit: 10,
