@@ -14,48 +14,21 @@ import { SalesStatus } from '../../types/sales'
 import CallStatusBlock from './CallStatusBlock'
 import TotalRevenueBlock from './TotalRevenueBlock'
 
-const teamSettings = [
-  {
-    name: '無名組',
-    sales: [
-      { id: '5785af74-a3a5-4910-86af-f37b54c21fc3', name: 'winston' },
-      { id: 'xuemi-edison', name: 'edison' },
-    ],
-  },
-  {
-    name: '今天吃什麼',
-    sales: [
-      { id: '67d897bb-d500-497f-b8a8-7ceb55227da4', name: 'alan' },
-      { id: '906450b5-e4ab-4736-96ae-261d8a3abb96', name: 'nicole' },
-      { id: '585757d9-50c1-4800-a16b-fadf6fd8b669', name: 'cherry' },
-      { name: 'rooney', id: '44649150-6f11-4b95-a9c8-7ff3530febc6' },
-    ],
-  },
-  {
-    name: '喜刷刷',
-    sales: [
-      { id: 'fac9ad75-296b-456e-a577-a7cf7264635d', name: 'violet' },
-      { id: 'a8c910cf-c626-4f2d-827a-d7c92e22b707', name: 'jason' },
-      { id: 'c91ef026-c46b-4cf4-bc8d-7aba9fe650bc', name: 'jade' },
-      { name: 'ann', id: '32dfd15f-4e75-4fc5-a753-ef1ad349af4f' },
-      { name: 'shani', id: '1fc69bdc-519a-40fb-ab05-265a57dd2e0d' },
-    ],
-  },
-  {
-    name: '攻城獅',
-    sales: [
-      { id: '54eec91c-a636-4043-ac8e-7c1616b970eb', name: 'steven' },
-      { id: 'f13368e0-ca7f-4ec3-a5fb-88224b287896', name: 'youjia' },
-      { name: 'apple', id: '335f04ae-eaf4-4da1-ae00-4d5fb6a62666' },
-      { name: 'ashley', id: '775d6a85-83f0-4226-949f-52ffc86bdabf' },
-    ],
-  },
-]
+type SalesMember = {
+  id: string
+  name: string
+}
+
+type groupSetting = {
+  name: string
+  sales: SalesMember[]
+}
 
 const SalesStatusPage: React.VFC = () => {
   const [today, setToday] = useState(moment().startOf('day'))
   const { loading, data: salesStatus, error } = useSalesStatus(today)
   const { formatMessage } = useIntl()
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -88,6 +61,7 @@ const GET_SALES_STATUS = gql`
     }
   }
 `
+
 const useSalesStatus = (today: moment.Moment): { loading: boolean; error: Error | undefined; data: SalesStatus } => {
   const tomorrow = today.clone().add(1, 'day')
   const thisWeek = today.clone().startOf('week')
@@ -102,10 +76,12 @@ const useSalesStatus = (today: moment.Moment): { loading: boolean; error: Error 
       pollInterval: 10000,
     },
   )
+  const { groupSettings } = useSalesGroups(process.env.REACT_APP_ID || 'xuemi')
+
   return {
     loading,
     error,
-    data: teamSettings.map(setting => ({
+    data: groupSettings?.map(setting => ({
       name: setting.name,
       data: setting.sales.map(sales => {
         return {
@@ -173,6 +149,55 @@ const useSalesStatus = (today: moment.Moment): { loading: boolean; error: Error 
         }
       }),
     })),
+  }
+}
+
+const useSalesGroups = (appId: string) => {
+  const { loading, error, data } = useQuery<hasura.GET_SALES_GROUPS, hasura.GET_SALES_GROUPSVariables>(
+    gql`
+      query GET_SALES_GROUPS($appId: String!) {
+        member_property(where: { property: { app_id: { _eq: $appId }, name: { _eq: "組別" } } }) {
+          value
+          member {
+            id
+            name
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        appId,
+      },
+    },
+  )
+
+  const groupSettings: groupSetting[] =
+    loading || error || !data
+      ? []
+      : data.member_property.reduce((currentGroupSettings: groupSetting[], currentSalesMember) => {
+          const {
+            value: groupName,
+            member: { id, name },
+          } = currentSalesMember
+
+          const currentGroupId = currentGroupSettings.findIndex(groupSetting => groupSetting.name === groupName)
+
+          if (currentGroupId >= 0) {
+            currentGroupSettings[currentGroupId].sales.push({ id, name } as SalesMember)
+            return currentGroupSettings
+          }
+          const newGroupSetting: groupSetting = { name: groupName, sales: [] }
+          newGroupSetting.sales.push({ id, name } as SalesMember)
+          currentGroupSettings.push(newGroupSetting)
+
+          return currentGroupSettings
+        }, [] as groupSetting[])
+
+  return {
+    loadingGroupSettings: loading,
+    errorGroupSettings: error,
+    groupSettings,
   }
 }
 export default SalesStatusPage
