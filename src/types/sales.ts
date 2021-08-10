@@ -34,12 +34,12 @@ export type Lead = {
   notified: Boolean
 }
 
-export type SalesMember = {
+export type SalesMemberProps = {
   id: string
   name: string
 }
 
-export type GroupSetting = {
+export type GroupSettingProps = {
   name: string
-  sales: SalesMember[]
+  sales: SalesMemberProps[]
 }

@@ -10,7 +10,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
-import { GroupSetting, SalesMember, SalesStatus } from '../../types/sales'
+import { GroupSettingProps, SalesStatus } from '../../types/sales'
 import CallStatusBlock from './CallStatusBlock'
 import TotalRevenueBlock from './TotalRevenueBlock'
 
@@ -163,10 +163,10 @@ const useSalesGroups = (appId: string) => {
     },
   )
 
-  const groupSettings: GroupSetting[] =
+  const groupSettings: GroupSettingProps[] =
     loading || error || !data
       ? []
-      : data.member_property?.reduce((currentGroupSettings: GroupSetting[], currentSalesMember) => {
+      : data.member_property?.reduce<GroupSettingProps[]>((currentGroupSettings, currentSalesMember) => {
           const {
             value: groupName,
             member: { id, name },
@@ -175,14 +175,14 @@ const useSalesGroups = (appId: string) => {
           const currentGroupId = currentGroupSettings.findIndex(groupSetting => groupSetting.name === groupName)
 
           if (currentGroupId >= 0) {
-            const newSalesMembers = [...currentGroupSettings[currentGroupId].sales, { id, name } as SalesMember]
+            const newSalesMembers = [...currentGroupSettings[currentGroupId].sales, { id, name }]
             currentGroupSettings[currentGroupId].sales = newSalesMembers
             return currentGroupSettings
           }
-          const newGroupSetting: GroupSetting = { name: groupName, sales: [{ id, name } as SalesMember] }
+          const newGroupSetting: GroupSettingProps = { name: groupName, sales: [{ id, name }] }
 
           return [...currentGroupSettings, newGroupSetting]
-        }, [] as GroupSetting[])
+        }, [])
 
   return {
     loadingGroupSettings: loading,
