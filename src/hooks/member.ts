@@ -527,6 +527,7 @@ export const useMutateMemberNote = () => {
       $duration: Int
       $description: String
       $note: String
+      $rejectedAt: timestamptz
     ) {
       insert_member_note_one(
         object: {
@@ -537,6 +538,7 @@ export const useMutateMemberNote = () => {
           duration: $duration
           description: $description
           note: $note
+          rejected_at: $rejectedAt
         }
       ) {
         id

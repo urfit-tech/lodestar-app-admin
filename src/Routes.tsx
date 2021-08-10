@@ -269,6 +269,23 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
+  // sales
+  sales_performance: {
+    path: '/sales-performance',
+    pageName: 'SalesPage/SalesPerformancePage',
+    authenticated: true,
+  },
+  sales_lead: {
+    path: '/sales-lead',
+    pageName: 'SalesPage/SalesLeadPage',
+    authenticated: true,
+  },
+  sales_lead_delivery: {
+    path: '/sales-lead-delivery',
+    pageName: 'SalesPage/SalesLeadDeliveryPage',
+    authenticated: true,
+  },
+
   // task
   task_collection: {
     path: '/tasks',

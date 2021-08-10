@@ -38,6 +38,7 @@ export type Module =
   | 'project'
   | 'qrcode'
   | 'referrer'
+  | 'sales'
   | 'search'
   | 'sharing_code'
   | 'sms_verification'
