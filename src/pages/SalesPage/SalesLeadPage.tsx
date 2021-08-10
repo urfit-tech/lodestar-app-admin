@@ -15,7 +15,8 @@ import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { Lead, useSales } from '../../hooks/sales'
+import { useSales } from '../../hooks/sales'
+import { Lead } from '../../types/sales'
 
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
