@@ -16,6 +16,7 @@ import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
 import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
+import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { ReactComponent as PointIcon } from '../../images/icon/point.svg'
 import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
@@ -338,6 +339,29 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       key: 'note_collection',
       icon: () => <UsersIcon />,
       name: formatMessage(commonMessages.menu.noteAdmin),
+    },
+    {
+      permissionIsAllowed: !!enabledModules.sales,
+      key: 'sales_management',
+      icon: () => <PhoneIcon />,
+      name: formatMessage(commonMessages.menu.salesManagement),
+      subMenuItems: [
+        {
+          permissionIsAllowed: !!enabledModules.sales,
+          key: 'sales_performance',
+          name: formatMessage(commonMessages.menu.salesPerformance),
+        },
+        {
+          permissionIsAllowed: !!enabledModules.sales,
+          key: 'sales_lead',
+          name: formatMessage(commonMessages.menu.salesLead),
+        },
+        {
+          permissionIsAllowed: !!enabledModules.sales,
+          key: 'sales_lead_delivery',
+          name: formatMessage(commonMessages.menu.salesLeadDelivery),
+        },
+      ],
     },
     {
       permissionIsAllowed: !!enabledModules.member_task && (permissions.TASK_ADMIN || permissions.TASK_CATEGORY_ADMIN),
