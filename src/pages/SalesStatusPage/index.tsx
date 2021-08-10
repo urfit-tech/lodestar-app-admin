@@ -80,59 +80,60 @@ const useSalesStatus = (today: moment.Moment): { loading: boolean; error: Error 
           revenue: {
             today: sum(
               data?.member_contract
-                .filter(v => moment(v.agreed_at) >= today)
+                ?.filter(v => moment(v.agreed_at) >= today)
                 .map(v =>
                   sum(
                     v.values.orderExecutors
-                      .filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
+                      ?.filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
                       .map((executor: { member_id: string; ratio: number }) => v.values.price * executor.ratio) || [],
                   ),
                 ) || [],
             ),
             thisWeek: sum(
               data?.member_contract
-                .filter(v => moment(v.agreed_at) >= thisWeek)
+                ?.filter(v => moment(v.agreed_at) >= thisWeek)
                 .map(v =>
                   sum(
                     v.values.orderExecutors
-                      .filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
+                      ?.filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
                       .map((executor: { member_id: string; ratio: number }) => v.values.price * executor.ratio) || [],
                   ),
                 ) || [],
             ),
             thisMonth: sum(
               data?.member_contract
-                .filter(v => moment(v.agreed_at) >= thisMonth)
+                ?.filter(v => moment(v.agreed_at) >= thisMonth)
                 .map(v =>
                   sum(
                     v.values.orderExecutors
-                      .filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
+                      ?.filter((executor: { member_id: string; ratio: number }) => executor.member_id === sales.id)
                       .map((executor: { member_id: string; ratio: number }) => v.values.price * executor.ratio) || [],
                   ),
                 ) || [],
             ),
           },
           callTimes: {
-            today: data?.member_note.filter(v => moment(v.created_at) >= today && v.author.id === sales.id).length || 0,
+            today:
+              data?.member_note?.filter(v => moment(v.created_at) >= today && v.author.id === sales.id).length || 0,
             thisWeek:
-              data?.member_note.filter(v => moment(v.created_at) >= thisWeek && v.author.id === sales.id).length || 0,
+              data?.member_note?.filter(v => moment(v.created_at) >= thisWeek && v.author.id === sales.id).length || 0,
             thisMonth:
-              data?.member_note.filter(v => moment(v.created_at) >= thisMonth && v.author.id === sales.id).length || 0,
+              data?.member_note?.filter(v => moment(v.created_at) >= thisMonth && v.author.id === sales.id).length || 0,
           },
           callDuration: {
             today: sum(
               data?.member_note
-                .filter(v => moment(v.created_at) >= today && v.author.id === sales.id)
+                ?.filter(v => moment(v.created_at) >= today && v.author.id === sales.id)
                 .map(v => v.duration) || [],
             ),
             thisWeek: sum(
               data?.member_note
-                .filter(v => moment(v.created_at) >= thisWeek && v.author.id === sales.id)
+                ?.filter(v => moment(v.created_at) >= thisWeek && v.author.id === sales.id)
                 .map(v => v.duration) || [],
             ),
             thisMonth: sum(
               data?.member_note
-                .filter(v => moment(v.created_at) >= thisMonth && v.author.id === sales.id)
+                ?.filter(v => moment(v.created_at) >= thisMonth && v.author.id === sales.id)
                 .map(v => v.duration) || [],
             ),
           },
@@ -165,7 +166,7 @@ const useSalesGroups = (appId: string) => {
   const groupSettings: GroupSetting[] =
     loading || error || !data
       ? []
-      : data.member_property.reduce((currentGroupSettings: GroupSetting[], currentSalesMember) => {
+      : data.member_property?.reduce((currentGroupSettings: GroupSetting[], currentSalesMember) => {
           const {
             value: groupName,
             member: { id, name },
