@@ -175,14 +175,13 @@ const useSalesGroups = (appId: string) => {
           const currentGroupId = currentGroupSettings.findIndex(groupSetting => groupSetting.name === groupName)
 
           if (currentGroupId >= 0) {
-            currentGroupSettings[currentGroupId].sales.push({ id, name } as SalesMember)
+            const newSalesMembers = [...currentGroupSettings[currentGroupId].sales, { id, name } as SalesMember]
+            currentGroupSettings[currentGroupId].sales = newSalesMembers
             return currentGroupSettings
           }
-          const newGroupSetting: GroupSetting = { name: groupName, sales: [] }
-          newGroupSetting.sales.push({ id, name } as SalesMember)
-          currentGroupSettings.push(newGroupSetting)
+          const newGroupSetting: GroupSetting = { name: groupName, sales: [{ id, name } as SalesMember] }
 
-          return currentGroupSettings
+          return [...currentGroupSettings, newGroupSetting]
         }, [] as GroupSetting[])
 
   return {
