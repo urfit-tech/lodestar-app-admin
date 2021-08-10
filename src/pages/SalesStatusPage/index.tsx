@@ -10,19 +10,9 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
-import { SalesStatus } from '../../types/sales'
+import { GroupSetting, SalesMember, SalesStatus } from '../../types/sales'
 import CallStatusBlock from './CallStatusBlock'
 import TotalRevenueBlock from './TotalRevenueBlock'
-
-type SalesMember = {
-  id: string
-  name: string
-}
-
-type groupSetting = {
-  name: string
-  sales: SalesMember[]
-}
 
 const SalesStatusPage: React.VFC = () => {
   const [today, setToday] = useState(moment().startOf('day'))
@@ -172,10 +162,10 @@ const useSalesGroups = (appId: string) => {
     },
   )
 
-  const groupSettings: groupSetting[] =
+  const groupSettings: GroupSetting[] =
     loading || error || !data
       ? []
-      : data.member_property.reduce((currentGroupSettings: groupSetting[], currentSalesMember) => {
+      : data.member_property.reduce((currentGroupSettings: GroupSetting[], currentSalesMember) => {
           const {
             value: groupName,
             member: { id, name },
@@ -187,12 +177,12 @@ const useSalesGroups = (appId: string) => {
             currentGroupSettings[currentGroupId].sales.push({ id, name } as SalesMember)
             return currentGroupSettings
           }
-          const newGroupSetting: groupSetting = { name: groupName, sales: [] }
+          const newGroupSetting: GroupSetting = { name: groupName, sales: [] }
           newGroupSetting.sales.push({ id, name } as SalesMember)
           currentGroupSettings.push(newGroupSetting)
 
           return currentGroupSettings
-        }, [] as groupSetting[])
+        }, [] as GroupSetting[])
 
   return {
     loadingGroupSettings: loading,

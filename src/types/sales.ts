@@ -33,3 +33,13 @@ export type Lead = {
   status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'PAID' | 'CLOSED'
   notified: Boolean
 }
+
+export type SalesMember = {
+  id: string
+  name: string
+}
+
+export type GroupSetting = {
+  name: string
+  sales: SalesMember[]
+}
