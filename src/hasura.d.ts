@@ -6573,10 +6573,10 @@ export interface app_nav_insert_input {
   id?: any | null;
   label?: string | null;
   locale?: string | null;
+<<<<<<< HEAD
   options?: any | null;
+=======
   parent_id?: any | null;
-  position?: number | null;
-  sub_app_navs?: app_nav_arr_rel_insert_input | null;
   tag?: string | null;
 }
 
