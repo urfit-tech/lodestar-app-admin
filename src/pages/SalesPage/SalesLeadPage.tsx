@@ -10,12 +10,12 @@ import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import SalesLeadTable from '../../components/sale/SalesLeadTable'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { useSales } from '../../hooks/sales'
-import { Lead } from '../../types/sales'
+import { Lead, useSales } from '../../hooks/sales'
 
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -44,10 +44,11 @@ const SalesLeadPage: React.VFC = () => {
 }
 
 const ManagerScoreBlock: React.VFC<{ managerId: string }> = React.memo(({ managerId }) => {
+  const { id: appId } = useApp()
   const { data } = useQuery<hasura.GET_MANAGER_SCORE, hasura.GET_MANAGER_SCOREVariables>(GET_MANAGER_SCORE, {
-    variables: { managerId },
+    variables: { appId, managerId },
   })
-  const managerScoreData = data?.xuemi_manager_score.pop()
+  const managerScoreData = data?.manager_score.pop()
   return managerScoreData ? (
     <div>
       分數：
@@ -250,17 +251,18 @@ const useMemberContractNotification = () => {
   }, [data])
 }
 const useSalesLeads = (managerId: string) => {
+  const { id: appId } = useApp()
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
     {
-      variables: { managerId },
+      variables: { appId, managerId },
       context: {
         important: true,
       },
       pollInterval: 5 * 60 * 1000,
     },
   )
-  const convertToLead = (v: hasura.GET_SALES_LEADS_xuemi_lead_status): Lead | null => {
+  const convertToLead = (v: hasura.GET_SALES_LEADS_lead_status): Lead | null => {
     const notified =
       v.paid <= 0 &&
       v.member &&
@@ -284,7 +286,7 @@ const useSalesLeads = (managerId: string) => {
       : null
   }
 
-  const leads = sortBy(prop('id'))(data?.xuemi_lead_status.map(convertToLead).filter(notEmpty) || [])
+  const leads = sortBy(prop('id'))(data?.lead_status.map(convertToLead).filter(notEmpty) || [])
   return {
     loading,
     error,
@@ -299,8 +301,8 @@ const useSalesLeads = (managerId: string) => {
 }
 
 const GET_SALES_LEADS = gql`
-  query GET_SALES_LEADS($managerId: String!) {
-    xuemi_lead_status(where: { member: { manager_id: { _eq: $managerId } } }) {
+  query GET_SALES_LEADS($appId: String!, $managerId: String!) {
+    lead_status(where: { member: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } } }) {
       member {
         id
         name
@@ -324,15 +326,13 @@ const GET_SALES_LEADS = gql`
     }
   }
 `
-
 const GET_MANAGER_SCORE = gql`
-  query GET_MANAGER_SCORE($managerId: String!) {
-    xuemi_manager_score(where: { manager_id: { _eq: $managerId } }) {
+  query GET_MANAGER_SCORE($appId: String!, $managerId: String!) {
+    manager_score(where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } }) {
       performance_score
       effort_score
       invitations_score
     }
   }
 `
-
 export default SalesLeadPage

@@ -10,7 +10,7 @@ import { AdminPageTitle } from '../../components/admin'
 import CategoryInput from '../../components/common/CategoryInput'
 import SalesMemberInput from '../../components/common/SalesMemberInput'
 import AdminLayout from '../../components/layout/AdminLayout'
-import { useAuth } from '../../contexts/AuthContext'
+import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
@@ -29,7 +29,7 @@ type AssignResult = {
 }
 const SalesLeadDeliveryPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { id: appId } = useApp()
   const [currentStep, setCurrentStep] = useState(0)
   const [assignedResult, setAssignedResult] = useState<AssignResult>()
   const [filter, setFilter] = useState<Filter>({
@@ -72,7 +72,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
             setAssignedResult({
               status: 'info',
             })
-            updateLeadManager({ variables: { memberIds, managerId } })
+            updateLeadManager({ variables: { appId, memberIds, managerId } })
               .then(({ data }) => {
                 setAssignedResult({
                   status: 'success',
@@ -132,6 +132,7 @@ const ConfirmSection: React.FC<{
   filter: Filter
   onNext?: (values: { memberIds: string[]; managerId: string | null }) => void
 }> = ({ filter, onNext }) => {
+  const { id: appId } = useApp()
   const [managerId, setManagerId] = useState<string>()
   const [numDeliver, setNumDeliver] = useState(1)
   const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
@@ -150,6 +151,11 @@ const ConfirmSection: React.FC<{
       variables: {
         condition: {
           _and: [
+            {
+              app_id: {
+                _eq: appId || 'demo',
+              },
+            },
             {
               manager_id: {
                 _is_null: !filter.managerId,
@@ -197,10 +203,18 @@ const ConfirmSection: React.FC<{
     hasura.GET_ASSIGNED_LEADSVariables
   >(
     gql`
-      query GET_ASSIGNED_LEADS($memberIds: [String!], $assignedAtCondition: timestamptz_comparison_exp) {
+      query GET_ASSIGNED_LEADS(
+        $appId: String!
+        $memberIds: [String!]
+        $assignedAtCondition: timestamptz_comparison_exp
+      ) {
         audit_log(
           distinct_on: [member_id]
-          where: { member_id: { _in: $memberIds }, created_at: $assignedAtCondition }
+          where: {
+            member: { app_id: { _eq: $appId } }
+            member_id: { _in: $memberIds }
+            created_at: $assignedAtCondition
+          }
         ) {
           member_id
         }
@@ -209,6 +223,7 @@ const ConfirmSection: React.FC<{
     {
       fetchPolicy: 'no-cache',
       variables: {
+        appId,
         memberIds: filter.assignedAtRange ? leadCandidatesData?.member.map(v => v.id) || [] : [],
         assignedAtCondition: filter.assignedAtRange
           ? {
@@ -271,8 +286,8 @@ const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = (
 }
 
 const UPDATE_LEAD_MANAGER = gql`
-  mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
-    update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
+  mutation UPDATE_LEAD_MANAGER($appId: String!, $memberIds: [String!], $managerId: String) {
+    update_member(where: { app_id: { _eq: $appId }, id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
       affected_rows
     }
   }
