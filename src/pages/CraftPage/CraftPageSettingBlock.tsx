@@ -99,16 +99,16 @@ const CraftPageSettingBlock: React.VFC = () => {
           <StyledScrollBar>
             <StyledContent>
               <Frame>
-                <Element is={CraftContainer} padding={{}} canvas setActiveKey={setActiveKey}>
+                <Element is={CraftContainer} margin={{}} canvas setActiveKey={setActiveKey}>
                   <CraftLayout
-                    mobile={{ padding: {}, columnAmount: 5, columnRatio: [3, 3, 3], displayAmount: 6 }}
-                    desktop={{ padding: {}, columnAmount: 3, columnRatio: [2, 2, 2], displayAmount: 3 }}
+                    mobile={{ margin: {}, columnAmount: 5, columnRatio: [3, 3, 3], displayAmount: 6 }}
+                    desktop={{ margin: {}, columnAmount: 3, columnRatio: [2, 2, 2], displayAmount: 3 }}
                     setActiveKey={setActiveKey}
                   />
                   <CraftTitle
                     titleContent="文字標題"
                     fontSize={20}
-                    padding={{}}
+                    margin={{}}
                     textAlign="center"
                     fontWeight="bold"
                     color="#585858"
@@ -117,7 +117,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                   <CraftParagraph
                     paragraphContent="文字段落"
                     fontSize={20}
-                    padding={{}}
+                    margin={{}}
                     lineHeight={1}
                     textAlign="left"
                     fontWeight="bold"
@@ -128,7 +128,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title={{
                       titleContent: '文字段落 (常見問題 02)',
                       fontSize: 20,
-                      padding: 3,
+                      margin: 3,
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: '#fcd89d',
@@ -136,7 +136,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph={{
                       paragraphContent: '',
                       fontSize: 14,
-                      padding: 0,
+                      margin: 0,
                       lineHeight: 1,
                       textAlign: 'left',
                       fontWeight: 'normal',
@@ -168,14 +168,14 @@ const CraftPageSettingBlock: React.VFC = () => {
                     ]}
                     titleStyle={{
                       fontSize: 10,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: '#c8c858',
                     }}
                     paragraphStyle={{
                       fontSize: 14,
-                      padding: {},
+                      margin: {},
                       lineHeight: 1,
                       textAlign: 'left',
                       fontWeight: 'normal',
@@ -205,7 +205,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title={{
                       titleContent: '數值 (數值01、數值02)',
                       fontSize: 12,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: '#585858',
@@ -213,7 +213,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph={{
                       paragraphContent: '',
                       fontSize: 12,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: '#585858',
@@ -230,7 +230,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title="卡片 特色02"
                     titleStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -251,7 +251,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title="卡片 特色01"
                     titleStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -259,7 +259,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph="卡片 特色01"
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -280,7 +280,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title="卡片 推薦評價01"
                     titleStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -288,7 +288,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph="卡片 推薦評價01"
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -312,7 +312,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title="卡片 推薦評價02"
                     titleStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -320,7 +320,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph="卡片 推薦評價02"
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -335,7 +335,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     title="手風琴"
                     titleStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
@@ -343,7 +343,7 @@ const CraftPageSettingBlock: React.VFC = () => {
                     paragraph=""
                     paragraphStyle={{
                       fontSize: 16,
-                      padding: {},
+                      margin: {},
                       textAlign: 'center',
                       fontWeight: 'bold',
                       color: 'blue',
