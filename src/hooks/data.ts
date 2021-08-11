@@ -793,3 +793,29 @@ export const useCouponCollection = (memberId: string) => {
     refetchCoupons: refetch,
   }
 }
+
+export const useProductSku = (productId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SKU, hasura.GET_PRODUCT_SKUVariables>(
+    gql`
+      query GET_PRODUCT_SKU($productId: String!) {
+        product_by_pk(id: $productId) {
+          sku
+        }
+      }
+    `,
+    {
+      variables: {
+        productId,
+      },
+    },
+  )
+
+  const product = data?.product_by_pk
+
+  return {
+    loadingProduct: loading,
+    errorProduct: error,
+    product,
+    refetchProduct: refetch,
+  }
+}
