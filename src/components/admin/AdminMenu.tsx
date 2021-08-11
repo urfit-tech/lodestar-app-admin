@@ -357,7 +357,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(commonMessages.menu.salesLead),
         },
         {
-          permissionIsAllowed: !!enabledModules.sales,
+          permissionIsAllowed: currentUserRole === 'app-owner',
           key: 'sales_lead_delivery',
           name: formatMessage(commonMessages.menu.salesLeadDelivery),
         },
