@@ -33,7 +33,7 @@ const AppBasicAdminCard: React.VFC<AppBasicAdminCardProps> = ({ ...cardProps }) 
     uploadFile(key, file, authToken)
       .then(() =>
         updateLogo({
-          variables: { appId, logoUrl: `https://${process.env.REACT_APP_S3_BUCKET}/${key}?v=${Date.now()}` },
+          variables: { appId, logoUrl: `https://${process.env.REACT_APP_S3_BUCKET}/${key}/120?v=${Date.now()}` },
         }),
       )
       .then(() => {

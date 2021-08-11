@@ -98,7 +98,7 @@ const MerchandiseImagesUploader: React.FC<MerchandiseImagesUploaderProps> = ({
       onChange([
         ...images,
         {
-          url: `https://${process.env.REACT_APP_S3_BUCKET}/merchandise_images/${app.id}/${merchandiseId}/${fieldId}`,
+          url: `https://${process.env.REACT_APP_S3_BUCKET}/merchandise_images/${app.id}/${merchandiseId}/${fieldId}/400`,
           isCover: images.length === 0,
         },
       ])

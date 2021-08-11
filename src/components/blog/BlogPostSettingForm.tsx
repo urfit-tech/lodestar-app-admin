@@ -42,7 +42,7 @@ const BlogPostSettingForm: React.FC<{
     updatePostCover({
       variables: {
         postId: post.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}/400?t=${uploadTime}`,
       },
     })
       .then(() => {

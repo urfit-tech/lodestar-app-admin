@@ -45,10 +45,10 @@ const ProjectIntroForm: React.FC<{
     updateProjectCover({
       variables: {
         projectId: project.id,
-        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
+        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/400?t=${uploadTime}`,
         coverUrl:
           project.coverUrl === null
-            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${uploadTime}`
             : project.coverUrl,
       },
     })
@@ -69,7 +69,7 @@ const ProjectIntroForm: React.FC<{
         introduction: values.introduction?.getCurrentContent().hasText() ? values.introduction.toRAW() : null,
         coverUrl: values.coverUrl
           ? values.coverUrl
-          : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${Date.now()}`,
+          : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${Date.now()}`,
         cover_type: values.coverUrl ? 'video' : 'image',
       },
     })
