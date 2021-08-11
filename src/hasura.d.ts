@@ -4574,31 +4574,6 @@ export interface UPDATE_PROGRAM_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PRODUCT_SKU
-// ====================================================
-
-export interface GET_PRODUCT_SKU_product_by_pk {
-  __typename: "product";
-  sku: string | null;
-}
-
-export interface GET_PRODUCT_SKU {
-  /**
-   * fetch data from the table: "product" using primary key columns
-   */
-  product_by_pk: GET_PRODUCT_SKU_product_by_pk | null;
-}
-
-export interface GET_PRODUCT_SKUVariables {
-  productId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
 
@@ -5074,6 +5049,35 @@ export interface GET_PROGRAM_PLANS {
 
 export interface GET_PROGRAM_PLANSVariables {
   programId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PRODUCT_SKU
+// ====================================================
+
+export interface UPDATE_PRODUCT_SKU_update_product {
+  __typename: "product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRODUCT_SKU {
+  /**
+   * update data of the table: "product"
+   */
+  update_product: UPDATE_PRODUCT_SKU_update_product | null;
+}
+
+export interface UPDATE_PRODUCT_SKUVariables {
+  productId?: string | null;
+  sku?: string | null;
 }
 
 /* tslint:disable */
@@ -9025,6 +9029,31 @@ export interface GET_COUPON_COLLECTION {
 
 export interface GET_COUPON_COLLECTIONVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_SKU
+// ====================================================
+
+export interface GET_PRODUCT_SKU_product_by_pk {
+  __typename: "product";
+  sku: string | null;
+}
+
+export interface GET_PRODUCT_SKU {
+  /**
+   * fetch data from the table: "product" using primary key columns
+   */
+  product_by_pk: GET_PRODUCT_SKU_product_by_pk | null;
+}
+
+export interface GET_PRODUCT_SKUVariables {
+  productId: string;
 }
 
 /* tslint:disable */

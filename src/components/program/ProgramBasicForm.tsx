@@ -1,5 +1,5 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
@@ -9,6 +9,7 @@ import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
+import { useProductSku } from '../../hooks/data'
 import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
@@ -34,7 +35,7 @@ const ProgramBasicForm: React.FC<{
   const [updateProgramBasic] = useMutation<hasura.UPDATE_PROGRAM_BASIC, hasura.UPDATE_PROGRAM_BASICVariables>(
     UPDATE_PROGRAM_BASIC,
   )
-  const { loadingProduct, product, refetchProduct } = useProduct(`Program_${program?.id}`)
+  const { loadingProduct, product, refetchProduct } = useProductSku(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
 
   if (!program || loadingProduct) {
@@ -182,29 +183,4 @@ const UPDATE_PROGRAM_BASIC = gql`
   }
 `
 
-const useProduct = (productId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SKU, hasura.GET_PRODUCT_SKUVariables>(
-    gql`
-      query GET_PRODUCT_SKU($productId: String!) {
-        product_by_pk(id: $productId) {
-          sku
-        }
-      }
-    `,
-    {
-      variables: {
-        productId,
-      },
-    },
-  )
-
-  const product = data?.product_by_pk
-
-  return {
-    loadingProduct: loading,
-    errorProduct: error,
-    product,
-    refetchProduct: refetch,
-  }
-}
 export default ProgramBasicForm

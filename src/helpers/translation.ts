@@ -233,6 +233,7 @@ export const commonMessages = {
     memberCategory: { id: 'common.label.memberCategory', defaultMessage: '會員分類' },
     material: { id: 'common.label.material', defaultMessage: '教材' },
     sku: { id: 'common.label.sku', defaultMessage: '料號（SKU)' },
+    skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },

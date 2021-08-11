@@ -5,12 +5,14 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import PriceLabel from '../common/PriceLabel'
+import ProductSkuModal from '../common/ProductSkuModal'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 
@@ -26,6 +28,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   onRefetch?: () => void
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
@@ -71,6 +74,17 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
                   )}
                 />
               </Menu.Item>
+
+              {enabledModules.sku && (
+                <Menu.Item>
+                  <ProductSkuModal
+                    productId={`ProgramPlan_${programPlan.id}`}
+                    renderTrigger={({ setVisible }) => (
+                      <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.label.skuSetting)}</span>
+                    )}
+                  />
+                </Menu.Item>
+              )}
             </Menu>
           }
         >
