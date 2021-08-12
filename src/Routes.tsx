@@ -390,7 +390,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   member_contract_creation: {
-    path: '/members/:memberId/contracts/new',
+    path: '/members/:memberId/new-contract',
     pageName: 'owner/MemberContractCreationPage',
     authenticated: true,
   },
