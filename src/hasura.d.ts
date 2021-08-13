@@ -1610,6 +1610,35 @@ export interface INSERT_POINT_LOG_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PRODUCT_SKU
+// ====================================================
+
+export interface UPDATE_PRODUCT_SKU_update_product {
+  __typename: "product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRODUCT_SKU {
+  /**
+   * update data of the table: "product"
+   */
+  update_product: UPDATE_PRODUCT_SKU_update_product | null;
+}
+
+export interface UPDATE_PRODUCT_SKUVariables {
+  productId?: string | null;
+  sku?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_MEMBERS
 // ====================================================
 
@@ -4561,6 +4590,7 @@ export interface UPDATE_PROGRAM_BASICVariables {
   title?: string | null;
   supportLocales?: any | null;
   isIssuesOpen?: boolean | null;
+  isIntroductionSectionVisible?: boolean | null;
   productId?: string | null;
   sku?: string | null;
   programCategories: program_category_insert_input[];
@@ -5049,35 +5079,6 @@ export interface GET_PROGRAM_PLANS {
 
 export interface GET_PROGRAM_PLANSVariables {
   programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PRODUCT_SKU
-// ====================================================
-
-export interface UPDATE_PRODUCT_SKU_update_product {
-  __typename: "product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRODUCT_SKU {
-  /**
-   * update data of the table: "product"
-   */
-  update_product: UPDATE_PRODUCT_SKU_update_product | null;
-}
-
-export interface UPDATE_PRODUCT_SKUVariables {
-  productId?: string | null;
-  sku?: string | null;
 }
 
 /* tslint:disable */
@@ -10773,6 +10774,7 @@ export interface GET_PROGRAM_program_by_pk {
   is_private: boolean;
   is_issues_open: boolean;
   is_countdown_timer_visible: boolean;
+  is_introduction_section_visible: boolean;
   /**
    * An array relationship
    */
@@ -12406,35 +12408,6 @@ export interface GET_MEMBER_CONTRACT {
 
 export interface GET_MEMBER_CONTRACTVariables {
   memberContractId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_CRAFT_PAGE
-// ====================================================
-
-export interface PUBLISH_CRAFT_PAGE_update_app_page {
-  __typename: "app_page_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_CRAFT_PAGE {
-  /**
-   * update data of the table: "app_page"
-   */
-  update_app_page: PUBLISH_CRAFT_PAGE_update_app_page | null;
-}
-
-export interface PUBLISH_CRAFT_PAGEVariables {
-  pageId: any;
-  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -16540,6 +16513,7 @@ export enum program_update_column {
   in_advance = "in_advance",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_deleted = "is_deleted",
+  is_introduction_section_visible = "is_introduction_section_visible",
   is_issues_open = "is_issues_open",
   is_private = "is_private",
   is_sold_out = "is_sold_out",
@@ -18066,6 +18040,7 @@ export interface app_nav_bool_exp {
   locale?: String_comparison_exp | null;
   parent_id?: uuid_comparison_exp | null;
   position?: Int_comparison_exp | null;
+  sub_app_navs?: app_nav_bool_exp | null;
   tag?: String_comparison_exp | null;
 }
 
@@ -18084,6 +18059,7 @@ export interface app_nav_insert_input {
   locale?: string | null;
   parent_id?: any | null;
   position?: number | null;
+  sub_app_navs?: app_nav_arr_rel_insert_input | null;
   tag?: string | null;
 }
 
@@ -28041,6 +28017,7 @@ export interface program_bool_exp {
   in_advance?: Boolean_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_introduction_section_visible?: Boolean_comparison_exp | null;
   is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
@@ -29122,6 +29099,7 @@ export interface program_insert_input {
   in_advance?: boolean | null;
   is_countdown_timer_visible?: boolean | null;
   is_deleted?: boolean | null;
+  is_introduction_section_visible?: boolean | null;
   is_issues_open?: boolean | null;
   is_private?: boolean | null;
   is_sold_out?: boolean | null;
@@ -29219,6 +29197,7 @@ export interface program_order_by {
   in_advance?: order_by | null;
   is_countdown_timer_visible?: order_by | null;
   is_deleted?: order_by | null;
+  is_introduction_section_visible?: order_by | null;
   is_issues_open?: order_by | null;
   is_private?: order_by | null;
   is_sold_out?: order_by | null;
