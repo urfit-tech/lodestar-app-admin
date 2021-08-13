@@ -126,25 +126,27 @@ const ProgramBasicForm: React.FC<{
         <LanguageSelector />
       </Form.Item>
 
-      <Form.Item
-        label={
-          <span>
-            {formatMessage(programMessages.label.isIntroductionSectionVisible)}
-            <Tooltip
-              placement="top"
-              title={<StyledTips>{formatMessage(commonMessages.text.sectionVisible)}</StyledTips>}
-            >
-              <QuestionCircleFilled className="ml-2" />
-            </Tooltip>
-          </span>
-        }
-        name="isIntroductionSectionVisible"
-      >
-        <Radio.Group>
-          <Radio value={true}>{formatMessage(programMessages.status.displayAllSection)}</Radio>
-          <Radio value={false}>{formatMessage(programMessages.status.displayTrial)}</Radio>
-        </Radio.Group>
-      </Form.Item>
+      {program.isSubscription && (
+        <Form.Item
+          label={
+            <span>
+              {formatMessage(programMessages.label.isIntroductionSectionVisible)}
+              <Tooltip
+                placement="top"
+                title={<StyledTips>{formatMessage(commonMessages.text.sectionVisible)}</StyledTips>}
+              >
+                <QuestionCircleFilled className="ml-2" />
+              </Tooltip>
+            </span>
+          }
+          name="isIntroductionSectionVisible"
+        >
+          <Radio.Group>
+            <Radio value={true}>{formatMessage(programMessages.status.displayAllSection)}</Radio>
+            <Radio value={false}>{formatMessage(programMessages.status.displayTrial)}</Radio>
+          </Radio.Group>
+        </Form.Item>
+      )}
 
       <Form.Item label={formatMessage(programMessages.label.isIssuesOpen)} name="isIssuesOpen">
         <Radio.Group>
