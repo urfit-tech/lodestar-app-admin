@@ -11,7 +11,8 @@ import { ContractInfo, FieldProps } from '.'
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import hasura from '../../../hasura'
-import { currencyFormatter, notEmpty } from '../../../helpers'
+import { notEmpty } from '../../../helpers'
+import { useCurrency } from '../../../hooks/currency'
 
 type ContractItem = {
   id: string
@@ -56,9 +57,10 @@ const MemberContractCreationBlock: React.FC<{
   contracts,
 }) => {
   const fieldValue = form.getFieldsValue()
-  const { id: appId } = useApp()
+  const { id: appId, settings } = useApp()
   const { currentMemberId } = useAuth()
   const [memberContractUrl, setMemberContractUrl] = useState('')
+  const { formatCurrency } = useCurrency()
 
   // calculate contract products
   const contractProducts: ContractItem[] = selectedProducts
@@ -92,17 +94,6 @@ const MemberContractCreationBlock: React.FC<{
   const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
   const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
   const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
-  if (fieldValue.withCreatorId && totalAppointments > 0) {
-    contractProducts.push({
-      id: contractsOptions.projectPlanId['designatedIndustryTeacher'],
-      type: 'addonProduct',
-      name: '指定業師',
-      price: 1000,
-      appointments: 0,
-      coins: 0,
-      amount: totalAppointments,
-    })
-  }
 
   // calculate contract discounts
   const contractDiscounts: ContractItem[] = []
@@ -251,25 +242,7 @@ const MemberContractCreationBlock: React.FC<{
           remaining: 0,
           app_id: appId,
           coupon_plan_id: index !== 0 ? couponPlanId : undefined,
-          coupon_plan:
-            index === 0
-              ? {
-                  on_conflict: {
-                    constraint: 'coupon_plan_pkey',
-                    update_columns: ['title'],
-                  },
-                  data: {
-                    id: couponPlanId,
-                    type: 2,
-                    amount: 100,
-                    title: `學米諮詢券`,
-                    description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
-                    started_at: fieldValue.startedAt,
-                    ended_at: endedAt,
-                    scope: ['AppointmentPlan'],
-                  },
-                }
-              : undefined,
+          coupon_plan: undefined,
         },
       },
     }))
@@ -328,13 +301,6 @@ const MemberContractCreationBlock: React.FC<{
               started_at: fieldValue.startedAt,
               ended_at: endedAt,
             })),
-            {
-              product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
-              name: '學米 VIP 會員卡',
-              price: 0,
-              started_at: fieldValue.startedAt,
-              ended_at: endedAt,
-            },
           ],
           coupons: [...coupons, ...project(['id', 'member_id', 'coupon_code'], contractCoupons)],
           orderDiscounts: [
@@ -362,7 +328,7 @@ const MemberContractCreationBlock: React.FC<{
     })
       .then(({ data }) => {
         const contractId = data?.insert_member_contract_one?.id
-        setMemberContractUrl(`https://www.xuemi.co/members/${member.id}/contracts/${contractId}`)
+        setMemberContractUrl(`${window.origin}/members/${member.id}/contracts/${contractId}`)
         message.success('成功產生合約')
       })
       .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
@@ -382,7 +348,7 @@ const MemberContractCreationBlock: React.FC<{
               <span>{item.name}</span>
               {item.amount > 1 ? <span>x{item.amount}</span> : ''}
             </div>
-            <div className="col-3 text-right">{currencyFormatter(item.price * item.amount)}</div>
+            <div className="col-3 text-right">{formatCurrency(item.price * item.amount)}</div>
           </div>
         ))}
 
@@ -390,9 +356,14 @@ const MemberContractCreationBlock: React.FC<{
           <strong className="col-6 text-right">合計</strong>
 
           <div className="col-6 text-right">
-            <StyledTotal>{currencyFormatter(totalPrice)}</StyledTotal>
-            <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
-            <StyledTotal>{totalCoins} XP</StyledTotal>
+            <StyledTotal>{formatCurrency(totalPrice)}</StyledTotal>
+            {totalCoins ? (
+              <StyledTotal>
+                {totalCoins} {settings['coin.unit']}
+              </StyledTotal>
+            ) : (
+              ''
+            )}
           </div>
         </div>
       </StyledOrder>

@@ -189,7 +189,7 @@ const MemberContractCreationPage: React.VFC = () => {
 }
 
 const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
-  if (['D', 'W', 'Y'].includes(type)) {
+  if (['D', 'W', 'M', 'Y'].includes(type)) {
     return type.toLowerCase() as MomentPeriodType
   }
 
@@ -222,23 +222,13 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           name
           placeholder
         }
-        contract(where: { published_at: { _is_null: false } }) {
+        contract(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
           id
           name
           options
         }
-        projectPrivateTeachPlan: project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
-          id
-          title
-          period_amount
-          period_type
-        }
-        products: project_plan(
-          where: {
-            title: { _nlike: "%私塾方案%" }
-            published_at: { _is_null: false }
-            project: { app_id: { _eq: $appId } }
-          }
+        project_plan(
+          where: { published_at: { _is_null: false }, project: { app_id: { _eq: $appId } } }
           order_by: [{ position: asc_nulls_last }, { title: asc }]
         ) {
           id
@@ -255,12 +245,12 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             name
           }
         }
-        xuemi_sales {
-          member {
-            id
-            name
-            username
-          }
+        sales: member(
+          where: { app_id: { _eq: $appId }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }
+        ) {
+          id
+          name
+          username
         }
       }
     `,
@@ -299,13 +289,13 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
       : null
     info.properties = data.property
     info.contracts = data.contract
-    info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
+    info.projectPlans = data.project_plan.map(v => ({
       id: v.id,
       title: v.title,
       periodAmount: v.period_amount || 0,
       periodType: v.period_type as PeriodType | null,
     }))
-    info.products = data.products.map(v => ({
+    info.products = data.project_plan.map(v => ({
       id: v.id,
       name: v.title,
       price: v.list_price,
@@ -325,7 +315,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           : null,
       )
       .filter(notEmpty)
-    info.sales = data.xuemi_sales.map(v => v.member).filter(notEmpty)
+    info.sales = data.sales.filter(notEmpty)
   }
 
   return {

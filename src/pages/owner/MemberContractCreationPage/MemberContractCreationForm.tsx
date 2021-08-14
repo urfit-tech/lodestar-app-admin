@@ -159,27 +159,6 @@ const MemberContractCreationForm: React.FC<
         </div>
 
         <Descriptions column={1} bordered className="mb-5">
-          <Descriptions.Item label="指定業師">
-            <Form.Item noStyle name="withCreatorId">
-              <Radio.Group>
-                <Radio value={false}>不指定</Radio>
-                <Radio value={true}>指定</Radio>
-              </Radio.Group>
-            </Form.Item>
-
-            <Form.Item name="creatorId" noStyle>
-              <Select<string> style={{ width: '150px' }}>
-                {appointmentPlanCreators.map(v =>
-                  v.id && v.name ? (
-                    <Select.Option key={v.id} value={v.id}>
-                      {v.name}
-                    </Select.Option>
-                  ) : null,
-                )}
-              </Select>
-            </Form.Item>
-          </Descriptions.Item>
-
           <Descriptions.Item label="學員身份" className="m-0">
             <div className="d-flex align-items-center">
               <Form.Item name="identity" noStyle>
