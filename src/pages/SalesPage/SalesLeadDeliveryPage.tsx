@@ -247,7 +247,6 @@ const ConfirmSection: React.FC<{
     return memberIds
   }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member])
 
-  console.log(leadCandidatesData)
   const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
   return (
     <div className="row">
