@@ -157,6 +157,11 @@ const ConfirmSection: React.FC<{
               },
             },
             {
+              role: {
+                _eq: 'general-member',
+              },
+            },
+            {
               manager_id: {
                 _is_null: !filter.managerId,
                 _eq: filter.managerId || undefined,
@@ -242,6 +247,7 @@ const ConfirmSection: React.FC<{
     return memberIds
   }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member])
 
+  console.log(leadCandidatesData)
   const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
   return (
     <div className="row">

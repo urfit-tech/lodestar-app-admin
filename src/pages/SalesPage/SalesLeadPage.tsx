@@ -254,7 +254,7 @@ const useSalesLeads = (managerId: string) => {
         !v.recent_tasked_at ||
         (v.recent_contacted_at && moment(v.recent_contacted_at) <= moment().startOf('day').subtract(3, 'weeks')) ||
         (v.recent_tasked_at && moment(v.recent_tasked_at) <= moment().startOf('day').subtract(3, 'days')))
-    return v.member && v.member.member_phones.length > 0
+    return v.member
       ? {
           id: v.member.id,
           star: v.member.star,
