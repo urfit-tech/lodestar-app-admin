@@ -25,12 +25,12 @@ const SalesMemberInput: React.FC<{
   return (
     <MemberSelector
       allowClear
-      members={data.order_executor.map(v => ({
-        id: v.member.id,
-        avatarUrl: v.member.picture_url,
-        name: v.member.name,
-        username: v.member.username,
-        email: v.member.email,
+      members={data?.member?.map(v => ({
+        id: v.id,
+        avatarUrl: v.picture_url,
+        name: v.name,
+        username: v.username,
+        email: v.email,
       }))}
       value={value}
       onChange={value => typeof value === 'string' && onChange?.(value)}
@@ -38,17 +38,16 @@ const SalesMemberInput: React.FC<{
     />
   )
 }
-
+// member: searchText(username, email, name) limit:20
+// searchable
 const GET_SALES_MEMBERS = gql`
   query GET_SALES_MEMBERS($appId: String!) {
-    order_executor(distinct_on: [member_id], where: { member: { app_id: { _eq: $appId } } }) {
-      member {
-        id
-        picture_url
-        name
-        username
-        email
-      }
+    member(where: { app_id: { _eq: $appId }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }) {
+      id
+      picture_url
+      name
+      username
+      email
     }
   }
 `

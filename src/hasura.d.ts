@@ -1642,7 +1642,7 @@ export interface UPDATE_PRODUCT_SKUVariables {
 // GraphQL query operation: GET_SALES_MEMBERS
 // ====================================================
 
-export interface GET_SALES_MEMBERS_order_executor_member {
+export interface GET_SALES_MEMBERS_member {
   __typename: "member";
   id: string;
   picture_url: string | null;
@@ -1651,19 +1651,11 @@ export interface GET_SALES_MEMBERS_order_executor_member {
   email: string;
 }
 
-export interface GET_SALES_MEMBERS_order_executor {
-  __typename: "order_executor";
-  /**
-   * An object relationship
-   */
-  member: GET_SALES_MEMBERS_order_executor_member;
-}
-
 export interface GET_SALES_MEMBERS {
   /**
-   * fetch data from the table: "order_executor"
+   * fetch data from the table: "member"
    */
-  order_executor: GET_SALES_MEMBERS_order_executor[];
+  member: GET_SALES_MEMBERS_member[];
 }
 
 export interface GET_SALES_MEMBERSVariables {
@@ -13952,6 +13944,7 @@ export enum app_nav_update_column {
   id = "id",
   label = "label",
   locale = "locale",
+  options = "options",
   parent_id = "parent_id",
   position = "position",
   tag = "tag",
@@ -17641,6 +17634,7 @@ export interface app_nav_bool_exp {
   id?: uuid_comparison_exp | null;
   label?: String_comparison_exp | null;
   locale?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   parent_id?: uuid_comparison_exp | null;
   position?: Int_comparison_exp | null;
   sub_app_navs?: app_nav_bool_exp | null;
@@ -17660,6 +17654,7 @@ export interface app_nav_insert_input {
   id?: any | null;
   label?: string | null;
   locale?: string | null;
+  options?: any | null;
   parent_id?: any | null;
   position?: number | null;
   sub_app_navs?: app_nav_arr_rel_insert_input | null;
