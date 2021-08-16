@@ -1610,6 +1610,35 @@ export interface INSERT_POINT_LOG_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PRODUCT_SKU
+// ====================================================
+
+export interface UPDATE_PRODUCT_SKU_update_product {
+  __typename: "product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRODUCT_SKU {
+  /**
+   * update data of the table: "product"
+   */
+  update_product: UPDATE_PRODUCT_SKU_update_product | null;
+}
+
+export interface UPDATE_PRODUCT_SKUVariables {
+  productId?: string | null;
+  sku?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_MEMBERS
 // ====================================================
 
@@ -5049,35 +5078,6 @@ export interface GET_PROGRAM_PLANS {
 
 export interface GET_PROGRAM_PLANSVariables {
   programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PRODUCT_SKU
-// ====================================================
-
-export interface UPDATE_PRODUCT_SKU_update_product {
-  __typename: "product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRODUCT_SKU {
-  /**
-   * update data of the table: "product"
-   */
-  update_product: UPDATE_PRODUCT_SKU_update_product | null;
-}
-
-export interface UPDATE_PRODUCT_SKUVariables {
-  productId?: string | null;
-  sku?: string | null;
 }
 
 /* tslint:disable */
@@ -12782,18 +12782,7 @@ export interface GET_CONTRACT_INFO_contract {
   options: any | null;
 }
 
-export interface GET_CONTRACT_INFO_projectPrivateTeachPlan {
-  __typename: "project_plan";
-  id: any;
-  title: string;
-  period_amount: any | null;
-  /**
-   * Y / M / W / D
-   */
-  period_type: string | null;
-}
-
-export interface GET_CONTRACT_INFO_products {
+export interface GET_CONTRACT_INFO_project_plan {
   __typename: "project_plan";
   id: any;
   title: string;
@@ -12821,19 +12810,11 @@ export interface GET_CONTRACT_INFO_appointment_plan {
   creator: GET_CONTRACT_INFO_appointment_plan_creator | null;
 }
 
-export interface GET_CONTRACT_INFO_xuemi_sales_member {
+export interface GET_CONTRACT_INFO_sales {
   __typename: "member";
   id: string;
   name: string;
   username: string;
-}
-
-export interface GET_CONTRACT_INFO_xuemi_sales {
-  __typename: "xuemi_sales";
-  /**
-   * An object relationship
-   */
-  member: GET_CONTRACT_INFO_xuemi_sales_member | null;
 }
 
 export interface GET_CONTRACT_INFO {
@@ -12852,19 +12833,15 @@ export interface GET_CONTRACT_INFO {
   /**
    * fetch data from the table: "project_plan"
    */
-  projectPrivateTeachPlan: GET_CONTRACT_INFO_projectPrivateTeachPlan[];
-  /**
-   * fetch data from the table: "project_plan"
-   */
-  products: GET_CONTRACT_INFO_products[];
+  project_plan: GET_CONTRACT_INFO_project_plan[];
   /**
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_CONTRACT_INFO_appointment_plan[];
   /**
-   * fetch data from the table: "xuemi.sales"
+   * fetch data from the table: "member"
    */
-  xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
+  sales: GET_CONTRACT_INFO_sales[];
 }
 
 export interface GET_CONTRACT_INFOVariables {
@@ -14376,6 +14353,7 @@ export enum app_nav_update_column {
   id = "id",
   label = "label",
   locale = "locale",
+  options = "options",
   parent_id = "parent_id",
   position = "position",
   tag = "tag",
@@ -16540,6 +16518,7 @@ export enum program_update_column {
   in_advance = "in_advance",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_deleted = "is_deleted",
+  is_introduction_section_visible = "is_introduction_section_visible",
   is_issues_open = "is_issues_open",
   is_private = "is_private",
   is_sold_out = "is_sold_out",
@@ -18064,8 +18043,10 @@ export interface app_nav_bool_exp {
   id?: uuid_comparison_exp | null;
   label?: String_comparison_exp | null;
   locale?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   parent_id?: uuid_comparison_exp | null;
   position?: Int_comparison_exp | null;
+  sub_app_navs?: app_nav_bool_exp | null;
   tag?: String_comparison_exp | null;
 }
 
@@ -18082,8 +18063,10 @@ export interface app_nav_insert_input {
   id?: any | null;
   label?: string | null;
   locale?: string | null;
+  options?: any | null;
   parent_id?: any | null;
   position?: number | null;
+  sub_app_navs?: app_nav_arr_rel_insert_input | null;
   tag?: string | null;
 }
 
@@ -28041,6 +28024,7 @@ export interface program_bool_exp {
   in_advance?: Boolean_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_introduction_section_visible?: Boolean_comparison_exp | null;
   is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
@@ -29122,6 +29106,7 @@ export interface program_insert_input {
   in_advance?: boolean | null;
   is_countdown_timer_visible?: boolean | null;
   is_deleted?: boolean | null;
+  is_introduction_section_visible?: boolean | null;
   is_issues_open?: boolean | null;
   is_private?: boolean | null;
   is_sold_out?: boolean | null;
@@ -29219,6 +29204,7 @@ export interface program_order_by {
   in_advance?: order_by | null;
   is_countdown_timer_visible?: order_by | null;
   is_deleted?: order_by | null;
+  is_introduction_section_visible?: order_by | null;
   is_issues_open?: order_by | null;
   is_private?: order_by | null;
   is_sold_out?: order_by | null;
