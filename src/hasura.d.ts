@@ -2410,18 +2410,20 @@ export interface GET_ASSIGNED_MEMBERVariables {
 // GraphQL query operation: GET_MEMBER_CONTRACT
 // ====================================================
 
-export interface GET_MEMBER_CONTRACT_xuemi_sales_member {
+export interface GET_MEMBER_CONTRACT_sales_member_properties {
+  __typename: "member_property";
+  value: string;
+}
+
+export interface GET_MEMBER_CONTRACT_sales {
   __typename: "member";
   id: string;
   name: string;
-}
-
-export interface GET_MEMBER_CONTRACT_xuemi_sales {
-  __typename: "xuemi_sales";
+  email: string;
   /**
-   * An object relationship
+   * An array relationship
    */
-  member: GET_MEMBER_CONTRACT_xuemi_sales_member | null;
+  member_properties: GET_MEMBER_CONTRACT_sales_member_properties[];
 }
 
 export interface GET_MEMBER_CONTRACT_member_contract_member {
@@ -2455,9 +2457,9 @@ export interface GET_MEMBER_CONTRACT_member_contract {
 
 export interface GET_MEMBER_CONTRACT {
   /**
-   * fetch data from the table: "xuemi.sales"
+   * fetch data from the table: "member"
    */
-  xuemi_sales: GET_MEMBER_CONTRACT_xuemi_sales[];
+  sales: GET_MEMBER_CONTRACT_sales[];
   /**
    * fetch data from the table: "member_contract"
    */
@@ -2890,6 +2892,7 @@ export enum app_nav_update_column {
   id = "id",
   label = "label",
   locale = "locale",
+  options = "options",
   parent_id = "parent_id",
   position = "position",
   tag = "tag",
@@ -5054,6 +5057,7 @@ export enum program_update_column {
   in_advance = "in_advance",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_deleted = "is_deleted",
+  is_introduction_section_visible = "is_introduction_section_visible",
   is_issues_open = "is_issues_open",
   is_private = "is_private",
   is_sold_out = "is_sold_out",
@@ -6549,6 +6553,7 @@ export interface app_nav_bool_exp {
   id?: uuid_comparison_exp | null;
   label?: String_comparison_exp | null;
   locale?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   parent_id?: uuid_comparison_exp | null;
   position?: Int_comparison_exp | null;
   sub_app_navs?: app_nav_bool_exp | null;
@@ -6568,6 +6573,7 @@ export interface app_nav_insert_input {
   id?: any | null;
   label?: string | null;
   locale?: string | null;
+  options?: any | null;
   parent_id?: any | null;
   position?: number | null;
   sub_app_navs?: app_nav_arr_rel_insert_input | null;
@@ -15106,6 +15112,7 @@ export interface program_bool_exp {
   in_advance?: Boolean_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_introduction_section_visible?: Boolean_comparison_exp | null;
   is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
@@ -15798,6 +15805,7 @@ export interface program_insert_input {
   in_advance?: boolean | null;
   is_countdown_timer_visible?: boolean | null;
   is_deleted?: boolean | null;
+  is_introduction_section_visible?: boolean | null;
   is_issues_open?: boolean | null;
   is_private?: boolean | null;
   is_sold_out?: boolean | null;
