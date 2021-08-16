@@ -39,23 +39,12 @@ const MemberContractCreationBlock: React.FC<{
   member: NonNullable<ContractInfo['member']>
   products: ContractInfo['products']
   contracts: ContractInfo['contracts']
-  selectedProjectPlan: ContractInfo['projectPlans'][number] | null
   endedAt: Date | null
   isAppointmentOnly: boolean
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
   selectedProducts: NonNullable<FieldProps['contractProducts']>
   form: FormInstance<FieldProps>
-}> = ({
-  member,
-  products,
-  selectedProjectPlan,
-  endedAt,
-  isAppointmentOnly,
-  memberBlockRef,
-  form,
-  selectedProducts,
-  contracts,
-}) => {
+}> = ({ member, products, endedAt, isAppointmentOnly, memberBlockRef, form, selectedProducts, contracts }) => {
   const fieldValue = form.getFieldsValue()
   const { id: appId, settings } = useApp()
   const { currentMemberId } = useAuth()
@@ -283,17 +272,10 @@ const MemberContractCreationBlock: React.FC<{
             email: member.email,
           },
           price: totalPrice,
-          coinName: `${selectedProjectPlan?.title}`,
+          coinName: `${settings['coin.name'] || 'LSC'}`,
           coinAmount: totalCoins,
           orderId,
           orderProducts: [
-            {
-              product_id: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
-              name: selectedProjectPlan?.title,
-              price: 0,
-              started_at: fieldValue.startedAt,
-              ended_at: endedAt,
-            },
             ...contractProducts.map(v => ({
               product_id: `ProjectPlan_${v.id}`,
               name: v.name,

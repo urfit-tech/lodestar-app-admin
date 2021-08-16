@@ -7,6 +7,7 @@ import React, { memo, useState } from 'react'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps, installmentPlans, paymentMethods } from '.'
 import { AdminBlockTitle } from '../../../components/admin'
+import PeriodSelector from '../../../components/form/PeriodSelector'
 import CertificationUploader from './CertificationUploader'
 import ReferralMemberSelector from './ReferralMemberSelector'
 
@@ -20,7 +21,6 @@ const StyledPriceField = styled.div`
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
-    projectPlans: ContractInfo['projectPlans']
     endedAt: Date | null
     products: ContractInfo['products']
     contractProducts: NonNullable<FieldProps['contractProducts']>
@@ -32,7 +32,6 @@ const MemberContractCreationForm: React.FC<
 > = memo(
   ({
     contracts,
-    projectPlans,
     endedAt,
     products,
     contractProducts,
@@ -62,31 +61,9 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="合約效期">
-            <Form.Item
-              className="mb-0"
-              name="selectedProjectPlanId"
-              rules={[{ required: true, message: '請選擇合約效期' }]}
-            >
-              <Select<string> onChange={() => form?.setFieldsValue({ contractProducts: [] })} style={{ width: 150 }}>
-                {projectPlans.map(v => (
-                  <Select.Option key={v.id} value={v.id}>
-                    {v.periodAmount} {v.periodType}
-                  </Select.Option>
-                ))}
-              </Select>
+            <Form.Item className="mb-0" name="period" rules={[{ required: true, message: '請選擇合約效期' }]}>
+              <PeriodSelector onChange={() => form?.setFieldsValue({ contractProducts: [] })} />
             </Form.Item>
-            <div className="d-flex align-items-center mt-2">
-              <div>加贈：</div>
-              <Form.Item className="mb-0" name="selectedGiftDays">
-                <Select<string> style={{ width: 100 }}>
-                  {[0, 7, 14].map(value => (
-                    <Select.Option key={value} value={value}>
-                      {value}天
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
           </Descriptions.Item>
 
           <Descriptions.Item label="服務開始日">
