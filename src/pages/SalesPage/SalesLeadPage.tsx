@@ -32,7 +32,6 @@ const SalesLeadPage: React.VFC = () => {
         </AdminPageTitle>
         <div className="d-flex flex-column align-items-end">
           {currentMemberId && <div>承辦編號：{currentMemberId}</div>}
-          {currentMemberId && <ManagerScoreBlock managerId={currentMemberId} />}
         </div>
       </div>
       {currentMemberId ? (
@@ -43,22 +42,6 @@ const SalesLeadPage: React.VFC = () => {
     </AdminLayout>
   )
 }
-
-const ManagerScoreBlock: React.VFC<{ managerId: string }> = React.memo(({ managerId }) => {
-  const { id: appId } = useApp()
-  const { data } = useQuery<hasura.GET_MANAGER_SCORE, hasura.GET_MANAGER_SCOREVariables>(GET_MANAGER_SCORE, {
-    variables: { appId, managerId },
-  })
-  const managerScoreData = data?.manager_score.pop()
-  return managerScoreData ? (
-    <div>
-      分數：
-      <span className="mr-2">通時通次({managerScoreData.effort_score})</span>
-      <span className="mr-2">邀約({managerScoreData.invitations_score})</span>
-      <span>業績({managerScoreData.performance_score})</span>
-    </div>
-  ) : null
-})
 
 const SalesLeadTabs: React.VFC<{
   activeKey: string
@@ -327,13 +310,5 @@ const GET_SALES_LEADS = gql`
     }
   }
 `
-const GET_MANAGER_SCORE = gql`
-  query GET_MANAGER_SCORE($appId: String!, $managerId: String!) {
-    manager_score(where: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } }) {
-      performance_score
-      effort_score
-      invitations_score
-    }
-  }
-`
+
 export default SalesLeadPage
