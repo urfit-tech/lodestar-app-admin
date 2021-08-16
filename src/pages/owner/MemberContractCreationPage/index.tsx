@@ -31,6 +31,7 @@ type FieldProps = {
     }
   }
   selectedProjectPlanId?: string | null
+  period: { type: PeriodType; amount: number }
   selectedGiftDays?: 0 | 7 | 14
   contractProducts?: {
     id: string
@@ -68,12 +69,6 @@ type ContractInfo = {
     name: string
     options: any
   }[]
-  projectPlans: {
-    id: string
-    title: string
-    periodAmount: number
-    periodType: PeriodType | null
-  }[]
   products: {
     id: string
     name: string
@@ -102,16 +97,8 @@ const MemberContractCreationPage: React.VFC = () => {
   const [form] = useForm<FieldProps>()
   const fieldValue = form.getFieldsValue()
 
-  const {
-    member,
-    products,
-    properties,
-    contracts,
-    projectPlans,
-    appointmentPlanCreators,
-    sales,
-    ...contractInfoStatus
-  } = usePrivateTeachContractInfo(appId, memberId)
+  const { member, products, properties, contracts, appointmentPlanCreators, sales, ...contractInfoStatus } =
+    usePrivateTeachContractInfo(appId, memberId)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
@@ -120,14 +107,9 @@ const MemberContractCreationPage: React.VFC = () => {
     return <LoadingPage />
   }
 
-  const selectedProjectPlan = projectPlans.find(v => v.id === fieldValue.selectedProjectPlanId) || null
-  const endedAt = selectedProjectPlan
+  const endedAt = fieldValue.startedAt
     ? moment(fieldValue.startedAt)
-        .add(
-          selectedProjectPlan.periodAmount || 0,
-          selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
-        )
-        .add(fieldValue.selectedGiftDays, 'days')
+        .add(fieldValue.period.amount || 0, fieldValue.period.type ? periodTypeConverter(fieldValue.period.type) : 'y')
         .toDate()
     : null
 
@@ -151,6 +133,7 @@ const MemberContractCreationPage: React.VFC = () => {
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
+              period: { type: 'Y', amount: '1' },
               startedAt: moment().add(1, 'day').startOf('day'),
               identity: 'normal',
             }}
@@ -162,11 +145,9 @@ const MemberContractCreationPage: React.VFC = () => {
             products={products.filter(
               product =>
                 product.periodType === null ||
-                (product.periodAmount === selectedProjectPlan?.periodAmount &&
-                  product.periodType === selectedProjectPlan.periodType),
+                (product.periodAmount === fieldValue.period?.amount && product.periodType === fieldValue.period?.type),
             )}
             contracts={contracts}
-            projectPlans={projectPlans}
             sales={sales}
             appointmentPlanCreators={appointmentPlanCreators}
           />
@@ -176,7 +157,6 @@ const MemberContractCreationPage: React.VFC = () => {
             member={member}
             products={products}
             contracts={contracts}
-            selectedProjectPlan={selectedProjectPlan}
             endedAt={endedAt}
             selectedProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
@@ -189,7 +169,7 @@ const MemberContractCreationPage: React.VFC = () => {
 }
 
 const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
-  if (['D', 'W', 'Y'].includes(type)) {
+  if (['D', 'W', 'M', 'Y'].includes(type)) {
     return type.toLowerCase() as MomentPeriodType
   }
 
@@ -222,23 +202,13 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           name
           placeholder
         }
-        contract(where: { published_at: { _is_null: false } }) {
+        contract(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
           id
           name
           options
         }
-        projectPrivateTeachPlan: project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
-          id
-          title
-          period_amount
-          period_type
-        }
-        products: project_plan(
-          where: {
-            title: { _nlike: "%私塾方案%" }
-            published_at: { _is_null: false }
-            project: { app_id: { _eq: $appId } }
-          }
+        project_plan(
+          where: { published_at: { _is_null: false }, project: { app_id: { _eq: $appId } } }
           order_by: [{ position: asc_nulls_last }, { title: asc }]
         ) {
           id
@@ -255,12 +225,12 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             name
           }
         }
-        xuemi_sales {
-          member {
-            id
-            name
-            username
-          }
+        sales: member(
+          where: { app_id: { _eq: $appId }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }
+        ) {
+          id
+          name
+          username
         }
       }
     `,
@@ -276,7 +246,6 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
     member: null,
     properties: [],
     contracts: [],
-    projectPlans: [],
     products: [],
     appointmentPlanCreators: [],
     sales: [],
@@ -299,13 +268,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
       : null
     info.properties = data.property
     info.contracts = data.contract
-    info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
-      id: v.id,
-      title: v.title,
-      periodAmount: v.period_amount || 0,
-      periodType: v.period_type as PeriodType | null,
-    }))
-    info.products = data.products.map(v => ({
+    info.products = data.project_plan.map(v => ({
       id: v.id,
       name: v.title,
       price: v.list_price,
@@ -325,7 +288,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           : null,
       )
       .filter(notEmpty)
-    info.sales = data.xuemi_sales.map(v => v.member).filter(notEmpty)
+    info.sales = data.sales.filter(notEmpty)
   }
 
   return {

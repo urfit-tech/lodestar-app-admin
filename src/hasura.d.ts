@@ -12378,18 +12378,7 @@ export interface GET_CONTRACT_INFO_contract {
   options: any | null;
 }
 
-export interface GET_CONTRACT_INFO_projectPrivateTeachPlan {
-  __typename: "project_plan";
-  id: any;
-  title: string;
-  period_amount: any | null;
-  /**
-   * Y / M / W / D
-   */
-  period_type: string | null;
-}
-
-export interface GET_CONTRACT_INFO_products {
+export interface GET_CONTRACT_INFO_project_plan {
   __typename: "project_plan";
   id: any;
   title: string;
@@ -12417,19 +12406,11 @@ export interface GET_CONTRACT_INFO_appointment_plan {
   creator: GET_CONTRACT_INFO_appointment_plan_creator | null;
 }
 
-export interface GET_CONTRACT_INFO_xuemi_sales_member {
+export interface GET_CONTRACT_INFO_sales {
   __typename: "member";
   id: string;
   name: string;
   username: string;
-}
-
-export interface GET_CONTRACT_INFO_xuemi_sales {
-  __typename: "xuemi_sales";
-  /**
-   * An object relationship
-   */
-  member: GET_CONTRACT_INFO_xuemi_sales_member | null;
 }
 
 export interface GET_CONTRACT_INFO {
@@ -12448,19 +12429,15 @@ export interface GET_CONTRACT_INFO {
   /**
    * fetch data from the table: "project_plan"
    */
-  projectPrivateTeachPlan: GET_CONTRACT_INFO_projectPrivateTeachPlan[];
-  /**
-   * fetch data from the table: "project_plan"
-   */
-  products: GET_CONTRACT_INFO_products[];
+  project_plan: GET_CONTRACT_INFO_project_plan[];
   /**
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_CONTRACT_INFO_appointment_plan[];
   /**
-   * fetch data from the table: "xuemi.sales"
+   * fetch data from the table: "member"
    */
-  xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
+  sales: GET_CONTRACT_INFO_sales[];
 }
 
 export interface GET_CONTRACT_INFOVariables {
