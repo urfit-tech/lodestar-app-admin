@@ -22,7 +22,7 @@ type FieldProps = {
   tags: string[]
   languages?: string[]
   isIssuesOpen: boolean
-  isIntroductionSectionVisible: boolean
+  isIntroductionSectionVisible?: boolean
   sku?: string
 }
 
@@ -51,7 +51,7 @@ const ProgramBasicForm: React.FC<{
         title: values.title,
         supportLocales: values.languages?.length ? values.languages : null,
         isIssuesOpen: values.isIssuesOpen,
-        isIntroductionSectionVisible: values.isIntroductionSectionVisible,
+        isIntroductionSectionVisible: values.isIntroductionSectionVisible ?? program.isIntroductionSectionVisible,
         programCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           program_id: program.id,
           category_id: categoryId,
