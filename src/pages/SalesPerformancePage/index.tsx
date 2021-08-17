@@ -235,16 +235,27 @@ const SalesPerformanceTable: React.VFC<{
     },
   ]
 
-  const isCanceled = (mc: MemberContract) => !!mc.canceledAt && !!mc.agreedAt && !mc.approvedAt
-  const isRevoked = (mc: MemberContract) => !!mc.revokedAt && !!mc.agreedAt
-  const isRefundApplied = (mc: MemberContract) =>
-    !!mc.refundAppliedAt && !!mc.agreedAt && !!mc.approvedAt && !mc.revokedAt
-  const isApproved = (mc: MemberContract) => !!mc.approvedAt && !!mc.agreedAt && !mc.refundAppliedAt && !mc.revokedAt
-  const isAgreed = (mc: MemberContract) =>
-    !!mc.agreedAt && !mc.approvedAt && !mc.refundAppliedAt && !mc.revokedAt && !mc.canceledAt
+  const filteredMemberContracts = activeManagerId
+    ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
+    : memberContracts
 
-  const calculatePerformance = (condition: (mc: MemberContract) => boolean) =>
-    sum(memberContracts.filter(condition).map(mc => mc.performance))
+  const canceledPerformance = filteredMemberContracts.filter(mc => mc.agreedAt).filter(mc => mc.canceledAt)
+
+  const revokedPerformance = filteredMemberContracts.filter(mc => mc.agreedAt).filter(mc => mc.revokedAt)
+
+  const refundAppliedPerformance = revokedPerformance.filter(mc => mc.refundAppliedAt)
+
+  const approvedPerformance = filteredMemberContracts
+    .filter(mc => mc.agreedAt)
+    .filter(mc => mc.approvedAt)
+    .filter(mc => !mc.revokedAt)
+
+  const agreedPerformance = filteredMemberContracts
+    .filter(mc => mc.agreedAt)
+    .filter(mc => !mc.approvedAt)
+    .filter(mc => !mc.revokedAt)
+    .filter(mc => !mc.refundAppliedAt)
+    .filter(mc => !mc.canceledAt)
 
   const performance = {
     agreed: calculatePerformance(isAgreed),
