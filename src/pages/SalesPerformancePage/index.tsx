@@ -21,6 +21,8 @@ type MemberContract = {
   agreedAt: Date
   approvedAt?: Date
   canceledAt?: Date
+  revokedAt?: Date
+  refundAppliedAt?: Date
   author: {
     id: string
     name: string
@@ -125,9 +127,24 @@ const SalesPerformancePage: React.VFC = () => {
   const filteredMemberContracts = activeManagerId
     ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
     : memberContracts
-  const agreedPerformance = sum(filteredMemberContracts.filter(mc => mc.agreedAt).map(mc => mc.performance))
-  const approvedPerformance = sum(filteredMemberContracts.filter(mc => mc.approvedAt).map(mc => mc.performance))
-  const canceledPerformance = sum(filteredMemberContracts.filter(mc => mc.canceledAt).map(mc => mc.performance))
+
+  const canceledPerformance = filteredMemberContracts.filter(mc => mc.agreedAt).filter(mc => mc.canceledAt)
+
+  const revokedPerformance = filteredMemberContracts.filter(mc => mc.agreedAt).filter(mc => mc.revokedAt)
+
+  const refundAppliedPerformance = revokedPerformance.filter(mc => mc.refundAppliedAt)
+
+  const approvedPerformance = filteredMemberContracts
+    .filter(mc => mc.agreedAt)
+    .filter(mc => mc.approvedAt)
+    .filter(mc => !mc.revokedAt)
+
+  const agreedPerformance = filteredMemberContracts
+    .filter(mc => mc.agreedAt)
+    .filter(mc => !mc.approvedAt)
+    .filter(mc => !mc.revokedAt)
+    .filter(mc => !mc.refundAppliedAt)
+    .filter(mc => !mc.canceledAt)
 
   return (
     <AdminLayout>
@@ -160,13 +177,19 @@ const SalesPerformancePage: React.VFC = () => {
           title={() => (
             <div className="d-flex">
               <span className="mr-3">
-                總共：{new Intl.NumberFormat('zh').format(approvedPerformance - canceledPerformance)}
+                審核中：{new Intl.NumberFormat('zh').format(sum(agreedPerformance.map(mc => mc.performance)))}
               </span>
-              <span className="mr-3">進件：{new Intl.NumberFormat('zh').format(agreedPerformance)}</span>
-              <span className="mr-3">過件：{new Intl.NumberFormat('zh').format(approvedPerformance)}</span>
               <span className="mr-3">
-                退件：{new Intl.NumberFormat('zh').format(canceledPerformance)} (
-                {approvedPerformance ? ((canceledPerformance / approvedPerformance) * 100).toFixed(0) : 0}%)
+                審核通過：{new Intl.NumberFormat('zh').format(sum(approvedPerformance.map(mc => mc.performance)))}
+              </span>
+              <span className="mr-3">
+                提出退費：{new Intl.NumberFormat('zh').format(sum(refundAppliedPerformance.map(mc => mc.performance)))}
+              </span>
+              <span className="mr-3">
+                解約：{new Intl.NumberFormat('zh').format(sum(revokedPerformance.map(mc => mc.performance)))}
+              </span>
+              <span className="mr-3">
+                取消：{new Intl.NumberFormat('zh').format(sum(canceledPerformance.map(mc => mc.performance)))}
               </span>
             </div>
           )}
@@ -249,7 +272,8 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                 agreedAt: v.agreed_at,
                 revokedAt: v.revoked_at,
                 approvedAt: v.options?.approvedAt,
-                canceledAt: v.options?.loanCanceledAt || v.options?.refundAppliedAt,
+                canceledAt: v.options?.loanCanceledAt,
+                refundAppliedAt: v.options?.refundAppliedAt,
                 performance: isGuaranteed ? performance * 0.7 : performance,
                 products: v.values.orderProducts
                   ?.filter((op: any) => op.price >= 1500)
