@@ -22,6 +22,7 @@ type FieldProps = {
   tags: string[]
   languages?: string[]
   isIssuesOpen: boolean
+  isIntroductionSectionVisible?: boolean
   sku?: string
 }
 
@@ -50,6 +51,7 @@ const ProgramBasicForm: React.FC<{
         title: values.title,
         supportLocales: values.languages?.length ? values.languages : null,
         isIssuesOpen: values.isIssuesOpen,
+        isIntroductionSectionVisible: values.isIntroductionSectionVisible ?? program.isIntroductionSectionVisible,
         programCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           program_id: program.id,
           category_id: categoryId,
@@ -91,6 +93,7 @@ const ProgramBasicForm: React.FC<{
         languages: program.supportLocales,
         isIssuesOpen: program.isIssuesOpen,
         sku: product?.sku,
+        isIntroductionSectionVisible: program.isIntroductionSectionVisible,
       }}
       onFinish={handleSubmit}
     >
@@ -122,6 +125,29 @@ const ProgramBasicForm: React.FC<{
       >
         <LanguageSelector />
       </Form.Item>
+
+      {program.isSubscription && (
+        <Form.Item
+          label={
+            <span>
+              {formatMessage(programMessages.label.isIntroductionSectionVisible)}
+              <Tooltip
+                placement="top"
+                title={<StyledTips>{formatMessage(commonMessages.text.sectionVisible)}</StyledTips>}
+              >
+                <QuestionCircleFilled className="ml-2" />
+              </Tooltip>
+            </span>
+          }
+          name="isIntroductionSectionVisible"
+        >
+          <Radio.Group>
+            <Radio value={true}>{formatMessage(programMessages.status.displayAllSection)}</Radio>
+            <Radio value={false}>{formatMessage(programMessages.status.displayTrial)}</Radio>
+          </Radio.Group>
+        </Form.Item>
+      )}
+
       <Form.Item label={formatMessage(programMessages.label.isIssuesOpen)} name="isIssuesOpen">
         <Radio.Group>
           <Radio value={true}>{formatMessage(programMessages.status.active)}</Radio>
@@ -147,6 +173,7 @@ const UPDATE_PROGRAM_BASIC = gql`
     $title: String
     $supportLocales: jsonb
     $isIssuesOpen: Boolean
+    $isIntroductionSectionVisible: Boolean
     $productId: String
     $sku: String
     $programCategories: [program_category_insert_input!]!
@@ -155,7 +182,12 @@ const UPDATE_PROGRAM_BASIC = gql`
   ) {
     update_program(
       where: { id: { _eq: $programId } }
-      _set: { title: $title, support_locales: $supportLocales, is_issues_open: $isIssuesOpen }
+      _set: {
+        title: $title
+        support_locales: $supportLocales
+        is_issues_open: $isIssuesOpen
+        is_introduction_section_visible: $isIntroductionSectionVisible
+      }
     ) {
       affected_rows
     }

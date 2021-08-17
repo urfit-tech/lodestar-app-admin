@@ -157,6 +157,11 @@ const ConfirmSection: React.FC<{
               },
             },
             {
+              role: {
+                _eq: 'general-member',
+              },
+            },
+            {
               manager_id: {
                 _is_null: !filter.managerId,
                 _eq: filter.managerId || undefined,

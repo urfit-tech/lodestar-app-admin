@@ -44,6 +44,7 @@ export type ProgramProps = {
   isPrivate: boolean
   isIssuesOpen: boolean
   isCountdownTimerVisible?: boolean
+  isIntroductionSectionVisible: boolean
 }
 
 export type ProgramAdminProps = ProgramProps & {

@@ -16,7 +16,7 @@ const MemberDescriptionBlock: React.FC<{
             <>
               <span>學生資料</span>
               <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
-                {'請去學米後台 > 會員列表 > 找到學員並將資料填寫完成'}
+                {'請去後台 > 會員列表 > 找到學員並將資料填寫完成'}
               </div>
             </>
           }
@@ -32,14 +32,6 @@ const MemberDescriptionBlock: React.FC<{
               <Alert type="error" message="未設定" />
             )}
           </Descriptions.Item>
-          {properties.map(property => (
-            <Descriptions.Item label={property.name} key={property.id}>
-              <div className="d-flex align-items-center">
-                {member.properties.find(v => v.propertyId === property.id)?.value ||
-                  (property.placeholder ? <Alert type="error" message="未設定" /> : null)}
-              </div>
-            </Descriptions.Item>
-          ))}
         </Descriptions>
       </div>
     )

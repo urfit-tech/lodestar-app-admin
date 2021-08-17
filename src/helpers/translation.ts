@@ -245,6 +245,7 @@ export const commonMessages = {
     newPasswordAgain: { id: 'common.label.newPasswordAgain', defaultMessage: '再次輸入新密碼' },
     forgotPassword: { id: 'common.text.forgotPassword', defaultMessage: '忘記密碼？' },
     locale: { id: 'common.text.locale', defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示' },
+    sectionVisible: { id: 'common.text.sectionVisible', defaultMessage: '控制購買前是否能看到所有章節內容名稱' },
     salePriceNotation: {
       id: 'program.text.salePriceNotation',
       defaultMessage: '購買到優惠價的會員，往後每期皆以優惠價收款',
@@ -689,6 +690,8 @@ export const programMessages = {
     failed: { id: 'program.status.failed', defaultMessage: '未通過' },
     reviewed: { id: 'program.status.reviewed', defaultMessage: '已點評' },
     unreviewed: { id: 'program.status.unreviewed', defaultMessage: '未點評' },
+    displayAllSection: { id: 'program.status.displayAllSection', defaultMessage: '顯示所有章節' },
+    displayTrial: { id: 'program.status.displayTrial', defaultMessage: '僅顯示試看章節' },
   }),
   label: defineMessages({
     wholeProgram: { id: 'program.label.wholeProgram', defaultMessage: '全部課程' },
@@ -701,6 +704,7 @@ export const programMessages = {
     perpetualPlanType: { id: 'program.label.perpetualPlanType', defaultMessage: '單次付費' },
     subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
     isIssuesOpen: { id: 'program.label.isIssuesOpen', defaultMessage: '問題討論' },
+    isIntroductionSectionVisible: { id: 'program.label.isIntroductionSectionVisible', defaultMessage: '簡介章節' },
     planField: { id: 'program.label.planField', defaultMessage: '方案：' },
     notDeliveryOnly: { id: 'program.label.notDeliveryOnly', defaultMessage: '僅顯示未交付' },
     memberList: { id: 'program.label.memberList', defaultMessage: '學員名單' },
