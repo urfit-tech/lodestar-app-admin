@@ -12,6 +12,7 @@ import { UserRoleName } from '../../components/common/UserRole'
 import AdminLayout from '../../components/layout/AdminLayout'
 import MemberCreationModal from '../../components/member/MemberCreationModal'
 import MemberExportModal from '../../components/member/MemberExportModal'
+import MemberImportModal from '../../components/member/MemberImportModal'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
@@ -365,8 +366,11 @@ const MemberCollectionAdminPage: React.FC = () => {
             {formatMessage(memberMessages.label.field)}
           </StyledButton>
         </Popover>
+        <div className="mr-2">{permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}</div>
+        <div className="mr-2">
+          <MemberImportModal appId={appId} filter={fieldFilter} />
+        </div>
         <MemberExportModal appId={appId} filter={fieldFilter} />
-        {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
       </div>
 
       <AdminCard className="mb-5">
