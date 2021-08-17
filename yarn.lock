@@ -1755,7 +1755,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@craftjs/core@^0.1.0-beta.20":
+"@craftjs/core@0.1.0-beta.20":
   version "0.1.0-beta.20"
   resolved "https://registry.yarnpkg.com/@craftjs/core/-/core-0.1.0-beta.20.tgz#7d9140fdb8f962cb4ff701024f7a3cf43f6bdfa6"
   integrity sha512-AdX597cnoY8ktPKnh8tE6FRe+uz82DAsy9GyruRUQc7/mClvoO45zjCVFT2MngwW8PaH9xAVeEko2si8ScGeDw==
@@ -10335,10 +10335,10 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-element@urfit-tech/lodestar-app-element.git#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/a946973e196d3c219ca33cd445813f3759f46e64"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/623b0faa8dae0587a6885b40c09267f15655bd46"
   dependencies:
     "@apollo/react-hooks" "^3.1.5"
-    "@craftjs/core" "^0.1.0-beta.20"
+    "@craftjs/core" "0.1.0-beta.20"
     "@types/node" "^12.0.0"
     "@types/ramda" "^0.27.10"
     "@types/react" "^17.0.0"
