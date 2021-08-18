@@ -10257,25 +10257,29 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-element@urfit-tech/lodestar-app-element.git#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/623b0faa8dae0587a6885b40c09267f15655bd46"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/58a635feb1bc12eeabd8553906ae72325dad4399"
   dependencies:
     "@apollo/react-hooks" "^3.1.5"
+    "@craftjs/core" "0.1.0-beta.20"
     "@types/node" "^12.0.0"
     "@types/ramda" "^0.27.10"
     "@types/react" "^17.0.0"
+    "@types/react-color" "^3.0.5"
     "@types/react-dom" "^17.0.0"
     "@types/react-responsive" "^8.0.2"
     "@types/react-router-dom" "^5.1.5"
     "@types/react-slick" "^0.23.4"
     "@types/styled-components" "^5.1.1"
+    antd "^4.16.9"
     graphql-tag "^2.10.3"
     moment "^2.29.1"
     node-sass "^4.14.1"
     ramda "^0.27.0"
     rc-progress "^3.1.4"
     react "^17.0.2"
+    react-color "^2.19.3"
     react-dom "^17.0.2"
-    react-intl "^5.0.2"
+    react-intl "^5.20.9"
     react-responsive "^8.1.0"
     react-router-dom "^5.2.0"
     react-scripts "^4.0.3"
@@ -13512,7 +13516,7 @@ react-intl-translations-manager@^5.0.3:
     json-stable-stringify "^1.0.1"
     mkdirp "^0.5.1"
 
-react-intl@^5.0.2, react-intl@^5.20.9:
+react-intl@^5.20.9:
   version "5.20.9"
   resolved "https://registry.yarnpkg.com/react-intl/-/react-intl-5.20.9.tgz#ca086e5c4d800edb9dab5b7a236842106b99ac41"
   integrity sha512-nObPjUkECRMjgmXKfP2OehvloosUPeneXK5+hntu1liig/yfyJ2i37HFFKyzStK6wynwJARwFBgjPQQDd1oLzw==
