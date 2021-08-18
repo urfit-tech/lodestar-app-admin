@@ -109,7 +109,7 @@
     "react-contenteditable": "^3.3.5",
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0",
-    "react-intl": "^5.13.2",
+    "react-intl": "^5.20.9",
     "react-intl-translations-manager": "^5.0.3",
     "react-player": "^2.9.0",
     "react-responsive": "^8.2.0",
