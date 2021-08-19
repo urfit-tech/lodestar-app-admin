@@ -39,7 +39,9 @@ export const createUploadFn = (appId: string, authToken: string | null) => {
     const uniqId = uuid()
     uploadFile(`images/${appId}/editor/${uniqId}`, params.file, authToken).then(() => {
       params.success({
-        url: `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}/600`,
+        url: params.file.type.startsWith('image')
+          ? `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}/1200`
+          : `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}`,
         meta: {
           id: '',
           title: '',
