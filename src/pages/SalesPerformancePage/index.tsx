@@ -21,6 +21,8 @@ type MemberContract = {
   agreedAt: Date
   approvedAt?: Date
   canceledAt?: Date
+  revokedAt?: Date
+  refundAppliedAt?: Date
   author: {
     id: string
     name: string
@@ -122,12 +124,28 @@ const SalesPerformancePage: React.VFC = () => {
     },
   ]
 
-  const filteredMemberContracts = activeManagerId
+  const managerMemberContracts = activeManagerId
     ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
     : memberContracts
-  const agreedPerformance = sum(filteredMemberContracts.filter(mc => mc.agreedAt).map(mc => mc.performance))
-  const approvedPerformance = sum(filteredMemberContracts.filter(mc => mc.approvedAt).map(mc => mc.performance))
-  const canceledPerformance = sum(filteredMemberContracts.filter(mc => mc.canceledAt).map(mc => mc.performance))
+
+  const isCanceled = (mc: MemberContract) => !!mc.canceledAt && !!mc.agreedAt && !mc.approvedAt
+  const isRevoked = (mc: MemberContract) => !!mc.revokedAt && !!mc.agreedAt
+  const isRefundApplied = (mc: MemberContract) =>
+    !!mc.refundAppliedAt && !!mc.agreedAt && !!mc.approvedAt && !mc.revokedAt
+  const isApproved = (mc: MemberContract) => !!mc.approvedAt && !!mc.agreedAt && !mc.refundAppliedAt && !mc.revokedAt
+  const isAgreed = (mc: MemberContract) =>
+    !!mc.agreedAt && !mc.approvedAt && !mc.refundAppliedAt && !mc.revokedAt && !mc.canceledAt
+
+  const calculatePerformance = (condition: (mc: MemberContract) => boolean) =>
+    sum(managerMemberContracts.filter(condition).map(mc => mc.performance))
+
+  const performance = {
+    agreed: calculatePerformance(isAgreed),
+    approved: calculatePerformance(isApproved),
+    refundApplied: calculatePerformance(isRefundApplied),
+    revoked: calculatePerformance(isRevoked),
+    canceled: calculatePerformance(isCanceled),
+  }
 
   return (
     <AdminLayout>
@@ -159,20 +177,16 @@ const SalesPerformancePage: React.VFC = () => {
         <Table
           title={() => (
             <div className="d-flex">
-              <span className="mr-3">
-                總共：{new Intl.NumberFormat('zh').format(approvedPerformance - canceledPerformance)}
-              </span>
-              <span className="mr-3">進件：{new Intl.NumberFormat('zh').format(agreedPerformance)}</span>
-              <span className="mr-3">過件：{new Intl.NumberFormat('zh').format(approvedPerformance)}</span>
-              <span className="mr-3">
-                退件：{new Intl.NumberFormat('zh').format(canceledPerformance)} (
-                {approvedPerformance ? ((canceledPerformance / approvedPerformance) * 100).toFixed(0) : 0}%)
-              </span>
+              <span className="mr-3">審核中：{new Intl.NumberFormat('zh').format(performance.agreed)}</span>
+              <span className="mr-3">審核通過：{new Intl.NumberFormat('zh').format(performance.approved)}</span>
+              <span className="mr-3">提出退費：{new Intl.NumberFormat('zh').format(performance.refundApplied)}</span>
+              <span className="mr-3">解約：{new Intl.NumberFormat('zh').format(performance.revoked)}</span>
+              <span className="mr-3">取消：{new Intl.NumberFormat('zh').format(performance.canceled)}</span>
             </div>
           )}
           loading={loading}
           pagination={false}
-          dataSource={filteredMemberContracts}
+          dataSource={managerMemberContracts}
           columns={columns}
         />
       </TableWrapper>
@@ -249,7 +263,8 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                 agreedAt: v.agreed_at,
                 revokedAt: v.revoked_at,
                 approvedAt: v.options?.approvedAt,
-                canceledAt: v.options?.loanCanceledAt || v.options?.refundAppliedAt,
+                canceledAt: v.options?.loanCanceledAt,
+                refundAppliedAt: v.options?.refundAppliedAt,
                 performance: isGuaranteed ? performance * 0.7 : performance,
                 products: v.values.orderProducts
                   ?.filter((op: any) => op.price >= 1500)
