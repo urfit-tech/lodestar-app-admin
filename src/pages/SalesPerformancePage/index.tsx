@@ -128,12 +128,13 @@ const SalesPerformancePage: React.VFC = () => {
     ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
     : memberContracts
 
-  const isCanceled = (mc: MemberContract) => !!mc.canceledAt && !!mc.agreedAt
+  const isCanceled = (mc: MemberContract) => !!mc.canceledAt && !!mc.agreedAt && !mc.approvedAt
   const isRevoked = (mc: MemberContract) => !!mc.revokedAt && !!mc.agreedAt
-  const isRefundApplied = (mc: MemberContract) => !!mc.refundAppliedAt && isRevoked(mc)
-  const isApproved = (mc: MemberContract) => !!mc.approvedAt && !!mc.agreedAt && !mc.revokedAt
+  const isRefundApplied = (mc: MemberContract) =>
+    !!mc.refundAppliedAt && !!mc.agreedAt && !!mc.approvedAt && !mc.revokedAt
+  const isApproved = (mc: MemberContract) => !!mc.approvedAt && !!mc.agreedAt && !mc.refundAppliedAt && !mc.revokedAt
   const isAgreed = (mc: MemberContract) =>
-    !!mc.agreedAt && !mc.approvedAt && !mc.revokedAt && !mc.refundAppliedAt && !mc.canceledAt
+    !!mc.agreedAt && !mc.approvedAt && !mc.refundAppliedAt && !mc.revokedAt && !mc.canceledAt
 
   const calculatePerformance = (condition: (mc: MemberContract) => boolean) =>
     sum(managerMemberContracts.filter(condition).map(mc => mc.performance))
