@@ -133,7 +133,7 @@ const MemberContractCreationPage: React.VFC = () => {
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
-              period: { type: 'D', amount: '1' },
+              period: { type: 'D', amount: '0' },
               startedAt: moment().add(1, 'day').startOf('day'),
               identity: 'normal',
             }}
