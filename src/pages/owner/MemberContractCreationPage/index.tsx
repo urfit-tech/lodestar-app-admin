@@ -100,7 +100,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const fieldValue = form.getFieldsValue()
 
   const { member, products, properties, contracts, appointmentPlanCreators, sales, ...contractInfoStatus } =
-    usePrivateTeachContractInfo(appId, memberId)
+    useContractInfo(appId, memberId)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
@@ -189,7 +189,7 @@ const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
   return type as MomentPeriodType
 }
 
-const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
+const useContractInfo = (appId: string, memberId: string) => {
   const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
     gql`
       query GET_CONTRACT_INFO($appId: String!, $memberId: String!) {
