@@ -55,7 +55,7 @@ type ContractInfo = {
     id: string
     name: string
     email: string
-    phones: string[]
+    phone: string
     properties: {
       id: string
       propertyId: string
@@ -184,7 +184,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_phones {
+          member_phones(where: { is_primary: { _eq: true } }) {
             id
             phone
           }
@@ -257,7 +257,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           id: data.member_by_pk.id,
           name: data.member_by_pk.name,
           email: data.member_by_pk.email,
-          phones: data.member_by_pk.member_phones.map(v => v.phone),
+          phone: data.member_by_pk.member_phones[0]?.phone,
           properties: data.member_by_pk.member_properties.map(v => ({
             id: v.id,
             value: v.value,

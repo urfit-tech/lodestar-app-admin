@@ -12039,6 +12039,35 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: PUBLISH_CRAFT_PAGE
+// ====================================================
+
+export interface PUBLISH_CRAFT_PAGE_update_app_page {
+  __typename: "app_page_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_CRAFT_PAGE {
+  /**
+   * update data of the table: "app_page"
+   */
+  update_app_page: PUBLISH_CRAFT_PAGE_update_app_page | null;
+}
+
+export interface PUBLISH_CRAFT_PAGEVariables {
+  pageId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_EXERCISE_COLLECTION
 // ====================================================
 
