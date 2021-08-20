@@ -133,7 +133,7 @@ const MemberContractCreationPage: React.VFC = () => {
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
-              period: { type: 'D', amount: '0' },
+              period: { type: 'D', amount: '1' },
               startedAt: moment().add(1, 'day').startOf('day'),
               identity: 'normal',
             }}
@@ -184,7 +184,7 @@ const useContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_phones(where: { is_primary: { _eq: true } }) {
+          member_phones {
             id
             phone
           }
