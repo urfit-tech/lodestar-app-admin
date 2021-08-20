@@ -263,17 +263,23 @@ const MemberContractCreationBlock: React.FC<{
         endedAt,
         authorId: currentMemberId || '',
         values: {
-          startedAt: fieldValue.startedAt,
-          endedAt,
           memberId: member.id,
+          coinLogs: [
+            {
+              id: v4(),
+              member_id: member.id,
+              title: `${settings['coin.name'] || 'LSC'}`,
+              amount: totalCoins,
+              started_at: fieldValue.startedAt.toISOString(),
+              ended_at: endedAt?.toISOString(),
+            },
+          ],
           invoice: {
             name: member.name,
-            phone: member.phones,
+            phone: member.phone,
             email: member.email,
           },
           price: totalPrice,
-          coinName: `${settings['coin.name'] || 'LSC'}`,
-          coinAmount: totalCoins,
           orderId,
           orderProducts: [
             ...contractProducts.map(v => ({
