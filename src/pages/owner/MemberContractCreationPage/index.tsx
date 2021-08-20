@@ -55,7 +55,7 @@ type ContractInfo = {
     id: string
     name: string
     email: string
-    phones: string[]
+    phone: string
     properties: {
       id: string
       propertyId: string
@@ -98,7 +98,7 @@ const MemberContractCreationPage: React.VFC = () => {
   const fieldValue = form.getFieldsValue()
 
   const { member, products, properties, contracts, appointmentPlanCreators, sales, ...contractInfoStatus } =
-    usePrivateTeachContractInfo(appId, memberId)
+    useContractInfo(appId, memberId)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
@@ -133,7 +133,7 @@ const MemberContractCreationPage: React.VFC = () => {
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
-              period: { type: 'Y', amount: '1' },
+              period: { type: 'D', amount: '0' },
               startedAt: moment().add(1, 'day').startOf('day'),
               identity: 'normal',
             }}
@@ -176,7 +176,7 @@ const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
   return type as MomentPeriodType
 }
 
-const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
+const useContractInfo = (appId: string, memberId: string) => {
   const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
     gql`
       query GET_CONTRACT_INFO($appId: String!, $memberId: String!) {
@@ -184,7 +184,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           id
           name
           email
-          member_phones {
+          member_phones(where: { is_primary: { _eq: true } }) {
             id
             phone
           }
@@ -257,7 +257,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           id: data.member_by_pk.id,
           name: data.member_by_pk.name,
           email: data.member_by_pk.email,
-          phones: data.member_by_pk.member_phones.map(v => v.phone),
+          phone: data.member_by_pk.member_phones[0]?.phone,
           properties: data.member_by_pk.member_properties.map(v => ({
             id: v.id,
             value: v.value,

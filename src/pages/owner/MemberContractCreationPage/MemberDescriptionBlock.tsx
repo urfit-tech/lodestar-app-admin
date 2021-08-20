@@ -1,5 +1,4 @@
 import { Alert, Descriptions, Tag } from 'antd'
-import { length } from 'ramda'
 import React, { memo } from 'react'
 import { ContractInfo } from '.'
 
@@ -26,11 +25,7 @@ const MemberDescriptionBlock: React.FC<{
           <Descriptions.Item label="學員姓名">{member.name}</Descriptions.Item>
           <Descriptions.Item label="學員信箱">{member.email}</Descriptions.Item>
           <Descriptions.Item label="學員電話">
-            {!!length(member.phones) ? (
-              member.phones.map((v, index) => <Tag key={index}>{v}</Tag>)
-            ) : (
-              <Alert type="error" message="未設定" />
-            )}
+            {member.phone ? <Tag>{member.phone}</Tag> : <Alert type="error" message="未設定" />}
           </Descriptions.Item>
         </Descriptions>
       </div>
