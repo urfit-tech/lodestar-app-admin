@@ -21,6 +21,7 @@ const StyledPriceField = styled.div`
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
+    startedAt: Date | null
     endedAt: Date | null
     products: ContractInfo['products']
     contractProducts: NonNullable<FieldProps['contractProducts']>
@@ -154,7 +155,6 @@ const MemberContractCreationForm: React.FC<
               {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
             </div>
           </Descriptions.Item>
-
           <Descriptions.Item label="介紹人">
             <Form.Item name="referralMemberId" noStyle>
               <ReferralMemberSelector />
@@ -164,6 +164,25 @@ const MemberContractCreationForm: React.FC<
             <Form.Item name="hasDeposit" valuePropName="checked" noStyle>
               <Checkbox>扣除訂金 $1000</Checkbox>
             </Form.Item>
+          </Descriptions.Item>
+          <Descriptions.Item label="鑑賞期">
+            <div className="d-flex align-items-center">
+              <div className="flex-shrink-0">
+                <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
+                  <Checkbox>使用鑑賞期</Checkbox>
+                </Form.Item>
+              </div>
+              <div className="flex-grow-1 ml-2">
+                <Form.Item name="productStartedAt" noStyle>
+                  <DatePicker
+                    disabledDate={date =>
+                      date.isBefore(moment().add(1, 'day').startOf('day')) ||
+                      date.isAfter(moment().add(14, 'day').startOf('day'))
+                    }
+                  />
+                </Form.Item>
+              </div>
+            </div>
           </Descriptions.Item>
         </Descriptions>
 

@@ -48,6 +48,8 @@ type FieldProps = {
     ratio?: number
   }[]
   hasDeposit?: boolean[]
+  withProductStartedAt: boolean
+  productStartedAt: Moment
 }
 
 type ContractInfo = {
@@ -102,6 +104,7 @@ const MemberContractCreationPage: React.VFC = () => {
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
+  const [startedAt, setStartedAt] = useState(moment().add(1, 'days').startOf('day').toDate())
 
   if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />
@@ -134,11 +137,21 @@ const MemberContractCreationPage: React.VFC = () => {
               withCreatorId: false,
               orderExecutorRatio: 1,
               //period: { type: 'Y', amount: '1' },
-              startedAt: moment().add(1, 'day').startOf('day'),
+              //startedAt: moment(startedAt),
               identity: 'normal',
+              withProductStartedAt: false,
+              productStartedAt: moment(startedAt),
             }}
-            onValuesChange={() => setReRender(prev => prev + 1)}
+            onValuesChange={(_, values) => {
+              setReRender(prev => prev + 1)
+              setStartedAt(
+                values.withProductStartedAt
+                  ? values.productStartedAt.toDate()
+                  : moment().add(1, 'days').startOf('day').toDate(),
+              )
+            }}
             memberId={memberId}
+            startedAt={startedAt}
             endedAt={endedAt}
             contractProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
