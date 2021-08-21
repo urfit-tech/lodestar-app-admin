@@ -92,7 +92,7 @@ type ContractInfo = {
 }
 type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
 
-type ContractItem = {
+export type ContractItem = {
   id: string
   type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount' | 'rebateDiscount'
   name: string
@@ -245,9 +245,12 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: 1,
     })
   }
-  const endedAt = moment(startedAt)
-    .add(period.amount || 0, period.type ? periodTypeConverter(fieldValue.period.type) : 'y')
-    .toDate()
+  const endedAt =
+    startedAt && period
+      ? moment(startedAt)
+          .add(period?.amount || 0, period?.type ? periodTypeConverter(period.type) : 'y')
+          .toDate()
+      : null
 
   const totalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
 
@@ -262,34 +265,48 @@ const MemberContractCreationPage: React.VFC = () => {
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
-              period,
-              startedAt: moment().add(1, 'day').startOf('day'),
               identity: 'normal',
+              period,
+              withProductStartedAt: false,
+              productStartedAt: moment(startedAt),
             }}
-            onValuesChange={() => setReRender(prev => prev + 1)}
+            onValuesChange={(_, values) => {
+              setReRender(prev => prev + 1)
+              setStartedAt(
+                values.withProductStartedAt
+                  ? values.productStartedAt.toDate()
+                  : moment().add(1, 'days').startOf('day').toDate(),
+              )
+              setPeriod(values.period ? values.period : period)
+            }}
             memberId={memberId}
+            startedAt={startedAt}
             endedAt={endedAt}
             contractProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
             products={products.filter(
               product =>
                 product.periodType === null ||
-                (product.periodAmount === fieldValue.period?.amount && product.periodType === fieldValue.period?.type),
+                (product.periodAmount === period.amount && product.periodType === period.type),
             )}
             contracts={contracts}
             sales={sales}
             appointmentPlanCreators={appointmentPlanCreators}
+            totalPrice={totalPrice}
           />
 
           <MemberContractCreationBlock
             form={form}
             member={member}
-            products={products}
             contracts={contracts}
+            startedAt={startedAt}
             endedAt={endedAt}
             selectedProducts={selectedProducts}
-            isAppointmentOnly={isAppointmentOnly}
             memberBlockRef={memberBlockRef}
+            contractProducts={contractProducts}
+            contractDiscounts={contractDiscounts}
+            totalPrice={totalPrice}
+            totalCoins={totalCoins}
           />
         </AdminBlock>
       </div>

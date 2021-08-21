@@ -3,26 +3,15 @@ import { Alert, Button, message } from 'antd'
 import { FormInstance } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { project, range, sum } from 'ramda'
+import { project, sum } from 'ramda'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
-import { ContractInfo, FieldProps } from '.'
+import { ContractInfo, ContractItem, FieldProps } from '.'
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import hasura from '../../../hasura'
-import { notEmpty } from '../../../helpers'
 import { useCurrency } from '../../../hooks/currency'
-
-type ContractItem = {
-  id: string
-  type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount'
-  name: string
-  price: number
-  appointments: number
-  coins: number
-  amount: number
-}
 
 const StyledOrder = styled.div`
   border: 1px solid var(--gray-darker);
@@ -37,147 +26,37 @@ const StyledTotal = styled.div`
 
 const MemberContractCreationBlock: React.FC<{
   member: NonNullable<ContractInfo['member']>
-  products: ContractInfo['products']
   contracts: ContractInfo['contracts']
+  startedAt: Date
   endedAt: Date | null
-  isAppointmentOnly: boolean
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
   selectedProducts: NonNullable<FieldProps['contractProducts']>
   form: FormInstance<FieldProps>
-}> = ({ member, products, endedAt, isAppointmentOnly, memberBlockRef, form, selectedProducts, contracts }) => {
-  const fieldValue = form.getFieldsValue()
-  const { id: appId, settings } = useApp()
-  const { currentMemberId } = useAuth()
-  const [memberContractUrl, setMemberContractUrl] = useState('')
-  const { formatCurrency } = useCurrency()
-
-  // calculate contract products
-  const contractProducts: ContractItem[] = selectedProducts
-    .map(contractProduct => {
-      const product = products.find(product => product.id === contractProduct.id)
-      if (!product) {
-        return null
-      }
-      const productType: 'mainProduct' | 'addonProduct' =
-        product.name === '業師諮詢' && isAppointmentOnly
-          ? 'mainProduct'
-          : product.addonPrice
-          ? 'addonProduct'
-          : 'mainProduct'
-
-      return {
-        id: contractProduct.id,
-        name: product.name,
-        type: productType,
-        price: productType === 'mainProduct' ? product.price : product.addonPrice || 0,
-        appointments:
-          productType === 'mainProduct' && fieldValue?.identity === 'student'
-            ? product.appointments / 2
-            : product.appointments,
-        coins: product.coins,
-        amount: contractProduct.amount,
-      }
-    })
-    .filter(notEmpty)
-  const mainProducts = contractProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
-  const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
-  const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
-  const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
-
-  // calculate contract discounts
-  const contractDiscounts: ContractItem[] = []
-  const discountAmount = {
-    referral: 0,
-    deposit: -1000,
-    studentPromotion: 0,
-    groupPromotion: 0,
-  }
-
-  if (fieldValue.referralMemberId) {
-    discountAmount['referral'] = 2000 * -1
-  }
-  if (fieldValue.identity === 'student' && fieldValue?.certification?.file.name) {
-    discountAmount['studentPromotion'] =
-      (sum(mainProducts.map(mainProduct => mainProduct.price)) + discountAmount['referral'] * mainProducts.length) *
-      -0.1
-  }
-  discountAmount['groupPromotion'] =
-    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
-      discountAmount['referral'] * mainProducts.length +
-      discountAmount['studentPromotion']) *
-    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
-
-  if (discountAmount['referral']) {
-    contractDiscounts.push({
-      id: contractsOptions.couponPlanId['referral'],
-      type: 'referralDiscount',
-      name: '被介紹人折抵',
-      price: discountAmount['referral'],
-      appointments: 0,
-      coins: 0,
-      amount: mainProducts.length,
-    })
-  }
-  if (discountAmount['studentPromotion']) {
-    contractDiscounts.push({
-      id: contractsOptions.couponPlanId['student'],
-      type: 'promotionDiscount',
-      name: '學生方案',
-      price: discountAmount['studentPromotion'],
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    })
-  }
-  if (Math.ceil(discountAmount['groupPromotion'])) {
-    const promotionDiscount: Omit<ContractItem, 'id' | 'name'> = {
-      price: Math.ceil(discountAmount['groupPromotion']),
-      type: 'promotionDiscount',
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    }
-
-    if (mainProducts.length === 2) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['tenPercentOff'],
-        name: '任選兩件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length === 3) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['fifteenPercentOff'],
-        name: '任選三件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length >= 4) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['twentyPercentOff'],
-        name: '任選四件折抵',
-        ...promotionDiscount,
-      })
-    }
-  }
-  if (fieldValue.hasDeposit) {
-    contractDiscounts.push({
-      id: contractsOptions.couponPlanId['deposit'],
-      type: 'depositDiscount',
-      name: '扣除訂金',
-      price: discountAmount['deposit'],
-      appointments: 0,
-      coins: 0,
-      amount: 1,
-    })
-  }
-
-  const contractItems = [...contractProducts, ...contractDiscounts]
-  const totalPrice = sum(contractItems.map(v => v.price * v.amount))
-
+  contractProducts: ContractItem[]
+  contractDiscounts: ContractItem[]
+  totalPrice: number
+  totalCoins: number
+}> = ({
+  member,
+  startedAt,
+  endedAt,
+  memberBlockRef,
+  form,
+  contractProducts,
+  contractDiscounts,
+  totalPrice,
+  totalCoins,
+}) => {
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
+
+  const { id: appId, settings } = useApp()
+  const { currentMemberId } = useAuth()
+  const [memberContractUrl, setMemberContractUrl] = useState('')
+  const { formatCurrency } = useCurrency('TWD')
+
+  const fieldValue = form.getFieldsValue()
 
   const handleMemberContractCreate = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
@@ -220,21 +99,22 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
+    // !!TODO: confirm the business logic would create the couponPlan when totalAppointments >0
     // generate coupons
-    const couponPlanId = v4()
-    const coupons = range(0, totalAppointments).map((v, index) => ({
-      member_id: member.id,
-      coupon_code: {
-        data: {
-          code: moment().format('x') + v,
-          count: 1,
-          remaining: 0,
-          app_id: appId,
-          coupon_plan_id: index !== 0 ? couponPlanId : undefined,
-          coupon_plan: undefined,
-        },
-      },
-    }))
+    // const couponPlanId = v4()
+    // const coupons = range(0, totalAppointments).map((v, index) => ({
+    //   member_id: member.id,
+    //   coupon_code: {
+    //     data: {
+    //       code: moment().format('x') + v,
+    //       count: 1,
+    //       remaining: 0,
+    //       app_id: appId,
+    //       coupon_plan_id: index !== 0 ? couponPlanId : undefined,
+    //       coupon_plan: undefined,
+    //     },
+    //   },
+    // }))
 
     const times = '0'
     const orderId = moment().format('YYYYMMDDHHmmssSSS') + times.padStart(2, '0')
@@ -259,22 +139,25 @@ const MemberContractCreationBlock: React.FC<{
       variables: {
         memberId: member.id,
         contractId: fieldValue.contractId,
-        startedAt: fieldValue.startedAt,
+        startedAt,
         endedAt,
         authorId: currentMemberId || '',
         values: {
           memberId: member.id,
-          coinLogs: [
-            {
-              id: v4(),
-              member_id: member.id,
-              title: `${settings['coin.name'] || 'LSC'}`,
-              amount: totalCoins,
-              description: '',
-              started_at: fieldValue.startedAt.toISOString(),
-              ended_at: endedAt?.toISOString(),
-            },
-          ],
+          coinLogs:
+            totalCoins > 1
+              ? [
+                  {
+                    id: v4(),
+                    member_id: member.id,
+                    title: `${settings['coin.name'] || 'LSC'}`,
+                    amount: totalCoins,
+                    description: '',
+                    started_at: startedAt.toISOString(),
+                    ended_at: endedAt?.toISOString(),
+                  },
+                ]
+              : [],
           invoice: {
             name: member.name,
             phone: member.phone,
@@ -287,11 +170,11 @@ const MemberContractCreationBlock: React.FC<{
               product_id: `ProjectPlan_${v.id}`,
               name: v.name,
               price: v.price * v.amount,
-              started_at: fieldValue.startedAt,
+              started_at: startedAt,
               ended_at: endedAt,
             })),
           ],
-          coupons: [...coupons, ...project(['id', 'member_id', 'coupon_code'], contractCoupons)],
+          coupons: [...project(['id', 'member_id', 'coupon_code'], contractCoupons)],
           orderDiscounts: [
             ...contractCoupons.map(v => ({
               name: v.name,
@@ -326,7 +209,7 @@ const MemberContractCreationBlock: React.FC<{
   return (
     <>
       <StyledOrder className="mb-5">
-        {contractItems.map(item => (
+        {[...contractProducts, ...contractDiscounts].map(item => (
           <div key={item.id} className="row mb-2">
             <div className="col-6 text-right">
               {item.type === 'addonProduct' && '【加購項目】'}
