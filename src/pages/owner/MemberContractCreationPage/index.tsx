@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/react-hooks'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import moment from 'moment'
-import { uniqBy } from 'ramda'
+import moment, { Moment } from 'moment'
+import { sum, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../../components/admin'
@@ -23,7 +23,6 @@ type FieldProps = {
   contractId: string
   withCreatorId: boolean
   orderExecutorRatio: number
-  startedAt: Date
   identity: 'normal' | 'student'
   certification?: {
     file: {
@@ -48,6 +47,8 @@ type FieldProps = {
     ratio?: number
   }[]
   hasDeposit?: boolean[]
+  withProductStartedAt: boolean
+  productStartedAt: Moment
 }
 
 type ContractInfo = {
@@ -91,6 +92,16 @@ type ContractInfo = {
 }
 type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
 
+type ContractItem = {
+  id: string
+  type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount' | 'depositDiscount' | 'rebateDiscount'
+  name: string
+  price: number
+  appointments: number
+  coins: number
+  amount: number
+}
+
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
@@ -102,16 +113,12 @@ const MemberContractCreationPage: React.VFC = () => {
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
+  const [startedAt, setStartedAt] = useState(moment().add(1, 'days').startOf('day').toDate())
+  const [period, setPeriod] = useState<{ type: PeriodType; amount: number }>({ type: 'Y', amount: 1 })
 
   if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />
   }
-
-  const endedAt = fieldValue.startedAt
-    ? moment(fieldValue.startedAt)
-        .add(fieldValue.period.amount || 0, fieldValue.period.type ? periodTypeConverter(fieldValue.period.type) : 'y')
-        .toDate()
-    : null
 
   // calculate contract items results
   const selectedProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
@@ -121,6 +128,128 @@ const MemberContractCreationPage: React.VFC = () => {
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
     products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
+
+  // calculate contract products
+  const contractProducts: ContractItem[] = selectedProducts
+    .map(contractProduct => {
+      const product = products.find(product => product.id === contractProduct.id)
+      if (!product) {
+        return null
+      }
+      const productType: 'mainProduct' | 'addonProduct' =
+        product.name === '業師諮詢' && isAppointmentOnly
+          ? 'mainProduct'
+          : product.addonPrice
+          ? 'addonProduct'
+          : 'mainProduct'
+
+      return {
+        id: contractProduct.id,
+        name: product.name,
+        type: productType,
+        price: productType === 'mainProduct' ? product.price : product.addonPrice || 0,
+        appointments:
+          productType === 'mainProduct' && fieldValue?.identity === 'student'
+            ? product.appointments / 2
+            : product.appointments,
+        coins: product.coins,
+        amount: contractProduct.amount,
+      }
+    })
+    .filter(notEmpty)
+  const mainProducts = contractProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
+  const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
+  const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
+  const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
+
+  // calculate contract discounts
+  const contractDiscounts: ContractItem[] = []
+  const discountAmount = {
+    referral: 0,
+    deposit: -1000,
+    studentPromotion: 0,
+    groupPromotion: 0,
+  }
+
+  if (fieldValue.referralMemberId) {
+    discountAmount['referral'] = 2000 * -1
+  }
+
+  discountAmount['groupPromotion'] =
+    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
+      discountAmount['referral'] * mainProducts.length +
+      discountAmount['studentPromotion']) *
+    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
+
+  if (discountAmount['referral']) {
+    contractDiscounts.push({
+      id: contractsOptions.couponPlanId['referral'],
+      type: 'referralDiscount',
+      name: '被介紹人折抵',
+      price: discountAmount['referral'],
+      appointments: 0,
+      coins: 0,
+      amount: mainProducts.length,
+    })
+  }
+  if (discountAmount['studentPromotion']) {
+    contractDiscounts.push({
+      id: contractsOptions.couponPlanId['student'],
+      type: 'promotionDiscount',
+      name: '學生方案',
+      price: discountAmount['studentPromotion'],
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+  if (Math.ceil(discountAmount['groupPromotion'])) {
+    const promotionDiscount: Omit<ContractItem, 'id' | 'name'> = {
+      price: Math.ceil(discountAmount['groupPromotion']),
+      type: 'promotionDiscount',
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    }
+
+    if (mainProducts.length === 2) {
+      contractDiscounts.push({
+        id: contractsOptions.couponPlanId['tenPercentOff'],
+        name: '任選兩件折抵',
+        ...promotionDiscount,
+      })
+    }
+    if (mainProducts.length === 3) {
+      contractDiscounts.push({
+        id: contractsOptions.couponPlanId['fifteenPercentOff'],
+        name: '任選三件折抵',
+        ...promotionDiscount,
+      })
+    }
+    if (mainProducts.length >= 4) {
+      contractDiscounts.push({
+        id: contractsOptions.couponPlanId['twentyPercentOff'],
+        name: '任選四件折抵',
+        ...promotionDiscount,
+      })
+    }
+  }
+  if (fieldValue.hasDeposit) {
+    contractDiscounts.push({
+      id: contractsOptions.couponPlanId['deposit'],
+      type: 'depositDiscount',
+      name: '扣除訂金',
+      price: discountAmount['deposit'],
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+  const endedAt = moment(startedAt)
+    .add(period.amount || 0, period.type ? periodTypeConverter(fieldValue.period.type) : 'y')
+    .toDate()
+
+  const totalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
 
   return (
     <DefaultLayout>
@@ -133,7 +262,7 @@ const MemberContractCreationPage: React.VFC = () => {
               contractId: contracts[0].id,
               withCreatorId: false,
               orderExecutorRatio: 1,
-              period: { type: 'D', amount: '1' },
+              period,
               startedAt: moment().add(1, 'day').startOf('day'),
               identity: 'normal',
             }}
