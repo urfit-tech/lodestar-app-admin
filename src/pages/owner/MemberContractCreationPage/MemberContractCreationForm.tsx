@@ -21,6 +21,7 @@ const StyledPriceField = styled.div`
 const MemberContractCreationForm: React.FC<
   FormProps<FieldProps> & {
     contracts: ContractInfo['contracts']
+    startedAt: Date
     endedAt: Date | null
     products: ContractInfo['products']
     contractProducts: NonNullable<FieldProps['contractProducts']>
@@ -28,10 +29,12 @@ const MemberContractCreationForm: React.FC<
     memberId: string
     isAppointmentOnly: boolean
     sales: ContractInfo['sales']
+    totalPrice: number
   }
 > = memo(
   ({
     contracts,
+    startedAt,
     endedAt,
     products,
     contractProducts,
@@ -39,6 +42,7 @@ const MemberContractCreationForm: React.FC<
     memberId,
     isAppointmentOnly,
     sales,
+    totalPrice,
     form,
     ...formProps
   }) => {
@@ -66,11 +70,7 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="服務開始日">
-            <Form.Item className="mb-0" name="startedAt">
-              <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-            </Form.Item>
-          </Descriptions.Item>
+          <Descriptions.Item label="服務開始日">{moment(startedAt).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
 
           <Descriptions.Item label="服務結束日">
             {endedAt ? moment(endedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
@@ -165,6 +165,25 @@ const MemberContractCreationForm: React.FC<
               <Checkbox>扣除訂金 $1000</Checkbox>
             </Form.Item>
           </Descriptions.Item>
+          <Descriptions.Item label="鑑賞期">
+            <div className="d-flex align-items-center">
+              <div className="flex-shrink-0">
+                <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
+                  <Checkbox>使用鑑賞期</Checkbox>
+                </Form.Item>
+              </div>
+              <div className="flex-grow-1 ml-2">
+                <Form.Item name="productStartedAt" noStyle>
+                  <DatePicker
+                    disabledDate={date =>
+                      date.isBefore(moment().add(1, 'day').startOf('day')) ||
+                      date.isAfter(moment().add(14, 'day').startOf('day'))
+                    }
+                  />
+                </Form.Item>
+              </div>
+            </div>
+          </Descriptions.Item>
         </Descriptions>
 
         <Descriptions title="付款方式" bordered className="mb-5">
@@ -193,7 +212,7 @@ const MemberContractCreationForm: React.FC<
           </Descriptions.Item>
 
           <Descriptions.Item label="金流編號">
-            <Form.Item className="mb-0" name="paymentNumber" rules={[{ required: true, message: '請填寫金流編號' }]}>
+            <Form.Item className="mb-0" name="paymentNumber">
               <Input />
             </Form.Item>
           </Descriptions.Item>
