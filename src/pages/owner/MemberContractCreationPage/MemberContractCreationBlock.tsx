@@ -270,6 +270,7 @@ const MemberContractCreationBlock: React.FC<{
               member_id: member.id,
               title: `${settings['coin.name'] || 'LSC'}`,
               amount: totalCoins,
+              description: '',
               started_at: fieldValue.startedAt.toISOString(),
               ended_at: endedAt?.toISOString(),
             },
