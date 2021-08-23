@@ -1,7 +1,6 @@
 import { ImportOutlined } from '@ant-design/icons'
 import { Alert, Button, Form, message, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
@@ -104,23 +103,5 @@ const MemberImportModal: React.FC<{
     </AdminModal>
   )
 }
-
-const GET_MEMBER_COLLECTION = gql`
-  query GET_MEMBER_COLLECTION($condition: member_export_bool_exp!) {
-    member_export(where: $condition) {
-      id
-      app_id
-      name
-      username
-      email
-      created_at
-      logined_at
-      role
-      phones
-      categories
-      consumption
-    }
-  }
-`
 
 export default MemberImportModal
