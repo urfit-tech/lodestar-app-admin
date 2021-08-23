@@ -19,7 +19,7 @@ import { usePostCollection } from '../hooks/blog'
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
   const { id: appId } = useApp()
   const { posts, refetchPosts } = usePostCollection()
   const [insertPost] = useMutation<hasura.INSERT_POST, hasura.INSERT_POSTVariables>(INSERT_POST)
@@ -92,19 +92,25 @@ const BlogAdminCollectionPage: React.FC = () => {
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
             <div className="row py-5">
-              {tabContent.posts.map(post => (
-                <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                  <BlogPostCard
-                    title={post.title}
-                    coverUrl={post.coverUrl}
-                    videoUrl={post.videoUrl}
-                    views={post.views}
-                    memberName={post.authorName}
-                    publishedAt={post.publishedAt}
-                    link={`/blog/${post.id}`}
-                  />
-                </div>
-              ))}
+              {tabContent.posts
+                .filter(post =>
+                  currentUserRole !== 'app-owner'
+                    ? post.postRoles.find(v => v.memberId === currentMemberId) && post
+                    : post,
+                )
+                .map(post => (
+                  <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-5">
+                    <BlogPostCard
+                      title={post.title}
+                      coverUrl={post.coverUrl}
+                      videoUrl={post.videoUrl}
+                      views={post.views}
+                      memberName={post.authorName}
+                      publishedAt={post.publishedAt}
+                      link={`/blog/${post.id}`}
+                    />
+                  </div>
+                ))}
             </div>
           </Tabs.TabPane>
         ))}

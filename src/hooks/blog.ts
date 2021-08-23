@@ -99,7 +99,7 @@ export const usePostCollection = () => {
           title
           cover_url
           video_url
-          post_roles(where: { name: { _eq: "author" } }) {
+          post_roles {
             id
             name
             post_id
@@ -124,6 +124,7 @@ export const usePostCollection = () => {
     views: number | null
     publishedAt: Date | null
     authorName?: string | null
+    postRoles: { name: string; memberId?: string | null }[]
   }[] =
     loading || error || !data
       ? []
@@ -135,6 +136,10 @@ export const usePostCollection = () => {
           views: post.views,
           publishedAt: post.published_at,
           authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
+          postRoles: post.post_roles.map(postRole => ({
+            name: postRole.name,
+            memberId: postRole.member?.id,
+          })),
         }))
 
   return {
