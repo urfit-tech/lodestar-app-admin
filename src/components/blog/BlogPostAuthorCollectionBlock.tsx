@@ -102,7 +102,7 @@ const BlogPostAuthorCollectionBlock: React.FC<{
 
         <Form form={form} layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item label={formatMessage(commonMessages.label.selectAuthor)} name="memberId">
-            <ContentCreatorSelector />
+            <ContentCreatorSelector allowedPermission="POST_ADMIN" />
           </Form.Item>
 
           <Form.Item className="text-right">
