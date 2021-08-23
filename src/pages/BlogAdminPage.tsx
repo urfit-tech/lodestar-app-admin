@@ -108,7 +108,7 @@ const BlogAdminPage: React.FC = () => {
               </AdminBlock>
 
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.author)}</AdminBlockTitle>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.postAuthor)}</AdminBlockTitle>
                 <BlogPostAuthorCollectionBlock post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
