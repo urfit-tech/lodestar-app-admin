@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { uniq } from 'ramda'
+import { useAuth } from '../contexts/AuthContext'
 import hasura from '../hasura'
 import { PostProps } from '../types/blog'
 
@@ -91,6 +92,7 @@ export const usePost = (postId: string) => {
 }
 
 export const usePostCollection = () => {
+  const { currentMemberId, currentUserRole } = useAuth()
   const { loading, error, data, refetch } = useQuery<hasura.GET_POSTS>(
     gql`
       query GET_POSTS {
@@ -128,19 +130,23 @@ export const usePostCollection = () => {
   }[] =
     loading || error || !data
       ? []
-      : data.post.map(post => ({
-          id: post.id,
-          title: post.title,
-          coverUrl: post.cover_url,
-          videoUrl: post.video_url,
-          views: post.views,
-          publishedAt: post.published_at,
-          authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
-          roles: post.post_roles.map(postRole => ({
-            name: postRole.name,
-            memberId: postRole.member?.id,
-          })),
-        }))
+      : data.post
+          .map(post => ({
+            id: post.id,
+            title: post.title,
+            coverUrl: post.cover_url,
+            videoUrl: post.video_url,
+            views: post.views,
+            publishedAt: post.published_at,
+            authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
+            roles: post.post_roles.map(postRole => ({
+              name: postRole.name,
+              memberId: postRole.member?.id,
+            })),
+          }))
+          .filter(post =>
+            currentUserRole !== 'app-owner' ? post.roles.find(role => role.memberId === currentMemberId) : post,
+          )
 
   return {
     loadingPosts: loading,
