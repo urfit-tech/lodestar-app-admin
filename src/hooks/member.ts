@@ -416,7 +416,6 @@ export const useMemberNotesAdmin = (
             data
             options
           }
-          deleted_at
         }
       }
     `,
@@ -477,7 +476,6 @@ export const useMemberNotesAdmin = (
         data: u.data,
         options: u.options,
       })),
-      deletedAt: v.deleted_at ? new Date(v.deleted_at) : null,
     })) || []
 
   const loadMoreNotes =

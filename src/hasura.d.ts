@@ -9523,7 +9523,6 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
    * An array relationship
    */
   member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
-  deleted_at: any | null;
 }
 
 export interface GET_MEMBER_NOTES_ADMIN {
