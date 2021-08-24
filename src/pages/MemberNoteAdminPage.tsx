@@ -67,24 +67,22 @@ const MemberProfileAdminPage: React.FC = () => {
           }
         />
         <AdminBlock className="mt-4">
-          {notes.filter(note => !note.deletedAt).length === 0 ? (
+          {notes.length === 0 ? (
             <StyledEmptyBlock>
               <span>{formatMessage(memberMessages.text.noMemberNote)}</span>
             </StyledEmptyBlock>
           ) : (
-            notes
-              .filter(note => !note.deletedAt)
-              .map(note => (
-                <MemberNoteAdminItem
-                  key={note.id}
-                  note={note}
-                  memberAdmin={memberAdmin}
-                  onRefetch={() => {
-                    refetchMemberAdmin()
-                    refetchNotes()
-                  }}
-                />
-              ))
+            notes.map(note => (
+              <MemberNoteAdminItem
+                key={note.id}
+                note={note}
+                memberAdmin={memberAdmin}
+                onRefetch={() => {
+                  refetchMemberAdmin()
+                  refetchNotes()
+                }}
+              />
+            ))
           )}
 
           {loadMoreNotes && (

@@ -282,6 +282,7 @@ export const useMemberNotesAdmin = (
 ) => {
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
+    deleted_at: { _is_null: true },
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -344,7 +345,7 @@ export const useMemberNotesAdmin = (
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
-        category(where: { member_categories: {} }) {
+        category {
           id
           name
         }
