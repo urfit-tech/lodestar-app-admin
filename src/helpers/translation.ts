@@ -228,6 +228,7 @@ export const commonMessages = {
     unknownProduct: { id: 'common.label.unknownProduct', defaultMessage: '未知類別' },
     owner: { id: 'common.label.owner', defaultMessage: '建立者' },
     author: { id: 'common.label.author', defaultMessage: '作者' },
+    postAuthor: { id: 'common.label.postAuthor', defaultMessage: '文章作者' },
     supportedLanguages: { id: 'common.label.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
     tags: { id: 'common.label.tags', defaultMessage: '標籤' },
     memberCategory: { id: 'common.label.memberCategory', defaultMessage: '會員分類' },

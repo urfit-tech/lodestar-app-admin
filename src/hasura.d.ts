@@ -7851,6 +7851,10 @@ export interface GET_POSTS {
   post: GET_POSTS_post[];
 }
 
+export interface GET_POSTSVariables {
+  condition?: post_bool_exp | null;
+}
+
 /* tslint:disable */
 /* eslint-disable */
 // @generated

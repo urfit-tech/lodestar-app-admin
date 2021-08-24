@@ -231,7 +231,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.blog && (permissions.POST_ADMIN || permissions.POST_CATEGORY_ADMIN),
+      permissionIsAllowed:
+        !!enabledModules.blog &&
+        (currentUserRole === 'app-owner' ||
+          currentUserRole === 'content-creator' ||
+          permissions.POST_ADMIN ||
+          permissions.POST_CATEGORY_ADMIN),
       key: 'owner_blog_admin',
       icon: () => <ShoppingFilled className="mr-0" />,
       name: formatMessage(commonMessages.menu.blogAdmin),

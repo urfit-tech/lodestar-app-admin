@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { uniq } from 'ramda'
+import { useAuth } from '../contexts/AuthContext'
 import hasura from '../hasura'
 import { PostProps } from '../types/blog'
 
@@ -90,16 +91,22 @@ export const usePost = (postId: string) => {
   }
 }
 
-export const usePostCollection = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_POSTS>(
+export const usePostCollection = (filter?: { currentMemberId?: string; currentUserRole?: string }) => {
+  const condition: hasura.GET_POSTSVariables['condition'] = {
+    is_deleted: { _eq: false },
+    post_roles:
+      filter?.currentUserRole !== 'app-owner' ? { member: { id: { _eq: `${filter?.currentMemberId}` } } } : undefined,
+  }
+
+  const { loading, error, data, refetch } = useQuery<hasura.GET_POSTS, hasura.GET_POSTSVariables>(
     gql`
-      query GET_POSTS {
-        post(where: { is_deleted: { _eq: false } }, order_by: { updated_at: desc }) {
+      query GET_POSTS($condition: post_bool_exp) {
+        post(where: $condition, order_by: { updated_at: desc }) {
           id
           title
           cover_url
           video_url
-          post_roles(where: { name: { _eq: "author" } }) {
+          post_roles {
             id
             name
             post_id
@@ -114,6 +121,9 @@ export const usePostCollection = () => {
         }
       }
     `,
+    {
+      variables: { condition },
+    },
   )
 
   const posts: {
@@ -124,6 +134,7 @@ export const usePostCollection = () => {
     views: number | null
     publishedAt: Date | null
     authorName?: string | null
+    roles: { name: string; memberId?: string | null }[]
   }[] =
     loading || error || !data
       ? []
@@ -135,6 +146,10 @@ export const usePostCollection = () => {
           views: post.views,
           publishedAt: post.published_at,
           authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
+          roles: post.post_roles.map(role => ({
+            name: role.name,
+            memberId: role.member?.id,
+          })),
         }))
 
   return {

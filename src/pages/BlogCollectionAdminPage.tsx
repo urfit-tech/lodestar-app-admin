@@ -19,9 +19,12 @@ import { usePostCollection } from '../hooks/blog'
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
   const { id: appId } = useApp()
-  const { posts, refetchPosts } = usePostCollection()
+  const { posts, refetchPosts } = usePostCollection({
+    currentMemberId: currentMemberId || '',
+    currentUserRole: currentUserRole,
+  })
   const [insertPost] = useMutation<hasura.INSERT_POST, hasura.INSERT_POSTVariables>(INSERT_POST)
 
   const tabContents = [
