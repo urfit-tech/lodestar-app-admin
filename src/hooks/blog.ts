@@ -124,7 +124,7 @@ export const usePostCollection = () => {
     views: number | null
     publishedAt: Date | null
     authorName?: string | null
-    postRoles: { name: string; memberId?: string | null }[]
+    roles: { name: string; memberId?: string | null }[]
   }[] =
     loading || error || !data
       ? []
@@ -136,7 +136,7 @@ export const usePostCollection = () => {
           views: post.views,
           publishedAt: post.published_at,
           authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
-          postRoles: post.post_roles.map(postRole => ({
+          roles: post.post_roles.map(postRole => ({
             name: postRole.name,
             memberId: postRole.member?.id,
           })),
