@@ -91,12 +91,17 @@ export const usePost = (postId: string) => {
   }
 }
 
-export const usePostCollection = () => {
-  const { currentMemberId, currentUserRole } = useAuth()
-  const { loading, error, data, refetch } = useQuery<hasura.GET_POSTS>(
+export const usePostCollection = (filter?: { currentMemberId?: string; currentUserRole?: string }) => {
+  const condition: hasura.GET_POSTSVariables['condition'] = {
+    is_deleted: { _eq: false },
+    post_roles:
+      filter?.currentUserRole !== 'app-owner' ? { member: { id: { _eq: `${filter?.currentMemberId}` } } } : undefined,
+  }
+
+  const { loading, error, data, refetch } = useQuery<hasura.GET_POSTS, hasura.GET_POSTSVariables>(
     gql`
-      query GET_POSTS {
-        post(where: { is_deleted: { _eq: false } }, order_by: { updated_at: desc }) {
+      query GET_POSTS($condition: post_bool_exp) {
+        post(where: $condition, order_by: { updated_at: desc }) {
           id
           title
           cover_url
@@ -116,6 +121,9 @@ export const usePostCollection = () => {
         }
       }
     `,
+    {
+      variables: { condition },
+    },
   )
 
   const posts: {
@@ -130,23 +138,22 @@ export const usePostCollection = () => {
   }[] =
     loading || error || !data
       ? []
-      : data.post
-          .map(post => ({
-            id: post.id,
-            title: post.title,
-            coverUrl: post.cover_url,
-            videoUrl: post.video_url,
-            views: post.views,
-            publishedAt: post.published_at,
-            authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
-            roles: post.post_roles.map(postRole => ({
-              name: postRole.name,
-              memberId: postRole.member?.id,
-            })),
-          }))
-          .filter(post =>
-            currentUserRole !== 'app-owner' ? post.roles.find(role => role.memberId === currentMemberId) : post,
-          )
+      : data.post.map(post => ({
+          id: post.id,
+          title: post.title,
+          coverUrl: post.cover_url,
+          videoUrl: post.video_url,
+          views: post.views,
+          publishedAt: post.published_at,
+          authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
+          roles: post.post_roles.map(role => ({
+            name: role.name,
+            memberId: role.member?.id,
+          })),
+        }))
+  // .filter(post =>
+  //   currentUserRole !== 'app-owner' ? post.roles.find(role => role.memberId === currentMemberId) : post,
+  // )
 
   return {
     loadingPosts: loading,
