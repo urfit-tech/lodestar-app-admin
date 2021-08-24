@@ -151,9 +151,6 @@ export const usePostCollection = (filter?: { currentMemberId?: string; currentUs
             memberId: role.member?.id,
           })),
         }))
-  // .filter(post =>
-  //   currentUserRole !== 'app-owner' ? post.roles.find(role => role.memberId === currentMemberId) : post,
-  // )
 
   return {
     loadingPosts: loading,
