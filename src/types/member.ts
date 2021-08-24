@@ -141,6 +141,7 @@ export type NoteAdminProps = {
     data: any
     options: any
   }[]
+  deletedAt: Date | null
 }
 
 export type MemberTaskProps = {

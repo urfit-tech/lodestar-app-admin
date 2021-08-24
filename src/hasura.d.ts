@@ -9523,6 +9523,7 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
    * An array relationship
    */
   member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
+  deleted_at: any | null;
 }
 
 export interface GET_MEMBER_NOTES_ADMIN {
@@ -9616,20 +9617,25 @@ export interface UPDATE_MEMBER_NOTEVariables {
 // GraphQL mutation operation: DELETE_MEMBER_NOTE
 // ====================================================
 
-export interface DELETE_MEMBER_NOTE_delete_member_note_by_pk {
-  __typename: "member_note";
-  id: string;
+export interface DELETE_MEMBER_NOTE_update_member_note {
+  __typename: "member_note_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
 }
 
 export interface DELETE_MEMBER_NOTE {
   /**
-   * delete single row from the table: "member_note"
+   * update data of the table: "member_note"
    */
-  delete_member_note_by_pk: DELETE_MEMBER_NOTE_delete_member_note_by_pk | null;
+  update_member_note: DELETE_MEMBER_NOTE_update_member_note | null;
 }
 
 export interface DELETE_MEMBER_NOTEVariables {
   memberNoteId: string;
+  deletedAt?: any | null;
+  currentMemberId: string;
 }
 
 /* tslint:disable */
@@ -14648,6 +14654,8 @@ export enum member_note_constraint {
 export enum member_note_update_column {
   author_id = "author_id",
   created_at = "created_at",
+  deleted_at = "deleted_at",
+  deleted_from = "deleted_from",
   description = "description",
   duration = "duration",
   id = "id",
@@ -21875,11 +21883,14 @@ export interface member_note_bool_exp {
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  deleted_from?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   duration?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   memberByAuthorId?: member_bool_exp | null;
+  memberByDeleteFrom?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   member_note_attachments?: member_note_attachment_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -21897,11 +21908,14 @@ export interface member_note_insert_input {
   author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   created_at?: any | null;
+  deleted_at?: any | null;
+  deleted_from?: string | null;
   description?: string | null;
   duration?: number | null;
   id?: string | null;
   member?: member_obj_rel_insert_input | null;
   memberByAuthorId?: member_obj_rel_insert_input | null;
+  memberByDeleteFrom?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   member_note_attachments?: member_note_attachment_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -21918,6 +21932,8 @@ export interface member_note_insert_input {
 export interface member_note_max_order_by {
   author_id?: order_by | null;
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
+  deleted_from?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
@@ -21935,6 +21951,8 @@ export interface member_note_max_order_by {
 export interface member_note_min_order_by {
   author_id?: order_by | null;
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
+  deleted_from?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
@@ -21970,11 +21988,14 @@ export interface member_note_order_by {
   author?: member_order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
+  deleted_from?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
   member?: member_order_by | null;
   memberByAuthorId?: member_order_by | null;
+  memberByDeleteFrom?: member_order_by | null;
   member_id?: order_by | null;
   member_note_attachments_aggregate?: member_note_attachment_aggregate_order_by | null;
   metadata?: order_by | null;
@@ -21991,6 +22012,8 @@ export interface member_note_order_by {
 export interface member_note_set_input {
   author_id?: string | null;
   created_at?: any | null;
+  deleted_at?: any | null;
+  deleted_from?: string | null;
   description?: string | null;
   duration?: number | null;
   id?: string | null;

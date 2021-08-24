@@ -415,6 +415,7 @@ export const useMemberNotesAdmin = (
             data
             options
           }
+          deleted_at
         }
       }
     `,
@@ -475,6 +476,7 @@ export const useMemberNotesAdmin = (
         data: u.data,
         options: u.options,
       })),
+      deletedAt: v.deleted_at ? new Date(v.deleted_at) : null,
     })) || []
 
   const loadMoreNotes =
@@ -555,9 +557,12 @@ export const useMutateMemberNote = () => {
   `)
 
   const [deleteMemberNote] = useMutation(gql`
-    mutation DELETE_MEMBER_NOTE($memberNoteId: String!) {
-      delete_member_note_by_pk(id: $memberNoteId) {
-        id
+    mutation DELETE_MEMBER_NOTE($memberNoteId: String!, $deletedAt: timestamptz, $currentMemberId: String!) {
+      update_member_note(
+        where: { id: { _eq: $memberNoteId } }
+        _set: { deleted_at: $deletedAt, deleted_from: $currentMemberId }
+      ) {
+        affected_rows
       }
     }
   `)
