@@ -282,6 +282,7 @@ export const useMemberNotesAdmin = (
 ) => {
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
+    deleted_at: { _is_null: true },
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -344,7 +345,7 @@ export const useMemberNotesAdmin = (
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
-        category(where: { member_categories: {} }) {
+        category {
           id
           name
         }
@@ -555,9 +556,12 @@ export const useMutateMemberNote = () => {
   `)
 
   const [deleteMemberNote] = useMutation(gql`
-    mutation DELETE_MEMBER_NOTE($memberNoteId: String!) {
-      delete_member_note_by_pk(id: $memberNoteId) {
-        id
+    mutation DELETE_MEMBER_NOTE($memberNoteId: String!, $deletedAt: timestamptz, $currentMemberId: String!) {
+      update_member_note(
+        where: { id: { _eq: $memberNoteId } }
+        _set: { deleted_at: $deletedAt, deleted_from: $currentMemberId }
+      ) {
+        affected_rows
       }
     }
   `)

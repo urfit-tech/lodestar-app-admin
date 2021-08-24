@@ -4,6 +4,7 @@ import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
@@ -49,6 +50,7 @@ const MemberNoteAdminItem: React.FC<{
   onRefetch?: () => void
 }> = ({ note, memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { currentMemberId } = useAuth()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
@@ -150,7 +152,9 @@ const MemberNoteAdminItem: React.FC<{
                 cancelText={formatMessage(commonMessages.ui.back)}
                 okText={formatMessage(commonMessages.ui.delete)}
                 onOk={() =>
-                  deleteMemberNote({ variables: { memberNoteId: note.id } })
+                  deleteMemberNote({
+                    variables: { memberNoteId: note.id, deletedAt: new Date(), currentMemberId: currentMemberId },
+                  })
                     .then(() => {
                       message.success(formatMessage(commonMessages.event.successfullyDeleted))
                       onRefetch?.()
