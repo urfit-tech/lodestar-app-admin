@@ -38,7 +38,9 @@ const StyledTag = styled(Tag)`
   }
 `
 const StyledTrialTag = styled(StyledTag)`
-  background: #ffbe1e;
+  &&& {
+    background: #ffbe1e;
+  }
 `
 const StyledPrivateTag = styled(StyledTag)`
   background: var(--gray-darker);
