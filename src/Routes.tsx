@@ -389,6 +389,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'owner/MemberCollectionAdminPage',
     authenticated: true,
   },
+  owner_permission_group: {
+    path: '/permission_group',
+    pageName: 'owner/PermissionGroupAdminPage',
+    authenticated: true,
+  },
   member_contract_creation: {
     path: '/members/:memberId/new-contract',
     pageName: 'owner/MemberContractCreationPage',

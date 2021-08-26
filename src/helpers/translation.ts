@@ -367,6 +367,7 @@ export const commonMessages = {
     categories: { id: 'common.menu.categories', defaultMessage: '分類設定' },
     memberAdmin: { id: 'common.menu.memberAdmin', defaultMessage: '會員管理' },
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
+    permissionGroup: { id: 'common.menu.permissionGroup', defaultMessage: '權限組' },
     memberCategory: { id: 'common.menu.memberCategory', defaultMessage: '會員分類' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
     noteAdmin: { id: 'common.menu.noteAdmin', defaultMessage: '聯絡管理' },
