@@ -6573,9 +6573,7 @@ export interface app_nav_insert_input {
   id?: any | null;
   label?: string | null;
   locale?: string | null;
-<<<<<<< HEAD
   options?: any | null;
-=======
   parent_id?: any | null;
   tag?: string | null;
 }
