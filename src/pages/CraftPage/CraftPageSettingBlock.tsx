@@ -355,7 +355,32 @@ const CraftPageSettingBlock: React.VFC = () => {
                     setActiveKey={setActiveKey}
                   />
                   <CraftBackground backgroundType="none" padding={{}} margin={{}} setActiveKey={setActiveKey} />
-                  <CraftDataSelector setActiveKey={setActiveKey}>資料選擇</CraftDataSelector>
+                  <CraftDataSelector
+                    contentType="program"
+                    customContentIds={['48000bbb-830f-493b-ab13-a265b9634762']}
+                    setActiveKey={setActiveKey}
+                  >
+                    課程 資料選擇
+                  </CraftDataSelector>
+                  <CraftDataSelector contentType="activity" customContentIds={[]} setActiveKey={setActiveKey}>
+                    活動 資料選擇
+                  </CraftDataSelector>
+                  <CraftDataSelector contentType="podcast-program" setActiveKey={setActiveKey}>
+                    廣播課程 資料選擇
+                  </CraftDataSelector>
+                  <CraftDataSelector
+                    contentType="creator"
+                    customContentIds={['4463f002-594d-45c1-9ac4-847c403ea5ac', '5a885b7a-f878-4fef-8726-53a01eda5811']}
+                    setActiveKey={setActiveKey}
+                  >
+                    創作者 資料選擇
+                  </CraftDataSelector>
+                  <CraftDataSelector contentType="funding-project" setActiveKey={setActiveKey}>
+                    募資專案 資料選擇
+                  </CraftDataSelector>
+                  <CraftDataSelector contentType="pre-order-project" setActiveKey={setActiveKey}>
+                    預約專案 資料選擇
+                  </CraftDataSelector>
                 </Element>
               </Frame>
               <CraftActionsPanel />
