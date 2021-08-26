@@ -15,6 +15,7 @@ const CallStatusBlock: React.VFC<{
   if (error) {
     return null
   }
+
   return (
     <div className="row">
       <div className="col-6">
