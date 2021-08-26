@@ -3590,6 +3590,8 @@ export enum member_note_constraint {
 export enum member_note_update_column {
   author_id = "author_id",
   created_at = "created_at",
+  deleted_at = "deleted_at",
+  deleted_from = "deleted_from",
   description = "description",
   duration = "duration",
   id = "id",
@@ -6575,6 +6577,8 @@ export interface app_nav_insert_input {
   locale?: string | null;
   options?: any | null;
   parent_id?: any | null;
+  position?: number | null;
+  sub_app_navs?: app_nav_arr_rel_insert_input | null;
   tag?: string | null;
 }
 
@@ -10207,11 +10211,14 @@ export interface member_note_bool_exp {
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  deleted_from?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   duration?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   memberByAuthorId?: member_bool_exp | null;
+  memberByDeleteFrom?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   member_note_attachments?: member_note_attachment_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -10229,11 +10236,14 @@ export interface member_note_insert_input {
   author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   created_at?: any | null;
+  deleted_at?: any | null;
+  deleted_from?: string | null;
   description?: string | null;
   duration?: number | null;
   id?: string | null;
   member?: member_obj_rel_insert_input | null;
   memberByAuthorId?: member_obj_rel_insert_input | null;
+  memberByDeleteFrom?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   member_note_attachments?: member_note_attachment_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -10250,6 +10260,8 @@ export interface member_note_insert_input {
 export interface member_note_max_order_by {
   author_id?: order_by | null;
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
+  deleted_from?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
@@ -10267,6 +10279,8 @@ export interface member_note_max_order_by {
 export interface member_note_min_order_by {
   author_id?: order_by | null;
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
+  deleted_from?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
@@ -10302,11 +10316,14 @@ export interface member_note_order_by {
   author?: member_order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
+  deleted_from?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
   member?: member_order_by | null;
   memberByAuthorId?: member_order_by | null;
+  memberByDeleteFrom?: member_order_by | null;
   member_id?: order_by | null;
   member_note_attachments_aggregate?: member_note_attachment_aggregate_order_by | null;
   metadata?: order_by | null;
