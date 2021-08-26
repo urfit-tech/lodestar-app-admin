@@ -1,7 +1,7 @@
 import { AdminHeader } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 
-const PermissionGroupPage: React.VFC = () => {
+const PermissionGroupAdminPage: React.VFC = () => {
   return (
     <>
       <AdminHeader></AdminHeader>
@@ -14,4 +14,4 @@ const PermissionGroupCard: React.VFC = () => {
   return <></>
 }
 
-export default PermissionGroupPage
+export default PermissionGroupAdminPage
