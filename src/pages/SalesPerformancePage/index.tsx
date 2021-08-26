@@ -1,6 +1,6 @@
 import Icon, { DollarOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { DatePicker, Select, Table } from 'antd'
+import { DatePicker, Select, Skeleton, Table, Tabs } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
@@ -13,10 +13,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
 
-type MemberContract = {
+export type MemberContract = {
   id: string
   agreedAt: Date
   approvedAt?: Date
@@ -30,6 +31,7 @@ type MemberContract = {
   executor: {
     id: string
     name: string
+    agency: string
   }
   member: {
     id: string
@@ -49,17 +51,126 @@ const TableWrapper = styled.div`
     white-space: nowrap;
   }
 `
+
 const SalesPerformancePage: React.VFC = () => {
   const [month, setMonth] = useState(moment().startOf('month'))
   const [activeManagerId, setActiveManagerId] = useState<string>()
   const { formatMessage } = useIntl()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
   const { currentMemberId } = useAuth()
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   useEffect(() => {
     currentMemberId && setActiveManagerId(currentMemberId)
   }, [currentMemberId])
 
+  return (
+    <AdminLayout>
+      <AdminPageTitle className="mb-4">
+        <Icon className="mr-3" component={() => <DollarOutlined />} />
+        <span className="mr-3">{formatMessage(salesMessages.label.salesPerformance)}</span>
+        <div className="d-flex flex-row-reverse">
+          <DatePicker
+            className="mr-2 mb-10"
+            picker="month"
+            onChange={date => date && setMonth(date.startOf('month'))}
+          />
+          {currentMemberId && (
+            <Select
+              className="mr-3"
+              style={{ width: 200 }}
+              showSearch
+              allowClear
+              placeholder="業務顧問"
+              value={activeManagerId}
+              optionFilterProp="children"
+              onChange={setActiveManagerId}
+            >
+              {managers?.map(manager => (
+                <Select.Option key={manager?.id} value={manager?.id}>
+                  {manager?.name}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
+        </div>
+      </AdminPageTitle>
+      {currentMemberId ? (
+        <SalesAgencyTabs
+          activeKey={activeKey || 'all'}
+          activeManagerId={activeManagerId}
+          onActiveKeyChanged={setActiveKey}
+          loading={loading}
+          memberContracts={memberContracts}
+        />
+      ) : (
+        <Skeleton active />
+      )}
+    </AdminLayout>
+  )
+}
+
+const SalesAgencyTabs: React.VFC<{
+  activeKey: string
+  activeManagerId?: string
+  loading: boolean
+  memberContracts: MemberContract[]
+  onActiveKeyChanged?: (activeKey: string) => void
+}> = ({ activeKey, activeManagerId, onActiveKeyChanged, loading, memberContracts }) => {
+  const managerMemberContracts = activeManagerId
+    ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
+    : memberContracts
+
+  return (
+    <div>
+      <Tabs activeKey={activeKey} onChange={onActiveKeyChanged}>
+        <Tabs.TabPane key="all" tab={<span>全部 ({managerMemberContracts.length})</span>}>
+          {<SalesPerformanceTable loading={loading} memberContracts={managerMemberContracts} />}
+        </Tabs.TabPane>
+        <Tabs.TabPane
+          key="xuemi"
+          tab={
+            <span>
+              學米 ({managerMemberContracts.filter(memberContract => memberContract.executor.agency === '學米').length})
+            </span>
+          }
+        >
+          {
+            <SalesPerformanceTable
+              loading={loading}
+              memberContracts={managerMemberContracts.filter(
+                memberContract => memberContract.executor.agency === '學米',
+              )}
+            />
+          }
+        </Tabs.TabPane>
+        <Tabs.TabPane
+          key="xueyi"
+          tab={
+            <span>
+              學溢 ({managerMemberContracts.filter(memberContract => memberContract.executor.agency === '學溢').length})
+            </span>
+          }
+        >
+          {
+            <SalesPerformanceTable
+              loading={loading}
+              memberContracts={managerMemberContracts.filter(
+                memberContract => memberContract.executor.agency === '學溢',
+              )}
+            />
+          }
+        </Tabs.TabPane>
+      </Tabs>
+    </div>
+  )
+}
+
+const SalesPerformanceTable: React.VFC<{
+  loading: boolean
+  activeManagerId?: string
+  memberContracts: MemberContract[]
+}> = ({ loading, activeManagerId, memberContracts }) => {
   const columns: ColumnsType<MemberContract> = [
     {
       title: '簽署日',
@@ -148,49 +259,23 @@ const SalesPerformancePage: React.VFC = () => {
   }
 
   return (
-    <AdminLayout>
-      <AdminPageTitle className="mb-4">
-        <Icon className="mr-3" component={() => <DollarOutlined />} />
-        <span className="mr-3">{formatMessage(salesMessages.label.salesPerformance)}</span>
-        <DatePicker className="mr-2" picker="month" onChange={date => date && setMonth(date.startOf('month'))} />
-        {currentMemberId && (
-          <Select
-            className="mr-3"
-            style={{ width: 200 }}
-            showSearch
-            allowClear
-            placeholder="業務顧問"
-            value={activeManagerId}
-            optionFilterProp="children"
-            onChange={setActiveManagerId}
-          >
-            {managers?.map(manager => (
-              <Select.Option key={manager?.id} value={manager?.id}>
-                {manager?.name}
-              </Select.Option>
-            ))}
-          </Select>
+    <TableWrapper>
+      <Table
+        title={() => (
+          <div className="d-flex">
+            <span className="mr-3">審核中：{new Intl.NumberFormat('zh').format(performance.agreed)}</span>
+            <span className="mr-3">審核通過：{new Intl.NumberFormat('zh').format(performance.approved)}</span>
+            <span className="mr-3">提出退費：{new Intl.NumberFormat('zh').format(performance.refundApplied)}</span>
+            <span className="mr-3">解約：{new Intl.NumberFormat('zh').format(performance.revoked)}</span>
+            <span className="mr-3">取消：{new Intl.NumberFormat('zh').format(performance.canceled)}</span>
+          </div>
         )}
-      </AdminPageTitle>
-
-      <TableWrapper>
-        <Table
-          title={() => (
-            <div className="d-flex">
-              <span className="mr-3">審核中：{new Intl.NumberFormat('zh').format(performance.agreed)}</span>
-              <span className="mr-3">審核通過：{new Intl.NumberFormat('zh').format(performance.approved)}</span>
-              <span className="mr-3">提出退費：{new Intl.NumberFormat('zh').format(performance.refundApplied)}</span>
-              <span className="mr-3">解約：{new Intl.NumberFormat('zh').format(performance.revoked)}</span>
-              <span className="mr-3">取消：{new Intl.NumberFormat('zh').format(performance.canceled)}</span>
-            </div>
-          )}
-          loading={loading}
-          pagination={false}
-          dataSource={managerMemberContracts}
-          columns={columns}
-        />
-      </TableWrapper>
-    </AdminLayout>
+        loading={loading}
+        pagination={false}
+        dataSource={memberContracts}
+        columns={columns}
+      />
+    </TableWrapper>
   )
 }
 
@@ -198,10 +283,14 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT, hasura.GET_MEMBER_CONTRACTVariables>(
     gql`
       query GET_MEMBER_CONTRACT($startedAt: timestamptz!, $endedAt: timestamptz!) {
-        xuemi_sales {
-          member {
-            id
-            name
+        sales: member(
+          where: { app_id: { _eq: "xuemi" }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }
+        ) {
+          id
+          name
+          email
+          member_properties(where: { property: { app_id: { _eq: "xuemi" }, name: { _eq: "機構" } } }) {
+            value
           }
         }
         member_contract(
@@ -236,7 +325,18 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
       },
     },
   )
-  const managers = useMemo(() => data?.xuemi_sales.map(v => v.member).filter(notEmpty) || [], [data?.xuemi_sales])
+  const managers = useMemo(
+    () =>
+      data?.sales.filter(notEmpty).map(m => {
+        return {
+          id: m.id,
+          name: m.name,
+          email: m.email,
+          agency: m.member_properties.length > 0 ? m.member_properties[0].value : '學米',
+        }
+      }) || [],
+    [data?.sales],
+  )
   const memberContracts: MemberContract[] = useMemo(
     () =>
       data?.member_contract
@@ -255,6 +355,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                 executor: {
                   id: executor?.id,
                   name: executor?.name,
+                  agency: executor?.agency,
                 },
                 member: {
                   id: v.member.id,
@@ -278,6 +379,8 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
         .flat() || [],
     [data?.member_contract],
   )
+
   return { loading, memberContracts, managers }
 }
+
 export default SalesPerformancePage
