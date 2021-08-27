@@ -576,7 +576,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <StyledAreaTitle>{formatMessage(memberMessages.label.target)}</StyledAreaTitle>
             <StyledAreaTitle>
               {member?.name}
-              <Link to={`/admin/members/${memberId}`} target="_blank">
+              <Link to={`/members/${memberId}`} target="_blank">
                 <ExternalLinkIcon className="ml-2" />
               </Link>
             </StyledAreaTitle>
