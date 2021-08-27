@@ -18,6 +18,7 @@ import MemberDescriptionBlock from './MemberDescriptionBlock'
 
 const paymentMethods = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'] as const
 const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30] as const
+const periodTypeByDay: { [key: string]: number } = { D: 1, W: 7, M: 30, Y: 365 }
 
 type FieldProps = {
   contractId: string
@@ -287,7 +288,10 @@ const MemberContractCreationPage: React.VFC = () => {
             products={products.filter(
               product =>
                 product.periodType === null ||
-                (product.periodAmount === period.amount && product.periodType === period.type),
+                product.periodAmount === null ||
+                (product.periodAmount === period.amount && product.periodType === period.type) ||
+                periodTypeByDay[product.periodType] * product.periodAmount <=
+                  periodTypeByDay[period.type] * period.amount,
             )}
             contracts={contracts}
             sales={sales}
@@ -316,7 +320,7 @@ const MemberContractCreationPage: React.VFC = () => {
 
 const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
   if (['D', 'W', 'M', 'Y'].includes(type)) {
-    return type.toLowerCase() as MomentPeriodType
+    return type === 'M' ? (type as MomentPeriodType) : (type.toLowerCase() as MomentPeriodType)
   }
 
   return type as MomentPeriodType
