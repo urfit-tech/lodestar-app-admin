@@ -6,7 +6,9 @@ import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import { UserRoleName } from 'lodestar-app-admin/src/components/common/UserRole'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import MemberCreationModal from 'lodestar-app-admin/src/components/member/MemberCreationModal'
 import MemberExportModal from 'lodestar-app-admin/src/components/member/MemberExportModal'
+import MemberImportModal from 'lodestar-app-admin/src/components/member/MemberImportModal'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
@@ -118,7 +120,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const [propertyFilter, setPropertyFilter] = useState<{
     [propertyId: string]: string | undefined
   }>({})
-  const { loadingMembers, members, loadMoreMembers } = useMemberCollection({
+  const { loadingMembers, members, loadMoreMembers, refetchMembers } = useMemberCollection({
     ...fieldFilter,
     properties: Object.keys(propertyFilter).map(propertyId => ({
       id: propertyId,
@@ -365,6 +367,10 @@ const MemberCollectionAdminPage: React.FC = () => {
             {formatMessage(memberMessages.label.field)}
           </StyledButton>
         </Popover>
+        <div className="mr-2">{permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}</div>
+        <div className="mr-2">
+          <MemberImportModal appId={appId} filter={fieldFilter} />
+        </div>
         <MemberExportModal
           appId="xuemi"
           filter={{
