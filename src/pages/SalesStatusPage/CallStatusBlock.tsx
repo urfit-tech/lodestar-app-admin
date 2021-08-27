@@ -11,6 +11,7 @@ const CallStatusBlock: React.VFC<{
   loading?: boolean
   error?: Error
 }> = ({ salesStatus, loading, error }) => {
+  const chartRef = useRef()
   if (error) {
     return null
   }
@@ -24,7 +25,7 @@ const CallStatusBlock: React.VFC<{
             const teamDuration = sum(status.data.map(d => d.callDuration.today)) / status.data.length
             return (
               <div key={status.name} style={{ width: `${Math.floor(100 / salesStatus.length)}%` }}>
-                <CallDurationLiquid name={status.name} value={teamDuration} loading={loading} />
+                <CallDurationLiquid name={status.name} value={teamDuration} loading={loading} chartRef={chartRef} />
               </div>
             )
           })}
@@ -37,12 +38,12 @@ const CallStatusBlock: React.VFC<{
   )
 }
 
-const CallDurationLiquid: React.VFC<{ name: string; value: number; loading?: boolean }> = ({
-  name,
-  value,
-  loading,
-}) => {
-  const chartRef = useRef()
+const CallDurationLiquid: React.VFC<{
+  name: string
+  value: number
+  loading?: boolean
+  chartRef: React.MutableRefObject<any>
+}> = ({ name, value, loading, chartRef }) => {
   const config: LiquidConfig = {
     percent: value / TARGET_CALL_DURATION,
     statistic: {
@@ -66,7 +67,7 @@ const CallDurationLiquid: React.VFC<{ name: string; value: number; loading?: boo
     },
     color: '#5B8FF9',
   }
-  return <Liquid loading={loading} {...config} chartRef={chartRef} />
+  return <Liquid loading={loading} {...config} chartRef={plot => (chartRef.current = plot)} />
 }
 
 const CallDurationTimesDualChart: React.VFC<{ salesStatus: SalesStatus; loading?: boolean }> = ({

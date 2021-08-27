@@ -240,7 +240,7 @@ const SalesPerformanceTable: React.VFC<{
     : memberContracts
 
   const isCanceled = (mc: MemberContract) => !!mc.canceledAt && !!mc.agreedAt && !mc.approvedAt
-  const isRevoked = (mc: MemberContract) => !!mc.revokedAt && !!mc.agreedAt
+  const isRevoked = (mc: MemberContract) => !!mc.revokedAt && !!mc.agreedAt && !mc.canceledAt
   const isRefundApplied = (mc: MemberContract) =>
     !!mc.refundAppliedAt && !!mc.agreedAt && !!mc.approvedAt && !mc.revokedAt
   const isApproved = (mc: MemberContract) => !!mc.approvedAt && !!mc.agreedAt && !mc.refundAppliedAt && !mc.revokedAt
