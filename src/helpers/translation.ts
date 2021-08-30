@@ -72,6 +72,8 @@ export const commonMessages = {
     backstage: { id: 'common.ui.backstage', defaultMessage: '管理後台' },
     ownerBackstage: { id: 'common.ui.ownerBackstage', defaultMessage: '平台管理者專區' },
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
+    createPermissionGroup: { id: 'common.ui.createPermissionGroup', defaultMessage: '新增權限組' },
+    editPermissionGroup: { id: 'common.ui.editPermissionGroup', defaultMessage: '編輯權限組' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -235,6 +237,8 @@ export const commonMessages = {
     material: { id: 'common.label.material', defaultMessage: '教材' },
     sku: { id: 'common.label.sku', defaultMessage: '料號（SKU)' },
     skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
+    roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
+    permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },

@@ -3,18 +3,13 @@ import { Button, Form, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { MemberAdminProps, UserRole } from '../../types/member'
 import PermissionInput from '../form/PermissionInput'
-
-const messages = defineMessages({
-  roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
-  permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
-})
 
 type FieldProps = {
   roleId: UserRole
@@ -86,7 +81,7 @@ const MemberPermissionForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(messages.roleSettings)} name="roleId">
+      <Form.Item label={formatMessage(commonMessages.label.roleSettings)} name="roleId">
         <Select>
           <Select.Option value="general-member">{formatMessage(commonMessages.label.generalMember)}</Select.Option>
           <Select.Option value="content-creator">{formatMessage(commonMessages.label.contentCreator)}</Select.Option>
@@ -96,7 +91,7 @@ const MemberPermissionForm: React.FC<{
 
       {enabledModules.permission && (
         <Form.Item
-          label={formatMessage(messages.permissionSettings)}
+          label={formatMessage(commonMessages.label.permissionSettings)}
           wrapperCol={{ md: { span: 20 } }}
           name="permissionIds"
         >
