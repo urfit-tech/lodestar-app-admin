@@ -4,10 +4,12 @@ import { Badge, Button, notification, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { prop, sortBy } from 'ramda'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
+import SalesMemberInput from '../../components/common/SalesMemberInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import SalesLeadTable from '../../components/sale/SalesLeadTable'
 import { useApp } from '../../contexts/AppContext'
@@ -18,10 +20,15 @@ import { salesMessages } from '../../helpers/translation'
 import { useSales } from '../../hooks/sales'
 import { Lead } from '../../types/sales'
 
+const StyledManagerBlock = styled.div`
+  width: 400px;
+`
+
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentMember } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const [saleId, setSaleId] = useState<string | undefined>()
   useMemberContractNotification()
   return (
     <AdminLayout>
@@ -30,12 +37,21 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        <div className="d-flex flex-column align-items-end">
-          {currentMemberId && <div>承辦編號：{currentMemberId}</div>}
-        </div>
+        {currentMember?.role === 'app-owner' ? (
+          <StyledManagerBlock className="d-flex flex-row align-items-center">
+            <span className="flex-shrink-0">承辦人：</span>
+            <SalesMemberInput value={saleId ? saleId : currentMember.id} onChange={value => setSaleId(value)} />
+          </StyledManagerBlock>
+        ) : currentMember?.role === 'general-member' ? (
+          <div>承辦編號：{currentMember.id}</div>
+        ) : null}
       </div>
       {currentMemberId ? (
-        <SalesLeadTabs activeKey={activeKey || 'idled'} managerId={currentMemberId} onActiveKeyChanged={setActiveKey} />
+        <SalesLeadTabs
+          activeKey={activeKey || 'idled'}
+          managerId={saleId ? saleId : currentMemberId}
+          onActiveKeyChanged={setActiveKey}
+        />
       ) : (
         <Skeleton active />
       )}

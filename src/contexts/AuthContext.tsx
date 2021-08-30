@@ -9,7 +9,14 @@ type AuthProps = {
   currentUserRole: UserRole
   currentMemberId: string | null
   authToken: string | null
-  currentMember: { name: string; username: string; email: string; pictureUrl: string } | null
+  currentMember: {
+    id: string
+    name: string
+    username: string
+    email: string
+    pictureUrl: string
+    role: UserRole
+  } | null
   permissions: { [key: string]: boolean }
   refreshToken?: () => Promise<void>
   register?: (data: { username: string; email: string; password: string }) => Promise<void>
@@ -48,10 +55,12 @@ export const AuthProvider: React.FC<{
         currentMemberId: payload && payload.sub,
         authToken,
         currentMember: payload && {
+          id: payload.sub,
           name: payload.name,
           username: payload.username,
           email: payload.email,
           pictureUrl: payload.pictureUrl,
+          role: payload.role,
         },
         permissions: payload?.permissions
           ? payload.permissions.reduce((accumulator: { [key: string]: boolean }, currentValue: string) => {
