@@ -242,12 +242,14 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(commonMessages.menu.blogAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: permissions.POST_ADMIN,
+          permissionIsAllowed:
+            currentUserRole === 'app-owner' || currentUserRole === 'content-creator' || permissions.POST_ADMIN,
           key: 'blog_collection',
           name: formatMessage(commonMessages.menu.blogPosts),
         },
         {
-          permissionIsAllowed: permissions.POST_CATEGORY_ADMIN,
+          permissionIsAllowed:
+            currentUserRole === 'app-owner' || currentUserRole === 'content-creator' || permissions.POST_CATEGORY_ADMIN,
           key: 'blog_category',
           name: formatMessage(commonMessages.menu.blogCategory),
         },
