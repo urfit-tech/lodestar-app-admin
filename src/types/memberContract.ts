@@ -9,6 +9,7 @@ export type DateRangeType =
 
 export type MemberContractProps = {
   id: string
+  authorId: string | null
   authorName: string | null
   member: {
     id: string | null

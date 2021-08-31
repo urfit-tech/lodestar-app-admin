@@ -74,7 +74,7 @@ const ExportContractCollectionButton: React.FC<{
         },
       })
 
-      const memberContracts: MemberContractProps[] =
+      const memberContracts: Omit<MemberContractProps, 'authorId'>[] =
         data?.xuemi_member_private_teach_contract.map(v => {
           const appointmentCouponPlanId: string | undefined = v.values?.coupons?.find(
             (coupon: any) => coupon?.coupon_code?.data?.coupon_plan?.data?.title === '學米諮詢券',

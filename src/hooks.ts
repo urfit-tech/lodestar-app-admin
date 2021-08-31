@@ -61,6 +61,7 @@ export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
   ) {
     xuemi_member_private_teach_contract(where: $condition, limit: $limit, order_by: $orderBy) {
       id
+      author_id
       author_name
       member_id
       member_name
@@ -156,18 +157,24 @@ export const useMemberContractCollection = ({
     { started_at: (sortOrder.startedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by },
   ]
 
-  const { loading, data, error, refetch, fetchMore } = useQuery<
-    hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
-    hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
-  >(GET_MEMBER_PRIVATE_TEACH_CONTRACT, {
-    variables: {
-      condition,
-      dateRangeCondition,
-      withAmount: true,
-      orderBy,
-      limit: 10,
+  const {
+    loading,
+    data,
+    error,
+    refetch,
+    //  fetchMore
+  } = useQuery<hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACT, hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables>(
+    GET_MEMBER_PRIVATE_TEACH_CONTRACT,
+    {
+      variables: {
+        condition,
+        dateRangeCondition,
+        withAmount: true,
+        orderBy,
+        // limit: 10,
+      },
     },
-  })
+  )
 
   const memberContracts: MemberContractProps[] =
     data?.xuemi_member_private_teach_contract.map(v => {
@@ -180,6 +187,7 @@ export const useMemberContractCollection = ({
 
       return {
         id: v.id,
+        authorId: v.author_id,
         authorName: v.author_name,
         member: {
           id: v.member_id,
@@ -244,82 +252,82 @@ export const useMemberContractCollection = ({
       }
     }) || []
 
-  const loadMoreMemberContracts =
-    (data?.xuemi_member_private_teach_contract_aggregate.aggregate?.count || 0) >= 10
-      ? () => {
-          const lastRecord =
-            data?.xuemi_member_private_teach_contract?.[data.xuemi_member_private_teach_contract.length - 1]
+  // const loadMoreMemberContracts =
+  //   (data?.xuemi_member_private_teach_contract_aggregate.aggregate?.count || 0) >= 10
+  //     ? () => {
+  //         const lastRecord =
+  //           data?.xuemi_member_private_teach_contract?.[data.xuemi_member_private_teach_contract.length - 1]
 
-          return fetchMore({
-            variables: {
-              orderBy,
-              condition: {
-                ...condition,
-                id: {
-                  _nin: data?.xuemi_member_private_teach_contract
-                    .filter(
-                      v =>
-                        v.agreed_at === lastRecord?.agreed_at ||
-                        v.revoked_at === lastRecord?.revoked_at ||
-                        v.started_at === lastRecord?.started_at,
-                    )
-                    .map(v => v.id),
-                },
-                agreed_at:
-                  sortOrder.agreedAt === 'descend'
-                    ? {
-                        _lte: lastRecord?.agreed_at,
-                        _gt: startedAt,
-                      }
-                    : sortOrder.agreedAt === 'ascend'
-                    ? {
-                        _gte: lastRecord?.agreed_at,
-                        _lt: endedAt,
-                      }
-                    : { _is_null: false },
-                revoked_at:
-                  sortOrder.revokedAt === 'descend'
-                    ? {
-                        _lte: lastRecord?.revoked_at,
-                        _gt: startedAt,
-                      }
-                    : sortOrder.revokedAt === 'ascend'
-                    ? {
-                        _gte: lastRecord?.revoked_at,
-                        _lt: endedAt,
-                      }
-                    : { _is_null: !isRevoked },
-                started_at:
-                  sortOrder.startedAt === 'descend'
-                    ? {
-                        _lte: lastRecord?.started_at,
-                        _gt: startedAt,
-                      }
-                    : sortOrder.startedAt === 'ascend'
-                    ? {
-                        _gte: lastRecord?.started_at,
-                        _lt: endedAt,
-                      }
-                    : undefined,
-              },
-              limit: 10,
-            },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) {
-                return prev
-              }
-              return Object.assign({}, prev, {
-                xuemi_member_private_teach_contract_aggregate:
-                  fetchMoreResult.xuemi_member_private_teach_contract_aggregate,
-                xuemi_member_private_teach_contract: [
-                  ...prev.xuemi_member_private_teach_contract,
-                  ...fetchMoreResult.xuemi_member_private_teach_contract,
-                ],
-              })
-            },
-          })
-        }
-      : undefined
+  //         return fetchMore({
+  //           variables: {
+  //             orderBy,
+  //             condition: {
+  //               ...condition,
+  //               id: {
+  //                 _nin: data?.xuemi_member_private_teach_contract
+  //                   .filter(
+  //                     v =>
+  //                       v.agreed_at === lastRecord?.agreed_at ||
+  //                       v.revoked_at === lastRecord?.revoked_at ||
+  //                       v.started_at === lastRecord?.started_at,
+  //                   )
+  //                   .map(v => v.id),
+  //               },
+  //               agreed_at:
+  //                 sortOrder.agreedAt === 'descend'
+  //                   ? {
+  //                       _lte: lastRecord?.agreed_at,
+  //                       _gt: startedAt,
+  //                     }
+  //                   : sortOrder.agreedAt === 'ascend'
+  //                   ? {
+  //                       _gte: lastRecord?.agreed_at,
+  //                       _lt: endedAt,
+  //                     }
+  //                   : { _is_null: false },
+  //               revoked_at:
+  //                 sortOrder.revokedAt === 'descend'
+  //                   ? {
+  //                       _lte: lastRecord?.revoked_at,
+  //                       _gt: startedAt,
+  //                     }
+  //                   : sortOrder.revokedAt === 'ascend'
+  //                   ? {
+  //                       _gte: lastRecord?.revoked_at,
+  //                       _lt: endedAt,
+  //                     }
+  //                   : { _is_null: !isRevoked },
+  //               started_at:
+  //                 sortOrder.startedAt === 'descend'
+  //                   ? {
+  //                       _lte: lastRecord?.started_at,
+  //                       _gt: startedAt,
+  //                     }
+  //                   : sortOrder.startedAt === 'ascend'
+  //                   ? {
+  //                       _gte: lastRecord?.started_at,
+  //                       _lt: endedAt,
+  //                     }
+  //                   : undefined,
+  //             },
+  //             limit: 10,
+  //           },
+  //           updateQuery: (prev, { fetchMoreResult }) => {
+  //             if (!fetchMoreResult) {
+  //               return prev
+  //             }
+  //             return Object.assign({}, prev, {
+  //               xuemi_member_private_teach_contract_aggregate:
+  //                 fetchMoreResult.xuemi_member_private_teach_contract_aggregate,
+  //               xuemi_member_private_teach_contract: [
+  //                 ...prev.xuemi_member_private_teach_contract,
+  //                 ...fetchMoreResult.xuemi_member_private_teach_contract,
+  //               ],
+  //             })
+  //           },
+  //         })
+  //       }
+  //     : undefined
 
   const memberContractPriceAmount: Record<StatusType, number> = {
     pending: data?.private_teach_pending_contract.aggregate?.sum?.price || 0,
@@ -335,7 +343,7 @@ export const useMemberContractCollection = ({
     memberContracts,
     memberContractPriceAmount,
     refetchMemberContracts: refetch,
-    loadMoreMemberContracts,
+    // loadMoreMemberContracts,
   }
 }
 
