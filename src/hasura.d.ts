@@ -130,6 +130,7 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_co
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract {
   __typename: "xuemi_member_private_teach_contract";
   id: any | null;
+  author_id: string | null;
   author_name: string | null;
   member_id: string | null;
   member_name: string | null;
@@ -1141,7 +1142,7 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
   id: string;
   created_at: any;
   /**
-   * NULL | inbound | outbound
+   * NULL | inbound | outbound | demo
    */
   type: string | null;
   /**
@@ -2311,7 +2312,7 @@ export interface GET_ASSIGNED_MEMBER_member_member_notes {
   id: string;
   author_id: string;
   /**
-   * NULL | inbound | outbound
+   * NULL | inbound | outbound | demo
    */
   type: string | null;
   /**
@@ -2498,7 +2499,7 @@ export interface GET_SALES_STATUS_member_note {
    */
   author: GET_SALES_STATUS_member_note_author;
   /**
-   * NULL | inbound | outbound
+   * NULL | inbound | outbound | demo
    */
   type: string | null;
   /**
@@ -2896,6 +2897,48 @@ export enum app_nav_update_column {
   parent_id = "parent_id",
   position = "position",
   tag = "tag",
+}
+
+/**
+ * unique or primary key constraints on table "app_page"
+ */
+export enum app_page_constraint {
+  app_page_path_app_id_key = "app_page_path_app_id_key",
+  app_page_pkey = "app_page_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "app_page_section"
+ */
+export enum app_page_section_constraint {
+  app_page_section_pkey = "app_page_section_pkey",
+}
+
+/**
+ * update columns of table "app_page_section"
+ */
+export enum app_page_section_update_column {
+  app_page_id = "app_page_id",
+  id = "id",
+  options = "options",
+  position = "position",
+  type = "type",
+}
+
+/**
+ * update columns of table "app_page"
+ */
+export enum app_page_update_column {
+  app_id = "app_id",
+  author_id = "author_id",
+  craft_data = "craft_data",
+  created_at = "created_at",
+  id = "id",
+  options = "options",
+  path = "path",
+  published_at = "published_at",
+  title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -4079,6 +4122,7 @@ export enum order_executor_update_column {
  * unique or primary key constraints on table "order_log"
  */
 export enum order_log_constraint {
+  order_log_custom_id_key = "order_log_custom_id_key",
   order_log_id_key = "order_log_id_key",
   order_log_pkey = "order_log_pkey",
 }
@@ -4089,6 +4133,7 @@ export enum order_log_constraint {
 export enum order_log_update_column {
   auto_renewed_at = "auto_renewed_at",
   created_at = "created_at",
+  custom_id = "custom_id",
   deliver_message = "deliver_message",
   delivered_at = "delivered_at",
   discount_coupon_id = "discount_coupon_id",
@@ -4237,6 +4282,7 @@ export enum package_update_column {
  * unique or primary key constraints on table "payment_log"
  */
 export enum payment_log_constraint {
+  payment_log_custom_no_key = "payment_log_custom_no_key",
   payment_log_no_key = "payment_log_no_key",
   payment_log_pkey = "payment_log_pkey",
 }
@@ -4246,6 +4292,7 @@ export enum payment_log_constraint {
  */
 export enum payment_log_update_column {
   created_at = "created_at",
+  custom_no = "custom_no",
   gateway = "gateway",
   method = "method",
   no = "no",
@@ -6724,6 +6771,151 @@ export interface app_order_by {
   updated_at?: order_by | null;
   vimeo_project_id?: order_by | null;
   voucher_plans_aggregate?: voucher_plan_aggregate_order_by | null;
+}
+
+/**
+ * order by aggregate values of table "app_page"
+ */
+export interface app_page_aggregate_order_by {
+  count?: order_by | null;
+  max?: app_page_max_order_by | null;
+  min?: app_page_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_page"
+ */
+export interface app_page_arr_rel_insert_input {
+  data: app_page_insert_input[];
+  on_conflict?: app_page_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_page". All fields are combined with a logical 'AND'.
+ */
+export interface app_page_bool_exp {
+  _and?: (app_page_bool_exp | null)[] | null;
+  _not?: app_page_bool_exp | null;
+  _or?: (app_page_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  app_page_sections?: app_page_section_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  craft_data?: jsonb_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  options?: jsonb_comparison_exp | null;
+  path?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_page"
+ */
+export interface app_page_insert_input {
+  app_id?: string | null;
+  app_page_sections?: app_page_section_arr_rel_insert_input | null;
+  author_id?: string | null;
+  craft_data?: any | null;
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  options?: any | null;
+  path?: string | null;
+  published_at?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "app_page"
+ */
+export interface app_page_max_order_by {
+  app_id?: order_by | null;
+  author_id?: order_by | null;
+  created_at?: order_by | null;
+  id?: order_by | null;
+  path?: order_by | null;
+  published_at?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "app_page"
+ */
+export interface app_page_min_order_by {
+  app_id?: order_by | null;
+  author_id?: order_by | null;
+  created_at?: order_by | null;
+  id?: order_by | null;
+  path?: order_by | null;
+  published_at?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "app_page"
+ */
+export interface app_page_obj_rel_insert_input {
+  data: app_page_insert_input;
+  on_conflict?: app_page_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "app_page"
+ */
+export interface app_page_on_conflict {
+  constraint: app_page_constraint;
+  update_columns: app_page_update_column[];
+  where?: app_page_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_page_section"
+ */
+export interface app_page_section_arr_rel_insert_input {
+  data: app_page_section_insert_input[];
+  on_conflict?: app_page_section_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_page_section". All fields are combined with a logical 'AND'.
+ */
+export interface app_page_section_bool_exp {
+  _and?: (app_page_section_bool_exp | null)[] | null;
+  _not?: app_page_section_bool_exp | null;
+  _or?: (app_page_section_bool_exp | null)[] | null;
+  app_page?: app_page_bool_exp | null;
+  app_page_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  position?: numeric_comparison_exp | null;
+  type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_page_section"
+ */
+export interface app_page_section_insert_input {
+  app_page?: app_page_obj_rel_insert_input | null;
+  app_page_id?: any | null;
+  id?: any | null;
+  options?: any | null;
+  position?: any | null;
+  type?: string | null;
+}
+
+/**
+ * on conflict condition type for table "app_page_section"
+ */
+export interface app_page_section_on_conflict {
+  constraint: app_page_section_constraint;
+  update_columns: app_page_section_update_column[];
+  where?: app_page_section_bool_exp | null;
 }
 
 /**
@@ -9549,6 +9741,7 @@ export interface member_bool_exp {
   activities?: activity_bool_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  app_pages?: app_page_bool_exp | null;
   appointment_plans?: appointment_plan_bool_exp | null;
   assignRulesBySourceMemberId?: xuemi_assign_rule_bool_exp | null;
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
@@ -9962,6 +10155,7 @@ export interface member_insert_input {
   activities?: activity_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  app_pages?: app_page_arr_rel_insert_input | null;
   appointment_plans?: appointment_plan_arr_rel_insert_input | null;
   assignRulesBySourceMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
@@ -10479,6 +10673,7 @@ export interface member_order_by {
   activities_aggregate?: activity_aggregate_order_by | null;
   app?: app_order_by | null;
   app_id?: order_by | null;
+  app_pages_aggregate?: app_page_aggregate_order_by | null;
   appointment_plans_aggregate?: appointment_plan_aggregate_order_by | null;
   assignRulesBySourceMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
@@ -12394,6 +12589,7 @@ export interface order_log_bool_exp {
   auto_renewed_at?: timestamptz_comparison_exp | null;
   coupon?: coupon_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  custom_id?: String_comparison_exp | null;
   deliver_message?: String_comparison_exp | null;
   delivered_at?: timestamptz_comparison_exp | null;
   discount_coupon_id?: uuid_comparison_exp | null;
@@ -12432,6 +12628,7 @@ export interface order_log_insert_input {
   auto_renewed_at?: any | null;
   coupon?: coupon_obj_rel_insert_input | null;
   created_at?: any | null;
+  custom_id?: string | null;
   deliver_message?: string | null;
   delivered_at?: any | null;
   discount_coupon_id?: any | null;
@@ -12469,6 +12666,7 @@ export interface order_log_insert_input {
 export interface order_log_max_order_by {
   auto_renewed_at?: order_by | null;
   created_at?: order_by | null;
+  custom_id?: order_by | null;
   deliver_message?: order_by | null;
   delivered_at?: order_by | null;
   discount_coupon_id?: order_by | null;
@@ -12493,6 +12691,7 @@ export interface order_log_max_order_by {
 export interface order_log_min_order_by {
   auto_renewed_at?: order_by | null;
   created_at?: order_by | null;
+  custom_id?: order_by | null;
   deliver_message?: order_by | null;
   delivered_at?: order_by | null;
   discount_coupon_id?: order_by | null;
@@ -12986,6 +13185,7 @@ export interface payment_log_bool_exp {
   _not?: payment_log_bool_exp | null;
   _or?: (payment_log_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
+  custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
   method?: String_comparison_exp | null;
   no?: numeric_comparison_exp | null;
@@ -13005,6 +13205,7 @@ export interface payment_log_bool_exp {
  */
 export interface payment_log_insert_input {
   created_at?: any | null;
+  custom_no?: string | null;
   gateway?: string | null;
   method?: string | null;
   no?: any | null;
