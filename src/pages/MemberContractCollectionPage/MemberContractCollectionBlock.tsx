@@ -90,7 +90,7 @@ export const MemberContractCollectionBlock: React.FC<{
     errorMemberContracts,
     memberContracts,
     memberContractPriceAmount,
-    loadMoreMemberContracts,
+    // loadMoreMemberContracts,
     refetchMemberContracts,
   } = useMemberContractCollection({
     ...filter,
@@ -115,7 +115,14 @@ export const MemberContractCollectionBlock: React.FC<{
     'orderExecutors',
   ])
 
-  const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId)
+  const displayMemberContracts =
+    currentUserRole === 'app-owner'
+      ? memberContracts
+      : memberContracts.filter(
+          mc =>
+            mc.authorId === currentMemberId || mc.orderExecutors?.map(v => v.memberId)?.includes(currentMemberId || ''),
+        )
+  const activeMemberContract = displayMemberContracts.find(mc => mc.id === activeMemberContractId)
 
   const priceAmountList = map(([status, amount]) => {
     const statusConverter = {
@@ -520,7 +527,7 @@ export const MemberContractCollectionBlock: React.FC<{
               <Table<MemberContractProps>
                 columns={columns.filter(column => visibleFields.includes(column.key as string))}
                 loading={loadingMemberContracts || !!errorMemberContracts || isLoading}
-                dataSource={memberContracts}
+                dataSource={displayMemberContracts}
                 scroll={{ x: true }}
                 rowKey={row => row.id}
                 rowClassName={permissions.CONTRACT_VALUE_VIEW ? 'cursor-pointer' : undefined}
@@ -547,7 +554,7 @@ export const MemberContractCollectionBlock: React.FC<{
           )}
         />
 
-        {loadMoreMemberContracts && (
+        {/* {loadMoreMemberContracts && (
           <div className="text-center mt-4">
             <Button
               loading={isLoading}
@@ -561,7 +568,7 @@ export const MemberContractCollectionBlock: React.FC<{
               {formatMessage(commonMessages.ui.showMore)}
             </Button>
           </div>
-        )}
+        )} */}
       </AdminCard>
     </>
   )
