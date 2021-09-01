@@ -1,6 +1,8 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { useApp } from '../contexts/AppContext'
 import hasura from '../hasura'
+import { PermissionGroupProps } from '../types/general'
 
 export const useDefaultPermissions = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ROLE_PERMISSION>(gql`
@@ -36,11 +38,11 @@ export const useDefaultPermissions = () => {
 
 export const usePermissionGroupsCollection = (appId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    hasura.GET_PERMISSION_GROUPS,
-    hasura.GET_PERMISSION_GROUPSVariables
+    hasura.GET_PERMISSION_GROUPS_Collection,
+    hasura.GET_PERMISSION_GROUPS_CollectionVariables
   >(
     gql`
-      query GET_PERMISSION_GROUPS($appId: String) {
+      query GET_PERMISSION_GROUPS_Collection($appId: String) {
         permission_group(where: { app_id: { _eq: $appId } }) {
           id
           name
@@ -70,5 +72,46 @@ export const usePermissionGroupsCollection = (appId: string) => {
     errorPermissionGroups: error,
     permissionGroups,
     refetchPermissionGroups: refetch,
+  }
+}
+
+export const usePermissionGroup = () => {
+  const { id: appId } = useApp()
+  const { loading, data, error, refetch } = useQuery<
+    hasura.GET_PERMISSION_GROUPS,
+    hasura.GET_PERMISSION_GROUPSVariables
+  >(
+    gql`
+      query GET_PERMISSION_GROUPS($appId: String!) {
+        permission_group(where: { app_id: { _eq: $appId } }) {
+          id
+          name
+          permission_group_permissions {
+            id
+            permission_id
+          }
+        }
+      }
+    `,
+    {
+      variables: { appId },
+    },
+  )
+
+  const permissionGroups: PermissionGroupProps[] =
+    data?.permission_group.map(v => ({
+      id: v.id,
+      name: v.name,
+      permissionGroupPermission: v.permission_group_permissions.map(permissionGroupsPermissions => ({
+        id: permissionGroupsPermissions.id,
+        permissionId: permissionGroupsPermissions.permission_id,
+      })),
+    })) || []
+
+  return {
+    loading,
+    permissionGroups,
+    error,
+    refetch,
   }
 }

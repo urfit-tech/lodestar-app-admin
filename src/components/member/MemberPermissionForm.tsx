@@ -7,13 +7,15 @@ import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/translation'
 import { useDefaultPermissions } from '../../hooks/permission'
 import { MemberAdminProps, UserRole } from '../../types/member'
+import PermissionGroupSelector from '../form/PermissionGroupSelector'
 import PermissionInput from '../form/PermissionInput'
 
 type FieldProps = {
   roleId: UserRole
+  permissionGroupIds?: string[]
   permissionIds?: string[]
 }
 
@@ -41,6 +43,11 @@ const MemberPermissionForm: React.FC<{
       variables: {
         memberId: memberAdmin.id,
         role: values.roleId,
+        permissionGroups:
+          values.permissionGroupIds?.map(permissionGroupId => ({
+            member_id: memberAdmin.id,
+            permission_group_id: permissionGroupId,
+          })) || [],
         permissions:
           values.permissionIds?.map((permissionId: string) => ({
             member_id: memberAdmin.id,
@@ -67,6 +74,7 @@ const MemberPermissionForm: React.FC<{
       initialValues={{
         roleId: memberAdmin.role,
         permissionIds: [...(defaultRolePermissions[memberAdmin.role] || []), ...memberAdmin.permissionIds],
+        permissionGroupIds: [...(memberAdmin.permissionGroups?.map(v => v.id) || [])],
       }}
       onValuesChange={values => {
         if (values.roleId) {
@@ -88,6 +96,10 @@ const MemberPermissionForm: React.FC<{
           <Select.Option value="content-creator">{formatMessage(commonMessages.label.contentCreator)}</Select.Option>
           <Select.Option value="app-owner">{formatMessage(commonMessages.label.appOwner)}</Select.Option>
         </Select>
+      </Form.Item>
+
+      <Form.Item label={formatMessage(permissionGroupsAdminMessages.label.permissionGroup)} name="permissionGroupIds">
+        <PermissionGroupSelector />
       </Form.Item>
 
       {enabledModules.permission && (
@@ -116,9 +128,16 @@ const UPDATE_MEMBER_ROLE = gql`
   mutation UPDATE_MEMBER_ROLE(
     $memberId: String!
     $role: String
+    $permissionGroups: [member_permission_group_insert_input!]!
     $permissions: [member_permission_extra_insert_input!]!
   ) {
     update_member(where: { id: { _eq: $memberId } }, _set: { role: $role }) {
+      affected_rows
+    }
+    delete_member_permission_group(where: { member_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    insert_member_permission_group(objects: $permissionGroups) {
       affected_rows
     }
     delete_member_permission_extra(where: { member_id: { _eq: $memberId } }) {

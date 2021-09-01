@@ -1407,7 +1407,9 @@ export const permissionGroupsAdminMessages = {
     editPermissionGroup: { id: 'permissionAdmin.ui.editPermissionGroup', defaultMessage: '編輯權限組' },
     deletePermissionGroup: { id: 'permissionAdmin.ui.deletePermissionGroup', defaultMessage: '刪除權限組' },
   }),
-  label: defineMessages({}),
+  label: defineMessages({
+    permissionGroup: { id: 'permissionAdmin.label.permissionGroup', defaultMessage: '權限組' },
+  }),
   text: defineMessages({
     deletePermissionGroupConfirmation: {
       id: 'permissionAdmin.text.deletePermissionGroupConfirmation',

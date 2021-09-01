@@ -173,6 +173,12 @@ export const useMemberAdmin = (memberId: string) => {
               name
             }
           }
+          member_permission_groups {
+            permission_group {
+              id
+              name
+            }
+          }
         }
       }
     `,
@@ -258,6 +264,10 @@ export const useMemberAdmin = (memberId: string) => {
           categories: data.member_by_pk.member_categories.map(v => ({
             id: v.category.id,
             name: v.category.name,
+          })),
+          permissionGroups: data.member_by_pk.member_permission_groups.map(v => ({
+            id: v.permission_group.id,
+            name: v.permission_group.name,
           })),
         }
 

@@ -95,3 +95,12 @@ export type OrderLogProps = {
   orderDiscounts: OrderDiscountProps[]
   orderExecutors: string[]
 }
+
+export type PermissionGroupProps = {
+  id: string
+  name: string
+  permissionGroupPermission?: {
+    id: string
+    permissionId: string
+  }[]
+}

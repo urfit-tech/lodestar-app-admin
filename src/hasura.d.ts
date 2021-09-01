@@ -2659,6 +2659,22 @@ export interface UPDATE_MEMBER_ROLE_update_member {
   affected_rows: number;
 }
 
+export interface UPDATE_MEMBER_ROLE_delete_member_permission_group {
+  __typename: "member_permission_group_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ROLE_insert_member_permission_group {
+  __typename: "member_permission_group_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MEMBER_ROLE_delete_member_permission_extra {
   __typename: "member_permission_extra_mutation_response";
   /**
@@ -2681,6 +2697,14 @@ export interface UPDATE_MEMBER_ROLE {
    */
   update_member: UPDATE_MEMBER_ROLE_update_member | null;
   /**
+   * delete data from the table: "member_permission_group"
+   */
+  delete_member_permission_group: UPDATE_MEMBER_ROLE_delete_member_permission_group | null;
+  /**
+   * insert data into the table: "member_permission_group"
+   */
+  insert_member_permission_group: UPDATE_MEMBER_ROLE_insert_member_permission_group | null;
+  /**
    * delete data from the table: "member_permission_extra"
    */
   delete_member_permission_extra: UPDATE_MEMBER_ROLE_delete_member_permission_extra | null;
@@ -2693,6 +2717,7 @@ export interface UPDATE_MEMBER_ROLE {
 export interface UPDATE_MEMBER_ROLEVariables {
   memberId: string;
   role?: string | null;
+  permissionGroups: member_permission_group_insert_input[];
   permissions: member_permission_extra_insert_input[];
 }
 
@@ -9440,6 +9465,20 @@ export interface GET_MEMBER_ADMIN_member_by_pk_member_categories {
   category: GET_MEMBER_ADMIN_member_by_pk_member_categories_category;
 }
 
+export interface GET_MEMBER_ADMIN_member_by_pk_member_permission_groups_permission_group {
+  __typename: "permission_group";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_ADMIN_member_by_pk_member_permission_groups {
+  __typename: "member_permission_group";
+  /**
+   * An object relationship
+   */
+  permission_group: GET_MEMBER_ADMIN_member_by_pk_member_permission_groups_permission_group;
+}
+
 export interface GET_MEMBER_ADMIN_member_by_pk {
   __typename: "member";
   id: string;
@@ -9499,6 +9538,10 @@ export interface GET_MEMBER_ADMIN_member_by_pk {
    * An array relationship
    */
   member_categories: GET_MEMBER_ADMIN_member_by_pk_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_permission_groups: GET_MEMBER_ADMIN_member_by_pk_member_permission_groups[];
 }
 
 export interface GET_MEMBER_ADMIN {
@@ -10494,6 +10537,42 @@ export interface GET_ROLE_PERMISSION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PERMISSION_GROUPS_Collection
+// ====================================================
+
+export interface GET_PERMISSION_GROUPS_Collection_permission_group_permission_group_permissions {
+  __typename: "permission_group_permission";
+  id: any;
+  permission_id: string;
+}
+
+export interface GET_PERMISSION_GROUPS_Collection_permission_group {
+  __typename: "permission_group";
+  id: any;
+  name: string;
+  /**
+   * An array relationship
+   */
+  permission_group_permissions: GET_PERMISSION_GROUPS_Collection_permission_group_permission_group_permissions[];
+}
+
+export interface GET_PERMISSION_GROUPS_Collection {
+  /**
+   * fetch data from the table: "permission_group"
+   */
+  permission_group: GET_PERMISSION_GROUPS_Collection_permission_group[];
+}
+
+export interface GET_PERMISSION_GROUPS_CollectionVariables {
+  appId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PERMISSION_GROUPS
 // ====================================================
 
@@ -10521,7 +10600,7 @@ export interface GET_PERMISSION_GROUPS {
 }
 
 export interface GET_PERMISSION_GROUPSVariables {
-  appId?: string | null;
+  appId: string;
 }
 
 /* tslint:disable */
@@ -14958,6 +15037,24 @@ export enum member_permission_extra_update_column {
   id = "id",
   member_id = "member_id",
   permission_id = "permission_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "member_permission_group"
+ */
+export enum member_permission_group_constraint {
+  member_permission_group_pkey = "member_permission_group_pkey",
+}
+
+/**
+ * update columns of table "member_permission_group"
+ */
+export enum member_permission_group_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  permission_group_id = "permission_group_id",
   updated_at = "updated_at",
 }
 
@@ -21685,6 +21782,7 @@ export interface member_bool_exp {
   member_notes?: member_note_bool_exp | null;
   member_oauths?: member_oauth_bool_exp | null;
   member_permission_extras?: member_permission_extra_bool_exp | null;
+  member_permission_groups?: member_permission_group_bool_exp | null;
   member_permissions?: member_permission_bool_exp | null;
   member_phones?: member_phone_bool_exp | null;
   member_properties?: member_property_bool_exp | null;
@@ -22120,6 +22218,7 @@ export interface member_insert_input {
   member_notes?: member_note_arr_rel_insert_input | null;
   member_oauths?: member_oauth_arr_rel_insert_input | null;
   member_permission_extras?: member_permission_extra_arr_rel_insert_input | null;
+  member_permission_groups?: member_permission_group_arr_rel_insert_input | null;
   member_phones?: member_phone_arr_rel_insert_input | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
@@ -22659,6 +22758,7 @@ export interface member_order_by {
   member_notes_aggregate?: member_note_aggregate_order_by | null;
   member_oauths_aggregate?: member_oauth_aggregate_order_by | null;
   member_permission_extras_aggregate?: member_permission_extra_aggregate_order_by | null;
+  member_permission_groups_aggregate?: member_permission_group_aggregate_order_by | null;
   member_permissions_aggregate?: member_permission_aggregate_order_by | null;
   member_phones_aggregate?: member_phone_aggregate_order_by | null;
   member_properties_aggregate?: member_property_aggregate_order_by | null;
@@ -22798,6 +22898,83 @@ export interface member_permission_extra_on_conflict {
   constraint: member_permission_extra_constraint;
   update_columns: member_permission_extra_update_column[];
   where?: member_permission_extra_bool_exp | null;
+}
+
+/**
+ * order by aggregate values of table "member_permission_group"
+ */
+export interface member_permission_group_aggregate_order_by {
+  count?: order_by | null;
+  max?: member_permission_group_max_order_by | null;
+  min?: member_permission_group_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_permission_group"
+ */
+export interface member_permission_group_arr_rel_insert_input {
+  data: member_permission_group_insert_input[];
+  on_conflict?: member_permission_group_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_permission_group". All fields are combined with a logical 'AND'.
+ */
+export interface member_permission_group_bool_exp {
+  _and?: (member_permission_group_bool_exp | null)[] | null;
+  _not?: member_permission_group_bool_exp | null;
+  _or?: (member_permission_group_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  permission_group?: permission_group_bool_exp | null;
+  permission_group_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_permission_group"
+ */
+export interface member_permission_group_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  permission_group?: permission_group_obj_rel_insert_input | null;
+  permission_group_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "member_permission_group"
+ */
+export interface member_permission_group_max_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  permission_group_id?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "member_permission_group"
+ */
+export interface member_permission_group_min_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  permission_group_id?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * on conflict condition type for table "member_permission_group"
+ */
+export interface member_permission_group_on_conflict {
+  constraint: member_permission_group_constraint;
+  update_columns: member_permission_group_update_column[];
+  where?: member_permission_group_bool_exp | null;
 }
 
 /**
