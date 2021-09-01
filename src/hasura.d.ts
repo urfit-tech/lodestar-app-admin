@@ -2702,29 +2702,6 @@ export interface UPDATE_MEMBER_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ROLE_PERMISSION
-// ====================================================
-
-export interface GET_ROLE_PERMISSION_role_permission {
-  __typename: "role_permission";
-  id: any;
-  role_id: string;
-  permission_id: string;
-}
-
-export interface GET_ROLE_PERMISSION {
-  /**
-   * fetch data from the table: "role_permission"
-   */
-  role_permission: GET_ROLE_PERMISSION_role_permission[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
 // ====================================================
 
@@ -3830,6 +3807,182 @@ export interface READ_NOTIFICATION {
 export interface READ_NOTIFICATIONVariables {
   notificationId: any;
   readAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PERMISSION_GROUP
+// ====================================================
+
+export interface INSERT_PERMISSION_GROUP_insert_permission_group_returning {
+  __typename: "permission_group";
+  id: any;
+}
+
+export interface INSERT_PERMISSION_GROUP_insert_permission_group {
+  __typename: "permission_group_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PERMISSION_GROUP_insert_permission_group_returning[];
+}
+
+export interface INSERT_PERMISSION_GROUP {
+  /**
+   * insert data into the table: "permission_group"
+   */
+  insert_permission_group: INSERT_PERMISSION_GROUP_insert_permission_group | null;
+}
+
+export interface INSERT_PERMISSION_GROUPVariables {
+  appId?: string | null;
+  name?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PERMISSION_GROUP
+// ====================================================
+
+export interface UPDATE_PERMISSION_GROUP_update_permission_group {
+  __typename: "permission_group_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PERMISSION_GROUP {
+  /**
+   * update data of the table: "permission_group"
+   */
+  update_permission_group: UPDATE_PERMISSION_GROUP_update_permission_group | null;
+}
+
+export interface UPDATE_PERMISSION_GROUPVariables {
+  id?: any | null;
+  name?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PERMISSION_GROUP_PERMISSION
+// ====================================================
+
+export interface INSERT_PERMISSION_GROUP_PERMISSION_insert_permission_group_permission {
+  __typename: "permission_group_permission_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PERMISSION_GROUP_PERMISSION {
+  /**
+   * insert data into the table: "permission_group_permission"
+   */
+  insert_permission_group_permission: INSERT_PERMISSION_GROUP_PERMISSION_insert_permission_group_permission | null;
+}
+
+export interface INSERT_PERMISSION_GROUP_PERMISSIONVariables {
+  permission_group: permission_group_permission_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PERMISSION_GROUP_PERMISSION
+// ====================================================
+
+export interface UPDATE_PERMISSION_GROUP_PERMISSION_delete_permission_group_permission {
+  __typename: "permission_group_permission_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PERMISSION_GROUP_PERMISSION_insert_permission_group_permission {
+  __typename: "permission_group_permission_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PERMISSION_GROUP_PERMISSION {
+  /**
+   * delete data from the table: "permission_group_permission"
+   */
+  delete_permission_group_permission: UPDATE_PERMISSION_GROUP_PERMISSION_delete_permission_group_permission | null;
+  /**
+   * insert data into the table: "permission_group_permission"
+   */
+  insert_permission_group_permission: UPDATE_PERMISSION_GROUP_PERMISSION_insert_permission_group_permission | null;
+}
+
+export interface UPDATE_PERMISSION_GROUP_PERMISSIONVariables {
+  permissionGroupPermissionId: any;
+  permission_group: permission_group_permission_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PERMISSION_GROUP
+// ====================================================
+
+export interface DELETE_PERMISSION_GROUP_delete_permission_group_permission {
+  __typename: "permission_group_permission_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PERMISSION_GROUP_delete_permission_group {
+  __typename: "permission_group_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PERMISSION_GROUP {
+  /**
+   * delete data from the table: "permission_group_permission"
+   */
+  delete_permission_group_permission: DELETE_PERMISSION_GROUP_delete_permission_group_permission | null;
+  /**
+   * delete data from the table: "permission_group"
+   */
+  delete_permission_group: DELETE_PERMISSION_GROUP_delete_permission_group | null;
+}
+
+export interface DELETE_PERMISSION_GROUPVariables {
+  id: any;
 }
 
 /* tslint:disable */
@@ -9504,7 +9657,7 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
   id: string;
   created_at: any;
   /**
-   * NULL | inbound | outbound
+   * NULL | inbound | outbound | demo
    */
   type: string | null;
   /**
@@ -10310,6 +10463,65 @@ export interface GET_ORDER_LOG_STATUS {
    * fetch data from the table: "order_log"
    */
   order_log: GET_ORDER_LOG_STATUS_order_log[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ROLE_PERMISSION
+// ====================================================
+
+export interface GET_ROLE_PERMISSION_role_permission {
+  __typename: "role_permission";
+  id: any;
+  role_id: string;
+  permission_id: string;
+}
+
+export interface GET_ROLE_PERMISSION {
+  /**
+   * fetch data from the table: "role_permission"
+   */
+  role_permission: GET_ROLE_PERMISSION_role_permission[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PERMISSION_GROUPS
+// ====================================================
+
+export interface GET_PERMISSION_GROUPS_permission_group_permission_group_permissions {
+  __typename: "permission_group_permission";
+  id: any;
+  permission_id: string;
+}
+
+export interface GET_PERMISSION_GROUPS_permission_group {
+  __typename: "permission_group";
+  id: any;
+  name: string;
+  /**
+   * An array relationship
+   */
+  permission_group_permissions: GET_PERMISSION_GROUPS_permission_group_permission_group_permissions[];
+}
+
+export interface GET_PERMISSION_GROUPS {
+  /**
+   * fetch data from the table: "permission_group"
+   */
+  permission_group: GET_PERMISSION_GROUPS_permission_group[];
+}
+
+export interface GET_PERMISSION_GROUPSVariables {
+  appId?: string | null;
 }
 
 /* tslint:disable */
@@ -13966,6 +14178,48 @@ export enum app_nav_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "app_page"
+ */
+export enum app_page_constraint {
+  app_page_path_app_id_key = "app_page_path_app_id_key",
+  app_page_pkey = "app_page_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "app_page_section"
+ */
+export enum app_page_section_constraint {
+  app_page_section_pkey = "app_page_section_pkey",
+}
+
+/**
+ * update columns of table "app_page_section"
+ */
+export enum app_page_section_update_column {
+  app_page_id = "app_page_id",
+  id = "id",
+  options = "options",
+  position = "position",
+  type = "type",
+}
+
+/**
+ * update columns of table "app_page"
+ */
+export enum app_page_update_column {
+  app_id = "app_id",
+  craft_data = "craft_data",
+  created_at = "created_at",
+  editor_id = "editor_id",
+  id = "id",
+  options = "options",
+  path = "path",
+  published_at = "published_at",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "app_secret"
  */
 export enum app_secret_constraint {
@@ -15146,6 +15400,7 @@ export enum order_executor_update_column {
  * unique or primary key constraints on table "order_log"
  */
 export enum order_log_constraint {
+  order_log_custom_id_key = "order_log_custom_id_key",
   order_log_id_key = "order_log_id_key",
   order_log_pkey = "order_log_pkey",
 }
@@ -15156,6 +15411,7 @@ export enum order_log_constraint {
 export enum order_log_update_column {
   auto_renewed_at = "auto_renewed_at",
   created_at = "created_at",
+  custom_id = "custom_id",
   deliver_message = "deliver_message",
   delivered_at = "delivered_at",
   discount_coupon_id = "discount_coupon_id",
@@ -15304,6 +15560,7 @@ export enum package_update_column {
  * unique or primary key constraints on table "payment_log"
  */
 export enum payment_log_constraint {
+  payment_log_custom_no_key = "payment_log_custom_no_key",
   payment_log_no_key = "payment_log_no_key",
   payment_log_pkey = "payment_log_pkey",
 }
@@ -15313,6 +15570,7 @@ export enum payment_log_constraint {
  */
 export enum payment_log_update_column {
   created_at = "created_at",
+  custom_no = "custom_no",
   gateway = "gateway",
   method = "method",
   no = "no",
@@ -15330,6 +15588,44 @@ export enum payment_log_update_column {
  */
 export enum permission_constraint {
   permission_pkey = "permission_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "permission_group"
+ */
+export enum permission_group_constraint {
+  permission_group_name_app_id_key = "permission_group_name_app_id_key",
+  permission_group_pkey = "permission_group_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "permission_group_permission"
+ */
+export enum permission_group_permission_constraint {
+  permission_group_permission_permission_group_id_permission_id_k = "permission_group_permission_permission_group_id_permission_id_k",
+  permission_group_permission_pkey = "permission_group_permission_pkey",
+}
+
+/**
+ * update columns of table "permission_group_permission"
+ */
+export enum permission_group_permission_update_column {
+  created_at = "created_at",
+  id = "id",
+  permission_group_id = "permission_group_id",
+  permission_id = "permission_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * update columns of table "permission_group"
+ */
+export enum permission_group_update_column {
+  app_id = "app_id",
+  created_at = "created_at",
+  id = "id",
+  name = "name",
+  updated_at = "updated_at",
 }
 
 /**
@@ -17820,6 +18116,151 @@ export interface app_order_by {
   updated_at?: order_by | null;
   vimeo_project_id?: order_by | null;
   voucher_plans_aggregate?: voucher_plan_aggregate_order_by | null;
+}
+
+/**
+ * order by aggregate values of table "app_page"
+ */
+export interface app_page_aggregate_order_by {
+  count?: order_by | null;
+  max?: app_page_max_order_by | null;
+  min?: app_page_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_page"
+ */
+export interface app_page_arr_rel_insert_input {
+  data: app_page_insert_input[];
+  on_conflict?: app_page_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_page". All fields are combined with a logical 'AND'.
+ */
+export interface app_page_bool_exp {
+  _and?: (app_page_bool_exp | null)[] | null;
+  _not?: app_page_bool_exp | null;
+  _or?: (app_page_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  app_page_sections?: app_page_section_bool_exp | null;
+  craft_data?: jsonb_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  editor?: member_bool_exp | null;
+  editor_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  path?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_page"
+ */
+export interface app_page_insert_input {
+  app_id?: string | null;
+  app_page_sections?: app_page_section_arr_rel_insert_input | null;
+  craft_data?: any | null;
+  created_at?: any | null;
+  editor?: member_obj_rel_insert_input | null;
+  editor_id?: string | null;
+  id?: any | null;
+  options?: any | null;
+  path?: string | null;
+  published_at?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "app_page"
+ */
+export interface app_page_max_order_by {
+  app_id?: order_by | null;
+  created_at?: order_by | null;
+  editor_id?: order_by | null;
+  id?: order_by | null;
+  path?: order_by | null;
+  published_at?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "app_page"
+ */
+export interface app_page_min_order_by {
+  app_id?: order_by | null;
+  created_at?: order_by | null;
+  editor_id?: order_by | null;
+  id?: order_by | null;
+  path?: order_by | null;
+  published_at?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "app_page"
+ */
+export interface app_page_obj_rel_insert_input {
+  data: app_page_insert_input;
+  on_conflict?: app_page_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "app_page"
+ */
+export interface app_page_on_conflict {
+  constraint: app_page_constraint;
+  update_columns: app_page_update_column[];
+  where?: app_page_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_page_section"
+ */
+export interface app_page_section_arr_rel_insert_input {
+  data: app_page_section_insert_input[];
+  on_conflict?: app_page_section_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_page_section". All fields are combined with a logical 'AND'.
+ */
+export interface app_page_section_bool_exp {
+  _and?: (app_page_section_bool_exp | null)[] | null;
+  _not?: app_page_section_bool_exp | null;
+  _or?: (app_page_section_bool_exp | null)[] | null;
+  app_page?: app_page_bool_exp | null;
+  app_page_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  position?: numeric_comparison_exp | null;
+  type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_page_section"
+ */
+export interface app_page_section_insert_input {
+  app_page?: app_page_obj_rel_insert_input | null;
+  app_page_id?: any | null;
+  id?: any | null;
+  options?: any | null;
+  position?: any | null;
+  type?: string | null;
+}
+
+/**
+ * on conflict condition type for table "app_page_section"
+ */
+export interface app_page_section_on_conflict {
+  constraint: app_page_section_constraint;
+  update_columns: app_page_section_update_column[];
+  where?: app_page_section_bool_exp | null;
 }
 
 /**
@@ -21202,6 +21643,7 @@ export interface member_bool_exp {
   activities?: activity_bool_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  app_pages?: app_page_bool_exp | null;
   appointment_plans?: appointment_plan_bool_exp | null;
   assignRulesBySourceMemberId?: xuemi_assign_rule_bool_exp | null;
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
@@ -21637,6 +22079,7 @@ export interface member_insert_input {
   activities?: activity_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  app_pages?: app_page_arr_rel_insert_input | null;
   appointment_plans?: appointment_plan_arr_rel_insert_input | null;
   assignRulesBySourceMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
@@ -22174,6 +22617,7 @@ export interface member_order_by {
   activities_aggregate?: activity_aggregate_order_by | null;
   app?: app_order_by | null;
   app_id?: order_by | null;
+  app_pages_aggregate?: app_page_aggregate_order_by | null;
   appointment_plans_aggregate?: appointment_plan_aggregate_order_by | null;
   assignRulesBySourceMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
@@ -24210,6 +24654,7 @@ export interface order_log_bool_exp {
   auto_renewed_at?: timestamptz_comparison_exp | null;
   coupon?: coupon_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  custom_id?: String_comparison_exp | null;
   deliver_message?: String_comparison_exp | null;
   delivered_at?: timestamptz_comparison_exp | null;
   discount_coupon_id?: uuid_comparison_exp | null;
@@ -24309,6 +24754,7 @@ export interface order_log_insert_input {
   auto_renewed_at?: any | null;
   coupon?: coupon_obj_rel_insert_input | null;
   created_at?: any | null;
+  custom_id?: string | null;
   deliver_message?: string | null;
   delivered_at?: any | null;
   discount_coupon_id?: any | null;
@@ -24346,6 +24792,7 @@ export interface order_log_insert_input {
 export interface order_log_max_order_by {
   auto_renewed_at?: order_by | null;
   created_at?: order_by | null;
+  custom_id?: order_by | null;
   deliver_message?: order_by | null;
   delivered_at?: order_by | null;
   discount_coupon_id?: order_by | null;
@@ -24370,6 +24817,7 @@ export interface order_log_max_order_by {
 export interface order_log_min_order_by {
   auto_renewed_at?: order_by | null;
   created_at?: order_by | null;
+  custom_id?: order_by | null;
   deliver_message?: order_by | null;
   delivered_at?: order_by | null;
   discount_coupon_id?: order_by | null;
@@ -24412,6 +24860,7 @@ export interface order_log_order_by {
   auto_renewed_at?: order_by | null;
   coupon?: coupon_order_by | null;
   created_at?: order_by | null;
+  custom_id?: order_by | null;
   deliver_message?: order_by | null;
   delivered_at?: order_by | null;
   discount_coupon_id?: order_by | null;
@@ -25150,6 +25599,7 @@ export interface payment_log_bool_exp {
   _not?: payment_log_bool_exp | null;
   _or?: (payment_log_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
+  custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
   method?: String_comparison_exp | null;
   no?: numeric_comparison_exp | null;
@@ -25192,6 +25642,7 @@ export interface payment_log_export_bool_exp {
  */
 export interface payment_log_insert_input {
   created_at?: any | null;
+  custom_no?: string | null;
   gateway?: string | null;
   method?: string | null;
   no?: any | null;
@@ -25210,6 +25661,7 @@ export interface payment_log_insert_input {
  */
 export interface payment_log_max_order_by {
   created_at?: order_by | null;
+  custom_no?: order_by | null;
   gateway?: order_by | null;
   method?: order_by | null;
   no?: order_by | null;
@@ -25226,6 +25678,7 @@ export interface payment_log_max_order_by {
  */
 export interface payment_log_min_order_by {
   created_at?: order_by | null;
+  custom_no?: order_by | null;
   gateway?: order_by | null;
   method?: order_by | null;
   no?: order_by | null;
@@ -25316,6 +25769,96 @@ export interface permission_bool_exp {
   member_permission_extras?: member_permission_extra_bool_exp | null;
   role_permissions?: role_permission_bool_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "permission_group". All fields are combined with a logical 'AND'.
+ */
+export interface permission_group_bool_exp {
+  _and?: (permission_group_bool_exp | null)[] | null;
+  _not?: permission_group_bool_exp | null;
+  _or?: (permission_group_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  permission_group_permissions?: permission_group_permission_bool_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "permission_group"
+ */
+export interface permission_group_insert_input {
+  app_id?: string | null;
+  created_at?: any | null;
+  id?: any | null;
+  name?: string | null;
+  permission_group_permissions?: permission_group_permission_arr_rel_insert_input | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "permission_group"
+ */
+export interface permission_group_obj_rel_insert_input {
+  data: permission_group_insert_input;
+  on_conflict?: permission_group_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "permission_group"
+ */
+export interface permission_group_on_conflict {
+  constraint: permission_group_constraint;
+  update_columns: permission_group_update_column[];
+  where?: permission_group_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "permission_group_permission"
+ */
+export interface permission_group_permission_arr_rel_insert_input {
+  data: permission_group_permission_insert_input[];
+  on_conflict?: permission_group_permission_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "permission_group_permission". All fields are combined with a logical 'AND'.
+ */
+export interface permission_group_permission_bool_exp {
+  _and?: (permission_group_permission_bool_exp | null)[] | null;
+  _not?: permission_group_permission_bool_exp | null;
+  _or?: (permission_group_permission_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  permission?: permission_bool_exp | null;
+  permission_group?: permission_group_bool_exp | null;
+  permission_group_id?: uuid_comparison_exp | null;
+  permission_id?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "permission_group_permission"
+ */
+export interface permission_group_permission_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  permission?: permission_obj_rel_insert_input | null;
+  permission_group?: permission_group_obj_rel_insert_input | null;
+  permission_group_id?: any | null;
+  permission_id?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "permission_group_permission"
+ */
+export interface permission_group_permission_on_conflict {
+  constraint: permission_group_permission_constraint;
+  update_columns: permission_group_permission_update_column[];
+  where?: permission_group_permission_bool_exp | null;
 }
 
 /**

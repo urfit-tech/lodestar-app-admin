@@ -72,8 +72,6 @@ export const commonMessages = {
     backstage: { id: 'common.ui.backstage', defaultMessage: '管理後台' },
     ownerBackstage: { id: 'common.ui.ownerBackstage', defaultMessage: '平台管理者專區' },
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
-    createPermissionGroup: { id: 'common.ui.createPermissionGroup', defaultMessage: '新增權限組' },
-    editPermissionGroup: { id: 'common.ui.editPermissionGroup', defaultMessage: '編輯權限組' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -1402,6 +1400,22 @@ export const permissionGroupsMessages = defineMessages({
   project: { id: 'permission.label.project', defaultMessage: '專案管理' },
   contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
 })
+
+export const permissionGroupsAdminMessages = {
+  ui: defineMessages({
+    createPermissionGroup: { id: 'permissionAdmin.ui.createPermissionGroup', defaultMessage: '新增權限組' },
+    editPermissionGroup: { id: 'permissionAdmin.ui.editPermissionGroup', defaultMessage: '編輯權限組' },
+    deletePermissionGroup: { id: 'permissionAdmin.ui.deletePermissionGroup', defaultMessage: '刪除權限組' },
+  }),
+  label: defineMessages({}),
+  text: defineMessages({
+    deletePermissionGroupConfirmation: {
+      id: 'permissionAdmin.text.deletePermissionGroupConfirmation',
+      defaultMessage: '權限組一經刪除即不可恢復，並且會將掛有此權限組的會員移除權限，確定要刪除嗎？',
+    },
+    emptyPermissionGroups: { id: 'permissionAdmin.text.emptyPermissionGroups', defaultMessage: '尚未設定任何權限組' },
+  }),
+}
 
 export const permissionMessages = defineMessages({
   // backstage

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
@@ -8,6 +8,7 @@ import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useDefaultPermissions } from '../../hooks/permission'
 import { MemberAdminProps, UserRole } from '../../types/member'
 import PermissionInput from '../form/PermissionInput'
 
@@ -128,37 +129,5 @@ const UPDATE_MEMBER_ROLE = gql`
     }
   }
 `
-
-const useDefaultPermissions = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_ROLE_PERMISSION>(gql`
-    query GET_ROLE_PERMISSION {
-      role_permission {
-        id
-        role_id
-        permission_id
-      }
-    }
-  `)
-
-  const defaultRolePermissions =
-    data?.role_permission.reduce<
-      {
-        [roleId in string]?: string[]
-      }
-    >(
-      (accumulator, currentValue) => ({
-        ...accumulator,
-        [currentValue.role_id]: [...(accumulator[currentValue.role_id] || []), currentValue.permission_id],
-      }),
-      {},
-    ) || {}
-
-  return {
-    loadingPermissions: loading,
-    errorPermissions: error,
-    defaultRolePermissions,
-    refetchPermissions: refetch,
-  }
-}
 
 export default MemberPermissionForm

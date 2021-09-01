@@ -72,7 +72,7 @@ const PermissionInput: React.FC<{
       {Object.keys(enabledGroups)
         .filter(groupId => enabledGroups[groupId as keyof typeof enabledGroups])
         .map(groupId => (
-          <div key={groupId} className="col-4 mb-3">
+          <div key={groupId} className="col-md-4 col-12 mb-3">
             <PermissionGroup
               label={
                 permissionGroupsMessages[groupId as keyof typeof permissionGroupsMessages]
