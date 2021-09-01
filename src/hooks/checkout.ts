@@ -49,13 +49,14 @@ export const useCouponPlanCollection = () => {
               }
             }
           }
-          coupon_codes {
-            coupons_aggregate(where: { status: { used: { _eq: true } } }) {
-              aggregate {
-                count
-              }
-            }
-          }
+          # FIXME: query too heavy
+          # coupon_codes {
+          #   coupons_aggregate(where: { status: { used: { _eq: true } } }) {
+          #     aggregate {
+          #       count
+          #     }
+          #   }
+          # }
           coupon_plan_products {
             id
             product_id
@@ -63,7 +64,7 @@ export const useCouponPlanCollection = () => {
         }
       }
     `,
-    { variables: { appId: app.id } },
+    { variables: { appId: app.id }, context: { important: true } },
   )
 
   const couponPlans: (CouponPlanProps & {
@@ -82,11 +83,13 @@ export const useCouponPlanCollection = () => {
             (!couponPlan.started_at || new Date(couponPlan.started_at).getTime() < Date.now()) &&
             (!couponPlan.ended_at || new Date(couponPlan.ended_at).getTime() > Date.now())
 
-          const used =
-            couponPlan.coupon_codes?.reduce(
-              (count, coupon) => count + (coupon.coupons_aggregate.aggregate?.count || 0),
-              0,
-            ) || 0
+          const used = 0
+          // FIXME: used coupon aggregate query too heavy
+          // const used
+          //   couponPlan.coupon_codes?.reduce(
+          //     (count, coupon) => count + (coupon.coupons_aggregate.aggregate?.count || 0),
+          //     0,
+          //   ) || 0
           return {
             id: couponPlan.id,
             title: couponPlan.title,
