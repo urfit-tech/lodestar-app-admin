@@ -346,16 +346,19 @@ const useOrderLog = (filters?: {
   const condition: hasura.GET_ORDERSVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
     status: filters?.statuses ? { _in: filters.statuses } : undefined,
-    member: {
-      id: filters?.memberId ? { _like: `%${filters.memberId}%` } : undefined,
-      _or: filters?.memberNameAndEmail
-        ? [
-            { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
-            { username: { _ilike: `%${filters.memberNameAndEmail}%` } },
-            { email: { _ilike: `%${filters.memberNameAndEmail}%` } },
-          ]
+    member:
+      filters?.memberId || filters?.memberNameAndEmail
+        ? {
+            id: filters?.memberId ? { _like: `%${filters.memberId}%` } : undefined,
+            _or: filters?.memberNameAndEmail
+              ? [
+                  { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
+                  { username: { _ilike: `%${filters.memberNameAndEmail}%` } },
+                  { email: { _ilike: `%${filters.memberNameAndEmail}%` } },
+                ]
+              : undefined,
+          }
         : undefined,
-    },
   }
 
   const { data: allOrderLogs } = useQuery<hasura.GET_ALL_ORDER_LOG>(gql`
