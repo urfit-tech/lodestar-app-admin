@@ -640,7 +640,7 @@ export const promotionMessages = {
     exchangedCount: { id: 'promotion.text.exchangedCount', defaultMessage: '{exchanged}/{total} 張' },
     sentUsedCount: {
       id: 'promotion.text.sentUsedCount',
-      defaultMessage: '總量{total} / 發送{exchanged} / 使用{used}',
+      defaultMessage: '總量{total} / 發送{exchanged}',
     },
     constraints: { id: 'promotion.text.constraints', defaultMessage: '消費滿 {total} 折抵 {discount}' },
     directly: { id: 'promotion.text.directly', defaultMessage: '直接折抵 {discount}' },
