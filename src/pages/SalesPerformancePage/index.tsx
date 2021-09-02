@@ -201,7 +201,7 @@ const SalesPerformanceTable: React.VFC<{
       dataIndex: 'member',
       key: 'member',
       render: v => (
-        <Link to={`/admin/members/${v.id}`} target="blank">
+        <Link to={`/members/${v.id}`} target="blank">
           {v.name}
         </Link>
       ),
