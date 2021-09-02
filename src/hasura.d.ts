@@ -9936,9 +9936,10 @@ export interface GET_MEMBER_ROLE_COUNT {
 }
 
 export interface GET_MEMBER_ROLE_COUNTVariables {
-  appId?: string | null;
-  email?: string | null;
-  name?: string | null;
+  conditionAll?: member_bool_exp | null;
+  conditionAppOwner?: member_bool_exp | null;
+  conditionContentCreator?: member_bool_exp | null;
+  conditionGeneralMember?: member_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -10000,6 +10001,21 @@ export interface GET_PAGE_MEMBER_COLLECTION_member_member_properties {
   value: string;
 }
 
+export interface GET_PAGE_MEMBER_COLLECTION_member_member_permission_groups_permission_group {
+  __typename: "permission_group";
+  id: any;
+  name: string;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_member_permission_groups {
+  __typename: "member_permission_group";
+  id: any;
+  /**
+   * An object relationship
+   */
+  permission_group: GET_PAGE_MEMBER_COLLECTION_member_member_permission_groups_permission_group;
+}
+
 export interface GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
   price: any | null;
@@ -10057,6 +10073,10 @@ export interface GET_PAGE_MEMBER_COLLECTION_member {
    * An array relationship
    */
   member_properties: GET_PAGE_MEMBER_COLLECTION_member_member_properties[];
+  /**
+   * An array relationship
+   */
+  member_permission_groups: GET_PAGE_MEMBER_COLLECTION_member_member_permission_groups[];
   /**
    * An array relationship
    */
@@ -10601,6 +10621,51 @@ export interface GET_PERMISSION_GROUPS {
 
 export interface GET_PERMISSION_GROUPSVariables {
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PERMISSION_GROUPS_DROPDOWN_MENU
+// ====================================================
+
+export interface GET_PERMISSION_GROUPS_DROPDOWN_MENU_member_permission_group_member {
+  __typename: "member";
+  id: string;
+}
+
+export interface GET_PERMISSION_GROUPS_DROPDOWN_MENU_member_permission_group_permission_group {
+  __typename: "permission_group";
+  name: string;
+}
+
+export interface GET_PERMISSION_GROUPS_DROPDOWN_MENU_member_permission_group {
+  __typename: "member_permission_group";
+  /**
+   * An object relationship
+   */
+  member: GET_PERMISSION_GROUPS_DROPDOWN_MENU_member_permission_group_member;
+  /**
+   * An object relationship
+   */
+  permission_group: GET_PERMISSION_GROUPS_DROPDOWN_MENU_member_permission_group_permission_group;
+}
+
+export interface GET_PERMISSION_GROUPS_DROPDOWN_MENU {
+  /**
+   * fetch data from the table: "member_permission_group"
+   */
+  member_permission_group: GET_PERMISSION_GROUPS_DROPDOWN_MENU_member_permission_group[];
+}
+
+export interface GET_PERMISSION_GROUPS_DROPDOWN_MENUVariables {
+  appId: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
 }
 
 /* tslint:disable */
@@ -14291,6 +14356,7 @@ export enum app_page_update_column {
   created_at = "created_at",
   editor_id = "editor_id",
   id = "id",
+  is_deleted = "is_deleted",
   options = "options",
   path = "path",
   published_at = "published_at",
@@ -18246,6 +18312,7 @@ export interface app_page_bool_exp {
   editor?: member_bool_exp | null;
   editor_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   path?: String_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -18264,6 +18331,7 @@ export interface app_page_insert_input {
   editor?: member_obj_rel_insert_input | null;
   editor_id?: string | null;
   id?: any | null;
+  is_deleted?: boolean | null;
   options?: any | null;
   path?: string | null;
   published_at?: any | null;

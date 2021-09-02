@@ -237,6 +237,10 @@ export const commonMessages = {
     skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
     roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
     permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
+    permissionGroupsSelectorPlaceholder: {
+      id: 'common.label.permissionGroupsSelectorPlaceholder',
+      defaultMessage: '選擇權限組',
+    },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
