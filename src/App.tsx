@@ -17,7 +17,6 @@ import NoteCollectionPage from './pages/NoteCollectionPage'
 import SalesActivenessPage from './pages/SalesActivenessPage'
 import SalesCallPage from './pages/SalesCallPage'
 import SalesLeadDeliveryPage from './pages/SalesLeadDeliveryPage'
-import SalesLeadPage from './pages/SalesLeadPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
 import SalesPerformancePage from './pages/SalesPerformancePage'
@@ -159,11 +158,6 @@ const App: React.FC = () => {
         note_collection: {
           path: '/notes',
           pageName: <NoteCollectionPage />,
-          authenticated: true,
-        },
-        sales_lead: {
-          path: '/sales-lead',
-          pageName: <SalesLeadPage />,
           authenticated: true,
         },
         sales_lead_delivery: {

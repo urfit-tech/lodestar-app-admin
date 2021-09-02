@@ -1,9 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Select } from 'antd'
 import gql from 'graphql-tag'
-import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-
 export default function CategoryInput({
   class: categoryClass,
   value,
@@ -13,7 +11,6 @@ export default function CategoryInput({
   value?: string
   onChange?: (category: string | null) => void
 }) {
-  const { formatMessage } = useIntl()
   const { loading, error, data } = useQuery<hasura.GET_CATEGORY_LIST>(
     gql`
       query GET_CATEGORY_LIST($class: String!) {
