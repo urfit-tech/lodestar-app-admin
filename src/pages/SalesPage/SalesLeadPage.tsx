@@ -7,7 +7,6 @@ import { prop, sortBy } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
 import SalesMemberInput from '../../components/common/SalesMemberInput'
 import AdminLayout from '../../components/layout/AdminLayout'
@@ -27,7 +26,7 @@ const StyledManagerBlock = styled.div`
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentMember } = useAuth()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const [activeKey, setActiveKey] = useState('idled')
   const [saleId, setSaleId] = useState<string | undefined>()
   useMemberContractNotification()
   return (
@@ -48,7 +47,7 @@ const SalesLeadPage: React.VFC = () => {
       </div>
       {currentMemberId ? (
         <SalesLeadTabs
-          activeKey={activeKey || 'idled'}
+          activeKey={activeKey}
           managerId={saleId ? saleId : currentMemberId}
           onActiveKeyChanged={setActiveKey}
         />
