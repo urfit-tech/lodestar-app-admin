@@ -5,7 +5,6 @@ import { ResultProps } from 'antd/lib/result'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
-import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
@@ -29,7 +28,6 @@ type AssignResult = {
 }
 const SalesLeadDeliveryPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
   const [currentStep, setCurrentStep] = useState(0)
   const [assignedResult, setAssignedResult] = useState<AssignResult>()
   const [filter, setFilter] = useState<Filter>({
