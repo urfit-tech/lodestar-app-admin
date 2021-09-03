@@ -1,5 +1,4 @@
 import { Skeleton } from 'antd'
-import gql from 'graphql-tag'
 import { isEmpty } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -9,6 +8,7 @@ import AdminPublishBlock, {
   PublishStatus,
 } from '../../components/admin/AdminPublishBlock'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
 
 const CraftPagePublishAdminBlock: React.VFC<{
@@ -16,8 +16,7 @@ const CraftPagePublishAdminBlock: React.VFC<{
   onRefetch?: () => void
 }> = ({ pageAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  //TODO: app_page add published column
-  //   const [publishCraftPage] = useMutation<hasura.PUBLISH_ACTIVITY, hasura.PUBLISH_ACTIVITYVariables>(PUBLISH_CRAFT_PAGE)
+  const { updateAppPage } = useMutateAppPage()
 
   if (!pageAdmin) {
     return <Skeleton active />
@@ -25,7 +24,7 @@ const CraftPagePublishAdminBlock: React.VFC<{
 
   const checklist: ChecklistItemProps[] = []
 
-  isEmpty(pageAdmin.pageName) &&
+  isEmpty(pageAdmin.title) &&
     checklist.push({
       id: 'NO_PAGE_NAME',
       text: formatMessage(craftPageMessages.text.noPageName),
@@ -49,18 +48,16 @@ const CraftPagePublishAdminBlock: React.VFC<{
       : ['', '']
 
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
-    // publishCraftPage({
-    //   variables: {
-    //     pageId: pageAdmin.id,
-    //     publishedAt: values.publishedAt,
-    //   },
-    // })
-    //   .then(() => {
-    //     onRefetch?.()
-    //     onSuccess?.()
-    //   })
-    //   .catch(error => onError && onError(error))
-    //   .finally(() => onFinally && onFinally())
+    updateAppPage({
+      pageId: pageAdmin.id,
+      publishedAt: values.publishedAt || null,
+    })
+      .then(() => {
+        onRefetch?.()
+        onSuccess?.()
+      })
+      .catch(error => onError && onError(error))
+      .finally(() => onFinally && onFinally())
   }
 
   return (
@@ -73,13 +70,5 @@ const CraftPagePublishAdminBlock: React.VFC<{
     />
   )
 }
-
-const PUBLISH_CRAFT_PAGE = gql`
-  mutation PUBLISH_CRAFT_PAGE($pageId: uuid!, $publishedAt: timestamptz) {
-    update_app_page(where: { id: { _eq: $activityId } }, _set: { published_at: $publishedAt }) {
-      affected_rows
-    }
-  }
-`
 
 export default CraftPagePublishAdminBlock
