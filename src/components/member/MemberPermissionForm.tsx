@@ -98,9 +98,11 @@ const MemberPermissionForm: React.FC<{
         </Select>
       </Form.Item>
 
-      <Form.Item label={formatMessage(permissionGroupsAdminMessages.label.permissionGroup)} name="permissionGroupIds">
-        <PermissionGroupInputSelector />
-      </Form.Item>
+      {enabledModules.permission_group && (
+        <Form.Item label={formatMessage(permissionGroupsAdminMessages.label.permissionGroup)} name="permissionGroupIds">
+          <PermissionGroupInputSelector />
+        </Form.Item>
+      )}
 
       {enabledModules.permission && (
         <Form.Item

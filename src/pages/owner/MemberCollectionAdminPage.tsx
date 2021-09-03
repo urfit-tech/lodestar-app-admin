@@ -182,6 +182,10 @@ const MemberCollectionAdminPage: React.FC = () => {
       value={selectedPermissionGroup}
       onChange={value => {
         setSelectedPermissionGroup(value)
+        setFieldFilter(filter => ({
+          ...filter,
+          permissionGroup: value,
+        }))
       }}
     >
       {permissionGroupDropdownMenu.map(item => (
@@ -364,7 +368,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex">
           <div className="mr-3">{roleSelector}</div>
-          <div>{permissionGroupsDropDownSelector}</div>
+          {enabledModules.permission_group && <div>{permissionGroupsDropDownSelector}</div>}
         </div>
 
         <div className="d-flex">
