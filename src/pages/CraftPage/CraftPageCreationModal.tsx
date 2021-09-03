@@ -8,11 +8,15 @@ import { StyledTips } from '../../components/admin'
 import AdminCard from '../../components/admin/AdminCard'
 import AdminModal, { AdminModalProps } from '../../components/admin/AdminModal'
 import { BREAK_POINT } from '../../components/common/Responsive'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/translation'
-import templateA from '../../images/default/template-1.png'
-import templateB from '../../images/default/template-2.png'
-import templateC from '../../images/default/template-3.png'
+import { useMutateAppPage } from '../../hooks/appPage'
+import templateAImage from '../../images/default/template-1.png'
+import templateBImage from '../../images/default/template-2.png'
+import templateCImage from '../../images/default/template-3.png'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
+import { templateA, templateB, templateC, templateDefault } from './templatePage'
 
 const StyledDemoUrl = styled.div`
   font-size: 14px;
@@ -28,21 +32,21 @@ const StyledFormItemWrapper = styled.div<{ currentTemplate: string }>`
   }
   .ant-row:nth-child(1) {
     .ant-card {
-      background-image: url(${templateA});
+      background-image: url(${templateAImage});
       background-size: cover;
       border: ${props => (props.currentTemplate === 'A' ? `2px ${props.theme['@primary-color']} solid` : null)};
     }
   }
   .ant-row:nth-child(2) {
     .ant-card {
-      background-image: url(${templateB});
+      background-image: url(${templateBImage});
       background-size: cover;
       border: ${props => (props.currentTemplate === 'B' ? `2px ${props.theme['@primary-color']} solid` : null)};
     }
   }
   .ant-row:nth-child(3) {
     .ant-card {
-      background-image: url(${templateC});
+      background-image: url(${templateCImage});
       background-size: cover;
       border: ${props => (props.currentTemplate === 'C' ? `2px ${props.theme['@primary-color']} solid` : null)};
     }
@@ -81,15 +85,20 @@ type FieldProps = {
   path: string
 }
 
-const ProductCreationModal: React.VFC<
+const CraftPageCreationModal: React.VFC<
   AdminModalProps & {
     setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
   }
 > = ({ setModalVisible, ...props }) => {
+  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const { insertAppPage } = useMutateAppPage()
   const [loading, setLoading] = useState(false)
   const [currentTemplate, setCurrentTemplate] = useState<'A' | 'B' | 'C' | 'empty'>('A')
+
+  const [pageName, setPageName] = useState('')
+  const [path, setPath] = useState('')
   const [createStep, setCreateStep] = useState<'page' | 'template'>('page')
 
   const resetModal = () => {
@@ -98,11 +107,27 @@ const ProductCreationModal: React.VFC<
     setCurrentTemplate('A')
   }
   const handleSubmit = (values: FieldProps) => {
+    if (!currentMemberId) {
+      return
+    }
     setLoading(true)
-    //TODO: insert page
-    setLoading(false)
-    setModalVisible(false)
-    resetModal()
+
+    insertAppPage({
+      path: path,
+      title: pageName,
+      editorId: currentMemberId,
+      craftData: { empty: templateDefault, A: templateA, B: templateB, C: templateC }[currentTemplate],
+    })
+      .then(({ data }) => {
+        const pageId = data?.insert_app_page_one?.id
+        window.location.assign('/craft_page/' + pageId)
+      })
+      .catch(handleError)
+      .finally(() => {
+        setLoading(false)
+        setModalVisible(false)
+        resetModal()
+      })
   }
 
   return (
@@ -181,7 +206,6 @@ const ProductCreationModal: React.VFC<
             </div>
           </>
         ) : (
-          // createStep === 'page'
           <>
             <Form.Item label={formatMessage(craftPageMessages.label.pageName)}>
               <Form.Item
@@ -230,10 +254,10 @@ const ProductCreationModal: React.VFC<
                   },
                 ]}
               >
-                <Input className="mb-2" />
+                <Input className="mb-2" onChange={e => setPath(e.target.value)} />
               </Form.Item>
 
-              <StyledDemoUrl>www.demo.com/</StyledDemoUrl>
+              <StyledDemoUrl>{window.location.host + path}</StyledDemoUrl>
             </Form.Item>
             <div className="text-right">
               <div>
@@ -251,6 +275,10 @@ const ProductCreationModal: React.VFC<
                   onClick={() => {
                     form
                       .validateFields(['pageName', 'path'])
+                      .then(({ pageName, path }) => {
+                        setPageName(pageName)
+                        setPath(path)
+                      })
                       .then(() => setCreateStep('template'))
                       .catch(err => {
                         if (process.env.NODE_ENV === 'development') console.log(err)
@@ -268,4 +296,4 @@ const ProductCreationModal: React.VFC<
   )
 }
 
-export default ProductCreationModal
+export default CraftPageCreationModal

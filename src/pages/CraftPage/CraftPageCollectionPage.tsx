@@ -8,7 +8,7 @@ import { commonMessages } from '../../helpers/translation'
 import { useAppPageCollection } from '../../hooks/appPage'
 import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
 import CraftPageCollectionTable from './CraftPageCollectionTable'
-import CraftPageCreationModel from './CraftPageCreationModel'
+import CraftPageCreationModal from './CraftPageCreationModal'
 
 const CraftPageCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -54,7 +54,7 @@ const CraftPageCollectionPage: React.VFC = () => {
       </div>
 
       <div className="mb-4">
-        <CraftPageCreationModel
+        <CraftPageCreationModal
           visible={isModalVisible}
           icon={<FileAddOutlined />}
           setModalVisible={setIsModalVisible}
