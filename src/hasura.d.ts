@@ -7623,6 +7623,143 @@ export interface INSERT_APPOINTMENT_SCHEDULESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APP_PAGE
+// ====================================================
+
+export interface GET_APP_PAGE_app_page_by_pk_editor {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_APP_PAGE_app_page_by_pk {
+  __typename: "app_page";
+  id: any;
+  path: string | null;
+  title: string | null;
+  craft_data: any | null;
+  updated_at: any;
+  published_at: any | null;
+  options: any | null;
+  editor_id: string | null;
+  /**
+   * An object relationship
+   */
+  editor: GET_APP_PAGE_app_page_by_pk_editor | null;
+}
+
+export interface GET_APP_PAGE {
+  /**
+   * fetch data from the table: "app_page" using primary key columns
+   */
+  app_page_by_pk: GET_APP_PAGE_app_page_by_pk | null;
+}
+
+export interface GET_APP_PAGEVariables {
+  pageId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP_PAGE_COLLECTION
+// ====================================================
+
+export interface GET_APP_PAGE_COLLECTION_app_page_editor {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_APP_PAGE_COLLECTION_app_page {
+  __typename: "app_page";
+  id: any;
+  path: string | null;
+  title: string | null;
+  craft_data: any | null;
+  updated_at: any;
+  published_at: any | null;
+  options: any | null;
+  editor_id: string | null;
+  /**
+   * An object relationship
+   */
+  editor: GET_APP_PAGE_COLLECTION_app_page_editor | null;
+}
+
+export interface GET_APP_PAGE_COLLECTION {
+  /**
+   * fetch data from the table: "app_page"
+   */
+  app_page: GET_APP_PAGE_COLLECTION_app_page[];
+}
+
+export interface GET_APP_PAGE_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_APP_PAGE
+// ====================================================
+
+export interface INSERT_APP_PAGE_insert_app_page_one {
+  __typename: "app_page";
+  id: any;
+}
+
+export interface INSERT_APP_PAGE {
+  /**
+   * insert a single row into the table: "app_page"
+   */
+  insert_app_page_one: INSERT_APP_PAGE_insert_app_page_one | null;
+}
+
+export interface INSERT_APP_PAGEVariables {
+  appId: string;
+  path?: string | null;
+  editorId: string;
+  title: string;
+  craftData?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APP_PAGE
+// ====================================================
+
+export interface UPDATE_APP_PAGE_update_app_page_by_pk {
+  __typename: "app_page";
+  id: any;
+}
+
+export interface UPDATE_APP_PAGE {
+  /**
+   * update single row of the table: "app_page"
+   */
+  update_app_page_by_pk: UPDATE_APP_PAGE_update_app_page_by_pk | null;
+}
+
+export interface UPDATE_APP_PAGEVariables {
+  pageId: any;
+  updated?: app_page_set_input | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ATTEND
 // ====================================================
 
@@ -12048,35 +12185,6 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: PUBLISH_CRAFT_PAGE
-// ====================================================
-
-export interface PUBLISH_CRAFT_PAGE_update_app_page {
-  __typename: "app_page_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_CRAFT_PAGE {
-  /**
-   * update data of the table: "app_page"
-   */
-  update_app_page: PUBLISH_CRAFT_PAGE_update_app_page | null;
-}
-
-export interface PUBLISH_CRAFT_PAGEVariables {
-  pageId: any;
-  publishedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_EXERCISE_COLLECTION
 // ====================================================
 
@@ -13963,6 +14071,49 @@ export enum app_nav_update_column {
   parent_id = "parent_id",
   position = "position",
   tag = "tag",
+}
+
+/**
+ * unique or primary key constraints on table "app_page"
+ */
+export enum app_page_constraint {
+  app_page_path_app_id_key = "app_page_path_app_id_key",
+  app_page_pkey = "app_page_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "app_page_section"
+ */
+export enum app_page_section_constraint {
+  app_page_section_pkey = "app_page_section_pkey",
+}
+
+/**
+ * update columns of table "app_page_section"
+ */
+export enum app_page_section_update_column {
+  app_page_id = "app_page_id",
+  id = "id",
+  options = "options",
+  position = "position",
+  type = "type",
+}
+
+/**
+ * update columns of table "app_page"
+ */
+export enum app_page_update_column {
+  app_id = "app_id",
+  craft_data = "craft_data",
+  created_at = "created_at",
+  editor_id = "editor_id",
+  id = "id",
+  is_deleted = "is_deleted",
+  options = "options",
+  path = "path",
+  published_at = "published_at",
+  title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -17823,6 +17974,170 @@ export interface app_order_by {
 }
 
 /**
+ * order by aggregate values of table "app_page"
+ */
+export interface app_page_aggregate_order_by {
+  count?: order_by | null;
+  max?: app_page_max_order_by | null;
+  min?: app_page_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_page"
+ */
+export interface app_page_arr_rel_insert_input {
+  data: app_page_insert_input[];
+  on_conflict?: app_page_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_page". All fields are combined with a logical 'AND'.
+ */
+export interface app_page_bool_exp {
+  _and?: (app_page_bool_exp | null)[] | null;
+  _not?: app_page_bool_exp | null;
+  _or?: (app_page_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  app_page_sections?: app_page_section_bool_exp | null;
+  craft_data?: jsonb_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  editor?: member_bool_exp | null;
+  editor_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  path?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_page"
+ */
+export interface app_page_insert_input {
+  app_id?: string | null;
+  app_page_sections?: app_page_section_arr_rel_insert_input | null;
+  craft_data?: any | null;
+  created_at?: any | null;
+  editor?: member_obj_rel_insert_input | null;
+  editor_id?: string | null;
+  id?: any | null;
+  is_deleted?: boolean | null;
+  options?: any | null;
+  path?: string | null;
+  published_at?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "app_page"
+ */
+export interface app_page_max_order_by {
+  app_id?: order_by | null;
+  created_at?: order_by | null;
+  editor_id?: order_by | null;
+  id?: order_by | null;
+  path?: order_by | null;
+  published_at?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "app_page"
+ */
+export interface app_page_min_order_by {
+  app_id?: order_by | null;
+  created_at?: order_by | null;
+  editor_id?: order_by | null;
+  id?: order_by | null;
+  path?: order_by | null;
+  published_at?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "app_page"
+ */
+export interface app_page_obj_rel_insert_input {
+  data: app_page_insert_input;
+  on_conflict?: app_page_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "app_page"
+ */
+export interface app_page_on_conflict {
+  constraint: app_page_constraint;
+  update_columns: app_page_update_column[];
+  where?: app_page_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_page_section"
+ */
+export interface app_page_section_arr_rel_insert_input {
+  data: app_page_section_insert_input[];
+  on_conflict?: app_page_section_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_page_section". All fields are combined with a logical 'AND'.
+ */
+export interface app_page_section_bool_exp {
+  _and?: (app_page_section_bool_exp | null)[] | null;
+  _not?: app_page_section_bool_exp | null;
+  _or?: (app_page_section_bool_exp | null)[] | null;
+  app_page?: app_page_bool_exp | null;
+  app_page_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  position?: numeric_comparison_exp | null;
+  type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_page_section"
+ */
+export interface app_page_section_insert_input {
+  app_page?: app_page_obj_rel_insert_input | null;
+  app_page_id?: any | null;
+  id?: any | null;
+  options?: any | null;
+  position?: any | null;
+  type?: string | null;
+}
+
+/**
+ * on conflict condition type for table "app_page_section"
+ */
+export interface app_page_section_on_conflict {
+  constraint: app_page_section_constraint;
+  update_columns: app_page_section_update_column[];
+  where?: app_page_section_bool_exp | null;
+}
+
+/**
+ * input type for updating data in table "app_page"
+ */
+export interface app_page_set_input {
+  app_id?: string | null;
+  craft_data?: any | null;
+  created_at?: any | null;
+  editor_id?: string | null;
+  id?: any | null;
+  is_deleted?: boolean | null;
+  options?: any | null;
+  path?: string | null;
+  published_at?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
  * order by aggregate values of table "app_secret"
  */
 export interface app_secret_aggregate_order_by {
@@ -21202,6 +21517,7 @@ export interface member_bool_exp {
   activities?: activity_bool_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  app_pages?: app_page_bool_exp | null;
   appointment_plans?: appointment_plan_bool_exp | null;
   assignRulesBySourceMemberId?: xuemi_assign_rule_bool_exp | null;
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
@@ -21637,6 +21953,7 @@ export interface member_insert_input {
   activities?: activity_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  app_pages?: app_page_arr_rel_insert_input | null;
   appointment_plans?: appointment_plan_arr_rel_insert_input | null;
   assignRulesBySourceMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
@@ -22174,6 +22491,7 @@ export interface member_order_by {
   activities_aggregate?: activity_aggregate_order_by | null;
   app?: app_order_by | null;
   app_id?: order_by | null;
+  app_pages_aggregate?: app_page_aggregate_order_by | null;
   appointment_plans_aggregate?: appointment_plan_aggregate_order_by | null;
   assignRulesBySourceMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
