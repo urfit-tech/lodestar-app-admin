@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 import { isEmpty } from 'lodash'
 import { Moment } from 'moment'
 import { sum } from 'ramda'
+import { useIntl } from 'react-intl'
 import { useAuth } from '../contexts/AuthContext'
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
@@ -626,58 +627,73 @@ export const usePublicMember = (memberId: string) => {
   }
 }
 
-export const useMemberRoleCount = (appId: string, filter?: { name?: string; email?: string }) => {
+export const useMemberRoleCount = (
+  appId: string,
+  filter?: { name?: string; email?: string; permissionGroup?: string | null },
+) => {
+  const conditionAll: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionAll'] = {
+    app_id: { _eq: appId },
+    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
+    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
+    member_permission_groups: filter?.permissionGroup
+      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
+      : undefined,
+  }
+  const conditionAppOwner: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionAppOwner'] = {
+    app_id: { _eq: appId },
+    role: { _eq: 'app-owner' },
+    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
+    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
+    member_permission_groups: filter?.permissionGroup
+      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
+      : undefined,
+  }
+  const conditionContentCreator: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionContentCreator'] = {
+    app_id: { _eq: appId },
+    role: { _eq: 'content-creator' },
+    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
+    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
+    member_permission_groups: filter?.permissionGroup
+      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
+      : undefined,
+  }
+  const conditionGeneralMember: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionGeneralMember'] = {
+    app_id: { _eq: appId },
+    role: { _eq: 'general-member' },
+    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
+    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
+    member_permission_groups: filter?.permissionGroup
+      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
+      : undefined,
+  }
+
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_MEMBER_ROLE_COUNT,
     hasura.GET_MEMBER_ROLE_COUNTVariables
   >(
     gql`
-      query GET_MEMBER_ROLE_COUNT($appId: String, $email: String, $name: String) {
-        all: member_aggregate(
-          where: { _and: [{ app_id: { _eq: $appId } }, { name: { _ilike: $name } }, { email: { _ilike: $email } }] }
-        ) {
+      query GET_MEMBER_ROLE_COUNT(
+        $conditionAll: member_bool_exp
+        $conditionAppOwner: member_bool_exp
+        $conditionContentCreator: member_bool_exp
+        $conditionGeneralMember: member_bool_exp
+      ) {
+        all: member_aggregate(where: $conditionAll) {
           aggregate {
             count
           }
         }
-        app_owner: member_aggregate(
-          where: {
-            _and: [
-              { app_id: { _eq: $appId } }
-              { role: { _eq: "app-owner" } }
-              { name: { _ilike: $name } }
-              { email: { _ilike: $email } }
-            ]
-          }
-        ) {
+        app_owner: member_aggregate(where: $conditionAppOwner) {
           aggregate {
             count
           }
         }
-        content_creator: member_aggregate(
-          where: {
-            _and: [
-              { app_id: { _eq: $appId } }
-              { role: { _eq: "content-creator" } }
-              { name: { _ilike: $name } }
-              { email: { _ilike: $email } }
-            ]
-          }
-        ) {
+        content_creator: member_aggregate(where: $conditionContentCreator) {
           aggregate {
             count
           }
         }
-        general_member: member_aggregate(
-          where: {
-            _and: [
-              { app_id: { _eq: $appId } }
-              { role: { _eq: "general-member" } }
-              { name: { _ilike: $name } }
-              { email: { _ilike: $email } }
-            ]
-          }
-        ) {
+        general_member: member_aggregate(where: $conditionGeneralMember) {
           aggregate {
             count
           }
@@ -686,9 +702,10 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
     `,
     {
       variables: {
-        appId,
-        name: filter?.name && `%${filter.name}%`,
-        email: filter?.email && `%${filter.email}%`,
+        conditionAll,
+        conditionAppOwner,
+        conditionContentCreator,
+        conditionGeneralMember,
       },
     },
   )
@@ -741,6 +758,7 @@ export const useMemberCollection = (filter?: {
     id: string
     value?: string
   }[]
+  permissionGroup?: string | null
 }) => {
   const condition: hasura.GET_PAGE_MEMBER_COLLECTIONVariables['condition'] = {
     role: filter?.role ? { _eq: filter.role } : undefined,
@@ -781,6 +799,11 @@ export const useMemberCollection = (filter?: {
               property_id: { _eq: property.id },
               value: { _ilike: `%${property.value}%` },
             })),
+        }
+      : undefined,
+    member_permission_groups: filter?.permissionGroup
+      ? {
+          permission_group: { name: { _like: `${filter.permissionGroup}` } },
         }
       : undefined,
   }
@@ -829,6 +852,13 @@ export const useMemberCollection = (filter?: {
             id
             property_id
             value
+          }
+          member_permission_groups {
+            id
+            permission_group {
+              id
+              name
+            }
           }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
@@ -881,6 +911,7 @@ export const useMemberCollection = (filter?: {
               [currentValue.property_id]: currentValue.value,
             }
           }, {} as MemberInfoProps['properties']),
+          permission_group: v.member_permission_groups.map(w => w.permission_group.name),
         }))
 
   const loadMoreMembers = () =>

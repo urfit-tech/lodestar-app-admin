@@ -1,5 +1,5 @@
 import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Input, Menu, Popover, Table, Tag } from 'antd'
+import { Button, Checkbox, Dropdown, Input, Menu, Popover, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useRef, useState } from 'react'
@@ -18,6 +18,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../../hooks/member'
+import { usePermissionGroupsDropdownMenu } from '../../hooks/permission'
 import { ReactComponent as TableIcon } from '../../images/icon/table.svg'
 import { MemberInfoProps, UserRole } from '../../types/member'
 
@@ -115,6 +116,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     category?: string
     managerName?: string
     tag?: string
+    permissionGroup?: string | null
   }>({})
   const [propertyFilter, setPropertyFilter] = useState<{
     [propertyId: string]: string | undefined
@@ -127,6 +129,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     })),
   })
   const [loading, setLoading] = useState(false)
+  const [selectedPermissionGroup, setSelectedPermissionGroup] = useState<string | undefined>(undefined)
 
   // role selector
   const { menu } = useMemberRoleCount(appId, fieldFilter)
@@ -168,6 +171,25 @@ const MemberCollectionAdminPage: React.FC = () => {
         <CaretDownOutlined />
       </Button>
     </StyledDropdown>
+  )
+
+  // permission group dropdown selector
+  const { permissionGroupDropdownMenu } = usePermissionGroupsDropdownMenu(appId, fieldFilter)
+  const permissionGroupsDropDownSelector = (
+    <Select
+      allowClear
+      placeholder={formatMessage(commonMessages.label.permissionGroupsSelectorPlaceholder)}
+      value={selectedPermissionGroup}
+      onChange={value => {
+        setSelectedPermissionGroup(value)
+      }}
+    >
+      {permissionGroupDropdownMenu.map(item => (
+        <Select.Option key={item.permissionGroup} value={item.permissionGroup}>
+          {item.permissionGroup} ({item.count})
+        </Select.Option>
+      ))}
+    </Select>
   )
 
   // table
@@ -340,37 +362,44 @@ const MemberCollectionAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <div className="flex-grow-1">{roleSelector}</div>
-
-        <Popover
-          trigger="click"
-          placement="bottomLeft"
-          content={
-            <StyledOverlay>
-              <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
-              <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
-                <FilterWrapper>
-                  {allColumns.map(column =>
-                    column ? (
-                      <Checkbox key={column.id} value={column.id}>
-                        {column.title}
-                      </Checkbox>
-                    ) : null,
-                  )}
-                </FilterWrapper>
-              </Checkbox.Group>
-            </StyledOverlay>
-          }
-        >
-          <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
-            {formatMessage(memberMessages.label.field)}
-          </StyledButton>
-        </Popover>
-        <div className="mr-2">{permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}</div>
-        <div className="mr-2">
-          <MemberImportModal appId={appId} filter={fieldFilter} />
+        <div className="d-flex">
+          <div className="mr-3">{roleSelector}</div>
+          <div>{permissionGroupsDropDownSelector}</div>
         </div>
-        <MemberExportModal appId={appId} filter={fieldFilter} />
+
+        <div className="d-flex">
+          <Popover
+            trigger="click"
+            placement="bottomLeft"
+            content={
+              <StyledOverlay>
+                <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
+                <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
+                  <FilterWrapper>
+                    {allColumns.map(column =>
+                      column ? (
+                        <Checkbox key={column.id} value={column.id}>
+                          {column.title}
+                        </Checkbox>
+                      ) : null,
+                    )}
+                  </FilterWrapper>
+                </Checkbox.Group>
+              </StyledOverlay>
+            }
+          >
+            <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
+              {formatMessage(memberMessages.label.field)}
+            </StyledButton>
+          </Popover>
+          <div className="mr-2">
+            {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
+          </div>
+          <div className="mr-2">
+            <MemberImportModal appId={appId} filter={fieldFilter} />
+          </div>
+          <MemberExportModal appId={appId} filter={fieldFilter} />
+        </div>
       </div>
 
       <AdminCard className="mb-5">
