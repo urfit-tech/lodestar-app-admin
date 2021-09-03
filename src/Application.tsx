@@ -6,6 +6,7 @@ import React from 'react'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 import { QueryParamProvider } from 'use-query-params'
+import { ElementConfig } from './containers/ElementConfig'
 import { ApiProvider } from './contexts/ApiContext'
 import { AppProvider } from './contexts/AppContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -29,9 +30,11 @@ const Application: React.FC<{
               <LanguageProvider>
                 <ThemeProvider theme={theme}>
                   <ConfigProvider locale={zhTW}>
-                    <CustomRendererProvider renderer={customRender}>
-                      <Routes extra={extraRouteProps} />
-                    </CustomRendererProvider>
+                    <ElementConfig appId={appId}>
+                      <CustomRendererProvider renderer={customRender}>
+                        <Routes extra={extraRouteProps} />
+                      </CustomRendererProvider>
+                    </ElementConfig>
                   </ConfigProvider>
                 </ThemeProvider>
               </LanguageProvider>
