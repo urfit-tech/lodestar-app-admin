@@ -4,9 +4,15 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../helpers/translation'
 
-const CraftSettingsPanel: React.VFC = () => {
+const CraftSettingsPanel: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
+  setActiveKey,
+}) => {
   const { formatMessage } = useIntl()
-  const { selected, actions } = useEditor(state => {
+  const {
+    query: { node },
+    selected,
+    actions,
+  } = useEditor(state => {
     const currentNodeId = state.events.selected
     let selected
     if (currentNodeId) {
@@ -29,8 +35,13 @@ const CraftSettingsPanel: React.VFC = () => {
         <Button
           block
           onClick={() => {
-            window.alert(formatMessage(craftPageMessages.text.deleteWarning))
-            actions.delete(selected.id)
+            if (node(selected.id).isRoot()) {
+              return
+            }
+            if (window.confirm(formatMessage(craftPageMessages.text.deleteWarning))) {
+              actions.delete(selected.id)
+              setActiveKey('component')
+            }
           }}
         >
           {selected.labelName === 'deleteBlock'
