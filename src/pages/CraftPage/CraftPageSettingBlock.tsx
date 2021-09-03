@@ -1,25 +1,39 @@
-import { Editor, Element, Frame } from '@craftjs/core'
-import { Tabs } from 'antd'
+import { Editor, Element, Frame, useEditor } from '@craftjs/core'
+import { Button, message, Tabs } from 'antd'
+import CraftActivity from 'lodestar-app-element/src/components/craft/CraftActivity'
 import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
 import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
 import CraftCard from 'lodestar-app-element/src/components/craft/CraftCard'
 import CraftCarousel from 'lodestar-app-element/src/components/craft/CraftCarousel'
+import CraftCarouselContainer from 'lodestar-app-element/src/components/craft/CraftCarouselContainer'
 import CraftCollapse from 'lodestar-app-element/src/components/craft/CraftCollapse'
 import CraftContainer from 'lodestar-app-element/src/components/craft/CraftContainer'
-import CraftDataSelector from 'lodestar-app-element/src/components/craft/CraftDataSelector'
 import CraftImage from 'lodestar-app-element/src/components/craft/CraftImage'
+import CraftInstructor from 'lodestar-app-element/src/components/craft/CraftInstructor'
 import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
 import CraftParagraph from 'lodestar-app-element/src/components/craft/CraftParagraph'
+import CraftPodcastProgram from 'lodestar-app-element/src/components/craft/CraftPodcastProgram'
+import CraftProgram from 'lodestar-app-element/src/components/craft/CraftProgram'
+import CraftProject from 'lodestar-app-element/src/components/craft/CraftProject'
 import CraftStatistics from 'lodestar-app-element/src/components/craft/CraftStatistics'
 import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
 import CraftTitleAndParagraph from 'lodestar-app-element/src/components/craft/CraftTitleAndParagraph'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
+import { useMutateAppPage } from '../../hooks/appPage'
 import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
 import { ReactComponent as BrushIcon } from '../../images/icon/paintbrush.svg'
-import CraftActionsPanel from './CraftActionsPanel'
+import { CraftPageAdminProps } from '../../types/craft'
 import CraftSettingsPanel from './CraftSettingsPanel'
 import CraftToolbox from './CraftToolbox'
+
+const messages = defineMessages({
+  saveAndUpdate: { id: 'project.ui.saveAndUpdate', defaultMessage: '儲存並更新' },
+})
 
 const StyledScrollBar = styled.div`
   flex: 12;
@@ -38,7 +52,8 @@ const StyledScrollBar = styled.div`
   }
 `
 const StyledContent = styled.div`
-  margin: 40px;
+  padding: 20px;
+  background: #eee;
 `
 const StyledTabs = styled(Tabs)`
   flex: 3;
@@ -73,57 +88,111 @@ const StyledTabBarWrapper = styled.div`
   }
 `
 
-const CraftPageSettingBlock: React.VFC = () => {
+const CraftPageSettingBlock: React.VFC<{
+  pageAdmin: CraftPageAdminProps | null
+  onRefetch?: () => void
+}> = ({ pageAdmin, onRefetch }) => {
   const [activeKey, setActiveKey] = useState('component')
 
   return (
-    <>
-      <Editor
-        resolver={{
-          CraftContainer,
-          CraftLayout,
-          CraftTitle,
-          CraftParagraph,
-          CraftTitleAndParagraph,
-          CraftButton,
-          CraftCarousel,
-          CraftStatistics,
-          CraftImage,
-          CraftCard,
-          CraftCollapse,
-          CraftBackground,
-          CraftDataSelector,
-        }}
-      >
-        <div className="d-flex">
-          <StyledScrollBar>
-            <StyledContent>
-              <Frame>
-                <Element is={CraftContainer} margin={{}} canvas></Element>
+    <Editor
+      resolver={{
+        CraftContainer,
+        CraftLayout,
+        CraftTitle,
+        CraftParagraph,
+        CraftTitleAndParagraph,
+        CraftButton,
+        CraftCarousel,
+        CraftStatistics,
+        CraftImage,
+        CraftCard,
+        CraftCollapse,
+        CraftBackground,
+        CraftProgram,
+        CraftProject,
+        CraftActivity,
+        CraftPodcastProgram,
+        CraftInstructor,
+        CraftCarouselContainer,
+      }}
+    >
+      <div className="d-flex">
+        <StyledScrollBar>
+          <StyledContent>
+            <div style={{ height: 'auto', background: 'white' }} onClick={() => setActiveKey('settings')}>
+              <Frame data={pageAdmin?.craftData ? JSON.stringify(pageAdmin.craftData) : undefined}>
+                <Element is={CraftContainer} margin={{}} padding={{ pb: '40', pt: '40', pr: '40', pl: '40' }} canvas />
               </Frame>
-              <CraftActionsPanel />
-            </StyledContent>
-          </StyledScrollBar>
-          <StyledTabs
-            style={{ position: 'relative' }}
-            activeKey={activeKey || 'component'}
-            onChange={key => setActiveKey(key)}
-            renderTabBar={(props, DefaultTabBar) => (
-              <StyledTabBarWrapper>
-                <DefaultTabBar {...props} className="mb-0" />
-              </StyledTabBarWrapper>
-            )}
-          >
-            <StyledTabsPane key="component" tab={<StyledPageIcon active={activeKey} />}>
-              <CraftToolbox />
-            </StyledTabsPane>
-            <StyledTabsPane key="settings" tab={<StyledBrushIcon active={activeKey} />}>
-              <CraftSettingsPanel />
-            </StyledTabsPane>
-          </StyledTabs>
+            </div>
+          </StyledContent>
+        </StyledScrollBar>
+        <SettingBlock pageId={pageAdmin?.id} activeKey={activeKey} setActiveKey={setActiveKey} onRefetch={onRefetch} />
+      </div>
+    </Editor>
+  )
+}
+
+const SettingBlock: React.VFC<{
+  pageId?: string
+  activeKey: string
+  setActiveKey: React.Dispatch<React.SetStateAction<string>>
+  onRefetch?: () => void
+}> = ({ pageId, activeKey, setActiveKey, onRefetch }) => {
+  const { currentMemberId } = useAuth()
+  const { formatMessage } = useIntl()
+  const { updateAppPage } = useMutateAppPage()
+  const { isDataChanged, actions, query } = useEditor((state, query) => ({
+    isDataChanged: query.history.canUndo(),
+  }))
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = () => {
+    if (!currentMemberId || !pageId) {
+      return
+    }
+    setLoading(true)
+    updateAppPage({
+      pageId,
+      editorId: currentMemberId,
+      craftData: JSON.parse(query.serialize()),
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
+        actions.history.clear()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
+  }
+
+  return (
+    <div>
+      {isDataChanged && (
+        <div className="py-3 px-4" style={{ background: 'white' }}>
+          <Button loading={loading} type="primary" block onClick={handleSubmit}>
+            {formatMessage(messages.saveAndUpdate)}
+          </Button>
         </div>
-      </Editor>
-    </>
+      )}
+      <StyledTabs
+        style={{ position: 'relative', maxWidth: '300px', minWidth: '250px' }}
+        activeKey={activeKey || 'component'}
+        onChange={key => setActiveKey(key)}
+        renderTabBar={(props, DefaultTabBar) => (
+          <StyledTabBarWrapper>
+            <DefaultTabBar {...props} className="mb-0" />
+          </StyledTabBarWrapper>
+        )}
+      >
+        <StyledTabsPane key="component" tab={<StyledPageIcon active={activeKey} />}>
+          <CraftToolbox />
+        </StyledTabsPane>
+        <StyledTabsPane key="settings" tab={<StyledBrushIcon active={activeKey} />}>
+          <CraftSettingsPanel setActiveKey={setActiveKey} />
+        </StyledTabsPane>
+      </StyledTabs>
+    </div>
   )
 }
 
