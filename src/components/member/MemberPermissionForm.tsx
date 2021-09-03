@@ -10,7 +10,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/translation'
 import { useDefaultPermissions } from '../../hooks/permission'
 import { MemberAdminProps, UserRole } from '../../types/member'
-import PermissionGroupSelector from '../form/PermissionGroupSelector'
+import PermissionGroupInputSelector from '../form/PermissionGroupInputSelector'
 import PermissionInput from '../form/PermissionInput'
 
 type FieldProps = {
@@ -99,7 +99,7 @@ const MemberPermissionForm: React.FC<{
       </Form.Item>
 
       <Form.Item label={formatMessage(permissionGroupsAdminMessages.label.permissionGroup)} name="permissionGroupIds">
-        <PermissionGroupSelector />
+        <PermissionGroupInputSelector />
       </Form.Item>
 
       {enabledModules.permission && (
