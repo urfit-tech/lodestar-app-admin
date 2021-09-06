@@ -10547,33 +10547,33 @@ export interface GET_ROLE_PERMISSION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PERMISSION_GROUPS_COLLECTION
+// GraphQL query operation: GET_PERMISSION_GROUP_COLLECTION
 // ====================================================
 
-export interface GET_PERMISSION_GROUPS_COLLECTION_permission_group_permission_group_permissions {
+export interface GET_PERMISSION_GROUP_COLLECTION_permission_group_permission_group_permissions {
   __typename: "permission_group_permission";
   id: any;
   permission_id: string;
 }
 
-export interface GET_PERMISSION_GROUPS_COLLECTION_permission_group {
+export interface GET_PERMISSION_GROUP_COLLECTION_permission_group {
   __typename: "permission_group";
   id: any;
   name: string;
   /**
    * An array relationship
    */
-  permission_group_permissions: GET_PERMISSION_GROUPS_COLLECTION_permission_group_permission_group_permissions[];
+  permission_group_permissions: GET_PERMISSION_GROUP_COLLECTION_permission_group_permission_group_permissions[];
 }
 
-export interface GET_PERMISSION_GROUPS_COLLECTION {
+export interface GET_PERMISSION_GROUP_COLLECTION {
   /**
    * fetch data from the table: "permission_group"
    */
-  permission_group: GET_PERMISSION_GROUPS_COLLECTION_permission_group[];
+  permission_group: GET_PERMISSION_GROUP_COLLECTION_permission_group[];
 }
 
-export interface GET_PERMISSION_GROUPS_COLLECTIONVariables {
+export interface GET_PERMISSION_GROUP_COLLECTIONVariables {
   appId?: string | null;
 }
 

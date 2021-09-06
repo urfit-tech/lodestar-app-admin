@@ -6,12 +6,12 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import PermissionGroupAdminItem from '../../components/permission/PermissionGroupAdminItem'
 import PermissionGroupAdminModal from '../../components/permission/PermissionGroupAdminModal'
 import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/translation'
-import { usePermissionGroupsCollection } from '../../hooks/permission'
+import { usePermissionGroupCollection } from '../../hooks/permission'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
 
 const PermissionGroupAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { loadingPermissionGroups, permissionGroups, refetchPermissionGroups } = usePermissionGroupsCollection()
+  const { loadingPermissionGroups, permissionGroups, refetchPermissionGroups } = usePermissionGroupCollection()
 
   return (
     <AdminLayout>

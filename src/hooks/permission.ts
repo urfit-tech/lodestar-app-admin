@@ -37,14 +37,14 @@ export const useDefaultPermissions = () => {
   }
 }
 
-export const usePermissionGroupsCollection = () => {
+export const usePermissionGroupCollection = () => {
   const { id: appId } = useApp()
   const { loading, error, data, refetch } = useQuery<
-    hasura.GET_PERMISSION_GROUPS_COLLECTION,
-    hasura.GET_PERMISSION_GROUPS_COLLECTIONVariables
+    hasura.GET_PERMISSION_GROUP_COLLECTION,
+    hasura.GET_PERMISSION_GROUP_COLLECTIONVariables
   >(
     gql`
-      query GET_PERMISSION_GROUPS_COLLECTION($appId: String) {
+      query GET_PERMISSION_GROUP_COLLECTION($appId: String) {
         permission_group(where: { app_id: { _eq: $appId } }) {
           id
           name
