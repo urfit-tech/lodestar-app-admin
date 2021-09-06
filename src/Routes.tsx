@@ -390,7 +390,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   owner_permission_group: {
-    path: '/permission_group',
+    path: '/permission-group',
     pageName: 'owner/PermissionGroupAdminPage',
     authenticated: true,
   },
