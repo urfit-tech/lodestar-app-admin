@@ -3,11 +3,11 @@ import gql from 'graphql-tag'
 import { isEmpty } from 'lodash'
 import { Moment } from 'moment'
 import { sum } from 'ramda'
-import { useIntl } from 'react-intl'
 import { useAuth } from '../contexts/AuthContext'
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
 import { CouponPlanProps } from '../types/checkout'
+import { PermissionGroupProps } from '../types/general'
 import {
   MemberAdminProps,
   MemberInfoProps,
@@ -202,6 +202,7 @@ export const useMemberAdmin = (memberId: string) => {
           }
         }[]
         noAgreedContract: boolean
+        permissionGroups: PermissionGroupProps[]
       })
     | null =
     loading || error || !data || !data.member_by_pk

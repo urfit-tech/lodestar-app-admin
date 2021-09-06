@@ -9,6 +9,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/translation'
 import { useDefaultPermissions } from '../../hooks/permission'
+import { PermissionGroupProps } from '../../types/general'
 import { MemberAdminProps, UserRole } from '../../types/member'
 import PermissionGroupInputSelector from '../form/PermissionGroupInputSelector'
 import PermissionInput from '../form/PermissionInput'
@@ -20,7 +21,7 @@ type FieldProps = {
 }
 
 const MemberPermissionForm: React.FC<{
-  memberAdmin: MemberAdminProps | null
+  memberAdmin: (MemberAdminProps & { permissionGroups: PermissionGroupProps[] }) | null
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()

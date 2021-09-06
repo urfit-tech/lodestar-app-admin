@@ -10,6 +10,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useDefaultPermissions } from '../../hooks/permission'
+import { PermissionGroupProps } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PermissionInput from '../form/PermissionInput'
 
@@ -19,13 +20,11 @@ type FieldProps = {
 }
 
 const PermissionGroupAdminModal: React.FC<
-  AdminModalProps & {
-    id?: string
-    name?: string
-    permissionGroupPermissions?: string[]
-    onRefetch?: () => void
-  }
-> = ({ id, name, permissionGroupPermissions, onRefetch, ...props }) => {
+  AdminModalProps &
+    PermissionGroupProps & {
+      onRefetch?: () => void
+    }
+> = ({ id, name, permissionIds, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
@@ -112,7 +111,7 @@ const PermissionGroupAdminModal: React.FC<
         hideRequiredMark
         initialValues={{
           name,
-          permissionIds: permissionGroupPermissions,
+          permissionIds,
         }}
       >
         <Form.Item

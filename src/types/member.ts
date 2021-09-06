@@ -97,10 +97,6 @@ export type MemberAdminProps = {
 
   consumption?: number
   coins?: number
-  permissionGroups?: {
-    id: string
-    name: string
-  }[]
 }
 
 export type MemberPropertyProps = {
