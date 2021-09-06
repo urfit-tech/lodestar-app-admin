@@ -7916,6 +7916,7 @@ export interface INSERT_APP_PAGEVariables {
   editorId: string;
   title: string;
   craftData?: any | null;
+  options?: any | null;
 }
 
 /* tslint:disable */

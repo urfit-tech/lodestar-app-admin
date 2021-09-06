@@ -119,9 +119,23 @@ export const useAppPageCollection = () => {
 export const useMutateAppPage = () => {
   const { id: appId } = useApp()
   const [insertAppPageHandler] = useMutation<hasura.INSERT_APP_PAGE, hasura.INSERT_APP_PAGEVariables>(gql`
-    mutation INSERT_APP_PAGE($appId: String!, $path: String, $editorId: String!, $title: String!, $craftData: jsonb) {
+    mutation INSERT_APP_PAGE(
+      $appId: String!
+      $path: String
+      $editorId: String!
+      $title: String!
+      $craftData: jsonb
+      $options: jsonb
+    ) {
       insert_app_page_one(
-        object: { app_id: $appId, path: $path, title: $title, editor_id: $editorId, craft_data: $craftData }
+        object: {
+          app_id: $appId
+          path: $path
+          title: $title
+          editor_id: $editorId
+          craft_data: $craftData
+          options: $options
+        }
       ) {
         id
       }
@@ -134,7 +148,7 @@ export const useMutateAppPage = () => {
     craftData: { [key: string]: any } | null
   }) => {
     return insertAppPageHandler({
-      variables: { appId, ...values },
+      variables: { appId, ...values, options: { white: true } },
     })
   }
   const [updateAppPageHandler] = useMutation<hasura.UPDATE_APP_PAGE, hasura.UPDATE_APP_PAGEVariables>(gql`
