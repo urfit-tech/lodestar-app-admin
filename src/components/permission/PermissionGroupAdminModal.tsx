@@ -21,7 +21,7 @@ type FieldProps = {
 
 const PermissionGroupAdminModal: React.FC<
   AdminModalProps &
-    PermissionGroupProps & {
+    Partial<PermissionGroupProps> & {
       onRefetch?: () => void
     }
 > = ({ id, name, permissionIds, onRefetch, ...props }) => {

@@ -202,7 +202,7 @@ export const useMemberAdmin = (memberId: string) => {
           }
         }[]
         noAgreedContract: boolean
-        permissionGroups: PermissionGroupProps[]
+        permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[]
       })
     | null =
     loading || error || !data || !data.member_by_pk
@@ -912,7 +912,7 @@ export const useMemberCollection = (filter?: {
               [currentValue.property_id]: currentValue.value,
             }
           }, {} as MemberInfoProps['properties']),
-          permission_group: v.member_permission_groups.map(w => w.permission_group.name),
+          permissionGroupNames: v.member_permission_groups.map(w => w.permission_group.name),
         }))
 
   const loadMoreMembers = () =>

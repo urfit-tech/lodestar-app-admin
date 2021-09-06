@@ -21,7 +21,7 @@ type FieldProps = {
 }
 
 const MemberPermissionForm: React.FC<{
-  memberAdmin: (MemberAdminProps & { permissionGroups: PermissionGroupProps[] }) | null
+  memberAdmin: (MemberAdminProps & { permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[] }) | null
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()

@@ -97,7 +97,7 @@ export type OrderLogProps = {
 }
 
 export type PermissionGroupProps = {
-  id?: string
-  name?: string
-  permissionIds?: string[]
+  id: string
+  name: string
+  permissionIds: string[]
 }
