@@ -5,15 +5,13 @@ import { AdminPageTitle, EmptyBlock } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import PermissionGroupAdminItem from '../../components/permission/PermissionGroupAdminItem'
 import PermissionGroupAdminModal from '../../components/permission/PermissionGroupAdminModal'
-import { useApp } from '../../contexts/AppContext'
 import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/translation'
 import { usePermissionGroupsCollection } from '../../hooks/permission'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
 
 const PermissionGroupAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
-  const { loadingPermissionGroups, permissionGroups, refetchPermissionGroups } = usePermissionGroupsCollection(appId)
+  const { loadingPermissionGroups, permissionGroups, refetchPermissionGroups } = usePermissionGroupsCollection()
 
   return (
     <AdminLayout>
@@ -35,21 +33,20 @@ const PermissionGroupAdminPage: React.VFC = () => {
           onRefetch={refetchPermissionGroups}
         />
       </div>
-      <>
-        {loadingPermissionGroups && <Skeleton active />}
-        {!loadingPermissionGroups && permissionGroups.length === 0 && (
-          <EmptyBlock>{formatMessage(permissionGroupsAdminMessages.text.emptyPermissionGroups)}</EmptyBlock>
-        )}
-        {permissionGroups.map(permissionGroup => (
-          <PermissionGroupAdminItem
-            key={permissionGroup.id}
-            id={permissionGroup.id}
-            name={permissionGroup.name}
-            permissionGroupPermissions={permissionGroup.permissionGroupPermissions}
-            onRefetch={refetchPermissionGroups}
-          />
-        ))}
-      </>
+
+      {loadingPermissionGroups && <Skeleton active />}
+      {!loadingPermissionGroups && permissionGroups.length === 0 && (
+        <EmptyBlock>{formatMessage(permissionGroupsAdminMessages.text.emptyPermissionGroups)}</EmptyBlock>
+      )}
+      {permissionGroups.map(permissionGroup => (
+        <PermissionGroupAdminItem
+          key={permissionGroup.id}
+          id={permissionGroup.id}
+          name={permissionGroup.name}
+          permissionIds={permissionGroup.permissionIds}
+          onRefetch={refetchPermissionGroups}
+        />
+      ))}
     </AdminLayout>
   )
 }

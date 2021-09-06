@@ -52,6 +52,9 @@ const PermissionGroupDeletionModal: React.VFC<{ id: string; onRefetch?: () => vo
 
 const DELETE_PERMISSION_GROUP = gql`
   mutation DELETE_PERMISSION_GROUP($id: uuid!) {
+    delete_member_permission_group(where: { permission_group_id: { _eq: $id } }) {
+      affected_rows
+    }
     delete_permission_group_permission(where: { permission_group_id: { _eq: $id } }) {
       affected_rows
     }

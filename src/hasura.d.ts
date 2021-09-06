@@ -3979,6 +3979,14 @@ export interface UPDATE_PERMISSION_GROUP_PERMISSIONVariables {
 // GraphQL mutation operation: DELETE_PERMISSION_GROUP
 // ====================================================
 
+export interface DELETE_PERMISSION_GROUP_delete_member_permission_group {
+  __typename: "member_permission_group_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PERMISSION_GROUP_delete_permission_group_permission {
   __typename: "permission_group_permission_mutation_response";
   /**
@@ -3996,6 +4004,10 @@ export interface DELETE_PERMISSION_GROUP_delete_permission_group {
 }
 
 export interface DELETE_PERMISSION_GROUP {
+  /**
+   * delete data from the table: "member_permission_group"
+   */
+  delete_member_permission_group: DELETE_PERMISSION_GROUP_delete_member_permission_group | null;
   /**
    * delete data from the table: "permission_group_permission"
    */
@@ -10535,70 +10547,34 @@ export interface GET_ROLE_PERMISSION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PERMISSION_GROUPS_Collection
+// GraphQL query operation: GET_PERMISSION_GROUPS_COLLECTION
 // ====================================================
 
-export interface GET_PERMISSION_GROUPS_Collection_permission_group_permission_group_permissions {
+export interface GET_PERMISSION_GROUPS_COLLECTION_permission_group_permission_group_permissions {
   __typename: "permission_group_permission";
   id: any;
   permission_id: string;
 }
 
-export interface GET_PERMISSION_GROUPS_Collection_permission_group {
+export interface GET_PERMISSION_GROUPS_COLLECTION_permission_group {
   __typename: "permission_group";
   id: any;
   name: string;
   /**
    * An array relationship
    */
-  permission_group_permissions: GET_PERMISSION_GROUPS_Collection_permission_group_permission_group_permissions[];
+  permission_group_permissions: GET_PERMISSION_GROUPS_COLLECTION_permission_group_permission_group_permissions[];
 }
 
-export interface GET_PERMISSION_GROUPS_Collection {
+export interface GET_PERMISSION_GROUPS_COLLECTION {
   /**
    * fetch data from the table: "permission_group"
    */
-  permission_group: GET_PERMISSION_GROUPS_Collection_permission_group[];
+  permission_group: GET_PERMISSION_GROUPS_COLLECTION_permission_group[];
 }
 
-export interface GET_PERMISSION_GROUPS_CollectionVariables {
+export interface GET_PERMISSION_GROUPS_COLLECTIONVariables {
   appId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PERMISSION_GROUPS
-// ====================================================
-
-export interface GET_PERMISSION_GROUPS_permission_group_permission_group_permissions {
-  __typename: "permission_group_permission";
-  id: any;
-  permission_id: string;
-}
-
-export interface GET_PERMISSION_GROUPS_permission_group {
-  __typename: "permission_group";
-  id: any;
-  name: string;
-  /**
-   * An array relationship
-   */
-  permission_group_permissions: GET_PERMISSION_GROUPS_permission_group_permission_group_permissions[];
-}
-
-export interface GET_PERMISSION_GROUPS {
-  /**
-   * fetch data from the table: "permission_group"
-   */
-  permission_group: GET_PERMISSION_GROUPS_permission_group[];
-}
-
-export interface GET_PERMISSION_GROUPSVariables {
-  appId: string;
 }
 
 /* tslint:disable */
