@@ -68,10 +68,12 @@ const PermissionGroupAdminModal: React.FC<
             const permissionGroupId = data?.insert_permission_group?.returning[0].id
             insertPermissionGroupPermission({
               variables: {
-                permission_group: values.permissionIds.map(permissionId => ({
-                  permission_group_id: permissionGroupId,
-                  permission_id: permissionId,
-                })),
+                permission_group: values.permissionIds
+                  ? values.permissionIds.map(permissionId => ({
+                      permission_group_id: permissionGroupId,
+                      permission_id: permissionId,
+                    }))
+                  : [],
               },
             }).then(() => message.success(formatMessage(commonMessages.event.successfullyCreated)))
           })
