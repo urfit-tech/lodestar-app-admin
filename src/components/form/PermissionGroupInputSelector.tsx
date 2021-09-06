@@ -1,7 +1,7 @@
 import { Select } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
-import { usePermissionGroupsCollection } from '../../hooks/permission'
+import { usePermissionGroupCollection } from '../../hooks/permission'
 
 const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
   width: 100%;
@@ -28,7 +28,7 @@ const PermissionGroupInputSelector: React.FC<{
   value?: string
   onChange?: (value: string) => void
 }> = ({ single, value, onChange }) => {
-  const { loadingPermissionGroups, permissionGroups } = usePermissionGroupsCollection()
+  const { loadingPermissionGroups, permissionGroups } = usePermissionGroupCollection()
 
   return (
     <StyledSelect
