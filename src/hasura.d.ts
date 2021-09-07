@@ -3926,7 +3926,7 @@ export interface INSERT_PERMISSION_GROUP_PERMISSION {
 }
 
 export interface INSERT_PERMISSION_GROUP_PERMISSIONVariables {
-  permission_group: permission_group_permission_insert_input[];
+  permissionGroups: permission_group_permission_insert_input[];
 }
 
 /* tslint:disable */
@@ -3967,7 +3967,7 @@ export interface UPDATE_PERMISSION_GROUP_PERMISSION {
 
 export interface UPDATE_PERMISSION_GROUP_PERMISSIONVariables {
   permissionGroupPermissionId: any;
-  permission_group: permission_group_permission_insert_input[];
+  permissionGroups: permission_group_permission_insert_input[];
 }
 
 /* tslint:disable */

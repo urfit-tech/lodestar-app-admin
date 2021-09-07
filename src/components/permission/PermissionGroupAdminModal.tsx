@@ -56,7 +56,7 @@ const PermissionGroupAdminModal: React.FC<
           updatePermissionGroupPermission({
             variables: {
               permissionGroupPermissionId: id,
-              permission_group:
+              permissionGroups:
                 values.permissionIds.map(permissionId => ({
                   permission_group_id: id,
                   permission_id: permissionId,
@@ -68,7 +68,7 @@ const PermissionGroupAdminModal: React.FC<
             const permissionGroupId = data?.insert_permission_group?.returning[0].id
             insertPermissionGroupPermission({
               variables: {
-                permission_group: values.permissionIds
+                permissionGroups: values.permissionIds
                   ? values.permissionIds.map(permissionId => ({
                       permission_group_id: permissionGroupId,
                       permission_id: permissionId,
@@ -157,8 +157,8 @@ const UPDATE_PERMISSION_GROUP = gql`
 `
 
 const INSERT_PERMISSION_GROUP_PERMISSION = gql`
-  mutation INSERT_PERMISSION_GROUP_PERMISSION($permission_group: [permission_group_permission_insert_input!]!) {
-    insert_permission_group_permission(objects: $permission_group) {
+  mutation INSERT_PERMISSION_GROUP_PERMISSION($permissionGroups: [permission_group_permission_insert_input!]!) {
+    insert_permission_group_permission(objects: $permissionGroups) {
       affected_rows
     }
   }
@@ -166,12 +166,12 @@ const INSERT_PERMISSION_GROUP_PERMISSION = gql`
 const UPDATE_PERMISSION_GROUP_PERMISSION = gql`
   mutation UPDATE_PERMISSION_GROUP_PERMISSION(
     $permissionGroupPermissionId: uuid!
-    $permission_group: [permission_group_permission_insert_input!]!
+    $permissionGroups: [permission_group_permission_insert_input!]!
   ) {
     delete_permission_group_permission(where: { permission_group_id: { _eq: $permissionGroupPermissionId } }) {
       affected_rows
     }
-    insert_permission_group_permission(objects: $permission_group) {
+    insert_permission_group_permission(objects: $permissionGroups) {
       affected_rows
     }
   }
