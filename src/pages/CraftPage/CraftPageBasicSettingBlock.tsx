@@ -30,6 +30,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
   const { formatMessage } = useIntl()
   const { updateAppPage } = useMutateAppPage()
   const [form] = useForm<FieldProps>()
+  const [path, setPath] = useState(pageAdmin?.path || '')
   const [loading, setLoading] = useState(false)
 
   if (!pageAdmin) {
@@ -118,10 +119,9 @@ const CraftPageBasicSettingBlock: React.VFC<{
                 },
               ]}
             >
-              <Input className="mb-2" />
+              <Input className="mb-2" onChange={e => setPath(e.target.value)} />
             </Form.Item>
-
-            <StyledCraftSettingLabel>www.demo.com/</StyledCraftSettingLabel>
+            <StyledCraftSettingLabel>{window.location.host + path}</StyledCraftSettingLabel>
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button
