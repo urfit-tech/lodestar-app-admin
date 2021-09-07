@@ -62,6 +62,9 @@ const PermissionGroupAdminModal: React.FC<
                   permission_id: permissionId,
                 })) || [],
             },
+          }).then(() => {
+            message.success(formatMessage(commonMessages.event.successfullyEdited))
+            onRefetch?.()
           })
         } else {
           insertPermissionGroup({ variables: { appId: appId, name: values.name } }).then(({ data }) => {
@@ -75,11 +78,14 @@ const PermissionGroupAdminModal: React.FC<
                     }))
                   : [],
               },
-            }).then(() => message.success(formatMessage(commonMessages.event.successfullyCreated)))
+            }).then(() => {
+              message.success(formatMessage(commonMessages.event.successfullyCreated))
+              onRefetch?.()
+            })
           })
         }
+        form.resetFields()
         onSuccess()
-        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
