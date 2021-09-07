@@ -11,7 +11,7 @@ export type AppPageProps = {
   editorId: string | null
   editorName: string | null
   publishedAt: Date | null
-  updatedAt: Date | null
+  updatedAt: Date
   options: { [key: string]: string } | null
 }
 
@@ -50,7 +50,7 @@ export const useAppPage = (pageId: string) => {
         editorId: data.app_page_by_pk.editor_id,
         editorName: data.app_page_by_pk.editor?.name || null,
         publishedAt: data.app_page_by_pk.published_at ? new Date(data.app_page_by_pk.published_at) : null,
-        updatedAt: data.app_page_by_pk.updated_at ? new Date(data.app_page_by_pk.updated_at) : null,
+        updatedAt: new Date(data.app_page_by_pk.updated_at),
         options: data.app_page_by_pk.options,
       }
     : null
@@ -103,7 +103,7 @@ export const useAppPageCollection = () => {
         editorId: v.editor_id,
         editorName: v.editor?.name || null,
         publishedAt: v.published_at ? new Date(v.published_at) : null,
-        updatedAt: v.updated_at ? new Date(v.updated_at) : null,
+        updatedAt: new Date(v.updated_at),
         options: v.options,
       }))
       .filter(v => v.craftData) || []
