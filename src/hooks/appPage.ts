@@ -171,12 +171,12 @@ export const useMutateAppPage = () => {
       variables: {
         pageId: values.pageId,
         updated: {
-          ...(values.path ? { path: values.path } : {}),
-          ...(values.title ? { title: values.title } : {}),
-          ...(values.editorId ? { editor_id: values.editorId } : {}),
-          ...(values.publishedAt !== undefined ? { published_at: values.publishedAt } : {}),
-          ...(values.craftData ? { craft_data: values.craftData } : {}),
+          path: values.path,
+          title: values.title,
+          editor_id: values.editorId,
+          craft_data: values.craftData,
           is_deleted: values.isDeleted,
+          published_at: values.publishedAt,
         },
       },
     })
