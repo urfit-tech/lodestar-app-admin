@@ -189,7 +189,7 @@ const SettingBlock: React.VFC<{
           <CraftToolbox />
         </StyledTabsPane>
         <StyledTabsPane key="settings" tab={<StyledBrushIcon active={activeKey} />}>
-          <CraftSettingsPanel setActiveKey={setActiveKey} />
+          <CraftSettingsPanel callback={{ onDelete: () => setActiveKey('component') }} />
         </StyledTabsPane>
       </StyledTabs>
     </div>

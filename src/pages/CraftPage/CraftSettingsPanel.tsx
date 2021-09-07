@@ -4,9 +4,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../helpers/translation'
 
-const CraftSettingsPanel: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({
-  setActiveKey,
-}) => {
+const CraftSettingsPanel: React.VFC<{ callback?: { onDelete?: () => void } }> = ({ callback }) => {
   const { formatMessage } = useIntl()
   const {
     query: { node },
@@ -40,7 +38,7 @@ const CraftSettingsPanel: React.VFC<{ setActiveKey: React.Dispatch<React.SetStat
             }
             if (window.confirm(formatMessage(craftPageMessages.text.deleteWarning))) {
               actions.delete(selected.id)
-              setActiveKey('component')
+              callback?.onDelete?.()
             }
           }}
         >
