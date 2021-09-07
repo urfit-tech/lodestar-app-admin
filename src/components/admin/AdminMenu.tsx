@@ -330,6 +330,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(commonMessages.menu.members),
         },
         {
+          permissionIsAllowed: !!enabledModules.permission_group,
+          key: 'owner_permission_group',
+          name: formatMessage(commonMessages.menu.permissionGroup),
+        },
+        {
           permissionIsAllowed: permissions.MEMBER_CATEGORY_ADMIN,
           key: 'owner_member_category',
           name: formatMessage(commonMessages.menu.memberCategory),
