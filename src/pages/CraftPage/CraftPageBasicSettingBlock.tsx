@@ -1,5 +1,5 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { Button, Form, Input, Tooltip } from 'antd'
+import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -10,7 +10,10 @@ import {
   StyledCraftSettingLabel,
   StyledTips,
 } from '../../components/admin'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/translation'
+import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
 import CraftPageDeletionAdminCard from './CraftPageDeletionAdminCard'
 
@@ -22,16 +25,34 @@ type FieldProps = {
 const CraftPageBasicSettingBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps | null
   onRefetch?: () => void
-}> = ({ pageAdmin }) => {
+}> = ({ pageAdmin, onRefetch }) => {
+  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
+  const { updateAppPage } = useMutateAppPage()
   const [form] = useForm<FieldProps>()
+  const [path, setPath] = useState(pageAdmin?.path || '')
   const [loading, setLoading] = useState(false)
 
+  if (!pageAdmin) {
+    return <Skeleton active />
+  }
+
   const handleSubmit = (values: FieldProps) => {
+    if (!currentMemberId) {
+      return
+    }
     setLoading(true)
-    //TODO: update page
-    setLoading(false)
-    //refresh
+    updateAppPage({
+      pageId: pageAdmin.id,
+      path: values.path,
+      title: values.pageName,
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -46,7 +67,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
           labelCol={{ md: { span: 4 } }}
           wrapperCol={{ md: { span: 8 } }}
           initialValues={{
-            pageName: pageAdmin?.pageName,
+            pageName: pageAdmin?.title,
             path: pageAdmin?.path,
           }}
           onFinish={handleSubmit}
@@ -98,10 +119,9 @@ const CraftPageBasicSettingBlock: React.VFC<{
                 },
               ]}
             >
-              <Input className="mb-2" />
+              <Input className="mb-2" onChange={e => setPath(e.target.value)} />
             </Form.Item>
-
-            <StyledCraftSettingLabel>www.demo.com/</StyledCraftSettingLabel>
+            <StyledCraftSettingLabel>{window.location.host + path}</StyledCraftSettingLabel>
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button

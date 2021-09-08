@@ -10,6 +10,7 @@ import { ApiProvider } from './contexts/ApiContext'
 import { AppProvider } from './contexts/AppContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { CustomRendererProps, CustomRendererProvider } from './contexts/CustomRendererContext'
+import { ElementConfig } from './contexts/ElementConfig'
 import { LanguageProvider } from './contexts/LanguageContext'
 import Routes, { RouteProps } from './Routes'
 import './styles/default/index.scss'
@@ -29,9 +30,11 @@ const Application: React.FC<{
               <LanguageProvider>
                 <ThemeProvider theme={theme}>
                   <ConfigProvider locale={zhTW}>
-                    <CustomRendererProvider renderer={customRender}>
-                      <Routes extra={extraRouteProps} />
-                    </CustomRendererProvider>
+                    <ElementConfig appId={appId}>
+                      <CustomRendererProvider renderer={customRender}>
+                        <Routes extra={extraRouteProps} />
+                      </CustomRendererProvider>
+                    </ElementConfig>
                   </ConfigProvider>
                 </ThemeProvider>
               </LanguageProvider>

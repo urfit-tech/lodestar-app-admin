@@ -23,10 +23,10 @@ const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filter
 
 type CraftPageColumnProps = {
   id: string
-  pageName: string
-  path: string
+  title: string | null
+  path: string | null
   updatedAt: Date | null
-  editor: string
+  editor: string | null
 }
 
 const CraftPageCollectionTable: React.VFC<{ pages: CraftPageColumnProps[] }> = ({ pages }) => {
@@ -38,7 +38,7 @@ const CraftPageCollectionTable: React.VFC<{ pages: CraftPageColumnProps[] }> = (
       key: 'pageName',
       title: formatMessage(craftPageMessages.label.pageName),
       width: '55%',
-      render: (_, record) => <StyledText>{record.pageName}</StyledText>,
+      render: (_, record) => <StyledText>{record.title}</StyledText>,
       filterDropdown: () => (
         <div className="p-2">
           <Input
@@ -79,7 +79,7 @@ const CraftPageCollectionTable: React.VFC<{ pages: CraftPageColumnProps[] }> = (
       <Table<CraftPageColumnProps>
         rowKey="id"
         columns={columns}
-        dataSource={pages.filter(page => !searchPageName || page.pageName.includes(searchPageName))}
+        dataSource={pages.filter(page => !searchPageName || page.title?.includes(searchPageName))}
         onRow={record => ({
           onClick: () => {
             window.open(`${process.env.PUBLIC_URL}/craft_page/${record.id}?tab=editor`, '_blank')
