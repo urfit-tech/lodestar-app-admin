@@ -1,5 +1,5 @@
 import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Input, Menu, Popover, Table, Tag } from 'antd'
+import { Button, Checkbox, Dropdown, Input, Menu, Popover, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
@@ -14,6 +14,7 @@ import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from 'lodestar-app-admin/src/hooks/member'
+import { usePermissionGroupsDropdownMenu } from 'lodestar-app-admin/src/hooks/permission'
 import { ReactComponent as TableIcon } from 'lodestar-app-admin/src/images/icon/table.svg'
 import { MemberInfoProps, UserRole } from 'lodestar-app-admin/src/types/member'
 import moment from 'moment'
@@ -128,6 +129,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     })),
   })
   const [loading, setLoading] = useState(false)
+  const [selectedPermissionGroup, setSelectedPermissionGroup] = useState<string | undefined>(undefined)
 
   // role selector
   const { menu } = useMemberRoleCount(appId, fieldFilter)
@@ -169,6 +171,29 @@ const MemberCollectionAdminPage: React.FC = () => {
         <CaretDownOutlined />
       </Button>
     </StyledDropdown>
+  )
+
+  // permission group dropdown selector
+  const { permissionGroupDropdownMenu } = usePermissionGroupsDropdownMenu(appId, fieldFilter)
+  const permissionGroupsDropDownSelector = (
+    <Select
+      allowClear
+      placeholder={formatMessage(commonMessages.label.permissionGroupsSelectorPlaceholder)}
+      value={selectedPermissionGroup}
+      onChange={value => {
+        setSelectedPermissionGroup(value)
+        setFieldFilter(filter => ({
+          ...filter,
+          permissionGroup: value,
+        }))
+      }}
+    >
+      {permissionGroupDropdownMenu.map(item => (
+        <Select.Option key={item.permissionGroup} value={item.permissionGroup}>
+          {item.permissionGroup} ({item.count})
+        </Select.Option>
+      ))}
+    </Select>
   )
 
   // table
@@ -341,7 +366,12 @@ const MemberCollectionAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <div className="flex-grow-1">{roleSelector}</div>
+        <div className="d-flex">
+          <div className="mr-3">{roleSelector}</div>
+          {enabledModules.permission_group && currentUserRole === 'app-owner' && (
+            <div>{permissionGroupsDropDownSelector}</div>
+          )}
+        </div>
 
         <Popover
           trigger="click"
