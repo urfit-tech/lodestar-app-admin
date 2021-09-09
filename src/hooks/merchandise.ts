@@ -346,6 +346,8 @@ export const useMerchandiseSpecCollection = (options?: {
           merchandise {
             title
             published_at
+            is_physical
+            is_customized
             merchandise_imgs {
               url
             }
@@ -359,6 +361,7 @@ export const useMerchandiseSpecCollection = (options?: {
             buyable_quantity
             delivered_quantity
             undelivered_quantity
+            unpaid_quantity
           }
         }
       }
@@ -384,6 +387,8 @@ export const useMerchandiseSpecCollection = (options?: {
     coverUrl: string | null
     merchandiseSpecTitle: string
     merchandiseSpecInventoryStatus: ProductInventoryStatusProps
+    isPhysical: boolean
+    isCustomized: boolean
   }[] =
     loading || error || !data
       ? []
@@ -399,7 +404,10 @@ export const useMerchandiseSpecCollection = (options?: {
             buyableQuantity: v.merchandise_spec_inventory_status?.buyable_quantity | 0,
             deliveredQuantity: v.merchandise_spec_inventory_status?.delivered_quantity | 0,
             undeliveredQuantity: v.merchandise_spec_inventory_status?.undelivered_quantity | 0,
+            unpaidQuantity: v.merchandise_spec_inventory_status?.unpaid_quantity | 0,
           },
+          isPhysical: v.merchandise.is_physical,
+          isCustomized: v.merchandise.is_customized,
         }))
   return {
     loadingMerchandiseSpecs: loading,

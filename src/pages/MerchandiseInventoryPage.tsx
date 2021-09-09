@@ -129,6 +129,8 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
                   merchandiseSpecTitle={merchandise.merchandiseSpecTitle}
                   merchandiseSpecInventoryStatus={merchandise.merchandiseSpecInventoryStatus}
                   merchandiseMemberShop={merchandise.merchandiseMemberShop}
+                  isPhysical={merchandise.isPhysical}
+                  isCustomized={merchandise.isCustomized}
                   onRefetch={refetchMerchandiseSpecs}
                 />
               ))

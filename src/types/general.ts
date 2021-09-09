@@ -48,6 +48,7 @@ export type ProductInventoryStatusProps = {
   buyableQuantity: number
   undeliveredQuantity: number
   deliveredQuantity: number
+  unpaidQuantity: number
 }
 
 export type ProductInventoryLogProps = {

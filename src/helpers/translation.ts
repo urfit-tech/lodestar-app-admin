@@ -1000,6 +1000,7 @@ export const merchandiseMessages = {
     arrange: { id: 'merchandise.status.arrange', defaultMessage: '調整庫存' },
     inOperation: { id: 'merchandise.status.inOperation', defaultMessage: '經營中' },
     inactivated: { id: 'merchandise.status.inactivated', defaultMessage: '未啟用' },
+    reserved: { id: 'merchandise.statue.reserved', defaultMessage: '已保留' },
   }),
   menu: defineMessages({
     memberShopSetting: { id: 'merchandise.menu.memberShopSetting', defaultMessage: '商店設定' },
