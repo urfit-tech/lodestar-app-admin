@@ -235,6 +235,12 @@ export const commonMessages = {
     material: { id: 'common.label.material', defaultMessage: '教材' },
     sku: { id: 'common.label.sku', defaultMessage: '料號（SKU)' },
     skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
+    roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
+    permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
+    permissionGroupsSelectorPlaceholder: {
+      id: 'common.label.permissionGroupsSelectorPlaceholder',
+      defaultMessage: '選擇權限組',
+    },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -367,6 +373,7 @@ export const commonMessages = {
     categories: { id: 'common.menu.categories', defaultMessage: '分類設定' },
     memberAdmin: { id: 'common.menu.memberAdmin', defaultMessage: '會員管理' },
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
+    permissionGroup: { id: 'common.menu.permissionGroup', defaultMessage: '權限組' },
     memberCategory: { id: 'common.menu.memberCategory', defaultMessage: '會員分類' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
     noteAdmin: { id: 'common.menu.noteAdmin', defaultMessage: '聯絡管理' },
@@ -1397,6 +1404,24 @@ export const permissionGroupsMessages = defineMessages({
   project: { id: 'permission.label.project', defaultMessage: '專案管理' },
   contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
 })
+
+export const permissionGroupsAdminMessages = {
+  ui: defineMessages({
+    createPermissionGroup: { id: 'permissionAdmin.ui.createPermissionGroup', defaultMessage: '新增權限組' },
+    editPermissionGroup: { id: 'permissionAdmin.ui.editPermissionGroup', defaultMessage: '編輯權限組' },
+    deletePermissionGroup: { id: 'permissionAdmin.ui.deletePermissionGroup', defaultMessage: '刪除權限組' },
+  }),
+  label: defineMessages({
+    permissionGroup: { id: 'permissionAdmin.label.permissionGroup', defaultMessage: '權限組' },
+  }),
+  text: defineMessages({
+    deletePermissionGroupConfirmation: {
+      id: 'permissionAdmin.text.deletePermissionGroupConfirmation',
+      defaultMessage: '權限組一經刪除即不可恢復，並且會將掛有此權限組的會員移除權限，確定要刪除嗎？',
+    },
+    emptyPermissionGroups: { id: 'permissionAdmin.text.emptyPermissionGroups', defaultMessage: '尚未設定任何權限組' },
+  }),
+}
 
 export const permissionMessages = defineMessages({
   // backstage

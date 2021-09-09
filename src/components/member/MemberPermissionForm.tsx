@@ -1,28 +1,27 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, permissionGroupsAdminMessages } from '../../helpers/translation'
+import { useDefaultPermissions } from '../../hooks/permission'
+import { PermissionGroupProps } from '../../types/general'
 import { MemberAdminProps, UserRole } from '../../types/member'
+import PermissionGroupInputSelector from '../form/PermissionGroupInputSelector'
 import PermissionInput from '../form/PermissionInput'
-
-const messages = defineMessages({
-  roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
-  permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
-})
 
 type FieldProps = {
   roleId: UserRole
+  permissionGroupIds?: string[]
   permissionIds?: string[]
 }
 
 const MemberPermissionForm: React.FC<{
-  memberAdmin: MemberAdminProps | null
+  memberAdmin: (MemberAdminProps & { permissionGroups: Pick<PermissionGroupProps, 'id' | 'name'>[] }) | null
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -45,6 +44,11 @@ const MemberPermissionForm: React.FC<{
       variables: {
         memberId: memberAdmin.id,
         role: values.roleId,
+        permissionGroups:
+          values.permissionGroupIds?.map(permissionGroupId => ({
+            member_id: memberAdmin.id,
+            permission_group_id: permissionGroupId,
+          })) || [],
         permissions:
           values.permissionIds?.map((permissionId: string) => ({
             member_id: memberAdmin.id,
@@ -71,6 +75,7 @@ const MemberPermissionForm: React.FC<{
       initialValues={{
         roleId: memberAdmin.role,
         permissionIds: [...(defaultRolePermissions[memberAdmin.role] || []), ...memberAdmin.permissionIds],
+        permissionGroupIds: [...(memberAdmin.permissionGroups?.map(v => v.id) || [])],
       }}
       onValuesChange={values => {
         if (values.roleId) {
@@ -86,7 +91,7 @@ const MemberPermissionForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(messages.roleSettings)} name="roleId">
+      <Form.Item label={formatMessage(commonMessages.label.roleSettings)} name="roleId">
         <Select>
           <Select.Option value="general-member">{formatMessage(commonMessages.label.generalMember)}</Select.Option>
           <Select.Option value="content-creator">{formatMessage(commonMessages.label.contentCreator)}</Select.Option>
@@ -94,9 +99,15 @@ const MemberPermissionForm: React.FC<{
         </Select>
       </Form.Item>
 
+      {enabledModules.permission_group && (
+        <Form.Item label={formatMessage(permissionGroupsAdminMessages.label.permissionGroup)} name="permissionGroupIds">
+          <PermissionGroupInputSelector />
+        </Form.Item>
+      )}
+
       {enabledModules.permission && (
         <Form.Item
-          label={formatMessage(messages.permissionSettings)}
+          label={formatMessage(commonMessages.label.permissionSettings)}
           wrapperCol={{ md: { span: 20 } }}
           name="permissionIds"
         >
@@ -120,9 +131,16 @@ const UPDATE_MEMBER_ROLE = gql`
   mutation UPDATE_MEMBER_ROLE(
     $memberId: String!
     $role: String
+    $permissionGroups: [member_permission_group_insert_input!]!
     $permissions: [member_permission_extra_insert_input!]!
   ) {
     update_member(where: { id: { _eq: $memberId } }, _set: { role: $role }) {
+      affected_rows
+    }
+    delete_member_permission_group(where: { member_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    insert_member_permission_group(objects: $permissionGroups) {
       affected_rows
     }
     delete_member_permission_extra(where: { member_id: { _eq: $memberId } }) {
@@ -133,37 +151,5 @@ const UPDATE_MEMBER_ROLE = gql`
     }
   }
 `
-
-const useDefaultPermissions = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_ROLE_PERMISSION>(gql`
-    query GET_ROLE_PERMISSION {
-      role_permission {
-        id
-        role_id
-        permission_id
-      }
-    }
-  `)
-
-  const defaultRolePermissions =
-    data?.role_permission.reduce<
-      {
-        [roleId in string]?: string[]
-      }
-    >(
-      (accumulator, currentValue) => ({
-        ...accumulator,
-        [currentValue.role_id]: [...(accumulator[currentValue.role_id] || []), currentValue.permission_id],
-      }),
-      {},
-    ) || {}
-
-  return {
-    loadingPermissions: loading,
-    errorPermissions: error,
-    defaultRolePermissions,
-    refetchPermissions: refetch,
-  }
-}
 
 export default MemberPermissionForm

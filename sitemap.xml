@@ -114,10 +114,10 @@
          <loc>https://demo-admin.lodestar-dev.cc/admin/sales</loc>  
     </url>
     <url> 
-         <loc>https://demo-admin.lodestar-dev.cc/admin/coupon_plans</loc>  
+         <loc>https://demo-admin.lodestar-dev.cc/admin/coupon-plans</loc>  
     </url>
     <url> 
-         <loc>https://demo-admin.lodestar-dev.cc/admin/voucher_plans</loc>  
+         <loc>https://demo-admin.lodestar-dev.cc/admin/voucher-plans</loc>  
     </url>
     <url> 
          <loc>https://demo-admin.lodestar-dev.cc/admin/members</loc>  

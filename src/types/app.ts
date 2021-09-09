@@ -49,6 +49,7 @@ export type Module =
   | 'group_buying'
   | 'craft_page'
   | 'sku'
+  | 'permission_group'
 
 export type Currency = {
   name: string

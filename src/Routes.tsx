@@ -350,20 +350,20 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
   // craft page
   craft_page_collection: {
-    path: '/craft_page',
+    path: '/craft-page',
     pageName: 'CraftPage/CraftPageCollectionPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
   craft_page_setup: {
-    path: '/craft_page/:pageId',
+    path: '/craft-page/:pageId',
     pageName: 'CraftPage/CraftPageAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
   // app owner admin
   owner_learning_overview: {
-    path: '/learning_overview',
+    path: '/learning-overview',
     pageName: 'owner/LearningOverviewPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
@@ -375,18 +375,23 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     allowedUserRole: 'app-owner',
   },
   owner_coupon_plans: {
-    path: '/coupon_plans',
+    path: '/coupon-plans',
     pageName: 'owner/CouponPlanCollectionAdminPage',
     authenticated: true,
   },
   owner_voucher_plans: {
-    path: '/voucher_plans',
+    path: '/voucher-plans',
     pageName: 'owner/VoucherPlanCollectionAdminPage',
     authenticated: true,
   },
   owner_members: {
     path: '/members',
     pageName: 'owner/MemberCollectionAdminPage',
+    authenticated: true,
+  },
+  owner_permission_group: {
+    path: '/permission-group',
+    pageName: 'owner/PermissionGroupAdminPage',
     authenticated: true,
   },
   member_contract_creation: {

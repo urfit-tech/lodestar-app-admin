@@ -8,11 +8,11 @@ import styled from 'styled-components'
 import { StyledFullWidthSelect } from '../../components/admin'
 import { craftPageMessages } from '../../helpers/translation'
 
-const StyledBoxWrapper = styled.div`
+export const StyledBoxWrapper = styled.div`
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
 `
 
-const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateAction<string>> }> = ({ setActiveKey }) => {
+const CraftToolbox: React.VFC = () => {
   const { connectors } = useEditor()
   const { formatMessage } = useIntl()
   const [selected, setSelected] = useState<SelectValue | undefined>(undefined)
@@ -111,7 +111,6 @@ const CraftToolbox: React.VFC<{ setActiveKey: React.Dispatch<React.SetStateActio
                     fontWeight: 'normal',
                     color: '#cccdff',
                   }}
-                  setActiveKey={setActiveKey}
                 />,
               )
             }
