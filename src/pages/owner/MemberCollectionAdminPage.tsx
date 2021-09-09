@@ -368,7 +368,9 @@ const MemberCollectionAdminPage: React.FC = () => {
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex">
           <div className="mr-3">{roleSelector}</div>
-          {enabledModules.permission_group && <div>{permissionGroupsDropDownSelector}</div>}
+          {enabledModules.permission_group && currentUserRole === 'app-owner' && (
+            <div>{permissionGroupsDropDownSelector}</div>
+          )}
         </div>
 
         <div className="d-flex">
