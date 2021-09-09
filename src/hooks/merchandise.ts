@@ -10,6 +10,7 @@ import {
   MemberShopProps,
   MerchandisePreviewProps,
   MerchandiseProps,
+  MerchandiseSpec,
 } from '../types/merchandise'
 
 export const useMerchandiseCollection = (isNotPublished?: boolean) => {
@@ -378,36 +379,25 @@ export const useMerchandiseSpecCollection = (options?: {
     },
   )
 
-  const merchandiseSpecs: {
-    merchandiseSpecId: string
-    merchandiseTitle: string
-    published_at: Date | null
-    merchandiseMemberShopId?: string
-    merchandiseMemberShop?: string
-    coverUrl: string | null
-    merchandiseSpecTitle: string
-    merchandiseSpecInventoryStatus: ProductInventoryStatusProps
-    isPhysical: boolean
-    isCustomized: boolean
-  }[] =
+  const merchandiseSpecs: MerchandiseSpec[] =
     loading || error || !data
       ? []
       : data.merchandise_spec.map(v => ({
-          merchandiseSpecId: v.id,
-          merchandiseTitle: v.merchandise.title,
-          published_at: v.merchandise.published_at,
-          merchandiseMemberShopId: v.merchandise?.member_shop?.id,
-          merchandiseMemberShop: v.merchandise?.member_shop?.title,
+          id: v.id,
+          title: v.title,
           coverUrl: v.merchandise.merchandise_imgs[0]?.url || null,
-          merchandiseSpecTitle: v.title,
-          merchandiseSpecInventoryStatus: {
-            buyableQuantity: v.merchandise_spec_inventory_status?.buyable_quantity | 0,
-            deliveredQuantity: v.merchandise_spec_inventory_status?.delivered_quantity | 0,
-            undeliveredQuantity: v.merchandise_spec_inventory_status?.undelivered_quantity | 0,
-            unpaidQuantity: v.merchandise_spec_inventory_status?.unpaid_quantity | 0,
+          publishedAt: v.merchandise.published_at,
+          inventoryStatus: {
+            buyableQuantity: v.merchandise_spec_inventory_status?.buyable_quantity || 0,
+            deliveredQuantity: v.merchandise_spec_inventory_status?.delivered_quantity || 0,
+            undeliveredQuantity: v.merchandise_spec_inventory_status?.undelivered_quantity || 0,
+            unpaidQuantity: v.merchandise_spec_inventory_status?.unpaid_quantity || 0,
           },
           isPhysical: v.merchandise.is_physical,
           isCustomized: v.merchandise.is_customized,
+          merchandiseTitle: v.merchandise.title,
+          memberShopId: v.merchandise?.member_shop?.id || '',
+          memberShop: v.merchandise?.member_shop?.title || '',
         }))
   return {
     loadingMerchandiseSpecs: loading,
