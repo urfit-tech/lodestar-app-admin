@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ProductInventoryStatusProps } from '../../types/general'
+import { MerchandiseSpec } from '../../types/merchandise'
 import AdminCard from '../admin/AdminCard'
 import MerchandiseInventoryAdminModal from './MerchandiseInventoryAdminModal'
 
@@ -39,28 +39,23 @@ const MerchandiseInventoryAmount = styled.div`
   line-height: 24px;
   color: var(--gray-darker);
 `
-
-export type MerchandiseInventoryCardProps = CardProps & {
-  merchandiseSpecId: string
-  coverUrl: string | null
-  merchandiseTitle: string
-  merchandiseSpecTitle: string
-  merchandiseSpecInventoryStatus: ProductInventoryStatusProps
-  merchandiseMemberShop?: string
-  isPhysical: boolean
-  isCustomized: boolean
-  onRefetch?: () => void
-}
+export type MerchandiseInventoryCardProps = CardProps &
+  Pick<
+    MerchandiseSpec,
+    'id' | 'title' | 'coverUrl' | 'inventoryStatus' | 'isPhysical' | 'isCustomized' | 'merchandiseTitle' | 'memberShop'
+  > & {
+    onRefetch?: () => void
+  }
 
 const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
-  merchandiseSpecId,
+  id,
+  title,
   coverUrl,
-  merchandiseTitle,
-  merchandiseSpecTitle,
-  merchandiseSpecInventoryStatus,
-  merchandiseMemberShop,
+  inventoryStatus,
   isPhysical,
   isCustomized,
+  merchandiseTitle,
+  memberShop,
   onRefetch,
   ...cardProps
 }) => {
@@ -76,9 +71,9 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
             <MerchandiseTitle>
               {merchandiseTitle}
               <span>|</span>
-              {merchandiseSpecTitle}
+              {title}
             </MerchandiseTitle>
-            <MerchandiseInventoryLabel>{merchandiseMemberShop}</MerchandiseInventoryLabel>
+            <MerchandiseInventoryLabel>{memberShop}</MerchandiseInventoryLabel>
           </div>
           <div className="d-flex flex-fill justify-content-end">
             <div className="mr-sm-5 mr-1">
@@ -86,7 +81,7 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
                 {formatMessage(messages.sold)}
               </MerchandiseInventoryLabel>
               <MerchandiseInventoryAmount className="d-flex justify-content-center">
-                {merchandiseSpecInventoryStatus.deliveredQuantity + merchandiseSpecInventoryStatus.undeliveredQuantity}
+                {inventoryStatus.deliveredQuantity + inventoryStatus.undeliveredQuantity}
               </MerchandiseInventoryAmount>
             </div>
             <div>
@@ -94,7 +89,7 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
                 {formatMessage(messages.currentInventory)}
               </MerchandiseInventoryLabel>
               <MerchandiseInventoryAmount className="d-flex justify-content-center">
-                {merchandiseSpecInventoryStatus.buyableQuantity}
+                {inventoryStatus.buyableQuantity}
               </MerchandiseInventoryAmount>
             </div>
           </div>
@@ -102,14 +97,14 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
       </StyledMerchandiseInventoryCard>
 
       <MerchandiseInventoryAdminModal
-        merchandiseSpecId={merchandiseSpecId}
+        id={id}
+        title={title}
         coverUrl={coverUrl}
-        merchandiseTitle={merchandiseTitle}
-        merchandiseSpecTitle={merchandiseSpecTitle}
-        merchandiseSpecInventoryStatus={merchandiseSpecInventoryStatus}
-        merchandiseMemberShop={merchandiseMemberShop}
+        inventoryStatus={inventoryStatus}
         isPhysical={isPhysical}
         isCustomized={isCustomized}
+        merchandiseTitle={merchandiseTitle}
+        memberShop={memberShop}
         visible={visible}
         onCancel={() => setVisible(false)}
         onRefetch={onRefetch}

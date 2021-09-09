@@ -37,44 +37,40 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
     {
       key: 'selling',
       tab: formatMessage(merchandiseMessages.status.selling),
-      merchandises:
+      merchandiseSpecs:
         selectedMemberShop === 'all'
           ? merchandiseSpecs.filter(
-              merchandiseSpec =>
-                merchandiseSpec.published_at && merchandiseSpec.merchandiseSpecInventoryStatus.buyableQuantity > 0,
+              merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity > 0,
             )
           : merchandiseSpecs
-              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.merchandiseMemberShopId)
+              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShopId)
               .filter(
-                merchandiseSpec =>
-                  merchandiseSpec.published_at && merchandiseSpec.merchandiseSpecInventoryStatus.buyableQuantity > 0,
+                merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity > 0,
               ),
     },
     {
       key: 'soldOut',
       tab: formatMessage(merchandiseMessages.status.soldOut),
-      merchandises:
+      merchandiseSpecs:
         selectedMemberShop === 'all'
           ? merchandiseSpecs.filter(
-              merchandiseSpec =>
-                merchandiseSpec.published_at && merchandiseSpec.merchandiseSpecInventoryStatus.buyableQuantity <= 0,
+              merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity <= 0,
             )
           : merchandiseSpecs
-              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.merchandiseMemberShopId)
+              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShopId)
               .filter(
-                merchandiseSpec =>
-                  merchandiseSpec.published_at && merchandiseSpec.merchandiseSpecInventoryStatus.buyableQuantity <= 0,
+                merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity <= 0,
               ),
     },
     {
       key: 'unpublished',
       tab: formatMessage(merchandiseMessages.status.unpublished),
-      merchandises:
+      merchandiseSpecs:
         selectedMemberShop === 'all'
-          ? merchandiseSpecs.filter(merchandiseSpec => !merchandiseSpec.published_at)
+          ? merchandiseSpecs.filter(merchandiseSpec => !merchandiseSpec.publishedAt)
           : merchandiseSpecs
-              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.merchandiseMemberShopId)
-              .filter(merchandiseSpec => !merchandiseSpec.published_at),
+              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShopId)
+              .filter(merchandiseSpec => !merchandiseSpec.publishedAt),
     },
   ]
 
@@ -112,25 +108,25 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
 
       <Tabs defaultActiveKey="selling">
         {tabContents.map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.merchandises.length})`}>
+          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.merchandiseSpecs.length})`}>
             {isAuthenticating || loadingMerchandiseSpecs ? (
               <Skeleton active />
-            ) : tabContent.merchandises.length === 0 ? (
+            ) : tabContent.merchandiseSpecs.length === 0 ? (
               <StyledNoMatching>
                 <div>{formatMessage(merchandiseMessages.text.noMatchingItems)}</div>
               </StyledNoMatching>
             ) : (
-              tabContent.merchandises.map(merchandise => (
+              tabContent.merchandiseSpecs.map(merchandiseSpec => (
                 <MerchandiseInventoryCard
-                  key={merchandise.merchandiseSpecId}
-                  merchandiseSpecId={merchandise.merchandiseSpecId}
-                  coverUrl={merchandise.coverUrl}
-                  merchandiseTitle={merchandise.merchandiseTitle}
-                  merchandiseSpecTitle={merchandise.merchandiseSpecTitle}
-                  merchandiseSpecInventoryStatus={merchandise.merchandiseSpecInventoryStatus}
-                  merchandiseMemberShop={merchandise.merchandiseMemberShop}
-                  isPhysical={merchandise.isPhysical}
-                  isCustomized={merchandise.isCustomized}
+                  key={merchandiseSpec.id}
+                  id={merchandiseSpec.id}
+                  title={merchandiseSpec.title}
+                  coverUrl={merchandiseSpec.coverUrl}
+                  inventoryStatus={merchandiseSpec.inventoryStatus}
+                  merchandiseTitle={merchandiseSpec.merchandiseTitle}
+                  isPhysical={merchandiseSpec.isPhysical}
+                  isCustomized={merchandiseSpec.isCustomized}
+                  memberShop={merchandiseSpec.memberShop}
                   onRefetch={refetchMerchandiseSpecs}
                 />
               ))

@@ -7,13 +7,9 @@ import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useArrangeProductInventory, useProductInventoryLog } from '../../hooks/data'
+import { MerchandiseSpec } from '../../types/merchandise'
 import QuantityInput from '../form/QuantityInput'
-import {
-  MerchandiseCover,
-  MerchandiseInventoryCardProps,
-  MerchandiseInventoryLabel,
-  MerchandiseTitle,
-} from './MerchandiseInventoryCard'
+import { MerchandiseCover, MerchandiseInventoryLabel, MerchandiseTitle } from './MerchandiseInventoryCard'
 import MerchandiseInventoryTable from './MerchandiseInventoryTable'
 
 const StyledLabel = styled.div`
@@ -50,15 +46,30 @@ const StatusCardQuantity = styled.div`
   line-height: 24px;
   color: var(--gray-darker);
 `
-const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & ModalProps> = ({
-  merchandiseSpecId,
+const MerchandiseInventoryAdminModal: React.FC<
+  ModalProps &
+    Pick<
+      MerchandiseSpec,
+      | 'id'
+      | 'title'
+      | 'coverUrl'
+      | 'inventoryStatus'
+      | 'isPhysical'
+      | 'isCustomized'
+      | 'merchandiseTitle'
+      | 'memberShop'
+    > & {
+      onRefetch?: () => void
+    }
+> = ({
+  id,
+  title,
   coverUrl,
-  merchandiseTitle,
-  merchandiseSpecTitle,
-  merchandiseSpecInventoryStatus,
-  merchandiseMemberShop,
+  inventoryStatus,
   isPhysical,
   isCustomized,
+  merchandiseTitle,
+  memberShop,
   onCancel,
   onRefetch,
   ...props
@@ -67,16 +78,16 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
   const [loading, setLoading] = useState(false)
   const [quantity, setQuantity] = useState('0')
   const [comment, setComment] = useState('')
-  const arrangeProductInventory = useArrangeProductInventory(`MerchandiseSpec_${merchandiseSpecId}`)
-  const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`MerchandiseSpec_${merchandiseSpecId}`)
+  const arrangeProductInventory = useArrangeProductInventory(`MerchandiseSpec_${id}`)
+  const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`MerchandiseSpec_${id}`)
 
   const handleSubmit = (closeModal?: () => void) => {
-    if (merchandiseSpecInventoryStatus.buyableQuantity + Number(quantity) < 0) {
+    if (inventoryStatus.buyableQuantity + Number(quantity) < 0) {
       return
     }
     setLoading(true)
     arrangeProductInventory({
-      specification: merchandiseSpecTitle,
+      specification: title,
       quantity: Number(quantity),
       comment: comment || null,
     })
@@ -99,9 +110,9 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
             <MerchandiseTitle>
               {merchandiseTitle}
               <span>|</span>
-              {merchandiseSpecTitle}
+              {title}
             </MerchandiseTitle>
-            <MerchandiseInventoryLabel>{merchandiseMemberShop}</MerchandiseInventoryLabel>
+            <MerchandiseInventoryLabel>{memberShop}</MerchandiseInventoryLabel>
           </div>
         </div>
         <div className="row mb-1 mb-sm-4">
@@ -109,18 +120,16 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
             <StyledStatus className="p-4">
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.currentInventory)}</StatusCardTitle>
               <div className="d-flex align-items-center">
-                <StatusCardNumber className="mr-2">{merchandiseSpecInventoryStatus.buyableQuantity}</StatusCardNumber>
+                <StatusCardNumber className="mr-2">{inventoryStatus.buyableQuantity}</StatusCardNumber>
                 <ArrowRightOutlined className="mr-2" style={{ fontSize: '16px' }} />
-                <StatusCardQuantity>
-                  {merchandiseSpecInventoryStatus.buyableQuantity + Number(quantity)}
-                </StatusCardQuantity>
+                <StatusCardQuantity>{inventoryStatus.buyableQuantity + Number(quantity)}</StatusCardQuantity>
               </div>
             </StyledStatus>
           </div>
           <div className="col-12 col-lg-3 mb-1">
             <StyledStatus className="p-4">
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.reserved)}</StatusCardTitle>
-              <StatusCardNumber>{merchandiseSpecInventoryStatus.unpaidQuantity}</StatusCardNumber>
+              <StatusCardNumber>{inventoryStatus.unpaidQuantity}</StatusCardNumber>
             </StyledStatus>
           </div>
 
@@ -128,7 +137,7 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
             <StyledStatus className="p-4">
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
               <StatusCardNumber>
-                {!isPhysical && !isCustomized ? 0 : merchandiseSpecInventoryStatus.undeliveredQuantity}
+                {!isPhysical && !isCustomized ? 0 : inventoryStatus.undeliveredQuantity}
               </StatusCardNumber>
             </StyledStatus>
           </div>
@@ -138,9 +147,8 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipped)}</StatusCardTitle>
               <StatusCardNumber>
                 {!isPhysical && !isCustomized
-                  ? merchandiseSpecInventoryStatus.undeliveredQuantity +
-                    merchandiseSpecInventoryStatus.deliveredQuantity
-                  : merchandiseSpecInventoryStatus.deliveredQuantity}
+                  ? inventoryStatus.undeliveredQuantity + inventoryStatus.deliveredQuantity
+                  : inventoryStatus.deliveredQuantity}
               </StatusCardNumber>
             </StyledStatus>
           </div>
@@ -151,7 +159,7 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
             <QuantityInput
               setInputValue={setQuantity}
               value={Number(quantity)}
-              min={-merchandiseSpecInventoryStatus.buyableQuantity}
+              min={-inventoryStatus.buyableQuantity}
               onChange={value => typeof value === 'number' && setQuantity(`${value}`)}
             />
           </div>
