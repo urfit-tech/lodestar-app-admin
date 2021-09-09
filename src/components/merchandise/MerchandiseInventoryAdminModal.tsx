@@ -57,6 +57,8 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
   merchandiseSpecTitle,
   merchandiseSpecInventoryStatus,
   merchandiseMemberShop,
+  isPhysical,
+  isCustomized,
   onCancel,
   onRefetch,
   ...props
@@ -103,7 +105,7 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
           </div>
         </div>
         <div className="row mb-1 mb-sm-4">
-          <div className="col-12 col-lg-4 mb-1">
+          <div className="col-12 col-lg-3 mb-1">
             <StyledStatus className="p-4">
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.currentInventory)}</StatusCardTitle>
               <div className="d-flex align-items-center">
@@ -115,16 +117,31 @@ const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & M
               </div>
             </StyledStatus>
           </div>
-          <div className="col-12 col-lg-4 mb-1">
+          <div className="col-12 col-lg-3 mb-1">
             <StyledStatus className="p-4">
-              <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
-              <StatusCardNumber>{merchandiseSpecInventoryStatus.undeliveredQuantity}</StatusCardNumber>
+              <StatusCardTitle>{formatMessage(merchandiseMessages.status.reserved)}</StatusCardTitle>
+              <StatusCardNumber>{merchandiseSpecInventoryStatus.unpaidQuantity}</StatusCardNumber>
             </StyledStatus>
           </div>
-          <div className="col-12 col-lg-4 mb-1">
+
+          <div className="col-12 col-lg-3 mb-1">
+            <StyledStatus className="p-4">
+              <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
+              <StatusCardNumber>
+                {!isPhysical && !isCustomized ? 0 : merchandiseSpecInventoryStatus.undeliveredQuantity}
+              </StatusCardNumber>
+            </StyledStatus>
+          </div>
+
+          <div className="col-12 col-lg-3 mb-1">
             <StyledStatus className="p-4">
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipped)}</StatusCardTitle>
-              <StatusCardNumber>{merchandiseSpecInventoryStatus.deliveredQuantity}</StatusCardNumber>
+              <StatusCardNumber>
+                {!isPhysical && !isCustomized
+                  ? merchandiseSpecInventoryStatus.undeliveredQuantity +
+                    merchandiseSpecInventoryStatus.deliveredQuantity
+                  : merchandiseSpecInventoryStatus.deliveredQuantity}
+              </StatusCardNumber>
             </StyledStatus>
           </div>
         </div>

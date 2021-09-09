@@ -182,6 +182,8 @@ const MerchandiseAdminPage: React.FC = () => {
                       merchandiseSpecTitle={merchandiseSpec.merchandiseSpecTitle}
                       merchandiseSpecInventoryStatus={merchandiseSpec.merchandiseSpecInventoryStatus}
                       merchandiseMemberShop={merchandiseSpec.merchandiseMemberShop}
+                      isPhysical={merchandise.isPhysical}
+                      isCustomized={merchandise.isCustomized}
                       onRefetch={refetchMerchandiseSpecs}
                     />
                   ))
