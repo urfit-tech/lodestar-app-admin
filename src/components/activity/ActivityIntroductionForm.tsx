@@ -45,7 +45,7 @@ const ActivityIntroductionForm: React.FC<{
     updateActivityCover({
       variables: {
         activityId: activityAdmin.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activityAdmin.id}/400?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activityAdmin.id}?t=${uploadTime}`,
       },
     })
       .then(() => {

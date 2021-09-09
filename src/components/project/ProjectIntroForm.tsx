@@ -45,10 +45,10 @@ const ProjectIntroForm: React.FC<{
     updateProjectCover({
       variables: {
         projectId: project.id,
-        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/400?t=${uploadTime}`,
+        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
         coverUrl:
           project.coverUrl === null
-            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${uploadTime}`
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`
             : project.coverUrl,
       },
     })
