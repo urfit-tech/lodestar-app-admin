@@ -1,4 +1,3 @@
-import { CardProps } from 'antd/lib/card'
 import { ProductInventoryStatusProps } from './general'
 
 export type MerchandisePreviewProps = {
