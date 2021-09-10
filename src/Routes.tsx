@@ -218,6 +218,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     path: '/blog-post-category',
     pageName: 'BlogPostCategoryPage',
     authenticated: true,
+    allowedUserRole: 'app-owner',
   },
 
   // merchandise
