@@ -21,7 +21,7 @@ import { commonMessages, memberMessages, salesMessages } from '../../helpers/tra
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
-import { Lead, SalesProps } from '../../types/sales'
+import { LeadProps, SalesProps } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../member/MemberTaskAdminModal'
@@ -53,7 +53,7 @@ const TableWrapper = styled.div`
   }
 `
 
-const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: () => void }> = ({
+const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefetch?: () => void }> = ({
   sales,
   leads,
   onRefetch,
@@ -81,7 +81,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
   const [memberNoteModalVisible, setMemberNoteModalVisible] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string } | null>(null)
 
-  const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<Lead> = onSetFilter => ({
+  const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<LeadProps> = onSetFilter => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -123,7 +123,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
-  const columns: ColumnsType<Lead> = [
+  const columns: ColumnsType<LeadProps> = [
     {
       key: 'memberId',
       dataIndex: 'id',
@@ -354,7 +354,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: Lead[]; onRefetch?: 
         />
       )}
       <TableWrapper>
-        <Table<Lead>
+        <Table<LeadProps>
           rowClassName={row => (row.notified ? 'notified' : '')}
           rowKey="memberId"
           columns={columns}

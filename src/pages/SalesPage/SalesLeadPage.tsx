@@ -3,7 +3,6 @@ import { useQuery } from '@apollo/react-hooks'
 import { Badge, Button, notification, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { prop, sortBy } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -11,13 +10,10 @@ import { AdminPageTitle } from '../../components/admin'
 import SalesMemberInput from '../../components/common/SalesMemberInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import SalesLeadTable from '../../components/sale/SalesLeadTable'
-import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
-import { notEmpty } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { useSales } from '../../hooks/sales'
-import { Lead } from '../../types/sales'
+import { useSales, useSalesLeads } from '../../hooks/sales'
 
 const StyledManagerBlock = styled.div`
   width: 400px;
@@ -87,7 +83,7 @@ const SalesLeadTabs: React.VFC<{
           <Badge
             size="small"
             offset={[10, -10]}
-            count={idledLeads.filter(lead => lead.notified).length}
+            count={idledLeads.filter(lead => lead?.notified).length}
             overflowCount={999}
           >
             {formatMessage(salesMessages.idledLead)}
@@ -249,81 +245,5 @@ const useMemberContractNotification = () => {
     })
   }, [data])
 }
-const useSalesLeads = (managerId: string) => {
-  const { id: appId } = useApp()
-  const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
-    GET_SALES_LEADS,
-    {
-      variables: { appId, managerId },
-      context: {
-        important: true,
-      },
-      pollInterval: 5 * 60 * 1000,
-    },
-  )
-  const convertToLead = (v: hasura.GET_SALES_LEADS_lead_status): Lead | null => {
-    const notified =
-      v.paid <= 0 &&
-      v.member &&
-      (!v.recent_contacted_at ||
-        !v.recent_tasked_at ||
-        (v.recent_contacted_at && moment(v.recent_contacted_at) <= moment().startOf('day').subtract(3, 'weeks')) ||
-        (v.recent_tasked_at && moment(v.recent_tasked_at) <= moment().startOf('day').subtract(3, 'days')))
-    return v.member && v.member.member_phones.length > 0
-      ? {
-          id: v.member.id,
-          star: v.member.star,
-          name: v.member.name,
-          email: v.member.email,
-          createdAt: moment(v.member.created_at).toDate(),
-          phones: v.member.member_phones.map(_v => _v.phone),
-          categoryNames: v.member.member_categories.map(_v => _v.category.name),
-          paid: v.paid,
-          status: v.status as Lead['status'],
-          notified,
-        }
-      : null
-  }
-
-  const leads = sortBy(prop('id'))(data?.lead_status.map(convertToLead).filter(notEmpty) || [])
-  return {
-    loading,
-    error,
-    refetch,
-    idledLeads: leads.filter(lead => lead.status === 'IDLED'),
-    contactedLeads: leads.filter(lead => lead.status === 'CONTACTED'),
-    invitedLeads: leads.filter(lead => lead.status === 'INVITED'),
-    presentedLeads: leads.filter(lead => lead.status === 'PRESENTED'),
-    paidLeads: leads.filter(lead => lead.status === 'PAID'),
-    closedLeads: leads.filter(lead => lead.status === 'CLOSED'),
-  }
-}
-
-const GET_SALES_LEADS = gql`
-  query GET_SALES_LEADS($appId: String!, $managerId: String!) {
-    lead_status(where: { member: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } } }) {
-      member {
-        id
-        name
-        email
-        star
-        created_at
-        assigned_at
-        member_phones {
-          phone
-        }
-        member_categories {
-          category {
-            name
-          }
-        }
-      }
-      status
-      paid
-      recent_contacted_at
-      recent_tasked_at
-    }
-  }
-`
 
 export default SalesLeadPage
