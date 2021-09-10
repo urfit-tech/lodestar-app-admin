@@ -14025,25 +14025,25 @@ export interface GET_TODAY_MEMBER_CONTRACTVariables {
 // GraphQL query operation: GET_SALES_LEADS
 // ====================================================
 
-export interface GET_SALES_LEADS_lead_status_member_member_phones {
+export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
   __typename: "member_phone";
   phone: string;
 }
 
-export interface GET_SALES_LEADS_lead_status_member_member_categories_category {
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories_category {
   __typename: "category";
   name: string;
 }
 
-export interface GET_SALES_LEADS_lead_status_member_member_categories {
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories {
   __typename: "member_category";
   /**
    * An object relationship
    */
-  category: GET_SALES_LEADS_lead_status_member_member_categories_category;
+  category: GET_SALES_LEADS_lead_status_new_member_member_categories_category;
 }
 
-export interface GET_SALES_LEADS_lead_status_member {
+export interface GET_SALES_LEADS_lead_status_new_member {
   __typename: "member";
   id: string;
   name: string;
@@ -14054,19 +14054,19 @@ export interface GET_SALES_LEADS_lead_status_member {
   /**
    * An array relationship
    */
-  member_phones: GET_SALES_LEADS_lead_status_member_member_phones[];
+  member_phones: GET_SALES_LEADS_lead_status_new_member_member_phones[];
   /**
    * An array relationship
    */
-  member_categories: GET_SALES_LEADS_lead_status_member_member_categories[];
+  member_categories: GET_SALES_LEADS_lead_status_new_member_member_categories[];
 }
 
-export interface GET_SALES_LEADS_lead_status {
-  __typename: "lead_status";
+export interface GET_SALES_LEADS_lead_status_new {
+  __typename: "lead_status_new";
   /**
    * An object relationship
    */
-  member: GET_SALES_LEADS_lead_status_member | null;
+  member: GET_SALES_LEADS_lead_status_new_member | null;
   status: string | null;
   paid: any | null;
   recent_contacted_at: any | null;
@@ -14075,9 +14075,9 @@ export interface GET_SALES_LEADS_lead_status {
 
 export interface GET_SALES_LEADS {
   /**
-   * fetch data from the table: "lead_status"
+   * fetch data from the table: "lead_status_new"
    */
-  lead_status: GET_SALES_LEADS_lead_status[];
+  lead_status_new: GET_SALES_LEADS_lead_status_new[];
 }
 
 export interface GET_SALES_LEADSVariables {
@@ -24279,6 +24279,7 @@ export interface merchandise_spec_inventory_status_bool_exp {
   merchandise_spec_id?: uuid_comparison_exp | null;
   total_quantity?: bigint_comparison_exp | null;
   undelivered_quantity?: bigint_comparison_exp | null;
+  unpaid_quantity?: bigint_comparison_exp | null;
 }
 
 /**

@@ -1,4 +1,4 @@
-export type Lead = {
+export type LeadProps = {
   id: string
   name: string
   email: string
