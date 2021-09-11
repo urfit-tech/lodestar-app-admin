@@ -137,7 +137,7 @@ export const useSalesLeads = (managerId: string) => {
     contactedLeads: leads.filter(lead => lead.status === 'CONTACTED'),
     invitedLeads: leads.filter(lead => lead?.status === 'INVITED'),
     presentedLeads: leads.filter(lead => lead?.status === 'PRESENTED'),
-    paidLeads: leads.filter(lead => lead?.status === 'PAID'),
+    paidLeads: leads.filter(lead => lead?.status === 'SIGNED'),
     closedLeads: leads.filter(lead => lead?.status === 'CLOSED'),
   }
 }
