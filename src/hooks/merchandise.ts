@@ -4,7 +4,7 @@ import { max, min } from 'lodash'
 import { sum } from 'ramda'
 import { notEmpty } from '../helpers'
 import hasura from '../hasura'
-import { ProductInventoryStatusProps } from '../types/general'
+
 import {
   MemberShopPreviewProps,
   MemberShopProps,
@@ -396,8 +396,10 @@ export const useMerchandiseSpecCollection = (options?: {
           isPhysical: v.merchandise.is_physical,
           isCustomized: v.merchandise.is_customized,
           merchandiseTitle: v.merchandise.title,
-          memberShopId: v.merchandise?.member_shop?.id || '',
-          memberShop: v.merchandise?.member_shop?.title || '',
+          memberShop: {
+            id: v.merchandise?.member_shop?.id || '',
+            title: v.merchandise?.member_shop?.title || '',
+          },
         }))
   return {
     loadingMerchandiseSpecs: loading,

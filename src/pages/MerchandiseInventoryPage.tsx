@@ -43,7 +43,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
               merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity > 0,
             )
           : merchandiseSpecs
-              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShopId)
+              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShop.id)
               .filter(
                 merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity > 0,
               ),
@@ -57,7 +57,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
               merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity <= 0,
             )
           : merchandiseSpecs
-              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShopId)
+              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShop.id)
               .filter(
                 merchandiseSpec => merchandiseSpec.publishedAt && merchandiseSpec.inventoryStatus.buyableQuantity <= 0,
               ),
@@ -69,7 +69,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
         selectedMemberShop === 'all'
           ? merchandiseSpecs.filter(merchandiseSpec => !merchandiseSpec.publishedAt)
           : merchandiseSpecs
-              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShopId)
+              .filter(merchandiseSpec => selectedMemberShop === merchandiseSpec.memberShop.id)
               .filter(merchandiseSpec => !merchandiseSpec.publishedAt),
     },
   ]

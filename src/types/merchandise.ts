@@ -59,8 +59,10 @@ export type MerchandiseSpec = {
   isPhysical: boolean
   isCustomized: boolean
   merchandiseTitle: string
-  memberShopId: string
-  memberShop: string
+  memberShop: {
+    id: string
+    title: string
+  }
 }
 
 export type MemberShopPreviewProps = {

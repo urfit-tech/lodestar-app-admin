@@ -112,7 +112,7 @@ const MerchandiseInventoryAdminModal: React.FC<
               <span>|</span>
               {title}
             </MerchandiseTitle>
-            <MerchandiseInventoryLabel>{memberShop}</MerchandiseInventoryLabel>
+            <MerchandiseInventoryLabel>{memberShop.title}</MerchandiseInventoryLabel>
           </div>
         </div>
         <div className="row mb-1 mb-sm-4">
