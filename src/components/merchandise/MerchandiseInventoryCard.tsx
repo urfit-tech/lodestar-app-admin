@@ -73,7 +73,7 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
               <span>|</span>
               {title}
             </MerchandiseTitle>
-            <MerchandiseInventoryLabel>{memberShop}</MerchandiseInventoryLabel>
+            <MerchandiseInventoryLabel>{memberShop.title}</MerchandiseInventoryLabel>
           </div>
           <div className="d-flex flex-fill justify-content-end">
             <div className="mr-sm-5 mr-1">
