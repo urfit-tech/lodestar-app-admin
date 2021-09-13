@@ -120,7 +120,7 @@ const CraftPageCreationModal: React.VFC<
     })
       .then(({ data }) => {
         const pageId = data?.insert_app_page_one?.id
-        window.location.assign('/craft_page/' + pageId)
+        window.location.assign('/craft-page/' + pageId)
       })
       .catch(handleError)
       .finally(() => {
