@@ -241,6 +241,8 @@ export const commonMessages = {
       id: 'common.label.permissionGroupsSelectorPlaceholder',
       defaultMessage: '選擇權限組',
     },
+    default: { id: 'common.label.default', defaultMessage: '預設' },
+    desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },

@@ -123,12 +123,12 @@ const ProjectIntroForm: React.FC<{
 
       <Form.Item label={formatMessage(projectMessages.label.projectContent)} wrapperCol={{ md: { span: 20 } }}>
         <Tabs defaultActiveKey="default">
-          <Tabs.TabPane key="default" tab="預設">
+          <Tabs.TabPane key="default" tab={formatMessage(commonMessages.label.default)}>
             <Form.Item name="introduction">
               <AdminBraftEditor />
             </Form.Item>
           </Tabs.TabPane>
-          <Tabs.TabPane key="desktop" tab="電腦版">
+          <Tabs.TabPane key="desktop" tab={formatMessage(commonMessages.label.desktop)}>
             <Form.Item name="introductionDesktop">
               <AdminBraftEditor />
             </Form.Item>
