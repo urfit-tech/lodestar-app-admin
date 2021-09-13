@@ -35,7 +35,7 @@ const CraftPageAdminPage: React.VFC = () => {
 
         <AdminHeaderTitle>{appPage.title}</AdminHeaderTitle>
 
-        <a href={`https://${host}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${host + appPage.path}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>
