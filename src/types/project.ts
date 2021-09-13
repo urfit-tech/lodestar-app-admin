@@ -5,6 +5,7 @@ export type ProjectPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
 export type ProjectAdminProps = ProjectPreviewProps & {
   categories: CategoryProps[]
   introduction: string | null
+  introductionDesktop: string | null
   description: string | null
   targetAmount: number
   targetUnit: string
