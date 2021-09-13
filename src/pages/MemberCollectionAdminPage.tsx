@@ -373,41 +373,45 @@ const MemberCollectionAdminPage: React.FC = () => {
           )}
         </div>
 
-        <Popover
-          trigger="click"
-          placement="bottomLeft"
-          content={
-            <StyledOverlay>
-              <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
-              <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
-                <FilterWrapper>
-                  {allColumns.map(column =>
-                    column ? (
-                      <Checkbox key={column.id} value={column.id}>
-                        {column.title}
-                      </Checkbox>
-                    ) : null,
-                  )}
-                </FilterWrapper>
-              </Checkbox.Group>
-            </StyledOverlay>
-          }
-        >
-          <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
-            {formatMessage(memberMessages.label.field)}
-          </StyledButton>
-        </Popover>
-        <div className="mr-2">{permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}</div>
-        <div className="mr-2">
-          <MemberImportModal appId={appId} filter={fieldFilter} />
+        <div className="d-flex">
+          <Popover
+            trigger="click"
+            placement="bottomLeft"
+            content={
+              <StyledOverlay>
+                <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
+                <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
+                  <FilterWrapper>
+                    {allColumns.map(column =>
+                      column ? (
+                        <Checkbox key={column.id} value={column.id}>
+                          {column.title}
+                        </Checkbox>
+                      ) : null,
+                    )}
+                  </FilterWrapper>
+                </Checkbox.Group>
+              </StyledOverlay>
+            }
+          >
+            <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
+              {formatMessage(memberMessages.label.field)}
+            </StyledButton>
+          </Popover>
+          <div className="mr-2">
+            {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
+          </div>
+          <div className="mr-2">
+            <MemberImportModal appId={appId} filter={fieldFilter} />
+          </div>
+          <MemberExportModal
+            appId="xuemi"
+            filter={{
+              ...fieldFilter,
+              managerId: currentUserRole === 'general-member' ? currentMemberId || '' : undefined,
+            }}
+          />
         </div>
-        <MemberExportModal
-          appId="xuemi"
-          filter={{
-            ...fieldFilter,
-            managerId: currentUserRole === 'general-member' ? currentMemberId || '' : undefined,
-          }}
-        />
       </div>
 
       <AdminCard className="mb-5">
