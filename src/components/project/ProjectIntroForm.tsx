@@ -68,10 +68,13 @@ const ProjectIntroForm: React.FC<{
         projectId: project.id,
         abstract: values.abstract,
         introduction: values.introduction?.getCurrentContent().hasText() ? values.introduction.toRAW() : null,
+        introductionDesktop: values.introductionDesktop?.getCurrentContent().hasText()
+          ? values.introductionDesktop.toRAW()
+          : null,
         coverUrl: values.coverUrl
           ? values.coverUrl
           : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${Date.now()}`,
-        cover_type: values.coverUrl ? 'video' : 'image',
+        coverType: values.coverUrl ? 'video' : 'image',
       },
     })
       .then(() => {
@@ -157,12 +160,19 @@ const UPDATE_PROJECT_INTRO = gql`
     $projectId: uuid!
     $abstract: String
     $introduction: String
+    $introductionDesktop: String
     $coverUrl: String
-    $cover_type: String
+    $coverType: String
   ) {
     update_project(
       where: { id: { _eq: $projectId } }
-      _set: { abstract: $abstract, introduction: $introduction, cover_url: $coverUrl, cover_type: $cover_type }
+      _set: {
+        abstract: $abstract
+        introduction: $introduction
+        introduction_desktop: $introductionDesktop
+        cover_url: $coverUrl
+        cover_type: $coverType
+      }
     ) {
       affected_rows
     }
