@@ -27,7 +27,7 @@ const CraftPageAdminPage: React.VFC = () => {
   return (
     <>
       <AdminHeader>
-        <Link to="/craft_page">
+        <Link to="/craft-page">
           <Button type="link" className="mr-3">
             <CloseOutlined />
           </Button>

@@ -82,7 +82,7 @@ const CraftPageCollectionTable: React.VFC<{ pages: CraftPageColumnProps[] }> = (
         dataSource={pages.filter(page => !searchPageName || page.title?.includes(searchPageName))}
         onRow={record => ({
           onClick: () => {
-            window.open(`${process.env.PUBLIC_URL}/craft_page/${record.id}?tab=editor`, '_blank')
+            window.open(`${process.env.PUBLIC_URL}/craft-page/${record.id}?tab=editor`, '_blank')
           },
         })}
       />

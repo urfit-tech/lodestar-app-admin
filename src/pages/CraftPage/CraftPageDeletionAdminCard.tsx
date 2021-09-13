@@ -32,7 +32,7 @@ const CraftPageDeletionAdminCard: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullyDeleted))
-        history.push('/craft_page')
+        history.push('/craft-page')
       })
       .catch(handleError)
   }
