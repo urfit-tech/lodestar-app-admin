@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Input, message, Skeleton, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
@@ -18,6 +18,7 @@ type FieldProps = {
   coverUrl: string
   abstract: string
   introduction: EditorState
+  introductionDesktop: EditorState
 }
 
 const ProjectIntroForm: React.FC<{
@@ -92,6 +93,7 @@ const ProjectIntroForm: React.FC<{
         coverUrl: project.coverType === 'video' ? project.coverUrl : null,
         abstract: project.abstract,
         introduction: BraftEditor.createEditorState(project.introduction),
+        introductionDesktop: BraftEditor.createEditorState(project.introductionDesktop),
       }}
       onFinish={handleSubmit}
     >
@@ -116,12 +118,19 @@ const ProjectIntroForm: React.FC<{
         <Input.TextArea rows={5} />
       </Form.Item>
 
-      <Form.Item
-        label={formatMessage(projectMessages.label.projectContent)}
-        wrapperCol={{ md: { span: 20 } }}
-        name="introduction"
-      >
-        <AdminBraftEditor />
+      <Form.Item label={formatMessage(projectMessages.label.projectContent)} wrapperCol={{ md: { span: 20 } }}>
+        <Tabs defaultActiveKey="default">
+          <Tabs.TabPane key="default" tab="預設">
+            <Form.Item name="introduction">
+              <AdminBraftEditor />
+            </Form.Item>
+          </Tabs.TabPane>
+          <Tabs.TabPane key="desktop" tab="電腦版">
+            <Form.Item name="introductionDesktop">
+              <AdminBraftEditor />
+            </Form.Item>
+          </Tabs.TabPane>
+        </Tabs>
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
