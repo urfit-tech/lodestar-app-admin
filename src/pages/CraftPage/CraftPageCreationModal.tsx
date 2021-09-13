@@ -3,6 +3,7 @@ import { Button, Form, Input, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router'
 import styled from 'styled-components'
 import { StyledTips } from '../../components/admin'
 import AdminCard from '../../components/admin/AdminCard'
@@ -92,6 +93,7 @@ const CraftPageCreationModal: React.VFC<
 > = ({ setModalVisible, ...props }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
+  const history = useHistory()
   const [form] = useForm<FieldProps>()
   const { insertAppPage } = useMutateAppPage()
   const [loading, setLoading] = useState(false)
@@ -120,7 +122,7 @@ const CraftPageCreationModal: React.VFC<
     })
       .then(({ data }) => {
         const pageId = data?.insert_app_page_one?.id
-        window.location.assign('/craft-page/' + pageId)
+        history.push('/craft-page/' + pageId)
       })
       .catch(handleError)
       .finally(() => {
