@@ -112,6 +112,7 @@ const useProjectAdmin = (projectId: string) => {
           title
           abstract
           introduction
+          introduction_desktop
           description
           target_amount
           target_unit
@@ -180,6 +181,7 @@ const useProjectAdmin = (projectId: string) => {
           title: data.project_by_pk.title,
           abstract: data.project_by_pk.abstract,
           introduction: data.project_by_pk.introduction,
+          introductionDesktop: data.project_by_pk.introduction_desktop,
           description: data.project_by_pk.description,
           targetAmount: data.project_by_pk.target_amount,
           targetUnit: data.project_by_pk.target_unit,
