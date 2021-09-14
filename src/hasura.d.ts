@@ -11482,6 +11482,31 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_BODY
+// ====================================================
+
+export interface INSERT_PROGRAM_CONTENT_BODY_insert_program_content_body_one {
+  __typename: "program_content_body";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_CONTENT_BODY {
+  /**
+   * insert a single row into the table: "program_content_body"
+   */
+  insert_program_content_body_one: INSERT_PROGRAM_CONTENT_BODY_insert_program_content_body_one | null;
+}
+
+export interface INSERT_PROGRAM_CONTENT_BODYVariables {
+  object: program_content_body_insert_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT
 // ====================================================
 
@@ -11508,6 +11533,7 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
   duration?: any | null;
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
+  programContentBodyId: any;
 }
 
 /* tslint:disable */
