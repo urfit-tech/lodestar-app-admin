@@ -49,7 +49,8 @@ const ProgramContentAdminModal: React.FC<{
   const { id: appId, enabledModules } = useApp()
   const { authToken } = useAuth()
 
-  const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
+  const { updateProgramContent, updateProgramContentBody, deleteProgramContent, insertProgramContentBody } =
+    useMutateProgramContent()
   const [updateProgramContentPlan] = useMutation<
     hasura.UPDATE_PROGRAM_CONTENT_PLAN,
     hasura.UPDATE_PROGRAM_CONTENT_PLANVariables
@@ -87,6 +88,8 @@ const ProgramContentAdminModal: React.FC<{
     setUploadProgress({})
     const uploadError: typeof isUploadFailed = {}
 
+    let updatedProgramContentBodyId = programContentBody.id
+
     // upload video
     if (
       videoFile &&
@@ -94,7 +97,21 @@ const ProgramContentAdminModal: React.FC<{
         videoFile?.lastModified !== programContentBody.data?.video?.lastModified)
     ) {
       try {
-        await uploadFile(`videos/${appId}/${programContentBody.id}`, videoFile, authToken, {
+        const { data } = await insertProgramContentBody({
+          variables: {
+            object: {
+              type: programContentBody.type,
+              description: programContentBody.description,
+              data: programContentBody.data,
+            },
+          },
+        })
+        updatedProgramContentBodyId = data?.insert_program_content_body_one?.id || updatedProgramContentBodyId
+      } catch {
+        uploadError.video = true
+      }
+      try {
+        await uploadFile(`videos/${appId}/${updatedProgramContentBodyId}`, videoFile, authToken, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [videoFile.name]: Math.floor((loaded / total) * 100) }))
@@ -104,6 +121,7 @@ const ProgramContentAdminModal: React.FC<{
         uploadError.video = true
       }
     }
+
     // upload caption
     if (
       captionFile &&
@@ -111,7 +129,7 @@ const ProgramContentAdminModal: React.FC<{
         captionFile.lastModified !== programContentBody.data?.texttrack?.lastModified)
     ) {
       try {
-        await uploadFile(`texttracks/${appId}/${programContentBody.id}`, captionFile, authToken, {
+        await uploadFile(`texttracks/${appId}/${updatedProgramContentBodyId}`, captionFile, authToken, {
           cancelToken: new axios.CancelToken(canceler => (uploadCanceler.current = canceler)),
           onUploadProgress: ({ loaded, total }) => {
             setUploadProgress(prev => ({ ...prev, [captionFile.name]: Math.floor((loaded / total) * 100) }))
@@ -164,6 +182,7 @@ const ProgramContentAdminModal: React.FC<{
               : programContent.duration,
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+          programContentBodyId: updatedProgramContentBodyId,
         },
       })
 
