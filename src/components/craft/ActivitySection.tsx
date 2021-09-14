@@ -53,7 +53,7 @@ const ProblemSection: React.VFC = () => {
                 displayAmount: 3,
               }}
             >
-              <CraftActivity />
+              <CraftActivity type="newest" ids={[]} />
             </Element>
             <div style={{ textAlign: 'center' }}>
               <CraftButton
