@@ -37,7 +37,8 @@ const messages = defineMessages({
 
 const StyledScrollBar = styled.div`
   flex: 12;
-  height: 100vh;
+  height: calc(100vh - 64px - 49px);
+  overflow-x: hidden;
   overflow-y: scroll;
   ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -51,14 +52,19 @@ const StyledScrollBar = styled.div`
     background-color: rgba(0, 0, 0, 0.5);
   }
 `
+const StyledSettingBlock = styled.div`
+  flex: 4;
+  height: calc(100vh - 113px);
+`
 const StyledContent = styled.div`
-  padding: 20px;
-  background: #eee;
+  /* padding: 20px;
+  background: #eee; */
 `
 const StyledTabs = styled(Tabs)`
-  flex: 3;
+  width: 100%;
   height: 100vh;
-  overflow-y: scroll;
+  min-width: 300px;
+  position: relative;
 `
 const StyledPageIcon = styled(PageIcon)<{ active: string }>`
   font-size: 21px;
@@ -74,12 +80,18 @@ const StyledBrushIcon = styled(BrushIcon)<{ active: string }>`
 `
 
 const StyledTabsPane = styled(Tabs.TabPane)`
+  height: calc(100vh - 64px - 49px - 60px);
+  overflow-y: scroll;
   background: #ffffff;
   .ant-tabs-content-holder {
     background: #ffffff;
   }
 `
 const StyledTabBarWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 1rem;
   background: #ffffff;
 
   .ant-tabs-tab {
@@ -167,21 +179,16 @@ const SettingBlock: React.VFC<{
   }
 
   return (
-    <div>
-      {isDataChanged && (
-        <div className="py-3 px-4" style={{ background: 'white' }}>
-          <Button loading={loading} type="primary" block onClick={handleSubmit}>
-            {formatMessage(messages.saveAndUpdate)}
-          </Button>
-        </div>
-      )}
+    <StyledSettingBlock>
       <StyledTabs
-        style={{ position: 'relative', maxWidth: '300px', minWidth: '250px' }}
         activeKey={activeKey || 'component'}
         onChange={key => setActiveKey(key)}
         renderTabBar={(props, DefaultTabBar) => (
           <StyledTabBarWrapper>
             <DefaultTabBar {...props} className="mb-0" />
+            <Button disabled={!isDataChanged} loading={loading} type="primary" onClick={handleSubmit}>
+              {formatMessage(messages.saveAndUpdate)}
+            </Button>
           </StyledTabBarWrapper>
         )}
       >
@@ -192,7 +199,7 @@ const SettingBlock: React.VFC<{
           <CraftSettingsPanel onDelete={() => setActiveKey('component')} />
         </StyledTabsPane>
       </StyledTabs>
-    </div>
+    </StyledSettingBlock>
   )
 }
 
