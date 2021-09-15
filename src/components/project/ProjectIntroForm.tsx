@@ -4,7 +4,8 @@ import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -13,6 +14,23 @@ import { ProjectAdminProps } from '../../types/project'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
 import VideoInput from '../form/VideoInput'
+
+const messages = defineMessages({
+  introductionDefaultNotice: {
+    id: 'project.text.introductionDefaultNotice',
+    defaultMessage: '預設顯示在手機版與電腦版的圖文內容',
+  },
+  introductionDesktopNotice: {
+    id: 'project.text.introductionDesktopNotice',
+    defaultMessage: '優先顯示在電腦版的圖文內容，若與「預設」一樣可留空',
+  },
+})
+
+const StyledNotice = styled.div`
+  font-size: 12px;
+  color: #9b9b9b;
+  padding: 0 0 8px 0;
+`
 
 type FieldProps = {
   coverUrl: string
@@ -125,11 +143,13 @@ const ProjectIntroForm: React.FC<{
         <Tabs defaultActiveKey="default">
           <Tabs.TabPane key="default" tab={formatMessage(commonMessages.label.default)}>
             <Form.Item name="introduction">
+              <StyledNotice>{formatMessage(messages.introductionDefaultNotice)}</StyledNotice>
               <AdminBraftEditor />
             </Form.Item>
           </Tabs.TabPane>
           <Tabs.TabPane key="desktop" tab={formatMessage(commonMessages.label.desktop)}>
             <Form.Item name="introductionDesktop">
+              <StyledNotice>{formatMessage(messages.introductionDesktopNotice)}</StyledNotice>
               <AdminBraftEditor />
             </Form.Item>
           </Tabs.TabPane>
