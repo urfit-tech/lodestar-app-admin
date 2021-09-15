@@ -1,6 +1,6 @@
 import { PeriodType } from './general'
 
-export type PodcastProgramAdminProps = {
+export type PodcastProgram = {
   id: string
   title: string
   contentType: string | null
@@ -19,6 +19,8 @@ export type PodcastProgramAdminProps = {
   supportLocales: string[]
   audios: PodcastProgramAudio[]
 }
+
+export type PodcastProgramAdminProps = PodcastProgram
 
 export type PodcastProgramAudio = {
   id: string
