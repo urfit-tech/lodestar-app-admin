@@ -6,6 +6,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages, programMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -36,6 +37,7 @@ type FieldProps = {
 
 const ProductCreationModal: React.FC<
   AdminModalProps & {
+    customModalTitle?: string
     categoryClassType?: ClassType
     withCreatorSelector?: boolean
     withProgramType?: boolean
@@ -54,6 +56,7 @@ const ProductCreationModal: React.FC<
     customTitleDefault?: string
   }
 > = ({
+  customModalTitle,
   categoryClassType,
   withCreatorSelector,
   withProgramType,
@@ -89,7 +92,7 @@ const ProductCreationModal: React.FC<
           isCustomized: withMerchandiseType ? values.merchandiseType.includes('customized') : undefined,
         }).finally(() => setLoading(false))
       })
-      .catch(() => {})
+      .catch(handleError)
   }
 
   return (
@@ -99,7 +102,7 @@ const ProductCreationModal: React.FC<
           {formatMessage(commonMessages.ui.create)}
         </Button>
       )}
-      title={formatMessage(commonMessages.ui.create)}
+      title={customModalTitle ? customModalTitle : formatMessage(commonMessages.ui.create)}
       cancelText={formatMessage(commonMessages.ui.cancel)}
       okText={formatMessage(commonMessages.ui.create)}
       okButtonProps={{ loading }}
