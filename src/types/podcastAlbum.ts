@@ -13,6 +13,10 @@ export type PodcastAlbum = {
   id: string
   title: string
   coverUrl: string
+  author: {
+    id: string
+    name: string
+  }
   description: string
   isPublic: boolean
   isDeleted: boolean
