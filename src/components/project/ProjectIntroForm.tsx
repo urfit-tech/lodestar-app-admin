@@ -142,14 +142,14 @@ const ProjectIntroForm: React.FC<{
       <Form.Item label={formatMessage(projectMessages.label.projectContent)} wrapperCol={{ md: { span: 20 } }}>
         <Tabs defaultActiveKey="default">
           <Tabs.TabPane key="default" tab={formatMessage(commonMessages.label.default)}>
+            <StyledNotice>{formatMessage(messages.introductionDefaultNotice)}</StyledNotice>
             <Form.Item name="introduction">
-              <StyledNotice>{formatMessage(messages.introductionDefaultNotice)}</StyledNotice>
               <AdminBraftEditor />
             </Form.Item>
           </Tabs.TabPane>
           <Tabs.TabPane key="desktop" tab={formatMessage(commonMessages.label.desktop)}>
+            <StyledNotice>{formatMessage(messages.introductionDesktopNotice)}</StyledNotice>
             <Form.Item name="introductionDesktop">
-              <StyledNotice>{formatMessage(messages.introductionDesktopNotice)}</StyledNotice>
               <AdminBraftEditor />
             </Form.Item>
           </Tabs.TabPane>
