@@ -24,6 +24,7 @@ const PodcastAlbumCollectionTabs: React.VFC = () => {
       condition: {
         published_at: { _is_null: false },
         app_id: { _eq: appId },
+        is_deleted: { _eq: false },
       },
     },
     {
@@ -32,6 +33,7 @@ const PodcastAlbumCollectionTabs: React.VFC = () => {
       condition: {
         published_at: { _is_null: true },
         app_id: { _eq: appId },
+        is_deleted: { _eq: false },
       },
     },
   ]
