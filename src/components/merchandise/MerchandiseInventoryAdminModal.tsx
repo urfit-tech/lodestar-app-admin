@@ -136,20 +136,14 @@ const MerchandiseInventoryAdminModal: React.FC<
           <div className="col-12 col-lg-3 mb-1">
             <StyledStatus className="p-4">
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
-              <StatusCardNumber>
-                {!isPhysical && !isCustomized ? 0 : inventoryStatus.undeliveredQuantity}
-              </StatusCardNumber>
+              <StatusCardNumber>{inventoryStatus.undeliveredQuantity}</StatusCardNumber>
             </StyledStatus>
           </div>
 
           <div className="col-12 col-lg-3 mb-1">
             <StyledStatus className="p-4">
               <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipped)}</StatusCardTitle>
-              <StatusCardNumber>
-                {!isPhysical && !isCustomized
-                  ? inventoryStatus.undeliveredQuantity + inventoryStatus.deliveredQuantity
-                  : inventoryStatus.deliveredQuantity}
-              </StatusCardNumber>
+              <StatusCardNumber>{inventoryStatus.deliveredQuantity}</StatusCardNumber>
             </StyledStatus>
           </div>
         </div>
