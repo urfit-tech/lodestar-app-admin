@@ -27150,7 +27150,7 @@ export interface podcast_album_category_bool_exp {
   category?: category_bool_exp | null;
   category_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  podast_ablum?: podcast_album_bool_exp | null;
+  podast_album?: podcast_album_bool_exp | null;
   podcast_album_id?: uuid_comparison_exp | null;
   position?: Int_comparison_exp | null;
 }
@@ -27162,7 +27162,7 @@ export interface podcast_album_category_insert_input {
   category?: category_obj_rel_insert_input | null;
   category_id?: string | null;
   id?: any | null;
-  podast_ablum?: podcast_album_obj_rel_insert_input | null;
+  podast_album?: podcast_album_obj_rel_insert_input | null;
   podcast_album_id?: any | null;
   position?: number | null;
 }
@@ -27229,7 +27229,7 @@ export interface podcast_album_podcast_program_bool_exp {
   _not?: podcast_album_podcast_program_bool_exp | null;
   _or?: (podcast_album_podcast_program_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
-  podcast_ablum?: podcast_album_bool_exp | null;
+  podcast_album?: podcast_album_bool_exp | null;
   podcast_album_id?: uuid_comparison_exp | null;
   podcast_program?: podcast_program_bool_exp | null;
   podcast_program_id?: uuid_comparison_exp | null;
@@ -27241,7 +27241,7 @@ export interface podcast_album_podcast_program_bool_exp {
  */
 export interface podcast_album_podcast_program_insert_input {
   id?: any | null;
-  podcast_ablum?: podcast_album_obj_rel_insert_input | null;
+  podcast_album?: podcast_album_obj_rel_insert_input | null;
   podcast_album_id?: any | null;
   podcast_program?: podcast_program_obj_rel_insert_input | null;
   podcast_program_id?: any | null;
