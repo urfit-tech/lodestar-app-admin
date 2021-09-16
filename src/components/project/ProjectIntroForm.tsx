@@ -1,10 +1,11 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Input, message, Skeleton, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -14,10 +15,28 @@ import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
 import VideoInput from '../form/VideoInput'
 
+const messages = defineMessages({
+  introductionDefaultNotice: {
+    id: 'project.text.introductionDefaultNotice',
+    defaultMessage: '預設顯示在手機版與電腦版的圖文內容',
+  },
+  introductionDesktopNotice: {
+    id: 'project.text.introductionDesktopNotice',
+    defaultMessage: '優先顯示在電腦版的圖文內容，若與「預設」一樣可留空',
+  },
+})
+
+const StyledNotice = styled.div`
+  font-size: 12px;
+  color: #9b9b9b;
+  padding: 0 0 8px 0;
+`
+
 type FieldProps = {
   coverUrl: string
   abstract: string
   introduction: EditorState
+  introductionDesktop: EditorState
 }
 
 const ProjectIntroForm: React.FC<{
@@ -45,10 +64,10 @@ const ProjectIntroForm: React.FC<{
     updateProjectCover({
       variables: {
         projectId: project.id,
-        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/400?t=${uploadTime}`,
+        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
         coverUrl:
           project.coverUrl === null
-            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${uploadTime}`
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`
             : project.coverUrl,
       },
     })
@@ -67,10 +86,13 @@ const ProjectIntroForm: React.FC<{
         projectId: project.id,
         abstract: values.abstract,
         introduction: values.introduction?.getCurrentContent().hasText() ? values.introduction.toRAW() : null,
+        introductionDesktop: values.introductionDesktop?.getCurrentContent().hasText()
+          ? values.introductionDesktop.toRAW()
+          : null,
         coverUrl: values.coverUrl
           ? values.coverUrl
           : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${Date.now()}`,
-        cover_type: values.coverUrl ? 'video' : 'image',
+        coverType: values.coverUrl ? 'video' : 'image',
       },
     })
       .then(() => {
@@ -92,6 +114,7 @@ const ProjectIntroForm: React.FC<{
         coverUrl: project.coverType === 'video' ? project.coverUrl : null,
         abstract: project.abstract,
         introduction: BraftEditor.createEditorState(project.introduction),
+        introductionDesktop: BraftEditor.createEditorState(project.introductionDesktop),
       }}
       onFinish={handleSubmit}
     >
@@ -116,12 +139,21 @@ const ProjectIntroForm: React.FC<{
         <Input.TextArea rows={5} />
       </Form.Item>
 
-      <Form.Item
-        label={formatMessage(projectMessages.label.projectContent)}
-        wrapperCol={{ md: { span: 20 } }}
-        name="introduction"
-      >
-        <AdminBraftEditor />
+      <Form.Item label={formatMessage(projectMessages.label.projectContent)} wrapperCol={{ md: { span: 20 } }}>
+        <Tabs defaultActiveKey="default">
+          <Tabs.TabPane key="default" tab={formatMessage(commonMessages.label.default)}>
+            <StyledNotice>{formatMessage(messages.introductionDefaultNotice)}</StyledNotice>
+            <Form.Item name="introduction">
+              <AdminBraftEditor />
+            </Form.Item>
+          </Tabs.TabPane>
+          <Tabs.TabPane key="desktop" tab={formatMessage(commonMessages.label.desktop)}>
+            <StyledNotice>{formatMessage(messages.introductionDesktopNotice)}</StyledNotice>
+            <Form.Item name="introductionDesktop">
+              <AdminBraftEditor />
+            </Form.Item>
+          </Tabs.TabPane>
+        </Tabs>
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -148,12 +180,19 @@ const UPDATE_PROJECT_INTRO = gql`
     $projectId: uuid!
     $abstract: String
     $introduction: String
+    $introductionDesktop: String
     $coverUrl: String
-    $cover_type: String
+    $coverType: String
   ) {
     update_project(
       where: { id: { _eq: $projectId } }
-      _set: { abstract: $abstract, introduction: $introduction, cover_url: $coverUrl, cover_type: $cover_type }
+      _set: {
+        abstract: $abstract
+        introduction: $introduction
+        introduction_desktop: $introductionDesktop
+        cover_url: $coverUrl
+        cover_type: $coverType
+      }
     ) {
       affected_rows
     }

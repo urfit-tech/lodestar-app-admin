@@ -1,10 +1,12 @@
-import { Button, Skeleton } from 'antd'
+import { Button, message, Skeleton } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import AdminModal from '../../components/admin/AdminModal'
+import { handleError } from '../../helpers'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
 
 const StyledConfirmation = styled.div`
@@ -17,23 +19,22 @@ const CraftPageDeletionAdminCard: React.FC<{
 }> = ({ page }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  //TODO: app_page create is_deleted column
-  //   const [archivePage] = useMutation<hasura.UPDATE_PAGE_IS_DELETED, hasura.UPDATE_PAGE_IS_DELETEDVariables>(
-  //     UPDATE_PAGE_IS_DELETED,
-  //   )
+  const { updateAppPage } = useMutateAppPage()
+
   if (!page) {
     return <Skeleton active />
   }
 
-  const handleArchive = (PageId: string) => {
-    // archivePage({
-    //   variables: { pageId },
-    // })
-    //   .then(() => {
-    //     message.success(formatMessage(commonMessages.event.successfullyDeleted))
-    //     history.push('/craft_page')
-    //   })
-    //   .catch(handleError)
+  const handleArchive = (pageId: string) => {
+    updateAppPage({
+      pageId,
+      isDeleted: true,
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullyDeleted))
+        history.push('/craft-page')
+      })
+      .catch(handleError)
   }
 
   return (
@@ -43,10 +44,6 @@ const CraftPageDeletionAdminCard: React.FC<{
         className="mb-2"
         title={formatMessage(craftPageMessages.ui.deletePage)}
         renderTrigger={({ setVisible }) => (
-          //   page.isDeleted ? (
-          // <Button disabled>{formatMessage(commonMessages.status.deleted)}</Button>
-          //   )
-          //   ) : (
           <Button type="primary" danger onClick={() => setVisible(true)}>
             {formatMessage(craftPageMessages.ui.deletePage)}
           </Button>
@@ -54,22 +51,12 @@ const CraftPageDeletionAdminCard: React.FC<{
         okText={formatMessage(commonMessages.ui.delete)}
         okButtonProps={{ danger: true }}
         cancelText={formatMessage(commonMessages.ui.back)}
-        // onOk={() => handleArchive(page.id)}
+        onOk={() => handleArchive(page.id)}
       >
         <StyledConfirmation>{formatMessage(craftPageMessages.text.deletePageConfirmation)}</StyledConfirmation>
       </AdminModal>
     </div>
   )
 }
-
-// const UPDATE_PAGE_IS_DELETED = gql`
-//   mutation UPDATE_PAGE_IS_DELETED($pageId: uuid) {
-//     update_app_page(
-//       # where: { id: { _eq: $pageId } } # , _set: { is_deleted: true }
-//     ) {
-//       affected_rows
-//     }
-//   }
-// `
 
 export default CraftPageDeletionAdminCard

@@ -1,37 +1,41 @@
 import { CloseOutlined } from '@ant-design/icons'
-import { Button, Tabs } from 'antd'
+import { Button, Skeleton, Tabs } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { useApp } from '../../contexts/AppContext'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { useAppPage } from '../../hooks/appPage'
 import CraftPageBasicSettingBlock from './CraftPageBasicSettingBlock'
 import CraftPagePublishAdminBlock from './CraftPagePublishAdminBlock'
 import CraftPageSettingBlock from './CraftPageSettingBlock'
 
 const CraftPageAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
+  const { pageId } = useParams<{ pageId: string }>()
   const { host } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { appPage, loadingAppPage, errorAppPage, refetchAppPage } = useAppPage(pageId)
 
-  //TODO: get page data
-  const page = { id: '123', pageName: 'pageName', path: '', publishedAt: null }
+  if (!appPage || loadingAppPage || errorAppPage) {
+    return <Skeleton active />
+  }
 
   return (
     <>
       <AdminHeader>
-        <Link to="/craft_page">
+        <Link to="/craft-page">
           <Button type="link" className="mr-3">
             <CloseOutlined />
           </Button>
         </Link>
 
-        <AdminHeaderTitle>{formatMessage(craftPageMessages.label.pageEditor)}</AdminHeaderTitle>
+        <AdminHeaderTitle>{appPage.title}</AdminHeaderTitle>
 
-        <a href={`https://${host}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${host + appPage.path}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>
@@ -47,16 +51,16 @@ const CraftPageAdminPage: React.VFC = () => {
           )}
         >
           <Tabs.TabPane key="editor" tab={formatMessage(craftPageMessages.label.editPage)}>
-            <CraftPageSettingBlock />
+            <CraftPageSettingBlock pageAdmin={appPage} onRefetch={refetchAppPage} />
           </Tabs.TabPane>
           <Tabs.TabPane key="general" tab={formatMessage(craftPageMessages.label.settings)}>
-            <CraftPageBasicSettingBlock pageAdmin={page} />
+            <CraftPageBasicSettingBlock pageAdmin={appPage} onRefetch={refetchAppPage} />
           </Tabs.TabPane>
           <Tabs.TabPane key="publish" tab={formatMessage(craftPageMessages.label.publish)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
               <AdminBlock>
-                <CraftPagePublishAdminBlock pageAdmin={page} />
+                <CraftPagePublishAdminBlock pageAdmin={appPage} onRefetch={refetchAppPage} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

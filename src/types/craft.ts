@@ -23,14 +23,16 @@ export type CraftLayoutProps = {
 
 export type CraftPageAdminProps = {
   id: string
-  pageName: string
-  path: string
+  title: string | null
+  path: string | null
   publishedAt: Date | null
+  editorId: string | null
+  craftData: { [key: string]: string } | null
 }
 
 export type CraftPageColumnProps = {
   id: string
-  pageName: string
+  title: string
   url: string
   updateAt: Date
 }

@@ -510,6 +510,16 @@ const GET_PROGRAM_PROGRESS = gql`
 `
 
 export const useMutateProgramContent = () => {
+  const [insertProgramContentBody] = useMutation<
+    hasura.INSERT_PROGRAM_CONTENT_BODY,
+    hasura.INSERT_PROGRAM_CONTENT_BODYVariables
+  >(gql`
+    mutation INSERT_PROGRAM_CONTENT_BODY($object: program_content_body_insert_input!) {
+      insert_program_content_body_one(object: $object) {
+        id
+      }
+    }
+  `)
   const [updateProgramContent] = useMutation<hasura.UPDATE_PROGRAM_CONTENT, hasura.UPDATE_PROGRAM_CONTENTVariables>(
     gql`
       mutation UPDATE_PROGRAM_CONTENT(
@@ -520,6 +530,7 @@ export const useMutateProgramContent = () => {
         $duration: numeric
         $isNotifyUpdate: Boolean
         $notifiedAt: timestamptz
+        $programContentBodyId: uuid!
       ) {
         update_program_content(
           where: { id: { _eq: $programContentId } }
@@ -531,6 +542,7 @@ export const useMutateProgramContent = () => {
             published_at: $publishedAt
             is_notify_update: $isNotifyUpdate
             notified_at: $notifiedAt
+            content_body_id: $programContentBodyId
           }
         ) {
           affected_rows
@@ -580,5 +592,6 @@ export const useMutateProgramContent = () => {
     updateProgramContent,
     updateProgramContentBody,
     deleteProgramContent,
+    insertProgramContentBody,
   }
 }

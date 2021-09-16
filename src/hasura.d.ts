@@ -6174,8 +6174,9 @@ export interface UPDATE_PROJECT_INTROVariables {
   projectId: any;
   abstract?: string | null;
   introduction?: string | null;
+  introductionDesktop?: string | null;
   coverUrl?: string | null;
-  cover_type?: string | null;
+  coverType?: string | null;
 }
 
 /* tslint:disable */
@@ -7805,6 +7806,144 @@ export interface INSERT_APPOINTMENT_SCHEDULES {
 
 export interface INSERT_APPOINTMENT_SCHEDULESVariables {
   data: appointment_schedule_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP_PAGE
+// ====================================================
+
+export interface GET_APP_PAGE_app_page_by_pk_editor {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_APP_PAGE_app_page_by_pk {
+  __typename: "app_page";
+  id: any;
+  path: string | null;
+  title: string | null;
+  craft_data: any | null;
+  updated_at: any;
+  published_at: any | null;
+  options: any | null;
+  editor_id: string | null;
+  /**
+   * An object relationship
+   */
+  editor: GET_APP_PAGE_app_page_by_pk_editor | null;
+}
+
+export interface GET_APP_PAGE {
+  /**
+   * fetch data from the table: "app_page" using primary key columns
+   */
+  app_page_by_pk: GET_APP_PAGE_app_page_by_pk | null;
+}
+
+export interface GET_APP_PAGEVariables {
+  pageId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP_PAGE_COLLECTION
+// ====================================================
+
+export interface GET_APP_PAGE_COLLECTION_app_page_editor {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_APP_PAGE_COLLECTION_app_page {
+  __typename: "app_page";
+  id: any;
+  path: string | null;
+  title: string | null;
+  craft_data: any | null;
+  updated_at: any;
+  published_at: any | null;
+  options: any | null;
+  editor_id: string | null;
+  /**
+   * An object relationship
+   */
+  editor: GET_APP_PAGE_COLLECTION_app_page_editor | null;
+}
+
+export interface GET_APP_PAGE_COLLECTION {
+  /**
+   * fetch data from the table: "app_page"
+   */
+  app_page: GET_APP_PAGE_COLLECTION_app_page[];
+}
+
+export interface GET_APP_PAGE_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_APP_PAGE
+// ====================================================
+
+export interface INSERT_APP_PAGE_insert_app_page_one {
+  __typename: "app_page";
+  id: any;
+}
+
+export interface INSERT_APP_PAGE {
+  /**
+   * insert a single row into the table: "app_page"
+   */
+  insert_app_page_one: INSERT_APP_PAGE_insert_app_page_one | null;
+}
+
+export interface INSERT_APP_PAGEVariables {
+  appId: string;
+  path?: string | null;
+  editorId: string;
+  title: string;
+  craftData?: any | null;
+  options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APP_PAGE
+// ====================================================
+
+export interface UPDATE_APP_PAGE_update_app_page_by_pk {
+  __typename: "app_page";
+  id: any;
+}
+
+export interface UPDATE_APP_PAGE {
+  /**
+   * update single row of the table: "app_page"
+   */
+  update_app_page_by_pk: UPDATE_APP_PAGE_update_app_page_by_pk | null;
+}
+
+export interface UPDATE_APP_PAGEVariables {
+  pageId: any;
+  updated?: app_page_set_input | null;
 }
 
 /* tslint:disable */
@@ -11343,6 +11482,31 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_BODY
+// ====================================================
+
+export interface INSERT_PROGRAM_CONTENT_BODY_insert_program_content_body_one {
+  __typename: "program_content_body";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_CONTENT_BODY {
+  /**
+   * insert a single row into the table: "program_content_body"
+   */
+  insert_program_content_body_one: INSERT_PROGRAM_CONTENT_BODY_insert_program_content_body_one | null;
+}
+
+export interface INSERT_PROGRAM_CONTENT_BODYVariables {
+  object: program_content_body_insert_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT
 // ====================================================
 
@@ -11369,6 +11533,7 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
   duration?: any | null;
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
+  programContentBodyId: any;
 }
 
 /* tslint:disable */
@@ -11949,6 +12114,75 @@ export interface GET_SALESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SALES_LEADS
+// ====================================================
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
+  __typename: "member_phone";
+  phone: string;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories {
+  __typename: "member_category";
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_LEADS_lead_status_new_member_member_categories_category;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  star: any | null;
+  created_at: any | null;
+  assigned_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_SALES_LEADS_lead_status_new_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_LEADS_lead_status_new_member_member_categories[];
+}
+
+export interface GET_SALES_LEADS_lead_status_new {
+  __typename: "lead_status_new";
+  /**
+   * An object relationship
+   */
+  member: GET_SALES_LEADS_lead_status_new_member | null;
+  status: string | null;
+  paid: any | null;
+  recent_contacted_at: any | null;
+  recent_tasked_at: any | null;
+}
+
+export interface GET_SALES_LEADS {
+  /**
+   * fetch data from the table: "lead_status_new"
+   */
+  lead_status_new: GET_SALES_LEADS_lead_status_new[];
+}
+
+export interface GET_SALES_LEADSVariables {
+  appId: string;
+  managerId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_ACTIVITY
 // ====================================================
 
@@ -12350,35 +12584,6 @@ export interface GET_MEMBER_CONTRACT {
 
 export interface GET_MEMBER_CONTRACTVariables {
   memberContractId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_CRAFT_PAGE
-// ====================================================
-
-export interface PUBLISH_CRAFT_PAGE_update_app_page {
-  __typename: "app_page_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_CRAFT_PAGE {
-  /**
-   * update data of the table: "app_page"
-   */
-  update_app_page: PUBLISH_CRAFT_PAGE_update_app_page | null;
-}
-
-export interface PUBLISH_CRAFT_PAGEVariables {
-  pageId: any;
-  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -13666,6 +13871,7 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
   title: string;
   abstract: string | null;
   introduction: string | null;
+  introduction_desktop: string | null;
   description: string | null;
   target_amount: any | null;
   /**
@@ -13905,75 +14111,6 @@ export interface GET_TODAY_MEMBER_CONTRACT {
 
 export interface GET_TODAY_MEMBER_CONTRACTVariables {
   today: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SALES_LEADS
-// ====================================================
-
-export interface GET_SALES_LEADS_lead_status_member_member_phones {
-  __typename: "member_phone";
-  phone: string;
-}
-
-export interface GET_SALES_LEADS_lead_status_member_member_categories_category {
-  __typename: "category";
-  name: string;
-}
-
-export interface GET_SALES_LEADS_lead_status_member_member_categories {
-  __typename: "member_category";
-  /**
-   * An object relationship
-   */
-  category: GET_SALES_LEADS_lead_status_member_member_categories_category;
-}
-
-export interface GET_SALES_LEADS_lead_status_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-  star: any | null;
-  created_at: any | null;
-  assigned_at: any | null;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_SALES_LEADS_lead_status_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_SALES_LEADS_lead_status_member_member_categories[];
-}
-
-export interface GET_SALES_LEADS_lead_status {
-  __typename: "lead_status";
-  /**
-   * An object relationship
-   */
-  member: GET_SALES_LEADS_lead_status_member | null;
-  status: string | null;
-  paid: any | null;
-  recent_contacted_at: any | null;
-  recent_tasked_at: any | null;
-}
-
-export interface GET_SALES_LEADS {
-  /**
-   * fetch data from the table: "lead_status"
-   */
-  lead_status: GET_SALES_LEADS_lead_status[];
-}
-
-export interface GET_SALES_LEADSVariables {
-  appId: string;
-  managerId: string;
 }
 
 /* tslint:disable */
@@ -16646,6 +16783,7 @@ export enum project_update_column {
   expired_at = "expired_at",
   id = "id",
   introduction = "introduction",
+  introduction_desktop = "introduction_desktop",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_participants_visible = "is_participants_visible",
   position = "position",
@@ -18380,6 +18518,23 @@ export interface app_page_section_on_conflict {
   constraint: app_page_section_constraint;
   update_columns: app_page_section_update_column[];
   where?: app_page_section_bool_exp | null;
+}
+
+/**
+ * input type for updating data in table "app_page"
+ */
+export interface app_page_set_input {
+  app_id?: string | null;
+  craft_data?: any | null;
+  created_at?: any | null;
+  editor_id?: string | null;
+  id?: any | null;
+  is_deleted?: boolean | null;
+  options?: any | null;
+  path?: string | null;
+  published_at?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -24153,6 +24308,7 @@ export interface merchandise_spec_inventory_status_bool_exp {
   merchandise_spec_id?: uuid_comparison_exp | null;
   total_quantity?: bigint_comparison_exp | null;
   undelivered_quantity?: bigint_comparison_exp | null;
+  unpaid_quantity?: bigint_comparison_exp | null;
 }
 
 /**
@@ -30737,6 +30893,7 @@ export interface project_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   introduction?: String_comparison_exp | null;
+  introduction_desktop?: String_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -30907,6 +31064,7 @@ export interface project_insert_input {
   expired_at?: any | null;
   id?: any | null;
   introduction?: string | null;
+  introduction_desktop?: string | null;
   is_countdown_timer_visible?: boolean | null;
   is_participants_visible?: boolean | null;
   position?: number | null;
@@ -30957,6 +31115,7 @@ export interface project_order_by {
   expired_at?: order_by | null;
   id?: order_by | null;
   introduction?: order_by | null;
+  introduction_desktop?: order_by | null;
   is_countdown_timer_visible?: order_by | null;
   is_participants_visible?: order_by | null;
   position?: order_by | null;

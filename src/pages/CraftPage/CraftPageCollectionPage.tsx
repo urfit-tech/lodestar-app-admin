@@ -5,34 +5,42 @@ import { useIntl } from 'react-intl'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { commonMessages } from '../../helpers/translation'
+import { useAppPageCollection } from '../../hooks/appPage'
 import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
 import CraftPageCollectionTable from './CraftPageCollectionTable'
-import CraftPageCreationModel from './CraftPageCreationModel'
+import CraftPageCreationModal from './CraftPageCreationModal'
 
 const CraftPageCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
+  const { appPages } = useAppPageCollection()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const tabContents = [
     {
       key: 'published',
       tab: formatMessage(commonMessages.status.published),
-      //TODO: pages filter published_at is not null
-      pages: [
-        {
-          id: '123',
-          pageName: 'pageName',
-          path: `/demo`,
-          updatedAt: new Date('2021-06-26T14:55:47.665035+00:00'),
-          editor: '修改人員',
-        },
-      ],
+      pages: appPages
+        .filter(appPage => appPage.publishedAt)
+        .map(appPage => ({
+          id: appPage.id,
+          title: appPage.title,
+          path: appPage.path,
+          updatedAt: appPage.updatedAt,
+          editor: appPage.editorName,
+        })),
     },
     {
       key: 'unpublished',
       tab: formatMessage(commonMessages.status.unpublished),
-      //TODO: pages filter published_at is null
-      pages: [],
+      pages: appPages
+        .filter(appPage => !appPage.publishedAt)
+        .map(appPage => ({
+          id: appPage.id,
+          title: appPage.title,
+          path: appPage.path,
+          updatedAt: appPage.updatedAt,
+          editor: appPage.editorName,
+        })),
     },
   ]
 
@@ -46,7 +54,7 @@ const CraftPageCollectionPage: React.VFC = () => {
       </div>
 
       <div className="mb-4">
-        <CraftPageCreationModel
+        <CraftPageCreationModal
           visible={isModalVisible}
           icon={<FileAddOutlined />}
           setModalVisible={setIsModalVisible}

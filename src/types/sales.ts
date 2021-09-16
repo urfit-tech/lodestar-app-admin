@@ -1,4 +1,4 @@
-export type Lead = {
+export type LeadProps = {
   id: string
   name: string
   email: string
@@ -7,7 +7,7 @@ export type Lead = {
   paid: number
   star: number
   createdAt: Date
-  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'PAID' | 'CLOSED'
+  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'SIGNED' | 'CLOSED'
   notified: Boolean
 }
 
