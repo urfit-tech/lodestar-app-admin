@@ -187,6 +187,7 @@ export const commonMessages = {
     instructor: { id: 'common.label.instructor', defaultMessage: '老師' },
     star: { id: 'common.label.star', defaultMessage: '星等' },
     price: { id: 'common.label.price', defaultMessage: '售價' },
+    purchase: { id: 'common.label.purchase', defaultMessage: '購買' },
     teachingAssistant: { id: 'common.label.teachingAssistant', defaultMessage: '助教' },
     cover: { id: 'common.label.cover', defaultMessage: '封面' },
     description: { id: 'common.label.description', defaultMessage: '描述' },
@@ -392,6 +393,7 @@ export const commonMessages = {
     pageSetup: { id: 'common.menu.pageSetup', defaultMessage: '頁面設定' },
     menuSetup: { id: 'common.menu.menuSetup', defaultMessage: '選單設定' },
     podcastAlbum: { id: 'common.menu.podcastAlbum', defaultMessage: '音頻專輯' },
+    podcastAlbumCategory: { id: 'common.menu.podcastAlbumCategory', defaultMessage: '音頻專輯分類' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
