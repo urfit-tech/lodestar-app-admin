@@ -151,7 +151,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.podcast && currentUserRole === 'app-owner',
+      permissionIsAllowed:
+        !!enabledModules.podcast && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator'),
       key: 'owner_podcast_admin',
       icon: () => <MicrophoneIcon />,
       name: formatMessage(commonMessages.menu.podcastAdmin),
@@ -172,12 +173,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(commonMessages.menu.podcastCategory),
         },
         {
-          permissionIsAllowed: true,
+          permissionIsAllowed: currentUserRole === 'app-owner',
           key: 'podcast_album_collection',
           name: formatMessage(commonMessages.menu.podcastAlbum),
         },
         {
-          permissionIsAllowed: true,
+          permissionIsAllowed: currentUserRole === 'app-owner',
           key: 'podcast_album_category',
           name: formatMessage(commonMessages.menu.podcastAlbumCategory),
         },
