@@ -4732,8 +4732,8 @@ export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM {
 
 export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAMVariables {
   podcastPrograms: podcast_album_podcast_program_insert_input[];
-  podcast_album_id: any;
-  delete_podcast_programs_id: any[];
+  podcastAlbumId: any;
+  deletePodcastProgramsId: any[];
 }
 
 /* tslint:disable */
