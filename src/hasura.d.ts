@@ -10587,6 +10587,8 @@ export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise {
   __typename: "merchandise";
   title: string;
   published_at: any | null;
+  is_physical: boolean;
+  is_customized: boolean;
   /**
    * An array relationship
    */
@@ -10602,6 +10604,7 @@ export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_sp
   buyable_quantity: any | null;
   delivered_quantity: any | null;
   undelivered_quantity: any | null;
+  unpaid_quantity: any | null;
 }
 
 export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec {
