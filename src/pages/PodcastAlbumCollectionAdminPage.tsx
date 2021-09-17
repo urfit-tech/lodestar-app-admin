@@ -2,7 +2,6 @@ import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button } from 'antd'
 import gql from 'graphql-tag'
-import { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../components/admin'
@@ -25,42 +24,41 @@ const PodcastAlbumCollectionAdminPage: React.VFC = () => {
     INSERT_PODCAST_ALBUM,
   )
 
-  // clean up
-  useEffect(() => {
-    return () => {}
-  }, [])
-
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <MicrophoneIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.podcastAlbum)}</span>
       </AdminPageTitle>
+
       {currentMemberId && (
-        <ProductCreationModal
-          icon={<FileAddOutlined />}
-          customModalTitle={formatMessage(podcastAlbumMessages.ui.createAlbum)}
-          renderTrigger={({ setVisible }) => (
-            <Button className="mb-5" type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-              {formatMessage(podcastAlbumMessages.ui.addPodcastProgram)}
-            </Button>
-          )}
-          onCreate={({ title }) =>
-            createPodcastAlbum({
-              variables: {
-                appId,
-                title,
-                authorId: currentMemberId,
-              },
-            })
-              .then(res => {
-                const podcastAlbumId = res.data?.insert_podcast_album?.returning[0].id
-                podcastAlbumId && history.push(`/podcast-albums/${podcastAlbumId}?tab=podcastItem`)
+        <div className="mb-5">
+          <ProductCreationModal
+            icon={<FileAddOutlined />}
+            customModalTitle={formatMessage(podcastAlbumMessages.ui.createAlbum)}
+            renderTrigger={({ setVisible }) => (
+              <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+                {formatMessage(podcastAlbumMessages.ui.addPodcastProgram)}
+              </Button>
+            )}
+            onCreate={({ title }) =>
+              createPodcastAlbum({
+                variables: {
+                  appId,
+                  title,
+                  authorId: currentMemberId,
+                },
               })
-              .catch(handleError)
-          }
-        />
+                .then(res => {
+                  const podcastAlbumId = res.data?.insert_podcast_album?.returning[0].id
+                  podcastAlbumId && history.push(`/podcast-albums/${podcastAlbumId}?tab=podcastItem`)
+                })
+                .catch(handleError)
+            }
+          />
+        </div>
       )}
+
       <PodcastAlbumCollectionTabs />
     </AdminLayout>
   )
