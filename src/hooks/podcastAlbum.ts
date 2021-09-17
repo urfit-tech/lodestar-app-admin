@@ -51,7 +51,7 @@ export const usePodcastAlbumAdmin = (podcastAlbumId: string) => {
     description: data?.podcast_album_by_pk?.description || '',
     isPublic: !!data?.podcast_album_by_pk?.is_public,
     isDeleted: !!data?.podcast_album_by_pk?.is_deleted,
-    publishedAt: data?.podcast_album_by_pk?.published_at,
+    publishedAt: data?.podcast_album_by_pk?.published_at ? new Date(data.podcast_album_by_pk.published_at) : null,
     podcastPrograms:
       data?.podcast_album_by_pk?.podcast_album_podcast_programs.map(v => ({
         id: v?.podcast_program?.id,
@@ -97,6 +97,7 @@ export const usePodcastAlbumCounts = (appId: string) => {
     `,
     {
       variables: { appId },
+      fetchPolicy: 'no-cache',
     },
   )
   const counts: { [key: string]: number } | null = data
