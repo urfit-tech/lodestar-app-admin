@@ -66,8 +66,8 @@ const PodcastAlbumPodcastProgramConnectionModal: React.VFC<{
               podcast_album_id: podcastAlbumId,
               podcast_program_id: podcastProgramsId,
             })),
-            podcast_album_id: podcastAlbumId,
-            delete_podcast_programs_id: podcastPrograms
+            podcastAlbumId: podcastAlbumId,
+            deletePodcastProgramsId: podcastPrograms
               .filter(podcastProgram => !podcastProgramsIds.includes(podcastProgram.id))
               .map(podcastProgram => podcastProgram.podcastAlbumPodcastProgramId),
           },
@@ -181,8 +181,8 @@ const useGetAvailablePodcastProgramCollection = (appId: string) => {
 const UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM = gql`
   mutation UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM(
     $podcastPrograms: [podcast_album_podcast_program_insert_input!]!
-    $podcast_album_id: uuid!
-    $delete_podcast_programs_id: [uuid!]!
+    $podcastAlbumId: uuid!
+    $deletePodcastProgramsId: [uuid!]!
   ) {
     insert_podcast_album_podcast_program(
       objects: $podcastPrograms
@@ -194,7 +194,7 @@ const UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM = gql`
       affected_rows
     }
     delete_podcast_album_podcast_program(
-      where: { _and: [{ podcast_album_id: { _eq: $podcast_album_id } }, { id: { _in: $delete_podcast_programs_id } }] }
+      where: { _and: [{ podcast_album_id: { _eq: $podcastAlbumId } }, { id: { _in: $deletePodcastProgramsId } }] }
     ) {
       affected_rows
     }
