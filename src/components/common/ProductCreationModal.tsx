@@ -102,7 +102,7 @@ const ProductCreationModal: React.FC<
           {formatMessage(commonMessages.ui.create)}
         </Button>
       )}
-      title={customModalTitle ? customModalTitle : formatMessage(commonMessages.ui.create)}
+      title={customModalTitle || formatMessage(commonMessages.ui.create)}
       cancelText={formatMessage(commonMessages.ui.cancel)}
       okText={formatMessage(commonMessages.ui.create)}
       okButtonProps={{ loading }}
