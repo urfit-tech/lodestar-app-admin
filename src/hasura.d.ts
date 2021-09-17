@@ -12114,6 +12114,75 @@ export interface GET_SALESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SALES_LEADS
+// ====================================================
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
+  __typename: "member_phone";
+  phone: string;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories {
+  __typename: "member_category";
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_LEADS_lead_status_new_member_member_categories_category;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  star: any | null;
+  created_at: any | null;
+  assigned_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_SALES_LEADS_lead_status_new_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_LEADS_lead_status_new_member_member_categories[];
+}
+
+export interface GET_SALES_LEADS_lead_status_new {
+  __typename: "lead_status_new";
+  /**
+   * An object relationship
+   */
+  member: GET_SALES_LEADS_lead_status_new_member | null;
+  status: string | null;
+  paid: any | null;
+  recent_contacted_at: any | null;
+  recent_tasked_at: any | null;
+}
+
+export interface GET_SALES_LEADS {
+  /**
+   * fetch data from the table: "lead_status_new"
+   */
+  lead_status_new: GET_SALES_LEADS_lead_status_new[];
+}
+
+export interface GET_SALES_LEADSVariables {
+  appId: string;
+  managerId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_ACTIVITY
 // ====================================================
 
@@ -14042,75 +14111,6 @@ export interface GET_TODAY_MEMBER_CONTRACT {
 
 export interface GET_TODAY_MEMBER_CONTRACTVariables {
   today: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SALES_LEADS
-// ====================================================
-
-export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
-  __typename: "member_phone";
-  phone: string;
-}
-
-export interface GET_SALES_LEADS_lead_status_new_member_member_categories_category {
-  __typename: "category";
-  name: string;
-}
-
-export interface GET_SALES_LEADS_lead_status_new_member_member_categories {
-  __typename: "member_category";
-  /**
-   * An object relationship
-   */
-  category: GET_SALES_LEADS_lead_status_new_member_member_categories_category;
-}
-
-export interface GET_SALES_LEADS_lead_status_new_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-  star: any | null;
-  created_at: any | null;
-  assigned_at: any | null;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_SALES_LEADS_lead_status_new_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_SALES_LEADS_lead_status_new_member_member_categories[];
-}
-
-export interface GET_SALES_LEADS_lead_status_new {
-  __typename: "lead_status_new";
-  /**
-   * An object relationship
-   */
-  member: GET_SALES_LEADS_lead_status_new_member | null;
-  status: string | null;
-  paid: any | null;
-  recent_contacted_at: any | null;
-  recent_tasked_at: any | null;
-}
-
-export interface GET_SALES_LEADS {
-  /**
-   * fetch data from the table: "lead_status_new"
-   */
-  lead_status_new: GET_SALES_LEADS_lead_status_new[];
-}
-
-export interface GET_SALES_LEADSVariables {
-  appId: string;
-  managerId: string;
 }
 
 /* tslint:disable */
