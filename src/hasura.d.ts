@@ -199,6 +199,33 @@ export interface PUBLISH_ACTIVITYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: SEARCH_ACTIVITY
+// ====================================================
+
+export interface SEARCH_ACTIVITY_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface SEARCH_ACTIVITY {
+  /**
+   * fetch data from the table: "activity"
+   */
+  activity: SEARCH_ACTIVITY_activity[];
+}
+
+export interface SEARCH_ACTIVITYVariables {
+  appId: string;
+  searchText: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_ACTIVITY_SESSION
 // ====================================================
 
@@ -1659,6 +1686,32 @@ export interface GET_SALES_MEMBERS {
 }
 
 export interface GET_SALES_MEMBERSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP_ACTIVITY_CATEGORIES
+// ====================================================
+
+export interface GET_APP_ACTIVITY_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_APP_ACTIVITY_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_APP_ACTIVITY_CATEGORIES_category[];
+}
+
+export interface GET_APP_ACTIVITY_CATEGORIESVariables {
   appId: string;
 }
 
