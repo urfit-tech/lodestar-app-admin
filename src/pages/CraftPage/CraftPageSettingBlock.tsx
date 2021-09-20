@@ -21,6 +21,7 @@ import CraftTitleAndParagraph from 'lodestar-app-element/src/components/craft/Cr
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import ActivitySettings from '../../components/craftSetting/ActivitySettings'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -107,28 +108,7 @@ const CraftPageSettingBlock: React.VFC<{
   const [activeKey, setActiveKey] = useState('component')
 
   return (
-    <Editor
-      resolver={{
-        CraftContainer,
-        CraftLayout,
-        CraftTitle,
-        CraftParagraph,
-        CraftTitleAndParagraph,
-        CraftButton,
-        CraftCarousel,
-        CraftStatistics,
-        CraftImage,
-        CraftCard,
-        CraftCollapse,
-        CraftBackground,
-        CraftProgram,
-        CraftProject,
-        CraftActivity,
-        CraftPodcastProgram,
-        CraftInstructor,
-        CraftCarouselContainer,
-      }}
-    >
+    <Editor resolver={configureResolver()}>
       <div className="d-flex">
         <StyledScrollBar>
           <StyledContent>
@@ -201,6 +181,40 @@ const SettingBlock: React.VFC<{
       </StyledTabs>
     </StyledSettingBlock>
   )
+}
+
+const configureResolver = () => {
+  CraftActivity.craft = {
+    related: {
+      settings: ActivitySettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+
+  return {
+    CraftContainer,
+    CraftLayout,
+    CraftTitle,
+    CraftParagraph,
+    CraftTitleAndParagraph,
+    CraftButton,
+    CraftCarousel,
+    CraftStatistics,
+    CraftImage,
+    CraftCard,
+    CraftCollapse,
+    CraftBackground,
+    CraftProgram,
+    CraftProject,
+    CraftActivity,
+    CraftPodcastProgram,
+    CraftInstructor,
+    CraftCarouselContainer,
+  }
 }
 
 export default CraftPageSettingBlock
