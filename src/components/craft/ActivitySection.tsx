@@ -3,7 +3,7 @@ import { Image } from 'antd'
 import CraftActivity from 'lodestar-app-element/src/components/craft/CraftActivity'
 import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
 import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
-import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
+import CraftImage from 'lodestar-app-element/src/components/craft/CraftImage'
 import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
 import React, { useContext } from 'react'
 import { ThemeContext } from 'styled-components'
@@ -36,24 +36,14 @@ const ProblemSection: React.VFC = () => {
               fontWeight="bold"
               color={'#585858'}
             />
-            <Element
-              id="CraftLayout"
-              is={CraftLayout}
-              canvas
-              mobile={{
-                margin: { ml: '16', mr: '16', mb: '20' },
-                columnAmount: 1,
-                columnRatio: [12],
-                displayAmount: 3,
-              }}
-              desktop={{
-                margin: { ml: '120', mr: '120', mb: '20' },
-                columnAmount: 3,
-                columnRatio: [4, 4, 4],
-                displayAmount: 3,
-              }}
-            >
-              <CraftActivity type="newest" ids={[]} />
+            <Element id="CraftActivity" is={CraftActivity} canvas type="newest" ids={[]} defaultCategoryIds={[]}>
+              <CraftImage
+                type="image"
+                width="100%"
+                padding={{}}
+                margin={{}}
+                coverUrl="https://static.kolable.com/images/demo/home/feature-img2.jpg"
+              />
             </Element>
             <div style={{ textAlign: 'center' }}>
               <CraftButton
