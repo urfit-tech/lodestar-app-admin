@@ -66,7 +66,7 @@ const PodcastAlbumCollectionAdminPage: React.VFC = () => {
 
 const INSERT_PODCAST_ALBUM = gql`
   mutation INSERT_PODCAST_ALBUM($appId: String!, $title: String!, $authorId: String!) {
-    insert_podcast_album(objects: { app_id: $appId, title: $title, author_id: $authorId }) {
+    insert_podcast_album(objects: { app_id: $appId, title: $title, author_id: $authorId, is_public: true }) {
       affected_rows
       returning {
         id
