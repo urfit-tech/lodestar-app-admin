@@ -4581,10 +4581,10 @@ export interface UPDATE_PODCAST_ALBUM_COVERVariables {
 // GraphQL query operation: GET_PODCAST_ALBUM_PREVIEW_COLLECTION
 // ====================================================
 
-export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album_member {
-  __typename: "member";
-  id: string;
-  name: string;
+export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album_author {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
 }
 
 export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album {
@@ -4596,7 +4596,7 @@ export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album {
   /**
    * An object relationship
    */
-  member: GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album_member;
+  author: GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album_author | null;
 }
 
 export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION {
@@ -11410,10 +11410,10 @@ export interface GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_podcast_pro
   podcast_program: GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_podcast_programs_podcast_program | null;
 }
 
-export interface GET_PODCAST_ALBUM_podcast_album_by_pk_member {
-  __typename: "member";
-  id: string;
-  name: string;
+export interface GET_PODCAST_ALBUM_podcast_album_by_pk_author {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
 }
 
 export interface GET_PODCAST_ALBUM_podcast_album_by_pk {
@@ -11436,7 +11436,7 @@ export interface GET_PODCAST_ALBUM_podcast_album_by_pk {
   /**
    * An object relationship
    */
-  member: GET_PODCAST_ALBUM_podcast_album_by_pk_member;
+  author: GET_PODCAST_ALBUM_podcast_album_by_pk_author | null;
 }
 
 export interface GET_PODCAST_ALBUM {
@@ -16571,6 +16571,7 @@ export enum podcast_album_podcast_program_update_column {
  * update columns of table "podcast_album"
  */
 export enum podcast_album_update_column {
+  abstract = "abstract",
   app_id = "app_id",
   author_id = "author_id",
   cover_url = "cover_url",
@@ -27116,7 +27117,9 @@ export interface podcast_album_bool_exp {
   _and?: (podcast_album_bool_exp | null)[] | null;
   _not?: podcast_album_bool_exp | null;
   _or?: (podcast_album_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
+  author?: member_public_bool_exp | null;
   author_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -27124,7 +27127,6 @@ export interface podcast_album_bool_exp {
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   is_public?: Boolean_comparison_exp | null;
-  member?: member_bool_exp | null;
   podcast_album_categories?: podcast_album_category_bool_exp | null;
   podcast_album_podcast_programs?: podcast_album_podcast_program_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -27180,6 +27182,7 @@ export interface podcast_album_category_on_conflict {
  * input type for inserting data into table "podcast_album"
  */
 export interface podcast_album_insert_input {
+  abstract?: string | null;
   app_id?: string | null;
   author_id?: string | null;
   cover_url?: string | null;
@@ -27188,7 +27191,6 @@ export interface podcast_album_insert_input {
   id?: any | null;
   is_deleted?: boolean | null;
   is_public?: boolean | null;
-  member?: member_obj_rel_insert_input | null;
   podcast_album_categories?: podcast_album_category_arr_rel_insert_input | null;
   podcast_album_podcast_programs?: podcast_album_podcast_program_arr_rel_insert_input | null;
   published_at?: any | null;
