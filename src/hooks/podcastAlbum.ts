@@ -31,7 +31,7 @@ export const usePodcastAlbumAdmin = (podcastAlbumId: string) => {
               duration_second
             }
           }
-          member {
+          author {
             id
             name
           }
@@ -45,8 +45,8 @@ export const usePodcastAlbumAdmin = (podcastAlbumId: string) => {
     title: data?.podcast_album_by_pk?.title || '',
     coverUrl: data?.podcast_album_by_pk?.cover_url || '',
     author: {
-      id: data?.podcast_album_by_pk?.member.id || '',
-      name: data?.podcast_album_by_pk?.member.name || '',
+      id: data?.podcast_album_by_pk?.author?.id || '',
+      name: data?.podcast_album_by_pk?.author?.name || '',
     },
     description: data?.podcast_album_by_pk?.description || '',
     isPublic: !!data?.podcast_album_by_pk?.is_public,

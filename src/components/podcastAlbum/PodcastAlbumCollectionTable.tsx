@@ -173,7 +173,7 @@ const usePodcastAlbumPreviewCollection = (
           title
           cover_url
           published_at
-          member {
+          author {
             id
             name
           }
@@ -190,8 +190,8 @@ const usePodcastAlbumPreviewCollection = (
       coverUrl: v.cover_url || '',
       publishedAt: v.published_at,
       author: {
-        id: v.member.id,
-        name: v.member.name,
+        id: v.author?.id || '',
+        name: v.author?.name || '',
       },
     })) || []
 
