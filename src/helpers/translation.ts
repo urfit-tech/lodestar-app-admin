@@ -187,6 +187,7 @@ export const commonMessages = {
     instructor: { id: 'common.label.instructor', defaultMessage: '老師' },
     star: { id: 'common.label.star', defaultMessage: '星等' },
     price: { id: 'common.label.price', defaultMessage: '售價' },
+    purchase: { id: 'common.label.purchase', defaultMessage: '購買' },
     teachingAssistant: { id: 'common.label.teachingAssistant', defaultMessage: '助教' },
     cover: { id: 'common.label.cover', defaultMessage: '封面' },
     description: { id: 'common.label.description', defaultMessage: '描述' },
@@ -391,6 +392,8 @@ export const commonMessages = {
     pageAdmin: { id: 'common.menu.pageAdmin', defaultMessage: '頁面管理' },
     pageSetup: { id: 'common.menu.pageSetup', defaultMessage: '頁面設定' },
     menuSetup: { id: 'common.menu.menuSetup', defaultMessage: '選單設定' },
+    podcastAlbum: { id: 'common.menu.podcastAlbum', defaultMessage: '音頻專輯' },
+    podcastAlbumCategory: { id: 'common.menu.podcastAlbumCategory', defaultMessage: '音頻專輯分類' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
@@ -981,7 +984,37 @@ export const podcastMessages = {
     },
   }),
 }
-
+export const podcastAlbumMessages = {
+  ui: defineMessages({
+    createAlbum: { id: 'podcastAlbum.ui.createPodcastAlbum', defaultMessage: '建立專輯' },
+    addPodcastProgram: { id: 'podcastAlbum.ui.addPodcastProgram', defaultMessage: '加入音頻' },
+    sortPodcastProgram: { id: 'podcastAlbum.ui.sortPodcastProgram', defaultMessage: '排序音頻' },
+  }),
+  label: defineMessages({
+    podcastItem: { id: 'podcastAlbum.label.podcastItem', defaultMessage: '音頻項目' },
+    deletePodcastAlbum: { id: 'podcastAlbum.label.deletePodcastAlbum', defaultMessage: '刪除音頻專輯' },
+  }),
+  text: defineMessages({
+    noPodcastAlbumTitle: { id: 'podcastAlbum.text.noPodcastAlbumTitle', defaultMessage: '尚未填寫名稱' },
+    emptyPodcastAlbum: { id: 'podcastAlbum.text.emptyPodcastAlbum', defaultMessage: '尚未加入任何音頻到此專輯' },
+    connectionModalPlaceholder: {
+      id: 'podcastAlbum.text.connectionModalPlaceholder',
+      defaultMessage: '請選擇要加入專輯的音頻',
+    },
+    deletePodcastAlbumWarning: {
+      id: 'podcastAlbum.text.deletePodcastAlbumWarning',
+      defaultMessage: '請仔細確認是否真的要刪除音頻專輯，因為一旦刪除就無法恢復。',
+    },
+    deletePodcastAlbumDanger: {
+      id: 'podcastAlbum.text.deletePodcastAlbumDanger',
+      defaultMessage: '注意：只有在無人購買的情況下才能刪除音頻專輯。',
+    },
+    deletePodcastAlbumConfirmation: {
+      id: 'podcastAlbum.text.deletePodcastAlbumConfirmation',
+      defaultMessage: '音頻專輯一經刪除即不可恢復，確定要刪除嗎？',
+    },
+  }),
+}
 export const merchandiseMessages = {
   ui: defineMessages({
     createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },

@@ -6,6 +6,7 @@ import hasura from '../hasura'
 import { CategoryProps, PeriodType } from '../types/general'
 import {
   PodcastPlanProps,
+  PodcastProgram,
   PodcastProgramAdminProps,
   PodcastProgramAudio,
   podcastProgramAudiosFromRawAudios,
@@ -154,7 +155,7 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
   )
 
   const podcastProgramAdmin = useMemo<
-    | (PodcastProgramAdminProps & {
+    | (PodcastProgram & {
         audios: PodcastProgramAudio[]
         categories: CategoryProps[]
         tags: string[]

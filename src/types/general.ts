@@ -10,6 +10,7 @@ export type ClassType =
   | 'task'
   | 'member'
   | 'creator'
+  | 'podcastAlbum'
 export type ProductType =
   | 'Program'
   | 'ProgramPlan'
@@ -23,6 +24,7 @@ export type ProductType =
   | 'PodcastProgram'
   | 'PodcastPlan'
   | 'AppointmentPlan'
+  | 'PodcastAlbum'
 
 export type CategoryProps = {
   id: string

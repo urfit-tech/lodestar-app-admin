@@ -4494,6 +4494,283 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_ALBUM_BASIC
+// ====================================================
+
+export interface UPDATE_PODCAST_ALBUM_BASIC_update_podcast_album {
+  __typename: "podcast_album_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_ALBUM_BASIC_delete_podcast_album_category {
+  __typename: "podcast_album_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_ALBUM_BASIC_insert_podcast_album_category {
+  __typename: "podcast_album_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_ALBUM_BASIC {
+  /**
+   * update data of the table: "podcast_album"
+   */
+  update_podcast_album: UPDATE_PODCAST_ALBUM_BASIC_update_podcast_album | null;
+  /**
+   * delete data from the table: "podcast_album_category"
+   */
+  delete_podcast_album_category: UPDATE_PODCAST_ALBUM_BASIC_delete_podcast_album_category | null;
+  /**
+   * insert data into the table: "podcast_album_category"
+   */
+  insert_podcast_album_category: UPDATE_PODCAST_ALBUM_BASIC_insert_podcast_album_category | null;
+}
+
+export interface UPDATE_PODCAST_ALBUM_BASICVariables {
+  id: any;
+  title?: string | null;
+  coverUrl?: string | null;
+  podcastAlbumCategories: podcast_album_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_ALBUM_COVER
+// ====================================================
+
+export interface UPDATE_PODCAST_ALBUM_COVER_update_podcast_album {
+  __typename: "podcast_album_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_ALBUM_COVER {
+  /**
+   * update data of the table: "podcast_album"
+   */
+  update_podcast_album: UPDATE_PODCAST_ALBUM_COVER_update_podcast_album | null;
+}
+
+export interface UPDATE_PODCAST_ALBUM_COVERVariables {
+  id: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_ALBUM_PREVIEW_COLLECTION
+// ====================================================
+
+export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album_author {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album {
+  __typename: "podcast_album";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  published_at: any | null;
+  /**
+   * An object relationship
+   */
+  author: GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album_author | null;
+}
+
+export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION {
+  /**
+   * fetch data from the table: "podcast_album"
+   */
+  podcast_album: GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album[];
+}
+
+export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTIONVariables {
+  condition: podcast_album_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_ALBUM_IS_DELETED
+// ====================================================
+
+export interface UPDATE_PODCAST_ALBUM_IS_DELETED_update_podcast_album {
+  __typename: "podcast_album_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_ALBUM_IS_DELETED {
+  /**
+   * update data of the table: "podcast_album"
+   */
+  update_podcast_album: UPDATE_PODCAST_ALBUM_IS_DELETED_update_podcast_album | null;
+}
+
+export interface UPDATE_PODCAST_ALBUM_IS_DELETEDVariables {
+  podcastAlbumId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_ALBUM_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_PODCAST_ALBUM_DESCRIPTION_update_podcast_album {
+  __typename: "podcast_album_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_ALBUM_DESCRIPTION {
+  /**
+   * update data of the table: "podcast_album"
+   */
+  update_podcast_album: UPDATE_PODCAST_ALBUM_DESCRIPTION_update_podcast_album | null;
+}
+
+export interface UPDATE_PODCAST_ALBUM_DESCRIPTIONVariables {
+  id: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_AVAILABLE_PODCAST_PROGRAM_COLLECTION
+// ====================================================
+
+export interface GET_AVAILABLE_PODCAST_PROGRAM_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_AVAILABLE_PODCAST_PROGRAM_COLLECTION {
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_AVAILABLE_PODCAST_PROGRAM_COLLECTION_podcast_program[];
+}
+
+export interface GET_AVAILABLE_PODCAST_PROGRAM_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM
+// ====================================================
+
+export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM_insert_podcast_album_podcast_program {
+  __typename: "podcast_album_podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM_delete_podcast_album_podcast_program {
+  __typename: "podcast_album_podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM {
+  /**
+   * insert data into the table: "podcast_album_podcast_program"
+   */
+  insert_podcast_album_podcast_program: UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM_insert_podcast_album_podcast_program | null;
+  /**
+   * delete data from the table: "podcast_album_podcast_program"
+   */
+  delete_podcast_album_podcast_program: UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM_delete_podcast_album_podcast_program | null;
+}
+
+export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAMVariables {
+  podcastPrograms: podcast_album_podcast_program_insert_input[];
+  podcastAlbumId: any;
+  deletePodcastProgramsId: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PODCAST_ALBUM
+// ====================================================
+
+export interface PUBLISH_PODCAST_ALBUM_update_podcast_album {
+  __typename: "podcast_album_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PODCAST_ALBUM {
+  /**
+   * update data of the table: "podcast_album"
+   */
+  update_podcast_album: PUBLISH_PODCAST_ALBUM_update_podcast_album | null;
+}
+
+export interface PUBLISH_PODCAST_ALBUMVariables {
+  id: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PRACTICE_STATUS
 // ====================================================
 
@@ -11098,6 +11375,131 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PODCAST_ALBUM
+// ====================================================
+
+export interface GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_categories {
+  __typename: "podcast_album_category";
+  /**
+   * An object relationship
+   */
+  category: GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_categories_category | null;
+}
+
+export interface GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_podcast_programs_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  duration_second: any;
+}
+
+export interface GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_podcast_programs {
+  __typename: "podcast_album_podcast_program";
+  id: any;
+  position: number;
+  /**
+   * An object relationship
+   */
+  podcast_program: GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_podcast_programs_podcast_program | null;
+}
+
+export interface GET_PODCAST_ALBUM_podcast_album_by_pk_author {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_PODCAST_ALBUM_podcast_album_by_pk {
+  __typename: "podcast_album";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  description: string | null;
+  is_public: boolean;
+  is_deleted: boolean;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  podcast_album_categories: GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_categories[];
+  /**
+   * An array relationship
+   */
+  podcast_album_podcast_programs: GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_podcast_programs[];
+  /**
+   * An object relationship
+   */
+  author: GET_PODCAST_ALBUM_podcast_album_by_pk_author | null;
+}
+
+export interface GET_PODCAST_ALBUM {
+  /**
+   * fetch data from the table: "podcast_album" using primary key columns
+   */
+  podcast_album_by_pk: GET_PODCAST_ALBUM_podcast_album_by_pk | null;
+}
+
+export interface GET_PODCAST_ALBUMVariables {
+  podcastAlbumId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_ALBUM_COUNTS
+// ====================================================
+
+export interface GET_PODCAST_ALBUM_COUNTS_draft_aggregate {
+  __typename: "podcast_album_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PODCAST_ALBUM_COUNTS_draft {
+  __typename: "podcast_album_aggregate";
+  aggregate: GET_PODCAST_ALBUM_COUNTS_draft_aggregate | null;
+}
+
+export interface GET_PODCAST_ALBUM_COUNTS_published_aggregate {
+  __typename: "podcast_album_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PODCAST_ALBUM_COUNTS_published {
+  __typename: "podcast_album_aggregate";
+  aggregate: GET_PODCAST_ALBUM_COUNTS_published_aggregate | null;
+}
+
+export interface GET_PODCAST_ALBUM_COUNTS {
+  /**
+   * fetch aggregated fields from the table: "podcast_album"
+   */
+  draft: GET_PODCAST_ALBUM_COUNTS_draft;
+  /**
+   * fetch aggregated fields from the table: "podcast_album"
+   */
+  published: GET_PODCAST_ALBUM_COUNTS_published;
+}
+
+export interface GET_PODCAST_ALBUM_COUNTSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM
 // ====================================================
 
@@ -12162,6 +12564,75 @@ export interface GET_SALESVariables {
   salesId: string;
   startOfToday: any;
   startOfMonth: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_LEADS
+// ====================================================
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
+  __typename: "member_phone";
+  phone: string;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_categories {
+  __typename: "member_category";
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_LEADS_lead_status_new_member_member_categories_category;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  star: any | null;
+  created_at: any | null;
+  assigned_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_SALES_LEADS_lead_status_new_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_LEADS_lead_status_new_member_member_categories[];
+}
+
+export interface GET_SALES_LEADS_lead_status_new {
+  __typename: "lead_status_new";
+  /**
+   * An object relationship
+   */
+  member: GET_SALES_LEADS_lead_status_new_member | null;
+  status: string | null;
+  paid: any | null;
+  recent_contacted_at: any | null;
+  recent_tasked_at: any | null;
+}
+
+export interface GET_SALES_LEADS {
+  /**
+   * fetch data from the table: "lead_status_new"
+   */
+  lead_status_new: GET_SALES_LEADS_lead_status_new[];
+}
+
+export interface GET_SALES_LEADSVariables {
+  appId: string;
+  managerId: string;
 }
 
 /* tslint:disable */
@@ -13375,6 +13846,73 @@ export interface DELETE_POINT_LOG {
 
 export interface DELETE_POINT_LOGVariables {
   pointLogId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTION_insert_podcast_album_podcast_program {
+  __typename: "podcast_album_podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "podcast_album_podcast_program"
+   */
+  insert_podcast_album_podcast_program: UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTION_insert_podcast_album_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTIONVariables {
+  data: podcast_album_podcast_program_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PODCAST_ALBUM
+// ====================================================
+
+export interface INSERT_PODCAST_ALBUM_insert_podcast_album_returning {
+  __typename: "podcast_album";
+  id: any;
+}
+
+export interface INSERT_PODCAST_ALBUM_insert_podcast_album {
+  __typename: "podcast_album_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PODCAST_ALBUM_insert_podcast_album_returning[];
+}
+
+export interface INSERT_PODCAST_ALBUM {
+  /**
+   * insert data into the table: "podcast_album"
+   */
+  insert_podcast_album: INSERT_PODCAST_ALBUM_insert_podcast_album | null;
+}
+
+export interface INSERT_PODCAST_ALBUMVariables {
+  appId: string;
+  title: string;
+  authorId: string;
 }
 
 /* tslint:disable */
@@ -15983,6 +16521,66 @@ export enum playlist_update_column {
   id = "id",
   member_id = "member_id",
   position = "position",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_album_category"
+ */
+export enum podcast_album_category_constraint {
+  podcast_album_category_pkey = "podcast_album_category_pkey",
+}
+
+/**
+ * update columns of table "podcast_album_category"
+ */
+export enum podcast_album_category_update_column {
+  category_id = "category_id",
+  id = "id",
+  podcast_album_id = "podcast_album_id",
+  position = "position",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_album"
+ */
+export enum podcast_album_constraint {
+  podcast_album_pkey = "podcast_album_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_album_podcast_program"
+ */
+export enum podcast_album_podcast_program_constraint {
+  podcast_album_podcast_program_pkey = "podcast_album_podcast_program_pkey",
+  podcast_album_podcast_program_podcast_album_id_podcast_program_ = "podcast_album_podcast_program_podcast_album_id_podcast_program_",
+}
+
+/**
+ * update columns of table "podcast_album_podcast_program"
+ */
+export enum podcast_album_podcast_program_update_column {
+  id = "id",
+  podcast_album_id = "podcast_album_id",
+  podcast_program_id = "podcast_program_id",
+  position = "position",
+}
+
+/**
+ * update columns of table "podcast_album"
+ */
+export enum podcast_album_update_column {
+  abstract = "abstract",
+  app_id = "app_id",
+  author_id = "author_id",
+  cover_url = "cover_url",
+  created_at = "created_at",
+  description = "description",
+  id = "id",
+  is_deleted = "is_deleted",
+  is_public = "is_public",
+  published_at = "published_at",
   title = "title",
   updated_at = "updated_at",
 }
@@ -26510,6 +27108,155 @@ export interface podcast_aggregate_order_by {
   count?: order_by | null;
   max?: podcast_max_order_by | null;
   min?: podcast_min_order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_album". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_album_bool_exp {
+  _and?: (podcast_album_bool_exp | null)[] | null;
+  _not?: podcast_album_bool_exp | null;
+  _or?: (podcast_album_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
+  app_id?: String_comparison_exp | null;
+  author?: member_public_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
+  is_public?: Boolean_comparison_exp | null;
+  podcast_album_categories?: podcast_album_category_bool_exp | null;
+  podcast_album_podcast_programs?: podcast_album_podcast_program_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_album_category"
+ */
+export interface podcast_album_category_arr_rel_insert_input {
+  data: podcast_album_category_insert_input[];
+  on_conflict?: podcast_album_category_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_album_category". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_album_category_bool_exp {
+  _and?: (podcast_album_category_bool_exp | null)[] | null;
+  _not?: podcast_album_category_bool_exp | null;
+  _or?: (podcast_album_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  podast_album?: podcast_album_bool_exp | null;
+  podcast_album_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_album_category"
+ */
+export interface podcast_album_category_insert_input {
+  category?: category_obj_rel_insert_input | null;
+  category_id?: string | null;
+  id?: any | null;
+  podast_album?: podcast_album_obj_rel_insert_input | null;
+  podcast_album_id?: any | null;
+  position?: number | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_album_category"
+ */
+export interface podcast_album_category_on_conflict {
+  constraint: podcast_album_category_constraint;
+  update_columns: podcast_album_category_update_column[];
+  where?: podcast_album_category_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_album"
+ */
+export interface podcast_album_insert_input {
+  abstract?: string | null;
+  app_id?: string | null;
+  author_id?: string | null;
+  cover_url?: string | null;
+  created_at?: any | null;
+  description?: string | null;
+  id?: any | null;
+  is_deleted?: boolean | null;
+  is_public?: boolean | null;
+  podcast_album_categories?: podcast_album_category_arr_rel_insert_input | null;
+  podcast_album_podcast_programs?: podcast_album_podcast_program_arr_rel_insert_input | null;
+  published_at?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "podcast_album"
+ */
+export interface podcast_album_obj_rel_insert_input {
+  data: podcast_album_insert_input;
+  on_conflict?: podcast_album_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_album"
+ */
+export interface podcast_album_on_conflict {
+  constraint: podcast_album_constraint;
+  update_columns: podcast_album_update_column[];
+  where?: podcast_album_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_album_podcast_program"
+ */
+export interface podcast_album_podcast_program_arr_rel_insert_input {
+  data: podcast_album_podcast_program_insert_input[];
+  on_conflict?: podcast_album_podcast_program_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_album_podcast_program". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_album_podcast_program_bool_exp {
+  _and?: (podcast_album_podcast_program_bool_exp | null)[] | null;
+  _not?: podcast_album_podcast_program_bool_exp | null;
+  _or?: (podcast_album_podcast_program_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  podcast_album?: podcast_album_bool_exp | null;
+  podcast_album_id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_album_podcast_program"
+ */
+export interface podcast_album_podcast_program_insert_input {
+  id?: any | null;
+  podcast_album?: podcast_album_obj_rel_insert_input | null;
+  podcast_album_id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+  position?: number | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_album_podcast_program"
+ */
+export interface podcast_album_podcast_program_on_conflict {
+  constraint: podcast_album_podcast_program_constraint;
+  update_columns: podcast_album_podcast_program_update_column[];
+  where?: podcast_album_podcast_program_bool_exp | null;
 }
 
 /**
