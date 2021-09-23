@@ -11,6 +11,7 @@ export const usePodcastAlbumAdmin = (podcastAlbumId: string) => {
           id
           title
           cover_url
+          abstract
           description
           is_public
           is_deleted
@@ -48,6 +49,7 @@ export const usePodcastAlbumAdmin = (podcastAlbumId: string) => {
       id: data?.podcast_album_by_pk?.author?.id || '',
       name: data?.podcast_album_by_pk?.author?.name || '',
     },
+    abstract: data?.podcast_album_by_pk?.abstract || '',
     description: data?.podcast_album_by_pk?.description || '',
     isPublic: !!data?.podcast_album_by_pk?.is_public,
     isDeleted: !!data?.podcast_album_by_pk?.is_deleted,

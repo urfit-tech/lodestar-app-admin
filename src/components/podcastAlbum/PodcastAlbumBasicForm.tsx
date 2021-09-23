@@ -4,7 +4,7 @@ import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
 import React, { useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
@@ -17,7 +17,12 @@ import CategorySelector from '../form/CategorySelector'
 type FieldProps = {
   title: string
   categoryIds: string[]
+  abstract: string
 }
+
+const messages = defineMessages({
+  abstract: { id: 'podcast.label.abstract', defaultMessage: '專輯摘要' },
+})
 
 const PodcastAlbumBasicForm: React.FC<{
   podcastAlbum: PodcastAlbum | null
@@ -53,6 +58,7 @@ const PodcastAlbumBasicForm: React.FC<{
       variables: {
         id: podcastAlbum.id,
         title: values.title,
+        abstract: values.abstract,
         podcastAlbumCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           podcast_album_id: podcastAlbum.id,
           category_id: categoryId,
@@ -98,6 +104,7 @@ const PodcastAlbumBasicForm: React.FC<{
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
         title: podcastAlbum.title,
+        abstract: podcastAlbum.abstract,
         categoryIds: podcastAlbum.categories.map(category => category.id),
       }}
       onFinish={handleSubmit}
@@ -115,7 +122,9 @@ const PodcastAlbumBasicForm: React.FC<{
           onChange={file => setCoverImage(file)}
         />
       </Form.Item>
-
+      <Form.Item label={formatMessage(messages.abstract)} name="abstract">
+        <Input.TextArea rows={5} />
+      </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>
           {formatMessage(commonMessages.ui.cancel)}
@@ -133,9 +142,13 @@ const UPDATE_PODCAST_ALBUM_BASIC = gql`
     $id: uuid!
     $title: String
     $coverUrl: String
+    $abstract: String
     $podcastAlbumCategories: [podcast_album_category_insert_input!]!
   ) {
-    update_podcast_album(where: { id: { _eq: $id } }, _set: { title: $title, cover_url: $coverUrl }) {
+    update_podcast_album(
+      where: { id: { _eq: $id } }
+      _set: { title: $title, cover_url: $coverUrl, abstract: $abstract }
+    ) {
       affected_rows
     }
     # update categories

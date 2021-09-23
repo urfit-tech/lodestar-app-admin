@@ -4540,6 +4540,7 @@ export interface UPDATE_PODCAST_ALBUM_BASICVariables {
   id: any;
   title?: string | null;
   coverUrl?: string | null;
+  abstract?: string | null;
   podcastAlbumCategories: podcast_album_category_insert_input[];
 }
 
@@ -11421,6 +11422,7 @@ export interface GET_PODCAST_ALBUM_podcast_album_by_pk {
   id: any;
   title: string;
   cover_url: string | null;
+  abstract: string | null;
   description: string | null;
   is_public: boolean;
   is_deleted: boolean;
@@ -12564,75 +12566,6 @@ export interface GET_SALESVariables {
   salesId: string;
   startOfToday: any;
   startOfMonth: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SALES_LEADS
-// ====================================================
-
-export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
-  __typename: "member_phone";
-  phone: string;
-}
-
-export interface GET_SALES_LEADS_lead_status_new_member_member_categories_category {
-  __typename: "category";
-  name: string;
-}
-
-export interface GET_SALES_LEADS_lead_status_new_member_member_categories {
-  __typename: "member_category";
-  /**
-   * An object relationship
-   */
-  category: GET_SALES_LEADS_lead_status_new_member_member_categories_category;
-}
-
-export interface GET_SALES_LEADS_lead_status_new_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-  star: any | null;
-  created_at: any | null;
-  assigned_at: any | null;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_SALES_LEADS_lead_status_new_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_SALES_LEADS_lead_status_new_member_member_categories[];
-}
-
-export interface GET_SALES_LEADS_lead_status_new {
-  __typename: "lead_status_new";
-  /**
-   * An object relationship
-   */
-  member: GET_SALES_LEADS_lead_status_new_member | null;
-  status: string | null;
-  paid: any | null;
-  recent_contacted_at: any | null;
-  recent_tasked_at: any | null;
-}
-
-export interface GET_SALES_LEADS {
-  /**
-   * fetch data from the table: "lead_status_new"
-   */
-  lead_status_new: GET_SALES_LEADS_lead_status_new[];
-}
-
-export interface GET_SALES_LEADSVariables {
-  appId: string;
-  managerId: string;
 }
 
 /* tslint:disable */
