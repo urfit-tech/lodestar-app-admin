@@ -76,13 +76,13 @@ const PodcastAlbumDeletionAdminCard: React.FC<{
       </div>
 
       <AdminModal
-        title={formatMessage(commonMessages.ui.deleteProgram)}
+        title={formatMessage(podcastAlbumMessages.ui.deletePodcastAlbum)}
         renderTrigger={({ setVisible }) =>
           podcastAlbum.isDeleted ? (
             <Button disabled>{formatMessage(commonMessages.status.deleted)}</Button>
           ) : (
             <Button type="primary" danger onClick={() => setVisible(true)}>
-              {formatMessage(commonMessages.ui.deleteProgram)}
+              {formatMessage(podcastAlbumMessages.ui.deletePodcastAlbum)}
             </Button>
           )
         }

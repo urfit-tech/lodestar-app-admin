@@ -989,6 +989,7 @@ export const podcastAlbumMessages = {
     createAlbum: { id: 'podcastAlbum.ui.createPodcastAlbum', defaultMessage: '建立專輯' },
     addPodcastProgram: { id: 'podcastAlbum.ui.addPodcastProgram', defaultMessage: '加入音頻' },
     sortPodcastProgram: { id: 'podcastAlbum.ui.sortPodcastProgram', defaultMessage: '排序音頻' },
+    deletePodcastAlbum: {id:'podcastAlbum.ui.deletePodcastAlbum',defaultMessage:'刪除專輯'},
   }),
   label: defineMessages({
     podcastItem: { id: 'podcastAlbum.label.podcastItem', defaultMessage: '音頻項目' },
