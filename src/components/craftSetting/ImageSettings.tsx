@@ -1,5 +1,5 @@
 import { useNode } from '@craftjs/core'
-import { Button, Collapse } from 'antd'
+import { Collapse } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { CraftBoxModelProps, CraftImageProps } from 'lodestar-app-element/src/types/craft'
@@ -9,12 +9,19 @@ import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers/index'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { craftPageMessages } from '../../helpers/translation'
 import ImageUploader from '../common/ImageUploader'
 import BoxModelInput, { formatBoxModelValue } from './BoxModelInput'
 import { AdminHeaderTitle, StyledCollapsePanel } from './styled'
 
-type FieldProps = CraftImageProps & { margin: string; padding: string }
+type FieldProps = {
+  desktopMargin: string
+  desktopPadding: string
+  desktopCoverUrl?: string
+  mobileMargin: string
+  mobilePadding: string
+  mobileCoverUrl?: string
+}
 
 const ImageSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -26,50 +33,68 @@ const ImageSettings: React.VFC = () => {
     props,
     selected,
   } = useNode(node => ({
-    props: node.data.props as CraftImageProps & CraftBoxModelProps,
+    props: node.data.props as {
+      desktop?: CraftImageProps & CraftBoxModelProps
+      mobile?: CraftImageProps & CraftBoxModelProps
+    },
     selected: node.events.selected,
   }))
   const [loading, setLoading] = useState(false)
-  const [isImageUploaded, setIsImageUploaded] = useState(false)
-  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [desktopCoverImage, setDesktopCoverImage] = useState<File | null>(null)
+  const [mobileCoverImage, setMobileCoverImage] = useState<File | null>(null)
 
   const handleChange = () => {
     form
       .validateFields()
       .then(values => {
-        const margin = formatBoxModelValue(values.margin)
-        const padding = formatBoxModelValue(values.padding)
+        const desktopMargin = formatBoxModelValue(values.desktopMargin)
+        const desktopPadding = formatBoxModelValue(values.desktopPadding)
+        const mobileMargin = formatBoxModelValue(values.mobileMargin)
+        const mobilePadding = formatBoxModelValue(values.mobilePadding)
 
         setProp(props => {
-          props.margin = {
-            mt: margin?.[0] || '0',
-            mr: margin?.[1] || '0',
-            mb: margin?.[2] || '0',
-            ml: margin?.[3] || '0',
+          props.desktop.margin = {
+            mt: desktopMargin?.[0] || '0',
+            mr: desktopMargin?.[1] || '0',
+            mb: desktopMargin?.[2] || '0',
+            ml: desktopMargin?.[3] || '0',
           }
-          props.padding = {
-            pt: padding?.[0] || '0',
-            pr: padding?.[1] || '0',
-            pb: padding?.[2] || '0',
-            pl: padding?.[3] || '0',
+          props.desktop.padding = {
+            pt: desktopPadding?.[0] || '0',
+            pr: desktopPadding?.[1] || '0',
+            pb: desktopPadding?.[2] || '0',
+            pl: desktopPadding?.[3] || '0',
+          }
+          props.mobile.margin = {
+            mt: mobileMargin?.[0] || '0',
+            mr: mobileMargin?.[1] || '0',
+            mb: mobileMargin?.[2] || '0',
+            ml: mobileMargin?.[3] || '0',
+          }
+          props.mobile.padding = {
+            pt: mobilePadding?.[0] || '0',
+            pr: mobilePadding?.[1] || '0',
+            pb: mobilePadding?.[2] || '0',
+            pl: mobilePadding?.[3] || '0',
           }
         })
       })
       .catch(() => {})
   }
 
-  const handleImageUpload = () => {
-    if (coverImage) {
-      const uniqId = uuid()
+  const handleImageUpload: (responsiveType: 'mobile' | 'desktop', file?: File) => void = (responsiveType, file) => {
+    if (file) {
+      const imageSetConvert = { desktop: setDesktopCoverImage, mobile: setMobileCoverImage }
       setLoading(true)
-      uploadFile(`images/${appId}/craft/${uniqId}`, coverImage, authToken)
+      const uniqImageId = uuid()
+      uploadFile(`images/${appId}/craft/${uniqImageId}`, file, authToken)
         .then(() => {
+          imageSetConvert[responsiveType](file)
           setProp(props => {
-            props.coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}${
-              coverImage.type.startsWith('image') ? '/1200' : ''
-            }`
+            props[
+              responsiveType
+            ].coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqImageId}`
           })
-          setIsImageUploaded(true)
         })
         .catch(handleError)
         .finally(() => setLoading(false))
@@ -83,11 +108,20 @@ const ImageSettings: React.VFC = () => {
       colon={false}
       requiredMark={false}
       initialValues={{
-        coverImage: props.coverUrl,
-        margin: `${props.margin?.mt || 0};${props.margin?.mr || 0};${props.margin?.mb || 0};${props.margin?.ml || 0}`,
-        padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
-          props.padding?.pl || 0
-        }`,
+        desktopCoverImage: props.desktop?.coverUrl,
+        desktopMargin: `${props.desktop?.margin?.mt || 0};${props.desktop?.margin?.mr || 0};${
+          props.desktop?.margin?.mb || 0
+        };${props.desktop?.margin?.ml || 0}`,
+        desktopPadding: `${props.desktop?.padding?.pt || 0};${props.desktop?.padding?.pr || 0};${
+          props.desktop?.padding?.pb || 0
+        };${props.desktop?.padding?.pl || 0}`,
+        mobileCoverImage: props.mobile?.coverUrl,
+        mobileMargin: `${props.mobile?.margin?.mt || 0};${props.mobile?.margin?.mr || 0};${
+          props.mobile?.margin?.mb || 0
+        };${props.mobile?.margin?.ml || 0}`,
+        mobilePadding: `${props.mobile?.padding?.pt || 0};${props.mobile?.padding?.pr || 0};${
+          props.mobile?.padding?.pb || 0
+        };${props.mobile?.padding?.pl || 0}`,
       }}
       onChange={handleChange}
     >
@@ -96,38 +130,22 @@ const ImageSettings: React.VFC = () => {
         bordered={false}
         expandIconPosition="right"
         ghost
-        defaultActiveKey={['imageSetting']}
+        defaultActiveKey={['desktopDisplay']}
       >
         <StyledCollapsePanel
-          key="imageSetting"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.imageSetting)}</AdminHeaderTitle>}
+          key="desktopDisplay"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.desktopDisplay)}</AdminHeaderTitle>}
         >
-          <Form.Item name="coverImage">
-            <div className="d-flex align-items-center">
-              <ImageUploader
-                file={coverImage}
-                initialCoverUrl={props.coverUrl}
-                onChange={file => {
-                  setIsImageUploaded(false)
-                  setCoverImage(file)
-                }}
-              />
-              {selected && coverImage && !isImageUploaded && (
-                <Button loading={loading} className="ml-3 mb-3" type="primary" block onClick={handleImageUpload}>
-                  {formatMessage(commonMessages.ui.upload)}
-                </Button>
-              )}
-            </div>
+          <Form.Item name="desktopCoverImage">
+            <ImageUploader
+              uploading={loading}
+              file={desktopCoverImage}
+              initialCoverUrl={props.desktop?.coverUrl}
+              onChange={file => handleImageUpload('desktop', file)}
+            />
           </Form.Item>
-        </StyledCollapsePanel>
-      </Collapse>
-      <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['container']}>
-        <StyledCollapsePanel
-          key="container"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
-        >
           <Form.Item
-            name="margin"
+            name="desktopMargin"
             label={formatMessage(craftPageMessages.label.margin)}
             rules={[
               {
@@ -137,10 +155,10 @@ const ImageSettings: React.VFC = () => {
               },
             ]}
           >
-            <BoxModelInput />
+            <BoxModelInput onChange={handleChange} />
           </Form.Item>
           <Form.Item
-            name="padding"
+            name="desktopPadding"
             label={formatMessage(craftPageMessages.label.padding)}
             rules={[
               {
@@ -150,7 +168,54 @@ const ImageSettings: React.VFC = () => {
               },
             ]}
           >
-            <BoxModelInput />
+            <BoxModelInput onChange={handleChange} />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
+      <Collapse
+        className="mt-2 p-0"
+        bordered={false}
+        expandIconPosition="right"
+        ghost
+        defaultActiveKey={['mobileDisplay']}
+      >
+        <StyledCollapsePanel
+          key="mobileDisplay"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.mobileDisplay)}</AdminHeaderTitle>}
+        >
+          <Form.Item name="mobileCoverImage">
+            <ImageUploader
+              uploading={loading}
+              file={mobileCoverImage}
+              initialCoverUrl={props.mobile?.coverUrl}
+              onChange={file => handleImageUpload('mobile', file)}
+            />
+          </Form.Item>
+          <Form.Item
+            name="mobileMargin"
+            label={formatMessage(craftPageMessages.label.margin)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <BoxModelInput onChange={handleChange} />
+          </Form.Item>
+          <Form.Item
+            name="mobilePadding"
+            label={formatMessage(craftPageMessages.label.padding)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <BoxModelInput onChange={handleChange} />
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>

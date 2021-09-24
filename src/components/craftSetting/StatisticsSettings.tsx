@@ -94,6 +94,7 @@ const StatisticsSettings: React.VFC = () => {
               mb: paragraphMargin?.[2] || '0',
               ml: paragraphMargin?.[3] || '0',
             },
+            lineHeight: values.paragraphStyle.lineHeight,
             textAlign: values.paragraphStyle.textAlign,
             fontWeight: values.paragraphStyle.fontWeight,
             color: values.paragraphStyle.color,

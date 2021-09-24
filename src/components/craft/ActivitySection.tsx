@@ -38,11 +38,20 @@ const ProblemSection: React.VFC = () => {
             />
             <Element id="CraftActivity" is={CraftActivity} canvas type="newest" ids={[]} defaultCategoryIds={[]}>
               <CraftImage
-                type="image"
-                width="100%"
-                padding={{}}
-                margin={{}}
-                coverUrl="https://static.kolable.com/images/demo/home/feature-img2.jpg"
+                desktop={{
+                  type: 'image',
+                  width: '100%',
+                  padding: {},
+                  margin: {},
+                  coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
+                }}
+                mobile={{
+                  type: 'image',
+                  width: '100%',
+                  padding: {},
+                  margin: {},
+                  coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
+                }}
               />
             </Element>
             <div style={{ textAlign: 'center' }}>
