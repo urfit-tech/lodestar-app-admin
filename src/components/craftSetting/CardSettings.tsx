@@ -141,16 +141,17 @@ const CardSettings: React.VFC = () => {
     if (file && type) {
       const imageSetConvert = { image: setImage, avatar: setAvatarImage, background: setBackgroundImage }
       const imagePropConvert = { image: 'imageUrl', avatar: 'avatarImageUrl', background: 'backgroundImageUrl' }
-      const imageSizeConvert = { image: '600', avatar: '400', background: '800' }
+      const imageSizeConvert = { image: null, avatar: '400', background: '800' }
       setLoading(true)
       const imageId = uuid()
       uploadFile(`images/${appId}/craft/${imageId}`, file, authToken)
         .then(() => {
           imageSetConvert[type](file)
           setProp(props => {
-            props[imagePropConvert[type]] = `https://${
-              process.env.REACT_APP_S3_BUCKET
-            }/images/${appId}/craft/${imageId}${file.type.startsWith('image') ? `/${imageSizeConvert[type]}` : ''}`
+            props[imagePropConvert[type]] = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${
+              imageId +
+              (file.type.startsWith('image') ? (imageSizeConvert[type] ? '/' + imageSizeConvert[type] : '') : '')
+            }`
           })
         })
         .catch(handleError)

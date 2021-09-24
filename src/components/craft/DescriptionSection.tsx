@@ -55,11 +55,20 @@ const Description: React.VFC = () => {
               </Element>
 
               <CraftImage
-                type="image"
-                width="100%"
-                padding={{}}
-                margin={{}}
-                coverUrl="https://static.kolable.com/images/demo/home/feature-img2.jpg"
+                desktop={{
+                  type: 'image',
+                  width: '100%',
+                  padding: {},
+                  margin: {},
+                  coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
+                }}
+                mobile={{
+                  type: 'image',
+                  width: '100%',
+                  padding: {},
+                  margin: {},
+                  coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
+                }}
               />
             </Element>
           </Element>,

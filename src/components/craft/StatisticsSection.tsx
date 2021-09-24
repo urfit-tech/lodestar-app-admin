@@ -122,11 +122,20 @@ const Statistics: React.VFC<{
       desktop={{ margin: { ml: '200', mr: '200' }, columnAmount: 2, columnRatio: [4, 8], displayAmount: 2 }}
     >
       <CraftImage
-        type="image"
-        width="100%"
-        padding={{}}
-        margin={{}}
-        coverUrl="https://static.kolable.com/images/demo/home/feature-img2.jpg"
+        desktop={{
+          type: 'image',
+          width: '100%',
+          padding: {},
+          margin: {},
+          coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
+        }}
+        mobile={{
+          type: 'image',
+          width: '100%',
+          padding: {},
+          margin: {},
+          coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
+        }}
       />
       <Element is={CraftContainer} margin={{}}>
         <CraftTitle
