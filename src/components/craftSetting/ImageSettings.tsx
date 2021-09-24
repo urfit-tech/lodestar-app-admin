@@ -1,0 +1,161 @@
+import { useNode } from '@craftjs/core'
+import { Button, Collapse } from 'antd'
+import Form from 'antd/lib/form/'
+import { useForm } from 'antd/lib/form/Form'
+import { CraftBoxModelProps, CraftImageProps } from 'lodestar-app-element/src/types/craft'
+import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
+import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError, uploadFile } from '../../helpers/index'
+import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import ImageUploader from '../common/ImageUploader'
+import BoxModelInput, { formatBoxModelValue } from './BoxModelInput'
+import { AdminHeaderTitle, StyledCollapsePanel } from './styled'
+
+type FieldProps = CraftImageProps & { margin: string; padding: string }
+
+const ImageSettings: React.VFC = () => {
+  const { formatMessage } = useIntl()
+  const [form] = useForm<FieldProps>()
+  const { authToken } = useAuth()
+  const { id: appId } = useApp()
+  const {
+    actions: { setProp },
+    props,
+    selected,
+  } = useNode(node => ({
+    props: node.data.props as CraftImageProps & CraftBoxModelProps,
+    selected: node.events.selected,
+  }))
+  const [loading, setLoading] = useState(false)
+  const [isImageUploaded, setIsImageUploaded] = useState(false)
+  const [coverImage, setCoverImage] = useState<File | null>(null)
+
+  const handleChange = () => {
+    form
+      .validateFields()
+      .then(values => {
+        const margin = formatBoxModelValue(values.margin)
+        const padding = formatBoxModelValue(values.padding)
+
+        setProp(props => {
+          props.margin = {
+            mt: margin?.[0] || '0',
+            mr: margin?.[1] || '0',
+            mb: margin?.[2] || '0',
+            ml: margin?.[3] || '0',
+          }
+          props.padding = {
+            pt: padding?.[0] || '0',
+            pr: padding?.[1] || '0',
+            pb: padding?.[2] || '0',
+            pl: padding?.[3] || '0',
+          }
+        })
+      })
+      .catch(() => {})
+  }
+
+  const handleImageUpload = () => {
+    if (coverImage) {
+      const uniqId = uuid()
+      setLoading(true)
+      uploadFile(`images/${appId}/craft/${uniqId}`, coverImage, authToken)
+        .then(() => {
+          setProp(props => {
+            props.coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}${
+              coverImage.type.startsWith('image') ? '/1200' : ''
+            }`
+          })
+          setIsImageUploaded(true)
+        })
+        .catch(handleError)
+        .finally(() => setLoading(false))
+    }
+  }
+
+  return (
+    <Form
+      form={form}
+      layout="vertical"
+      colon={false}
+      requiredMark={false}
+      initialValues={{
+        coverImage: props.coverUrl,
+        margin: `${props.margin?.mt || 0};${props.margin?.mr || 0};${props.margin?.mb || 0};${props.margin?.ml || 0}`,
+        padding: `${props.padding?.pt || 0};${props.padding?.pr || 0};${props.padding?.pb || 0};${
+          props.padding?.pl || 0
+        }`,
+      }}
+      onChange={handleChange}
+    >
+      <Collapse
+        className="mt-2 p-0"
+        bordered={false}
+        expandIconPosition="right"
+        ghost
+        defaultActiveKey={['imageSetting']}
+      >
+        <StyledCollapsePanel
+          key="imageSetting"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.imageSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item name="coverImage">
+            <div className="d-flex align-items-center">
+              <ImageUploader
+                file={coverImage}
+                initialCoverUrl={props.coverUrl}
+                onChange={file => {
+                  setIsImageUploaded(false)
+                  setCoverImage(file)
+                }}
+              />
+              {selected && coverImage && !isImageUploaded && (
+                <Button loading={loading} className="ml-3 mb-3" type="primary" block onClick={handleImageUpload}>
+                  {formatMessage(commonMessages.ui.upload)}
+                </Button>
+              )}
+            </div>
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
+      <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['container']}>
+        <StyledCollapsePanel
+          key="container"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.containerComponent)}</AdminHeaderTitle>}
+        >
+          <Form.Item
+            name="margin"
+            label={formatMessage(craftPageMessages.label.margin)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <BoxModelInput />
+          </Form.Item>
+          <Form.Item
+            name="padding"
+            label={formatMessage(craftPageMessages.label.padding)}
+            rules={[
+              {
+                required: true,
+                pattern: /^\d+;\d+;\d+;\d+$/,
+                message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+              },
+            ]}
+          >
+            <BoxModelInput />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
+    </Form>
+  )
+}
+
+export default ImageSettings

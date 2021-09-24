@@ -25,7 +25,6 @@ import ProgramSection from '../../components/craft/ProgramSection'
 import ProjectSection from '../../components/craft/ProjectSection'
 import ReferrerSection from '../../components/craft/ReferrerSection'
 import CraftStatisticsSection from '../../components/craft/StatisticsSection'
-import { useApp } from '../../contexts/AppContext'
 import { craftPageMessages } from '../../helpers/translation'
 
 export const StyledBoxWrapper = styled.div`
@@ -34,7 +33,6 @@ export const StyledBoxWrapper = styled.div`
 
 const CraftToolbox: React.VFC = () => {
   const { connectors } = useEditor()
-  const { id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [selected, setSelected] = useState<SelectValue | undefined>(undefined)
 

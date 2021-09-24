@@ -3,13 +3,7 @@ import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import {
-  AdminBlock,
-  AdminBlockTitle,
-  AdminPaneTitle,
-  StyledCraftSettingLabel,
-  StyledTips,
-} from '../../components/admin'
+import { AdminBlock, AdminBlockTitle, AdminPaneTitle, CraftSettingLabel, StyledTips } from '../../components/admin'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/translation'
@@ -121,7 +115,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
             >
               <Input className="mb-2" onChange={e => setPath(e.target.value)} />
             </Form.Item>
-            <StyledCraftSettingLabel>{window.location.host + path}</StyledCraftSettingLabel>
+            <CraftSettingLabel>{window.location.host + path}</CraftSettingLabel>
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button

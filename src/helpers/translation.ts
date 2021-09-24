@@ -1293,7 +1293,6 @@ export const craftPageMessages = {
     solidColor: { id: 'craft.ui.solidColor', defaultMessage: '純色' },
   }),
   label: defineMessages({
-    
     emptyPage: { id: 'craft.label.emptyPage', defaultMessage: '空白頁' },
     settings: { id: 'craft.label.settings', defaultMessage: '基本設定' },
     pageEditor: { id: 'craft.label.pageEditor', defaultMessage: '首頁 - 編輯頁面' },
@@ -1330,6 +1329,8 @@ export const craftPageMessages = {
     fontSize: { id: 'craft.label.fontSize', defaultMessage: '字級' },
     lineHeight: { id: 'craft.label.lineHeight', defaultMessage: '行高' },
     textAlign: { id: 'craft.label.textAlign', defaultMessage: '對齊' },
+    top: { id: 'craft.label.top', defaultMessage: '上' },
+    bottom: { id: 'craft.label.bottom', defaultMessage: '下' },
     left: { id: 'craft.label.left', defaultMessage: '左' },
     center: { id: 'craft.label.center', defaultMessage: '中' },
     right: { id: 'craft.label.right', defaultMessage: '右' },

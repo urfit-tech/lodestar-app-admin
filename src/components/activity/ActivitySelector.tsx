@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel } from '../craftSetting'
+import { CraftSettingLabel } from '../craftSetting/styled'
 
 export type ActivityCollection = {
   type: 'newest' | 'custom'
