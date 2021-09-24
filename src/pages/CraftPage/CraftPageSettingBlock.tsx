@@ -1,27 +1,48 @@
 import { Editor, Element, Frame, useEditor } from '@craftjs/core'
 import { Button, message, Tabs } from 'antd'
-import CraftActivity from 'lodestar-app-element/src/components/craft/CraftActivity'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
-import CraftCard from 'lodestar-app-element/src/components/craft/CraftCard'
-import CraftCarousel from 'lodestar-app-element/src/components/craft/CraftCarousel'
-import CraftCarouselContainer from 'lodestar-app-element/src/components/craft/CraftCarouselContainer'
-import CraftCollapse from 'lodestar-app-element/src/components/craft/CraftCollapse'
-import CraftContainer from 'lodestar-app-element/src/components/craft/CraftContainer'
-import CraftImage from 'lodestar-app-element/src/components/craft/CraftImage'
-import CraftInstructor from 'lodestar-app-element/src/components/craft/CraftInstructor'
-import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
-import CraftParagraph from 'lodestar-app-element/src/components/craft/CraftParagraph'
-import CraftPodcastProgram from 'lodestar-app-element/src/components/craft/CraftPodcastProgram'
-import CraftProgram from 'lodestar-app-element/src/components/craft/CraftProgram'
-import CraftProject from 'lodestar-app-element/src/components/craft/CraftProject'
-import CraftStatistics from 'lodestar-app-element/src/components/craft/CraftStatistics'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
-import CraftTitleAndParagraph from 'lodestar-app-element/src/components/craft/CraftTitleAndParagraph'
+import {
+  CraftActivity,
+  CraftBackground,
+  CraftButton,
+  CraftCard,
+  CraftCarousel,
+  CraftCarouselContainer,
+  CraftCollapse,
+  CraftContainer,
+  CraftImage,
+  CraftInstructor,
+  CraftLayout,
+  CraftParagraph,
+  CraftPodcastProgram,
+  CraftProgram,
+  CraftProject,
+  CraftStatistics,
+  CraftTitle,
+  CraftTitleAndParagraph,
+} from 'lodestar-app-element/src/components/craft'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import ActivitySettings from '../../components/craftSetting/ActivitySettings'
+import {
+  ActivitySettings,
+  BackgroundSettings,
+  ButtonSettings,
+  CardSettings,
+  CarouselContainerSettings,
+  CarouselSettings,
+  CollapseSettings,
+  ContainerSettings,
+  ImageSettings,
+  InstructorSettings,
+  LayoutSettings,
+  ParagraphSettings,
+  PodcastProgramSettings,
+  ProgramSettings,
+  ProjectSettings,
+  StatisticsSettings,
+  TitleAndParagraphSettings,
+  TitleSettings,
+} from '../../components/craftSetting'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -187,6 +208,156 @@ const configureResolver = () => {
   CraftActivity.craft = {
     related: {
       settings: ActivitySettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftBackground.craft = {
+    related: {
+      settings: BackgroundSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftButton.craft = {
+    related: {
+      settings: ButtonSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftCard.craft = {
+    related: {
+      settings: CardSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftCarousel.craft = {
+    related: {
+      settings: CarouselSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftCarouselContainer.craft = {
+    related: {
+      settings: CarouselContainerSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftCollapse.craft = {
+    related: {
+      settings: CollapseSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftContainer.craft = {
+    related: {
+      settings: ContainerSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftImage.craft = {
+    related: {
+      settings: ImageSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftInstructor.craft = {
+    related: {
+      settings: InstructorSettings,
+    },
+  }
+  CraftLayout.craft = {
+    related: {
+      settings: LayoutSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftParagraph.craft = {
+    related: {
+      settings: ParagraphSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftPodcastProgram.craft = {
+    related: {
+      settings: PodcastProgramSettings,
+    },
+  }
+  CraftProgram.craft = {
+    related: {
+      settings: ProgramSettings,
+    },
+  }
+  CraftProject.craft = {
+    related: {
+      settings: ProjectSettings,
+    },
+  }
+  CraftStatistics.craft = {
+    related: {
+      settings: StatisticsSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftTitle.craft = {
+    related: {
+      settings: TitleSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftTitleAndParagraph.craft = {
+    related: {
+      settings: TitleAndParagraphSettings,
     },
     custom: {
       button: {

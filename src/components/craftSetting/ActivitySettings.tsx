@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { AdminHeaderTitle, StyledCollapsePanel, StyledCraftSettingLabel } from '../admin'
+import { AdminHeaderTitle, CraftSettingLabel, StyledCollapsePanel } from '../admin'
 
 const ActivitySettings: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -83,20 +83,14 @@ const ActivitySettings: React.VFC = () => {
             name="categorySelectorEnabled"
             valuePropName="checked"
             label={
-              <StyledCraftSettingLabel>
-                {formatMessage(craftPageMessages.label.categorySelectorEnabled)}
-              </StyledCraftSettingLabel>
+              <CraftSettingLabel>{formatMessage(craftPageMessages.label.categorySelectorEnabled)}</CraftSettingLabel>
             }
           >
             <Switch />
           </Form.Item>
           <Form.Item
             name="defaultCategoryIds"
-            label={
-              <StyledCraftSettingLabel>
-                {formatMessage(craftPageMessages.label.defaultCategoryId)}
-              </StyledCraftSettingLabel>
-            }
+            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.defaultCategoryId)}</CraftSettingLabel>}
           >
             <Select
               showSearch
