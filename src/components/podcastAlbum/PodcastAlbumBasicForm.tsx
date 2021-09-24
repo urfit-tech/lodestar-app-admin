@@ -59,11 +59,11 @@ const PodcastAlbumBasicForm: React.FC<{
         id: podcastAlbum.id,
         title: values.title,
         abstract: values.abstract,
+        coverUrl: podcastAlbum.coverUrl,
         podcastAlbumCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           podcast_album_id: podcastAlbum.id,
           category_id: categoryId,
           position: index,
-          cover_url: podcastAlbum.coverUrl,
         })),
       },
     })
