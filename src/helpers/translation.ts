@@ -1329,6 +1329,8 @@ export const craftPageMessages = {
     fontSize: { id: 'craft.label.fontSize', defaultMessage: '字級' },
     lineHeight: { id: 'craft.label.lineHeight', defaultMessage: '行高' },
     textAlign: { id: 'craft.label.textAlign', defaultMessage: '對齊' },
+    topAndBottomAlign: { id: 'craft.label.topAndBottomAlign', defaultMessage: '上下對齊' },
+    leftAndRightAlign: { id: 'craft.label.leftAndRightAlign', defaultMessage: '左右對齊' },
     top: { id: 'craft.label.top', defaultMessage: '上' },
     bottom: { id: 'craft.label.bottom', defaultMessage: '下' },
     left: { id: 'craft.label.left', defaultMessage: '左' },

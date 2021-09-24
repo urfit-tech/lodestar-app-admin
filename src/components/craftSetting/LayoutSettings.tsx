@@ -156,12 +156,8 @@ const LayoutSettings: React.VFC = () => {
           <Form.Item name="desktopDisplayAmount" label={formatMessage(craftPageMessages.label.displayAmount)}>
             <StyledInputNumber />
           </Form.Item>
-          <Form.Item name="desktopAlignItems" label="上下對齊">
-            <Radio.Group
-              className="mt-2"
-              // value={value.fontWeight}
-              // onChange={e => onChange?.({ ...value, fontWeight: e.target.value })}
-            >
+          <Form.Item name="desktopAlignItems" label={formatMessage(craftPageMessages.label.topAndBottomAlign)}>
+            <Radio.Group className="mt-2">
               <Space>
                 <Radio value="start">{formatMessage(craftPageMessages.label.top)}</Radio>
                 <Radio value="center">{formatMessage(craftPageMessages.label.center)}</Radio>
@@ -169,11 +165,10 @@ const LayoutSettings: React.VFC = () => {
               </Space>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="desktopJustifyContent" label="左右對齊">
+          {/* TODO: fix layout content justify feature */}
+          {/* <Form.Item name="desktopJustifyContent" label={formatMessage(craftPageMessages.label.leftAndRightAlign)}>
             <Radio.Group
               className="mt-2"
-              // value={value.fontWeight}
-              // onChange={e => onChange?.({ ...value, fontWeight: e.target.value })}
             >
               <Space>
                 <Radio value="start">{formatMessage(craftPageMessages.label.left)}</Radio>
@@ -181,7 +176,7 @@ const LayoutSettings: React.VFC = () => {
                 <Radio value="end">{formatMessage(craftPageMessages.label.right)}</Radio>
               </Space>
             </Radio.Group>
-          </Form.Item>
+          </Form.Item> */}
         </StyledCollapsePanel>
       </Collapse>
 
@@ -227,7 +222,7 @@ const LayoutSettings: React.VFC = () => {
           <Form.Item name="mobileDisplayAmount" label={formatMessage(craftPageMessages.label.displayAmount)}>
             <StyledInputNumber />
           </Form.Item>
-          <Form.Item name="mobileAlignItems" label="上下對齊">
+          <Form.Item name="mobileAlignItems" label={formatMessage(craftPageMessages.label.topAndBottomAlign)}>
             <Radio.Group className="mt-2">
               <Space>
                 <Radio value="start">{formatMessage(craftPageMessages.label.top)}</Radio>
@@ -236,7 +231,8 @@ const LayoutSettings: React.VFC = () => {
               </Space>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="mobileJustifyContent" label="左右對齊">
+          {/* TODO: fix layout content justify feature */}
+          {/* <Form.Item name="mobileJustifyContent" label={formatMessage(craftPageMessages.label.leftAndRightAlign)}>
             <Radio.Group className="mt-2">
               <Space>
                 <Radio value="start">{formatMessage(craftPageMessages.label.left)}</Radio>
@@ -245,6 +241,7 @@ const LayoutSettings: React.VFC = () => {
               </Space>
             </Radio.Group>
           </Form.Item>
+         */}
         </StyledCollapsePanel>
       </Collapse>
     </Form>

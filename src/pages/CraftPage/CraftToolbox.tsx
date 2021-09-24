@@ -257,8 +257,20 @@ const CraftToolbox: React.VFC = () => {
               ref,
               <Element
                 is={CraftImage}
-                width="100%"
-                coverUrl="https://static.kolable.com/images/default/craft/image.png"
+                desktop={{
+                  type: 'image',
+                  width: '100%',
+                  padding: {},
+                  margin: {},
+                  coverUrl: 'https://static.kolable.com/images/default/craft/image.png',
+                }}
+                mobile={{
+                  type: 'image',
+                  width: '100%',
+                  padding: {},
+                  margin: {},
+                  coverUrl: 'https://static.kolable.com/images/default/craft/image.png',
+                }}
               />,
             )
           }
