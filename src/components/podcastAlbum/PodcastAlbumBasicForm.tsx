@@ -67,10 +67,10 @@ const PodcastAlbumBasicForm: React.FC<{
         })),
       },
     })
-      .then(() => {
+      .then(async () => {
         if (coverImage) {
           try {
-            uploadFile(`podcast_album_covers/${appId}/${podcastAlbum.id}/400`, coverImage, authToken, {
+            await uploadFile(`podcast_album_covers/${appId}/${podcastAlbum.id}/400`, coverImage, authToken, {
               cancelToken: new axios.CancelToken(canceler => {
                 uploadCanceler.current = canceler
               }),
@@ -79,7 +79,7 @@ const PodcastAlbumBasicForm: React.FC<{
             process.env.NODE_ENV === 'development' && console.log(error)
             return error
           }
-          updatePodcastAlbumCover({
+          await updatePodcastAlbumCover({
             variables: {
               id: podcastAlbum.id,
               coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_album_covers/${appId}/${podcastAlbum.id}/400?t=${uploadTime}`,
