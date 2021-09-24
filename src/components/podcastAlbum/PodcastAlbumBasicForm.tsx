@@ -63,6 +63,7 @@ const PodcastAlbumBasicForm: React.FC<{
           podcast_album_id: podcastAlbum.id,
           category_id: categoryId,
           position: index,
+          cover_url: podcastAlbum.coverUrl,
         })),
       },
     })
