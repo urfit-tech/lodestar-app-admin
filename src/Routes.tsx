@@ -168,6 +168,21 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'PodcastProgramCategoryPage',
     authenticated: true,
   },
+  podcast_album_collection: {
+    path: '/podcast-albums',
+    pageName: 'PodcastAlbumCollectionAdminPage',
+    authenticated: true,
+  },
+  podcast_album: {
+    path: '/podcast-albums/:podcastAlbumId',
+    pageName: 'PodcastAlbumAdminPage',
+    authenticated: true,
+  },
+  podcast_album_category: {
+    path: '/podcast-album-category',
+    pageName: 'PodcastAlbumCategoryPage',
+    authenticated: true,
+  },
 
   // appointment
   appointment_plan_collection: {

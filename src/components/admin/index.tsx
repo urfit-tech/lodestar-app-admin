@@ -132,7 +132,7 @@ export const StyledCollapsePanel = styled(Collapse.Panel)`
     padding: 0px !important;
   }
 `
-export const StyledCraftSettingLabel = styled.span`
+export const CraftSettingLabel = styled.span`
   color: var(--gray-dark);
   font-size: 14px;
   letter-spacing: 0.4px;
@@ -172,7 +172,7 @@ export const StyleCircleColorInput = styled.div<{ background: string }>`
   height: 16px;
   border: 1px solid #d8d8d8;
 `
-export const StyledCraftSlider = styled(Slider)`
+export const CraftSlider = styled(Slider)`
   .ant-slider-track {
     background-color: ${props => props.theme['@primary-color'] || '#4c5b8f'};
   }

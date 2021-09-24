@@ -187,6 +187,7 @@ export const commonMessages = {
     instructor: { id: 'common.label.instructor', defaultMessage: '老師' },
     star: { id: 'common.label.star', defaultMessage: '星等' },
     price: { id: 'common.label.price', defaultMessage: '售價' },
+    purchase: { id: 'common.label.purchase', defaultMessage: '購買' },
     teachingAssistant: { id: 'common.label.teachingAssistant', defaultMessage: '助教' },
     cover: { id: 'common.label.cover', defaultMessage: '封面' },
     description: { id: 'common.label.description', defaultMessage: '描述' },
@@ -391,6 +392,8 @@ export const commonMessages = {
     pageAdmin: { id: 'common.menu.pageAdmin', defaultMessage: '頁面管理' },
     pageSetup: { id: 'common.menu.pageSetup', defaultMessage: '頁面設定' },
     menuSetup: { id: 'common.menu.menuSetup', defaultMessage: '選單設定' },
+    podcastAlbum: { id: 'common.menu.podcastAlbum', defaultMessage: '音頻專輯' },
+    podcastAlbumCategory: { id: 'common.menu.podcastAlbumCategory', defaultMessage: '音頻專輯分類' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
@@ -981,7 +984,38 @@ export const podcastMessages = {
     },
   }),
 }
-
+export const podcastAlbumMessages = {
+  ui: defineMessages({
+    createAlbum: { id: 'podcastAlbum.ui.createPodcastAlbum', defaultMessage: '建立專輯' },
+    addPodcastProgram: { id: 'podcastAlbum.ui.addPodcastProgram', defaultMessage: '加入音頻' },
+    sortPodcastProgram: { id: 'podcastAlbum.ui.sortPodcastProgram', defaultMessage: '排序音頻' },
+    deletePodcastAlbum: {id:'podcastAlbum.ui.deletePodcastAlbum',defaultMessage:'刪除專輯'},
+  }),
+  label: defineMessages({
+    podcastItem: { id: 'podcastAlbum.label.podcastItem', defaultMessage: '音頻項目' },
+    deletePodcastAlbum: { id: 'podcastAlbum.label.deletePodcastAlbum', defaultMessage: '刪除音頻專輯' },
+  }),
+  text: defineMessages({
+    noPodcastAlbumTitle: { id: 'podcastAlbum.text.noPodcastAlbumTitle', defaultMessage: '尚未填寫名稱' },
+    emptyPodcastAlbum: { id: 'podcastAlbum.text.emptyPodcastAlbum', defaultMessage: '尚未加入任何音頻到此專輯' },
+    connectionModalPlaceholder: {
+      id: 'podcastAlbum.text.connectionModalPlaceholder',
+      defaultMessage: '請選擇要加入專輯的音頻',
+    },
+    deletePodcastAlbumWarning: {
+      id: 'podcastAlbum.text.deletePodcastAlbumWarning',
+      defaultMessage: '請仔細確認是否真的要刪除音頻專輯，因為一旦刪除就無法恢復。',
+    },
+    deletePodcastAlbumDanger: {
+      id: 'podcastAlbum.text.deletePodcastAlbumDanger',
+      defaultMessage: '注意：只有在無人購買的情況下才能刪除音頻專輯。',
+    },
+    deletePodcastAlbumConfirmation: {
+      id: 'podcastAlbum.text.deletePodcastAlbumConfirmation',
+      defaultMessage: '音頻專輯一經刪除即不可恢復，確定要刪除嗎？',
+    },
+  }),
+}
 export const merchandiseMessages = {
   ui: defineMessages({
     createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },
@@ -1002,6 +1036,7 @@ export const merchandiseMessages = {
     arrange: { id: 'merchandise.status.arrange', defaultMessage: '調整庫存' },
     inOperation: { id: 'merchandise.status.inOperation', defaultMessage: '經營中' },
     inactivated: { id: 'merchandise.status.inactivated', defaultMessage: '未啟用' },
+    reserved: { id: 'merchandise.statue.reserved', defaultMessage: '已保留' },
   }),
   menu: defineMessages({
     memberShopSetting: { id: 'merchandise.menu.memberShopSetting', defaultMessage: '商店設定' },
@@ -1269,6 +1304,7 @@ export const craftPageMessages = {
     latestUpdatedAt: { id: 'craft.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
     publish: { id: 'craft.label.publish', defaultMessage: '發佈' },
     columnAmount: { id: 'craft.label.columnAmount', defaultMessage: '欄數' },
+    scrollAmount: { id: 'craft.label.scrollAmount', defaultMessage: '捲動數量' },
     ratio: { id: 'craft.label.ratio', defaultMessage: '比例' },
     displayAmount: { id: 'craft.label.displayAmount', defaultMessage: '資料顯示數量' },
     title: { id: 'craft.label.title', defaultMessage: '標題' },
@@ -1281,8 +1317,8 @@ export const craftPageMessages = {
     paragraphStyle: { id: 'craft.label.paragraphStyle', defaultMessage: '段落樣式' },
     paragraphContent: { id: 'craft.label.paragraphContent', defaultMessage: '段落內容' },
     cardStyle: { id: 'craft.label.cardStyle', defaultMessage: '卡片樣式' },
-    boundary: { id: 'craft.label.boundary', defaultMessage: '邊界' },
-    borderSpacing: { id: 'craft.label.borderSpacing', defaultMessage: '邊框間距' },
+    margin: { id: 'craft.label.margin', defaultMessage: '外距' },
+    padding: { id: 'craft.label.padding', defaultMessage: '內距' },
     buttonSetting: { id: 'craft.label.buttonSetting', defaultMessage: '按鈕設定' },
     buttonStyle: { id: 'craft.label.buttonStyle', defaultMessage: '按鈕樣式' },
     carouselSetting: { id: 'craft.label.carouselSetting', defaultMessage: '輪播設定' },
@@ -1293,6 +1329,8 @@ export const craftPageMessages = {
     fontSize: { id: 'craft.label.fontSize', defaultMessage: '字級' },
     lineHeight: { id: 'craft.label.lineHeight', defaultMessage: '行高' },
     textAlign: { id: 'craft.label.textAlign', defaultMessage: '對齊' },
+    top: { id: 'craft.label.top', defaultMessage: '上' },
+    bottom: { id: 'craft.label.bottom', defaultMessage: '下' },
     left: { id: 'craft.label.left', defaultMessage: '左' },
     center: { id: 'craft.label.center', defaultMessage: '中' },
     right: { id: 'craft.label.right', defaultMessage: '右' },
@@ -1317,6 +1355,8 @@ export const craftPageMessages = {
     containerComponent: { id: 'craft.label.containerComponent', defaultMessage: '區塊元件' },
     desktopLayoutComponent: { id: 'craft.label.desktopLayoutComponent', defaultMessage: '電腦版排版元件' },
     mobileLayoutComponent: { id: 'craft.label.mobileLayoutComponent', defaultMessage: '手機版排版元件' },
+    desktopCarouselComponent: { id: 'craft.label.desktopCarouselComponent', defaultMessage: '電腦版輪播元件' },
+    mobileCarouselComponent: { id: 'craft.label.mobileCarouselComponent', defaultMessage: '手機版輪播元件' },
     allTemplate: { id: 'craft.label.allTemplate', defaultMessage: '所有樣板' },
     cover: { id: 'craft.label.cover', defaultMessage: '輪播' },
     programBlock: { id: 'craft.label.programBlock', defaultMessage: '課程區塊' },
@@ -1338,7 +1378,11 @@ export const craftPageMessages = {
     activitySection: { id: 'craft.label.activitySection', defaultMessage: '活動區塊' },
     blockSetting: { id: 'craft.label.blockSetting', defaultMessage: '區塊樣式' },
     dataDisplay: { id: 'craft.label.dataDisplay', defaultMessage: '資料顯示' },
+    addItem: { id: 'craft.label.addItem', defaultMessage: '新增項目' },
     specifyDisplayItem: { id: 'craft.label.specifyDisplayItem', defaultMessage: '指定顯示項目' },
+    categorySelector: { id: 'craft.label.categorySelector', defaultMessage: '分類選擇器' },
+    categorySelectorEnabled: { id: 'craft.label.categorySelectorEnabled', defaultMessage: '啟用分類選擇器' },
+    defaultCategoryId: { id: 'craft.label.defaultCategoryId', defaultMessage: '預設分類' },
     choiceData: { id: 'craft.label.choiceData', defaultMessage: '選擇資料' },
     program: { id: 'craft.label.program', defaultMessage: '課程' },
     activity: { id: 'craft.label.activity', defaultMessage: '活動' },
@@ -1346,9 +1390,18 @@ export const craftPageMessages = {
     lecturer: { id: 'craft.label.lecturer', defaultMessage: '講師' },
     fundraising: { id: 'craft.label.fundraising', defaultMessage: '募資' },
     preOrder: { id: 'craft.label.preOrder', defaultMessage: '預購' },
+    newest: { id: 'craft.label.newest', defaultMessage: '最新上架' },
+    custom: { id: 'craft.label.newest', defaultMessage: '自訂項目' },
+    ruleOfSort: { id: 'craft.label.ruleOfSort', defaultMessage: '排序規則' },
+    boundary: { id: 'craft.label.boundary', defaultMessage: '邊界' },
+    borderSpacing: { id: 'craft.label.borderSpacing', defaultMessage: '邊框間距' },
     deletePage: { id: 'craft.label.deletePage', defaultMessage: '刪除頁面' },
   }),
   text: defineMessages({
+    chooseCategories: {
+      id: 'craft.text.chooseCategories',
+      defaultMessage: '選擇分類',
+    },
     deleteWarning: {
       id: 'craft.text.deleteWarning',
       defaultMessage: '刪除不可恢復，確定要刪除嗎？',
@@ -1383,7 +1436,7 @@ export const craftPageMessages = {
     },
     boxModelInputWarning: {
       id: 'craft.text.boxModelInputWarning',
-      defaultMessage: '請填入以下格式，5;3;5;3;',
+      defaultMessage: '請填入以下格式，5;3;5;3',
     },
   }),
 }

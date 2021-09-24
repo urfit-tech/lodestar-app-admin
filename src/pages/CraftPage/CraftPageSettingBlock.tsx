@@ -1,26 +1,48 @@
 import { Editor, Element, Frame, useEditor } from '@craftjs/core'
 import { Button, message, Tabs } from 'antd'
-import CraftActivity from 'lodestar-app-element/src/components/craft/CraftActivity'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
-import CraftCard from 'lodestar-app-element/src/components/craft/CraftCard'
-import CraftCarousel from 'lodestar-app-element/src/components/craft/CraftCarousel'
-import CraftCarouselContainer from 'lodestar-app-element/src/components/craft/CraftCarouselContainer'
-import CraftCollapse from 'lodestar-app-element/src/components/craft/CraftCollapse'
-import CraftContainer from 'lodestar-app-element/src/components/craft/CraftContainer'
-import CraftImage from 'lodestar-app-element/src/components/craft/CraftImage'
-import CraftInstructor from 'lodestar-app-element/src/components/craft/CraftInstructor'
-import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
-import CraftParagraph from 'lodestar-app-element/src/components/craft/CraftParagraph'
-import CraftPodcastProgram from 'lodestar-app-element/src/components/craft/CraftPodcastProgram'
-import CraftProgram from 'lodestar-app-element/src/components/craft/CraftProgram'
-import CraftProject from 'lodestar-app-element/src/components/craft/CraftProject'
-import CraftStatistics from 'lodestar-app-element/src/components/craft/CraftStatistics'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
-import CraftTitleAndParagraph from 'lodestar-app-element/src/components/craft/CraftTitleAndParagraph'
+import {
+  CraftActivity,
+  CraftBackground,
+  CraftButton,
+  CraftCard,
+  CraftCarousel,
+  CraftCarouselContainer,
+  CraftCollapse,
+  CraftContainer,
+  CraftImage,
+  CraftInstructor,
+  CraftLayout,
+  CraftParagraph,
+  CraftPodcastProgram,
+  CraftProgram,
+  CraftProject,
+  CraftStatistics,
+  CraftTitle,
+  CraftTitleAndParagraph,
+} from 'lodestar-app-element/src/components/craft'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import {
+  ActivitySettings,
+  BackgroundSettings,
+  ButtonSettings,
+  CardSettings,
+  CarouselContainerSettings,
+  CarouselSettings,
+  CollapseSettings,
+  ContainerSettings,
+  ImageSettings,
+  InstructorSettings,
+  LayoutSettings,
+  ParagraphSettings,
+  PodcastProgramSettings,
+  ProgramSettings,
+  ProjectSettings,
+  StatisticsSettings,
+  TitleAndParagraphSettings,
+  TitleSettings,
+} from '../../components/craftSetting'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -37,7 +59,8 @@ const messages = defineMessages({
 
 const StyledScrollBar = styled.div`
   flex: 12;
-  height: 100vh;
+  height: calc(100vh - 64px - 49px);
+  overflow-x: hidden;
   overflow-y: scroll;
   ::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -51,14 +74,19 @@ const StyledScrollBar = styled.div`
     background-color: rgba(0, 0, 0, 0.5);
   }
 `
+const StyledSettingBlock = styled.div`
+  flex: 4;
+  height: calc(100vh - 113px);
+`
 const StyledContent = styled.div`
-  padding: 20px;
-  background: #eee;
+  /* padding: 20px;
+  background: #eee; */
 `
 const StyledTabs = styled(Tabs)`
-  flex: 3;
+  width: 100%;
   height: 100vh;
-  overflow-y: scroll;
+  min-width: 300px;
+  position: relative;
 `
 const StyledPageIcon = styled(PageIcon)<{ active: string }>`
   font-size: 21px;
@@ -74,12 +102,18 @@ const StyledBrushIcon = styled(BrushIcon)<{ active: string }>`
 `
 
 const StyledTabsPane = styled(Tabs.TabPane)`
+  height: calc(100vh - 64px - 49px - 60px);
+  overflow-y: scroll;
   background: #ffffff;
   .ant-tabs-content-holder {
     background: #ffffff;
   }
 `
 const StyledTabBarWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 1rem;
   background: #ffffff;
 
   .ant-tabs-tab {
@@ -95,28 +129,7 @@ const CraftPageSettingBlock: React.VFC<{
   const [activeKey, setActiveKey] = useState('component')
 
   return (
-    <Editor
-      resolver={{
-        CraftContainer,
-        CraftLayout,
-        CraftTitle,
-        CraftParagraph,
-        CraftTitleAndParagraph,
-        CraftButton,
-        CraftCarousel,
-        CraftStatistics,
-        CraftImage,
-        CraftCard,
-        CraftCollapse,
-        CraftBackground,
-        CraftProgram,
-        CraftProject,
-        CraftActivity,
-        CraftPodcastProgram,
-        CraftInstructor,
-        CraftCarouselContainer,
-      }}
-    >
+    <Editor resolver={configureResolver()}>
       <div className="d-flex">
         <StyledScrollBar>
           <StyledContent>
@@ -167,21 +180,16 @@ const SettingBlock: React.VFC<{
   }
 
   return (
-    <div>
-      {isDataChanged && (
-        <div className="py-3 px-4" style={{ background: 'white' }}>
-          <Button loading={loading} type="primary" block onClick={handleSubmit}>
-            {formatMessage(messages.saveAndUpdate)}
-          </Button>
-        </div>
-      )}
+    <StyledSettingBlock>
       <StyledTabs
-        style={{ position: 'relative', maxWidth: '300px', minWidth: '250px' }}
         activeKey={activeKey || 'component'}
         onChange={key => setActiveKey(key)}
         renderTabBar={(props, DefaultTabBar) => (
           <StyledTabBarWrapper>
             <DefaultTabBar {...props} className="mb-0" />
+            <Button disabled={!isDataChanged} loading={loading} type="primary" onClick={handleSubmit}>
+              {formatMessage(messages.saveAndUpdate)}
+            </Button>
           </StyledTabBarWrapper>
         )}
       >
@@ -192,8 +200,192 @@ const SettingBlock: React.VFC<{
           <CraftSettingsPanel onDelete={() => setActiveKey('component')} />
         </StyledTabsPane>
       </StyledTabs>
-    </div>
+    </StyledSettingBlock>
   )
+}
+
+const configureResolver = () => {
+  CraftActivity.craft = {
+    related: {
+      settings: ActivitySettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftBackground.craft = {
+    related: {
+      settings: BackgroundSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftButton.craft = {
+    related: {
+      settings: ButtonSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftCard.craft = {
+    related: {
+      settings: CardSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftCarousel.craft = {
+    related: {
+      settings: CarouselSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftCarouselContainer.craft = {
+    related: {
+      settings: CarouselContainerSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftCollapse.craft = {
+    related: {
+      settings: CollapseSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftContainer.craft = {
+    related: {
+      settings: ContainerSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftImage.craft = {
+    related: {
+      settings: ImageSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftInstructor.craft = {
+    related: {
+      settings: InstructorSettings,
+    },
+  }
+  CraftLayout.craft = {
+    related: {
+      settings: LayoutSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteAllBlock',
+      },
+    },
+  }
+  CraftParagraph.craft = {
+    related: {
+      settings: ParagraphSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftPodcastProgram.craft = {
+    related: {
+      settings: PodcastProgramSettings,
+    },
+  }
+  CraftProgram.craft = {
+    related: {
+      settings: ProgramSettings,
+    },
+  }
+  CraftProject.craft = {
+    related: {
+      settings: ProjectSettings,
+    },
+  }
+  CraftStatistics.craft = {
+    related: {
+      settings: StatisticsSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftTitle.craft = {
+    related: {
+      settings: TitleSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftTitleAndParagraph.craft = {
+    related: {
+      settings: TitleAndParagraphSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+
+  return {
+    CraftContainer,
+    CraftLayout,
+    CraftTitle,
+    CraftParagraph,
+    CraftTitleAndParagraph,
+    CraftButton,
+    CraftCarousel,
+    CraftStatistics,
+    CraftImage,
+    CraftCard,
+    CraftCollapse,
+    CraftBackground,
+    CraftProgram,
+    CraftProject,
+    CraftActivity,
+    CraftPodcastProgram,
+    CraftInstructor,
+    CraftCarouselContainer,
+  }
 }
 
 export default CraftPageSettingBlock

@@ -1,3 +1,5 @@
+import { ProductInventoryStatusProps } from './general'
+
 export type MerchandisePreviewProps = {
   id: string
   coverUrl: string | null
@@ -46,6 +48,21 @@ export type MerchandiseSpecProps = {
   salePrice: number | null
   quota: number
   files: { id: string; data: any }[]
+}
+
+export type MerchandiseSpec = {
+  id: string
+  title: string
+  coverUrl: string | null
+  publishedAt: Date | null
+  inventoryStatus: ProductInventoryStatusProps
+  isPhysical: boolean
+  isCustomized: boolean
+  merchandiseTitle: string
+  memberShop: {
+    id: string
+    title: string
+  }
 }
 
 export type MemberShopPreviewProps = {

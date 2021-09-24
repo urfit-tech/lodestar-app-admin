@@ -52,8 +52,10 @@ const StyledFormItemWrapper = styled.div<{ currentTemplate: string }>`
       border: ${props => (props.currentTemplate === 'C' ? `2px ${props.theme['@primary-color']} solid` : null)};
     }
   }
-  .ant-row:last-child {
+  // TODO: change row first child to last child when template enable
+  .ant-row:nth-child(1) {
     .ant-card {
+      background-image: none;
       position: relative;
       border: ${props => (props.currentTemplate === 'empty' ? `2px ${props.theme['@primary-color']} solid` : null)};
       .content {
@@ -97,7 +99,7 @@ const CraftPageCreationModal: React.VFC<
   const [form] = useForm<FieldProps>()
   const { insertAppPage } = useMutateAppPage()
   const [loading, setLoading] = useState(false)
-  const [currentTemplate, setCurrentTemplate] = useState<'A' | 'B' | 'C' | 'empty'>('A')
+  const [currentTemplate, setCurrentTemplate] = useState<'A' | 'B' | 'C' | 'empty'>('empty')
 
   const [pageName, setPageName] = useState('')
   const [path, setPath] = useState('')
@@ -156,7 +158,8 @@ const CraftPageCreationModal: React.VFC<
         {createStep === 'template' ? (
           <>
             <StyledFormItemWrapper currentTemplate={currentTemplate}>
-              <StyledFormItem>
+              {/* TODO: enable template when needs */}
+              {/* <StyledFormItem>
                 <AdminCard
                   hoverable
                   cover={''}
@@ -183,6 +186,7 @@ const CraftPageCreationModal: React.VFC<
                   }}
                 />
               </StyledFormItem>
+               */}
               <StyledFormItem>
                 <AdminCard
                   hoverable

@@ -172,6 +172,16 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           key: 'podcast_program_category',
           name: formatMessage(commonMessages.menu.podcastCategory),
         },
+        {
+          permissionIsAllowed: currentUserRole === 'app-owner',
+          key: 'podcast_album_collection',
+          name: formatMessage(commonMessages.menu.podcastAlbum),
+        },
+        {
+          permissionIsAllowed: currentUserRole === 'app-owner',
+          key: 'podcast_album_category',
+          name: formatMessage(commonMessages.menu.podcastAlbumCategory),
+        },
       ],
     },
     {

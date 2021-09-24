@@ -175,13 +175,15 @@ const MerchandiseAdminPage: React.FC = () => {
                 ) : (
                   merchandiseSpecs.map(merchandiseSpec => (
                     <MerchandiseInventoryCard
-                      key={merchandiseSpec.merchandiseSpecId}
-                      merchandiseSpecId={merchandiseSpec.merchandiseSpecId}
+                      key={merchandiseSpec.id}
+                      id={merchandiseSpec.id}
+                      title={merchandiseSpec.title}
                       coverUrl={merchandiseSpec.coverUrl}
+                      inventoryStatus={merchandiseSpec.inventoryStatus}
+                      isPhysical={merchandise.isPhysical}
+                      isCustomized={merchandise.isCustomized}
                       merchandiseTitle={merchandiseSpec.merchandiseTitle}
-                      merchandiseSpecTitle={merchandiseSpec.merchandiseSpecTitle}
-                      merchandiseSpecInventoryStatus={merchandiseSpec.merchandiseSpecInventoryStatus}
-                      merchandiseMemberShop={merchandiseSpec.merchandiseMemberShop}
+                      memberShop={merchandiseSpec.memberShop}
                       onRefetch={refetchMerchandiseSpecs}
                     />
                   ))
