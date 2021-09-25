@@ -1,5 +1,5 @@
 import { useNode } from '@craftjs/core'
-import { Button, Collapse, Form, Radio } from 'antd'
+import { Collapse, Form, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CraftStatisticsProps } from 'lodestar-app-element/src/components/craft/CraftStatistics'
 import { CraftBoxModelProps, CraftImageProps, CraftTextStyleProps } from 'lodestar-app-element/src/types/craft'
@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers/index'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { craftPageMessages } from '../../helpers/translation'
 import ImageUploader from '../common/ImageUploader'
 import BoxModelInput, { formatBoxModelValue } from './BoxModelInput'
 import ParagraphContentBlock from './ParagraphContentBlock'
@@ -46,7 +46,6 @@ const StatisticsSettings: React.VFC = () => {
     props: node.data.props as CraftBoxModelProps & CraftStatisticsProps,
     selected: node.events.selected,
   }))
-  const [isImageUploaded, setIsImageUploaded] = useState(false)
   const [coverImage, setCoverImage] = useState<File | null>(null)
 
   const handleChange = () => {
@@ -104,18 +103,16 @@ const StatisticsSettings: React.VFC = () => {
       .catch(() => {})
   }
 
-  const handleImageUpload = () => {
-    if (coverImage) {
+  const handleImageUpload = (file?: File) => {
+    if (file) {
       const uniqId = uuid()
       setLoading(true)
-      uploadFile(`images/${appId}/craft/${uniqId}`, coverImage, authToken)
+      uploadFile(`images/${appId}/craft/${uniqId}`, file, authToken)
         .then(() => {
+          setCoverImage(file)
           setProp(props => {
-            props.coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}${
-              coverImage.type.startsWith('image') ? '/100' : ''
-            }`
+            props.coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}`
           })
-          setIsImageUploaded(true)
         })
         .catch(handleError)
         .finally(() => setLoading(false))
@@ -178,21 +175,12 @@ const StatisticsSettings: React.VFC = () => {
           </Form.Item>
           {props.type === 'image' && (
             <Form.Item name="coverImage">
-              <div className="d-flex align-items-center">
-                <ImageUploader
-                  file={coverImage}
-                  initialCoverUrl={props.coverUrl}
-                  onChange={file => {
-                    setIsImageUploaded(false)
-                    setCoverImage(file)
-                  }}
-                />
-                {selected && coverImage && !isImageUploaded && (
-                  <Button loading={loading} className="ml-3 mb-3" type="primary" block onClick={handleImageUpload}>
-                    {formatMessage(commonMessages.ui.save)}
-                  </Button>
-                )}
-              </div>
+              <ImageUploader
+                uploading={loading}
+                file={coverImage}
+                initialCoverUrl={props.coverUrl}
+                onChange={handleImageUpload}
+              />
             </Form.Item>
           )}
         </StyledCollapsePanel>

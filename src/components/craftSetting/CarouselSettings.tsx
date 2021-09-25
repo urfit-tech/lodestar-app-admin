@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers/index'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { craftPageMessages } from '../../helpers/translation'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
 import { CraftTextStyleProps } from '../../types/craft'
@@ -66,13 +66,9 @@ const CarouselSettings: React.VFC = () => {
   const {
     actions: { setProp },
     props,
-    selected,
   } = useNode(node => ({
     props: node.data.props as CraftCarouselProps,
-    selected: node.events.selected,
   }))
-  const [isDesktopImagesUploaded, setIsDesktopImagesUploaded] = useState<boolean[]>([])
-  const [isMobileImagesUploaded, setIsMobileImagesUploaded] = useState<boolean[]>([])
   const [desktopCover, setDesktopCover] = useState<File[]>([])
   const [mobileCover, setMobileCover] = useState<File[]>([])
 
@@ -114,67 +110,31 @@ const CarouselSettings: React.VFC = () => {
       })
       .catch(() => {})
   }
-
-  const handleImageAsyncUpload = async () => {
-    if (desktopCover.length || mobileCover.length) {
-      let covers: FieldProps['covers'] = [...form.getFieldValue('covers')]
+  const handleImageUpload: (responsiveType: 'mobile' | 'desktop', coverIndex: number, file?: File) => void = (
+    responsiveType,
+    coverIndex,
+    file,
+  ) => {
+    if (file) {
+      const imagePropConvert = { desktop: 'desktopCoverUrl', mobile: 'mobileCoverUrl' }
+      const imageSetConvert = { desktop: setDesktopCover, mobile: setMobileCover }
       setLoading(true)
-      try {
-        for (let i = 0; i < desktopCover.length; i++) {
-          const file = desktopCover[i]
-          if (!file || isDesktopImagesUploaded[i]) {
-            continue
-          }
-          const uniqId = uuid()
-
-          await uploadFile(`images/${appId}/craft/${uniqId}`, file, authToken)
-          const desktopCoverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}${
-            file.type.startsWith('image') ? '/1200' : ''
-          }`
+      const uniqImageId = uuid()
+      uploadFile(`images/${appId}/craft/${uniqImageId}`, file, authToken)
+        .then(() => {
+          imageSetConvert[responsiveType](cover => {
+            const coverClone = cover.slice()
+            coverClone[coverIndex] = file
+            return coverClone
+          })
           setProp(props => {
-            props.covers[i].desktopCoverUrl = desktopCoverUrl
+            props.covers[coverIndex][
+              imagePropConvert[responsiveType]
+            ] = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqImageId}`
           })
-          covers[i] = {
-            ...covers[i],
-            desktopCoverUrl,
-          }
-          form.setFieldsValue({ covers })
-          setIsDesktopImagesUploaded(isUploaded => {
-            const isUploadedClone = [...isUploaded]
-            isUploadedClone[i] = true
-            return isUploadedClone
-          })
-        }
-
-        for (let i = 0; i < mobileCover.length; i++) {
-          const file = mobileCover[i]
-          if (!file || isMobileImagesUploaded[i]) {
-            continue
-          }
-          const uniqId = uuid()
-
-          await uploadFile(`images/${appId}/craft/${uniqId}`, file, authToken)
-          const mobileCoverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}${
-            file.type.startsWith('image') ? '/600' : ''
-          }`
-          setProp(props => {
-            props.covers[i].mobileCoverUrl = mobileCoverUrl
-          })
-          covers[i] = {
-            ...covers[i],
-            mobileCoverUrl,
-          }
-          form.setFieldsValue({ covers })
-          setIsMobileImagesUploaded(isUploaded => {
-            const isUploadedClone = [...isUploaded]
-            isUploadedClone[i] = true
-            return isUploadedClone
-          })
-        }
-      } catch (error) {
-        handleError(error)
-      }
-      setLoading(false)
+        })
+        .catch(handleError)
+        .finally(() => setLoading(false))
     }
   }
 
@@ -287,35 +247,14 @@ const CarouselSettings: React.VFC = () => {
                         <CraftSettingLabel>{formatMessage(craftPageMessages.label.desktopDisplay)}</CraftSettingLabel>
                       }
                     >
-                      <div className="d-flex align-items-center">
-                        <ImageUploader
-                          file={desktopCover ? desktopCover[index] : null}
-                          initialCoverUrl={props.covers[index]?.desktopCoverUrl || ''}
-                          onChange={file => {
-                            setIsDesktopImagesUploaded(isUploaded => {
-                              const isUploadedClone = [...isUploaded]
-                              isUploadedClone[index] = false
-                              return isUploadedClone
-                            })
-                            setDesktopCover(cover => {
-                              const coverClone = cover.slice()
-                              coverClone[index] = file
-                              return coverClone
-                            })
-                          }}
-                        />
-                        {selected && desktopCover[index] && !isDesktopImagesUploaded[index] && (
-                          <Button
-                            loading={loading}
-                            className="ml-3 mb-3"
-                            type="primary"
-                            block
-                            onClick={handleImageAsyncUpload}
-                          >
-                            {formatMessage(commonMessages.ui.upload)}
-                          </Button>
-                        )}
-                      </div>
+                      <ImageUploader
+                        uploading={loading}
+                        file={desktopCover[index] || null}
+                        initialCoverUrl={props.covers[index]?.desktopCoverUrl || ''}
+                        onChange={file => {
+                          handleImageUpload('desktop', index, file)
+                        }}
+                      />
                     </Form.Item>
                     <Form.Item
                       className="mb-3"
@@ -325,35 +264,14 @@ const CarouselSettings: React.VFC = () => {
                         <CraftSettingLabel>{formatMessage(craftPageMessages.label.mobileDisplay)}</CraftSettingLabel>
                       }
                     >
-                      <div className="d-flex align-items-center">
-                        <ImageUploader
-                          file={mobileCover ? mobileCover[index] : null}
-                          initialCoverUrl={props.covers[index]?.mobileCoverUrl || ''}
-                          onChange={file => {
-                            setIsMobileImagesUploaded(isUploaded => {
-                              const isUploadedClone = [...isUploaded]
-                              isUploadedClone[index] = false
-                              return isUploadedClone
-                            })
-                            setMobileCover(cover => {
-                              const coverClone = cover.slice()
-                              coverClone[index] = file
-                              return coverClone
-                            })
-                          }}
-                        />
-                        {selected && mobileCover[index] && !isMobileImagesUploaded[index] && (
-                          <Button
-                            loading={loading}
-                            className="ml-3 mb-3"
-                            type="primary"
-                            block
-                            onClick={handleImageAsyncUpload}
-                          >
-                            {formatMessage(commonMessages.ui.upload)}
-                          </Button>
-                        )}
-                      </div>
+                      <ImageUploader
+                        uploading={loading}
+                        file={mobileCover[index] || null}
+                        initialCoverUrl={props.covers[index]?.mobileCoverUrl || ''}
+                        onChange={file => {
+                          handleImageUpload('mobile', index, file)
+                        }}
+                      />
                     </Form.Item>
 
                     <StyledLinkFormItem

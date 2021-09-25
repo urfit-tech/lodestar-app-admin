@@ -1,5 +1,5 @@
 import { useNode } from '@craftjs/core'
-import { Button, Collapse, Radio } from 'antd'
+import { Collapse, Radio } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { CraftBackgroundProps } from 'lodestar-app-element/src/components/craft/CraftBackground'
@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers/index'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { craftPageMessages } from '../../helpers/translation'
 import ImageUploader from '../common/ImageUploader'
 import BoxModelInput, { formatBoxModelValue } from './BoxModelInput'
 import CraftColorPickerBlock from './ColorPickerBlock'
@@ -65,18 +65,18 @@ const BackgroundSettings: React.VFC = () => {
       .catch(() => {})
   }
 
-  const handleImageUpload = () => {
-    if (backgroundImage) {
+  const handleImageUpload = (file?: File) => {
+    if (file) {
       const uniqId = uuid()
       setLoading(true)
-      uploadFile(`images/${appId}/craft/${uniqId}`, backgroundImage, authToken)
+      uploadFile(`images/${appId}/craft/${uniqId}`, file, authToken)
         .then(() => {
+          setBackgroundImage(file)
           setProp(props => {
             props.coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}${
-              backgroundImage.type.startsWith('image') ? '/1200' : ''
+              file.type.startsWith('image') ? '/1200' : ''
             }`
           })
-          setIsImageUploaded(true)
         })
         .catch(handleError)
         .finally(() => setLoading(false))
@@ -125,21 +125,12 @@ const BackgroundSettings: React.VFC = () => {
 
           <Form.Item name="backgroundImage" noStyle={props.backgroundType !== 'backgroundImage'}>
             {props.backgroundType === 'backgroundImage' && (
-              <div className="d-flex align-items-center">
-                <ImageUploader
-                  file={backgroundImage}
-                  initialCoverUrl={props.coverUrl}
-                  onChange={file => {
-                    setIsImageUploaded(false)
-                    setBackgroundImage(file)
-                  }}
-                />
-                {selected && backgroundImage && !isImageUploaded && (
-                  <Button loading={loading} className="ml-3 mb-3" type="primary" onClick={handleImageUpload}>
-                    {formatMessage(commonMessages.ui.upload)}
-                  </Button>
-                )}
-              </div>
+              <ImageUploader
+                uploading={loading}
+                file={backgroundImage}
+                initialCoverUrl={props.coverUrl}
+                onChange={handleImageUpload}
+              />
             )}
           </Form.Item>
         </StyledCollapsePanel>

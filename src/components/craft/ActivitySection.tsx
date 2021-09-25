@@ -9,7 +9,7 @@ import React, { useContext } from 'react'
 import { ThemeContext } from 'styled-components'
 import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
 
-const ProblemSection: React.VFC = () => {
+const ActivitySection: React.VFC = () => {
   const { connectors } = useEditor()
   const theme = useContext(ThemeContext)
 
@@ -39,14 +39,12 @@ const ProblemSection: React.VFC = () => {
             <Element id="CraftActivity" is={CraftActivity} canvas type="newest" ids={[]} defaultCategoryIds={[]}>
               <CraftImage
                 desktop={{
-                  type: 'image',
                   width: '100%',
                   padding: {},
                   margin: {},
                   coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
                 }}
                 mobile={{
-                  type: 'image',
                   width: '100%',
                   padding: {},
                   margin: {},
@@ -74,4 +72,4 @@ const ProblemSection: React.VFC = () => {
   )
 }
 
-export default ProblemSection
+export default ActivitySection

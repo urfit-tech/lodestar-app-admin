@@ -56,14 +56,12 @@ const Description: React.VFC = () => {
 
               <CraftImage
                 desktop={{
-                  type: 'image',
                   width: '100%',
                   padding: {},
                   margin: {},
                   coverUrl: 'https://static.kolable.com/images/demo/home/feature-img2.jpg',
                 }}
                 mobile={{
-                  type: 'image',
                   width: '100%',
                   padding: {},
                   margin: {},
