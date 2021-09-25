@@ -1,18 +1,15 @@
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, Select } from 'antd'
 import gql from 'graphql-tag'
+import { ActivityCollection } from 'lodestar-app-element/src/types/data'
 import { repeat } from 'ramda'
 import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel } from '../craftSetting/styled'
+import { StyledCraftSettingLabel } from '../craft'
 
-export type ActivityCollection = {
-  type: 'newest' | 'custom'
-  ids: (string | null)[]
-}
 const ActivityCollectionSelector: React.FC<{
   value?: ActivityCollection
   onChange?: (value: ActivityCollection) => void
@@ -20,7 +17,9 @@ const ActivityCollectionSelector: React.FC<{
   const { formatMessage } = useIntl()
   return (
     <div>
-      <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</CraftSettingLabel>}>
+      <Form.Item
+        label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</StyledCraftSettingLabel>}
+      >
         <Select<ActivityCollection['type']>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
           value={value?.type}
@@ -43,7 +42,9 @@ const ActivityCollectionSelector: React.FC<{
       </Form.Item>
       {value?.type === 'newest' && (
         <Form.Item
-          label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</CraftSettingLabel>}
+          label={
+            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</StyledCraftSettingLabel>
+          }
         >
           <InputNumber
             value={value.ids.length}
@@ -52,7 +53,11 @@ const ActivityCollectionSelector: React.FC<{
         </Form.Item>
       )}
       {value?.type === 'custom' && (
-        <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
+        <Form.Item
+          label={
+            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</StyledCraftSettingLabel>
+          }
+        >
           {value.ids.map((activityId, idx) => (
             <div className="my-2" key={activityId}>
               <ActivitySelect

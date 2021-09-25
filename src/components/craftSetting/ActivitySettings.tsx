@@ -3,13 +3,12 @@ import { useNode } from '@craftjs/core'
 import { Collapse, Form, Select, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import ActivityCollectionSelector, {
-  ActivityCollection,
-} from 'lodestar-app-element/src/components/ActivityCollectionSelector'
+import { ActivityCollection } from 'lodestar-app-element/src/types/data'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
+import ActivityCollectionSelector from '../activity/ActivityCollectionSelector'
 import { AdminHeaderTitle, CraftSettingLabel, StyledCollapsePanel } from '../admin'
 
 const ActivitySettings: React.VFC = () => {
