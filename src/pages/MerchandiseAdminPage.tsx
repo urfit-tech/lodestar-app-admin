@@ -1,5 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Skeleton, Tabs, Tag } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -23,7 +24,6 @@ import MerchandiseInventoryCard from '../components/merchandise/MerchandiseInven
 import MerchandisePublishBlock from '../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../components/merchandise/MerchandiseSalesForm'
 import MerchandiseSpecForm from '../components/merchandise/MerchandiseSpecForm'
-import { useApp } from '../contexts/AppContext'
 import { commonMessages, merchandiseMessages } from '../helpers/translation'
 import { useMerchandise, useMerchandiseSpecCollection } from '../hooks/merchandise'
 

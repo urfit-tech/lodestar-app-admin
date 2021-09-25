@@ -1,4 +1,5 @@
 import { Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
@@ -13,7 +14,6 @@ import PodcastProgramInstructorCollectionBlock from '../components/podcast/Podca
 import PodcastProgramIntroForm from '../components/podcast/PodcastProgramIntroForm'
 import PodcastProgramPlanForm from '../components/podcast/PodcastProgramPlanForm'
 import PodcastProgramPublishBlock from '../components/podcast/PodcastProgramPublishBlock'
-import { useApp } from '../contexts/AppContext'
 import { commonMessages, podcastMessages } from '../helpers/translation'
 import { usePodcastProgramAdmin } from '../hooks/podcast'
 

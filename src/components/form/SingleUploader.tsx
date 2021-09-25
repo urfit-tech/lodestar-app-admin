@@ -3,12 +3,12 @@ import { Button, message, Spin, Upload } from 'antd'
 import { UploadProps } from 'antd/lib/upload'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { extname } from 'path'
 import { clone } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useAuth } from '../../contexts/AuthContext'
 import { notEmpty, uploadFile } from '../../helpers'
 
 const messages = defineMessages({

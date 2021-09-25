@@ -20,6 +20,7 @@ import {
   CraftTitle,
   CraftTitleAndParagraph,
 } from 'lodestar-app-element/src/components/craft'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -43,7 +44,6 @@ import {
   TitleAndParagraphSettings,
   TitleSettings,
 } from '../../components/craftSetting'
-import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'

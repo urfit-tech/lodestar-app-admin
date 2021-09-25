@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import { useEffect, useState } from 'react'
-import { useApp } from '../contexts/AppContext'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
 import { ProgramAdminProps, ProgramApprovalProps, ProgramContentBodyProps, ProgramRoleName } from '../types/program'
 

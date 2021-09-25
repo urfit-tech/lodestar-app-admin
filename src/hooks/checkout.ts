@@ -3,7 +3,7 @@ import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import { reverse, times } from 'ramda'
 import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
-import { useApp } from '../contexts/AppContext'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
 import {
   CouponCodeProps,
@@ -17,7 +17,7 @@ import {
 import axios from 'axios'
 import { prop, sum } from 'ramda'
 import { useCallback, useEffect, useState } from 'react'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { InvoiceProps } from '../types/merchandise'
 import { ShippingProps } from '../types/merchandise'
 import { CheckProps, OrderDiscountProps, OrderProductProps, shippingOptionProps } from '../types/checkout'

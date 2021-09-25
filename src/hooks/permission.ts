@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { groupBy } from 'ramda'
-import { useApp } from '../contexts/AppContext'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
 import { PermissionGroupProps } from '../types/general'
 

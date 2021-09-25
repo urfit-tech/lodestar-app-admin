@@ -1,5 +1,6 @@
 /// <reference types="react-scripts" />
 
+declare module '@bobthered/tailwindcss-palette-generator'
 declare module 'audio-recorder-polyfill/mpeg-encoder'
 declare module 'coupon-code'
 declare module 'react-calendar-heatmap'

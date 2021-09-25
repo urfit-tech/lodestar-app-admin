@@ -1,9 +1,9 @@
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, Upload } from 'antd'
 import { UploadProps } from 'antd/lib/upload/Upload'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
-import { useApp } from '../../../contexts/AppContext'
-import { useAuth } from '../../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../../helpers'
 
 const CertificationUploader: React.VFC<

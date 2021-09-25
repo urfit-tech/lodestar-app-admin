@@ -1,11 +1,11 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Input, Table } from 'antd'
 import { ColumnType } from 'antd/lib/table'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useRef } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useApp } from '../../contexts/AppContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ExerciseProps } from '../../types/program'
 

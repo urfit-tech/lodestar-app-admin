@@ -1,11 +1,11 @@
 import { DollarOutlined } from '@ant-design/icons'
 import { Typography } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import AdminLayout from '../../components/layout/AdminLayout'
 import SaleCollectionCreatorCard from '../../components/sale/SaleCollectionCreatorCard'
 import SaleSummaryCreatorCard from '../../components/sale/SaleSummaryCreatorCard'
-import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 
 const SalesAdminPage: React.VFC = () => {

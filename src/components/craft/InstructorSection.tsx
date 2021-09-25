@@ -3,8 +3,8 @@ import { Image } from 'antd'
 import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
 import CraftInstructor from 'lodestar-app-element/src/components/craft/CraftInstructor'
 import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
-import { useApp } from '../../contexts/AppContext'
 import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
 
 const InstructorSection: React.VFC = () => {

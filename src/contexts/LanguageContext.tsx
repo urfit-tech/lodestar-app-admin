@@ -1,8 +1,11 @@
+import { useQuery } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import 'moment/locale/zh-tw'
 import React, { createContext, useEffect, useState } from 'react'
 import { IntlProvider } from 'react-intl'
-import { useApp } from './AppContext'
+import hasura from '../hasura'
 
 const supportedLanguages = ['zh', 'zh-cn', 'en', 'vi', 'acsi']
 
@@ -19,10 +22,26 @@ const defaultLanguage: LanguageProps = {
 const LanguageContext = createContext<LanguageProps>(defaultLanguage)
 
 export const LanguageProvider: React.FC = ({ children }) => {
-  const { enabledModules, settings, locales } = useApp()
+  const { enabledModules, settings } = useApp()
   const [currentLanguage, setCurrentLanguage] = useState('zh')
   const [locale, setLocale] = useState('zh')
   moment.locale('zh-tw')
+
+  const { data } = useQuery<hasura.GET_LOCALES>(
+    gql`
+      query GET_LOCALES {
+        locale {
+          key
+          ${currentLanguage.replaceAll('-', '_')}
+        }
+      }
+    `,
+  )
+  const localeMessages =
+    data?.locale.reduce((accum, v) => {
+      accum[v.key] = (v as any)[currentLanguage.replaceAll('-', '_')]
+      return accum
+    }, {} as { [key: string]: string }) || {}
 
   useEffect(() => {
     const browserLanguage = settings['language'] || navigator.language.split('-')[0]
@@ -64,7 +83,7 @@ export const LanguageProvider: React.FC = ({ children }) => {
         },
       }}
     >
-      <IntlProvider defaultLocale="zh" locale={locale} messages={locales[currentLanguage]}>
+      <IntlProvider defaultLocale="zh" locale={locale} messages={localeMessages}>
         {children}
       </IntlProvider>
     </LanguageContext.Provider>

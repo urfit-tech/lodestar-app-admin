@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import React, { useEffect, useRef, useState } from 'react'
 import { SketchPicker } from 'react-color'
 import { useIntl } from 'react-intl'
-import styled, { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
 import { craftPageMessages } from '../../helpers/translation'
 import { CraftSettingLabel, StyledUnderLineInput } from './styled'
 
@@ -21,7 +22,7 @@ const CraftColorPickerBlock: React.VFC<{
   onChange?: (value: string) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
-  const theme = useContext(ThemeContext)
+  const theme = useAppTheme()
   const [visible, setVisible] = useState(false)
   const sketchPickerRef = useRef<HTMLDivElement | null>(null)
 

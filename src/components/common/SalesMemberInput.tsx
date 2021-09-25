@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
-import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import MemberSelector from '../form/MemberSelector'
 

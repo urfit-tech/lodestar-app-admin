@@ -4,12 +4,13 @@ import { Button, Dropdown, Form, Input, Menu, Tag, Typography } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled, { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { handleError, rgba } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -98,7 +99,7 @@ const IssueItem: React.FC<{
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const [form] = useForm<FieldProps>()
   const { currentMemberId, currentUserRole } = useAuth()
-  const theme = useContext(ThemeContext)
+  const theme = useAppTheme()
 
   const [updateIssue] = useMutation<hasura.UPDATE_ISSUE, hasura.UPDATE_ISSUEVariables>(UPDATE_ISSUE)
   const [deleteIssue] = useMutation<hasura.DELETE_ISSUE, hasura.DELETE_ISSUEVariables>(DELETE_ISSUE)

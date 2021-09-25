@@ -1,10 +1,13 @@
 import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Dropdown, Input, Menu, Popover, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React, { useContext, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled, { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
 import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
@@ -13,8 +16,6 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import MemberCreationModal from '../../components/member/MemberCreationModal'
 import MemberExportModal from '../../components/member/MemberExportModal'
 import MemberImportModal from '../../components/member/MemberImportModal'
-import { useApp } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../../hooks/member'
@@ -80,7 +81,7 @@ const StyledTag = styled(Tag)`
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const theme = useContext(ThemeContext)
+  const theme = useAppTheme()
   const { permissions, currentUserRole } = useAuth()
   const { id: appId, enabledModules } = useApp()
 

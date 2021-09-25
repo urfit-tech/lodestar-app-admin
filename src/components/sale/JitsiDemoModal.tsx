@@ -1,10 +1,10 @@
 import { CopyOutlined } from '@ant-design/icons'
 import { Button, message, Modal } from 'antd'
 import { ModalProps } from 'antd/lib/modal'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useApp } from '../../contexts/AppContext'
 import { copyToClipboard } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 

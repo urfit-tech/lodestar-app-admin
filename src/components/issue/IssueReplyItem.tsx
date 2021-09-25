@@ -3,13 +3,14 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, message, Tag } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled, { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { useApp } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import hasura from '../../hasura'
 import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -62,7 +63,7 @@ const IssueReplyItem: React.FC<{
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const { currentMemberId, authToken } = useAuth()
   const { id: appId } = useApp()
-  const theme = useContext(ThemeContext)
+  const theme = useAppTheme()
 
   const [insertIssueReplyReaction] = useMutation<
     hasura.INSERT_ISSUE_REPLY_REACTION,

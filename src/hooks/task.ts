@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 
 export const useTask = (queue: string | null, taskId: string | null) => {
   const { authToken } = useAuth()

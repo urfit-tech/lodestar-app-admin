@@ -1,4 +1,5 @@
 import { Skeleton } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
@@ -6,7 +7,6 @@ import { AdminBlock, AdminBlockTitle } from '../components/admin'
 import MemberAdminLayout from '../components/layout/MemberAdminLayout'
 import MemberProfileBasicForm from '../components/member/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../components/member/MemberPropertyAdminForm'
-import { useApp } from '../contexts/AppContext'
 import { memberMessages } from '../helpers/translation'
 import { useMemberAdmin } from '../hooks/member'
 

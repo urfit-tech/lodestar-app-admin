@@ -1,6 +1,6 @@
 import { Skeleton, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
-import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { usePodcastAlbumCounts } from '../../hooks/podcastAlbum'

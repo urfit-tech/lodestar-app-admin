@@ -1,12 +1,12 @@
 import { message } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import AuthModal, { AuthModalContext } from '../components/auth/AuthModal'
 import LoginSection from '../components/auth/LoginSection'
-import { useApp } from '../contexts/AppContext'
-import { useAuth } from '../contexts/AuthContext'
 
 const StyledWrapper = styled.div`
   display: flex;

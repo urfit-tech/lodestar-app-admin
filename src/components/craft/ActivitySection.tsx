@@ -5,13 +5,13 @@ import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBack
 import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
 import CraftImage from 'lodestar-app-element/src/components/craft/CraftImage'
 import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
-import React, { useContext } from 'react'
-import { ThemeContext } from 'styled-components'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import React from 'react'
 import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
 
 const ActivitySection: React.VFC = () => {
   const { connectors } = useEditor()
-  const theme = useContext(ThemeContext)
+  const theme = useAppTheme()
 
   return (
     <StyledBoxWrapper

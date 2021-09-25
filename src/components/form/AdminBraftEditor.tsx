@@ -1,8 +1,8 @@
 import { ControlType, EditorState } from 'braft-editor'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { useApp } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { uploadFile } from '../../helpers'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 

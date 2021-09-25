@@ -1,6 +1,6 @@
 import { Select } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
-import { useApp } from '../../contexts/AppContext'
 
 const CurrencySelector: React.FC<{
   value?: string

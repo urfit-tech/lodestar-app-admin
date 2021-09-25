@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Select } from 'antd'
 import gql from 'graphql-tag'
-import { useApp } from '../../contexts/AppContext'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../../hasura'
 
 const CategoryInput: React.VFC<{

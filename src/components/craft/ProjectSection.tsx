@@ -5,16 +5,16 @@ import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
 import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
 import CraftProject from 'lodestar-app-element/src/components/craft/CraftProject'
 import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
-import React, { useContext } from 'react'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import React from 'react'
 import { useIntl } from 'react-intl'
-import { ThemeContext } from 'styled-components'
 import { craftPageMessages } from '../../helpers/translation'
 import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
 
 const ProjectSection: React.VFC<{ projectType?: 'pre-order' | 'funding' }> = ({ projectType = 'pre-order' }) => {
   const { formatMessage } = useIntl()
   const { connectors } = useEditor()
-  const theme = useContext(ThemeContext)
+  const theme = useAppTheme()
 
   return (
     <StyledBoxWrapper

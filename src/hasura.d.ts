@@ -60,6 +60,33 @@ export interface UPDATE_ACTIVITY_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: SEARCH_ACTIVITY
+// ====================================================
+
+export interface SEARCH_ACTIVITY_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface SEARCH_ACTIVITY {
+  /**
+   * fetch data from the table: "activity"
+   */
+  activity: SEARCH_ACTIVITY_activity[];
+}
+
+export interface SEARCH_ACTIVITYVariables {
+  appId: string;
+  searchText: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_COVER
 // ====================================================
 
@@ -191,33 +218,6 @@ export interface PUBLISH_ACTIVITY {
 export interface PUBLISH_ACTIVITYVariables {
   activityId: any;
   publishedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: SEARCH_ACTIVITY
-// ====================================================
-
-export interface SEARCH_ACTIVITY_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface SEARCH_ACTIVITY {
-  /**
-   * fetch data from the table: "activity"
-   */
-  activity: SEARCH_ACTIVITY_activity[];
-}
-
-export interface SEARCH_ACTIVITYVariables {
-  appId: string;
-  searchText: string;
 }
 
 /* tslint:disable */
@@ -1713,6 +1713,138 @@ export interface GET_APP_ACTIVITY_CATEGORIES {
 
 export interface GET_APP_ACTIVITY_CATEGORIESVariables {
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_CONTENTS
+// ====================================================
+
+export interface GET_PROGRAM_CONTENTS_contents {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_CONTENTS {
+  /**
+   * fetch data from the table: "program"
+   */
+  contents: GET_PROGRAM_CONTENTS_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY
+// ====================================================
+
+export interface GET_ACTIVITY_contents {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_ACTIVITY {
+  /**
+   * fetch data from the table: "activity"
+   */
+  contents: GET_ACTIVITY_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_contents {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PODCAST_PROGRAM {
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  contents: GET_PODCAST_PROGRAM_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR
+// ====================================================
+
+export interface GET_CREATOR_contents {
+  __typename: "creator";
+  id: string | null;
+  title: string | null;
+}
+
+export interface GET_CREATOR {
+  /**
+   * fetch data from the table: "creator"
+   */
+  contents: GET_CREATOR_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_FUNDING_PROJECT
+// ====================================================
+
+export interface GET_FUNDING_PROJECT_contents {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_FUNDING_PROJECT {
+  /**
+   * fetch data from the table: "project"
+   */
+  contents: GET_FUNDING_PROJECT_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRE_ORDER_PROJECT
+// ====================================================
+
+export interface GET_PRE_ORDER_PROJECT_contents {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRE_ORDER_PROJECT {
+  /**
+   * fetch data from the table: "project"
+   */
+  contents: GET_PRE_ORDER_PROJECT_contents[];
 }
 
 /* tslint:disable */
@@ -7487,138 +7619,19 @@ export interface UPDATE_DELIVER_INFOVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_APPLICATION
+// GraphQL query operation: GET_LOCALES
 // ====================================================
 
-export interface GET_APPLICATION_currency {
-  __typename: "currency";
-  id: string;
-  name: string;
-  label: string;
-  unit: string;
-  minor_units: number | null;
-}
-
-export interface GET_APPLICATION_locale {
+export interface GET_LOCALES_locale {
   __typename: "locale";
   key: string;
-  zh: string;
-  zh_cn: string;
-  zh_acsi: string;
-  en: string;
-  vi: string;
 }
 
-export interface GET_APPLICATION_setting_app_settings {
-  __typename: "app_setting";
-  value: string;
-}
-
-export interface GET_APPLICATION_setting_app_secrets {
-  __typename: "app_secret";
-  value: string;
-}
-
-export interface GET_APPLICATION_setting {
-  __typename: "setting";
-  key: string;
-  is_secret: boolean;
-  /**
-   * An array relationship
-   */
-  app_settings: GET_APPLICATION_setting_app_settings[];
-  /**
-   * An array relationship
-   */
-  app_secrets: GET_APPLICATION_setting_app_secrets[];
-}
-
-export interface GET_APPLICATION_app_by_pk_app_modules {
-  __typename: "app_module";
-  id: any;
-  /**
-   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher | creator_display
-   */
-  module_id: string;
-}
-
-export interface GET_APPLICATION_app_by_pk_app_hosts {
-  __typename: "app_host";
-  host: string;
-}
-
-export interface GET_APPLICATION_app_by_pk_app_navs {
-  __typename: "app_nav";
-  block: string;
-  label: string;
-  href: string;
-  external: boolean;
-  tag: string | null;
-  position: number;
-}
-
-export interface GET_APPLICATION_app_by_pk_app_settings {
-  __typename: "app_setting";
-  key: string;
-  value: string;
-}
-
-export interface GET_APPLICATION_app_by_pk_app_secrets {
-  __typename: "app_secret";
-  key: string;
-  value: string;
-}
-
-export interface GET_APPLICATION_app_by_pk {
-  __typename: "app";
-  id: string;
-  name: string | null;
-  title: string | null;
-  description: string | null;
-  vimeo_project_id: string | null;
-  /**
-   * An array relationship
-   */
-  app_modules: GET_APPLICATION_app_by_pk_app_modules[];
-  /**
-   * An array relationship
-   */
-  app_hosts: GET_APPLICATION_app_by_pk_app_hosts[];
-  /**
-   * An array relationship
-   */
-  app_navs: GET_APPLICATION_app_by_pk_app_navs[];
-  /**
-   * An array relationship
-   */
-  app_settings: GET_APPLICATION_app_by_pk_app_settings[];
-  /**
-   * An array relationship
-   */
-  app_secrets: GET_APPLICATION_app_by_pk_app_secrets[];
-}
-
-export interface GET_APPLICATION {
-  /**
-   * fetch data from the table: "currency"
-   */
-  currency: GET_APPLICATION_currency[];
+export interface GET_LOCALES {
   /**
    * fetch data from the table: "locale"
    */
-  locale: GET_APPLICATION_locale[];
-  /**
-   * fetch data from the table: "setting"
-   */
-  setting: GET_APPLICATION_setting[];
-  /**
-   * fetch data from the table: "app" using primary key columns
-   */
-  app_by_pk: GET_APPLICATION_app_by_pk | null;
-}
-
-export interface GET_APPLICATIONVariables {
-  appId: string;
+  locale: GET_LOCALES_locale[];
 }
 
 /* tslint:disable */

@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { useApp } from '../contexts/AppContext'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import LanguageContext from '../contexts/LanguageContext'
 import { Currency } from '../types/app'
 

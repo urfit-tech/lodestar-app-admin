@@ -123,7 +123,7 @@ const useContent: (variant: ContentType) => {
   const query =
     variant === 'program'
       ? gql`
-          query GET_PROGRAM {
+          query GET_PROGRAM_CONTENTS {
             contents: program {
               id
               title

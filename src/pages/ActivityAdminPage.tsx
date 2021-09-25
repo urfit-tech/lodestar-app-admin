@@ -1,5 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Skeleton, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -18,7 +19,6 @@ import {
   AdminTabBarWrapper,
 } from '../components/admin'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
-import { useApp } from '../contexts/AppContext'
 import { activityMessages, commonMessages } from '../helpers/translation'
 import { useActivityAdmin } from '../hooks/activity'
 

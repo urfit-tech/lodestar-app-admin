@@ -1,11 +1,11 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Checkbox, Divider, Spin } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { groupBy, uniq } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useApp } from '../../contexts/AppContext'
 import hasura from '../../hasura'
 import { permissionGroupsMessages, permissionMessages } from '../../helpers/translation'
 

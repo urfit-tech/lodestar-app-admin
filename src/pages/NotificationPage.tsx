@@ -1,11 +1,11 @@
 import { BellOutlined } from '@ant-design/icons'
 import { List, Typography } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import AdminCard from '../components/admin/AdminCard'
 import DefaultLayout from '../components/layout/DefaultLayout'
 import NotificationItem from '../components/notification/NotificationItem'
-import { useAuth } from '../contexts/AuthContext'
 import { errorMessages } from '../helpers/translation'
 import { useNotifications } from '../hooks/data'
 

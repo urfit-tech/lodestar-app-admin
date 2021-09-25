@@ -1,5 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -20,8 +22,6 @@ import AppointmentPlanScheduleBlock from '../components/appointment/AppointmentP
 import AppointmentPlanScheduleCreationModal from '../components/appointment/AppointmentPlanScheduleCreationModal'
 import AppointmentScheduleImportModal from '../components/appointment/AppointmentScheduleImportModal'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
-import { useApp } from '../contexts/AppContext'
-import { useAuth } from '../contexts/AuthContext'
 import { commonMessages } from '../helpers/translation'
 import { useAppointmentPlanAdmin } from '../hooks/appointment'
 

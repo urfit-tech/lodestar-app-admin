@@ -1,6 +1,6 @@
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { lazy } from 'react'
 import { Redirect, useLocation } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
 import { getUserRoleLevel } from '../helpers'
 import { UserRole } from '../types/member'
 import LoadingPage from './LoadingPage'

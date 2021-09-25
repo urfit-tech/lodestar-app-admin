@@ -4,7 +4,7 @@ import moment from 'moment'
 import { sum ,prop,sortBy} from 'ramda'
 import hasura from '../hasura'
 import { SalesProps,LeadProps } from '../types/sales'
-import { useApp } from '../contexts/AppContext'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { notEmpty } from '../helpers'
 
 export const useSales = (salesId: string) => {
