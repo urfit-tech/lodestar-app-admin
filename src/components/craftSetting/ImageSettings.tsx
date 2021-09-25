@@ -31,14 +31,13 @@ const ImageSettings: React.VFC = () => {
   const {
     actions: { setProp },
     props,
-    selected,
   } = useNode(node => ({
     props: node.data.props as {
       desktop?: CraftImageProps & CraftBoxModelProps
       mobile?: CraftImageProps & CraftBoxModelProps
     },
-    selected: node.events.selected,
   }))
+
   const [loading, setLoading] = useState(false)
   const [desktopCoverImage, setDesktopCoverImage] = useState<File | null>(null)
   const [mobileCoverImage, setMobileCoverImage] = useState<File | null>(null)

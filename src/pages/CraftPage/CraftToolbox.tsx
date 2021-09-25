@@ -1,12 +1,14 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image, Select } from 'antd'
 import { SelectValue } from 'antd/lib/select'
-import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
-import CraftCarousel from 'lodestar-app-element/src/components/craft/CraftCarousel'
-import CraftImage from 'lodestar-app-element/src/components/craft/CraftImage'
-import CraftParagraph from 'lodestar-app-element/src/components/craft/CraftParagraph'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
-import CraftTitleAndParagraph from 'lodestar-app-element/src/components/craft/CraftTitleAndParagraph'
+import {
+  CraftButton,
+  CraftCarousel,
+  CraftImage,
+  CraftParagraph,
+  CraftTitle,
+  CraftTitleAndParagraph,
+} from 'lodestar-app-element/src/components/craft'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -258,14 +260,12 @@ const CraftToolbox: React.VFC = () => {
               <Element
                 is={CraftImage}
                 desktop={{
-                  type: 'image',
                   width: '100%',
                   padding: {},
                   margin: {},
                   coverUrl: 'https://static.kolable.com/images/default/craft/image.png',
                 }}
                 mobile={{
-                  type: 'image',
                   width: '100%',
                   padding: {},
                   margin: {},

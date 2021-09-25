@@ -1,5 +1,5 @@
 import { useNode } from '@craftjs/core'
-import { Button, Collapse, Form, Radio, Space } from 'antd'
+import { Collapse, Form, Radio, Space } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CraftCollapseProps } from 'lodestar-app-element/src/components/craft/CraftCollapse'
 import { CraftTextStyleProps } from 'lodestar-app-element/src/types/craft'
@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers/index'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { craftPageMessages } from '../../helpers/translation'
 import ImageUploader from '../common/ImageUploader'
 import BoxModelInput, { formatBoxModelValue } from './BoxModelInput'
 import ColorPickerBlock from './ColorPickerBlock'
@@ -42,12 +42,9 @@ const CollapseSettings: React.VFC = () => {
   const {
     actions: { setProp },
     props,
-    selected,
   } = useNode(node => ({
     props: node.data.props as CraftCollapseProps,
-    selected: node.events.selected,
   }))
-  const [isImageUploaded, setIsImageUploaded] = useState(false)
   const [backgroundImage, setBackgroundImage] = useState<File | null>(null)
 
   const handleChange = () => {
@@ -104,18 +101,16 @@ const CollapseSettings: React.VFC = () => {
       .catch(() => {})
   }
 
-  const handleImageUpload = () => {
-    if (backgroundImage) {
+  const handleImageUpload = (file?: File) => {
+    if (file) {
       const uniqId = uuid()
       setLoading(true)
-      uploadFile(`images/${appId}/craft/${uniqId}`, backgroundImage, authToken)
+      uploadFile(`images/${appId}/craft/${uniqId}`, file, authToken)
         .then(() => {
+          setBackgroundImage(file)
           setProp(props => {
-            props.backgroundImageUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}${
-              backgroundImage.type.startsWith('image') ? '/1200' : ''
-            }`
+            props.backgroundImageUrl = `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${uniqId}`
           })
-          setIsImageUploaded(true)
         })
         .catch(handleError)
         .finally(() => setLoading(false))
@@ -230,21 +225,12 @@ const CollapseSettings: React.VFC = () => {
         noStyle={props.variant !== 'backgroundColor' || props.backgroundType !== 'backgroundImage'}
       >
         {props.variant === 'backgroundColor' && props.backgroundType === 'backgroundImage' && (
-          <div className="d-flex align-items-center">
-            <ImageUploader
-              file={backgroundImage}
-              initialCoverUrl={props.backgroundImageUrl}
-              onChange={file => {
-                setIsImageUploaded(false)
-                setBackgroundImage(file)
-              }}
-            />
-            {selected && backgroundImage && !isImageUploaded && (
-              <Button loading={loading} className="ml-3 mb-3" type="primary" block onClick={handleImageUpload}>
-                {formatMessage(commonMessages.ui.save)}
-              </Button>
-            )}
-          </div>
+          <ImageUploader
+            uploading={loading}
+            file={backgroundImage}
+            initialCoverUrl={props.backgroundImageUrl}
+            onChange={handleImageUpload}
+          />
         )}
       </Form.Item>
     </Form>
