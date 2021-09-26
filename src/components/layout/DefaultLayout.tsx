@@ -125,7 +125,7 @@ export const DefaultLayoutHeader: React.FC<{
       )}
 
       <div className="d-flex align-items-center">
-        {enabledModules.locale && languageOptions.length > 0 && (
+        {enabledModules.locale && languageOptions.length > 1 && (
           <>
             <Dropdown
               trigger={['click']}
@@ -163,7 +163,13 @@ export const DefaultLayoutHeader: React.FC<{
               }
             >
               <StyledButton type="link" size="small">
-                {currentLanguage === 'en' ? 'EN' : currentLanguage === 'vi' ? 'Tiếng việt' : '繁中'}
+                {currentLanguage.startsWith('en')
+                  ? 'EN'
+                  : currentLanguage.startsWith('vi')
+                  ? 'Tiếng việt'
+                  : currentLanguage.startsWith('zh')
+                  ? '繁中'
+                  : 'Unknown'}
                 <DownOutlined />
               </StyledButton>
             </Dropdown>
