@@ -7,6 +7,7 @@ import React, { createContext, useEffect, useState } from 'react'
 import { IntlProvider } from 'react-intl'
 import hasura from '../hasura'
 
+const supportedLanguages = ['zh', 'zh-cn', 'zh-acsi', 'en', 'vi']
 type LanguageProps = {
   locale: string
   currentLanguage: string
@@ -30,7 +31,7 @@ export const LanguageProvider: React.FC = ({ children }) => {
       query GET_LOCALES {
         locale {
           key
-          ${currentLanguage.replaceAll('-', '_')}
+          ${supportedLanguages.includes(currentLanguage) ? currentLanguage.replaceAll('-', '_') : 'zh'}
         }
       }
     `,
@@ -45,9 +46,9 @@ export const LanguageProvider: React.FC = ({ children }) => {
     const browserLanguage = settings['language'] || navigator.language.split('-')[0]
     const cachedLanguage = localStorage.getItem('kolable.app.language')
     if (enabledModules.locale) {
-      if (cachedLanguage && locales[cachedLanguage]) {
+      if (cachedLanguage && supportedLanguages.includes(cachedLanguage)) {
         setCurrentLanguage(cachedLanguage)
-      } else if (browserLanguage && locales[browserLanguage]) {
+      } else if (browserLanguage && supportedLanguages.includes(browserLanguage)) {
         setCurrentLanguage(browserLanguage)
       } else {
         setCurrentLanguage('zh')
@@ -76,7 +77,7 @@ export const LanguageProvider: React.FC = ({ children }) => {
         locale,
         currentLanguage,
         setCurrentLanguage: (newLanguage: string) => {
-          if (locales[currentLanguage]) {
+          if (supportedLanguages.includes(newLanguage)) {
             localStorage.setItem('kolable.app.language', newLanguage)
             setCurrentLanguage(newLanguage)
           }
