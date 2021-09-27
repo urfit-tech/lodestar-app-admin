@@ -30,6 +30,7 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
           props.link = values.link
           props.openNewTab = values.openNewTab
           props.size = values.size
+          props.align = values.align
           props.block = values.block
           props.variant = values.variant
           props.color = values.color
@@ -53,6 +54,7 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
         openNewTab: props.openNewTab || false,
         size: props.size || 'md',
         block: props.block || false,
+        align: props.align || 'start',
         variant: props.variant || 'solid',
         color: props.color || '#585858',
         outlineColor: props.outlineColor,
@@ -88,13 +90,7 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
             <StyledUnderLineInput className="mb-2" placeholder="https://" />
           </Form.Item>
           <Form.Item name="openNewTab" valuePropName="checked">
-            <Checkbox
-              onChange={e => {
-                setProp((props: CraftButtonProps) => (props.openNewTab = e.target.checked))
-              }}
-            >
-              {formatMessage(craftPageMessages.label.openNewTab)}
-            </Checkbox>
+            <Checkbox>{formatMessage(craftPageMessages.label.openNewTab)}</Checkbox>
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
@@ -111,39 +107,54 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
           key="buttonStyle"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonStyle)}</AdminHeaderTitle>}
         >
-          <Form.Item
-            name="size"
-            label={
-              <CraftSettingLabel className="mb-2">{formatMessage(craftPageMessages.label.size)}</CraftSettingLabel>
-            }
-          >
-            <Radio.Group onChange={e => setProp((props: CraftButtonProps) => (props.size = e.target.value))}>
-              <Space direction="vertical">
-                <Radio value="lg">{formatMessage(craftPageMessages.label.large)}</Radio>
-                <Radio value="md">{formatMessage(craftPageMessages.label.middle)}</Radio>
-                <Radio value="sm">{formatMessage(craftPageMessages.label.small)}</Radio>
-              </Space>
-            </Radio.Group>
+          <Form.Item className="mb-2">
+            <Form.Item
+              name="align"
+              label={
+                <CraftSettingLabel className="mb-1">
+                  {formatMessage(craftPageMessages.label.textAlign)}
+                </CraftSettingLabel>
+              }
+              style={{ display: 'inline-block' }}
+            >
+              <Radio.Group buttonStyle="solid">
+                <Space direction="vertical">
+                  <Radio value="start">{formatMessage(craftPageMessages.label.left)}</Radio>
+                  <Radio value="center">{formatMessage(craftPageMessages.label.center)}</Radio>
+                  <Radio value="end">{formatMessage(craftPageMessages.label.right)}</Radio>
+                </Space>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              name="size"
+              className="ml-4"
+              label={
+                <CraftSettingLabel className="mb-1">{formatMessage(craftPageMessages.label.size)}</CraftSettingLabel>
+              }
+              style={{ display: 'inline-block' }}
+            >
+              <Radio.Group>
+                <Space direction="vertical">
+                  <Radio value="lg">{formatMessage(craftPageMessages.label.large)}</Radio>
+                  <Radio value="md">{formatMessage(craftPageMessages.label.middle)}</Radio>
+                  <Radio value="sm">{formatMessage(craftPageMessages.label.small)}</Radio>
+                </Space>
+              </Radio.Group>
+            </Form.Item>
           </Form.Item>
           <Form.Item
             name="block"
             valuePropName="checked"
             label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.width)}</CraftSettingLabel>}
           >
-            <Checkbox
-              onChange={e => {
-                setProp((props: CraftButtonProps) => (props.block = e.target.checked))
-              }}
-            >
-              {formatMessage(craftPageMessages.label.buttonBlock)}
-            </Checkbox>
+            <Checkbox>{formatMessage(craftPageMessages.label.buttonBlock)}</Checkbox>
           </Form.Item>
 
           <Form.Item
             name="variant"
             label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.variant)}</CraftSettingLabel>}
           >
-            <Radio.Group onChange={e => setProp((props: CraftButtonProps) => (props.variant = e.target.value))}>
+            <Radio.Group>
               <Space direction="vertical">
                 <Radio value="text">{formatMessage(craftPageMessages.label.plainText)}</Radio>
                 <Radio value="solid">{formatMessage(craftPageMessages.label.coloring)}</Radio>
@@ -167,10 +178,7 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
         noStyle={props.variant !== 'solid'}
       >
         {props.variant === 'solid' && (
-          <Radio.Group
-            buttonStyle="solid"
-            onChange={e => setProp((props: CraftButtonProps) => (props.backgroundType = e.target.value))}
-          >
+          <Radio.Group buttonStyle="solid">
             <Radio.Button value="none">{formatMessage(craftPageMessages.ui.empty)}</Radio.Button>
             <Radio.Button value="solidColor">{formatMessage(craftPageMessages.ui.solidColor)}</Radio.Button>
           </Radio.Group>
