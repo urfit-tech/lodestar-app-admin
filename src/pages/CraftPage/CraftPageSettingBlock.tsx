@@ -9,6 +9,7 @@ import {
   CraftCarouselContainer,
   CraftCollapse,
   CraftContainer,
+  CraftCreator,
   CraftImage,
   CraftInstructor,
   CraftLayout,
@@ -33,6 +34,7 @@ import {
   CarouselSettings,
   CollapseSettings,
   ContainerSettings,
+  CreatorSettings,
   ImageSettings,
   InstructorSettings,
   LayoutSettings,
@@ -300,6 +302,11 @@ const configureResolver = () => {
       settings: InstructorSettings,
     },
   }
+  CraftCreator.craft = {
+    related: {
+      settings: CreatorSettings,
+    },
+  }
   CraftLayout.craft = {
     related: {
       settings: LayoutSettings,
@@ -368,6 +375,7 @@ const configureResolver = () => {
 
   return {
     CraftContainer,
+    CraftCreator,
     CraftLayout,
     CraftTitle,
     CraftParagraph,
