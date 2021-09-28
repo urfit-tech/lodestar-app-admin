@@ -22,6 +22,7 @@ type FieldProps = Pick<
   CraftCardProps,
   | 'imageType'
   | 'imageUrl'
+  | 'imageAlign'
   | 'title'
   | 'paragraph'
   | 'variant'
@@ -90,6 +91,7 @@ const CardSettings: React.VFC = () => {
             pb: imagePadding?.[2] || '0',
             pl: imagePadding?.[3] || '0',
           }
+          props.imageAlign = values.imageAlign
           props.avatarName = values.avatarName
           props.avatarType = values.avatarType
           props.cardMargin = {
@@ -174,6 +176,7 @@ const CardSettings: React.VFC = () => {
         imagePadding: `${props.imagePadding?.pt || 0};${props.imagePadding?.pr || 0};${props.imagePadding?.pb || 0};${
           props.imagePadding?.pl || 0
         }`,
+        imageAlign: props.imageAlign || 'flex-start',
         avatarType: props.avatarType || 'none',
         avatarImage: props.avatarImageUrl || '',
         avatarName: props.avatarName || '',
@@ -281,6 +284,15 @@ const CardSettings: React.VFC = () => {
                   ]}
                 >
                   <BoxModelInput onChange={handleChange} />
+                </Form.Item>
+                <Form.Item name="imageAlign" label={formatMessage(craftPageMessages.label.textAlign)}>
+                  <Radio.Group buttonStyle="solid">
+                    <Space>
+                      <Radio value="flex-start">{formatMessage(craftPageMessages.label.left)}</Radio>
+                      <Radio value="center">{formatMessage(craftPageMessages.label.center)}</Radio>
+                      <Radio value="flex-end">{formatMessage(craftPageMessages.label.right)}</Radio>
+                    </Space>
+                  </Radio.Group>
                 </Form.Item>
               </StyledCollapsePanel>
             </Collapse>
