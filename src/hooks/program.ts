@@ -7,9 +7,9 @@ import hasura from '../hasura'
 import { ProgramAdminProps, ProgramApprovalProps, ProgramContentBodyProps, ProgramRoleName } from '../types/program'
 
 export const useProgram = (programId: string) => {
-  const { loading, data, error, refetch } = useQuery<hasura.GET_PROGRAM, hasura.GET_PROGRAMVariables>(
+  const { loading, data, error, refetch } = useQuery<hasura.GET_PROGRAM_BY_ID, hasura.GET_PROGRAM_BY_IDVariables>(
     gql`
-      query GET_PROGRAM($programId: uuid!) {
+      query GET_PROGRAM_BY_ID($programId: uuid!) {
         program_by_pk(id: $programId) {
           id
           app_id
