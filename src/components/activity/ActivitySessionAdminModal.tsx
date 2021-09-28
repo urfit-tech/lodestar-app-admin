@@ -197,7 +197,7 @@ const ActivityOnlineLinkInput: React.VFC<{ value?: string; onChange?: (value: st
 }) => {
   const { formatMessage } = useIntl()
   const [linkType, setLinkType] = useState<'system' | 'media' | 'custom' | ''>(
-    value.includes('https://meet.jit.si') ? 'system' : value.includes('<iframe>') ? 'media' : 'custom',
+    value.startsWith('https://meet.jit.si') ? 'system' : value.startsWith('<iframe') ? 'media' : 'custom',
   )
 
   return (
