@@ -86,7 +86,7 @@ const PodcastAlbumPodcastProgramConnectionModal: React.VFC<{
   return (
     <AdminModal
       icon={<FileAddOutlined />}
-      title={formatMessage(podcastAlbumMessages.ui.addPodcastProgram)}
+      title={formatMessage(podcastAlbumMessages.ui.createAlbum)}
       destroyOnClose
       maskClosable={false}
       renderTrigger={({ setVisible }) => (
