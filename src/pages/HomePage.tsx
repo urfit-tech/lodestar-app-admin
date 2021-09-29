@@ -21,6 +21,7 @@ const StyledLogoBlock = styled.div`
   text-align: center;
 
   img {
+    display: inline;
     height: 36px;
   }
 `
