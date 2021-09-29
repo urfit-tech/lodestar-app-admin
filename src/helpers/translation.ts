@@ -504,6 +504,9 @@ export const activityMessages = {
     sellingTime: { id: 'activity.label.sellingTime', defaultMessage: '售票時間' },
     ticketPlan: { id: 'activity.label.ticketPlan', defaultMessage: '票券方案' },
     ticketPlanTitle: { id: 'activity.label.ticketPlanTitle', defaultMessage: '票券名稱' },
+    null: { id: 'activity.label.null', defaultMessage: '無' },
+    customOnlineLink: { id: 'activity.label.null', defaultMessage: '自訂連結' },
+    embedMedia: { id: 'activity.label.embedMedia', defaultMessage: '媒體嵌入' },
     generateBySystem: { id: 'activity.label.generateBySystem', defaultMessage: '系統產生' },
     published: { id: 'activity.label.published', defaultMessage: '是否開賣' },
     ticketStartedAt: { id: 'activity.label.ticketStartedAt', defaultMessage: '售票開始時間' },
@@ -989,7 +992,7 @@ export const podcastAlbumMessages = {
     createAlbum: { id: 'podcastAlbum.ui.createPodcastAlbum', defaultMessage: '建立專輯' },
     addPodcastProgram: { id: 'podcastAlbum.ui.addPodcastProgram', defaultMessage: '加入音頻' },
     sortPodcastProgram: { id: 'podcastAlbum.ui.sortPodcastProgram', defaultMessage: '排序音頻' },
-    deletePodcastAlbum: {id:'podcastAlbum.ui.deletePodcastAlbum',defaultMessage:'刪除專輯'},
+    deletePodcastAlbum: { id: 'podcastAlbum.ui.deletePodcastAlbum', defaultMessage: '刪除專輯' },
   }),
   label: defineMessages({
     podcastItem: { id: 'podcastAlbum.label.podcastItem', defaultMessage: '音頻項目' },

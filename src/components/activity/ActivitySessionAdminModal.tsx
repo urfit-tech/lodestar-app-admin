@@ -1,4 +1,4 @@
-import { Button, Checkbox, DatePicker, Form, Input, InputNumber } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
@@ -57,7 +57,7 @@ const ActivitySessionAdminModal: React.FC<
             startedAt: values.startedAt.toDate(),
             endedAt: values.endedAt.toDate(),
             location: values.offlineLocation,
-            onlineLink: values.onlineLink,
+            onlineLink: values.onlineLink || null,
             threshold: withThreshold ? values.threshold : null,
           },
           () => form.resetFields(),
@@ -99,7 +99,7 @@ const ActivitySessionAdminModal: React.FC<
           startedAt: activitySession ? moment(activitySession.startedAt) : null,
           endedAt: activitySession ? moment(activitySession.endedAt) : null,
           offlineLocation: activitySession?.location || '',
-          onlineLink: activitySession?.onlineLink || `https://meet.jit.si/${uuid()}`,
+          onlineLink: activitySession?.onlineLink || '',
           threshold: activitySession?.threshold || null,
         }}
       >
@@ -184,37 +184,48 @@ const ActivitySessionAdminModal: React.FC<
   )
 }
 
+const linkTypes = [
+  { value: '', name: activityMessages.label.null },
+  { value: 'system', name: activityMessages.label.generateBySystem },
+  { value: 'custom', name: activityMessages.label.customOnlineLink },
+  { value: 'media', name: activityMessages.label.embedMedia },
+]
+
 const ActivityOnlineLinkInput: React.VFC<{ value?: string; onChange?: (value: string) => void }> = ({
   value = '',
   onChange,
 }) => {
   const { formatMessage } = useIntl()
-  const isSystemLink = value.includes('https://meet.jit.si')
-  const [systemLink] = useState(isSystemLink ? value : `https://meet.jit.si/${uuid()}`)
-  const [customLink, setCustomLink] = useState(isSystemLink ? '' : value)
-  const [check, setCheck] = useState(isSystemLink)
+  const [linkType, setLinkType] = useState<'system' | 'media' | 'custom' | ''>(
+    value.startsWith('https://meet.jit.si') ? 'system' : value.startsWith('<iframe') ? 'media' : 'custom',
+  )
 
   return (
     <div className="d-flex align-items-center">
-      <Input
-        className="mr-3 flex-grow-1"
-        onChange={e => {
-          setCustomLink(e.target.value)
-          onChange?.(e.target.value)
-        }}
-        disabled={check}
-        value={check ? value : customLink}
-      />
-      <Checkbox
-        className="flex-shrink-0"
-        checked={check}
-        onClick={() => {
-          setCheck(!check)
-          onChange?.(check ? customLink : systemLink)
+      <Select
+        style={{ width: 180 }}
+        value={linkType}
+        onChange={value => {
+          setLinkType(value)
+          if (value === 'system') {
+            onChange?.(`https://meet.jit.si/${uuid()}`)
+            return
+          }
+          onChange?.('')
         }}
       >
-        {formatMessage(activityMessages.label.generateBySystem)}
-      </Checkbox>
+        {linkTypes.map(type => (
+          <Select.Option key={type.value} value={type.value}>
+            {formatMessage(type.name)}
+          </Select.Option>
+        ))}
+      </Select>
+      <Input
+        className="flex-grow-1"
+        disabled={['system', ''].includes(linkType)}
+        value={value}
+        onChange={e => onChange?.(e.target.value)}
+      />
     </div>
   )
 }

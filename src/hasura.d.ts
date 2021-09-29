@@ -1695,6 +1695,68 @@ export interface GET_SALES_MEMBERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_NEWEST_CREATOR
+// ====================================================
+
+export interface GET_NEWEST_CREATOR_creator {
+  __typename: "creator";
+  id: string | null;
+}
+
+export interface GET_NEWEST_CREATOR {
+  /**
+   * fetch data from the table: "creator"
+   */
+  creator: GET_NEWEST_CREATOR_creator[];
+}
+
+export interface GET_NEWEST_CREATORVariables {
+  limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PUBLISHED_CREATOR
+// ====================================================
+
+export interface GET_PUBLISHED_CREATOR_creator_member {
+  __typename: "member_public";
+  title: string | null;
+  abstract: string | null;
+}
+
+export interface GET_PUBLISHED_CREATOR_creator {
+  __typename: "creator";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+  /**
+   * An object relationship
+   */
+  member: GET_PUBLISHED_CREATOR_creator_member | null;
+}
+
+export interface GET_PUBLISHED_CREATOR {
+  /**
+   * fetch data from the table: "creator"
+   */
+  creator: GET_PUBLISHED_CREATOR_creator[];
+}
+
+export interface GET_PUBLISHED_CREATORVariables {
+  ids: string[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APP_ACTIVITY_CATEGORIES
 // ====================================================
 
@@ -1845,6 +1907,164 @@ export interface GET_PRE_ORDER_PROJECT {
    * fetch data from the table: "project"
    */
   contents: GET_PRE_ORDER_PROJECT_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM
+// ====================================================
+
+export interface GET_PROGRAM_contents {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM {
+  /**
+   * fetch data from the table: "program"
+   */
+  contents: GET_PROGRAM_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY
+// ====================================================
+
+export interface GET_ACTIVITY_contents {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_ACTIVITY {
+  /**
+   * fetch data from the table: "activity"
+   */
+  contents: GET_ACTIVITY_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_contents {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PODCAST_PROGRAM {
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  contents: GET_PODCAST_PROGRAM_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR
+// ====================================================
+
+export interface GET_CREATOR_contents {
+  __typename: "creator";
+  id: string | null;
+  title: string | null;
+}
+
+export interface GET_CREATOR {
+  /**
+   * fetch data from the table: "creator"
+   */
+  contents: GET_CREATOR_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_FUNDING_PROJECT
+// ====================================================
+
+export interface GET_FUNDING_PROJECT_contents {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_FUNDING_PROJECT {
+  /**
+   * fetch data from the table: "project"
+   */
+  contents: GET_FUNDING_PROJECT_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRE_ORDER_PROJECT
+// ====================================================
+
+export interface GET_PRE_ORDER_PROJECT_contents {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRE_ORDER_PROJECT {
+  /**
+   * fetch data from the table: "project"
+   */
+  contents: GET_PRE_ORDER_PROJECT_contents[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: SEARCH_CREATOR
+// ====================================================
+
+export interface SEARCH_CREATOR_creator {
+  __typename: "creator";
+  id: string | null;
+  name: string | null;
+}
+
+export interface SEARCH_CREATOR {
+  /**
+   * fetch data from the table: "creator"
+   */
+  creator: SEARCH_CREATOR_creator[];
+}
+
+export interface SEARCH_CREATORVariables {
+  searchText: string;
 }
 
 /* tslint:disable */
@@ -11515,43 +11735,43 @@ export interface GET_PODCAST_ALBUM_COUNTSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM
+// GraphQL query operation: GET_PROGRAM_BY_ID
 // ====================================================
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_body {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_body {
   __typename: "program_content_body";
   data: any | null;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_type {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_type {
   __typename: "program_content_type";
   id: any | null;
   type: string | null;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans_program_plan {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_plans_program_plan {
   __typename: "program_plan";
   id: any;
   title: string;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_plans {
   __typename: "program_content_plan";
   id: any;
   /**
    * An object relationship
    */
-  program_plan: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans_program_plan;
+  program_plan: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_plans_program_plan;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_attachments {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_attachments {
   __typename: "program_content_attachment";
   attachment_id: any | null;
   data: any | null;
   options: any | null;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents {
   __typename: "program_content";
   id: any;
   title: string;
@@ -11567,39 +11787,39 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   /**
    * An object relationship
    */
-  program_content_body: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_body;
+  program_content_body: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_body;
   /**
    * An object relationship
    */
-  program_content_type: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_type | null;
+  program_content_type: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_type | null;
   /**
    * An array relationship
    */
-  program_content_plans: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans[];
+  program_content_plans: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_plans[];
   /**
    * An array relationship
    */
-  program_content_attachments: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_attachments[];
+  program_content_attachments: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_attachments[];
 }
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections {
   __typename: "program_content_section";
   id: any;
   title: string;
   /**
    * An array relationship
    */
-  program_contents: GET_PROGRAM_program_by_pk_program_content_sections_program_contents[];
+  program_contents: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents[];
 }
 
-export interface GET_PROGRAM_program_by_pk_program_roles_member {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_roles_member {
   __typename: "member_public";
   id: string | null;
   name: string | null;
   picture_url: string | null;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_roles {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_roles {
   __typename: "program_role";
   id: any;
   /**
@@ -11609,10 +11829,10 @@ export interface GET_PROGRAM_program_by_pk_program_roles {
   /**
    * An object relationship
    */
-  member: GET_PROGRAM_program_by_pk_program_roles_member | null;
+  member: GET_PROGRAM_BY_ID_program_by_pk_program_roles_member | null;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_plans {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_plans {
   __typename: "program_plan";
   id: any;
   /**
@@ -11635,35 +11855,35 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   group_buying_people: any | null;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_categories_category {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_categories_category {
   __typename: "category";
   id: string;
   name: string;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_categories {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_categories {
   __typename: "program_category";
   /**
    * An object relationship
    */
-  category: GET_PROGRAM_program_by_pk_program_categories_category;
+  category: GET_PROGRAM_BY_ID_program_by_pk_program_categories_category;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_tags_tag {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_tags_tag {
   __typename: "tag";
   name: string;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_tags {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_tags {
   __typename: "program_tag";
   id: any;
   /**
    * An object relationship
    */
-  tag: GET_PROGRAM_program_by_pk_program_tags_tag;
+  tag: GET_PROGRAM_BY_ID_program_by_pk_program_tags_tag;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_approvals {
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_approvals {
   __typename: "program_approval";
   id: any;
   created_at: any;
@@ -11676,7 +11896,7 @@ export interface GET_PROGRAM_program_by_pk_program_approvals {
   feedback: string | null;
 }
 
-export interface GET_PROGRAM_program_by_pk {
+export interface GET_PROGRAM_BY_ID_program_by_pk {
   __typename: "program";
   id: any;
   app_id: string;
@@ -11701,37 +11921,37 @@ export interface GET_PROGRAM_program_by_pk {
   /**
    * An array relationship
    */
-  program_content_sections: GET_PROGRAM_program_by_pk_program_content_sections[];
+  program_content_sections: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections[];
   /**
    * An array relationship
    */
-  program_roles: GET_PROGRAM_program_by_pk_program_roles[];
+  program_roles: GET_PROGRAM_BY_ID_program_by_pk_program_roles[];
   /**
    * An array relationship
    */
-  program_plans: GET_PROGRAM_program_by_pk_program_plans[];
+  program_plans: GET_PROGRAM_BY_ID_program_by_pk_program_plans[];
   /**
    * An array relationship
    */
-  program_categories: GET_PROGRAM_program_by_pk_program_categories[];
+  program_categories: GET_PROGRAM_BY_ID_program_by_pk_program_categories[];
   /**
    * An array relationship
    */
-  program_tags: GET_PROGRAM_program_by_pk_program_tags[];
+  program_tags: GET_PROGRAM_BY_ID_program_by_pk_program_tags[];
   /**
    * An array relationship
    */
-  program_approvals: GET_PROGRAM_program_by_pk_program_approvals[];
+  program_approvals: GET_PROGRAM_BY_ID_program_by_pk_program_approvals[];
 }
 
-export interface GET_PROGRAM {
+export interface GET_PROGRAM_BY_ID {
   /**
    * fetch data from the table: "program" using primary key columns
    */
-  program_by_pk: GET_PROGRAM_program_by_pk | null;
+  program_by_pk: GET_PROGRAM_BY_ID_program_by_pk | null;
 }
 
-export interface GET_PROGRAMVariables {
+export interface GET_PROGRAM_BY_IDVariables {
   programId: any;
 }
 

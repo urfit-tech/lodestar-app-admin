@@ -14,6 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StyledFullWidthSelect } from '../../components/admin'
 import ActivitySection from '../../components/craft/ActivitySection'
+import CreatorSection from '../../components/craft/CreatorSection'
 import CTASection from '../../components/craft/CTASection'
 import CTAWithSubtitleSection from '../../components/craft/CTAWithSubtitleSection'
 import DescriptionSection from '../../components/craft/DescriptionSection'
@@ -205,7 +206,12 @@ const CraftToolbox: React.VFC = () => {
 
       {(selected === 'podcast' || selected === undefined) && <PodcastProgramSection />}
 
-      {(selected === 'lecturer' || selected === undefined) && <InstructorSection />}
+      {(selected === 'lecturer' || selected === undefined) && (
+        <>
+          <InstructorSection />
+          <CreatorSection />
+        </>
+      )}
 
       {(selected === 'fundraising' || selected === undefined) && <ProjectSection projectType="funding" />}
 
