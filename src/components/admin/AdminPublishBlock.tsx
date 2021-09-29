@@ -1,4 +1,4 @@
-import { RightOutlined } from '@ant-design/icons'
+import Icon, { RightOutlined } from '@ant-design/icons'
 import { Button, message } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -83,9 +83,9 @@ const AdminPublishBlock: React.FC<{
   return (
     <>
       <div className="text-center mb-4">
-        {type === 'alert' && <StatusAlertIcon />}
-        {type === 'ordinary' && <StatusOrdinaryIcon />}
-        {type === 'success' && <StatusSuccessIcon />}
+        {type === 'alert' && <Icon component={() => <StatusAlertIcon />} />}
+        {type === 'ordinary' && <Icon component={() => <StatusOrdinaryIcon />} />}
+        {type === 'success' && <Icon component={() => <StatusSuccessIcon />} />}
       </div>
 
       <StyledTitle className="text-center mb-2">{title}</StyledTitle>
