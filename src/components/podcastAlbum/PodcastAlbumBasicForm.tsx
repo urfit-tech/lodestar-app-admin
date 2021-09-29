@@ -9,7 +9,7 @@ import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
-import { commonMessages, programMessages } from '../../helpers/translation'
+import { commonMessages, podcastAlbumMessages } from '../../helpers/translation'
 import { PodcastAlbum } from '../../types/podcastAlbum'
 import ImageUploader from '../common/ImageUploader'
 import CategorySelector from '../form/CategorySelector'
@@ -110,7 +110,7 @@ const PodcastAlbumBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(programMessages.label.programTitle)} name="title">
+      <Form.Item label={formatMessage(podcastAlbumMessages.label.podcastAlbumTitle)} name="title">
         <Input />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">

@@ -995,6 +995,7 @@ export const podcastAlbumMessages = {
     deletePodcastAlbum: { id: 'podcastAlbum.ui.deletePodcastAlbum', defaultMessage: '刪除專輯' },
   }),
   label: defineMessages({
+    podcastAlbumTitle: { id: 'podcastAlbum.label.podcastAlbumTitle', defaultMessage: '專輯名稱' },
     podcastItem: { id: 'podcastAlbum.label.podcastItem', defaultMessage: '音頻項目' },
     deletePodcastAlbum: { id: 'podcastAlbum.label.deletePodcastAlbum', defaultMessage: '刪除音頻專輯' },
   }),

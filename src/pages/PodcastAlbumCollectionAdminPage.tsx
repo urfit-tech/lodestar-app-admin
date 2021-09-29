@@ -38,7 +38,7 @@ const PodcastAlbumCollectionAdminPage: React.VFC = () => {
             customModalTitle={formatMessage(podcastAlbumMessages.ui.createAlbum)}
             renderTrigger={({ setVisible }) => (
               <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-                {formatMessage(podcastAlbumMessages.ui.addPodcastProgram)}
+                {formatMessage(podcastAlbumMessages.ui.createAlbum)}
               </Button>
             )}
             onCreate={({ title }) =>
