@@ -70,7 +70,7 @@ const ProjectSection: React.VFC<{ projectType?: 'pre-order' | 'funding' }> = ({ 
                 size="md"
                 block={false}
                 variant="text"
-                color={theme['@primary-color']}
+                color={theme.colors.primary[500]}
               />
             </div>
           </Element>,

@@ -51,8 +51,8 @@ const CraftColorPickerBlock: React.VFC<{
 
       <div className="d-flex mb-3">
         <StyleCircleColorInput
-          background={theme['@primary-color'] || '#e1614b'}
-          onClick={() => onChange?.(theme['@primary-color'] || '#e1614b')}
+          background={theme.colors.primary[500] || '#e1614b'}
+          onClick={() => onChange?.(theme.colors.primary[500] || '#e1614b')}
         />
         <StyleCircleColorInput className="ml-2" background="#585858" onClick={() => onChange?.('#585858')} />
         <StyleCircleColorInput className="ml-2" background="#ffffff" onClick={() => onChange?.('#ffffff')} />
