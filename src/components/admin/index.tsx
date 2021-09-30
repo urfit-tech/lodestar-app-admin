@@ -4,9 +4,11 @@ import styled from 'styled-components'
 import { MemberTaskProps } from '../../types/member'
 
 export const AdminPageTitle = styled.h1`
+  display: flex;
   color: var(--gray-darker);
   font-size: 24px;
   font-weight: bold;
+  line-height: 1;
   letter-spacing: 0.2px;
 `
 export const AdminPageBlock = styled.div`
