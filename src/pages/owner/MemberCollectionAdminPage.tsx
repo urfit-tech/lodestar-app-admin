@@ -271,7 +271,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             </StyledTag>
           )}
           {record.role === 'content-creator' && (
-            <StyledTag color={theme['@primary-color']} className="ml-2 mr-0">
+            <StyledTag color={theme.colors.primary[500]} className="ml-2 mr-0">
               {formatMessage(commonMessages.label.contentCreator)}
             </StyledTag>
           )}

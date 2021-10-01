@@ -128,7 +128,7 @@ const IssueReplyItem: React.FC<{
                 .filter(role => role?.member?.id === memberId)
                 .map(role =>
                   role.name === 'instructor' ? (
-                    <StyledTag key={role.id} color={theme['@primary-color']} className="ml-2 mr-0">
+                    <StyledTag key={role.id} color={theme.colors.primary[500]} className="ml-2 mr-0">
                       <ProgramRoleLabel role={role.name} />
                     </StyledTag>
                   ) : role.name === 'assistant' ? (

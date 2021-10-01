@@ -63,7 +63,7 @@ const ProblemSection: React.VFC = () => {
                 size="md"
                 block={false}
                 variant="text"
-                color={theme['@primary-color']}
+                color={theme.colors.primary[500]}
               />
             </div>
           </Element>,
