@@ -68,6 +68,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ContractPage',
     authenticated: true,
   },
+  media_library: {
+    path: '/media-library',
+    pageName: 'MediaLibraryPage',
+    authenticated: true,
+  },
 
   // program
   program_collection: {

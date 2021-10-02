@@ -422,6 +422,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
+      permissionIsAllowed: currentUserRole === 'app-owner',
+      key: 'media_library',
+      icon: () => <UserIcon />,
+      name: formatMessage(commonMessages.menu.mediaLibrary),
+    },
+    {
       permissionIsAllowed: true,
       key: 'settings',
       icon: () => <UserIcon />,

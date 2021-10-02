@@ -41,6 +41,7 @@
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
     "@babel/preset-react": "^7.12.13",
+    "@cloudflare/stream-react": "^1.2.0",
     "@craftjs/core": "0.1.0-beta.20",
     "@fullcalendar/daygrid": "^5.3.2",
     "@fullcalendar/react": "^5.3.1",
@@ -63,6 +64,10 @@
     "@types/styled-components": "^5.1.9",
     "@types/uuid": "^8.3.0",
     "@types/wavesurfer.js": "^3.3.1",
+    "@uppy/core": "^2.0.3",
+    "@uppy/react": "^2.0.3",
+    "@uppy/tus": "^2.0.2",
+    "@uppy/xhr-upload": "^2.0.3",
     "antd": "4.9.4",
     "apollo": "2.32.5",
     "apollo-cache-inmemory": "1.6.6",
@@ -138,5 +143,8 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "devDependencies": {
+    "ts-deep-pick": "^0.2.2"
   }
 }

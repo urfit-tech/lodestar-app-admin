@@ -2,6 +2,9 @@ import { defineMessages } from 'react-intl'
 
 export const commonMessages = {
   ui: defineMessages({
+    video: { id: 'common.ui.video', defaultMessage: '影片' },
+    image: { id: 'common.ui.image', defaultMessage: '圖片' },
+    other: { id: 'common.ui.other', defaultMessage: '其他' },
     comma: { id: 'common.ui.comma', defaultMessage: '、' },
     or: { id: 'common.ui.or', defaultMessage: '或' },
     check: { id: 'common.ui.check', defaultMessage: '查看' },
@@ -320,6 +323,7 @@ export const commonMessages = {
     orderPartialPaid: { id: 'common.status.orderPartialPaid', defaultMessage: '部分付款' },
   }),
   menu: defineMessages({
+    mediaLibrary: { id: 'common.menu.mediaLibrary', defaultMessage: '媒體庫' },
     learningOverviewAdmin: { id: 'common.menu.learningOverviewAdmin', defaultMessage: '學習總覽' },
     salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
     appBasicAdmin: { id: 'common.menu.appBasicAdmin', defaultMessage: '基本設定' },

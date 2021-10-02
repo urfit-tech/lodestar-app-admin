@@ -104,3 +104,25 @@ export type PermissionGroupProps = {
   name: string
   permissionIds: string[]
 }
+
+export type Member = {
+  id: string
+  email: string
+  name: string
+  username: string
+  pictureUrl: string | null
+}
+export type Attachment = {
+  id: string
+  name: string
+  filename: string
+  contentType: string
+  size: number
+  author: Member
+  thumbnailUrl: string | null
+  createdAt: Date
+  updatedAt: Date
+  options: any
+}
+
+export type UploadState = 'idle' | 'uploading' | 'upload-success' | 'upload-error'

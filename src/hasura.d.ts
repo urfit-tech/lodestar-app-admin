@@ -1695,68 +1695,6 @@ export interface GET_SALES_MEMBERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_NEWEST_CREATOR
-// ====================================================
-
-export interface GET_NEWEST_CREATOR_creator {
-  __typename: "creator";
-  id: string | null;
-}
-
-export interface GET_NEWEST_CREATOR {
-  /**
-   * fetch data from the table: "creator"
-   */
-  creator: GET_NEWEST_CREATOR_creator[];
-}
-
-export interface GET_NEWEST_CREATORVariables {
-  limit?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PUBLISHED_CREATOR
-// ====================================================
-
-export interface GET_PUBLISHED_CREATOR_creator_member {
-  __typename: "member_public";
-  title: string | null;
-  abstract: string | null;
-}
-
-export interface GET_PUBLISHED_CREATOR_creator {
-  __typename: "creator";
-  id: string | null;
-  name: string | null;
-  picture_url: string | null;
-  /**
-   * An object relationship
-   */
-  member: GET_PUBLISHED_CREATOR_creator_member | null;
-}
-
-export interface GET_PUBLISHED_CREATOR {
-  /**
-   * fetch data from the table: "creator"
-   */
-  creator: GET_PUBLISHED_CREATOR_creator[];
-}
-
-export interface GET_PUBLISHED_CREATORVariables {
-  ids: string[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_APP_ACTIVITY_CATEGORIES
 // ====================================================
 
@@ -1797,138 +1735,6 @@ export interface GET_PROGRAM_CONTENTS {
    * fetch data from the table: "program"
    */
   contents: GET_PROGRAM_CONTENTS_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ACTIVITY
-// ====================================================
-
-export interface GET_ACTIVITY_contents {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface GET_ACTIVITY {
-  /**
-   * fetch data from the table: "activity"
-   */
-  contents: GET_ACTIVITY_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PODCAST_PROGRAM
-// ====================================================
-
-export interface GET_PODCAST_PROGRAM_contents {
-  __typename: "podcast_program";
-  id: any;
-  title: string;
-}
-
-export interface GET_PODCAST_PROGRAM {
-  /**
-   * fetch data from the table: "podcast_program"
-   */
-  contents: GET_PODCAST_PROGRAM_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CREATOR
-// ====================================================
-
-export interface GET_CREATOR_contents {
-  __typename: "creator";
-  id: string | null;
-  title: string | null;
-}
-
-export interface GET_CREATOR {
-  /**
-   * fetch data from the table: "creator"
-   */
-  contents: GET_CREATOR_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_FUNDING_PROJECT
-// ====================================================
-
-export interface GET_FUNDING_PROJECT_contents {
-  __typename: "project";
-  id: any;
-  title: string;
-}
-
-export interface GET_FUNDING_PROJECT {
-  /**
-   * fetch data from the table: "project"
-   */
-  contents: GET_FUNDING_PROJECT_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PRE_ORDER_PROJECT
-// ====================================================
-
-export interface GET_PRE_ORDER_PROJECT_contents {
-  __typename: "project";
-  id: any;
-  title: string;
-}
-
-export interface GET_PRE_ORDER_PROJECT {
-  /**
-   * fetch data from the table: "project"
-   */
-  contents: GET_PRE_ORDER_PROJECT_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM
-// ====================================================
-
-export interface GET_PROGRAM_contents {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAM {
-  /**
-   * fetch data from the table: "program"
-   */
-  contents: GET_PROGRAM_contents[];
 }
 
 /* tslint:disable */
@@ -9930,6 +9736,51 @@ export interface GET_PRODUCT_SKUVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ATTACHMENTS
+// ====================================================
+
+export interface GET_ATTACHMENTS_attachment_author {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_ATTACHMENTS_attachment {
+  __typename: "attachment";
+  id: any;
+  name: string | null;
+  filename: string | null;
+  size: number;
+  /**
+   * An object relationship
+   */
+  author: GET_ATTACHMENTS_attachment_author | null;
+  thumbnail_url: string | null;
+  /**
+   * MIME format
+   */
+  content_type: string | null;
+  created_at: any;
+  updated_at: any;
+  options: any | null;
+}
+
+export interface GET_ATTACHMENTS {
+  /**
+   * fetch data from the table: "attachment"
+   */
+  attachment: GET_ATTACHMENTS_attachment[];
+}
+
+export interface GET_ATTACHMENTSVariables {
+  contentType?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -15328,12 +15179,18 @@ export enum attachment_constraint {
  */
 export enum attachment_update_column {
   app_id = "app_id",
+  author_id = "author_id",
+  content_type = "content_type",
   created_at = "created_at",
   data = "data",
+  filename = "filename",
   id = "id",
   is_deleted = "is_deleted",
+  name = "name",
   options = "options",
+  size = "size",
   target = "target",
+  thumbnail_url = "thumbnail_url",
   type = "type",
   updated_at = "updated_at",
 }
@@ -20031,6 +19888,38 @@ export interface appointment_schedule_variance_order_by {
 }
 
 /**
+ * order by aggregate values of table "attachment"
+ */
+export interface attachment_aggregate_order_by {
+  avg?: attachment_avg_order_by | null;
+  count?: order_by | null;
+  max?: attachment_max_order_by | null;
+  min?: attachment_min_order_by | null;
+  stddev?: attachment_stddev_order_by | null;
+  stddev_pop?: attachment_stddev_pop_order_by | null;
+  stddev_samp?: attachment_stddev_samp_order_by | null;
+  sum?: attachment_sum_order_by | null;
+  var_pop?: attachment_var_pop_order_by | null;
+  var_samp?: attachment_var_samp_order_by | null;
+  variance?: attachment_variance_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "attachment"
+ */
+export interface attachment_arr_rel_insert_input {
+  data: attachment_insert_input[];
+  on_conflict?: attachment_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "attachment"
+ */
+export interface attachment_avg_order_by {
+  size?: order_by | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "attachment". All fields are combined with a logical 'AND'.
  */
 export interface attachment_bool_exp {
@@ -20038,12 +19927,19 @@ export interface attachment_bool_exp {
   _not?: attachment_bool_exp | null;
   _or?: (attachment_bool_exp | null)[] | null;
   app_id?: String_comparison_exp | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  content_type?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   data?: jsonb_comparison_exp | null;
+  filename?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
+  size?: Int_comparison_exp | null;
   target?: String_comparison_exp | null;
+  thumbnail_url?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -20053,14 +19949,57 @@ export interface attachment_bool_exp {
  */
 export interface attachment_insert_input {
   app_id?: string | null;
+  author?: member_obj_rel_insert_input | null;
+  author_id?: string | null;
+  content_type?: string | null;
   created_at?: any | null;
   data?: any | null;
+  filename?: string | null;
   id?: any | null;
   is_deleted?: boolean | null;
+  name?: string | null;
   options?: any | null;
+  size?: number | null;
   target?: string | null;
+  thumbnail_url?: string | null;
   type?: string | null;
   updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "attachment"
+ */
+export interface attachment_max_order_by {
+  app_id?: order_by | null;
+  author_id?: order_by | null;
+  content_type?: order_by | null;
+  created_at?: order_by | null;
+  filename?: order_by | null;
+  id?: order_by | null;
+  name?: order_by | null;
+  size?: order_by | null;
+  target?: order_by | null;
+  thumbnail_url?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "attachment"
+ */
+export interface attachment_min_order_by {
+  app_id?: order_by | null;
+  author_id?: order_by | null;
+  content_type?: order_by | null;
+  created_at?: order_by | null;
+  filename?: order_by | null;
+  id?: order_by | null;
+  name?: order_by | null;
+  size?: order_by | null;
+  target?: order_by | null;
+  thumbnail_url?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -20078,6 +20017,55 @@ export interface attachment_on_conflict {
   constraint: attachment_constraint;
   update_columns: attachment_update_column[];
   where?: attachment_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "attachment"
+ */
+export interface attachment_stddev_order_by {
+  size?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "attachment"
+ */
+export interface attachment_stddev_pop_order_by {
+  size?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "attachment"
+ */
+export interface attachment_stddev_samp_order_by {
+  size?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "attachment"
+ */
+export interface attachment_sum_order_by {
+  size?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "attachment"
+ */
+export interface attachment_var_pop_order_by {
+  size?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "attachment"
+ */
+export interface attachment_var_samp_order_by {
+  size?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "attachment"
+ */
+export interface attachment_variance_order_by {
+  size?: order_by | null;
 }
 
 /**
@@ -22743,6 +22731,7 @@ export interface member_bool_exp {
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
   assign_rules?: xuemi_assign_rule_bool_exp | null;
   assigned_at?: timestamptz_comparison_exp | null;
+  attachments?: attachment_bool_exp | null;
   attends?: attend_bool_exp | null;
   coin_logs?: coin_log_bool_exp | null;
   coin_statuses?: coin_status_bool_exp | null;
@@ -23180,6 +23169,7 @@ export interface member_insert_input {
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assign_rules?: xuemi_assign_rule_arr_rel_insert_input | null;
   assigned_at?: any | null;
+  attachments?: attachment_arr_rel_insert_input | null;
   attends?: attend_arr_rel_insert_input | null;
   coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
@@ -23719,6 +23709,7 @@ export interface member_order_by {
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assign_rules_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assigned_at?: order_by | null;
+  attachments_aggregate?: attachment_aggregate_order_by | null;
   attends_aggregate?: attend_aggregate_order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
   coin_statuses_aggregate?: coin_status_aggregate_order_by | null;

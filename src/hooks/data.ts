@@ -1,3 +1,5 @@
+import { DeepPick } from 'ts-deep-pick'
+import { useMemo } from 'react'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
@@ -8,7 +10,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
-import { CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
+import { Attachment, CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
@@ -818,4 +820,53 @@ export const useProductSku = (productId: string) => {
     product,
     refetchProduct: refetch,
   }
+}
+
+export const useAttachments = (contentType?: string) => {
+  const { data, loading, refetch } = useQuery<hasura.GET_ATTACHMENTS, hasura.GET_ATTACHMENTSVariables>(
+    gql`
+      query GET_ATTACHMENTS($contentType: String) {
+        attachment(where: { content_type: { _like: $contentType } }, order_by: [{ created_at: desc }]) {
+          id
+          name
+          filename
+          size
+          author {
+            name
+          }
+          thumbnail_url
+          content_type
+          created_at
+          updated_at
+          options
+        }
+      }
+    `,
+    {
+      variables: { contentType },
+    },
+  )
+  const attachments: DeepPick<Attachment, '~author.name'>[] = useMemo(
+    () =>
+      data?.attachment.map(v => ({
+        id: v.id,
+        name: v.name || 'untitled',
+        filename: v.filename || 'unknown',
+        size: v.size,
+        author: v.author
+          ? {
+              name: v.author.name,
+            }
+          : {
+              name: 'unknown',
+            },
+        contentType: v.content_type || 'application/octet-stream',
+        thumbnailUrl: v.thumbnail_url,
+        createdAt: v.created_at,
+        updatedAt: v.updated_at,
+        options: v.options,
+      })) || [],
+    [data],
+  )
+  return { attachments, loading, refetch }
 }
