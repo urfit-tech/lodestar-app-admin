@@ -4,7 +4,7 @@ import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
 import { Button, List, Tabs } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../components/admin'
@@ -16,11 +16,12 @@ import { useAttachments } from '../hooks/data'
 const MediaLibrary: React.FC = () => {
   const [uppy, setUppy] = useState<Uppy>()
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
+  const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const { attachments, loading: loadingAttachments, refetch: refetchAttachments } = useAttachments()
 
-  const handleVideoAdd = () => {
+  const handleVideoAdd = useCallback(() => {
     const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/`
     setUppy(
       new Uppy({
@@ -44,7 +45,12 @@ const MediaLibrary: React.FC = () => {
           refetchAttachments()
         }),
     )
-  }
+  }, [authToken, refetchAttachments])
+
+  useEffect(() => {
+    defaultVisibleModal === 'video' && handleVideoAdd()
+  }, [defaultVisibleModal, handleVideoAdd])
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">

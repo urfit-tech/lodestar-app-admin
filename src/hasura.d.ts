@@ -5304,88 +5304,6 @@ export interface PUBLISH_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_PLAN
-// ====================================================
-
-export interface UPDATE_PROGRAM_CONTENT_PLAN_delete_program_content_plan {
-  __typename: "program_content_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_PLAN_insert_program_content_plan {
-  __typename: "program_content_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_PLAN {
-  /**
-   * delete data from the table: "program_content_plan"
-   */
-  delete_program_content_plan: UPDATE_PROGRAM_CONTENT_PLAN_delete_program_content_plan | null;
-  /**
-   * insert data into the table: "program_content_plan"
-   */
-  insert_program_content_plan: UPDATE_PROGRAM_CONTENT_PLAN_insert_program_content_plan | null;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_PLANVariables {
-  programContentId: any;
-  programContentPlans: program_content_plan_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_MATERIALS
-// ====================================================
-
-export interface UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material {
-  __typename: "program_content_material_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material {
-  __typename: "program_content_material_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_MATERIALS {
-  /**
-   * delete data from the table: "program_content_material"
-   */
-  delete_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material | null;
-  /**
-   * insert data into the table: "program_content_material"
-   */
-  insert_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material | null;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
-  programContentId: any;
-  materials: program_content_material_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
 
@@ -9772,7 +9690,7 @@ export interface GET_ATTACHMENTS {
 }
 
 export interface GET_ATTACHMENTSVariables {
-  contentType?: string | null;
+  contentTypeLike?: string | null;
 }
 
 /* tslint:disable */
@@ -11622,6 +11540,21 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   options: any | null;
 }
 
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos_attachment {
+  __typename: "attachment";
+  id: any;
+  size: number;
+  options: any | null;
+}
+
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos {
+  __typename: "program_content_video";
+  /**
+   * An object relationship
+   */
+  attachment: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos_attachment;
+}
+
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents {
   __typename: "program_content";
   id: any;
@@ -11651,6 +11584,10 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
    * An array relationship
    */
   program_content_attachments: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_attachments[];
+  /**
+   * An array relationship
+   */
+  program_content_videos: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos[];
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections {
@@ -12185,6 +12122,232 @@ export interface DELETE_PROGRAM_CONTENT {
 
 export interface DELETE_PROGRAM_CONTENTVariables {
   programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SPECIFIC_PROGRAM_CONTENT
+// ====================================================
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_body {
+  __typename: "program_content_body";
+  data: any | null;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_type {
+  __typename: "program_content_type";
+  id: any | null;
+  type: string | null;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_plans_program_plan {
+  __typename: "program_plan";
+  id: any;
+  title: string;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_plans {
+  __typename: "program_content_plan";
+  id: any;
+  /**
+   * An object relationship
+   */
+  program_plan: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_plans_program_plan;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_attachments {
+  __typename: "program_content_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_videos_attachment {
+  __typename: "attachment";
+  id: any;
+  size: number;
+  options: any | null;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_videos {
+  __typename: "program_content_video";
+  /**
+   * An object relationship
+   */
+  attachment: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_videos_attachment;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk {
+  __typename: "program_content";
+  id: any;
+  title: string;
+  published_at: any | null;
+  list_price: any | null;
+  /**
+   * sec
+   */
+  duration: any | null;
+  is_notify_update: boolean;
+  notified_at: any | null;
+  metadata: any | null;
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_body;
+  /**
+   * An object relationship
+   */
+  program_content_type: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_type | null;
+  /**
+   * An array relationship
+   */
+  program_content_plans: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_plans[];
+  /**
+   * An array relationship
+   */
+  program_content_attachments: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_attachments[];
+  /**
+   * An array relationship
+   */
+  program_content_videos: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_videos[];
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENT {
+  /**
+   * fetch data from the table: "program_content" using primary key columns
+   */
+  program_content_by_pk: GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk | null;
+}
+
+export interface GET_SPECIFIC_PROGRAM_CONTENTVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_PLAN
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_PLAN_delete_program_content_plan {
+  __typename: "program_content_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_PLAN_insert_program_content_plan {
+  __typename: "program_content_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_PLAN {
+  /**
+   * delete data from the table: "program_content_plan"
+   */
+  delete_program_content_plan: UPDATE_PROGRAM_CONTENT_PLAN_delete_program_content_plan | null;
+  /**
+   * insert data into the table: "program_content_plan"
+   */
+  insert_program_content_plan: UPDATE_PROGRAM_CONTENT_PLAN_insert_program_content_plan | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_PLANVariables {
+  programContentId: any;
+  programContentPlans: program_content_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_MATERIALS
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material {
+  __typename: "program_content_material_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material {
+  __typename: "program_content_material_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS {
+  /**
+   * delete data from the table: "program_content_material"
+   */
+  delete_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material | null;
+  /**
+   * insert data into the table: "program_content_material"
+   */
+  insert_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
+  programContentId: any;
+  materials: program_content_material_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_VIDEOS
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_VIDEOS_delete_program_content_video {
+  __typename: "program_content_video_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_VIDEOS_insert_program_content_video {
+  __typename: "program_content_video_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_VIDEOS {
+  /**
+   * delete data from the table: "program_content_video"
+   */
+  delete_program_content_video: UPDATE_PROGRAM_CONTENT_VIDEOS_delete_program_content_video | null;
+  /**
+   * insert data into the table: "program_content_video"
+   */
+  insert_program_content_video: UPDATE_PROGRAM_CONTENT_VIDEOS_insert_program_content_video | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_VIDEOSVariables {
+  programContentId: any;
+  programContentVideos: program_content_video_insert_input[];
 }
 
 /* tslint:disable */
@@ -17146,6 +17309,24 @@ export enum program_content_update_column {
   sale_price = "sale_price",
   sold_at = "sold_at",
   title = "title",
+}
+
+/**
+ * unique or primary key constraints on table "program_content_video"
+ */
+export enum program_content_video_constraint {
+  program_content_stream_pkey = "program_content_stream_pkey",
+}
+
+/**
+ * update columns of table "program_content_video"
+ */
+export enum program_content_video_update_column {
+  attachment_id = "attachment_id",
+  created_at = "created_at",
+  id = "id",
+  program_content_id = "program_content_id",
+  updated_at = "updated_at",
 }
 
 /**
@@ -29800,6 +29981,7 @@ export interface program_content_bool_exp {
   program_content_progress?: program_content_progress_bool_exp | null;
   program_content_section?: program_content_section_bool_exp | null;
   program_content_type?: program_content_type_bool_exp | null;
+  program_content_videos?: program_content_video_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   sale_free?: program_content_sale_free_bool_exp | null;
   sale_price?: numeric_comparison_exp | null;
@@ -29873,6 +30055,7 @@ export interface program_content_insert_input {
   program_content_plans?: program_content_plan_arr_rel_insert_input | null;
   program_content_progress?: program_content_progress_arr_rel_insert_input | null;
   program_content_section?: program_content_section_obj_rel_insert_input | null;
+  program_content_videos?: program_content_video_arr_rel_insert_input | null;
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
@@ -30468,6 +30651,52 @@ export interface program_content_type_bool_exp {
   id?: uuid_comparison_exp | null;
   program_content?: program_content_bool_exp | null;
   type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_content_video"
+ */
+export interface program_content_video_arr_rel_insert_input {
+  data: program_content_video_insert_input[];
+  on_conflict?: program_content_video_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_video". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_video_bool_exp {
+  _and?: (program_content_video_bool_exp | null)[] | null;
+  _not?: program_content_video_bool_exp | null;
+  _or?: (program_content_video_bool_exp | null)[] | null;
+  attachment?: attachment_bool_exp | null;
+  attachment_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_content_video"
+ */
+export interface program_content_video_insert_input {
+  attachment?: attachment_obj_rel_insert_input | null;
+  attachment_id?: any | null;
+  created_at?: any | null;
+  id?: any | null;
+  program_content?: program_content_obj_rel_insert_input | null;
+  program_content_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "program_content_video"
+ */
+export interface program_content_video_on_conflict {
+  constraint: program_content_video_constraint;
+  update_columns: program_content_video_update_column[];
+  where?: program_content_video_bool_exp | null;
 }
 
 /**

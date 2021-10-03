@@ -1,10 +1,17 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
-import { ProgramAdminProps, ProgramApprovalProps, ProgramContentBodyProps, ProgramRoleName } from '../types/program'
+import {
+  ProgramAdminProps,
+  ProgramApprovalProps,
+  ProgramContent,
+  ProgramContentBodyProps,
+  ProgramRoleName,
+} from '../types/program'
+import { DeepPick } from 'ts-deep-pick/lib'
 
 export const useProgram = (programId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_PROGRAM_BY_ID, hasura.GET_PROGRAM_BY_IDVariables>(
@@ -62,6 +69,13 @@ export const useProgram = (programId: string) => {
                 data
                 options
               }
+              program_content_videos {
+                attachment {
+                  id
+                  size
+                  options
+                }
+              }
             }
           }
           program_roles {
@@ -114,103 +128,109 @@ export const useProgram = (programId: string) => {
         }
       }
     `,
-    { variables: { programId }, fetchPolicy: 'network-only' },
+    { variables: { programId }, fetchPolicy: 'no-cache' },
   )
-  const program: ProgramAdminProps | null =
-    loading || error || !data || !data.program_by_pk
-      ? null
-      : {
-          id: data.program_by_pk.id,
-          appId: data.program_by_pk.app_id,
-          title: data.program_by_pk.title,
-          abstract: data.program_by_pk.abstract,
-          description: data.program_by_pk.description,
-          isSubscription: data.program_by_pk.is_subscription,
-          soldAt: data.program_by_pk.sold_at && new Date(data.program_by_pk.sold_at),
-          salePrice: data.program_by_pk.sale_price,
-          listPrice: data.program_by_pk.list_price,
-          coverUrl: data.program_by_pk.cover_url,
-          coverVideoUrl: data.program_by_pk.cover_video_url,
-          publishedAt: data.program_by_pk.published_at && new Date(data.program_by_pk.published_at),
-          inAdvance: data.program_by_pk.in_advance,
-          isSoldOut: data.program_by_pk.is_sold_out,
-          supportLocales: data.program_by_pk.support_locales || [],
-          isDeleted: data.program_by_pk.is_deleted,
-          isPrivate: data.program_by_pk.is_private,
-          isIssuesOpen: data.program_by_pk.is_issues_open,
-          isCountdownTimerVisible: data.program_by_pk.is_countdown_timer_visible,
-          isIntroductionSectionVisible: data.program_by_pk.is_introduction_section_visible,
-          contentSections: data.program_by_pk.program_content_sections.map(programContentSection => ({
-            id: programContentSection.id,
-            title: programContentSection.title,
-            programContents: programContentSection.program_contents.map(programContent => ({
-              id: programContent.id,
-              title: programContent.title,
-              publishedAt: programContent.published_at && new Date(programContent.published_at),
-              listPrice: programContent.list_price,
-              duration: programContent.duration,
-              programContentType: programContent.program_content_type?.type || null,
-              isNotifyUpdate: programContent.is_notify_update,
-              notifiedAt: programContent.notified_at && new Date(programContent.notified_at),
-              programPlans: programContent.program_content_plans.map(programContentPlan => ({
-                id: programContentPlan.program_plan.id,
-                title: programContentPlan.program_plan.title,
-              })),
-              metadata: programContent.metadata,
-              programContentBodyData: programContent.program_content_body.data,
-              attachments: programContent.program_content_attachments.map(v => ({
-                id: v.attachment_id,
-                data: v.data,
-                options: v.options,
-              })),
-            })),
+  const program: ProgramAdminProps | null = useMemo(() => {
+    if (loading || error || !data || !data.program_by_pk) {
+      return null
+    }
+    return {
+      id: data.program_by_pk.id,
+      appId: data.program_by_pk.app_id,
+      title: data.program_by_pk.title,
+      abstract: data.program_by_pk.abstract,
+      description: data.program_by_pk.description,
+      isSubscription: data.program_by_pk.is_subscription,
+      soldAt: data.program_by_pk.sold_at && new Date(data.program_by_pk.sold_at),
+      salePrice: data.program_by_pk.sale_price,
+      listPrice: data.program_by_pk.list_price,
+      coverUrl: data.program_by_pk.cover_url,
+      coverVideoUrl: data.program_by_pk.cover_video_url,
+      publishedAt: data.program_by_pk.published_at && new Date(data.program_by_pk.published_at),
+      inAdvance: data.program_by_pk.in_advance,
+      isSoldOut: data.program_by_pk.is_sold_out,
+      supportLocales: data.program_by_pk.support_locales || [],
+      isDeleted: data.program_by_pk.is_deleted,
+      isPrivate: data.program_by_pk.is_private,
+      isIssuesOpen: data.program_by_pk.is_issues_open,
+      isCountdownTimerVisible: data.program_by_pk.is_countdown_timer_visible,
+      isIntroductionSectionVisible: data.program_by_pk.is_introduction_section_visible,
+      contentSections: data.program_by_pk.program_content_sections.map(pcs => ({
+        id: pcs.id,
+        title: pcs.title,
+        programContents: pcs.program_contents.map(pc => ({
+          id: pc.id,
+          title: pc.title,
+          publishedAt: pc.published_at && new Date(pc.published_at),
+          listPrice: pc.list_price,
+          duration: pc.duration,
+          programContentType: pc.program_content_type?.type || null,
+          isNotifyUpdate: pc.is_notify_update,
+          notifiedAt: pc.notified_at && new Date(pc.notified_at),
+          programPlans: pc.program_content_plans.map(pcp => ({
+            id: pcp.program_plan.id,
+            title: pcp.program_plan.title,
           })),
-          roles: data.program_by_pk.program_roles.map(programRole => ({
-            id: programRole.id,
-            name: programRole.name as ProgramRoleName,
-            member: {
-              id: programRole.member && programRole.member.id,
-              name: programRole.member && programRole.member.name,
-              pictureUrl: programRole.member && programRole.member.picture_url,
-            },
+          metadata: pc.metadata,
+          programContentBodyData: pc.program_content_body.data,
+          attachments: pc.program_content_attachments.map(v => ({
+            id: v.attachment_id,
+            data: v.data,
+            options: v.options,
           })),
-          plans: data.program_by_pk.program_plans.map(programPlan => ({
-            id: programPlan.id,
-            type: programPlan.type,
-            title: programPlan.title,
-            description: programPlan.description,
-            gains: programPlan.gains,
-            salePrice: programPlan.sale_price,
-            listPrice: programPlan.list_price,
-            discountDownPrice: programPlan.discount_down_price,
-            periodAmount: programPlan.period_amount,
-            periodType: programPlan.period_type,
-            soldAt: programPlan.sold_at && new Date(programPlan.sold_at),
-            currencyId: programPlan.currency_id,
-            autoRenewed: programPlan.auto_renewed,
-            publishedAt: programPlan.published_at && new Date(programPlan.published_at),
-            isCountdownTimerVisible: programPlan.is_countdown_timer_visible,
-            groupBuyingPeople: programPlan.group_buying_people,
+          videos: pc.program_content_videos.map(pcv => ({
+            id: pcv.attachment.id,
+            size: pcv.attachment.size,
+            options: pcv.attachment.options,
           })),
-          categories: data.program_by_pk.program_categories.map(programCategory => ({
-            id: programCategory.category.id,
-            name: programCategory.category.name,
-          })),
-          tags: data.program_by_pk.program_tags.map(programTag => programTag.tag.name),
-          approvals: data.program_by_pk.program_approvals.map(programApproval => ({
-            id: programApproval.id,
-            createdAt: new Date(programApproval.created_at),
-            updatedAt: new Date(programApproval.updated_at),
-            status: programApproval.status as ProgramApprovalProps['status'],
-            description: programApproval.description,
-            feedback: programApproval.feedback,
-          })),
-        }
-
+        })),
+      })),
+      roles: data.program_by_pk.program_roles.map(programRole => ({
+        id: programRole.id,
+        name: programRole.name as ProgramRoleName,
+        member: {
+          id: programRole.member && programRole.member.id,
+          name: programRole.member && programRole.member.name,
+          pictureUrl: programRole.member && programRole.member.picture_url,
+        },
+      })),
+      plans: data.program_by_pk.program_plans.map(programPlan => ({
+        id: programPlan.id,
+        type: programPlan.type,
+        title: programPlan.title,
+        description: programPlan.description,
+        gains: programPlan.gains,
+        salePrice: programPlan.sale_price,
+        listPrice: programPlan.list_price,
+        discountDownPrice: programPlan.discount_down_price,
+        periodAmount: programPlan.period_amount,
+        periodType: programPlan.period_type,
+        soldAt: programPlan.sold_at && new Date(programPlan.sold_at),
+        currencyId: programPlan.currency_id,
+        autoRenewed: programPlan.auto_renewed,
+        publishedAt: programPlan.published_at && new Date(programPlan.published_at),
+        isCountdownTimerVisible: programPlan.is_countdown_timer_visible,
+        groupBuyingPeople: programPlan.group_buying_people,
+      })),
+      categories: data.program_by_pk.program_categories.map(programCategory => ({
+        id: programCategory.category.id,
+        name: programCategory.category.name,
+      })),
+      tags: data.program_by_pk.program_tags.map(programTag => programTag.tag.name),
+      approvals: data.program_by_pk.program_approvals.map(programApproval => ({
+        id: programApproval.id,
+        createdAt: new Date(programApproval.created_at),
+        updatedAt: new Date(programApproval.updated_at),
+        status: programApproval.status as ProgramApprovalProps['status'],
+        description: programApproval.description,
+        feedback: programApproval.feedback,
+      })),
+    }
+  }, [data, error, loading])
   return {
     loadingProgram: loading,
     errorProgram: error,
-    program,
+    program: program,
     refetchProgram: refetch,
   }
 }
@@ -593,5 +613,174 @@ export const useMutateProgramContent = () => {
     updateProgramContentBody,
     deleteProgramContent,
     insertProgramContentBody,
+  }
+}
+
+export const useProgramContent = (programContentId: string) => {
+  const { data, loading, refetch } = useQuery<
+    hasura.GET_SPECIFIC_PROGRAM_CONTENT,
+    hasura.GET_SPECIFIC_PROGRAM_CONTENTVariables
+  >(
+    gql`
+      query GET_SPECIFIC_PROGRAM_CONTENT($programContentId: uuid!) {
+        program_content_by_pk(id: $programContentId) {
+          id
+          title
+          published_at
+          list_price
+          duration
+          is_notify_update
+          notified_at
+          metadata
+          program_content_body {
+            id
+            data
+          }
+          program_content_type {
+            id
+            type
+          }
+          program_content_plans {
+            id
+            program_plan {
+              id
+              title
+            }
+          }
+          program_content_attachments {
+            attachment_id
+            data
+            options
+          }
+          program_content_videos {
+            attachment {
+              id
+              size
+              options
+            }
+          }
+        }
+      }
+    `,
+    { variables: { programContentId } },
+  )
+
+  const programContent:
+    | (DeepPick<ProgramContent, '!videos'> &
+        DeepPick<ProgramContent, 'videos.[].id' | 'videos.[].size' | 'videos.[].options'>)
+    | null = data?.program_content_by_pk
+    ? {
+        id: data.program_content_by_pk.id,
+        title: data.program_content_by_pk.title,
+        publishedAt: data.program_content_by_pk.published_at && new Date(data.program_content_by_pk.published_at),
+        listPrice: data.program_content_by_pk.list_price,
+        duration: data.program_content_by_pk.duration,
+        programContentType: data.program_content_by_pk.program_content_type?.type || null,
+        isNotifyUpdate: data.program_content_by_pk.is_notify_update,
+        notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
+        programPlans: data.program_content_by_pk.program_content_plans.map(pcp => ({
+          id: pcp.program_plan.id,
+          title: pcp.program_plan.title,
+        })),
+        metadata: data.program_content_by_pk.metadata,
+        programContentBodyData: data.program_content_by_pk.program_content_body.data,
+        attachments: data.program_content_by_pk.program_content_attachments.map(v => ({
+          id: v.attachment_id,
+          data: v.data,
+          options: v.options,
+        })),
+        videos: data.program_content_by_pk.program_content_videos.map(pcv => ({
+          id: pcv.attachment.id,
+          size: pcv.attachment.size,
+          options: pcv.attachment.options,
+        })),
+      }
+    : null
+  return { programContent, loading, refetch }
+}
+export const useProgramContentActions = (programContentId: string) => {
+  const apolloClient = useApolloClient()
+  return {
+    updateContent: async () => {},
+    updatePlans: async (programPlanIds: string[]) => {
+      await apolloClient.mutate<hasura.UPDATE_PROGRAM_CONTENT_PLAN, hasura.UPDATE_PROGRAM_CONTENT_PLANVariables>({
+        mutation: gql`
+          mutation UPDATE_PROGRAM_CONTENT_PLAN(
+            $programContentId: uuid!
+            $programContentPlans: [program_content_plan_insert_input!]!
+          ) {
+            delete_program_content_plan(where: { program_content_id: { _eq: $programContentId } }) {
+              affected_rows
+            }
+            insert_program_content_plan(objects: $programContentPlans) {
+              affected_rows
+            }
+          }
+        `,
+        variables: {
+          programContentId,
+          programContentPlans: programPlanIds.map(programPlanId => ({
+            program_content_id: programContentId,
+            program_plan_id: programPlanId,
+          })),
+        },
+      })
+    },
+    updateMaterials: async (files: File[]) => {
+      await apolloClient.mutate<
+        hasura.UPDATE_PROGRAM_CONTENT_MATERIALS,
+        hasura.UPDATE_PROGRAM_CONTENT_MATERIALSVariables
+      >({
+        mutation: gql`
+          mutation UPDATE_PROGRAM_CONTENT_MATERIALS(
+            $programContentId: uuid!
+            $materials: [program_content_material_insert_input!]!
+          ) {
+            delete_program_content_material(where: { program_content_id: { _eq: $programContentId } }) {
+              affected_rows
+            }
+            insert_program_content_material(objects: $materials) {
+              affected_rows
+            }
+          }
+        `,
+        variables: {
+          programContentId,
+          materials: files.map(file => ({
+            program_content_id: programContentId,
+            data: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              lastModified: file.lastModified,
+            },
+          })),
+        },
+      })
+    },
+    updateVideos: async (attachmentIds: string[]) => {
+      await apolloClient.mutate<hasura.UPDATE_PROGRAM_CONTENT_VIDEOS, hasura.UPDATE_PROGRAM_CONTENT_VIDEOSVariables>({
+        mutation: gql`
+          mutation UPDATE_PROGRAM_CONTENT_VIDEOS(
+            $programContentId: uuid!
+            $programContentVideos: [program_content_video_insert_input!]!
+          ) {
+            delete_program_content_video(where: { program_content_id: { _eq: $programContentId } }) {
+              affected_rows
+            }
+            insert_program_content_video(objects: $programContentVideos) {
+              affected_rows
+            }
+          }
+        `,
+        variables: {
+          programContentId,
+          programContentVideos: attachmentIds.map(attachmentId => ({
+            program_content_id: programContentId,
+            attachment_id: attachmentId,
+          })),
+        },
+      })
+    },
   }
 }

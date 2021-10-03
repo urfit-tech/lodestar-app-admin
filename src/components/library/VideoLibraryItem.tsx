@@ -224,7 +224,7 @@ const ReUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } & But
             } catch (err: any) {
               if (err.isRestriction) {
                 // handle restrictions
-                alert('Restriction error:', (err as Error).message)
+                alert('Restriction error:' + err)
               } else {
                 // handle other errors
                 console.error(err)

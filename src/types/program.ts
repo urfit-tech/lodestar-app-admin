@@ -1,4 +1,5 @@
-import { CategoryProps } from './general'
+import { AttachmentSelectorValue } from '../components/common/AttachmentSelector'
+import { Attachment, CategoryProps } from './general'
 
 export type ProgramPlanType = 'subscribeFromNow' | 'subscribeAll' | 'unknown'
 export type ProgramPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
@@ -62,6 +63,29 @@ export type ProgramContentSectionProps = {
   programContents: ProgramContentProps[]
 }
 
+export type ProgramContent = {
+  id: string
+  title: string
+  publishedAt: Date | null
+  listPrice: number | null
+  duration: number | null
+  programContentType: string | null
+  isNotifyUpdate: boolean
+  notifiedAt: Date | null
+  programPlans: {
+    id: string
+    title: string | null
+  }[]
+  metadata: any
+  attachments: {
+    id: string
+    data: any
+    options: any
+  }[]
+  videos: Attachment[]
+  programContentBodyData: any
+}
+
 export type ProgramContentProps = {
   id: string
   title: string
@@ -81,6 +105,7 @@ export type ProgramContentProps = {
     data: any
     options: any
   }[]
+  videos: AttachmentSelectorValue[]
   programContentBodyData: any
 }
 

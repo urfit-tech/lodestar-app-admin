@@ -823,10 +823,11 @@ export const useProductSku = (productId: string) => {
 }
 
 export const useAttachments = (contentType?: string) => {
+  const contentTypeLike = contentType?.replace('*', '%')
   const { data, loading, refetch } = useQuery<hasura.GET_ATTACHMENTS, hasura.GET_ATTACHMENTSVariables>(
     gql`
-      query GET_ATTACHMENTS($contentType: String) {
-        attachment(where: { content_type: { _like: $contentType } }, order_by: [{ created_at: desc }]) {
+      query GET_ATTACHMENTS($contentTypeLike: String) {
+        attachment(where: { content_type: { _like: $contentTypeLike } }, order_by: [{ created_at: desc }]) {
           id
           name
           filename
@@ -843,7 +844,7 @@ export const useAttachments = (contentType?: string) => {
       }
     `,
     {
-      variables: { contentType },
+      variables: { contentTypeLike },
     },
   )
   const attachments: DeepPick<Attachment, '~author.name'>[] = useMemo(
