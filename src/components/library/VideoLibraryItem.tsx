@@ -141,7 +141,6 @@ const CaptionUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } 
     return new Uppy({
       restrictions: {
         maxNumberOfFiles: 1,
-        allowedFileTypes: ['text/vtt', 'text/srt'],
         maxTotalFileSize: 10 * 1024 * 1024, // limited 10MB at once
       },
     })
