@@ -9657,21 +9657,41 @@ export interface GET_PRODUCT_SKUVariables {
 // GraphQL query operation: GET_ATTACHMENTS
 // ====================================================
 
-export interface GET_ATTACHMENTS_attachment_author {
+export interface GET_ATTACHMENTS_attachment_aggregate_aggregate_max {
+  __typename: "attachment_max_fields";
+  size: number | null;
+  duration: any | null;
+}
+
+export interface GET_ATTACHMENTS_attachment_aggregate_aggregate_sum {
+  __typename: "attachment_sum_fields";
+  size: number | null;
+  duration: any | null;
+}
+
+export interface GET_ATTACHMENTS_attachment_aggregate_aggregate {
+  __typename: "attachment_aggregate_fields";
+  max: GET_ATTACHMENTS_attachment_aggregate_aggregate_max | null;
+  sum: GET_ATTACHMENTS_attachment_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ATTACHMENTS_attachment_aggregate_nodes_author {
   __typename: "member";
   name: string;
 }
 
-export interface GET_ATTACHMENTS_attachment {
+export interface GET_ATTACHMENTS_attachment_aggregate_nodes {
   __typename: "attachment";
   id: any;
   name: string | null;
   filename: string | null;
   size: number;
+  duration: any | null;
+  status: string;
   /**
    * An object relationship
    */
-  author: GET_ATTACHMENTS_attachment_author | null;
+  author: GET_ATTACHMENTS_attachment_aggregate_nodes_author | null;
   thumbnail_url: string | null;
   /**
    * MIME format
@@ -9682,14 +9702,21 @@ export interface GET_ATTACHMENTS_attachment {
   options: any | null;
 }
 
+export interface GET_ATTACHMENTS_attachment_aggregate {
+  __typename: "attachment_aggregate";
+  aggregate: GET_ATTACHMENTS_attachment_aggregate_aggregate | null;
+  nodes: GET_ATTACHMENTS_attachment_aggregate_nodes[];
+}
+
 export interface GET_ATTACHMENTS {
   /**
-   * fetch data from the table: "attachment"
+   * fetch aggregated fields from the table: "attachment"
    */
-  attachment: GET_ATTACHMENTS_attachment[];
+  attachment_aggregate: GET_ATTACHMENTS_attachment_aggregate;
 }
 
 export interface GET_ATTACHMENTSVariables {
+  status?: string | null;
   contentTypeLike?: string | null;
 }
 
@@ -12135,6 +12162,7 @@ export interface DELETE_PROGRAM_CONTENTVariables {
 
 export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_body {
   __typename: "program_content_body";
+  id: any;
   data: any | null;
 }
 
@@ -15346,12 +15374,14 @@ export enum attachment_update_column {
   content_type = "content_type",
   created_at = "created_at",
   data = "data",
+  duration = "duration",
   filename = "filename",
   id = "id",
   is_deleted = "is_deleted",
   name = "name",
   options = "options",
   size = "size",
+  status = "status",
   target = "target",
   thumbnail_url = "thumbnail_url",
   type = "type",
@@ -16866,6 +16896,28 @@ export enum podcast_program_category_update_column {
  */
 export enum podcast_program_constraint {
   podcast_program_pkey = "podcast_program_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_program_progress"
+ */
+export enum podcast_program_progress_constraint {
+  podcast_program_progress_member_id_podcast_program_id_key = "podcast_program_progress_member_id_podcast_program_id_key",
+  podcast_program_progress_pkey = "podcast_program_progress_pkey",
+}
+
+/**
+ * update columns of table "podcast_program_progress"
+ */
+export enum podcast_program_progress_update_column {
+  created_at = "created_at",
+  id = "id",
+  last_progress = "last_progress",
+  member_id = "member_id",
+  podcast_album_id = "podcast_album_id",
+  podcast_program_id = "podcast_program_id",
+  progress = "progress",
+  updated_at = "updated_at",
 }
 
 /**
@@ -20097,6 +20149,7 @@ export interface attachment_arr_rel_insert_input {
  * order by avg() on columns of table "attachment"
  */
 export interface attachment_avg_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -20113,12 +20166,14 @@ export interface attachment_bool_exp {
   content_type?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   data?: jsonb_comparison_exp | null;
+  duration?: numeric_comparison_exp | null;
   filename?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   size?: Int_comparison_exp | null;
+  status?: String_comparison_exp | null;
   target?: String_comparison_exp | null;
   thumbnail_url?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
@@ -20135,12 +20190,14 @@ export interface attachment_insert_input {
   content_type?: string | null;
   created_at?: any | null;
   data?: any | null;
+  duration?: any | null;
   filename?: string | null;
   id?: any | null;
   is_deleted?: boolean | null;
   name?: string | null;
   options?: any | null;
   size?: number | null;
+  status?: string | null;
   target?: string | null;
   thumbnail_url?: string | null;
   type?: string | null;
@@ -20155,10 +20212,12 @@ export interface attachment_max_order_by {
   author_id?: order_by | null;
   content_type?: order_by | null;
   created_at?: order_by | null;
+  duration?: order_by | null;
   filename?: order_by | null;
   id?: order_by | null;
   name?: order_by | null;
   size?: order_by | null;
+  status?: order_by | null;
   target?: order_by | null;
   thumbnail_url?: order_by | null;
   type?: order_by | null;
@@ -20173,10 +20232,12 @@ export interface attachment_min_order_by {
   author_id?: order_by | null;
   content_type?: order_by | null;
   created_at?: order_by | null;
+  duration?: order_by | null;
   filename?: order_by | null;
   id?: order_by | null;
   name?: order_by | null;
   size?: order_by | null;
+  status?: order_by | null;
   target?: order_by | null;
   thumbnail_url?: order_by | null;
   type?: order_by | null;
@@ -20204,6 +20265,7 @@ export interface attachment_on_conflict {
  * order by stddev() on columns of table "attachment"
  */
 export interface attachment_stddev_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -20211,6 +20273,7 @@ export interface attachment_stddev_order_by {
  * order by stddev_pop() on columns of table "attachment"
  */
 export interface attachment_stddev_pop_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -20218,6 +20281,7 @@ export interface attachment_stddev_pop_order_by {
  * order by stddev_samp() on columns of table "attachment"
  */
 export interface attachment_stddev_samp_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -20225,6 +20289,7 @@ export interface attachment_stddev_samp_order_by {
  * order by sum() on columns of table "attachment"
  */
 export interface attachment_sum_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -20232,6 +20297,7 @@ export interface attachment_sum_order_by {
  * order by var_pop() on columns of table "attachment"
  */
 export interface attachment_var_pop_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -20239,6 +20305,7 @@ export interface attachment_var_pop_order_by {
  * order by var_samp() on columns of table "attachment"
  */
 export interface attachment_var_samp_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -20246,6 +20313,7 @@ export interface attachment_var_samp_order_by {
  * order by variance() on columns of table "attachment"
  */
 export interface attachment_variance_order_by {
+  duration?: order_by | null;
   size?: order_by | null;
 }
 
@@ -27467,6 +27535,7 @@ export interface podcast_album_bool_exp {
   is_public?: Boolean_comparison_exp | null;
   podcast_album_categories?: podcast_album_category_bool_exp | null;
   podcast_album_podcast_programs?: podcast_album_podcast_program_bool_exp | null;
+  podcast_program_progresses?: podcast_program_progress_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -27531,6 +27600,7 @@ export interface podcast_album_insert_input {
   is_public?: boolean | null;
   podcast_album_categories?: podcast_album_category_arr_rel_insert_input | null;
   podcast_album_podcast_programs?: podcast_album_podcast_program_arr_rel_insert_input | null;
+  podcast_program_progresses?: podcast_program_progress_arr_rel_insert_input | null;
   published_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
@@ -28195,6 +28265,60 @@ export interface podcast_program_on_conflict {
   constraint: podcast_program_constraint;
   update_columns: podcast_program_update_column[];
   where?: podcast_program_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_program_progress"
+ */
+export interface podcast_program_progress_arr_rel_insert_input {
+  data: podcast_program_progress_insert_input[];
+  on_conflict?: podcast_program_progress_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_progress". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_progress_bool_exp {
+  _and?: (podcast_program_progress_bool_exp | null)[] | null;
+  _not?: podcast_program_progress_bool_exp | null;
+  _or?: (podcast_program_progress_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  last_progress?: numeric_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  podcast_album?: podcast_album_bool_exp | null;
+  podcast_album_id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
+  progress?: numeric_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_program_progress"
+ */
+export interface podcast_program_progress_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  last_progress?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  podcast_album?: podcast_album_obj_rel_insert_input | null;
+  podcast_album_id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+  progress?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program_progress"
+ */
+export interface podcast_program_progress_on_conflict {
+  constraint: podcast_program_progress_constraint;
+  update_columns: podcast_program_progress_update_column[];
+  where?: podcast_program_progress_bool_exp | null;
 }
 
 /**

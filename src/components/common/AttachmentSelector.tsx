@@ -12,12 +12,13 @@ const messages = defineMessages({
 })
 export type AttachmentSelectorValue = Pick<Attachment, 'id' | 'size' | 'options'>
 const AttachmentSelector: React.VFC<{
+  status?: string
   contentType?: string
   value?: AttachmentSelectorValue
   onChange?: (attachment: AttachmentSelectorValue) => void
-}> = ({ contentType, value, onChange }) => {
+}> = ({ status, contentType, value, onChange }) => {
   const { formatMessage } = useIntl()
-  const { attachments, loading, refetch } = useAttachments(contentType)
+  const { attachments, loading, refetch } = useAttachments({ contentType, status })
   return (
     <div className="d-flex">
       <Link target="_blank" to="/media-library?open=video">
@@ -37,7 +38,7 @@ const AttachmentSelector: React.VFC<{
         }}
       >
         {attachments.map(attachment => (
-          <Select.Option key={attachment.id} value={attachment.id}>
+          <Select.Option key={attachment.id} value={attachment.id} disabled={attachment.status !== 'READY'}>
             {`${attachment.name} / ${attachment.author.name}`}
           </Select.Option>
         ))}

@@ -822,38 +822,57 @@ export const useProductSku = (productId: string) => {
   }
 }
 
-export const useAttachments = (contentType?: string) => {
-  const contentTypeLike = contentType?.replace('*', '%')
+export const useAttachments = (options?: { contentType?: string; status?: string }) => {
+  const contentTypeLike = options?.contentType?.replace('*', '%')
   const { data, loading, refetch } = useQuery<hasura.GET_ATTACHMENTS, hasura.GET_ATTACHMENTSVariables>(
     gql`
-      query GET_ATTACHMENTS($contentTypeLike: String) {
-        attachment(where: { content_type: { _like: $contentTypeLike } }, order_by: [{ created_at: desc }]) {
-          id
-          name
-          filename
-          size
-          author {
-            name
+      query GET_ATTACHMENTS($status: String, $contentTypeLike: String) {
+        attachment_aggregate(
+          where: { status: { _eq: $status }, content_type: { _like: $contentTypeLike } }
+          order_by: [{ created_at: desc }]
+        ) {
+          aggregate {
+            max {
+              size
+              duration
+            }
+            sum {
+              size
+              duration
+            }
           }
-          thumbnail_url
-          content_type
-          created_at
-          updated_at
-          options
+          nodes {
+            id
+            name
+            filename
+            size
+            duration
+            status
+            author {
+              name
+            }
+            thumbnail_url
+            content_type
+            created_at
+            updated_at
+            options
+          }
         }
       }
     `,
     {
-      variables: { contentTypeLike },
+      variables: { contentTypeLike, status: options?.status },
     },
   )
   const attachments: DeepPick<Attachment, '~author.name'>[] = useMemo(
     () =>
-      data?.attachment.map(v => ({
+      data?.attachment_aggregate.nodes.map(v => ({
         id: v.id,
         name: v.name || 'untitled',
         filename: v.filename || 'unknown',
         size: v.size,
+        duration: v.duration,
+        status: v.status,
         author: v.author
           ? {
               name: v.author.name,
@@ -869,5 +888,13 @@ export const useAttachments = (contentType?: string) => {
       })) || [],
     [data],
   )
-  return { attachments, loading, refetch }
+  return {
+    maxSize: data?.attachment_aggregate.aggregate?.max?.size || 0,
+    maxDuration: data?.attachment_aggregate.aggregate?.max?.duration || 0,
+    totalSize: data?.attachment_aggregate.aggregate?.sum?.size || 0,
+    totalDuration: data?.attachment_aggregate.aggregate?.sum?.duration || 0,
+    attachments,
+    loading,
+    refetch,
+  }
 }

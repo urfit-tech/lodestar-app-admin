@@ -3,6 +3,8 @@ import Uppy from '@uppy/core'
 import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
 import { Button, List, Tabs } from 'antd'
+import axios from 'axios'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -14,13 +16,45 @@ import { commonMessages } from '../helpers/translation'
 import { useAttachments } from '../hooks/data'
 
 const MediaLibrary: React.FC = () => {
+  const { settings } = useApp()
   const [uppy, setUppy] = useState<Uppy>()
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
   const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
-  const { attachments, loading: loadingAttachments, refetch: refetchAttachments } = useAttachments()
+  const {
+    totalDuration,
+    totalSize,
+    maxDuration,
+    maxSize,
+    attachments,
+    loading: loadingAttachments,
+    refetch: refetchAttachments,
+  } = useAttachments()
 
+  const [synchronizing, setSynchronizing] = useState(false)
+  const handleSync = useCallback(() => {
+    setSynchronizing(true)
+    axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_ROOT}/videos/sync?forced=1`,
+        {},
+        {
+          headers: {
+            Authorization: `bearer ${authToken}`,
+          },
+        },
+      )
+      .then(({ data: { code, result, error } }) => {
+        if (code === 'SUCCESS') {
+          refetchAttachments()
+          alert('sync completely')
+        } else {
+          alert(`error: ${error}`)
+        }
+      })
+      .finally(() => setSynchronizing(false))
+  }, [authToken, refetchAttachments])
   const handleVideoAdd = useCallback(() => {
     const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/`
     setUppy(
@@ -57,14 +91,29 @@ const MediaLibrary: React.FC = () => {
         <BookOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.mediaLibrary)}</span>
       </AdminPageTitle>
+      <div>
+        <div>
+          Size: {Math.ceil(totalSize / 1024 / 1024)}MB / {settings['quota.storage']}MB (Maximum:{' '}
+          {Math.ceil(maxSize / 1024 / 1024)}MB)
+        </div>
+        <div>
+          Duration: {Math.ceil(totalDuration / 60)}minutes / {settings['quota.duration']}minutes (Maximum:{' '}
+          {Math.ceil(maxDuration / 60)}minutes)
+        </div>
+      </div>
       <Tabs activeKey={activeTabKey || 'video'} onChange={key => setActiveTabKey(key)}>
         <Tabs.TabPane tab={formatMessage(commonMessages.ui.video)} key="video">
           <List
             header={
-              <Button type="link" onClick={handleVideoAdd}>
-                <span className="mr-2">+</span>
-                {formatMessage(commonMessages.ui.add)}
-              </Button>
+              <div className="d-flex justify-content-between">
+                <Button className="mr-2" type="link" onClick={handleVideoAdd}>
+                  <span className="mr-2">+</span>
+                  {formatMessage(commonMessages.ui.add)}
+                </Button>
+                <Button loading={synchronizing} onClick={handleSync}>
+                  Sync
+                </Button>
+              </div>
             }
             itemLayout="vertical"
             dataSource={attachments.filter(attachment => attachment.contentType.startsWith('video/'))}
@@ -75,10 +124,13 @@ const MediaLibrary: React.FC = () => {
                 filename={item.filename}
                 author={item.author}
                 size={item.size}
+                duration={item.duration}
+                status={item.status}
                 options={item.options}
                 createdAt={item.createdAt}
                 updatedAt={item.updatedAt}
                 onReUpload={() => refetchAttachments()}
+                onDelete={() => refetchAttachments()}
               />
             )}
             loading={loadingAttachments}

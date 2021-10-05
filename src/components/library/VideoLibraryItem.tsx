@@ -6,7 +6,7 @@ import { Button, List, Modal, Select } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { DeepPick } from 'ts-deep-pick/lib'
 import { Attachment, UploadState } from '../../types/general'
@@ -16,6 +16,7 @@ const messages = defineMessages({
   preview: { id: 'program.ui.preview', defaultMessage: '預覽' },
   reUpload: { id: 'program.ui.reUpload', defaultMessage: '重新上傳' },
   uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
+  delete: { id: 'program.ui.delete', defaultMessage: '刪除檔案' },
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
   chooseCaptionLanguage: { id: 'program.label.chooseCaptionLanguage', defaultMessage: '選擇字幕語系' },
 })
@@ -51,6 +52,7 @@ const VideoLibraryItem: React.VFC<
     DeepPick<Attachment, 'author.name'> & {
       onReUpload?: () => void
       onCaptionUpload?: () => void
+      onDelete?: () => void
     }
 > = ({
   id,
@@ -58,41 +60,28 @@ const VideoLibraryItem: React.VFC<
   filename,
   size,
   author,
+  status,
   thumbnailUrl,
   contentType,
+  duration,
   createdAt,
   updatedAt,
   options,
   onReUpload,
   onCaptionUpload,
+  onDelete,
 }) => {
   const { authToken } = useAuth()
   const [cloudflareOptions, setCloudflareOptions] = useState(options?.cloudflare)
-  useEffect(() => {
-    authToken &&
-      axios
-        .post(
-          `${process.env.REACT_APP_API_BASE_ROOT}/videos/${id}/sync`,
-          {},
-          {
-            headers: {
-              Authorization: `bearer ${authToken}`,
-            },
-          },
-        )
-        .then(({ data: { code, result } }) => {
-          if (code === 'SUCCESS') {
-            setCloudflareOptions(result.cloudflareOptions)
-          }
-        })
-  }, [authToken, id])
+
   return (
     <List.Item
       className="mb-3"
       extra={[
-        <PreviewButton block className="mb-1" videoId={id} title={name} />,
-        <ReUploadButton block className="mb-1" videoId={id} onFinish={onReUpload} />,
-        <CaptionUploadButton block videoId={id} onFinish={onCaptionUpload} />,
+        <PreviewButton block className="mb-2" videoId={id} title={name} />,
+        <ReUploadButton block className="mb-2" videoId={id} onFinish={onReUpload} />,
+        <CaptionUploadButton block className="mb-2" videoId={id} onFinish={onCaptionUpload} />,
+        <DeleteButton block videoId={id} onDelete={onDelete} />,
       ]}
     >
       <List.Item.Meta
@@ -100,12 +89,47 @@ const VideoLibraryItem: React.VFC<
         description={`${(size ? (size / 1024 / 1024).toFixed(1) : '-') + 'MB'} @${author?.name}`}
       />
       <div>
+        <div>status: {status}</div>
         <div>filename: {filename}</div>
-        <div>duration: {Math.ceil(Number(cloudflareOptions?.duration) / 60)} minute(s)</div>
+        <div>duration: {Math.ceil(Number(duration) / 60)} minute(s)</div>
         <div>Created: {createdAt}</div>
         <div>Updated: {updatedAt}</div>
       </div>
     </List.Item>
+  )
+}
+
+const DeleteButton: React.VFC<{ videoId: string; onDelete?: () => void } & ButtonProps> = ({
+  videoId,
+  onDelete,
+  ...buttonProps
+}) => {
+  const { formatMessage } = useIntl()
+  const { authToken } = useAuth()
+  const [deleting, setDeleting] = useState(false)
+  const handleClick = () => {
+    if (window.confirm('This action cannot be reverted.')) {
+      setDeleting(true)
+      axios
+        .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}`, {
+          headers: {
+            Authorization: `bearer ${authToken}`,
+          },
+        })
+        .then(({ data: { code, error } }) => {
+          if (code === 'SUCCESS') {
+            onDelete?.()
+          } else {
+            alert(error)
+          }
+        })
+        .finally(() => setDeleting(false))
+    }
+  }
+  return (
+    <Button loading={deleting} danger onClick={handleClick} {...buttonProps}>
+      {formatMessage(messages.delete)}
+    </Button>
   )
 }
 

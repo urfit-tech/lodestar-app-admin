@@ -118,6 +118,8 @@ export type Attachment = {
   filename: string
   contentType: string
   size: number
+  duration: number
+  status: string
   author: Member
   thumbnailUrl: string | null
   createdAt: Date
