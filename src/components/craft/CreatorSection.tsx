@@ -1,11 +1,9 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftCreator from 'lodestar-app-element/src/components/craft/CraftCreator'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import { CraftBackground, CraftCreator, CraftTitle } from 'lodestar-app-element/src/components/craft'
 import { repeat } from 'ramda'
 import React from 'react'
-import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
+import { StyledBoxWrapper } from '.'
 
 const CreatorSection: React.VFC = () => {
   const {

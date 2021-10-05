@@ -1,11 +1,8 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
-import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import { CraftBackground, CraftButton, CraftLayout, CraftTitle } from 'lodestar-app-element/src/components/craft'
 import React from 'react'
-import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
+import { StyledBoxWrapper } from '.'
 
 const CTAWithSubtitleSection: React.VFC<{
   variant?: 'default' | 'dark'

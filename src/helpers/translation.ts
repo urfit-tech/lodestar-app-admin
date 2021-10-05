@@ -1384,6 +1384,7 @@ export const craftPageMessages = {
     commonProblem: { id: 'craft.label.commonProblem', defaultMessage: '常見問題' },
     imageBlock: { id: 'craft.label.imageBlock', defaultMessage: '圖片區塊' },
     textBlock: { id: 'craft.label.textBlock', defaultMessage: '文字區塊' },
+    embedBlock: { id: 'craft.label.embedBlock', defaultMessage: '嵌入元件' },
     programSection: { id: 'craft.label.programSection', defaultMessage: '課程區塊' },
     activitySection: { id: 'craft.label.activitySection', defaultMessage: '活動區塊' },
     blockSetting: { id: 'craft.label.blockSetting', defaultMessage: '區塊樣式' },
