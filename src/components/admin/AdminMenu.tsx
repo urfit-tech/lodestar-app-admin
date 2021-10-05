@@ -500,8 +500,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
                   <Menu.SubMenu
                     key={v.key}
                     title={
-                      <span>
-                        <Icon component={v.icon} />
+                      <span className="d-flex">
+                        <Icon component={v.icon} className="d-flex align-items-center" />
                         <span>{v.name}</span>
                       </span>
                     }
@@ -515,8 +515,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
                 )
               }
               return (
-                <Menu.Item key={v.key}>
-                  <Icon component={v.icon} />
+                <Menu.Item key={v.key} className="d-flex">
+                  <Icon component={v.icon} className="d-flex align-items-center" />
                   <span>{v.name}</span>
                 </Menu.Item>
               )
