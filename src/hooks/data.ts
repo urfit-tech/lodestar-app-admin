@@ -1,10 +1,10 @@
 import { DeepPick } from 'ts-deep-pick'
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
 import { useIntl } from 'react-intl'
-import { AxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError, uploadFile } from '../helpers'
@@ -14,6 +14,8 @@ import { Attachment, CategoryProps, ClassType, ProductInventoryLogProps, Product
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
+import { Uppy } from '@uppy/core'
+import XHRUpload from '@uppy/xhr-upload'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
@@ -896,5 +898,99 @@ export const useAttachments = (options?: { contentType?: string; status?: string
     attachments,
     loading,
     refetch,
+  }
+}
+
+export const useCaptions = (videoAttachmentId: string) => {
+  const captionLanguages = [
+    { code: 'zh', name: 'Mandarin Chinese' },
+    { code: 'hi', name: 'Hindi' },
+    { code: 'es', name: 'Spanish' },
+    { code: 'en', name: 'English' },
+    { code: 'ar', name: 'Arabic' },
+    { code: 'pt', name: 'Portuguese' },
+    { code: 'bn', name: 'Bengali' },
+    { code: 'ru', name: 'Russian' },
+    { code: 'ja', name: 'Japanese' },
+    { code: 'de', name: 'German' },
+    { code: 'pa', name: 'Panjabi' },
+    { code: 'jv', name: 'Javanese' },
+    { code: 'ko', name: 'Korean' },
+    { code: 'vi', name: 'Vietnamese' },
+    { code: 'fr', name: 'French' },
+    { code: 'ur', name: 'Urdu' },
+    { code: 'it', name: 'Italian' },
+    { code: 'tr', name: 'Turkish' },
+    { code: 'fa', name: 'Persian' },
+    { code: 'pl', name: 'Polish' },
+    { code: 'uk', name: 'Ukrainian' },
+    { code: 'my', name: 'Burmese' },
+    { code: 'th', name: 'Thai' },
+  ]
+  const { authToken } = useAuth()
+  const [uppy, setUppy] = useState<Uppy | null>(null)
+  const [captions, setCaptions] = useState<{ label: string; language: string }[]>([])
+  const refetch = useCallback(
+    () =>
+      axios
+        .get(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoAttachmentId}/captions`, {
+          headers: {
+            Authorization: `bearer ${authToken}`,
+          },
+        })
+        .then(({ data: { code, result } }) => {
+          setCaptions(code === 'SUCCESS' ? result : [])
+        }),
+    [authToken, videoAttachmentId],
+  )
+  const deleteCaption = useCallback(
+    (languageCode: string) =>
+      axios
+        .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoAttachmentId}/captions/${languageCode}`, {
+          headers: {
+            Authorization: `bearer ${authToken}`,
+          },
+        })
+        .then(({ data: { code } }) => {
+          code === 'SUCCESS' && refetch()
+        }),
+    [authToken, refetch, videoAttachmentId],
+  )
+  const addCaption = useCallback(
+    async (languageCode: typeof captionLanguages[number]['code']) =>
+      new Promise((resolve, reject) => {
+        setUppy(
+          new Uppy({
+            autoProceed: true,
+            restrictions: {
+              maxNumberOfFiles: 1,
+              maxTotalFileSize: 10 * 1024 * 1024, // limited 10MB at once
+            },
+          })
+            .use(XHRUpload, {
+              endpoint: `${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoAttachmentId}/captions/${languageCode}`,
+              headers: {
+                Authorization: `bearer ${authToken}`,
+              },
+            })
+            .on('complete', () => {
+              uppy?.reset()
+              resolve(null)
+            })
+            .on('error', reject),
+        )
+      }),
+    [authToken, uppy, videoAttachmentId],
+  )
+  useEffect(() => {
+    refetch()
+  }, [refetch, videoAttachmentId])
+  return {
+    captions,
+    captionLanguages,
+    refetch,
+    addCaption,
+    deleteCaption,
+    uppy,
   }
 }

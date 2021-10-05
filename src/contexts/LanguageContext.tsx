@@ -18,7 +18,7 @@ const defaultLanguage: LanguageProps = {
   currentLanguage: 'zh',
 }
 
-const LanguageContext = createContext<LanguageProps>(defaultLanguage)
+export const LanguageContext = createContext<LanguageProps>(defaultLanguage)
 
 export const LanguageProvider: React.FC = ({ children }) => {
   const { enabledModules, settings } = useApp()

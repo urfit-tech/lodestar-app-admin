@@ -11572,6 +11572,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   id: any;
   size: number;
   options: any | null;
+  duration: any | null;
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos {

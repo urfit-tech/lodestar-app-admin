@@ -1,57 +1,34 @@
 import Uppy from '@uppy/core'
-import { FileInput, StatusBar, useUppy } from '@uppy/react'
+import { StatusBar, useUppy } from '@uppy/react'
 import Tus from '@uppy/tus'
-import XHRUpload from '@uppy/xhr-upload'
-import { Button, List, Modal, Select } from 'antd'
+import { Button, List, Modal, Select, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
+import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { DeepPick } from 'ts-deep-pick/lib'
+import { useCaptions } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
 import VideoPlayer from './VideoPlayer'
 
 const messages = defineMessages({
   preview: { id: 'program.ui.preview', defaultMessage: '預覽' },
   reUpload: { id: 'program.ui.reUpload', defaultMessage: '重新上傳' },
-  uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
+  chooseFile: { id: 'program.ui.chooseFile', defaultMessage: '選擇檔案' },
+  manageCaption: { id: 'program.ui.manageCaption', defaultMessage: '管理字幕' },
+  uploadedCaptions: { id: 'program.ui.uploadedCaptions', defaultMessage: '已上傳字幕' },
   delete: { id: 'program.ui.delete', defaultMessage: '刪除檔案' },
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
   chooseCaptionLanguage: { id: 'program.label.chooseCaptionLanguage', defaultMessage: '選擇字幕語系' },
 })
-const captionLanguages = [
-  { code: 'zh', name: 'Mandarin Chinese' },
-  { code: 'hi', name: 'Hindi' },
-  { code: 'es', name: 'Spanish' },
-  { code: 'en', name: 'English' },
-  { code: 'ar', name: 'Arabic' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'bn', name: 'Bengali' },
-  { code: 'ru', name: 'Russian' },
-  { code: 'ja', name: 'Japanese' },
-  { code: 'de', name: 'German' },
-  { code: 'pa', name: 'Panjabi' },
-  { code: 'jv', name: 'Javanese' },
-  { code: 'ko', name: 'Korean' },
-  { code: 'vi', name: 'Vietnamese' },
-  { code: 'fr', name: 'French' },
-  { code: 'ur', name: 'Urdu' },
-  { code: 'it', name: 'Italian' },
-  { code: 'tr', name: 'Turkish' },
-  { code: 'fa', name: 'Persian' },
-  { code: 'pl', name: 'Polish' },
-  { code: 'uk', name: 'Ukrainian' },
-  { code: 'my', name: 'Burmese' },
-  { code: 'th', name: 'Thai' },
-]
 
 const VideoLibraryItem: React.VFC<
   Pick<Attachment, 'id' | 'name'> &
     Partial<Omit<Attachment, 'author'>> &
     DeepPick<Attachment, 'author.name'> & {
       onReUpload?: () => void
-      onCaptionUpload?: () => void
       onDelete?: () => void
     }
 > = ({
@@ -68,7 +45,6 @@ const VideoLibraryItem: React.VFC<
   updatedAt,
   options,
   onReUpload,
-  onCaptionUpload,
   onDelete,
 }) => {
   const { authToken } = useAuth()
@@ -80,7 +56,7 @@ const VideoLibraryItem: React.VFC<
       extra={[
         <PreviewButton block className="mb-2" videoId={id} title={name} />,
         <ReUploadButton block className="mb-2" videoId={id} onFinish={onReUpload} />,
-        <CaptionUploadButton block className="mb-2" videoId={id} onFinish={onCaptionUpload} />,
+        <CaptionUploadButton block className="mb-2" videoId={id} />,
         <DeleteButton block videoId={id} onDelete={onDelete} />,
       ]}
     >
@@ -152,54 +128,94 @@ const PreviewButton: React.VFC<{ videoId: string; title: string } & ButtonProps>
   )
 }
 
-const CaptionUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } & ButtonProps> = ({
-  videoId,
-  onFinish,
-  ...buttonProps
-}) => {
-  const { authToken } = useAuth()
+const CaptionUploadButton: React.VFC<{ videoId: string } & ButtonProps> = ({ videoId, ...buttonProps }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [languageCode, setLanguageCode] = useState<typeof captionLanguages[number]['code']>()
-  const uppy = useMemo(() => {
-    return new Uppy({
-      restrictions: {
-        maxNumberOfFiles: 1,
-        maxTotalFileSize: 10 * 1024 * 1024, // limited 10MB at once
-      },
-    })
-      .use(XHRUpload, {
-        endpoint: `${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}/captions/${languageCode}`,
-        headers: {
-          Authorization: `bearer ${authToken}`,
-        },
-      })
-      .on('complete', () => {
-        onFinish?.()
-      })
-  }, [authToken, languageCode, onFinish, videoId])
+
   return (
     <div>
       <Button onClick={() => setIsModalVisible(true)} {...buttonProps}>
-        {formatMessage(messages.uploadCaption)}
+        {formatMessage(messages.manageCaption)}
       </Button>
-      <Modal
-        footer={null}
-        title={formatMessage(messages.uploadCaption)}
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-      >
-        <Select style={{ width: '100%' }} showSearch value={languageCode} onChange={code => setLanguageCode(code)}>
-          {captionLanguages.map(captionLanguage => (
-            <Select.Option key={captionLanguage.code} value={captionLanguage.code}>
-              {captionLanguage.name}
-            </Select.Option>
-          ))}
-        </Select>
-        {languageCode && <FileInput uppy={uppy} pretty inputName="caption" />}
-        <StatusBar uppy={uppy} showProgressDetails />
-      </Modal>
+      {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
     </div>
+  )
+}
+
+const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ...modalProps }) => {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const { formatMessage } = useIntl()
+  const { captions, captionLanguages, refetch: refetchCaptions, deleteCaption, addCaption, uppy } = useCaptions(videoId)
+  const [languageCode, setLanguageCode] = useState<typeof captionLanguages[number]['code']>()
+  return (
+    <Modal visible footer={null} title={formatMessage(messages.manageCaption)} {...modalProps}>
+      <div className="d-flex mb-2">
+        {formatMessage(messages.uploadedCaptions)}：
+        {captions.map(caption => (
+          <Tag key={caption.language} className="mr-1" closable onClose={() => deleteCaption(caption.language)}>
+            {caption.label}
+          </Tag>
+        ))}
+      </div>
+      <Select
+        className="mb-2"
+        style={{ width: '100%' }}
+        showSearch
+        allowClear
+        placeholder={formatMessage(messages.chooseCaptionLanguage)}
+        value={languageCode}
+        onChange={code =>
+          addCaption(code).then(() => {
+            setLanguageCode('')
+            refetchCaptions()
+          })
+        }
+      >
+        {captionLanguages.map(captionLanguage => (
+          <Select.Option key={captionLanguage.code} value={captionLanguage.code}>
+            {captionLanguage.name}
+          </Select.Option>
+        ))}
+      </Select>
+      {uppy && (
+        <Button block onClick={() => inputRef.current?.click()}>
+          {formatMessage(messages.chooseFile)}
+        </Button>
+      )}
+      {uppy && (
+        <input
+          accept=".srt,.vtt"
+          ref={inputRef}
+          type="file"
+          hidden
+          onChange={e => {
+            const files = Array.from(e.target.files || [])
+            if (files.length > 0) {
+              uppy.reset()
+            }
+            files.forEach(file => {
+              try {
+                uppy.addFile({
+                  source: 'file input',
+                  name: file.name,
+                  type: file.type,
+                  data: file,
+                })
+              } catch (err: any) {
+                if (err.isRestriction) {
+                  // handle restrictions
+                  alert('Restriction error:' + err)
+                } else {
+                  // handle other errors
+                  console.error(err)
+                }
+              }
+            })
+          }}
+        />
+      )}
+      {uppy && <StatusBar uppy={uppy} hideUploadButton showProgressDetails />}
+    </Modal>
   )
 }
 

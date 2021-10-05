@@ -74,6 +74,7 @@ export const useProgram = (programId: string) => {
                   id
                   size
                   options
+                  duration
                 }
               }
             }
@@ -182,6 +183,7 @@ export const useProgram = (programId: string) => {
             id: pcv.attachment.id,
             size: pcv.attachment.size,
             options: pcv.attachment.options,
+            duration: pcv.attachment.duration,
           })),
         })),
       })),
