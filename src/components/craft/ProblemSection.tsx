@@ -1,11 +1,8 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftCollapse from 'lodestar-app-element/src/components/craft/CraftCollapse'
-import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import { CraftBackground, CraftCollapse, CraftLayout, CraftTitle } from 'lodestar-app-element/src/components/craft'
 import React from 'react'
-import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
+import { StyledBoxWrapper } from '.'
 
 const ProblemSection: React.VFC<{
   variant?: 'default' | 'card'

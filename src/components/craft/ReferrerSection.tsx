@@ -1,11 +1,13 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftCard from 'lodestar-app-element/src/components/craft/CraftCard'
-import CraftCarouselContainer from 'lodestar-app-element/src/components/craft/CraftCarouselContainer'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import {
+  CraftBackground,
+  CraftCard,
+  CraftCarouselContainer,
+  CraftTitle,
+} from 'lodestar-app-element/src/components/craft'
 import React from 'react'
-import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
+import { StyledBoxWrapper } from '.'
 
 const ReferrerSection: React.VFC<{
   variant?: 'default' | 'card'

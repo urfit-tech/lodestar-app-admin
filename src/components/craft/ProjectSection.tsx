@@ -1,16 +1,17 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftButton from 'lodestar-app-element/src/components/craft/CraftButton'
-import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
-import CraftProject from 'lodestar-app-element/src/components/craft/CraftProject'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import {
+  CraftBackground,
+  CraftButton,
+  CraftLayout,
+  CraftProject,
+  CraftTitle,
+} from 'lodestar-app-element/src/components/craft'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import { StyledBoxWrapper } from '.'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
-
 const ProjectSection: React.VFC<{ projectType?: 'pre-order' | 'funding' }> = ({ projectType = 'pre-order' }) => {
   const { formatMessage } = useIntl()
   const { connectors } = useEditor()

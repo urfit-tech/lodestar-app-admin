@@ -1,11 +1,9 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftInstructor from 'lodestar-app-element/src/components/craft/CraftInstructor'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import { CraftBackground, CraftInstructor, CraftTitle } from 'lodestar-app-element/src/components/craft'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
-import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
+import { StyledBoxWrapper } from '.'
 
 const InstructorSection: React.VFC = () => {
   const { connectors } = useEditor()

@@ -1,13 +1,15 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import CraftBackground from 'lodestar-app-element/src/components/craft/CraftBackground'
-import CraftContainer from 'lodestar-app-element/src/components/craft/CraftContainer'
-import CraftImage from 'lodestar-app-element/src/components/craft/CraftImage'
-import CraftLayout from 'lodestar-app-element/src/components/craft/CraftLayout'
-import CraftParagraph from 'lodestar-app-element/src/components/craft/CraftParagraph'
-import CraftTitle from 'lodestar-app-element/src/components/craft/CraftTitle'
+import {
+  CraftBackground,
+  CraftContainer,
+  CraftImage,
+  CraftLayout,
+  CraftParagraph,
+  CraftTitle,
+} from 'lodestar-app-element/src/components/craft'
 import React from 'react'
-import { StyledBoxWrapper } from '../../pages/CraftPage/CraftToolbox'
+import { StyledBoxWrapper } from '.'
 
 const Description: React.VFC = () => {
   const { connectors } = useEditor()
