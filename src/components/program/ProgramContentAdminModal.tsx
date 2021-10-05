@@ -191,11 +191,9 @@ const ProgramContentAdminModal: React.FC<{
               description: BraftEditor.createEditorState(programContentBody.description),
             }}
             onValuesChange={(values: Partial<FieldProps>) => {
-              if (form.getFieldValue('duration') <= 0) {
-                form.setFieldsValue({
-                  duration: values.videoAttachment?.options?.cloudflare?.duration || 0,
-                })
-              }
+              form.setFieldsValue({
+                duration: values.videoAttachment?.duration || form.getFieldValue('duration') || 0,
+              })
             }}
             onFinish={handleSubmit}
           >

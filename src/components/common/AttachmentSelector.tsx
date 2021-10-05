@@ -10,7 +10,7 @@ const messages = defineMessages({
   placeholder: { id: 'attachment.selector.placeholder', defaultMessage: '從媒體庫選擇' },
   refresh: { id: 'attachment.selector.refresh', defaultMessage: '重新整理' },
 })
-export type AttachmentSelectorValue = Pick<Attachment, 'id' | 'size' | 'options'>
+export type AttachmentSelectorValue = Pick<Attachment, 'id' | 'size' | 'options' | 'duration'>
 const AttachmentSelector: React.VFC<{
   status?: string
   contentType?: string
