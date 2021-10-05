@@ -24,7 +24,11 @@ import {
 } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import { appendPodcastProgramAudio, deletePodcastProgramAudio } from '../../pages/RecordingPageHelpers'
+import {
+  appendPodcastProgramAudio,
+  deletePodcastProgramAudio,
+  mergePodcastProgram,
+} from '../../pages/RecordingPageHelpers'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -93,9 +97,9 @@ const PodcastProgramContentForm: React.FC<{
     const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 
     setLoading(true)
+
     appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(async () => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
         form.setFields([{ name: 'duration', value: totalDuration }])
         await updatePodcastProgramDuration({
           variables: {
@@ -105,10 +109,16 @@ const PodcastProgramContentForm: React.FC<{
             durationSecond: totalDurationSecond,
           },
         })
+        await mergePodcastProgram(authToken, appId, podcastProgramAdmin.id)
+      })
+      .then(() => {
         onRefetch?.()
+        message.success(formatMessage(commonMessages.event.successfullyUpload))
       })
       .catch(handleError)
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   const handleSubmit = (values: FieldProps) => {
