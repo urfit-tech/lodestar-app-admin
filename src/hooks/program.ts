@@ -164,7 +164,7 @@ export const useProgram = (programId: string) => {
           publishedAt: pc.published_at && new Date(pc.published_at),
           listPrice: pc.list_price,
           duration: pc.duration,
-          programContentType: pc.program_content_type?.type || null,
+          programContentType: pc.program_content_videos.length > 0 ? 'video' : pc.program_content_type?.type || null,
           isNotifyUpdate: pc.is_notify_update,
           notifiedAt: pc.notified_at && new Date(pc.notified_at),
           programPlans: pc.program_content_plans.map(pcp => ({
@@ -675,7 +675,10 @@ export const useProgramContent = (programContentId: string) => {
         publishedAt: data.program_content_by_pk.published_at && new Date(data.program_content_by_pk.published_at),
         listPrice: data.program_content_by_pk.list_price,
         duration: data.program_content_by_pk.duration,
-        programContentType: data.program_content_by_pk.program_content_type?.type || null,
+        programContentType:
+          data.program_content_by_pk.program_content_videos.length > 0
+            ? 'video'
+            : data.program_content_by_pk.program_content_type?.type || null,
         isNotifyUpdate: data.program_content_by_pk.is_notify_update,
         notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
         programPlans: data.program_content_by_pk.program_content_plans.map(pcp => ({

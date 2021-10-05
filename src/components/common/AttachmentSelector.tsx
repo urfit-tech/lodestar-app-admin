@@ -14,8 +14,8 @@ export type AttachmentSelectorValue = Pick<Attachment, 'id' | 'size' | 'options'
 const AttachmentSelector: React.VFC<{
   status?: string
   contentType?: string
-  value?: AttachmentSelectorValue
-  onChange?: (attachment: AttachmentSelectorValue) => void
+  value?: AttachmentSelectorValue | null
+  onChange?: (attachment: AttachmentSelectorValue | null) => void
 }> = ({ status, contentType, value, onChange }) => {
   const { formatMessage } = useIntl()
   const { attachments, loading, refetch } = useAttachments({ contentType, status })
@@ -33,8 +33,8 @@ const AttachmentSelector: React.VFC<{
         filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
         value={value?.id}
         onChange={v => {
-          const selectedAttachment = attachments.find(attachment => attachment.id === v)
-          selectedAttachment && onChange?.(selectedAttachment)
+          const selectedAttachment = attachments.find(attachment => attachment.id === v) || null
+          onChange?.(selectedAttachment)
         }}
       >
         {attachments.map(attachment => (

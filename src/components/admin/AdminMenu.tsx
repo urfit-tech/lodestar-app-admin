@@ -1,4 +1,10 @@
-import Icon, { GlobalOutlined, GoldenFilled, RadarChartOutlined, ShoppingFilled } from '@ant-design/icons'
+import Icon, {
+  DatabaseOutlined,
+  GlobalOutlined,
+  GoldenFilled,
+  RadarChartOutlined,
+  ShoppingFilled,
+} from '@ant-design/icons'
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -66,6 +72,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       icon: () => <MoneyCircleIcon />,
       key: 'creator_sales',
       name: formatMessage(commonMessages.menu.salesAdmin),
+    },
+    {
+      permissionIsAllowed: currentUserRole === 'app-owner',
+      key: 'media_library',
+      icon: () => <DatabaseOutlined />,
+      name: formatMessage(commonMessages.menu.mediaLibrary),
     },
     {
       permissionIsAllowed:
@@ -420,12 +432,6 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(commonMessages.menu.menuSetup),
         },
       ],
-    },
-    {
-      permissionIsAllowed: currentUserRole === 'app-owner',
-      key: 'media_library',
-      icon: () => <UserIcon />,
-      name: formatMessage(commonMessages.menu.mediaLibrary),
     },
     {
       permissionIsAllowed: true,

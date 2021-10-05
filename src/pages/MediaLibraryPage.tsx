@@ -1,4 +1,4 @@
-import { BookOutlined } from '@ant-design/icons'
+import { DatabaseOutlined } from '@ant-design/icons'
 import Uppy from '@uppy/core'
 import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
@@ -88,7 +88,7 @@ const MediaLibrary: React.FC = () => {
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
-        <BookOutlined className="mr-3" />
+        <DatabaseOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.mediaLibrary)}</span>
       </AdminPageTitle>
       <div>
