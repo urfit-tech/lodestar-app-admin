@@ -4,8 +4,9 @@ import Tus from '@uppy/tus'
 import XHRUpload from '@uppy/xhr-upload'
 import { Button, List, Modal, Select } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
+import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { DeepPick } from 'ts-deep-pick/lib'
 import { Attachment, UploadState } from '../../types/general'
@@ -65,6 +66,26 @@ const VideoLibraryItem: React.VFC<
   onReUpload,
   onCaptionUpload,
 }) => {
+  const { authToken } = useAuth()
+  const [cloudflareOptions, setCloudflareOptions] = useState(options?.cloudflare)
+  useEffect(() => {
+    authToken &&
+      axios
+        .post(
+          `${process.env.REACT_APP_API_BASE_ROOT}/videos/${id}/sync`,
+          {},
+          {
+            headers: {
+              Authorization: `bearer ${authToken}`,
+            },
+          },
+        )
+        .then(({ data: { code, result } }) => {
+          if (code === 'SUCCESS') {
+            setCloudflareOptions(result.cloudflareOptions)
+          }
+        })
+  }, [authToken, id])
   return (
     <List.Item
       className="mb-3"
@@ -80,6 +101,7 @@ const VideoLibraryItem: React.VFC<
       />
       <div>
         <div>filename: {filename}</div>
+        <div>duration: {Math.ceil(Number(cloudflareOptions?.duration) / 60)} minute(s)</div>
         <div>Created: {createdAt}</div>
         <div>Updated: {updatedAt}</div>
       </div>
@@ -99,7 +121,7 @@ const PreviewButton: React.VFC<{ videoId: string; title: string } & ButtonProps>
       <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
         <VideoPlayer videoId={videoId} width="100%" />
       </Modal>
-      <Button onClick={() => setIsModalVisible(true)} {...buttonProps}>
+      <Button type="primary" onClick={() => setIsModalVisible(true)} {...buttonProps}>
         {formatMessage(messages.preview)}
       </Button>
     </div>
@@ -195,12 +217,7 @@ const ReUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } & But
   })
   return (
     <div>
-      <Button
-        disabled={uploadState === 'uploading'}
-        type="primary"
-        onClick={() => inputRef.current?.click()}
-        {...buttonProps}
-      >
+      <Button disabled={uploadState === 'uploading'} onClick={() => inputRef.current?.click()} {...buttonProps}>
         {formatMessage(messages.reUpload)}
       </Button>
       <input
