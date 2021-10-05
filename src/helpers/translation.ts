@@ -321,6 +321,7 @@ export const commonMessages = {
     visible: { id: 'common.status.visible', defaultMessage: '顯示' },
     invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
     orderPartialPaid: { id: 'common.status.orderPartialPaid', defaultMessage: '部分付款' },
+    noAuthority: { id: 'common.status.noAuthority', defaultMessage: '無此權限' },
   }),
   menu: defineMessages({
     mediaLibrary: { id: 'common.menu.mediaLibrary', defaultMessage: '媒體庫' },

@@ -2,6 +2,7 @@ import { Stream, StreamProps } from '@cloudflare/stream-react'
 import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
+import { commonMessages } from '../../helpers/translation'
 
 const VideoPlayer: React.VFC<{ videoId: string; animated?: boolean } & Partial<StreamProps>> = ({
   videoId,
@@ -32,7 +33,9 @@ const VideoPlayer: React.VFC<{ videoId: string; animated?: boolean } & Partial<S
         })
   }, [authToken, videoId])
   return isAuthenticating ? (
-    <div>Authenticating...</div>
+    <div className="text-center">Authenticating...</div>
+  ) : !authToken ? (
+    <div>{commonMessages.status.noAuthority}</div>
   ) : streamOptions ? (
     <Stream
       controls
@@ -40,9 +43,7 @@ const VideoPlayer: React.VFC<{ videoId: string; animated?: boolean } & Partial<S
       {...streamProps}
       src={streamOptions.token}
     />
-  ) : (
-    <div>Forbidden</div>
-  )
+  ) : null
 }
 
 export default VideoPlayer
