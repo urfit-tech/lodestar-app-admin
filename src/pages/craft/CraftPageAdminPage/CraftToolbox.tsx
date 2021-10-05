@@ -19,7 +19,7 @@ import {
   CTASection,
   CTAWithSubtitleSection,
   DescriptionSection,
-  EmbedSection,
+  // EmbedSection,
   FAQSection,
   FeatureSection,
   FeatureWithParagraphSection,
@@ -363,7 +363,7 @@ const CraftToolbox: React.VFC = () => {
           >
             <Image preview={false} src="https://static.kolable.com/images/default/craft/title-and-paragraph.png" />
           </StyledBoxWrapper>
-          <EmbedSection />
+          {/* <EmbedSection /> */}
         </>
       )}
       {(selected === 'button' || selected === undefined) && (
