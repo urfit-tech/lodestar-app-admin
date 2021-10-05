@@ -33,6 +33,7 @@
     ]
   },
   "dependencies": {
+    "ts-deep-pick": "0.2.2",
     "@ant-design/charts": "^1.1.17",
     "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.6.2",
@@ -143,8 +144,5 @@
       "prettier --write",
       "git add"
     ]
-  },
-  "devDependencies": {
-    "ts-deep-pick": "^0.2.2"
   }
 }
