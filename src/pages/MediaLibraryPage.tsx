@@ -2,16 +2,23 @@ import { DatabaseOutlined } from '@ant-design/icons'
 import Uppy from '@uppy/core'
 import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
-import { Button, List, Tabs } from 'antd'
+import { Button, Table, Tabs } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
 import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../components/admin'
 import AdminLayout from '../components/layout/AdminLayout'
-import VideoLibraryItem from '../components/library/VideoLibraryItem'
+import {
+  CaptionUploadButton,
+  DeleteButton,
+  PreviewButton,
+  ReUploadButton,
+} from '../components/library/VideoLibraryItem'
 import { commonMessages } from '../helpers/translation'
 import { useAttachments } from '../hooks/data'
 
@@ -33,11 +40,11 @@ const MediaLibrary: React.FC = () => {
   } = useAttachments()
 
   const [synchronizing, setSynchronizing] = useState(false)
-  const handleSync = useCallback(() => {
+  useEffect(() => {
     setSynchronizing(true)
     axios
       .post(
-        `${process.env.REACT_APP_API_BASE_ROOT}/videos/sync?forced=1`,
+        `${process.env.REACT_APP_API_BASE_ROOT}/videos/sync`,
         {},
         {
           headers: {
@@ -48,9 +55,6 @@ const MediaLibrary: React.FC = () => {
       .then(({ data: { code, result, error } }) => {
         if (code === 'SUCCESS') {
           refetchAttachments()
-          alert('sync completely')
-        } else {
-          alert(`error: ${error}`)
         }
       })
       .finally(() => setSynchronizing(false))
@@ -85,6 +89,72 @@ const MediaLibrary: React.FC = () => {
     defaultVisibleModal === 'video' && handleVideoAdd()
   }, [defaultVisibleModal, handleVideoAdd])
 
+  const videoAttachmentColumns: ColumnProps<typeof attachments[number]>[] = [
+    {
+      key: 'actions',
+      width: 0,
+      render: (_, attachment) => (
+        <div>
+          <div className="d-flex mb-1">
+            <PreviewButton className="mr-1" videoId={attachment.id} title={attachment.name} />
+            <ReUploadButton videoId={attachment.id} onFinish={() => refetchAttachments()} />
+          </div>
+          <div className="d-flex">
+            <CaptionUploadButton className="mr-1" videoId={attachment.id} />
+            <DeleteButton videoId={attachment.id} onDelete={() => refetchAttachments()} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      width: 80,
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text, attachment) => (
+        <div>
+          <div>{text}</div>
+          <small>
+            <span className="mr-1">{attachment.filename}</span>
+            {attachment.author?.name ? '@' + attachment.author.name : ''}
+          </small>
+        </div>
+      ),
+    },
+    {
+      title: 'Duration',
+      dataIndex: 'duration',
+      key: 'duration',
+      width: 120,
+      render: duration => `${Math.ceil(Number(duration) / 60)} min(s)`,
+    },
+    {
+      title: 'File size',
+      dataIndex: 'size',
+      key: 'size',
+      width: 100,
+      render: size => `${Math.ceil(Number(size) / 1024 / 1024)} MB`,
+    },
+    {
+      title: 'Create time',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 120,
+      render: text => moment(text).format('MM/DD HH:mm'),
+    },
+    {
+      title: 'Update time',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: 120,
+      render: text => moment(text).format('MM/DD HH:mm'),
+    },
+  ]
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -103,38 +173,17 @@ const MediaLibrary: React.FC = () => {
       </div>
       <Tabs activeKey={activeTabKey || 'video'} onChange={key => setActiveTabKey(key)}>
         <Tabs.TabPane tab={formatMessage(commonMessages.ui.video)} key="video">
-          <List
-            header={
-              <div className="d-flex justify-content-between">
-                <Button className="mr-2" type="link" onClick={handleVideoAdd}>
-                  <span className="mr-2">+</span>
-                  {formatMessage(commonMessages.ui.add)}
-                </Button>
-                <Button loading={synchronizing} onClick={handleSync}>
-                  Sync
-                </Button>
-              </div>
-            }
-            itemLayout="vertical"
-            dataSource={attachments.filter(attachment => attachment.contentType.startsWith('video/'))}
-            renderItem={item => (
-              <VideoLibraryItem
-                id={item.id}
-                name={item.name}
-                filename={item.filename}
-                author={item.author}
-                size={item.size}
-                duration={item.duration}
-                status={item.status}
-                options={item.options}
-                createdAt={item.createdAt}
-                updatedAt={item.updatedAt}
-                onReUpload={() => refetchAttachments()}
-                onDelete={() => refetchAttachments()}
-              />
-            )}
-            loading={loadingAttachments}
-          />
+          <Button className="mb-2" type="primary" onClick={handleVideoAdd}>
+            <span className="mr-2">+</span>
+            {formatMessage(commonMessages.ui.add)}
+          </Button>
+          <div className="overflow-auto">
+            <Table
+              loading={synchronizing || loadingAttachments}
+              columns={videoAttachmentColumns}
+              dataSource={attachments.filter(attachment => attachment.contentType.startsWith('video/'))}
+            />
+          </div>
         </Tabs.TabPane>
         <Tabs.TabPane tab={formatMessage(commonMessages.ui.image)} key="image">
           Content of Tab Pane 2

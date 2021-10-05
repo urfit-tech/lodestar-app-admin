@@ -1,3 +1,4 @@
+import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
 import Uppy from '@uppy/core'
 import { StatusBar, useUppy } from '@uppy/react'
 import Tus from '@uppy/tus'
@@ -51,15 +52,7 @@ const VideoLibraryItem: React.VFC<
   const [cloudflareOptions, setCloudflareOptions] = useState(options?.cloudflare)
 
   return (
-    <List.Item
-      className="mb-3"
-      extra={[
-        <PreviewButton block className="mb-2" videoId={id} title={name} />,
-        <ReUploadButton block className="mb-2" videoId={id} onFinish={onReUpload} />,
-        <CaptionUploadButton block className="mb-2" videoId={id} />,
-        <DeleteButton block videoId={id} onDelete={onDelete} />,
-      ]}
-    >
+    <List.Item className="mb-3" extra={[]}>
       <List.Item.Meta
         title={name}
         description={`${(size ? (size / 1024 / 1024).toFixed(1) : '-') + 'MB'} @${author?.name}`}
@@ -75,7 +68,7 @@ const VideoLibraryItem: React.VFC<
   )
 }
 
-const DeleteButton: React.VFC<{ videoId: string; onDelete?: () => void } & ButtonProps> = ({
+export const DeleteButton: React.VFC<{ videoId: string; onDelete?: () => void } & ButtonProps> = ({
   videoId,
   onDelete,
   ...buttonProps
@@ -103,13 +96,13 @@ const DeleteButton: React.VFC<{ videoId: string; onDelete?: () => void } & Butto
     }
   }
   return (
-    <Button loading={deleting} danger onClick={handleClick} {...buttonProps}>
-      {formatMessage(messages.delete)}
+    <Button size="small" loading={deleting} danger onClick={handleClick} {...buttonProps}>
+      <DeleteOutlined />
     </Button>
   )
 }
 
-const PreviewButton: React.VFC<{ videoId: string; title: string } & ButtonProps> = ({
+export const PreviewButton: React.VFC<{ videoId: string; title: string } & ButtonProps> = ({
   videoId,
   title,
   ...buttonProps
@@ -121,21 +114,21 @@ const PreviewButton: React.VFC<{ videoId: string; title: string } & ButtonProps>
       <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
         <VideoPlayer videoId={videoId} width="100%" />
       </Modal>
-      <Button type="primary" onClick={() => setIsModalVisible(true)} {...buttonProps}>
-        {formatMessage(messages.preview)}
+      <Button size="small" type="primary" onClick={() => setIsModalVisible(true)} {...buttonProps}>
+        <EyeOutlined />
       </Button>
     </div>
   )
 }
 
-const CaptionUploadButton: React.VFC<{ videoId: string } & ButtonProps> = ({ videoId, ...buttonProps }) => {
+export const CaptionUploadButton: React.VFC<{ videoId: string } & ButtonProps> = ({ videoId, ...buttonProps }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
     <div>
-      <Button onClick={() => setIsModalVisible(true)} {...buttonProps}>
-        {formatMessage(messages.manageCaption)}
+      <Button size="small" onClick={() => setIsModalVisible(true)} {...buttonProps}>
+        <FileWordOutlined />
       </Button>
       {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
     </div>
@@ -219,7 +212,7 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
   )
 }
 
-const ReUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } & ButtonProps> = ({
+export const ReUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } & ButtonProps> = ({
   videoId,
   onFinish,
   ...buttonProps
@@ -256,8 +249,13 @@ const ReUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } & But
   })
   return (
     <div>
-      <Button disabled={uploadState === 'uploading'} onClick={() => inputRef.current?.click()} {...buttonProps}>
-        {formatMessage(messages.reUpload)}
+      <Button
+        size="small"
+        disabled={uploadState === 'uploading'}
+        onClick={() => inputRef.current?.click()}
+        {...buttonProps}
+      >
+        <UploadOutlined />
       </Button>
       <input
         accept="video/*"
