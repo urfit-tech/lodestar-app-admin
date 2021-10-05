@@ -11,7 +11,7 @@ import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { StyledBoxWrapper } from '.'
-import { craftPageMessages } from '../../helpers/translation'
+import { craftPageMessages } from '../../../helpers/translation'
 const ProjectSection: React.VFC<{ projectType?: 'pre-order' | 'funding' }> = ({ projectType = 'pre-order' }) => {
   const { formatMessage } = useIntl()
   const { connectors } = useEditor()

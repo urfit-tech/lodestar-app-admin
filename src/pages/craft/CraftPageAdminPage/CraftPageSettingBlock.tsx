@@ -5,13 +5,12 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { configureResolver } from '../../../components/craft'
+import { configureResolver, CraftToolBox } from '../../../components/craft'
 import { handleError } from '../../../helpers'
 import { commonMessages, craftPageMessages } from '../../../helpers/translation'
 import { useMutateAppPage } from '../../../hooks/appPage'
 import { BrushIcon, PageIcon } from '../../../images/icon'
 import { CraftPageAdminProps } from '../../../types/craft'
-import CraftToolbox from './CraftToolbox'
 
 const messages = defineMessages({
   saveAndUpdate: { id: 'project.ui.saveAndUpdate', defaultMessage: '儲存並更新' },
@@ -154,7 +153,7 @@ const SettingBlock: React.VFC<{
         )}
       >
         <StyledTabsPane key="component" tab={<StyledPageIcon active={activeKey} />}>
-          <CraftToolbox />
+          <CraftToolBox />
         </StyledTabsPane>
         <StyledTabsPane key="settings" tab={<StyledBrushIcon active={activeKey} />}>
           <CraftSettingsPanel onDelete={() => setActiveKey('component')} />

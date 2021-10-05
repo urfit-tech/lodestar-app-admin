@@ -11,27 +11,28 @@ import {
 } from 'lodestar-app-element/src/components/craft'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { StyledFullWidthSelect } from '../../../components/admin'
-import {
-  ActivitySection,
-  CraftStatisticsSection,
-  CreatorSection,
-  CTASection,
-  CTAWithSubtitleSection,
-  DescriptionSection,
-  // EmbedSection,
-  FAQSection,
-  FeatureSection,
-  FeatureWithParagraphSection,
-  InstructorSection,
-  PodcastProgramSection,
-  ProblemSection,
-  ProgramSection,
-  ProjectSection,
-  ReferrerSection,
-  StyledBoxWrapper,
-} from '../../../components/craft'
+import styled from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import { StyledFullWidthSelect } from '../../admin'
+import ActivitySection from './ActivitySection'
+import CreatorSection from './CreatorSection'
+import CTASection from './CTASection'
+import CTAWithSubtitleSection from './CTAWithSubtitleSection'
+import DescriptionSection from './DescriptionSection'
+import FAQSection from './FAQSection'
+import FeatureSection from './FeatureSection'
+import FeatureWithParagraphSection from './FeatureWithParagraphSection'
+import InstructorSection from './InstructorSection'
+import PodcastProgramSection from './PodcastProgramSection'
+import ProblemSection from './ProblemSection'
+import ProgramSection from './ProgramSection'
+import ProjectSection from './ProjectSection'
+import ReferrerSection from './ReferrerSection'
+import StatisticsSection from './StatisticsSection'
+
+export const StyledBoxWrapper = styled.div`
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+`
 
 const CraftToolbox: React.VFC = () => {
   const { connectors } = useEditor()
@@ -218,9 +219,9 @@ const CraftToolbox: React.VFC = () => {
 
       {(selected === 'statistics' || selected === undefined) && (
         <>
-          <CraftStatisticsSection />
-          <CraftStatisticsSection variant="dark" />
-          <CraftStatisticsSection variant="image" />
+          <StatisticsSection />
+          <StatisticsSection variant="dark" />
+          <StatisticsSection variant="image" />
         </>
       )}
 

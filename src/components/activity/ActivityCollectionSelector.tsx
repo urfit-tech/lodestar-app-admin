@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledCraftSettingLabel } from '../craft'
+import { StyledCraftSettingLabel } from '../craft/settings'
 
 const ActivityCollectionSelector: React.FC<{
   value?: ActivityCollection
