@@ -38,6 +38,7 @@ type SingleUploaderProps = UploadProps & {
   onSuccess?: (info: UploadChangeParam<UploadFile>) => void
   onError?: (info: UploadChangeParam<UploadFile>) => void
   withExtension?: boolean
+  fileSizeLimitInfo?: { text: string; size: number }
 }
 const SingleUploader: React.FC<SingleUploaderProps> = ({
   path,
@@ -52,6 +53,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
   onCancel,
   isPublic,
   withExtension,
+  fileSizeLimitInfo,
   fileList,
   ...uploadProps
 }) => {
@@ -87,6 +89,13 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
     customRequest: option => {
       const { file, onProgress, onError, onSuccess } = option
       setLoading(true)
+
+      // file size limit
+      if (fileSizeLimitInfo && file.size > fileSizeLimitInfo.size) {
+        message.error(fileSizeLimitInfo.text)
+        return
+      }
+
       uploadFile(withExtension ? path + extname(file.name) : path, file, authToken, {
         onUploadProgress: progressEvent => {
           onProgress(

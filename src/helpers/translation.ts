@@ -990,6 +990,7 @@ export const podcastMessages = {
       id: 'podcast.text.browserNotSupported',
       defaultMessage: '本瀏覽器尚不支援錄音功能，請改用 Safari 瀏覽器',
     },
+    audioFileLimit: { id: 'podcast.text.audioFileLimit', defaultMessage: '檔案大小超過250MB，請重新選擇檔案上傳' },
   }),
 }
 export const podcastAlbumMessages = {

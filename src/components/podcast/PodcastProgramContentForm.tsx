@@ -180,7 +180,7 @@ const PodcastProgramContentForm: React.FC<{
             path={`audios/${appId}/${podcastProgramAdmin.id}/${uploadAudioBase}.mp3`}
             onSuccess={handleUploadAudio}
             className="mr-2"
-            fileSizeLimit={{ text: formatMessage(podcastMessages.text.audioFileLimit), size: 262144000 }}
+            fileSizeLimitInfo={{ text: formatMessage(podcastMessages.text.audioFileLimit), size: 262144000 }}
           />
         </Form.Item>
         {enabledModules.podcast_recording && (
