@@ -969,7 +969,7 @@ export const podcastMessages = {
     podcastAbstract: { id: 'podcast.label.podcastAbstract', defaultMessage: '廣播摘要' },
   }),
   text: defineMessages({
-    audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：5MB' },
+    audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：250MB' },
     podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議圖片尺寸：1200*1200px' },
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
     generatingVoice: { id: 'podcast.text.generatingVoice', defaultMessage: '音檔生成中，請稍待片刻' },
