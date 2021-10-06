@@ -114,11 +114,10 @@ const PodcastProgramContentForm: React.FC<{
       .then(() => {
         onRefetch?.()
         message.success(formatMessage(commonMessages.event.successfullyUpload))
-      })
-      .catch(handleError)
-      .finally(() => {
         setLoading(false)
       })
+      .catch(handleError)
+      .finally(() => {})
   }
 
   const handleSubmit = (values: FieldProps) => {
@@ -181,6 +180,7 @@ const PodcastProgramContentForm: React.FC<{
             path={`audios/${appId}/${podcastProgramAdmin.id}/${uploadAudioBase}.mp3`}
             onSuccess={handleUploadAudio}
             className="mr-2"
+            fileSizeLimit={{ text: formatMessage(podcastMessages.text.audioFileLimit), size: 262144000 }}
           />
         </Form.Item>
         {enabledModules.podcast_recording && (
