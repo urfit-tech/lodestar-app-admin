@@ -10,8 +10,6 @@ import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import MemberNoteAdminModal from 'lodestar-app-admin/src/components/member/MemberNoteAdminModal'
-import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import {
   currencyFormatter,
   dateFormatter,
@@ -22,6 +20,8 @@ import {
 import { commonMessages, memberMessages, podcastMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from 'lodestar-app-admin/src/hooks/data'
 import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
