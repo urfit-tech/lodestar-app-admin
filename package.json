@@ -128,6 +128,7 @@
     "standardized-audio-context": "^25.1.9",
     "styled-components": "5.1.1",
     "typescript": "4.3.5",
+    "ts-deep-pick": "^0.2.2",
     "use-query-params": "1.2.3",
     "uuid": "8.3.2",
     "wavesurfer.js": "^4.1.1"
@@ -143,8 +144,5 @@
       "prettier --write",
       "git add"
     ]
-  },
-  "devDependencies": {
-    "ts-deep-pick": "^0.2.2"
   }
 }
