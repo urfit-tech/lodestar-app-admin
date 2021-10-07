@@ -1,4 +1,4 @@
-import { DatabaseOutlined } from '@ant-design/icons'
+import { DatabaseOutlined, RedoOutlined } from '@ant-design/icons'
 import Uppy from '@uppy/core'
 import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
@@ -40,7 +40,7 @@ const MediaLibrary: React.FC = () => {
   } = useAttachments()
 
   const [synchronizing, setSynchronizing] = useState(false)
-  useEffect(() => {
+  const handleSync = useCallback(() => {
     setSynchronizing(true)
     axios
       .post(
@@ -80,14 +80,19 @@ const MediaLibrary: React.FC = () => {
           },
         })
         .on('complete', () => {
+          handleSync()
           refetchAttachments()
         }),
     )
-  }, [authToken, refetchAttachments])
+  }, [authToken, handleSync, refetchAttachments])
 
   useEffect(() => {
     defaultVisibleModal === 'video' && handleVideoAdd()
   }, [defaultVisibleModal, handleVideoAdd])
+
+  useEffect(() => {
+    handleSync()
+  }, [handleSync])
 
   const videoAttachmentColumns: ColumnProps<typeof attachments[number]>[] = [
     {
@@ -97,7 +102,13 @@ const MediaLibrary: React.FC = () => {
         <div>
           <div className="d-flex mb-1">
             <PreviewButton className="mr-1" videoId={attachment.id} title={attachment.name} />
-            <ReUploadButton videoId={attachment.id} onFinish={() => refetchAttachments()} />
+            <ReUploadButton
+              videoId={attachment.id}
+              onFinish={() => {
+                handleSync()
+                refetchAttachments()
+              }}
+            />
           </div>
           <div className="d-flex">
             <CaptionUploadButton className="mr-1" videoId={attachment.id} />
@@ -173,10 +184,20 @@ const MediaLibrary: React.FC = () => {
       </div>
       <Tabs activeKey={activeTabKey || 'video'} onChange={key => setActiveTabKey(key)}>
         <Tabs.TabPane tab={formatMessage(commonMessages.ui.video)} key="video">
-          <Button className="mb-2" type="primary" onClick={handleVideoAdd}>
-            <span className="mr-2">+</span>
-            {formatMessage(commonMessages.ui.add)}
-          </Button>
+          <div>
+            <Button className="mb-2 mr-1" type="primary" onClick={handleVideoAdd}>
+              <span className="mr-2">+</span>
+              {formatMessage(commonMessages.ui.add)}
+            </Button>
+            <Button
+              onClick={() => {
+                handleSync()
+                refetchAttachments()
+              }}
+            >
+              <RedoOutlined />
+            </Button>
+          </div>
           <div className="overflow-auto">
             <Table
               loading={synchronizing || loadingAttachments}
