@@ -9659,13 +9659,13 @@ export interface GET_PRODUCT_SKUVariables {
 
 export interface GET_ATTACHMENTS_attachment_aggregate_aggregate_max {
   __typename: "attachment_max_fields";
-  size: number | null;
+  size: any | null;
   duration: any | null;
 }
 
 export interface GET_ATTACHMENTS_attachment_aggregate_aggregate_sum {
   __typename: "attachment_sum_fields";
-  size: number | null;
+  size: any | null;
   duration: any | null;
 }
 
@@ -9685,7 +9685,7 @@ export interface GET_ATTACHMENTS_attachment_aggregate_nodes {
   id: any;
   name: string | null;
   filename: string | null;
-  size: number;
+  size: any;
   duration: any | null;
   status: string;
   /**
@@ -9716,6 +9716,7 @@ export interface GET_ATTACHMENTS {
 }
 
 export interface GET_ATTACHMENTSVariables {
+  currentMemberId?: string | null;
   status?: string | null;
   contentTypeLike?: string | null;
 }
@@ -11570,7 +11571,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos_attachment {
   __typename: "attachment";
   id: any;
-  size: number;
+  size: any;
   options: any | null;
   duration: any | null;
 }
@@ -12198,7 +12199,7 @@ export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_cont
 export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_videos_attachment {
   __typename: "attachment";
   id: any;
-  size: number;
+  size: any;
   options: any | null;
 }
 
@@ -20173,7 +20174,7 @@ export interface attachment_bool_exp {
   is_deleted?: Boolean_comparison_exp | null;
   name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
-  size?: Int_comparison_exp | null;
+  size?: numeric_comparison_exp | null;
   status?: String_comparison_exp | null;
   target?: String_comparison_exp | null;
   thumbnail_url?: String_comparison_exp | null;
@@ -20197,7 +20198,7 @@ export interface attachment_insert_input {
   is_deleted?: boolean | null;
   name?: string | null;
   options?: any | null;
-  size?: number | null;
+  size?: any | null;
   status?: string | null;
   target?: string | null;
   thumbnail_url?: string | null;

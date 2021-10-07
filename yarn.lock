@@ -16837,7 +16837,7 @@ tryer@^1.0.1:
   resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
   integrity sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==
 
-ts-deep-pick@^0.2.2:
+ts-deep-pick@0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/ts-deep-pick/-/ts-deep-pick-0.2.2.tgz#004219c60d997cac2b1d8bb9db024b84643ef0b5"
   integrity sha512-DFR0THXKY8Hil84r4vx5Ofb7zVryHCBfv/vYcgbDyymmivdB1vUcBwbYsDzP3j9pwnQqVFNZZplYu628STrXAA==

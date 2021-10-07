@@ -825,12 +825,17 @@ export const useProductSku = (productId: string) => {
 }
 
 export const useAttachments = (options?: { contentType?: string; status?: string }) => {
+  const { currentMemberId, currentUserRole } = useAuth()
   const contentTypeLike = options?.contentType?.replace('*', '%')
   const { data, loading, refetch } = useQuery<hasura.GET_ATTACHMENTS, hasura.GET_ATTACHMENTSVariables>(
     gql`
-      query GET_ATTACHMENTS($status: String, $contentTypeLike: String) {
+      query GET_ATTACHMENTS($currentMemberId: String, $status: String, $contentTypeLike: String) {
         attachment_aggregate(
-          where: { status: { _eq: $status }, content_type: { _like: $contentTypeLike } }
+          where: {
+            author_id: { _eq: $currentMemberId }
+            status: { _eq: $status }
+            content_type: { _like: $contentTypeLike }
+          }
           order_by: [{ created_at: desc }]
         ) {
           aggregate {
@@ -863,7 +868,11 @@ export const useAttachments = (options?: { contentType?: string; status?: string
       }
     `,
     {
-      variables: { contentTypeLike, status: options?.status },
+      variables: {
+        currentMemberId: currentUserRole === 'app-owner' ? undefined : currentMemberId,
+        contentTypeLike,
+        status: options?.status,
+      },
     },
   )
   const attachments: DeepPick<Attachment, '~author.name'>[] = useMemo(
