@@ -9,14 +9,14 @@ import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import MemberCreationModal from 'lodestar-app-admin/src/components/member/MemberCreationModal'
 import MemberExportModal from 'lodestar-app-admin/src/components/member/MemberExportModal'
 import MemberImportModal from 'lodestar-app-admin/src/components/member/MemberImportModal'
-import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from 'lodestar-app-admin/src/hooks/member'
 import { usePermissionGroupsDropdownMenu } from 'lodestar-app-admin/src/hooks/permission'
 import { ReactComponent as TableIcon } from 'lodestar-app-admin/src/images/icon/table.svg'
 import { MemberInfoProps, UserRole } from 'lodestar-app-admin/src/types/member'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useContext, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -373,41 +373,45 @@ const MemberCollectionAdminPage: React.FC = () => {
           )}
         </div>
 
-        <Popover
-          trigger="click"
-          placement="bottomLeft"
-          content={
-            <StyledOverlay>
-              <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
-              <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
-                <FilterWrapper>
-                  {allColumns.map(column =>
-                    column ? (
-                      <Checkbox key={column.id} value={column.id}>
-                        {column.title}
-                      </Checkbox>
-                    ) : null,
-                  )}
-                </FilterWrapper>
-              </Checkbox.Group>
-            </StyledOverlay>
-          }
-        >
-          <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
-            {formatMessage(memberMessages.label.field)}
-          </StyledButton>
-        </Popover>
-        <div className="mr-2">{permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}</div>
-        <div className="mr-2">
-          <MemberImportModal appId={appId} filter={fieldFilter} />
+        <div className="d-flex">
+          <Popover
+            trigger="click"
+            placement="bottomLeft"
+            content={
+              <StyledOverlay>
+                <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
+                <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
+                  <FilterWrapper>
+                    {allColumns.map(column =>
+                      column ? (
+                        <Checkbox key={column.id} value={column.id}>
+                          {column.title}
+                        </Checkbox>
+                      ) : null,
+                    )}
+                  </FilterWrapper>
+                </Checkbox.Group>
+              </StyledOverlay>
+            }
+          >
+            <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
+              {formatMessage(memberMessages.label.field)}
+            </StyledButton>
+          </Popover>
+          <div className="mr-2">
+            {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
+          </div>
+          <div className="mr-2">
+            <MemberImportModal appId={appId} filter={fieldFilter} />
+          </div>
+          <MemberExportModal
+            appId="xuemi"
+            filter={{
+              ...fieldFilter,
+              managerId: currentUserRole === 'general-member' ? currentMemberId || '' : undefined,
+            }}
+          />
         </div>
-        <MemberExportModal
-          appId="xuemi"
-          filter={{
-            ...fieldFilter,
-            managerId: currentUserRole === 'general-member' ? currentMemberId || '' : undefined,
-          }}
-        />
       </div>
 
       <AdminCard className="mb-5">
