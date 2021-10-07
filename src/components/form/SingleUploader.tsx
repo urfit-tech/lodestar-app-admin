@@ -93,6 +93,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
       // file size limit
       if (fileSizeLimitInfo && file.size > fileSizeLimitInfo.size) {
         message.error(fileSizeLimitInfo.text)
+        setLoading(false)
         return
       }
 
