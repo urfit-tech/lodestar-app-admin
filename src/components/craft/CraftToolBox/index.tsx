@@ -6,6 +6,7 @@ import {
   CraftCarousel,
   CraftImage,
   CraftParagraph,
+  CraftProgramCollection,
   CraftTitle,
   CraftTitleAndParagraph,
 } from 'lodestar-app-element/src/components/craft'
@@ -96,6 +97,15 @@ const CraftToolbox: React.VFC = () => {
           {formatMessage(craftPageMessages.label.textBlock)}
         </Select.Option>
       </StyledFullWidthSelect>
+      <StyledBoxWrapper
+        className="mb-3"
+        ref={ref =>
+          ref &&
+          connectors.create(ref, <Element is={CraftProgramCollection} options={{ source: 'publishedAt', limit: 4 }} />)
+        }
+      >
+        <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title-dark.png" />
+      </StyledBoxWrapper>
 
       {(selected === 'cover' || selected === undefined) && (
         <>

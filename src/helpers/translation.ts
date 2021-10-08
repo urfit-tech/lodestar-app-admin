@@ -1316,6 +1316,9 @@ export const craftPageMessages = {
     scrollAmount: { id: 'craft.label.scrollAmount', defaultMessage: '捲動數量' },
     ratio: { id: 'craft.label.ratio', defaultMessage: '比例' },
     displayAmount: { id: 'craft.label.displayAmount', defaultMessage: '資料顯示數量' },
+    sort: { id: 'craft.label.sort', defaultMessage: '排序方式' },
+    sortAsc: { id: 'craft.label.sortAsc', defaultMessage: '正序' },
+    sortDesc: { id: 'craft.label.sortDesc', defaultMessage: '倒序' },
     title: { id: 'craft.label.title', defaultMessage: '標題' },
     titleContent: { id: 'craft.label.titleContent', defaultMessage: '標題內容' },
     content: { id: 'craft.label.content', defaultMessage: '內文' },
@@ -1395,6 +1398,7 @@ export const craftPageMessages = {
     categorySelector: { id: 'craft.label.categorySelector', defaultMessage: '分類選擇器' },
     categorySelectorEnabled: { id: 'craft.label.categorySelectorEnabled', defaultMessage: '啟用分類選擇器' },
     defaultCategoryId: { id: 'craft.label.defaultCategoryId', defaultMessage: '預設分類' },
+    defaultTagName: { id: 'craft.label.defaultTagName', defaultMessage: '預設標籤' },
     choiceData: { id: 'craft.label.choiceData', defaultMessage: '選擇資料' },
     program: { id: 'craft.label.program', defaultMessage: '課程' },
     activity: { id: 'craft.label.activity', defaultMessage: '活動' },
@@ -1403,6 +1407,8 @@ export const craftPageMessages = {
     fundraising: { id: 'craft.label.fundraising', defaultMessage: '募資' },
     preOrder: { id: 'craft.label.preOrder', defaultMessage: '預購' },
     newest: { id: 'craft.label.newest', defaultMessage: '最新上架' },
+    publishedAt: { id: 'craft.label.publishedAt', defaultMessage: '依上架日期' },
+    currentPrice: { id: 'craft.label.currentPrice', defaultMessage: '依產品價錢' },
     custom: { id: 'craft.label.newest', defaultMessage: '自訂項目' },
     ruleOfSort: { id: 'craft.label.ruleOfSort', defaultMessage: '排序規則' },
     boundary: { id: 'craft.label.boundary', defaultMessage: '邊界' },
@@ -1413,6 +1419,10 @@ export const craftPageMessages = {
     chooseCategories: {
       id: 'craft.text.chooseCategories',
       defaultMessage: '選擇分類',
+    },
+    chooseTags: {
+      id: 'craft.text.chooseTags',
+      defaultMessage: '選擇標籤',
     },
     deleteWarning: {
       id: 'craft.text.deleteWarning',

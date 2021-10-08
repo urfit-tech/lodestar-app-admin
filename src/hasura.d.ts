@@ -5275,6 +5275,50 @@ export interface UPDATE_PROGRAM_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_CATEGORIES
+// ====================================================
+
+export interface GET_PROGRAM_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PROGRAM_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_PROGRAM_CATEGORIES_category[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_ID_LIST
+// ====================================================
+
+export interface GET_PROGRAM_ID_LIST_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_ID_LIST {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_ID_LIST_program[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
 
@@ -6044,6 +6088,27 @@ export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT {
 
 export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables {
   programPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_TAGS
+// ====================================================
+
+export interface GET_PROGRAM_TAGS_program_tag {
+  __typename: "program_tag";
+  tag_name: string;
+}
+
+export interface GET_PROGRAM_TAGS {
+  /**
+   * fetch data from the table: "program_tag"
+   */
+  program_tag: GET_PROGRAM_TAGS_program_tag[];
 }
 
 /* tslint:disable */

@@ -18,6 +18,7 @@ import {
   CraftStatistics,
   CraftTitle,
   CraftTitleAndParagraph,
+  CraftProgramCollection,
 } from 'lodestar-app-element/src/components/craft'
 import {
   ActivitySettings,
@@ -41,11 +42,22 @@ import {
   TitleSettings,
 } from '../../components/craft/settings'
 import CraftToolBox from './CraftToolBox'
+import ProgramCollectionSettings from './settings/ProgramCollectionSettings'
 
 const configureResolver = () => {
   CraftActivity.craft = {
     related: {
       settings: ActivitySettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
+  CraftProgramCollection.craft = {
+    related: {
+      settings: ProgramCollectionSettings,
     },
     custom: {
       button: {
@@ -224,6 +236,7 @@ const configureResolver = () => {
     CraftCollapse,
     CraftBackground,
     CraftProgram,
+    CraftProgramCollection,
     CraftProject,
     CraftActivity,
     CraftPodcastProgram,

@@ -3,6 +3,7 @@ import { Button, message, Tabs } from 'antd'
 import { CraftContainer } from 'lodestar-app-element/src/components/craft'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
+import Draggable from 'react-draggable'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { configureResolver, CraftToolBox } from '../../../components/craft'
@@ -13,7 +14,8 @@ import { BrushIcon, PageIcon } from '../../../images/icon'
 import { CraftPageAdminProps } from '../../../types/craft'
 
 const messages = defineMessages({
-  saveAndUpdate: { id: 'project.ui.saveAndUpdate', defaultMessage: '儲存並更新' },
+  settings: { id: 'appPage.ui.settings', defaultMessage: '元件設定' },
+  saveAndUpdate: { id: 'appPage.ui.saveAndUpdate', defaultMessage: '儲存並更新' },
 })
 
 const StyledScrollBar = styled.div`
@@ -85,21 +87,20 @@ const CraftPageSettingBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps | null
   onRefetch?: () => void
 }> = ({ pageAdmin, onRefetch }) => {
-  const [activeKey, setActiveKey] = useState('component')
-
+  const resolver = configureResolver()
   return (
-    <Editor resolver={configureResolver()}>
+    <Editor resolver={resolver}>
       <div className="d-flex">
         <StyledScrollBar>
           <StyledContent>
-            <div style={{ height: 'auto', background: 'white' }} onClick={() => setActiveKey('settings')}>
+            <div style={{ height: 'auto', background: 'white' }}>
               <Frame data={pageAdmin?.craftData ? JSON.stringify(pageAdmin.craftData) : undefined}>
                 <Element is={CraftContainer} margin={{}} padding={{ pb: '40', pt: '40', pr: '40', pl: '40' }} canvas />
               </Frame>
             </div>
           </StyledContent>
         </StyledScrollBar>
-        <SettingBlock pageId={pageAdmin?.id} activeKey={activeKey} setActiveKey={setActiveKey} onRefetch={onRefetch} />
+        <SettingBlock pageId={pageAdmin?.id} onRefetch={onRefetch} />
       </div>
     </Editor>
   )
@@ -107,10 +108,8 @@ const CraftPageSettingBlock: React.VFC<{
 
 const SettingBlock: React.VFC<{
   pageId?: string
-  activeKey: string
-  setActiveKey: React.Dispatch<React.SetStateAction<string>>
   onRefetch?: () => void
-}> = ({ pageId, activeKey, setActiveKey, onRefetch }) => {
+}> = ({ pageId, onRefetch }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const { updateAppPage } = useMutateAppPage()
@@ -140,9 +139,9 @@ const SettingBlock: React.VFC<{
 
   return (
     <StyledSettingBlock>
+      <CraftSettingsPanel />
       <StyledTabs
-        activeKey={activeKey || 'component'}
-        onChange={key => setActiveKey(key)}
+        activeKey="component"
         renderTabBar={(props, DefaultTabBar) => (
           <StyledTabBarWrapper>
             <DefaultTabBar {...props} className="mb-0" />
@@ -152,18 +151,15 @@ const SettingBlock: React.VFC<{
           </StyledTabBarWrapper>
         )}
       >
-        <StyledTabsPane key="component" tab={<StyledPageIcon active={activeKey} />}>
+        <StyledTabsPane key="component" tab={<StyledPageIcon active="component" />}>
           <CraftToolBox />
-        </StyledTabsPane>
-        <StyledTabsPane key="settings" tab={<StyledBrushIcon active={activeKey} />}>
-          <CraftSettingsPanel onDelete={() => setActiveKey('component')} />
         </StyledTabsPane>
       </StyledTabs>
     </StyledSettingBlock>
   )
 }
 
-const CraftSettingsPanel: React.VFC<{ onDelete?: () => void }> = ({ onDelete }) => {
+const CraftSettingsPanel: React.VFC = () => {
   const { formatMessage } = useIntl()
   const {
     query: { node },
@@ -186,27 +182,53 @@ const CraftSettingsPanel: React.VFC<{ onDelete?: () => void }> = ({ onDelete }) 
   })
 
   return (
-    <div className="px-3 mb-4">
-      {selected && selected.settings && React.createElement(selected.settings)}
-      {selected && selected.labelName && (
-        <Button
-          block
-          onClick={() => {
-            if (node(selected.id).isRoot()) {
-              return
-            }
-            if (window.confirm(formatMessage(craftPageMessages.text.deleteWarning))) {
-              actions.delete(selected.id)
-              onDelete?.()
-            }
+    <Draggable handle=".draggable" defaultPosition={{ x: -32, y: 32 }}>
+      <div
+        style={{
+          background: 'white',
+          position: 'fixed',
+          width: 280,
+          zIndex: 999,
+          border: '1px solid gray',
+          display: selected ? 'block' : 'none',
+        }}
+      >
+        <div
+          className="draggable cursor-pointer d-flex p-3 justify-content-between align-items-center"
+          style={{ borderBottom: '1px solid lightgrey' }}
+        >
+          {formatMessage(messages.settings)}
+          <button onClick={() => actions.selectNode()}>X</button>
+        </div>
+        <div
+          className="p-3"
+          style={{
+            height: '70vh',
+            overflow: 'auto',
           }}
         >
-          {selected.labelName === 'deleteBlock'
-            ? formatMessage(craftPageMessages.ui.deleteBlock)
-            : formatMessage(craftPageMessages.ui.deleteAllBlock)}
-        </Button>
-      )}
-    </div>
+          {selected && selected.settings && React.createElement(selected.settings)}
+          {selected && selected.labelName && (
+            <Button
+              block
+              danger
+              onClick={() => {
+                if (node(selected.id).isRoot()) {
+                  return
+                }
+                if (window.confirm(formatMessage(craftPageMessages.text.deleteWarning))) {
+                  actions.delete(selected.id)
+                }
+              }}
+            >
+              {selected.labelName === 'deleteBlock'
+                ? formatMessage(craftPageMessages.ui.deleteBlock)
+                : formatMessage(craftPageMessages.ui.deleteAllBlock)}
+            </Button>
+          )}
+        </div>
+      </div>
+    </Draggable>
   )
 }
 
