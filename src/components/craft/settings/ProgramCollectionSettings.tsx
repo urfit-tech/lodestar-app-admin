@@ -5,6 +5,7 @@ import { CraftProgramCollectionProps } from 'lodestar-app-element/src/components
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
 import { CraftSettingLabel } from '../../admin'
+import ResponsiveInput from '../../common/ResponsiveInput'
 import ProgramCollectionSelector from '../../program/ProgramCollectionSelector'
 
 const ProgramCollectionSettings: React.VFC = () => {
@@ -26,6 +27,9 @@ const ProgramCollectionSettings: React.VFC = () => {
           .validateFields()
           .then(values => {
             node.actions.setProp(props => {
+              props.gap = values.gap
+              props.gutter = values.gutter
+              props.columns = values.columns
               props.options = values.options
               props.withSelector = values.withSelector
             })
@@ -42,6 +46,15 @@ const ProgramCollectionSettings: React.VFC = () => {
       </Form.Item>
       <Form.Item name="options" className="mb-0">
         <ProgramCollectionSelector />
+      </Form.Item>
+      <Form.Item name="columns">
+        <ResponsiveInput label="columns" />
+      </Form.Item>
+      <Form.Item name="gutter">
+        <ResponsiveInput label="gutter" />
+      </Form.Item>
+      <Form.Item name="gap">
+        <ResponsiveInput label="gap" />
       </Form.Item>
     </Form>
   )

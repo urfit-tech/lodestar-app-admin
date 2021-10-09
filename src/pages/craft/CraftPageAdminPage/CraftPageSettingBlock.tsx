@@ -182,12 +182,12 @@ const CraftSettingsPanel: React.VFC = () => {
   })
 
   return (
-    <Draggable handle=".draggable" defaultPosition={{ x: -32, y: 32 }}>
+    <Draggable handle=".draggable" defaultPosition={{ x: -200, y: 32 }}>
       <div
         style={{
           background: 'white',
           position: 'fixed',
-          width: 280,
+          width: 400,
           zIndex: 999,
           border: '1px solid gray',
           display: selected ? 'block' : 'none',
