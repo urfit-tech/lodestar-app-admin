@@ -4,7 +4,6 @@ import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
 import { Button, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import axios from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -39,26 +38,6 @@ const MediaLibrary: React.FC = () => {
     refetch: refetchAttachments,
   } = useAttachments()
 
-  const [synchronizing, setSynchronizing] = useState(false)
-  const handleSync = useCallback(() => {
-    setSynchronizing(true)
-    axios
-      .post(
-        `${process.env.REACT_APP_API_BASE_ROOT}/videos/sync`,
-        {},
-        {
-          headers: {
-            Authorization: `bearer ${authToken}`,
-          },
-        },
-      )
-      .then(({ data: { code, result, error } }) => {
-        if (code === 'SUCCESS') {
-          refetchAttachments()
-        }
-      })
-      .finally(() => setSynchronizing(false))
-  }, [authToken, refetchAttachments])
   const handleVideoAdd = useCallback(() => {
     const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/`
     setUppy(
@@ -80,19 +59,18 @@ const MediaLibrary: React.FC = () => {
           },
         })
         .on('complete', () => {
-          handleSync()
           refetchAttachments()
         }),
     )
-  }, [authToken, handleSync, refetchAttachments])
+  }, [authToken, refetchAttachments])
 
   useEffect(() => {
     defaultVisibleModal === 'video' && handleVideoAdd()
   }, [defaultVisibleModal, handleVideoAdd])
 
   useEffect(() => {
-    handleSync()
-  }, [handleSync])
+    refetchAttachments()
+  }, [refetchAttachments])
 
   const videoAttachmentColumns: ColumnProps<typeof attachments[number]>[] = [
     {
@@ -102,13 +80,7 @@ const MediaLibrary: React.FC = () => {
         <div>
           <div className="d-flex mb-1">
             <PreviewButton className="mr-1" videoId={attachment.id} title={attachment.name} />
-            <ReUploadButton
-              videoId={attachment.id}
-              onFinish={() => {
-                handleSync()
-                refetchAttachments()
-              }}
-            />
+            <ReUploadButton videoId={attachment.id} onFinish={() => refetchAttachments()} />
           </div>
           <div className="d-flex">
             <CaptionUploadButton className="mr-1" videoId={attachment.id} />
@@ -189,18 +161,13 @@ const MediaLibrary: React.FC = () => {
               <span className="mr-2">+</span>
               {formatMessage(commonMessages.ui.add)}
             </Button>
-            <Button
-              onClick={() => {
-                handleSync()
-                refetchAttachments()
-              }}
-            >
+            <Button onClick={() => refetchAttachments()}>
               <RedoOutlined />
             </Button>
           </div>
           <div className="overflow-auto">
             <Table
-              loading={synchronizing || loadingAttachments}
+              loading={loadingAttachments}
               columns={videoAttachmentColumns}
               dataSource={attachments.filter(attachment => attachment.contentType.startsWith('video/'))}
             />

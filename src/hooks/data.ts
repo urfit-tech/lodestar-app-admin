@@ -825,7 +825,7 @@ export const useProductSku = (productId: string) => {
 }
 
 export const useAttachments = (options?: { contentType?: string; status?: string }) => {
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, authToken } = useAuth()
   const contentTypeLike = options?.contentType?.replace('*', '%')
   const { data, loading, refetch } = useQuery<hasura.GET_ATTACHMENTS, hasura.GET_ATTACHMENTSVariables>(
     gql`
@@ -906,7 +906,19 @@ export const useAttachments = (options?: { contentType?: string; status?: string
     totalDuration: data?.attachment_aggregate.aggregate?.sum?.duration || 0,
     attachments,
     loading,
-    refetch,
+    refetch: async () => {
+      await axios
+        .post(
+          `${process.env.REACT_APP_API_BASE_ROOT}/videos/sync`,
+          {},
+          {
+            headers: {
+              Authorization: `bearer ${authToken}`,
+            },
+          },
+        )
+        .finally(() => refetch())
+    },
   }
 }
 
