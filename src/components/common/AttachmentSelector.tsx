@@ -38,7 +38,11 @@ const AttachmentSelector: React.VFC<{
         }}
       >
         {attachments.map(attachment => (
-          <Select.Option key={attachment.id} value={attachment.id} disabled={attachment.status !== 'READY'}>
+          <Select.Option
+            key={attachment.id}
+            value={attachment.id}
+            disabled={attachment.status.toUpperCase() !== 'READY'}
+          >
             {`${attachment.name} / ${attachment.author.name}`}
           </Select.Option>
         ))}
