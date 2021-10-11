@@ -165,7 +165,9 @@ const RecordingPage: React.FC = () => {
           setCurrentAudioId(currentAudioId => currentAudioId || signedPodCastProgramAudios[0].id)
         }
       } catch (error) {
-        message.error(error.message)
+        if (error instanceof Error) {
+          message.error(error.message)
+        }
       }
 
       setIsGeneratingAudio(false)
@@ -334,7 +336,9 @@ const RecordingPage: React.FC = () => {
 
       await refetchPodcastProgramAdmin()
     } catch (error) {
-      message.error(error.message)
+      if (error instanceof Error) {
+        message.error(error.message)
+      }
     }
 
     setIsGeneratingAudio(false)
