@@ -24,7 +24,11 @@ import {
 } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import { appendPodcastProgramAudio, deletePodcastProgramAudio } from '../../pages/RecordingPageHelpers'
+import {
+  appendPodcastProgramAudio,
+  deletePodcastProgramAudio,
+  mergePodcastProgram,
+} from '../../pages/RecordingPageHelpers'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -81,7 +85,6 @@ const PodcastProgramContentForm: React.FC<{
 
     if (file == null) {
       console.warn('File is null / undefined')
-
       return
     }
 
@@ -93,9 +96,9 @@ const PodcastProgramContentForm: React.FC<{
     const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 
     setLoading(true)
+
     appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(async () => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
         form.setFields([{ name: 'duration', value: totalDuration }])
         await updatePodcastProgramDuration({
           variables: {
@@ -105,10 +108,15 @@ const PodcastProgramContentForm: React.FC<{
             durationSecond: totalDurationSecond,
           },
         })
+        await mergePodcastProgram(authToken, appId, podcastProgramAdmin.id)
+      })
+      .then(() => {
         onRefetch?.()
+        message.success(formatMessage(commonMessages.event.successfullyUpload))
+        setLoading(false)
       })
       .catch(handleError)
-      .finally(() => setLoading(false))
+      .finally(() => {})
   }
 
   const handleSubmit = (values: FieldProps) => {
@@ -171,6 +179,7 @@ const PodcastProgramContentForm: React.FC<{
             path={`audios/${appId}/${podcastProgramAdmin.id}/${uploadAudioBase}.mp3`}
             onSuccess={handleUploadAudio}
             className="mr-2"
+            fileSizeLimitInfo={{ text: formatMessage(podcastMessages.text.audioFileLimit), size: 250000000 }}
           />
         </Form.Item>
         {enabledModules.podcast_recording && (

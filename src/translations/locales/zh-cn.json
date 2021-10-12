@@ -1202,7 +1202,7 @@
   "podcast.status.planNotPublished": "停售，方案暂停对外销售，并从广播页中隐藏",
   "podcast.status.planPublished": "发布，立刻开卖订阅方案",
   "podcast.text.abstractLimit": "限 100 字",
-  "podcast.text.audioFileTips": "建议格式：MP3\n檔案大小限制：5MB",
+  "podcast.text.audioFileTips": "建议格式：MP3\n檔案大小限制：250MB",
   "podcast.text.browserNotSupported": "本浏览器尚不支持录音功能，请改用 Safari 瀏覽器",
   "podcast.text.bulkUploadMessage": "将会合并上传所有音档，确定要上传吗？ ",
   "podcast.text.chromeNotSupported": "的iOS Chrome 尚不支援錄音功能，請改用 Safari 瀏覽器",
