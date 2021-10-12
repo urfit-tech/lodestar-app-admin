@@ -1,14 +1,4 @@
-import axios from 'axios'
-import { filter } from 'ramda'
-import { useEffect, useRef, useState } from 'react'
-import { useRouteMatch } from 'react-router-dom'
-import { handleError } from '../helpers'
-import { routesProps } from '../Routes'
-
-export const useRouteKeys = () => {
-  let match = useRouteMatch()
-  return Object.keys(filter(routeProps => routeProps.path === match.path, routesProps))
-}
+import { useEffect, useRef } from 'react'
 
 export const useInterval = (callback: Function, delay: number | null, immediately?: boolean) => {
   const savedCallback = useRef<Function>()

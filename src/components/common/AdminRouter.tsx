@@ -1,9 +1,11 @@
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { UserRole } from 'lodestar-app-element/src/types/data'
+import { filter } from 'ramda'
 import React, { Suspense } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
-import LoadablePage from './pages/LoadablePage'
-import LoadingPage from './pages/LoadingPage'
-import NotFoundPage from './pages/NotFoundPage'
-import { UserRole } from './types/member'
+import { BrowserRouter, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { QueryParamProvider } from 'use-query-params'
+import LoadingPage from '../../pages/LoadingPage'
+import NotFoundPage from '../../pages/NotFoundPage'
 
 export type RouteProps = {
   path: string
@@ -481,63 +483,47 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 }
 
+export const useRouteKeys = () => {
+  let match = useRouteMatch()
+  return Object.keys(filter(routeProps => routeProps.path === match.path, routesProps))
+}
+
 export let routesMap = { ...routesProps }
 
-const Routes: React.FC<{ extra?: { [routeKey: string]: RouteProps } }> = ({ extra }) => {
-  routesMap = { ...routesMap, ...extra }
+const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps } }> = ({ extraRouteProps }) => {
+  const { isAuthenticating, permissions } = useAuth()
+  routesMap = { ...routesMap, ...extraRouteProps }
+
   return (
-    <Suspense fallback={<LoadingPage />}>
-      <Switch>
-        {Object.keys(routesMap).map(routeKey => {
-          const routeProps = routesMap[routeKey as keyof typeof routesProps]
-          return (
-            <Route
-              exact
-              key={routeKey}
-              path={routeProps.path}
-              render={props =>
-                typeof routeProps.pageName === 'string' ? (
-                  <LoadablePage
-                    {...props}
-                    pageName={routeProps.pageName}
-                    authenticated={routeProps.authenticated}
-                    allowedUserRole={routeProps.allowedUserRole}
-                  />
-                ) : (
-                  routeProps.pageName
-                )
-              }
-            />
-          )
-        })}
-        <Route
-          exact
-          path="/"
-          render={props => (
-            <Redirect
-              to={{
-                pathname: '/sales',
-                state: { from: props.location },
-              }}
-            />
-          )}
-        />
-        <Route
-          exact
-          path="/studio"
-          render={props => (
-            <Redirect
-              to={{
-                pathname: '/studio/sales',
-                state: { from: props.location },
-              }}
-            />
-          )}
-        />
-        <Route component={NotFoundPage} />
-      </Switch>
-    </Suspense>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
+      <QueryParamProvider ReactRouterRoute={Route}>
+        <Suspense fallback={<LoadingPage />}>
+          <Switch>
+            {Object.keys(routesMap).map(routeKey => {
+              const routeProps = routesMap[routeKey as keyof typeof routesProps]
+              return (
+                <Route
+                  exact
+                  key={routeKey}
+                  path={routeProps.path}
+                  render={props =>
+                    !isAuthenticating && !permissions['BACKSTAGE_ENTER'] && routeProps.path !== '/' ? (
+                      <Redirect to="/" />
+                    ) : typeof routeProps.pageName === 'string' ? (
+                      React.createElement(React.lazy(() => import(`../../pages/${routeProps.pageName}`)))
+                    ) : (
+                      routeProps.pageName
+                    )
+                  }
+                />
+              )
+            })}
+            <Route component={NotFoundPage} />
+          </Switch>
+        </Suspense>
+      </QueryParamProvider>
+    </BrowserRouter>
   )
 }
 
-export default Routes
+export default AdminRouter

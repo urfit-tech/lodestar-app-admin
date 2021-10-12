@@ -28,7 +28,7 @@ import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
-import { routesMap } from '../../Routes'
+import { routesMap } from '../common/AdminRouter'
 
 export const StyledMenu = styled(Menu)`
   && {
@@ -61,7 +61,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(commonMessages.menu.learningOverviewAdmin),
     },
     {
-      permissionIsAllowed: permissions.SALES_ADMIN && currentUserRole === 'app-owner',
+      permissionIsAllowed: permissions.SALES_ADMIN,
       icon: () => <MoneyCircleIcon />,
       key: 'owner_sales',
       name: formatMessage(commonMessages.menu.salesAdmin),
