@@ -2,7 +2,7 @@ import { DatabaseOutlined, RedoOutlined } from '@ant-design/icons'
 import Uppy from '@uppy/core'
 import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
-import { Button, Table, Tabs } from 'antd'
+import { Button, Input, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -24,6 +24,7 @@ import { useAttachments } from '../hooks/data'
 const MediaLibrary: React.FC = () => {
   const { settings } = useApp()
   const [uppy, setUppy] = useState<Uppy>()
+  const [searchText, setSearchText] = useState('')
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
   const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
@@ -156,20 +157,30 @@ const MediaLibrary: React.FC = () => {
       </div>
       <Tabs activeKey={activeTabKey || 'video'} onChange={key => setActiveTabKey(key)}>
         <Tabs.TabPane tab={formatMessage(commonMessages.ui.video)} key="video">
-          <div>
-            <Button className="mb-2 mr-1" type="primary" onClick={handleVideoAdd}>
-              <span className="mr-2">+</span>
-              {formatMessage(commonMessages.ui.add)}
-            </Button>
-            <Button onClick={() => refetchAttachments()}>
-              <RedoOutlined />
-            </Button>
+          <div className="d-flex justify-content-between">
+            <div>
+              <Button className="mb-2 mr-1" type="primary" onClick={handleVideoAdd}>
+                <span className="mr-2">+</span>
+                {formatMessage(commonMessages.ui.add)}
+              </Button>
+              <Button onClick={() => refetchAttachments()}>
+                <RedoOutlined />
+              </Button>
+            </div>
+            <Input
+              style={{ width: '200px', height: '48px' }}
+              placeholder="Search..."
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+            />
           </div>
           <div className="overflow-auto">
             <Table
               loading={loadingAttachments}
               columns={videoAttachmentColumns}
-              dataSource={attachments.filter(attachment => attachment.contentType.startsWith('video/'))}
+              dataSource={attachments
+                .filter(attachment => attachment.name.includes(searchText) || attachment.filename.includes(searchText))
+                .filter(attachment => attachment.contentType.startsWith('video/'))}
             />
           </div>
         </Tabs.TabPane>
