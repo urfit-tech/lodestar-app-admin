@@ -27,7 +27,7 @@ const ProgramCollectionSettings: React.VFC = () => {
           .validateFields()
           .then(values => {
             node.actions.setProp(props => {
-              props.gap = values.gap
+              // props.gap = values.gap
               props.gutter = values.gutter
               props.columns = values.columns
               props.options = values.options
