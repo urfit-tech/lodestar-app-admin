@@ -446,7 +446,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             name
           }
         }
-        xuemi_sales {
+        xuemi_sales: member_permission(where: { permission_id: { _eq: "MEMBER_CONTRACT_INSERT" } }) {
           member {
             id
             name
