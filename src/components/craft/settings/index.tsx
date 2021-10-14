@@ -1,5 +1,7 @@
 import { Collapse, Input, Slider } from 'antd'
+import React from 'react'
 import styled from 'styled-components'
+import CraftBoxModelInput from './BoxModelInput'
 
 export const AdminHeaderTitle = styled.div`
   flex-grow: 1;
@@ -51,6 +53,49 @@ export const StyledCraftSettingLabel = styled.span`
   font-weight: 500;
 `
 
+type SettingProps = {
+  title: string
+  label?: string
+  value?: string
+  onChange?: (value: string) => void
+}
+
+export const CraftCollapseSetting: React.VFC<
+  (
+    | {
+        variant: 'textarea'
+        placeholder?: string
+      }
+    | {
+        variant: 'slider'
+        placeholder?: never
+      }
+  ) &
+    SettingProps
+> = ({ variant, placeholder, title, label, value, onChange }) => {
+  return (
+    <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['key']}>
+      <StyledCollapsePanel key="key" header={<AdminHeaderTitle>{title}</AdminHeaderTitle>}>
+        <div className="mb-2">
+          {variant === 'textarea' && (
+            <>
+              {label && <CraftSettingLabel>{label}</CraftSettingLabel>}
+              <Input.TextArea
+                className="mt-2"
+                rows={5}
+                placeholder={placeholder}
+                defaultValue={value}
+                onChange={e => onChange?.(e.target.value)}
+              />
+            </>
+          )}
+          {variant === 'slider' && <CraftBoxModelInput title={label} value={value} onChange={onChange} />}
+        </div>
+      </StyledCollapsePanel>
+    </Collapse>
+  )
+}
+
 export { default as ActivitySettings } from './ActivitySettings'
 export { default as BackgroundSettings } from './BackgroundSettings'
 export { default as ButtonSettings } from './ButtonSettings'
@@ -60,11 +105,13 @@ export { default as CarouselSettings } from './CarouselSettings'
 export { default as CollapseSettings } from './CollapseSettings'
 export { default as ContainerSettings } from './ContainerSettings'
 export { default as CreatorSettings } from './CreatorSettings'
+export { default as EmbedSettings } from './EmbedSettings'
 export { default as ImageSettings } from './ImageSettings'
 export { default as InstructorSettings } from './InstructorSettings'
 export { default as LayoutSettings } from './LayoutSettings'
 export { default as ParagraphSettings } from './ParagraphSettings'
 export { default as PodcastProgramSettings } from './PodcastProgramSettings'
+export { default as ProgramCollectionSettings } from './ProgramCollectionSettings'
 export { default as ProgramSettings } from './ProgramSettings'
 export { default as ProjectSettings } from './ProjectSettings'
 export { default as StatisticsSettings } from './StatisticsSettings'

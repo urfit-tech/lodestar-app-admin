@@ -2,14 +2,19 @@ import { useNode } from '@craftjs/core'
 import { Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useIntl } from 'react-intl'
+import { CraftCollapseSetting } from '.'
+import { craftPageMessages } from '../../../helpers/translation'
 
 const EmbedSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<{}>()
+  const [form] = useForm<{
+    iframe: string
+    margin: `${number};${number};${number};${number}`
+  }>()
 
   const {
     actions: { setProp },
-    props: { type, ids },
+    props: { iframe, margin },
   } = useNode(node => ({
     props: node.data.props,
     selected: node.events.selected,
@@ -21,35 +26,47 @@ const EmbedSettings: React.VFC = () => {
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={{ creatorCollection: { type, ids } }}
+      initialValues={{ iframe, margin }}
       onValuesChange={() => {
         form
           .validateFields()
           .then(values => {
             setProp(props => {
-              // props.type = values.creatorCollection.type
-              // props.ids = values.creatorCollection.ids
+              props.margin = values.margin
             })
           })
-          .catch(() => {})
+          .catch(({ values, errorFields }) => {
+            if (errorFields.length > 0) {
+              return
+            }
+            setProp(props => {
+              props.iframe = values.iframe
+            })
+          })
       }}
     >
-      {/* <Collapse
-        className="mt-2 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['displayItem', 'categorySelector']}
+      <Form.Item
+        name="iframe"
+        rules={[
+          {
+            pattern: /(?:<iframe[^>]*)(?:(?:\/>)|(?:>.*?<\/iframe>))/g,
+            message: formatMessage(craftPageMessages.text.fillIframeFormatPlz),
+          },
+        ]}
       >
-        <StyledCollapsePanel
-          key="displayItem"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.specifyDisplayItem)}</AdminHeaderTitle>}
-        >
-          <Form.Item name="creatorCollection">
-            <CreatorCollectionSelector />
-          </Form.Item>
-        </StyledCollapsePanel>
-      </Collapse> */}
+        <CraftCollapseSetting
+          variant="textarea"
+          placeholder="<iframe></iframe>"
+          title={formatMessage(craftPageMessages.label.embedSetting)}
+        />
+      </Form.Item>
+      <Form.Item name="margin">
+        <CraftCollapseSetting
+          variant="slider"
+          title={formatMessage(craftPageMessages.label.embedStyle)}
+          label={formatMessage(craftPageMessages.label.margin)}
+        />
+      </Form.Item>
     </Form>
   )
 }

@@ -8,17 +8,18 @@ import {
   CraftCollapse,
   CraftContainer,
   CraftCreator,
+  CraftEmbed,
   CraftImage,
   CraftInstructor,
   CraftLayout,
   CraftParagraph,
   CraftPodcastProgram,
   CraftProgram,
+  CraftProgramCollection,
   CraftProject,
   CraftStatistics,
   CraftTitle,
   CraftTitleAndParagraph,
-  CraftProgramCollection,
 } from 'lodestar-app-element/src/components/craft'
 import {
   ActivitySettings,
@@ -30,11 +31,13 @@ import {
   CollapseSettings,
   ContainerSettings,
   CreatorSettings,
+  EmbedSettings,
   ImageSettings,
   InstructorSettings,
   LayoutSettings,
   ParagraphSettings,
   PodcastProgramSettings,
+  ProgramCollectionSettings,
   ProgramSettings,
   ProjectSettings,
   StatisticsSettings,
@@ -42,7 +45,6 @@ import {
   TitleSettings,
 } from '../../components/craft/settings'
 import CraftToolBox from './CraftToolBox'
-import ProgramCollectionSettings from './settings/ProgramCollectionSettings'
 
 const configureResolver = () => {
   CraftActivity.craft = {
@@ -220,28 +222,39 @@ const configureResolver = () => {
       },
     },
   }
+  CraftEmbed.craft = {
+    related: {
+      settings: EmbedSettings,
+    },
+    custom: {
+      button: {
+        label: 'deleteBlock',
+      },
+    },
+  }
 
   return {
+    CraftActivity,
+    CraftBackground,
+    CraftButton,
+    CraftCard,
+    CraftCarousel,
+    CraftCarouselContainer,
+    CraftCollapse,
     CraftContainer,
     CraftCreator,
-    CraftLayout,
-    CraftTitle,
-    CraftParagraph,
-    CraftTitleAndParagraph,
-    CraftButton,
-    CraftCarousel,
-    CraftStatistics,
+    CraftEmbed,
     CraftImage,
-    CraftCard,
-    CraftCollapse,
-    CraftBackground,
+    CraftInstructor,
+    CraftLayout,
+    CraftParagraph,
+    CraftPodcastProgram,
     CraftProgram,
     CraftProgramCollection,
     CraftProject,
-    CraftActivity,
-    CraftPodcastProgram,
-    CraftInstructor,
-    CraftCarouselContainer,
+    CraftStatistics,
+    CraftTitle,
+    CraftTitleAndParagraph,
   }
 }
 

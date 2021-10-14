@@ -1415,6 +1415,8 @@ export const craftPageMessages = {
     boundary: { id: 'craft.label.boundary', defaultMessage: '邊界' },
     borderSpacing: { id: 'craft.label.borderSpacing', defaultMessage: '邊框間距' },
     deletePage: { id: 'craft.label.deletePage', defaultMessage: '刪除頁面' },
+    embedSetting: { id: 'craft.label.embedSettings', defaultMessage: '嵌入設定' },
+    embedStyle: { id: 'craft.label.embedStyle', defaultMessage: '嵌入樣式' },
   }),
   text: defineMessages({
     chooseCategories: {
@@ -1460,6 +1462,10 @@ export const craftPageMessages = {
     boxModelInputWarning: {
       id: 'craft.text.boxModelInputWarning',
       defaultMessage: '請填入以下格式，5;3;5;3',
+    },
+    fillIframeFormatPlz: {
+      id: 'craft.text.fillIframeFormatPlz',
+      defaultMessage: '請填入 iframe',
     },
   }),
 }
