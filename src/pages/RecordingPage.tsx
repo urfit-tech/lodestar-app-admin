@@ -72,7 +72,7 @@ const RecordingPage: React.FC = () => {
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const { authToken } = useAuth()
   const { id: appId } = useApp()
-  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
+  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(podcastProgramId)
 
   const [signedPodCastProgramAudios, setSignedPodCastProgramAudios] = useState<SignedPodCastProgramAudio[]>([])
   const podcastAudios = podcastProgramAdmin?.audios
