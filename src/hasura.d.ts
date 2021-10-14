@@ -859,19 +859,11 @@ export interface GET_CONTRACT_INFO_appointment_plan {
   creator: GET_CONTRACT_INFO_appointment_plan_creator | null;
 }
 
-export interface GET_CONTRACT_INFO_xuemi_sales_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_CONTRACT_INFO_xuemi_sales {
-  __typename: "xuemi_sales";
-  /**
-   * An object relationship
-   */
-  member: GET_CONTRACT_INFO_xuemi_sales_member | null;
+export interface GET_CONTRACT_INFO_xuemi_contractor {
+  __typename: "xuemi_contractor";
+  id: string | null;
+  name: string | null;
+  username: string | null;
 }
 
 export interface GET_CONTRACT_INFO_app_setting {
@@ -905,9 +897,9 @@ export interface GET_CONTRACT_INFO {
    */
   appointment_plan: GET_CONTRACT_INFO_appointment_plan[];
   /**
-   * fetch data from the table: "xuemi.sales"
+   * fetch data from the table: "xuemi.contractor"
    */
-  xuemi_sales: GET_CONTRACT_INFO_xuemi_sales[];
+  xuemi_contractor: GET_CONTRACT_INFO_xuemi_contractor[];
   /**
    * fetch data from the table: "app_setting"
    */
@@ -2018,211 +2010,6 @@ export interface UPDATE_LEAD_MANAGERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_TODAY_MEMBER_CONTRACT
-// ====================================================
-
-export interface GET_TODAY_MEMBER_CONTRACT_order_executor_sharing_executor {
-  __typename: "member";
-  name: string;
-}
-
-export interface GET_TODAY_MEMBER_CONTRACT_order_executor_sharing_order_log_order_products {
-  __typename: "order_product";
-  name: string;
-}
-
-export interface GET_TODAY_MEMBER_CONTRACT_order_executor_sharing_order_log {
-  __typename: "order_log";
-  /**
-   * An array relationship
-   */
-  order_products: GET_TODAY_MEMBER_CONTRACT_order_executor_sharing_order_log_order_products[];
-}
-
-export interface GET_TODAY_MEMBER_CONTRACT_order_executor_sharing {
-  __typename: "order_executor_sharing";
-  created_at: any | null;
-  order_id: string | null;
-  /**
-   * An object relationship
-   */
-  executor: GET_TODAY_MEMBER_CONTRACT_order_executor_sharing_executor | null;
-  total_price: any | null;
-  /**
-   * An object relationship
-   */
-  order_log: GET_TODAY_MEMBER_CONTRACT_order_executor_sharing_order_log | null;
-}
-
-export interface GET_TODAY_MEMBER_CONTRACT {
-  /**
-   * fetch data from the table: "order_executor_sharing"
-   */
-  order_executor_sharing: GET_TODAY_MEMBER_CONTRACT_order_executor_sharing[];
-}
-
-export interface GET_TODAY_MEMBER_CONTRACTVariables {
-  today: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SALES_LEADS
-// ====================================================
-
-export interface GET_SALES_LEADS_xuemi_lead_status_member_member_phones {
-  __typename: "member_phone";
-  phone: string;
-}
-
-export interface GET_SALES_LEADS_xuemi_lead_status_member_member_categories_category {
-  __typename: "category";
-  name: string;
-}
-
-export interface GET_SALES_LEADS_xuemi_lead_status_member_member_categories {
-  __typename: "member_category";
-  /**
-   * An object relationship
-   */
-  category: GET_SALES_LEADS_xuemi_lead_status_member_member_categories_category;
-}
-
-export interface GET_SALES_LEADS_xuemi_lead_status_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-  star: any | null;
-  created_at: any | null;
-  assigned_at: any | null;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_SALES_LEADS_xuemi_lead_status_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_SALES_LEADS_xuemi_lead_status_member_member_categories[];
-}
-
-export interface GET_SALES_LEADS_xuemi_lead_status {
-  __typename: "xuemi_lead_status";
-  /**
-   * An object relationship
-   */
-  member: GET_SALES_LEADS_xuemi_lead_status_member | null;
-  status: string | null;
-  paid: any | null;
-  recent_contacted_at: any | null;
-  recent_tasked_at: any | null;
-}
-
-export interface GET_SALES_LEADS {
-  /**
-   * fetch data from the table: "xuemi.lead_status"
-   */
-  xuemi_lead_status: GET_SALES_LEADS_xuemi_lead_status[];
-}
-
-export interface GET_SALES_LEADSVariables {
-  managerId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MANAGER_SCORE
-// ====================================================
-
-export interface GET_MANAGER_SCORE_xuemi_manager_score {
-  __typename: "xuemi_manager_score";
-  performance_score: number | null;
-  effort_score: any | null;
-  invitations_score: any | null;
-}
-
-export interface GET_MANAGER_SCORE {
-  /**
-   * fetch data from the table: "xuemi.manager_score"
-   */
-  xuemi_manager_score: GET_MANAGER_SCORE_xuemi_manager_score[];
-}
-
-export interface GET_MANAGER_SCOREVariables {
-  managerId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: CLOSE_LEAD
-// ====================================================
-
-export interface CLOSE_LEAD_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface CLOSE_LEAD {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: CLOSE_LEAD_update_member | null;
-}
-
-export interface CLOSE_LEADVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: TRANSFER_LEAD
-// ====================================================
-
-export interface TRANSFER_LEAD_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface TRANSFER_LEAD {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: TRANSFER_LEAD_update_member | null;
-}
-
-export interface TRANSFER_LEADVariables {
-  memberId: string;
-  managerId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_SALES_MATERIALS
 // ====================================================
 
@@ -2930,10 +2717,11 @@ export enum app_page_section_update_column {
  */
 export enum app_page_update_column {
   app_id = "app_id",
-  author_id = "author_id",
   craft_data = "craft_data",
   created_at = "created_at",
+  editor_id = "editor_id",
   id = "id",
+  is_deleted = "is_deleted",
   options = "options",
   path = "path",
   published_at = "published_at",
@@ -3054,12 +2842,20 @@ export enum attachment_constraint {
  */
 export enum attachment_update_column {
   app_id = "app_id",
+  author_id = "author_id",
+  content_type = "content_type",
   created_at = "created_at",
   data = "data",
+  duration = "duration",
+  filename = "filename",
   id = "id",
   is_deleted = "is_deleted",
+  name = "name",
   options = "options",
+  size = "size",
+  status = "status",
   target = "target",
+  thumbnail_url = "thumbnail_url",
   type = "type",
   updated_at = "updated_at",
 }
@@ -3680,6 +3476,24 @@ export enum member_permission_extra_update_column {
   id = "id",
   member_id = "member_id",
   permission_id = "permission_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "member_permission_group"
+ */
+export enum member_permission_group_constraint {
+  member_permission_group_pkey = "member_permission_group_pkey",
+}
+
+/**
+ * update columns of table "member_permission_group"
+ */
+export enum member_permission_group_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  permission_group_id = "permission_group_id",
   updated_at = "updated_at",
 }
 
@@ -4313,6 +4127,44 @@ export enum permission_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "permission_group"
+ */
+export enum permission_group_constraint {
+  permission_group_name_app_id_key = "permission_group_name_app_id_key",
+  permission_group_pkey = "permission_group_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "permission_group_permission"
+ */
+export enum permission_group_permission_constraint {
+  permission_group_permission_permission_group_id_permission_id_k = "permission_group_permission_permission_group_id_permission_id_k",
+  permission_group_permission_pkey = "permission_group_permission_pkey",
+}
+
+/**
+ * update columns of table "permission_group_permission"
+ */
+export enum permission_group_permission_update_column {
+  created_at = "created_at",
+  id = "id",
+  permission_group_id = "permission_group_id",
+  permission_id = "permission_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * update columns of table "permission_group"
+ */
+export enum permission_group_update_column {
+  app_id = "app_id",
+  created_at = "created_at",
+  id = "id",
+  name = "name",
+  updated_at = "updated_at",
+}
+
+/**
  * update columns of table "permission"
  */
 export enum permission_update_column {
@@ -4902,6 +4754,24 @@ export enum program_content_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "program_content_video"
+ */
+export enum program_content_video_constraint {
+  program_content_stream_pkey = "program_content_stream_pkey",
+}
+
+/**
+ * update columns of table "program_content_video"
+ */
+export enum program_content_video_update_column {
+  attachment_id = "attachment_id",
+  created_at = "created_at",
+  id = "id",
+  program_content_id = "program_content_id",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "program_package_category"
  */
 export enum program_package_category_constraint {
@@ -5213,6 +5083,7 @@ export enum project_update_column {
   expired_at = "expired_at",
   id = "id",
   introduction = "introduction",
+  introduction_desktop = "introduction_desktop",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_participants_visible = "is_participants_visible",
   position = "position",
@@ -6799,11 +6670,12 @@ export interface app_page_bool_exp {
   _or?: (app_page_bool_exp | null)[] | null;
   app_id?: String_comparison_exp | null;
   app_page_sections?: app_page_section_bool_exp | null;
-  author_id?: String_comparison_exp | null;
   craft_data?: jsonb_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  editor?: member_bool_exp | null;
+  editor_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   path?: String_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -6817,11 +6689,12 @@ export interface app_page_bool_exp {
 export interface app_page_insert_input {
   app_id?: string | null;
   app_page_sections?: app_page_section_arr_rel_insert_input | null;
-  author_id?: string | null;
   craft_data?: any | null;
   created_at?: any | null;
+  editor?: member_obj_rel_insert_input | null;
+  editor_id?: string | null;
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
+  is_deleted?: boolean | null;
   options?: any | null;
   path?: string | null;
   published_at?: any | null;
@@ -6834,8 +6707,8 @@ export interface app_page_insert_input {
  */
 export interface app_page_max_order_by {
   app_id?: order_by | null;
-  author_id?: order_by | null;
   created_at?: order_by | null;
+  editor_id?: order_by | null;
   id?: order_by | null;
   path?: order_by | null;
   published_at?: order_by | null;
@@ -6848,8 +6721,8 @@ export interface app_page_max_order_by {
  */
 export interface app_page_min_order_by {
   app_id?: order_by | null;
-  author_id?: order_by | null;
   created_at?: order_by | null;
+  editor_id?: order_by | null;
   id?: order_by | null;
   path?: order_by | null;
   published_at?: order_by | null;
@@ -7363,6 +7236,39 @@ export interface appointment_schedule_on_conflict {
 }
 
 /**
+ * order by aggregate values of table "attachment"
+ */
+export interface attachment_aggregate_order_by {
+  avg?: attachment_avg_order_by | null;
+  count?: order_by | null;
+  max?: attachment_max_order_by | null;
+  min?: attachment_min_order_by | null;
+  stddev?: attachment_stddev_order_by | null;
+  stddev_pop?: attachment_stddev_pop_order_by | null;
+  stddev_samp?: attachment_stddev_samp_order_by | null;
+  sum?: attachment_sum_order_by | null;
+  var_pop?: attachment_var_pop_order_by | null;
+  var_samp?: attachment_var_samp_order_by | null;
+  variance?: attachment_variance_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "attachment"
+ */
+export interface attachment_arr_rel_insert_input {
+  data: attachment_insert_input[];
+  on_conflict?: attachment_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "attachment"
+ */
+export interface attachment_avg_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "attachment". All fields are combined with a logical 'AND'.
  */
 export interface attachment_bool_exp {
@@ -7370,12 +7276,21 @@ export interface attachment_bool_exp {
   _not?: attachment_bool_exp | null;
   _or?: (attachment_bool_exp | null)[] | null;
   app_id?: String_comparison_exp | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  content_type?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   data?: jsonb_comparison_exp | null;
+  duration?: numeric_comparison_exp | null;
+  filename?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
+  size?: numeric_comparison_exp | null;
+  status?: String_comparison_exp | null;
   target?: String_comparison_exp | null;
+  thumbnail_url?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -7385,14 +7300,63 @@ export interface attachment_bool_exp {
  */
 export interface attachment_insert_input {
   app_id?: string | null;
+  author?: member_obj_rel_insert_input | null;
+  author_id?: string | null;
+  content_type?: string | null;
   created_at?: any | null;
   data?: any | null;
+  duration?: any | null;
+  filename?: string | null;
   id?: any | null;
   is_deleted?: boolean | null;
+  name?: string | null;
   options?: any | null;
+  size?: any | null;
+  status?: string | null;
   target?: string | null;
+  thumbnail_url?: string | null;
   type?: string | null;
   updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "attachment"
+ */
+export interface attachment_max_order_by {
+  app_id?: order_by | null;
+  author_id?: order_by | null;
+  content_type?: order_by | null;
+  created_at?: order_by | null;
+  duration?: order_by | null;
+  filename?: order_by | null;
+  id?: order_by | null;
+  name?: order_by | null;
+  size?: order_by | null;
+  status?: order_by | null;
+  target?: order_by | null;
+  thumbnail_url?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "attachment"
+ */
+export interface attachment_min_order_by {
+  app_id?: order_by | null;
+  author_id?: order_by | null;
+  content_type?: order_by | null;
+  created_at?: order_by | null;
+  duration?: order_by | null;
+  filename?: order_by | null;
+  id?: order_by | null;
+  name?: order_by | null;
+  size?: order_by | null;
+  status?: order_by | null;
+  target?: order_by | null;
+  thumbnail_url?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -7410,6 +7374,62 @@ export interface attachment_on_conflict {
   constraint: attachment_constraint;
   update_columns: attachment_update_column[];
   where?: attachment_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "attachment"
+ */
+export interface attachment_stddev_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "attachment"
+ */
+export interface attachment_stddev_pop_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "attachment"
+ */
+export interface attachment_stddev_samp_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "attachment"
+ */
+export interface attachment_sum_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "attachment"
+ */
+export interface attachment_var_pop_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "attachment"
+ */
+export interface attachment_var_samp_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "attachment"
+ */
+export interface attachment_variance_order_by {
+  duration?: order_by | null;
+  size?: order_by | null;
 }
 
 /**
@@ -9747,6 +9767,7 @@ export interface member_bool_exp {
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
   assign_rules?: xuemi_assign_rule_bool_exp | null;
   assigned_at?: timestamptz_comparison_exp | null;
+  attachments?: attachment_bool_exp | null;
   attends?: attend_bool_exp | null;
   coin_logs?: coin_log_bool_exp | null;
   coin_statuses?: coin_status_bool_exp | null;
@@ -9783,6 +9804,7 @@ export interface member_bool_exp {
   member_notes?: member_note_bool_exp | null;
   member_oauths?: member_oauth_bool_exp | null;
   member_permission_extras?: member_permission_extra_bool_exp | null;
+  member_permission_groups?: member_permission_group_bool_exp | null;
   member_permissions?: member_permission_bool_exp | null;
   member_phones?: member_phone_bool_exp | null;
   member_properties?: member_property_bool_exp | null;
@@ -10161,6 +10183,7 @@ export interface member_insert_input {
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assign_rules?: xuemi_assign_rule_arr_rel_insert_input | null;
   assigned_at?: any | null;
+  attachments?: attachment_arr_rel_insert_input | null;
   attends?: attend_arr_rel_insert_input | null;
   coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
@@ -10196,6 +10219,7 @@ export interface member_insert_input {
   member_notes?: member_note_arr_rel_insert_input | null;
   member_oauths?: member_oauth_arr_rel_insert_input | null;
   member_permission_extras?: member_permission_extra_arr_rel_insert_input | null;
+  member_permission_groups?: member_permission_group_arr_rel_insert_input | null;
   member_phones?: member_phone_arr_rel_insert_input | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
@@ -10679,6 +10703,7 @@ export interface member_order_by {
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assign_rules_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assigned_at?: order_by | null;
+  attachments_aggregate?: attachment_aggregate_order_by | null;
   attends_aggregate?: attend_aggregate_order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
   coin_statuses_aggregate?: coin_status_aggregate_order_by | null;
@@ -10715,6 +10740,7 @@ export interface member_order_by {
   member_notes_aggregate?: member_note_aggregate_order_by | null;
   member_oauths_aggregate?: member_oauth_aggregate_order_by | null;
   member_permission_extras_aggregate?: member_permission_extra_aggregate_order_by | null;
+  member_permission_groups_aggregate?: member_permission_group_aggregate_order_by | null;
   member_permissions_aggregate?: member_permission_aggregate_order_by | null;
   member_phones_aggregate?: member_phone_aggregate_order_by | null;
   member_properties_aggregate?: member_property_aggregate_order_by | null;
@@ -10854,6 +10880,83 @@ export interface member_permission_extra_on_conflict {
   constraint: member_permission_extra_constraint;
   update_columns: member_permission_extra_update_column[];
   where?: member_permission_extra_bool_exp | null;
+}
+
+/**
+ * order by aggregate values of table "member_permission_group"
+ */
+export interface member_permission_group_aggregate_order_by {
+  count?: order_by | null;
+  max?: member_permission_group_max_order_by | null;
+  min?: member_permission_group_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_permission_group"
+ */
+export interface member_permission_group_arr_rel_insert_input {
+  data: member_permission_group_insert_input[];
+  on_conflict?: member_permission_group_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_permission_group". All fields are combined with a logical 'AND'.
+ */
+export interface member_permission_group_bool_exp {
+  _and?: (member_permission_group_bool_exp | null)[] | null;
+  _not?: member_permission_group_bool_exp | null;
+  _or?: (member_permission_group_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  permission_group?: permission_group_bool_exp | null;
+  permission_group_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_permission_group"
+ */
+export interface member_permission_group_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  permission_group?: permission_group_obj_rel_insert_input | null;
+  permission_group_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "member_permission_group"
+ */
+export interface member_permission_group_max_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  permission_group_id?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "member_permission_group"
+ */
+export interface member_permission_group_min_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  permission_group_id?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * on conflict condition type for table "member_permission_group"
+ */
+export interface member_permission_group_on_conflict {
+  constraint: member_permission_group_constraint;
+  update_columns: member_permission_group_update_column[];
+  where?: member_permission_group_bool_exp | null;
 }
 
 /**
@@ -11988,6 +12091,7 @@ export interface merchandise_spec_inventory_status_bool_exp {
   merchandise_spec_id?: uuid_comparison_exp | null;
   total_quantity?: bigint_comparison_exp | null;
   undelivered_quantity?: bigint_comparison_exp | null;
+  unpaid_quantity?: bigint_comparison_exp | null;
 }
 
 /**
@@ -13242,6 +13346,96 @@ export interface permission_bool_exp {
   member_permission_extras?: member_permission_extra_bool_exp | null;
   role_permissions?: role_permission_bool_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "permission_group". All fields are combined with a logical 'AND'.
+ */
+export interface permission_group_bool_exp {
+  _and?: (permission_group_bool_exp | null)[] | null;
+  _not?: permission_group_bool_exp | null;
+  _or?: (permission_group_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  permission_group_permissions?: permission_group_permission_bool_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "permission_group"
+ */
+export interface permission_group_insert_input {
+  app_id?: string | null;
+  created_at?: any | null;
+  id?: any | null;
+  name?: string | null;
+  permission_group_permissions?: permission_group_permission_arr_rel_insert_input | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "permission_group"
+ */
+export interface permission_group_obj_rel_insert_input {
+  data: permission_group_insert_input;
+  on_conflict?: permission_group_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "permission_group"
+ */
+export interface permission_group_on_conflict {
+  constraint: permission_group_constraint;
+  update_columns: permission_group_update_column[];
+  where?: permission_group_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "permission_group_permission"
+ */
+export interface permission_group_permission_arr_rel_insert_input {
+  data: permission_group_permission_insert_input[];
+  on_conflict?: permission_group_permission_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "permission_group_permission". All fields are combined with a logical 'AND'.
+ */
+export interface permission_group_permission_bool_exp {
+  _and?: (permission_group_permission_bool_exp | null)[] | null;
+  _not?: permission_group_permission_bool_exp | null;
+  _or?: (permission_group_permission_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  permission?: permission_bool_exp | null;
+  permission_group?: permission_group_bool_exp | null;
+  permission_group_id?: uuid_comparison_exp | null;
+  permission_id?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "permission_group_permission"
+ */
+export interface permission_group_permission_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  permission?: permission_obj_rel_insert_input | null;
+  permission_group?: permission_group_obj_rel_insert_input | null;
+  permission_group_id?: any | null;
+  permission_id?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "permission_group_permission"
+ */
+export interface permission_group_permission_on_conflict {
+  constraint: permission_group_permission_constraint;
+  update_columns: permission_group_permission_update_column[];
+  where?: permission_group_permission_bool_exp | null;
 }
 
 /**
@@ -15520,6 +15714,7 @@ export interface program_content_bool_exp {
   program_content_progress?: program_content_progress_bool_exp | null;
   program_content_section?: program_content_section_bool_exp | null;
   program_content_type?: program_content_type_bool_exp | null;
+  program_content_videos?: program_content_video_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   sale_free?: program_content_sale_free_bool_exp | null;
   sale_price?: numeric_comparison_exp | null;
@@ -15593,6 +15788,7 @@ export interface program_content_insert_input {
   program_content_plans?: program_content_plan_arr_rel_insert_input | null;
   program_content_progress?: program_content_progress_arr_rel_insert_input | null;
   program_content_section?: program_content_section_obj_rel_insert_input | null;
+  program_content_videos?: program_content_video_arr_rel_insert_input | null;
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
@@ -15960,6 +16156,52 @@ export interface program_content_type_bool_exp {
   id?: uuid_comparison_exp | null;
   program_content?: program_content_bool_exp | null;
   type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_content_video"
+ */
+export interface program_content_video_arr_rel_insert_input {
+  data: program_content_video_insert_input[];
+  on_conflict?: program_content_video_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_video". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_video_bool_exp {
+  _and?: (program_content_video_bool_exp | null)[] | null;
+  _not?: program_content_video_bool_exp | null;
+  _or?: (program_content_video_bool_exp | null)[] | null;
+  attachment?: attachment_bool_exp | null;
+  attachment_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_content_video"
+ */
+export interface program_content_video_insert_input {
+  attachment?: attachment_obj_rel_insert_input | null;
+  attachment_id?: any | null;
+  created_at?: any | null;
+  id?: any | null;
+  program_content?: program_content_obj_rel_insert_input | null;
+  program_content_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "program_content_video"
+ */
+export interface program_content_video_on_conflict {
+  constraint: program_content_video_constraint;
+  update_columns: program_content_video_update_column[];
+  where?: program_content_video_bool_exp | null;
 }
 
 /**
@@ -16804,6 +17046,7 @@ export interface project_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   introduction?: String_comparison_exp | null;
+  introduction_desktop?: String_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -16881,6 +17124,7 @@ export interface project_insert_input {
   expired_at?: any | null;
   id?: any | null;
   introduction?: string | null;
+  introduction_desktop?: string | null;
   is_countdown_timer_visible?: boolean | null;
   is_participants_visible?: boolean | null;
   position?: number | null;

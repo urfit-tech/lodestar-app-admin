@@ -446,12 +446,10 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             name
           }
         }
-        xuemi_sales: member_permission(where: { permission_id: { _eq: "MEMBER_CONTRACT_INSERT" } }) {
-          member {
-            id
-            name
-            username
-          }
+        xuemi_contractor {
+          id
+          name
+          username
         }
         app_setting(where: { app_id: { _eq: $appId }, key: { _eq: "coin.exchange_rate" } }) {
           value
@@ -521,7 +519,11 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           : null,
       )
       .filter(notEmpty)
-    info.sales = data.xuemi_sales.map(v => v.member).filter(notEmpty)
+    info.sales = data.xuemi_contractor.map(contractor => ({
+      id: contractor.id || '',
+      name: contractor.name || '',
+      username: contractor.username || '',
+    }))
     info.coinExchangeRage = Number(data.app_setting[0].value) || 0
   }
 
