@@ -1,5 +1,4 @@
 import { Tabs } from 'antd'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
@@ -19,10 +18,9 @@ import { usePodcastProgramAdmin } from '../hooks/podcast'
 
 const PodcastProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
+  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(podcastProgramId)
 
   useEffect(() => {
     refetchPodcastProgramAdmin()

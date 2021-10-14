@@ -95,7 +95,7 @@ export const usePodcastProgramCollection = (memberId?: string) => {
   }
 }
 
-export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) => {
+export const usePodcastProgramAdmin = (podcastProgramId: string) => {
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_PODCAST_PROGRAM_ADMIN,
     hasura.GET_PODCAST_PROGRAM_ADMINVariables
