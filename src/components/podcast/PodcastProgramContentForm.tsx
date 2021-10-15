@@ -93,13 +93,13 @@ const PodcastProgramContentForm: React.FC<{
 
     const duration = await getFileDuration(file)
     const totalDurationSecond = podcastProgramAdmin.audios.reduce((sum, audio) => (sum += audio.duration), 0)
-    const totalDuration = Math.ceil((duration + totalDurationSecond) / 60)
+    const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 
     setLoading(true)
 
     appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(async () => {
-        form.setFields([{ name: 'duration', value: durationFormatter(totalDurationSecond) }])
+        form.setFields([{ name: 'duration', value: totalDuration }])
         await updatePodcastProgramDuration({
           variables: {
             updatedAt: new Date(),
@@ -229,7 +229,7 @@ const PodcastProgramContentForm: React.FC<{
                           durationSecond: totalDurationSecond,
                         },
                       })
-                      form.setFields([{ name: 'duration', value: durationFormatter(totalDurationSecond) }])
+                      form.setFields([{ name: 'duration', value: totalDuration }])
                       onRefetch?.()
                     })
                     .catch(handleError)
