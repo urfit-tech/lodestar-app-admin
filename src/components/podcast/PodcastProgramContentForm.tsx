@@ -99,7 +99,15 @@ const PodcastProgramContentForm: React.FC<{
 
     appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(async () => {
-        form.setFields([{ name: 'duration', value: durationFormatter(totalDurationSecond) }])
+        form.setFields([
+          {
+            name: 'duration',
+            value:
+              podcastProgramAdmin.audios.length === 0
+                ? durationFormatter(duration)
+                : durationFormatter(totalDurationSecond),
+          },
+        ])
         await updatePodcastProgramDuration({
           variables: {
             updatedAt: new Date(),
