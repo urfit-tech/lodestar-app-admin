@@ -168,7 +168,7 @@ const usePodcastAlbumPreviewCollection = (
   >(
     gql`
       query GET_PODCAST_ALBUM_PREVIEW_COLLECTION($condition: podcast_album_bool_exp!) {
-        podcast_album(where: $condition) {
+        podcast_album(where: $condition, order_by: { published_at: desc }) {
           id
           title
           cover_url
