@@ -1,4 +1,5 @@
 import { DollarOutlined } from '@ant-design/icons'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
@@ -10,6 +11,7 @@ import { commonMessages } from '../../helpers/translation'
 
 const SalesAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
 
   return (
     <AdminLayout>
@@ -22,8 +24,8 @@ const SalesAdminPage: React.FC = () => {
         <OrderExportModal />
       </div>
 
-      <div className="mb-3">
-        <SaleSummaryCard />
+      <div className="mb-3" style={{ position: 'relative' }}>
+        <SaleSummaryCard isAuth={permissions.GROSS_SALES_ADMIN} />
       </div>
 
       <SaleCollectionAdminCard />
