@@ -2,11 +2,13 @@ import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/ico
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ActivityAdminProps } from '../../types/activity'
+import ProductSkuModal from '../common/ProductSkuModal'
 import ActivityTicket from './ActivityTicket'
 import ActivityTicketAdminModal from './ActivityTicketAdminModal'
 
@@ -14,6 +16,7 @@ const ActivityTicketsAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps | null
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [insertActivityTicket] = useMutation<hasura.INSERT_ACTIVITY_TICKET, hasura.INSERT_ACTIVITY_TICKETVariables>(
     INSERT_ACTIVITY_TICKET,
@@ -106,6 +109,18 @@ const ActivityTicketsAdminBlock: React.FC<{
                           onRefetch={onRefetch}
                         />
                       </Menu.Item>
+                      {enabledModules.sku && (
+                        <Menu.Item>
+                          <ProductSkuModal
+                            productId={`ActivityTicket_${ticket.id}`}
+                            renderTrigger={({ setVisible }) => (
+                              <span onClick={() => setVisible(true)}>
+                                {formatMessage(commonMessages.label.skuSetting)}
+                              </span>
+                            )}
+                          />
+                        </Menu.Item>
+                      )}
                     </Menu>
                   }
                   trigger={['click']}
