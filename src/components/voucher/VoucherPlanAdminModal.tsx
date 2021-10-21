@@ -122,8 +122,8 @@ const VoucherPlanAdminModal: React.FC<
           <InputNumber min={1} />
         </Form.Item>
 
-        <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)} name="startedAt">
-          <Form.Item className="d-inline-block m-0">
+        <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
+          <Form.Item className="d-inline-block m-0" name="startedAt">
             <DatePicker
               format="YYYY-MM-DD HH:mm"
               showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
