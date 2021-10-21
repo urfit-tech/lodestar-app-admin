@@ -60,25 +60,42 @@ export interface UPDATE_ACTIVITY_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: SEARCH_ACTIVITY
+// GraphQL query operation: GET_ACTIVITY_CATEGORIES
 // ====================================================
 
-export interface SEARCH_ACTIVITY_activity {
+export interface GET_ACTIVITY_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_ACTIVITY_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_ACTIVITY_CATEGORIES_category[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_ID_LIST
+// ====================================================
+
+export interface GET_ACTIVITY_ID_LIST_activity {
   __typename: "activity";
   id: any;
   title: string;
 }
 
-export interface SEARCH_ACTIVITY {
+export interface GET_ACTIVITY_ID_LIST {
   /**
    * fetch data from the table: "activity"
    */
-  activity: SEARCH_ACTIVITY_activity[];
-}
-
-export interface SEARCH_ACTIVITYVariables {
-  appId: string;
-  searchText: string;
+  activity: GET_ACTIVITY_ID_LIST_activity[];
 }
 
 /* tslint:disable */
@@ -288,6 +305,27 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
   onlineLink?: string | null;
   description?: string | null;
   threshold?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_TAGS
+// ====================================================
+
+export interface GET_ACTIVITY_TAGS_activity_tag {
+  __typename: "activity_tag";
+  tag_name: string;
+}
+
+export interface GET_ACTIVITY_TAGS {
+  /**
+   * fetch data from the table: "activity_tag"
+   */
+  activity_tag: GET_ACTIVITY_TAGS_activity_tag[];
 }
 
 /* tslint:disable */

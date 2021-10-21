@@ -11,7 +11,7 @@ const messages = defineMessages({
   tabletCollection: { id: 'common.ui.tabletCollection', defaultMessage: '平板' },
   desktopCollection: { id: 'common.ui.desktopCollection', defaultMessage: '電腦' },
 })
-type ResponsiveInputValue = [number | null, number | null, number | null]
+export type ResponsiveInputValue = [number | null, number | null, number | null]
 const ResponsiveInput: React.VFC<{
   label: keyof typeof labelMessages
   value?: ResponsiveInputValue

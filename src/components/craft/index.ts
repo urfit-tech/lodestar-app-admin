@@ -14,13 +14,12 @@ import {
   CraftLayout,
   CraftParagraph,
   CraftPodcastProgram,
-  CraftProgram,
-  CraftProgramCollection,
   CraftProject,
   CraftStatistics,
   CraftTitle,
   CraftTitleAndParagraph,
 } from 'lodestar-app-element/src/components/craft'
+import ProgramCardCollection from 'lodestar-app-element/src/components/craft/ProgramCardCollection'
 import {
   ActivitySettings,
   BackgroundSettings,
@@ -38,7 +37,6 @@ import {
   ParagraphSettings,
   PodcastProgramSettings,
   ProgramCollectionSettings,
-  ProgramSettings,
   ProjectSettings,
   StatisticsSettings,
   TitleAndParagraphSettings,
@@ -57,7 +55,7 @@ const configureResolver = () => {
       },
     },
   }
-  CraftProgramCollection.craft = {
+  ProgramCardCollection.craft = {
     related: {
       settings: ProgramCollectionSettings,
     },
@@ -182,11 +180,6 @@ const configureResolver = () => {
       settings: PodcastProgramSettings,
     },
   }
-  CraftProgram.craft = {
-    related: {
-      settings: ProgramSettings,
-    },
-  }
   CraftProject.craft = {
     related: {
       settings: ProjectSettings,
@@ -249,8 +242,7 @@ const configureResolver = () => {
     CraftLayout,
     CraftParagraph,
     CraftPodcastProgram,
-    CraftProgram,
-    CraftProgramCollection,
+    ProgramCardCollection,
     CraftProject,
     CraftStatistics,
     CraftTitle,
