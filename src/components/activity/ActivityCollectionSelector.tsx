@@ -1,30 +1,48 @@
-import { useApolloClient } from '@apollo/react-hooks'
-import { Button, Form, InputNumber, Select } from 'antd'
+import { useQuery } from '@apollo/react-hooks'
+import { Button, Form, InputNumber, Select, Switch } from 'antd'
 import gql from 'graphql-tag'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { ActivityCollection } from 'lodestar-app-element/src/types/data'
-import { repeat } from 'ramda'
-import { useEffect, useState } from 'react'
+import { ActivityCollectionOptions } from 'lodestar-app-element/src/components/collections/ActivityCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledCraftSettingLabel } from '../craft/settings'
+import { CraftSettingLabel, StyledCraftSettingLabel } from '../craft/settings'
+import ActivityCategorySelect from './ActivityCategorySelect'
+import ActivityTagSelect from './ActivityTagSelect'
 
 const ActivityCollectionSelector: React.FC<{
-  value?: ActivityCollection
-  onChange?: (value: ActivityCollection) => void
+  value?: ActivityCollectionOptions
+  onChange?: (value: ActivityCollectionOptions) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { data } = useQuery<hasura.GET_ACTIVITY_ID_LIST>(GET_ACTIVITY_ID_LIST)
+  const activityOptions = data?.activity.map(p => ({ id: p.id, title: p.title })) || []
   return (
     <div>
       <Form.Item
+        name="withSelector"
+        valuePropName="checked"
+        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.categorySelectorEnabled)}</CraftSettingLabel>}
+      >
+        <Switch
+          checked={value?.withSelector}
+          onChange={checked => value && onChange?.({ ...value, withSelector: checked })}
+        />
+      </Form.Item>
+      <Form.Item
         label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</StyledCraftSettingLabel>}
       >
-        <Select<ActivityCollection['type']>
+        <Select<ActivityCollectionOptions['source']>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
-          value={value?.type}
-          onChange={type => {
-            onChange?.({ type, ids: [] })
+          value={value?.source}
+          onChange={source => {
+            switch (source) {
+              case 'publishedAt':
+                onChange?.({ source, limit: 4 })
+                break
+              case 'custom':
+                onChange?.({ source, idList: [] })
+                break
+            }
           }}
           filterOption={(input, option) =>
             option?.props?.children
@@ -32,49 +50,94 @@ const ActivityCollectionSelector: React.FC<{
               : true
           }
         >
-          <Select.Option key="newest" value="newest">
-            {formatMessage(craftPageMessages.label.newest)}
+          <Select.Option key="publishedAt" value="publishedAt">
+            {formatMessage(craftPageMessages.label.publishedAt)}
+          </Select.Option>
+          <Select.Option key="currentPrice" value="currentPrice">
+            {formatMessage(craftPageMessages.label.currentPrice)}
           </Select.Option>
           <Select.Option key="custom" value="custom">
             {formatMessage(craftPageMessages.label.custom)}
           </Select.Option>
         </Select>
       </Form.Item>
-      {value?.type === 'newest' && (
-        <Form.Item
-          label={
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</StyledCraftSettingLabel>
-          }
-        >
-          <InputNumber
-            value={value.ids.length}
-            onChange={limit => onChange?.({ type: value.type, ids: repeat(null, Number(limit) || 0) })}
-          />
-        </Form.Item>
+      {value?.source === 'publishedAt' && (
+        <>
+          <Form.Item
+            label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</StyledCraftSettingLabel>}
+          >
+            <Select value={value.asc ? 'asc' : 'desc'} onChange={v => onChange?.({ ...value, asc: v === 'asc' })}>
+              <Select.Option value="asc">{formatMessage(craftPageMessages.label.sortAsc)}</Select.Option>
+              <Select.Option value="desc">{formatMessage(craftPageMessages.label.sortDesc)}</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            label={
+              <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</StyledCraftSettingLabel>
+            }
+          >
+            <InputNumber
+              value={value.limit}
+              onChange={limit => onChange?.({ ...value, limit: limit ? Number(limit) : undefined })}
+            />
+          </Form.Item>
+          <Form.Item
+            label={
+              <StyledCraftSettingLabel>
+                {formatMessage(craftPageMessages.label.defaultCategoryId)}
+              </StyledCraftSettingLabel>
+            }
+          >
+            <ActivityCategorySelect
+              value={value.defaultCategoryIds}
+              onChange={v => onChange?.({ ...value, defaultCategoryIds: typeof v === 'string' ? [v] : v })}
+            />
+          </Form.Item>
+          <Form.Item
+            label={
+              <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.defaultTagName)}</StyledCraftSettingLabel>
+            }
+          >
+            <ActivityTagSelect
+              value={value.defaultTagNames}
+              onChange={v => onChange?.({ ...value, defaultTagNames: typeof v === 'string' ? [v] : v })}
+            />
+          </Form.Item>
+        </>
       )}
-      {value?.type === 'custom' && (
+      {value?.source === 'custom' && (
         <Form.Item
           label={
             <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</StyledCraftSettingLabel>
           }
         >
-          {value.ids.map((activityId, idx) => (
-            <div className="my-2" key={activityId}>
-              <ActivitySelect
+          {value.idList.map((activityId, idx) => (
+            <div key={activityId} className="my-2">
+              <Select
+                showSearch
+                allowClear
+                placeholder={formatMessage(craftPageMessages.label.choiceData)}
                 value={activityId}
-                onChange={selectedActivityId => {
+                options={activityOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
+                onChange={selectedActivityId =>
+                  selectedActivityId &&
                   onChange?.({
-                    type: value.type,
-                    ids: [...value.ids.slice(0, idx), selectedActivityId, ...value.ids.slice(idx + 1)],
+                    ...value,
+                    idList: [...value.idList.slice(0, idx), selectedActivityId, ...value.idList.slice(idx + 1)],
                   })
-                }}
-                onRemove={() =>
-                  onChange?.({ type: value.type, ids: [...value.ids.slice(0, idx), ...value.ids.slice(idx + 1)] })
+                }
+                onClear={() =>
+                  onChange?.({ ...value, idList: [...value.idList.slice(0, idx), ...value.idList.slice(idx + 1)] })
+                }
+                filterOption={(input, option) =>
+                  option?.props?.children
+                    ? (option.props.children as string).toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    : true
                 }
               />
             </div>
           ))}
-          <Button type="link" onClick={() => onChange?.({ type: value.type, ids: [...value.ids, null] })}>
+          <Button type="link" onClick={() => onChange?.({ ...value, idList: [...value.idList, ''] })}>
             {formatMessage(craftPageMessages.label.addItem)}
           </Button>
         </Form.Item>
@@ -83,63 +146,13 @@ const ActivityCollectionSelector: React.FC<{
   )
 }
 
-const ActivitySelect: React.VFC<{
-  value?: string | null
-  onChange?: (value: string | null) => void
-  onRemove?: () => void
-}> = ({ value, onChange, onRemove }) => {
-  const { formatMessage } = useIntl()
-  const [searchValue, setSearchValue] = useState('')
-  const { id: appId } = useApp()
-  const apolloClient = useApolloClient()
-  const [searchedActivities, setSearchedActivities] = useState<{ id: string; title: string }[]>([])
-
-  useEffect(() => {
-    apolloClient
-      .query<hasura.SEARCH_ACTIVITY, hasura.SEARCH_ACTIVITYVariables>({
-        query: gql`
-          query SEARCH_ACTIVITY($appId: String!, $searchText: String!) {
-            activity(
-              limit: 20
-              where: { app_id: { _eq: $appId }, title: { _like: $searchText }, published_at: { _is_null: false } }
-            ) {
-              id
-              title
-            }
-          }
-        `,
-        variables: {
-          appId,
-          searchText: `%${searchValue}%`,
-        },
-      })
-      .then(({ data }: { data?: hasura.SEARCH_ACTIVITY }) => {
-        setSearchedActivities(data?.activity.map(v => ({ id: v.id, title: v.title })) || [])
-      })
-  }, [searchValue, apolloClient, appId])
-  return (
-    <Select
-      showSearch
-      allowClear
-      placeholder={formatMessage(craftPageMessages.label.choiceData)}
-      value={value || undefined}
-      searchValue={searchValue}
-      onChange={onChange}
-      onSearch={value => setSearchValue(value)}
-      onClear={onRemove}
-      filterOption={(input, option) =>
-        option?.props?.children
-          ? (option.props.children as string).toLowerCase().indexOf(input.toLowerCase()) >= 0
-          : true
-      }
-    >
-      {searchedActivities.map(activity => (
-        <Select.Option key={activity.id} value={activity.id}>
-          {activity.title}
-        </Select.Option>
-      ))}
-    </Select>
-  )
-}
+const GET_ACTIVITY_ID_LIST = gql`
+  query GET_ACTIVITY_ID_LIST {
+    activity(where: { published_at: { _lt: "now()" } }) {
+      id
+      title
+    }
+  }
+`
 
 export default ActivityCollectionSelector

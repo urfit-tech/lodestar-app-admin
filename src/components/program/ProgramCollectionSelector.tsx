@@ -1,37 +1,17 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Form, InputNumber, Select } from 'antd'
+import { Button, Form, InputNumber, Select, Switch } from 'antd'
 import gql from 'graphql-tag'
+import { ProgramCollectionOptions } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledCraftSettingLabel } from '../craft/settings'
+import { CraftSettingLabel, StyledCraftSettingLabel } from '../craft/settings'
 import ProgramCategorySelect from './ProgramCategorySelect'
 import ProgramTagSelect from './ProgramTagSelect'
 
-export type ProgramCollectionSelectorValue =
-  | {
-      source: 'publishedAt'
-      limit?: number
-      asc?: boolean
-      defaultCategoryIds?: string[]
-      defaultTagNames?: string[]
-    }
-  | {
-      source: 'currentPrice'
-      limit?: number
-      asc?: boolean
-      min?: number
-      max?: number
-      defaultCategoryIds?: string[]
-      defaultTagNames?: string[]
-    }
-  | {
-      source: 'custom'
-      idList: string[]
-    }
 const ProgramCollectionSelector: React.FC<{
-  value?: ProgramCollectionSelectorValue
-  onChange?: (value: ProgramCollectionSelectorValue) => void
+  value?: ProgramCollectionOptions
+  onChange?: (value: ProgramCollectionOptions) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const { data } = useQuery<hasura.GET_PROGRAM_ID_LIST>(GET_PROGRAM_ID_LIST)
@@ -39,9 +19,19 @@ const ProgramCollectionSelector: React.FC<{
   return (
     <div>
       <Form.Item
+        name="withSelector"
+        valuePropName="checked"
+        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.categorySelectorEnabled)}</CraftSettingLabel>}
+      >
+        <Switch
+          checked={value?.withSelector}
+          onChange={checked => value && onChange?.({ ...value, withSelector: checked })}
+        />
+      </Form.Item>
+      <Form.Item
         label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</StyledCraftSettingLabel>}
       >
-        <Select<ProgramCollectionSelectorValue['source']>
+        <Select<ProgramCollectionOptions['source']>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
           value={value?.source}
           onChange={source => {
