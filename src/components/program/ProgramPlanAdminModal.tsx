@@ -13,7 +13,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
-import { ProgramPlanProps } from '../../types/program'
+import { ProgramPlan } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import CurrencyInput from '../form/CurrencyInput'
@@ -40,6 +40,7 @@ const messages = defineMessages({
   unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '不可看過去內容' },
   availableForAllContent: { id: 'program.label.availableForAllContent', defaultMessage: '可看所有內容' },
   subscriptionPeriodType: { id: 'program.label.subscriptionPeriodType', defaultMessage: '訂閱週期' },
+  programExpirationNotice: { id: 'program.label.programExpirationNotice', defaultMessage: '課程到期通知' },
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
 })
 
@@ -47,6 +48,7 @@ type FieldProps = {
   title: string
   isPublished: boolean
   period: { type: PeriodType; amount: number }
+  remindPeriod: { type: PeriodType; amount: number }
   currencyId?: string
   listPrice: number
   sale: SaleProps
@@ -58,7 +60,7 @@ type FieldProps = {
 const ProgramPlanAdminModal: React.FC<
   AdminModalProps & {
     programId: string
-    programPlan?: ProgramPlanProps
+    programPlan?: ProgramPlan
     onRefetch?: () => void
   }
 > = ({ programId, programPlan, onRefetch, ...modalProps }) => {
@@ -71,6 +73,7 @@ const ProgramPlanAdminModal: React.FC<
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!programPlan?.discountDownPrice)
   const [withPeriod, setWithPeriod] = useState(!!(programPlan?.periodAmount && programPlan?.periodType))
+  const [withRemind, setWithRemind] = useState(!!(programPlan?.remindPeriodAmount && programPlan?.remindPeriodType))
   const [withAutoRenewed, setWithAutoRenewed] = useState(!!programPlan?.autoRenewed)
   const [currencyId, setCurrencyId] = useState(programPlan?.currencyId || '')
 
@@ -95,6 +98,8 @@ const ProgramPlanAdminModal: React.FC<
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             periodAmount: withPeriod ? values.period.amount : null,
             periodType: withPeriod ? values.period.type : null,
+            remindPeriodAmount: withRemind ? values.remindPeriod.amount : null,
+            remindPeriodType: withRemind ? values.remindPeriod.type : null,
             currencyId: values.currencyId || programPlan?.currencyId || 'TWD',
             autoRenewed: withPeriod ? withAutoRenewed : false,
             publishedAt: values.isPublished ? new Date() : null,
@@ -148,6 +153,7 @@ const ProgramPlanAdminModal: React.FC<
           period: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
           type: programPlan?.type || 1,
           discountDownPrice: programPlan?.discountDownPrice,
+          remindPeriod: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
         }}
       >
@@ -165,7 +171,6 @@ const ProgramPlanAdminModal: React.FC<
         >
           <Input />
         </Form.Item>
-
         <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">
           <Radio.Group>
             <Radio value={true} className="d-block">
@@ -176,13 +181,11 @@ const ProgramPlanAdminModal: React.FC<
             </Radio>
           </Radio.Group>
         </Form.Item>
-
         <div className="mb-4">
           <Checkbox defaultChecked={withPeriod} onChange={e => setWithPeriod(e.target.checked)}>
             {formatMessage(commonMessages.label.period)}
           </Checkbox>
         </div>
-
         {withPeriod && (
           <Form.Item name="period">
             <PeriodSelector />
@@ -211,18 +214,15 @@ const ProgramPlanAdminModal: React.FC<
             <CurrencySelector onChange={value => setCurrencyId(value && value !== currencyId ? value : currencyId)} />
           </Form.Item>
         )}
-
         <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
           <CurrencyInput noLabel currencyId={currencyId} />
         </Form.Item>
-
         <Form.Item
           name="sale"
           rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
         >
           <SaleInput currencyId={currencyId} withTimer />
         </Form.Item>
-
         {withPeriod && withAutoRenewed && (
           <div className="mb-4">
             <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
@@ -253,6 +253,18 @@ const ProgramPlanAdminModal: React.FC<
             </Radio.Group>
           </Form.Item>
         )}
+        <div className="mb-4">
+          <Checkbox defaultChecked={withRemind} onChange={e => setWithRemind(e.target.checked)}>
+            {formatMessage(messages.programExpirationNotice)}
+          </Checkbox>
+        </div>
+        <PeriodSelector />
+
+        {withRemind && (
+          <Form.Item name="remindPeriod">
+            <PeriodSelector />
+          </Form.Item>
+        )}
         <Form.Item label={formatMessage(messages.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
@@ -274,6 +286,8 @@ const UPSERT_PROGRAM_PLAN = gql`
     $discountDownPrice: numeric!
     $periodAmount: numeric
     $periodType: String
+    $remindPeriodAmount: Int
+    $remindPeriodType: String
     $currencyId: String!
     $autoRenewed: Boolean!
     $publishedAt: timestamptz
@@ -289,6 +303,8 @@ const UPSERT_PROGRAM_PLAN = gql`
         sale_price: $salePrice
         period_amount: $periodAmount
         period_type: $periodType
+        remind_period_amount: $remindPeriodAmount
+        remind_period_type: $remindPeriodType
         discount_down_price: $discountDownPrice
         sold_at: $soldAt
         program_id: $programId
@@ -308,6 +324,8 @@ const UPSERT_PROGRAM_PLAN = gql`
           discount_down_price
           period_amount
           period_type
+          remind_period_amount
+          remind_period_type
           sold_at
           currency_id
           auto_renewed
