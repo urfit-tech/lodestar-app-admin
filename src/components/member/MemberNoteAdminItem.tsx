@@ -15,8 +15,8 @@ import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
 import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
 import { MemberAdminProps, NoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
+import { StyledModalParagraph } from '../common'
 import { CustomRatioImage } from '../common/Image'
-import { StyledModalParagraph } from '../program/ProgramDeletionAdminCard'
 import MemberNoteAdminModal from './MemberNoteAdminModal'
 
 const StyledStatus = styled.span`

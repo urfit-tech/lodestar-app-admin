@@ -10,6 +10,8 @@ import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
+import { AdminBlock } from '../../components/admin'
+import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../../components/common'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -18,8 +20,6 @@ import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/statu
 import { ReactComponent as StatusSearchIcon } from '../../images/default/status-search.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
 import { ProgramAdminProps, ProgramApprovalProps } from '../../types/program'
-import { AdminBlock } from '../admin'
-import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
 
 type FieldProps = {
   description: string

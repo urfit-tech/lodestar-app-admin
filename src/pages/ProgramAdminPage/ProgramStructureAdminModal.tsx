@@ -6,11 +6,11 @@ import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
+import AdminModal from '../../components/admin/AdminModal'
+import DraggableItem from '../../components/common/DraggableItem'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
-import AdminModal from '../admin/AdminModal'
-import DraggableItem from '../common/DraggableItem'
 
 const messages = defineMessages({
   sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },

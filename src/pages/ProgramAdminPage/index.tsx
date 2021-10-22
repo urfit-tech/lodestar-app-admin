@@ -13,20 +13,20 @@ import {
   AdminPaneDescription,
   AdminPaneTitle,
   AdminTabBarWrapper,
-} from '../components/admin'
-import { StyledLayoutContent } from '../components/layout/DefaultLayout'
-import ProgramApprovalHistoryBlock from '../components/program/ProgramApprovalHistoryBlock'
-import ProgramBasicForm from '../components/program/ProgramBasicForm'
-import ProgramDeletionAdminCard from '../components/program/ProgramDeletionAdminCard'
-import ProgramIntroForm from '../components/program/ProgramIntroForm'
-import ProgramPlanAdminBlock from '../components/program/ProgramPlanAdminBlock'
-import ProgramPublishBlock from '../components/program/ProgramPublishBlock'
-import ProgramRoleAdminPane from '../components/program/ProgramRoleAdminPane'
-import ProgramSharingCodeAdminForm from '../components/program/ProgramSharingCodeAdminForm'
-import ProgramStructureAdminBlock from '../components/program/ProgramStructureAdminBlock'
-import ProgramStructureAdminModal from '../components/program/ProgramStructureAdminModal'
-import { commonMessages, programMessages } from '../helpers/translation'
-import { useProgram } from '../hooks/program'
+} from '../../components/admin'
+import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import { commonMessages, programMessages } from '../../helpers/translation'
+import { useProgram } from '../../hooks/program'
+import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
+import ProgramBasicForm from './ProgramBasicForm'
+import ProgramDeletionAdminCard from './ProgramDeletionAdminCard'
+import ProgramIntroForm from './ProgramIntroForm'
+import ProgramPlanAdminBlock from './ProgramPlanAdminBlock'
+import ProgramPublishBlock from './ProgramPublishBlock'
+import ProgramRoleAdminPane from './ProgramRoleAdminPane'
+import ProgramSharingCodeAdminForm from './ProgramSharingCodeAdminForm'
+import ProgramStructureAdminBlock from './ProgramStructureAdminBlock'
+import ProgramStructureAdminModal from './ProgramStructureAdminModal'
 
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()

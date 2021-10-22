@@ -4,10 +4,10 @@ import { Button, Divider, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import ProgramContentSectionAdminCard from '../../components/program/ProgramContentSectionAdminCard'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ProgramAdminProps } from '../../types/program'
-import ProgramContentSectionAdminCard from './ProgramContentSectionAdminCard'
 
 const messages = defineMessages({
   creatingBlock: { id: 'program.event.creatingBlock', defaultMessage: '新增區塊中' },

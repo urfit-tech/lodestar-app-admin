@@ -7,14 +7,14 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { StyledTips } from '../../components/admin'
+import AdminBraftEditor from '../../components/form/AdminBraftEditor'
+import ImageInput from '../../components/form/ImageInput'
+import VideoInput from '../../components/form/VideoInput'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
-import { StyledTips } from '../admin'
-import AdminBraftEditor from '../form/AdminBraftEditor'
-import ImageInput from '../form/ImageInput'
-import VideoInput from '../form/VideoInput'
 
 type FieldProps = {
   coverVideoUrl: string
