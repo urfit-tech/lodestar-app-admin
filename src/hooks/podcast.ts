@@ -7,7 +7,6 @@ import { CategoryProps, PeriodType } from '../types/general'
 import {
   PodcastPlanProps,
   PodcastProgram,
-  PodcastProgramAdminProps,
   PodcastProgramAudio,
   podcastProgramAudiosFromRawAudios,
 } from '../types/podcast'

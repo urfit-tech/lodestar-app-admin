@@ -159,7 +159,7 @@ const MemberContractCreationPage: React.VFC = () => {
     })
     .filter(notEmpty)
   const mainProducts = contractProducts.filter(selectedProduct => selectedProduct.type === 'mainProduct')
-  const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
+  // const totalAppointments = sum(contractProducts.map(product => product.appointments * product.amount))
   const totalCoins = sum(contractProducts.map(product => product.coins * product.amount))
   const contractsOptions = contracts.find(v => v.id === fieldValue.contractId)?.options
 

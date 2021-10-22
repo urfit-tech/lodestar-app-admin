@@ -4,12 +4,10 @@ import { useForm } from 'antd/lib/form/Form'
 import { CollectionLayout } from 'lodestar-app-element/src/components/collections/Collection'
 import { ProgramCollectionOptions } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { ProgramCardCollectionProps } from 'lodestar-app-element/src/components/craft/ProgramCardCollection'
-import { useIntl } from 'react-intl'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramCollectionSelector from '../../program/ProgramCollectionSelector'
 
 const ProgramCollectionSettings: React.VFC = () => {
-  const { formatMessage } = useIntl()
   const [form] = useForm<{ options: ProgramCollectionOptions; layout: CollectionLayout }>()
   const node = useNode(node => ({
     props: node.data.props as ProgramCardCollectionProps,
