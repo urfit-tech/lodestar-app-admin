@@ -50,7 +50,7 @@ export type ProgramProps = {
 
 export type ProgramAdminProps = ProgramProps & {
   contentSections: ProgramContentSectionProps[]
-  plans: ProgramPlanProps[]
+  plans: ProgramPlan[]
   roles: ProgramRoleProps[]
   categories: CategoryProps[]
   tags: string[]
@@ -122,7 +122,7 @@ export type ProgramContentMaterialProps = {
   data: any
 }
 
-export type ProgramPlanProps = {
+export type ProgramPlan = {
   id: string
   type: number
   title: string | null
@@ -133,6 +133,8 @@ export type ProgramPlanProps = {
   discountDownPrice: number
   periodAmount: number | null
   periodType: string | null
+  remindPeriodAmount: number | null
+  remindPeriodType: string | null
   soldAt: Date | null
   currencyId: string
   autoRenewed: boolean

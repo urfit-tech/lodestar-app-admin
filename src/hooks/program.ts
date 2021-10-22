@@ -99,6 +99,8 @@ export const useProgram = (programId: string) => {
             list_price
             period_amount
             period_type
+            remind_period_amount
+            remind_period_type
             sold_at
             currency_id
             auto_renewed
@@ -207,6 +209,8 @@ export const useProgram = (programId: string) => {
         discountDownPrice: programPlan.discount_down_price,
         periodAmount: programPlan.period_amount,
         periodType: programPlan.period_type,
+        remindPeriodAmount: programPlan.remind_period_amount,
+        remindPeriodType: programPlan.remind_period_type,
         soldAt: programPlan.sold_at && new Date(programPlan.sold_at),
         currencyId: programPlan.currency_id,
         autoRenewed: programPlan.auto_renewed,
