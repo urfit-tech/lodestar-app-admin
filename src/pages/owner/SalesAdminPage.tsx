@@ -21,14 +21,14 @@ const SalesAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="mb-4">
-        <OrderExportModal />
+        <OrderExportModal isAuth={permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_CREATOR} />
       </div>
 
-      <div className="mb-3" style={{ position: 'relative' }}>
+      <div className="mb-3 position-relative">
         <SaleSummaryCard isAuth={permissions.GROSS_SALES_ADMIN} />
       </div>
 
-      <SaleCollectionAdminCard />
+      <SaleCollectionAdminCard isAuth={permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_CREATOR} />
     </AdminLayout>
   )
 }

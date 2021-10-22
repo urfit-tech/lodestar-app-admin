@@ -30,7 +30,7 @@ type FieldProps = {
   orderStatuses: ('UNPAID' | 'SUCCESS' | 'FAILED' | 'REFUND')[]
 }
 
-const OrderExportModal: React.FC = () => {
+const OrderExportModal: React.FC<{ isAuth?: boolean }> = ({ isAuth }) => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
@@ -409,7 +409,7 @@ const OrderExportModal: React.FC = () => {
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
+        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)} disabled={!isAuth}>
           {formatMessage(messages.exportOrder)}
         </Button>
       )}

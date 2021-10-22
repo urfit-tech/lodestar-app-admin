@@ -52,6 +52,7 @@ const StyledCell = styled.div`
 `
 
 const SaleCollectionAdminCard: React.VFC<{
+  isAuth?: boolean
   memberId?: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
