@@ -56,7 +56,6 @@ const CardSettings: React.VFC = () => {
   const {
     actions: { setProp },
     props,
-    selected,
   } = useNode(node => ({
     props: node.data.props as CraftCardProps,
     selected: node.events.selected,

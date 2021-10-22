@@ -28,14 +28,12 @@ const BackgroundSettings: React.VFC = () => {
   const {
     actions: { setProp },
     props,
-    selected,
   } = useNode(node => ({
     props: node.data.props as CraftBackgroundProps,
     selected: node.events.selected,
   }))
 
   const [loading, setLoading] = useState(false)
-  const [isImageUploaded, setIsImageUploaded] = useState(false)
   const [backgroundImage, setBackgroundImage] = useState<File | null>(null)
 
   const handleChange = () => {

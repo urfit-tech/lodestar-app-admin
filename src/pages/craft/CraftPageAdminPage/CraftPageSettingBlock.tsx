@@ -10,7 +10,7 @@ import { configureResolver, CraftToolBox } from '../../../components/craft'
 import { handleError } from '../../../helpers'
 import { commonMessages, craftPageMessages } from '../../../helpers/translation'
 import { useMutateAppPage } from '../../../hooks/appPage'
-import { BrushIcon, PageIcon } from '../../../images/icon'
+import { PageIcon } from '../../../images/icon'
 import { CraftPageAdminProps } from '../../../types/craft'
 
 const messages = defineMessages({
@@ -53,12 +53,6 @@ const StyledPageIcon = styled(PageIcon)<{ active: string }>`
   font-size: 21px;
   g {
     fill: ${props => (props.active === 'component' ? props.theme['@primary-color'] : '#585858')};
-  }
-`
-const StyledBrushIcon = styled(BrushIcon)<{ active: string }>`
-  font-size: 21px;
-  path {
-    fill: ${props => (props.active === 'settings' ? props.theme['@primary-color'] : '#585858')};
   }
 `
 
