@@ -1,15 +1,15 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, message, Modal, Skeleton } from 'antd'
+import { Button, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import AdminModal from '../../components/admin/AdminModal'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
-import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessages({
   deleteProgramConfirmation: {
@@ -26,30 +26,6 @@ const messages = defineMessages({
   },
 })
 
-export const StyledModal = styled(Modal)`
-  && {
-    .ant-modal-body {
-      padding: 32px 32px 0;
-    }
-    .ant-modal-footer {
-      border-top: 0;
-      padding: 20px;
-    }
-  }
-`
-export const StyledModalTitle = styled.h3`
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--gray-darker);
-  letter-spacing: 0.8px;
-`
-export const StyledModalParagraph = styled.p`
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--gray-darker);
-  letter-spacing: 0.2px;
-  line-height: 1.5;
-`
 const StyledText = styled.div`
   color: ${props => props.theme['@primary-color']};
   font-size: 14px;

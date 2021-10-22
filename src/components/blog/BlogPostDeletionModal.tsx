@@ -7,7 +7,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { PostProps } from '../../types/blog'
-import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../program/ProgramDeletionAdminCard'
+import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../common'
 
 const messages = defineMessages({
   deletePostConfirmation: {
