@@ -1,53 +1,11 @@
-import {
-  CraftActivity,
-  CraftBackground,
-  CraftButton,
-  CraftCard,
-  CraftCarousel,
-  CraftCarouselContainer,
-  CraftCollapse,
-  CraftContainer,
-  CraftCreator,
-  CraftEmbed,
-  CraftImage,
-  CraftInstructor,
-  CraftLayout,
-  CraftParagraph,
-  CraftPodcastProgram,
-  CraftProject,
-  CraftStatistics,
-  CraftTitle,
-  CraftTitleAndParagraph,
-} from 'lodestar-app-element/src/components/craft'
-import ProgramCardCollection from 'lodestar-app-element/src/components/craft/ProgramCardCollection'
-import {
-  ActivitySettings,
-  BackgroundSettings,
-  ButtonSettings,
-  CardSettings,
-  CarouselContainerSettings,
-  CarouselSettings,
-  CollapseSettings,
-  ContainerSettings,
-  CreatorSettings,
-  EmbedSettings,
-  ImageSettings,
-  InstructorSettings,
-  LayoutSettings,
-  ParagraphSettings,
-  PodcastProgramSettings,
-  ProgramCollectionSettings,
-  ProjectSettings,
-  StatisticsSettings,
-  TitleAndParagraphSettings,
-  TitleSettings,
-} from '../../components/craft/settings'
+import * as CraftResolver from 'lodestar-app-element/src/components/craft'
+import * as CraftSetting from '../../components/craft/settings'
 import CraftToolBox from './CraftToolBox'
 
 const configureResolver = () => {
-  CraftActivity.craft = {
+  CraftResolver.CraftActivityCollection.craft = {
     related: {
-      settings: ActivitySettings,
+      settings: CraftSetting.ActivityCollectionSettings,
     },
     custom: {
       button: {
@@ -55,9 +13,9 @@ const configureResolver = () => {
       },
     },
   }
-  ProgramCardCollection.craft = {
+  CraftResolver.CraftProgramCollection.craft = {
     related: {
-      settings: ProgramCollectionSettings,
+      settings: CraftSetting.ProgramCollectionSettings,
     },
     custom: {
       button: {
@@ -65,9 +23,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftBackground.craft = {
+  CraftResolver.CraftBackground.craft = {
     related: {
-      settings: BackgroundSettings,
+      settings: CraftSetting.BackgroundSettings,
     },
     custom: {
       button: {
@@ -75,9 +33,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftButton.craft = {
+  CraftResolver.CraftButton.craft = {
     related: {
-      settings: ButtonSettings,
+      settings: CraftSetting.ButtonSettings,
     },
     custom: {
       button: {
@@ -85,9 +43,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftCard.craft = {
+  CraftResolver.CraftCard.craft = {
     related: {
-      settings: CardSettings,
+      settings: CraftSetting.CardSettings,
     },
     custom: {
       button: {
@@ -95,9 +53,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftCarousel.craft = {
+  CraftResolver.CraftCarousel.craft = {
     related: {
-      settings: CarouselSettings,
+      settings: CraftSetting.CarouselSettings,
     },
     custom: {
       button: {
@@ -105,9 +63,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftCarouselContainer.craft = {
+  CraftResolver.CraftCarouselContainer.craft = {
     related: {
-      settings: CarouselContainerSettings,
+      settings: CraftSetting.CarouselContainerSettings,
     },
     custom: {
       button: {
@@ -115,9 +73,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftCollapse.craft = {
+  CraftResolver.CraftCollapse.craft = {
     related: {
-      settings: CollapseSettings,
+      settings: CraftSetting.CollapseSettings,
     },
     custom: {
       button: {
@@ -125,9 +83,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftContainer.craft = {
+  CraftResolver.CraftContainer.craft = {
     related: {
-      settings: ContainerSettings,
+      settings: CraftSetting.ContainerSettings,
     },
     custom: {
       button: {
@@ -135,9 +93,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftImage.craft = {
+  CraftResolver.CraftImage.craft = {
     related: {
-      settings: ImageSettings,
+      settings: CraftSetting.ImageSettings,
     },
     custom: {
       button: {
@@ -145,19 +103,19 @@ const configureResolver = () => {
       },
     },
   }
-  CraftInstructor.craft = {
+  CraftResolver.CraftInstructor.craft = {
     related: {
-      settings: InstructorSettings,
+      settings: CraftSetting.InstructorSettings,
     },
   }
-  CraftCreator.craft = {
+  CraftResolver.CraftCreator.craft = {
     related: {
-      settings: CreatorSettings,
+      settings: CraftSetting.CreatorSettings,
     },
   }
-  CraftLayout.craft = {
+  CraftResolver.CraftLayout.craft = {
     related: {
-      settings: LayoutSettings,
+      settings: CraftSetting.LayoutSettings,
     },
     custom: {
       button: {
@@ -165,9 +123,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftParagraph.craft = {
+  CraftResolver.CraftParagraph.craft = {
     related: {
-      settings: ParagraphSettings,
+      settings: CraftSetting.ParagraphSettings,
     },
     custom: {
       button: {
@@ -175,19 +133,19 @@ const configureResolver = () => {
       },
     },
   }
-  CraftPodcastProgram.craft = {
+  CraftResolver.CraftPodcastProgram.craft = {
     related: {
-      settings: PodcastProgramSettings,
+      settings: CraftSetting.PodcastProgramSettings,
     },
   }
-  CraftProject.craft = {
+  CraftResolver.CraftProject.craft = {
     related: {
-      settings: ProjectSettings,
+      settings: CraftSetting.ProjectSettings,
     },
   }
-  CraftStatistics.craft = {
+  CraftResolver.CraftStatistics.craft = {
     related: {
-      settings: StatisticsSettings,
+      settings: CraftSetting.StatisticsSettings,
     },
     custom: {
       button: {
@@ -195,9 +153,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftTitle.craft = {
+  CraftResolver.CraftTitle.craft = {
     related: {
-      settings: TitleSettings,
+      settings: CraftSetting.TitleSettings,
     },
     custom: {
       button: {
@@ -205,9 +163,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftTitleAndParagraph.craft = {
+  CraftResolver.CraftTitleAndParagraph.craft = {
     related: {
-      settings: TitleAndParagraphSettings,
+      settings: CraftSetting.TitleAndParagraphSettings,
     },
     custom: {
       button: {
@@ -215,9 +173,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftEmbed.craft = {
+  CraftResolver.CraftEmbed.craft = {
     related: {
-      settings: EmbedSettings,
+      settings: CraftSetting.EmbedSettings,
     },
     custom: {
       button: {
@@ -226,28 +184,7 @@ const configureResolver = () => {
     },
   }
 
-  return {
-    CraftActivity,
-    CraftBackground,
-    CraftButton,
-    CraftCard,
-    CraftCarousel,
-    CraftCarouselContainer,
-    CraftCollapse,
-    CraftContainer,
-    CraftCreator,
-    CraftEmbed,
-    CraftImage,
-    CraftInstructor,
-    CraftLayout,
-    CraftParagraph,
-    CraftPodcastProgram,
-    ProgramCardCollection,
-    CraftProject,
-    CraftStatistics,
-    CraftTitle,
-    CraftTitleAndParagraph,
-  }
+  return CraftResolver
 }
 
 export { configureResolver, CraftToolBox }

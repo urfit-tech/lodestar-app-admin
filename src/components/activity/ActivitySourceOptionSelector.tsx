@@ -1,17 +1,18 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Form, InputNumber, Select, Switch } from 'antd'
+import { Button, Form, InputNumber, Select } from 'antd'
 import gql from 'graphql-tag'
-import { ActivityCollectionOptions } from 'lodestar-app-element/src/components/collections/ActivityCollection'
+import { CraftActivityCollectionProps } from 'lodestar-app-element/src/components/craft/CraftActivityCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel, StyledCraftSettingLabel } from '../craft/settings'
+import { StyledCraftSettingLabel } from '../craft/settings'
 import ActivityCategorySelect from './ActivityCategorySelect'
 import ActivityTagSelect from './ActivityTagSelect'
 
-const ActivityCollectionSelector: React.FC<{
-  value?: ActivityCollectionOptions
-  onChange?: (value: ActivityCollectionOptions) => void
+type ActivitySourceOption = CraftActivityCollectionProps['sourceOptions']
+const ActivitySourceOptionSelector: React.FC<{
+  value?: ActivitySourceOption
+  onChange?: (value: ActivitySourceOption) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const { data } = useQuery<hasura.GET_ACTIVITY_ID_LIST>(GET_ACTIVITY_ID_LIST)
@@ -19,19 +20,9 @@ const ActivityCollectionSelector: React.FC<{
   return (
     <div>
       <Form.Item
-        name="withSelector"
-        valuePropName="checked"
-        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.categorySelectorEnabled)}</CraftSettingLabel>}
-      >
-        <Switch
-          checked={value?.withSelector}
-          onChange={checked => value && onChange?.({ ...value, withSelector: checked })}
-        />
-      </Form.Item>
-      <Form.Item
         label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</StyledCraftSettingLabel>}
       >
-        <Select<ActivityCollectionOptions['source']>
+        <Select<ActivitySourceOption['source']>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
           value={value?.source}
           onChange={source => {
@@ -155,4 +146,4 @@ const GET_ACTIVITY_ID_LIST = gql`
   }
 `
 
-export default ActivityCollectionSelector
+export default ActivitySourceOptionSelector
