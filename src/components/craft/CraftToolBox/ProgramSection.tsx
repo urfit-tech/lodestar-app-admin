@@ -1,7 +1,11 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
-import { CraftBackground, CraftButton, CraftTitle } from 'lodestar-app-element/src/components/craft'
-import ProgramCardCollection from 'lodestar-app-element/src/components/craft/ProgramCardCollection'
+import {
+  CraftBackground,
+  CraftButton,
+  CraftProgramCollection,
+  CraftTitle,
+} from 'lodestar-app-element/src/components/craft'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import React from 'react'
 import { StyledBoxWrapper } from '.'
@@ -33,7 +37,7 @@ const ProblemSection: React.VFC = () => {
               fontWeight="bold"
               color={'#585858'}
             />
-            <ProgramCardCollection options={{ source: 'publishedAt', limit: 4 }} />
+            <CraftProgramCollection variant="card" sourceOptions={{ source: 'publishedAt', limit: 4 }} />
             <div style={{ textAlign: 'center' }}>
               <CraftButton
                 title="馬上查看 〉"

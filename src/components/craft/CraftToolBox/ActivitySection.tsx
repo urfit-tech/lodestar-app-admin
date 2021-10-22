@@ -1,7 +1,7 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
 import {
-  CraftActivity,
+  CraftActivityCollection,
   CraftBackground,
   CraftButton,
   CraftImage,
@@ -38,7 +38,13 @@ const ActivitySection: React.VFC = () => {
               fontWeight="bold"
               color={'#585858'}
             />
-            <Element id="CraftActivity" is={CraftActivity} canvas type="newest" ids={[]} defaultCategoryIds={[]}>
+            <Element
+              id="CraftActivity"
+              is={CraftActivityCollection}
+              canvas
+              variant="card"
+              sourceOptions={{ source: 'publishedAt', limit: 4 }}
+            >
               <CraftImage
                 desktop={{
                   width: '100%',

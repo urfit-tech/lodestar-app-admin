@@ -1,17 +1,18 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Form, InputNumber, Select, Switch } from 'antd'
+import { Button, Form, InputNumber, Select } from 'antd'
 import gql from 'graphql-tag'
-import { ProgramCollectionOptions } from 'lodestar-app-element/src/components/collections/ProgramCollection'
+import { CraftProgramCollectionProps } from 'lodestar-app-element/src/components/craft/CraftProgramCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel, StyledCraftSettingLabel } from '../craft/settings'
+import { StyledCraftSettingLabel } from '../craft/settings'
 import ProgramCategorySelect from './ProgramCategorySelect'
 import ProgramTagSelect from './ProgramTagSelect'
 
+type ProgramSourceOptions = CraftProgramCollectionProps['sourceOptions']
 const ProgramCollectionSelector: React.FC<{
-  value?: ProgramCollectionOptions
-  onChange?: (value: ProgramCollectionOptions) => void
+  value?: ProgramSourceOptions
+  onChange?: (value: ProgramSourceOptions) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const { data } = useQuery<hasura.GET_PROGRAM_ID_LIST>(GET_PROGRAM_ID_LIST)
@@ -19,19 +20,9 @@ const ProgramCollectionSelector: React.FC<{
   return (
     <div>
       <Form.Item
-        name="withSelector"
-        valuePropName="checked"
-        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.categorySelectorEnabled)}</CraftSettingLabel>}
-      >
-        <Switch
-          checked={value?.withSelector}
-          onChange={checked => value && onChange?.({ ...value, withSelector: checked })}
-        />
-      </Form.Item>
-      <Form.Item
         label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</StyledCraftSettingLabel>}
       >
-        <Select<ProgramCollectionOptions['source']>
+        <Select<ProgramSourceOptions['source']>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
           value={value?.source}
           onChange={source => {

@@ -1,7 +1,7 @@
 import { Element, useEditor } from '@craftjs/core'
 import { Image, Select } from 'antd'
 import { SelectValue } from 'antd/lib/select'
-import ProgramCardCollection from 'lodestar-app-element/src/components/craft/ProgramCardCollection'
+import { CraftProgramCollection } from 'lodestar-app-element/src/components/craft'
 import React, { ReactElement, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -177,7 +177,10 @@ const CraftToolbox: React.VFC = () => {
         className="mb-3"
         ref={ref =>
           ref &&
-          connectors.create(ref, <Element is={ProgramCardCollection} options={{ source: 'publishedAt', limit: 4 }} />)
+          connectors.create(
+            ref,
+            <Element is={CraftProgramCollection} variant="card" sourceOptions={{ source: 'publishedAt', limit: 4 }} />,
+          )
         }
       >
         <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title-dark.png" />
