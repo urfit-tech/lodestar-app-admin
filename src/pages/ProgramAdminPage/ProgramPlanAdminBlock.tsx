@@ -3,13 +3,13 @@ import { Button, Skeleton } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import { AdminBlock, AdminBlockTitle } from '../../components/admin'
+import ProgramGroupBuyingAdminForm from '../../components/program/ProgramGroupBuyingAdminForm'
+import ProgramPerpetualPlanAdminCard from '../../components/program/ProgramPerpetualPlanAdminCard'
+import ProgramPlanAdminModal from '../../components/program/ProgramPlanAdminModal'
+import ProgramSubscriptionPlanAdminCard from '../../components/program/ProgramSubscriptionPlanAdminCard'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
-import { AdminBlock, AdminBlockTitle } from '../admin'
-import ProgramGroupBuyingAdminForm from './ProgramGroupBuyingAdminForm'
-import ProgramPerpetualPlanAdminCard from './ProgramPerpetualPlanAdminCard'
-import ProgramPlanAdminModal from './ProgramPlanAdminModal'
-import ProgramSubscriptionPlanAdminCard from './ProgramSubscriptionPlanAdminCard'
 
 const ProgramPlanAdminBlock: React.FC<{
   program: ProgramAdminProps | null

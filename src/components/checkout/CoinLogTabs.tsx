@@ -14,9 +14,9 @@ import { commonMessages, errorMessages, promotionMessages } from '../../helpers/
 import { ReactComponent as TextIcon } from '../../images/icon/text.svg'
 import { MemberBriefProps } from '../../types/member'
 import { AdminBlock } from '../admin'
+import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../common'
 import CoinSendingModal from '../common/CoinSendingModal'
 import { AvatarImage } from '../common/Image'
-import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../program/ProgramDeletionAdminCard'
 
 const messages = defineMessages({
   coinReleaseHistory: { id: 'promotion.label.coinReleaseHistory', defaultMessage: '發送紀錄' },
