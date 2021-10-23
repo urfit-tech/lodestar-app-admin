@@ -49,10 +49,10 @@ const StyledTabs = styled(Tabs)`
   min-width: 300px;
   position: relative;
 `
-const StyledPageIcon = styled(PageIcon)<{ active: string }>`
+const StyledPageIcon = styled(PageIcon)<{ active?: boolean }>`
   font-size: 21px;
   g {
-    fill: ${props => (props.active === 'component' ? props.theme['@primary-color'] : '#585858')};
+    fill: ${props => (props.active ? props.theme['@primary-color'] : '#585858')};
   }
 `
 
@@ -135,7 +135,7 @@ const SettingBlock: React.VFC<{
     <StyledSettingBlock>
       <CraftSettingsPanel />
       <StyledTabs
-        activeKey="component"
+        activeKey="basic"
         renderTabBar={(props, DefaultTabBar) => (
           <StyledTabBarWrapper>
             <DefaultTabBar {...props} className="mb-0" />
@@ -145,8 +145,14 @@ const SettingBlock: React.VFC<{
           </StyledTabBarWrapper>
         )}
       >
-        <StyledTabsPane key="component" tab={<StyledPageIcon active="component" />}>
-          <CraftToolBox />
+        <StyledTabsPane key="basic" tab={<StyledPageIcon />}>
+          <CraftToolBox category="basic" />
+        </StyledTabsPane>
+        <StyledTabsPane key="product" tab={<StyledPageIcon />}>
+          <CraftToolBox category="product" />
+        </StyledTabsPane>
+        <StyledTabsPane key="template" tab={<StyledPageIcon />}>
+          <CraftToolBox category="template" />
         </StyledTabsPane>
       </StyledTabs>
     </StyledSettingBlock>
