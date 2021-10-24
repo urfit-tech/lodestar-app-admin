@@ -9,7 +9,7 @@ import {
 } from 'lodestar-app-element/src/components/craft'
 import React from 'react'
 
-const DescriptionSection: React.VFC = () => {
+const FeatureSection: React.VFC = () => {
   return (
     <Element
       id="CraftBackground"
@@ -65,4 +65,4 @@ const DescriptionSection: React.VFC = () => {
   )
 }
 
-export default DescriptionSection
+export default FeatureSection

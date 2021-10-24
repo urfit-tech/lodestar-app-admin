@@ -7,10 +7,11 @@ import Draggable from 'react-draggable'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { configureResolver, CraftToolBox } from '../../../components/craft'
+import { CraftToolboxCategory } from '../../../components/craft/CraftToolBox'
 import { handleError } from '../../../helpers'
 import { commonMessages, craftPageMessages } from '../../../helpers/translation'
 import { useMutateAppPage } from '../../../hooks/appPage'
-import { PageIcon } from '../../../images/icon'
+import { ReactComponent as PageIcon } from '../../../images/icon/page.svg'
 import { CraftPageAdminProps } from '../../../types/craft'
 
 const messages = defineMessages({
@@ -107,6 +108,7 @@ const SettingBlock: React.VFC<{
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const { updateAppPage } = useMutateAppPage()
+  const [active, setActive] = useState<CraftToolboxCategory>('basic')
   const { isDataChanged, actions, query } = useEditor((state, query) => ({
     isDataChanged: query.history.canUndo(),
   }))
@@ -135,7 +137,6 @@ const SettingBlock: React.VFC<{
     <StyledSettingBlock>
       <CraftSettingsPanel />
       <StyledTabs
-        activeKey="basic"
         renderTabBar={(props, DefaultTabBar) => (
           <StyledTabBarWrapper>
             <DefaultTabBar {...props} className="mb-0" />
