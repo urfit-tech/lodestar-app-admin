@@ -57,7 +57,7 @@ const SaleCollectionAdminCard: React.VFC<{
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
-  const { currentUserRole } = useAuth()
+  const { currentUserRole, permissions } = useAuth()
 
   const [isLoading, setIsLoading] = useState(false)
   const [statuses, setStatuses] = useState<string[] | null>(null)
@@ -344,11 +344,12 @@ const useOrderLog = (filters?: {
   memberNameAndEmail?: string | null
   memberId?: string
 }) => {
+  const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_ORDERSVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
     status: filters?.statuses ? { _in: filters.statuses } : undefined,
-    member:
-      filters?.memberId || filters?.memberNameAndEmail
+    member: permissions.SALES_RECORDS_ADMIN
+      ? filters?.memberId || filters?.memberNameAndEmail
         ? {
             id: filters?.memberId ? { _like: `%${filters.memberId}%` } : undefined,
             _or: filters?.memberNameAndEmail
@@ -359,18 +360,28 @@ const useOrderLog = (filters?: {
                 ]
               : undefined,
           }
-        : undefined,
+        : undefined
+      : {
+          id: { _eq: currentMemberId },
+        },
   }
 
-  const { data: allOrderLogs } = useQuery<hasura.GET_ALL_ORDER_LOG>(gql`
-    query GET_ALL_ORDER_LOG {
-      order_log_aggregate {
-        aggregate {
-          count
+  const { data: allOrderLogs } = useQuery<hasura.GET_ALL_ORDER_LOG>(
+    gql`
+      query GET_ALL_ORDER_LOG($memberId: String) {
+        order_log_aggregate(where: { member_id: { _eq: $memberId } }) {
+          aggregate {
+            count
+          }
         }
       }
-    }
-  `)
+    `,
+    {
+      variables: {
+        memberId: !permissions.SALES_RECORDS_ADMIN ? currentMemberId : undefined,
+      },
+    },
+  )
   const totalCount = allOrderLogs?.order_log_aggregate.aggregate?.count || 0
 
   const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDERS, hasura.GET_ORDERSVariables>(
@@ -385,7 +396,7 @@ const useOrderLog = (filters?: {
       },
     },
   )
-
+  console.log(data?.order_log)
   const loadMoreOrderLogs =
     (data?.order_log_aggregate.aggregate?.count || 0) > 20
       ? () => {
