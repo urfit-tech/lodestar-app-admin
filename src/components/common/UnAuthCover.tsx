@@ -27,7 +27,7 @@ const StyledCover = styled.div`
   }
 `
 const messages = defineMessages({
-  unAuth: { id: 'common.label.unAuth', defaultMessage: '銷售總額' },
+  unAuth: { id: 'common.label.unAuth', defaultMessage: '無此權限' },
 })
 
 const UnAuthCover: React.VFC<{}> = ({}) => {

@@ -396,7 +396,6 @@ const useOrderLog = (filters?: {
       },
     },
   )
-  console.log(data?.order_log)
   const loadMoreOrderLogs =
     (data?.order_log_aggregate.aggregate?.count || 0) > 20
       ? () => {
