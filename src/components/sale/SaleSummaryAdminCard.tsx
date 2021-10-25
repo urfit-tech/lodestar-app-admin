@@ -25,7 +25,6 @@ const SaleSummaryAdminCard: React.FC<{ isAuth?: boolean }> = ({ isAuth }) => {
           query: GET_TOTAL_ORDER_AMOUNT,
         })
         .then(({ data }: { data?: hasura.GET_TOTAL_ORDER_AMOUNT }) => {
-          console.log(data)
           setTotalOrderAmountResult(data)
           setLoading(false)
         })
