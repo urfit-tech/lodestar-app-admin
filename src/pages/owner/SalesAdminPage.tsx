@@ -9,9 +9,25 @@ import SaleCollectionAdminCard from '../../components/sale/SaleCollectionAdminCa
 import SaleSummaryCard from '../../components/sale/SaleSummaryAdminCard'
 import { commonMessages } from '../../helpers/translation'
 
+type SalesStatus = {
+  authStatus: 'Admin' | 'Creator' | 'None'
+  memberId: string | null
+}
+
 const SalesAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { permissions } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
+
+  const grossSalesPermission: SalesStatus = permissions.GROSS_SALES_ADMIN
+    ? { authStatus: 'Admin', memberId: currentMemberId }
+    : permissions.GROSS_SALES_CREATOR
+    ? { authStatus: 'Creator', memberId: currentMemberId }
+    : { authStatus: 'None', memberId: currentMemberId }
+  const salesRecordPermission: SalesStatus = permissions.SALES_RECORDS_ADMIN
+    ? { authStatus: 'Admin', memberId: currentMemberId }
+    : permissions.SALES_RECORDS_CREATOR
+    ? { authStatus: 'Creator', memberId: currentMemberId }
+    : { authStatus: 'None', memberId: currentMemberId }
 
   return (
     <AdminLayout>
@@ -25,10 +41,10 @@ const SalesAdminPage: React.FC = () => {
       </div>
 
       <div className="mb-3 position-relative">
-        <SaleSummaryCard isAuth={permissions.GROSS_SALES_ADMIN} />
+        <SaleSummaryCard {...grossSalesPermission} />
       </div>
 
-      <SaleCollectionAdminCard isAuth={permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_CREATOR} />
+      <SaleCollectionAdminCard />
     </AdminLayout>
   )
 }

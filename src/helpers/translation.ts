@@ -1516,6 +1516,10 @@ export const permissionMessages = defineMessages({
   SALES_READ: { id: 'permission.SALES_READ', defaultMessage: '查看所有訂單' },
   SALES_EXPORT: { id: 'permission.SALES_EXPORT', defaultMessage: '匯出所有訂單' },
   SALES_CREATOR_VIEW: { id: 'permission.SALES_CREATOR_VIEW', defaultMessage: '創作者銷售管理功能' },
+  SALES_RECORDS_ADMIN: { id: 'permission.SALES_RECORDS_ADMIN', defaultMessage: '查看所有銷售紀錄' },
+  SALES_RECORDS_CREATOR: { id: 'permission.SALES_RECORDS_CREATOR', defaultMessage: '查看創作者銷售紀錄' },
+  GROSS_SALES_CREATOR: { id: 'permission.GROSS_SALES_CREATOR', defaultMessage: '查看創作者銷售總額' },
+  GROSS_SALES_ADMIN: { id: 'permission.GROSS_SALES_ADMIN', defaultMessage: '查看所有銷售總額' },
 
   // program
   PROGRAM_ADMIN: { id: 'permission.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },

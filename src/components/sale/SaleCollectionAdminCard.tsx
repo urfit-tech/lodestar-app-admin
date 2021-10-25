@@ -7,7 +7,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { prop, sum } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import hasura from '../../hasura'
@@ -52,18 +52,18 @@ const StyledCell = styled.div`
 `
 
 const SaleCollectionAdminCard: React.VFC<{
-  isAuth?: boolean
   memberId?: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole } = useAuth()
 
   const [isLoading, setIsLoading] = useState(false)
   const [statuses, setStatuses] = useState<string[] | null>(null)
   const [orderId, setOrderId] = useState<string | null>(null)
   const [memberNameAndEmail, setMemberNameAndEmail] = useState<string | null>(null)
   const [tmpOrderLogStatus, setTmpOrderLogStatus] = useState<{ [OrderId in string]?: string }>({})
+  const [totalOrderLogsCnt, setTotalOrderLogsCnt] = useState<number>(0)
 
   const { loadingOrderLogs, errorOrderLogs, orderLogs, totalCount, refetchOrderLogs, loadMoreOrderLogs } = useOrderLog({
     statuses,
@@ -71,6 +71,12 @@ const SaleCollectionAdminCard: React.VFC<{
     memberNameAndEmail,
     memberId,
   })
+
+  useEffect(() => {
+    if (totalCount > totalOrderLogsCnt) {
+      setTotalOrderLogsCnt(totalCount)
+    }
+  }, [totalCount])
 
   const getColumnSearchProps = ({
     onReset,
@@ -306,7 +312,7 @@ const SaleCollectionAdminCard: React.VFC<{
       <StyledContainer>
         <div className="d-flex justify-content-end">
           <Typography.Text type="secondary">
-            {formatMessage(commonMessages.text.totalCount, { count: `${totalCount}` })}
+            {formatMessage(commonMessages.text.totalCount, { count: `${totalOrderLogsCnt}` })}
           </Typography.Text>
         </div>
 
@@ -345,31 +351,48 @@ const useOrderLog = (filters?: {
   memberId?: string
 }) => {
   const { permissions, currentMemberId } = useAuth()
+  const authStatus: 'Admin' | 'Creator' | 'None' = permissions.SALES_RECORDS_ADMIN
+    ? 'Admin'
+    : permissions.SALES_RECORDS_CREATOR
+    ? 'Creator'
+    : 'None'
+
   const condition: hasura.GET_ORDERSVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
     status: filters?.statuses ? { _in: filters.statuses } : undefined,
-    member: permissions.SALES_RECORDS_ADMIN
-      ? filters?.memberId || filters?.memberNameAndEmail
+    member:
+      authStatus !== 'None'
+        ? filters?.memberId || filters?.memberNameAndEmail
+          ? {
+              id: filters?.memberId ? { _like: `%${filters.memberId}%` } : undefined,
+              _or: filters?.memberNameAndEmail
+                ? [
+                    { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
+                    { username: { _ilike: `%${filters.memberNameAndEmail}%` } },
+                    { email: { _ilike: `%${filters.memberNameAndEmail}%` } },
+                  ]
+                : undefined,
+            }
+          : undefined
+        : {
+            id: { _eq: currentMemberId },
+          },
+    order_products:
+      authStatus === 'Creator'
         ? {
-            id: filters?.memberId ? { _like: `%${filters.memberId}%` } : undefined,
-            _or: filters?.memberNameAndEmail
-              ? [
-                  { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
-                  { username: { _ilike: `%${filters.memberNameAndEmail}%` } },
-                  { email: { _ilike: `%${filters.memberNameAndEmail}%` } },
-                ]
-              : undefined,
+            product: {
+              product_owner: {
+                member_id: { _eq: currentMemberId },
+              },
+            },
           }
-        : undefined
-      : {
-          id: { _eq: currentMemberId },
-        },
+        : undefined,
   }
 
-  const { data: allOrderLogs } = useQuery<hasura.GET_ALL_ORDER_LOG>(
+  const { data: allOrderLogs } = useQuery<hasura.GET_ALL_ORDER_LOG, hasura.GET_ALL_ORDER_LOGVariables>(
     gql`
-      query GET_ALL_ORDER_LOG($memberId: String) {
-        order_log_aggregate(where: { member_id: { _eq: $memberId } }) {
+      query GET_ALL_ORDER_LOG($allcondition: order_log_bool_exp) {
+        order_log_aggregate(where: $allcondition) {
           aggregate {
             count
           }
@@ -378,10 +401,23 @@ const useOrderLog = (filters?: {
     `,
     {
       variables: {
-        memberId: !permissions.SALES_RECORDS_ADMIN ? currentMemberId : undefined,
+        allcondition: {
+          member_id: authStatus === 'None' ? { _eq: currentMemberId } : undefined,
+          order_products:
+            authStatus === 'Creator'
+              ? {
+                  product: {
+                    product_owner: {
+                      member_id: { _eq: currentMemberId },
+                    },
+                  },
+                }
+              : undefined,
+        },
       },
     },
   )
+
   const totalCount = allOrderLogs?.order_log_aggregate.aggregate?.count || 0
 
   const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDERS, hasura.GET_ORDERSVariables>(

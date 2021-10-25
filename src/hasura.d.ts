@@ -6845,6 +6845,310 @@ export interface GET_TOTAL_ORDER_AMOUNT {
   order_discount_aggregate: GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate;
 }
 
+export interface GET_ALL_ORDER_LOGVariables {
+  allcondition?: order_log_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_OWNER_TOTAL_AMOUNT
+// ====================================================
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT {
+  /**
+   * fetch aggregated fields from the table: "order_product"
+   */
+  order_product_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate;
+  /**
+   * fetch aggregated fields from the table: "order_discount"
+   */
+  order_discount_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_SUBSCRIPTION_CANCELED
+// ====================================================
+
+export interface UPDATE_SUBSCRIPTION_CANCELED_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_SUBSCRIPTION_CANCELED {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_SUBSCRIPTION_CANCELED_update_order_product | null;
+}
+
+export interface UPDATE_SUBSCRIPTION_CANCELEDVariables {
+  orderProductId?: any | null;
+  options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_CONTACT
+// ====================================================
+
+export interface GET_ORDER_CONTACT_order_contact_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact {
+  __typename: "order_contact";
+  id: any;
+  message: string;
+  created_at: any;
+  read_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDER_CONTACT_order_contact_member | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact_aggregate_aggregate_max {
+  __typename: "order_contact_max_fields";
+  created_at: any | null;
+  read_at: any | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact_aggregate_aggregate {
+  __typename: "order_contact_aggregate_fields";
+  max: GET_ORDER_CONTACT_order_contact_aggregate_aggregate_max | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact_aggregate {
+  __typename: "order_contact_aggregate";
+  aggregate: GET_ORDER_CONTACT_order_contact_aggregate_aggregate | null;
+}
+
+export interface GET_ORDER_CONTACT {
+  /**
+   * fetch data from the table: "order_contact"
+   */
+  order_contact: GET_ORDER_CONTACT_order_contact[];
+  /**
+   * fetch aggregated fields from the table: "order_contact"
+   */
+  order_contact_aggregate: GET_ORDER_CONTACT_order_contact_aggregate;
+}
+
+export interface GET_ORDER_CONTACTVariables {
+  orderId: string;
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ORDER_CONTACT
+// ====================================================
+
+export interface INSERT_ORDER_CONTACT_insert_order_contact {
+  __typename: "order_contact_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_ORDER_CONTACT {
+  /**
+   * insert data into the table: "order_contact"
+   */
+  insert_order_contact: INSERT_ORDER_CONTACT_insert_order_contact | null;
+}
+
+export interface INSERT_ORDER_CONTACTVariables {
+  orderId: string;
+  memberId: string;
+  message: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_CONTACT_READ_AT
+// ====================================================
+
+export interface UPDATE_ORDER_CONTACT_READ_AT_update_order_contact {
+  __typename: "order_contact_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_CONTACT_READ_AT {
+  /**
+   * update data of the table: "order_contact"
+   */
+  update_order_contact: UPDATE_ORDER_CONTACT_READ_AT_update_order_contact | null;
+}
+
+export interface UPDATE_ORDER_CONTACT_READ_ATVariables {
+  orderId: string;
+  memberId: string;
+  readAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCT_FILES
+// ====================================================
+
+export interface UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file {
+  __typename: "order_product_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate_aggregate_sum | null;
+}
+
+export interface GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate_aggregate | null;
+}
+
+export interface GET_TOTAL_ORDER_AMOUNT {
+  /**
+   * fetch aggregated fields from the table: "order_product"
+   */
+  order_product_aggregate: GET_TOTAL_ORDER_AMOUNT_order_product_aggregate;
+  /**
+   * fetch aggregated fields from the table: "order_discount"
+   */
+  order_discount_aggregate: GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SELF_ORDER_AMOUNT
+// ====================================================
+
+export interface GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate_sum | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_product_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate_sum | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_discount_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT {
+  /**
+   * fetch aggregated fields from the table: "order_product"
+   */
+  order_product_aggregate: GET_SELF_ORDER_AMOUNT_order_product_aggregate;
+  /**
+   * fetch aggregated fields from the table: "order_discount"
+   */
+  order_discount_aggregate: GET_SELF_ORDER_AMOUNT_order_discount_aggregate;
+}
+
+export interface GET_SELF_ORDER_AMOUNTVariables {
+  memberId: string;
+}
+
 /* tslint:disable */
 /* eslint-disable */
 // @generated
