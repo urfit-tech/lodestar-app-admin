@@ -193,7 +193,7 @@ export const useVoucherPlanCollection = (appId: string) => {
           started_at
           ended_at
           product_quantity_limit
-
+          is_transferable
           voucher_codes_aggregate {
             aggregate {
               sum {
@@ -226,6 +226,7 @@ export const useVoucherPlanCollection = (appId: string) => {
       count: v.voucher_codes_aggregate.aggregate?.sum?.count || 0,
       remaining,
       productIds: v.voucher_plan_products.map(product => product.product_id),
+      isTransferable: v.is_transferable,
     }
   })
 
@@ -282,6 +283,7 @@ export const useMutateVoucherPlan = () => {
         $productQuantityLimit: Int!
         $voucherCodes: [voucher_code_insert_input!]!
         $voucherPlanProducts: [voucher_plan_product_insert_input!]!
+        $isTransferable: Boolean
       ) {
         insert_voucher_plan(
           objects: {
@@ -293,6 +295,7 @@ export const useMutateVoucherPlan = () => {
             product_quantity_limit: $productQuantityLimit
             voucher_codes: { data: $voucherCodes }
             voucher_plan_products: { data: $voucherPlanProducts }
+            is_transferable: $isTransferable
           }
         ) {
           affected_rows
@@ -340,6 +343,7 @@ export const useMutateVoucherPlan = () => {
         $endedAt: timestamptz
         $productQuantityLimit: Int!
         $voucherPlanProducts: [voucher_plan_product_insert_input!]!
+        $isTransferable: Boolean
       ) {
         update_voucher_plan(
           where: { id: { _eq: $voucherPlanId } }
@@ -350,6 +354,7 @@ export const useMutateVoucherPlan = () => {
             started_at: $startedAt
             ended_at: $endedAt
             product_quantity_limit: $productQuantityLimit
+            is_transferable: $isTransferable
           }
         ) {
           affected_rows
