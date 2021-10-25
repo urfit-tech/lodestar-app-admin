@@ -126,8 +126,8 @@ const VoucherPlanAdminModal: React.FC<
         >
           <InputNumber min={1} />
         </Form.Item>
-        <Form.Item name="isTransferable" valuePropName="checked" noStyle={!enabledModules.gift}>
-          {enabledModules.gift && <Checkbox>{formatMessage(messages.isTransferable)}</Checkbox>}
+        <Form.Item name="isTransferable" valuePropName="checked" noStyle={!enabledModules.transfer_voucher}>
+          {enabledModules.transfer_voucher && <Checkbox>{formatMessage(messages.isTransferable)}</Checkbox>}
         </Form.Item>
         <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
           <Form.Item className="d-inline-block m-0" name="startedAt">
