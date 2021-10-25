@@ -1,7 +1,7 @@
 export const templateDefault = {
   ROOT: {
     type: {
-      resolvedName: 'CraftContainer',
+      resolvedName: 'CraftSection',
     },
     nodes: [],
     props: {
@@ -25,14 +25,14 @@ export const templateDefault = {
     },
     hidden: false,
     isCanvas: true,
-    displayName: 'CraftContainer',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
 }
 
 export const templateA = {
   ROOT: {
-    type: { resolvedName: 'CraftContainer' },
+    type: { resolvedName: 'CraftSection' },
     nodes: [
       'AN590c6qsa',
       'D-F42wYLar',
@@ -48,7 +48,7 @@ export const templateA = {
     custom: { button: { label: 'deleteBlock' } },
     hidden: false,
     isCanvas: true,
-    displayName: 'CraftContainer',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   '-udbODIgwN': {
@@ -70,10 +70,10 @@ export const templateA = {
     linkedNodes: {},
   },
   '1-5QQ92_pD': {
-    type: { resolvedName: 'CraftCarouselContainer' },
+    type: { resolvedName: 'CraftCarousel' },
     nodes: ['C_cLZQOQi8', 'pVPMkyHTpi', '_HjjgF0Cju'],
     props: {
-      id: 'CraftCarouselContainer',
+      id: 'CraftCarousel',
       mobile: {
         margin: { mb: '0', ml: '16', mr: '16', mt: '0' },
         slidesToShow: 1,
@@ -91,7 +91,7 @@ export const templateA = {
     hidden: false,
     parent: 'ccPESSbyNE',
     isCanvas: true,
-    displayName: 'CraftCarouselContainer',
+    displayName: 'CraftCarousel',
     linkedNodes: {},
   },
   '3FmwrkP10S': {
@@ -177,10 +177,10 @@ export const templateA = {
     linkedNodes: {},
   },
   '9zEySw6IsN': {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['C0ar-CG-ob', '5XRb8t0YDD'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: 5, ml: '0', mr: '0', mt: '0' },
       padding: { pb: 64, pl: 120, pr: 120, pt: 64 },
       backgroundType: 'none',
@@ -189,7 +189,7 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   AN590c6qsa: {
@@ -337,10 +337,10 @@ export const templateA = {
     linkedNodes: {},
   },
   'D-F42wYLar': {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['7-6PQSEAG0', 'Y-TTBUArYh'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: 5, ml: '0', mr: '0', mt: '0' },
       padding: { pb: 40, pl: '0', pr: '0', pt: 80 },
       backgroundType: 'none',
@@ -349,7 +349,7 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   DfHQujh90U: {
@@ -579,10 +579,10 @@ export const templateA = {
     linkedNodes: {},
   },
   RydfSkPn0x: {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['Hlokdj0WsE', 'rW2v9GmigE'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: 5, ml: '0', mr: '0', mt: '0' },
       padding: { pb: 64, pl: '0', pr: '0', pt: 64 },
       backgroundType: 'none',
@@ -591,7 +591,7 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   Ut3PNSjUUb: {
@@ -638,10 +638,10 @@ export const templateA = {
     linkedNodes: {},
   },
   'WBU-CKpIwk': {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['-udbODIgwN', 'NtxPBJVrkH', 'h3PXKv0k9R'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: 1, ml: '0', mr: '0', mt: '0' },
       padding: { pb: 64, pl: '0', pr: '0', pt: 64 },
       backgroundType: 'none',
@@ -650,7 +650,7 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   WCKPeALtPE: {
@@ -837,10 +837,10 @@ export const templateA = {
     linkedNodes: {},
   },
   ccPESSbyNE: {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['6XNFOXfPVW', '1-5QQ92_pD'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: 1, ml: '0', mr: '0', mt: '0' },
       padding: { pb: 64, pl: '0', pr: '0', pt: 64 },
       backgroundType: 'none',
@@ -849,7 +849,7 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   h3PXKv0k9R: {
@@ -1029,10 +1029,10 @@ export const templateA = {
     linkedNodes: {},
   },
   xh0VGyR3UK: {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['I2pPTe9ShY'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: 1, ml: '0', mr: '0', mt: '0' },
       padding: { pb: 64, pl: '0', pr: '0', pt: 64 },
       coverUrl: 'https://i.picsum.photos/id/166/1920/1080.jpg?hmac=jxymCPYDSY6wglfW8ri3zwn-OgzKS9Kj5XdTHcbpnCk',
@@ -1042,14 +1042,14 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   xt2ekQJFhT: {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['WTOZ7XwBcE'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: 5, ml: '0', mr: '0', mt: '0' },
       padding: { pb: 64, pl: '0', pr: '0', pt: 64 },
       solidColor: '#f7f8f8',
@@ -1059,25 +1059,25 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   z61MeqQqwu: {
-    type: { resolvedName: 'CraftContainer' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['KizdarCnYR', 'E3wHkNuNAF'],
     props: { margin: {} },
     custom: { button: { label: 'deleteBlock' } },
     hidden: false,
     parent: 'WTOZ7XwBcE',
     isCanvas: false,
-    displayName: 'CraftContainer',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   zvFuLfkDoN: {
-    type: { resolvedName: 'CraftBackground' },
+    type: { resolvedName: 'CraftSection' },
     nodes: ['_tAodfFvu7', 'OMIH3jlA6O'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: { mb: '0', ml: '0', mr: '0', mt: '0' },
       padding: { pb: 64, pl: '0', pr: '0', pt: 64 },
       solidColor: '#4C5B8F',
@@ -1087,7 +1087,7 @@ export const templateA = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
 }
@@ -1095,7 +1095,7 @@ export const templateA = {
 export const templateB = {
   ROOT: {
     type: {
-      resolvedName: 'CraftContainer',
+      resolvedName: 'CraftSection',
     },
     nodes: [
       'AN590c6qsa',
@@ -1128,7 +1128,7 @@ export const templateB = {
     },
     hidden: false,
     isCanvas: true,
-    displayName: 'CraftContainer',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   '-9ls3wLc5P': {
@@ -1354,11 +1354,11 @@ export const templateB = {
   },
   '24ksSCiKpk': {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['lEAGAo_EWx', 'RaPDpAmVV3'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: '5',
       },
@@ -1377,7 +1377,7 @@ export const templateB = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   '4Vqk4df38q': {
@@ -1530,11 +1530,11 @@ export const templateB = {
   },
   '9zEySw6IsN': {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['C0ar-CG-ob', '5XRb8t0YDD'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: 5,
         ml: '0',
@@ -1557,7 +1557,7 @@ export const templateB = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   AN590c6qsa: {
@@ -1625,11 +1625,11 @@ export const templateB = {
   },
   A_jEGcFtsX: {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['5N_pv9J7s3'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: '5',
       },
@@ -1648,7 +1648,7 @@ export const templateB = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   'C0ar-CG-ob': {
@@ -1716,11 +1716,11 @@ export const templateB = {
   },
   EfZnm3aKa5: {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['OPsNF1CgAr', 'P-rPzPFVWW'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: 5,
         ml: '0',
@@ -1743,7 +1743,7 @@ export const templateB = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   'HYhW-sqnod': {
@@ -1951,11 +1951,11 @@ export const templateB = {
   },
   'P-rPzPFVWW': {
     type: {
-      resolvedName: 'CraftCarouselContainer',
+      resolvedName: 'CraftCarousel',
     },
     nodes: ['0mtO6zzdh9', '-UAAaJBF0q', 'L25BpKazPX'],
     props: {
-      id: 'CraftCarouselContainer',
+      id: 'CraftCarousel',
       mobile: {
         arrows: true,
         margin: {
@@ -1989,7 +1989,7 @@ export const templateB = {
     hidden: false,
     parent: 'EfZnm3aKa5',
     isCanvas: true,
-    displayName: 'CraftCarouselContainer',
+    displayName: 'CraftCarousel',
     linkedNodes: {},
   },
   Qu9avLzfS5: {
@@ -2093,11 +2093,11 @@ export const templateB = {
   },
   TqKwtP7Shv: {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['dd5A5hn2wI', '1Xhguc89Aj'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: '5',
       },
@@ -2115,7 +2115,7 @@ export const templateB = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   Vyg85h9FYN: {
@@ -2133,11 +2133,11 @@ export const templateB = {
   },
   'WBU-CKpIwk': {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['-udbODIgwN', 'NtxPBJVrkH', 'h3PXKv0k9R'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: 5,
         ml: '0',
@@ -2160,7 +2160,7 @@ export const templateB = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   XhlpkAeouR: {
@@ -2401,11 +2401,11 @@ export const templateB = {
   },
   'saVMW9vtv-': {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['EO-TgFRmYH'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: 5,
         ml: '0',
@@ -2428,7 +2428,7 @@ export const templateB = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   srHvNjfnsn: {
@@ -2571,7 +2571,7 @@ export const templateB = {
 export const templateC = {
   ROOT: {
     type: {
-      resolvedName: 'CraftContainer',
+      resolvedName: 'CraftSection',
     },
     nodes: ['AN590c6qsa', 'WBU-CKpIwk', 'qTkIQll-L4', 'RydfSkPn0x', 'kMxH8VLY56', '_lBgDL7dCy', '1WDRk7AKtd'],
     props: {
@@ -2595,7 +2595,7 @@ export const templateC = {
     },
     hidden: false,
     isCanvas: true,
-    displayName: 'CraftContainer',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   '-udbODIgwN': {
@@ -2674,11 +2674,11 @@ export const templateC = {
   },
   '1WDRk7AKtd': {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['7paCnVo9Wm', '5LTmO3G2md'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: '5',
       },
@@ -2696,7 +2696,7 @@ export const templateC = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   '2QgJ7idVr3': {
@@ -2841,11 +2841,11 @@ export const templateC = {
   },
   '9XLFTX_CuW': {
     type: {
-      resolvedName: 'CraftCarouselContainer',
+      resolvedName: 'CraftCarousel',
     },
     nodes: ['NV5wqyM95m', 'Pam2jqgyk_', 'dHZesgxq1V'],
     props: {
-      id: 'CraftCarouselContainer',
+      id: 'CraftCarousel',
       mobile: {
         arrows: true,
         margin: {
@@ -2879,7 +2879,7 @@ export const templateC = {
     hidden: false,
     parent: 'kMxH8VLY56',
     isCanvas: true,
-    displayName: 'CraftCarouselContainer',
+    displayName: 'CraftCarousel',
     linkedNodes: {},
   },
   AN590c6qsa: {
@@ -3471,11 +3471,11 @@ export const templateC = {
   },
   RydfSkPn0x: {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['Hlokdj0WsE', 'rW2v9GmigE'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: 5,
         ml: '0',
@@ -3498,7 +3498,7 @@ export const templateC = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   TaN6Bbhzqn: {
@@ -3593,11 +3593,11 @@ export const templateC = {
   },
   'WBU-CKpIwk': {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['-udbODIgwN', 'NtxPBJVrkH', 'h3PXKv0k9R'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: 5,
         ml: '0',
@@ -3620,7 +3620,7 @@ export const templateC = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   WNFe1jLA1Y: {
@@ -3735,11 +3735,11 @@ export const templateC = {
   },
   _lBgDL7dCy: {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['_OJG0FI7zR'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: '5',
       },
@@ -3758,7 +3758,7 @@ export const templateC = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   bYgcKL5UAi: {
@@ -3921,7 +3921,7 @@ export const templateC = {
   },
   g3vFe4riYG: {
     type: {
-      resolvedName: 'CraftContainer',
+      resolvedName: 'CraftSection',
     },
     nodes: ['dL6GHtNHiP', 'HemvuPuzKv'],
     props: {
@@ -3935,7 +3935,7 @@ export const templateC = {
     hidden: false,
     parent: 'BlN5eu2A22',
     isCanvas: false,
-    displayName: 'CraftContainer',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   h3PXKv0k9R: {
@@ -3955,11 +3955,11 @@ export const templateC = {
   },
   kMxH8VLY56: {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['oeCLO33f-8', '9XLFTX_CuW'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: '0',
         ml: '0',
@@ -3983,7 +3983,7 @@ export const templateC = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   'oeCLO33f-8': {
@@ -4037,11 +4037,11 @@ export const templateC = {
   },
   'qTkIQll-L4': {
     type: {
-      resolvedName: 'CraftBackground',
+      resolvedName: 'CraftSection',
     },
     nodes: ['BlN5eu2A22'],
     props: {
-      id: 'CraftBackground',
+      id: 'CraftSection',
       margin: {
         mb: '5',
       },
@@ -4059,7 +4059,7 @@ export const templateC = {
     hidden: false,
     parent: 'ROOT',
     isCanvas: true,
-    displayName: 'CraftBackground',
+    displayName: 'CraftSection',
     linkedNodes: {},
   },
   qj1uGTHiDW: {

@@ -1,30 +1,17 @@
 import { Collapse, InputNumber, Radio, Space } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { AdminHeaderTitle, CraftSettingLabel, CraftSlider, StyledCollapsePanel } from '.'
+import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import { AdminHeaderTitle, CraftSettingLabel, CraftSlider, StyledCollapsePanel } from '../settings/CraftSettings'
 import BoxModelInput from './BoxModelInput'
-import CraftColorPickerBlock from './ColorPickerBlock'
+import ColorPicker from './ColorPicker'
 
-const CraftTextStyleBlock: React.VFC<{
+const TextStyleInput: React.VFC<{
   type: 'title' | 'paragraph'
   title: string
-  value?: {
-    fontSize: number
-    lineHeight?: number
-    margin: string
-    textAlign: 'left' | 'right' | 'center'
-    fontWeight: 'lighter' | 'normal' | 'bold'
-    color: string
-  }
-  onChange?: (value: {
-    fontSize: number
-    lineHeight?: number
-    margin: string
-    textAlign: 'left' | 'right' | 'center'
-    fontWeight: 'lighter' | 'normal' | 'bold'
-    color: string
-  }) => void
+  value?: CSSObject
+  onChange?: (value: CSSObject) => void
 }> = ({ type, title, value, onChange }) => {
   const { formatMessage } = useIntl()
 
@@ -52,7 +39,7 @@ const CraftTextStyleBlock: React.VFC<{
               <InputNumber
                 className="col-4"
                 min={0}
-                value={value.fontSize}
+                value={Number(value.fontSize)}
                 onChange={v => {
                   onChange?.({ ...value, fontSize: Number(v) })
                 }}
@@ -73,7 +60,7 @@ const CraftTextStyleBlock: React.VFC<{
                 <InputNumber
                   className="col-4"
                   min={0}
-                  value={value.lineHeight}
+                  value={Number(value.lineHeight)}
                   onChange={v => onChange?.({ ...value, lineHeight: Number(v) })}
                 />
               </div>
@@ -82,7 +69,7 @@ const CraftTextStyleBlock: React.VFC<{
 
           <BoxModelInput
             title={formatMessage(craftPageMessages.label.margin)}
-            value={value.margin}
+            value={value.margin?.toString()}
             onChange={v => onChange?.({ ...value, margin: v })}
           />
 
@@ -120,11 +107,11 @@ const CraftTextStyleBlock: React.VFC<{
               </div>
             </div>
           </div>
-          <CraftColorPickerBlock value={value.color} onChange={v => onChange?.({ ...value, color: v })} />
+          <ColorPicker value={value.color} onChange={v => onChange?.({ ...value, color: v })} />
         </StyledCollapsePanel>
       )}
     </Collapse>
   )
 }
 
-export default CraftTextStyleBlock
+export default TextStyleInput

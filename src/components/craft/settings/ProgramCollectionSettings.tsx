@@ -1,20 +1,17 @@
-import { useNode } from '@craftjs/core'
 import { Form, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CollectionLayout } from 'lodestar-app-element/src/components/collections/Collection'
-import { CraftProgramCollectionProps } from 'lodestar-app-element/src/components/craft/CraftProgramCollection'
+import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
 import { CraftSettingLabel } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramCollectionSelector from '../../program/ProgramCollectionSelector'
+import { CraftSettings } from './CraftSettings'
 
-const ProgramCollectionSettings: React.VFC = () => {
+const ProgramCollectionSettings: CraftSettings<ProgramCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<{ options: CraftProgramCollectionProps['sourceOptions']; layout: CollectionLayout }>()
-  const node = useNode(node => ({
-    props: node.data.props as CraftProgramCollectionProps,
-  }))
+  const [form] = useForm<{ options: ProgramCollectionProps['sourceOptions']; layout: CollectionLayout }>()
   return (
     <Form
       className="pt-3"
@@ -22,14 +19,14 @@ const ProgramCollectionSettings: React.VFC = () => {
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={node.props}
+      initialValues={props}
       onValuesChange={(changedValues, currentValues) => {
         form
           .validateFields()
           .then(values => {
-            node.actions.setProp(props => {
-              props.layout = values.layout
-              props.options = values.options
+            onPropsChange?.({
+              layout: values.layout,
+              sourceOptions: values.options,
             })
           })
           .catch(console.error)

@@ -1,21 +1,17 @@
-import { useNode } from '@craftjs/core'
 import { Form, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import { CraftActivityCollectionProps } from 'lodestar-app-element/src/components/craft/CraftActivityCollection'
+import { ActivityCollectionProps } from 'lodestar-app-element/src/components/collections/ActivityCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
 import ActivityCollectionSelector from '../../activity/ActivitySourceOptionSelector'
 import { CraftSettingLabel } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
+import { CraftSettings } from './CraftSettings'
 
-const ActivityCollectionSettings: React.VFC = () => {
+const ActivityCollectionSettings: CraftSettings<ActivityCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<CraftActivityCollectionProps>()
-
-  const node = useNode(node => ({
-    props: node.data.props as CraftActivityCollectionProps,
-  }))
+  const [form] = useForm<ActivityCollectionProps>()
 
   return (
     <Form
@@ -23,15 +19,15 @@ const ActivityCollectionSettings: React.VFC = () => {
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={node.props}
+      initialValues={props}
       onValuesChange={() => {
         form
           .validateFields()
           .then(values => {
-            node.actions.setProp(props => {
-              props.layout = values.layout
-              props.sourceOptions = values.sourceOptions
-              props.withSelector = values.withSelector
+            onPropsChange?.({
+              layout: values.layout,
+              sourceOptions: values.sourceOptions,
+              withSelector: values.withSelector,
             })
           })
           .catch(() => {})

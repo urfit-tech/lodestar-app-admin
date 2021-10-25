@@ -1,9 +1,9 @@
 import { Input } from 'antd'
 import { range, repeat } from 'ramda'
 import React from 'react'
-import { CraftSettingLabel, CraftSlider } from '.'
+import { CraftSettingLabel, CraftSlider } from '../settings/CraftSettings'
 
-const CraftBoxModelInput: React.VFC<{
+const BoxModelInput: React.VFC<{
   title?: string
   value?: string
   onChange?: (value: string) => void
@@ -40,4 +40,4 @@ export const formatBoxModelValue = (value?: string) => {
   return range(0, 4).map(index => Number(slices[index]) || 0)
 }
 
-export default CraftBoxModelInput
+export default BoxModelInput

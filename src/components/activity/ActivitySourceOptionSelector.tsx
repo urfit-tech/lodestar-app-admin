@@ -1,15 +1,15 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, Select } from 'antd'
 import gql from 'graphql-tag'
-import { CraftActivityCollectionProps } from 'lodestar-app-element/src/components/craft/CraftActivityCollection'
+import { ActivityCollectionProps } from 'lodestar-app-element/src/components/collections/ActivityCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledCraftSettingLabel } from '../craft/settings'
+import { StyledCraftSettingLabel } from '../craft/settings/CraftSettings'
 import ActivityCategorySelect from './ActivityCategorySelect'
 import ActivityTagSelect from './ActivityTagSelect'
 
-type ActivitySourceOption = CraftActivityCollectionProps['sourceOptions']
+type ActivitySourceOption = ActivityCollectionProps['sourceOptions']
 const ActivitySourceOptionSelector: React.FC<{
   value?: ActivitySourceOption
   onChange?: (value: ActivitySourceOption) => void

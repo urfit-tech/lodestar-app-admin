@@ -2,7 +2,7 @@ import { Element, useEditor } from '@craftjs/core'
 import { Image } from 'antd'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { rgba } from 'lodestar-app-element/src/helpers'
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 
@@ -50,7 +50,7 @@ const CraftTool = <E extends object>({
   coverUrl,
   canvas,
   ...elementProps
-}: CraftToolProps<E>) => {
+}: PropsWithChildren<CraftToolProps<E>>) => {
   const { formatMessage } = useIntl()
   const { connectors } = useEditor()
   const theme = useAppTheme()

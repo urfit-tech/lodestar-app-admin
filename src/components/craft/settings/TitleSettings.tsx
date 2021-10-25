@@ -1,49 +1,32 @@
-import { useNode } from '@craftjs/core'
-import { Form } from 'antd'
+import { Collapse, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { CraftTextStyleProps, CraftTitleProps } from 'lodestar-app-element/src/types/craft'
+import { TitleProps } from 'lodestar-app-element/src/components/common/Title'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import { formatBoxModelValue } from './BoxModelInput'
-import TextStyleBlock from './TextStyleBlock'
-import TitleContentBlock from './TitleContentBlock'
+import TypographyStyleInput from '../inputs/TypographyStyleInput'
+import { AdminHeaderTitle, CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
 type FieldProps = {
   titleContent: string
-  titleStyle: Pick<CraftTextStyleProps, 'fontSize' | 'textAlign' | 'fontWeight' | 'color'> & {
-    margin: string
-  }
+  typographyStyle: CSSObject
 }
 
-const TitleSettings: React.VFC = () => {
+const TitleSettings: CraftSettings<TitleProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const {
-    actions: { setProp },
-    props,
-  } = useNode(node => ({
-    props: node.data.props as CraftTitleProps,
-  }))
 
   const handleChange = () => {
     form
       .validateFields()
       .then(values => {
-        const titleMargin = formatBoxModelValue(values.titleStyle.margin)
-
-        setProp(prop => {
-          prop.titleContent = values.titleContent
-          prop.fontSize = values.titleStyle.fontSize
-          prop.margin = {
-            mt: titleMargin?.[0] || '0',
-            mr: titleMargin?.[1] || '0',
-            mb: titleMargin?.[2] || '0',
-            ml: titleMargin?.[3] || '0',
-          }
-          prop.textAlign = values.titleStyle.textAlign
-          prop.fontWeight = values.titleStyle.fontWeight
-          prop.color = values.titleStyle.color
+        onPropsChange?.({
+          title: values.titleContent,
+          customStyle: {
+            ...props.customStyle,
+            ...values.typographyStyle,
+          },
         })
       })
       .catch(() => {})
@@ -55,25 +38,40 @@ const TitleSettings: React.VFC = () => {
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={{
-        titleContent: props.titleContent || '',
-        titleStyle: {
-          fontSize: props.fontSize || 16,
-          margin: `${props.margin?.mt || 0};${props.margin?.mr || 0};${props.margin?.mb || 0};${props.margin?.ml || 0}`,
-          textAlign: props.textAlign || 'left',
-          fontWeight: props.fontWeight || 'normal',
-          color: props.color || '#585858',
-        },
-      }}
+      initialValues={props}
       onValuesChange={handleChange}
     >
       <Form.Item name="titleContent">
         <TitleContentBlock />
       </Form.Item>
-      <Form.Item name="titleStyle">
-        <TextStyleBlock type="title" title={formatMessage(craftPageMessages.label.titleStyle)} />
+      <Form.Item name="typographyStyle">
+        <TypographyStyleInput />
       </Form.Item>
     </Form>
+  )
+}
+
+const TitleContentBlock: React.VFC<{ value?: string; onChange?: (value?: string) => void }> = ({ value, onChange }) => {
+  const { formatMessage } = useIntl()
+
+  return (
+    <Collapse
+      className="mt-2 p-0"
+      bordered={false}
+      expandIconPosition="right"
+      ghost
+      defaultActiveKey={['titleContent']}
+    >
+      <StyledCollapsePanel
+        key="titleContent"
+        header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleContent)}</AdminHeaderTitle>}
+      >
+        <div className="mb-2">
+          <CraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</CraftSettingLabel>
+          <Input className="mt-2" value={value} onChange={e => onChange?.(e.target.value)} />
+        </div>
+      </StyledCollapsePanel>
+    </Collapse>
   )
 }
 

@@ -11,11 +11,11 @@ const messages = defineMessages({
   tabletCollection: { id: 'common.ui.tabletCollection', defaultMessage: '平板' },
   desktopCollection: { id: 'common.ui.desktopCollection', defaultMessage: '電腦' },
 })
-export type ResponsiveInputValue = [number | null, number | null, number | null]
-const ResponsiveInput: React.VFC<{
+export type GridInputValue = [number | null, number | null, number | null]
+const GridInput: React.VFC<{
   label: keyof typeof labelMessages
-  value?: ResponsiveInputValue
-  onChange?: (value: ResponsiveInputValue) => void
+  value?: GridInputValue
+  onChange?: (value: GridInputValue) => void
 }> = ({ label, value, onChange }) => {
   const { formatMessage } = useIntl()
   return (
@@ -44,4 +44,4 @@ const ResponsiveInput: React.VFC<{
   )
 }
 
-export default ResponsiveInput
+export default GridInput

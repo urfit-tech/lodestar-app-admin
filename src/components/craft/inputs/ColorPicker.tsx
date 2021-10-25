@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { SketchPicker } from 'react-color'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { CraftSettingLabel, StyledUnderLineInput } from '.'
 import { craftPageMessages } from '../../../helpers/translation'
+import { CraftSettingLabel, StyledUnderLineInput } from '../settings/CraftSettings'
 
 const StyleCircleColorInput = styled.div<{ background: string }>`
   background-color: ${props => props.background};
@@ -17,7 +17,7 @@ const StyledSketchPicker = styled(SketchPicker)`
   width: auto !important;
 `
 
-const CraftColorPickerBlock: React.VFC<{
+const ColorPicker: React.VFC<{
   value?: string
   onChange?: (value: string) => void
 }> = ({ value, onChange }) => {
@@ -66,4 +66,4 @@ const CraftColorPickerBlock: React.VFC<{
   )
 }
 
-export default CraftColorPickerBlock
+export default ColorPicker

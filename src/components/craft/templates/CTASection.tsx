@@ -1,5 +1,10 @@
 import { Element } from '@craftjs/core'
-import { CraftBackground, CraftButton, CraftLayout, CraftTitle } from 'lodestar-app-element/src/components/craft'
+import {
+  CraftButton,
+  CraftLayout,
+  CraftSection,
+  CraftTitle,
+} from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
 
 const CTASection: React.VFC<{
@@ -7,32 +12,44 @@ const CTASection: React.VFC<{
 }> = ({ variant = 'default' }) => {
   return (
     <Element
-      id="CraftBackground"
-      is={CraftBackground}
-      backgroundType={variant === 'dark' ? 'backgroundImage' : 'none'}
-      padding={{ pt: '64', pb: '64' }}
-      margin={{ mb: '5' }}
-      coverUrl={
-        variant === 'dark'
-          ? 'https://i.picsum.photos/id/166/1920/1080.jpg?hmac=jxymCPYDSY6wglfW8ri3zwn-OgzKS9Kj5XdTHcbpnCk'
-          : undefined
-      }
+      id="CraftSection"
+      is={CraftSection}
+      customStyle={{
+        background:
+          variant === 'dark'
+            ? `url('https://i.picsum.photos/id/166/1920/1080.jpg?hmac=jxymCPYDSY6wglfW8ri3zwn-OgzKS9Kj5XdTHcbpnCk')`
+            : 'unset',
+        margin: '0 0 5 0',
+        padding: '64 0',
+      }}
       canvas
     >
       <Element
         id="CraftLayout"
         is={CraftLayout}
+        ratios={[12]}
+        customStyle={{
+          margin: '0 20',
+        }}
+        responsive={{
+          desktop: {
+            ratios: [3, 2],
+            customStyle: {
+              margin: '0 200',
+            },
+          },
+        }}
         canvas
-        mobile={{ margin: { ml: '20', mr: '20' }, columnAmount: 1, columnRatio: [12], displayAmount: 2 }}
-        desktop={{ margin: { ml: '200', mr: '200' }, columnAmount: 2, columnRatio: [3, 2], displayAmount: 2 }}
       >
         <CraftTitle
-          titleContent="還在等什麼？立即查看課程"
-          fontSize={28}
-          margin={{ mb: '0' }}
-          textAlign="center"
-          fontWeight="normal"
-          color={variant === 'dark' ? 'white' : '#585858'}
+          title="還在等什麼？立即查看課程"
+          customStyle={{
+            fontSize: 28,
+            margin: 0,
+            textAlign: 'center',
+            fontWeight: 'normal',
+            color: variant === 'dark' ? 'white' : '#585858',
+          }}
         />
         <CraftButton
           title="馬上查看"
@@ -41,10 +58,15 @@ const CTASection: React.VFC<{
           size="md"
           block={false}
           variant={variant === 'dark' ? 'outline' : 'solid'}
-          color="#fff"
-          outlineColor={variant === 'dark' ? '#fff' : undefined}
-          backgroundType={variant === 'dark' ? 'none' : 'solidColor'}
-          backgroundColor={variant === 'dark' ? undefined : '#4c5b8f'}
+          customStyle={
+            variant === 'dark'
+              ? {
+                  color: '#fff',
+                  outlineColor: '#fff',
+                  backgroundColor: '#4c5b8f',
+                }
+              : undefined
+          }
         />
       </Element>
     </Element>

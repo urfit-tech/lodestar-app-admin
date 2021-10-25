@@ -1,11 +1,11 @@
 import { Element } from '@craftjs/core'
 import {
   CraftActivityCollection,
-  CraftBackground,
   CraftButton,
   CraftImage,
+  CraftSection,
   CraftTitle,
-} from 'lodestar-app-element/src/components/craft'
+} from 'lodestar-app-element/src/components/common/CraftElement'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import React from 'react'
 
@@ -14,56 +14,45 @@ const ActivityCollectionSection: React.VFC = () => {
 
   return (
     <Element
-      id="CraftBackground"
-      is={CraftBackground}
-      backgroundType="none"
-      padding={{ pt: '64', pb: '64' }}
-      margin={{ mb: '5' }}
+      id="CraftSection"
+      is={CraftSection}
+      customStyle={{
+        padding: '64 0',
+        margin: '0 0 5 0',
+      }}
       canvas
     >
       <CraftTitle
-        titleContent="線下實體"
-        fontSize={20}
-        margin={{ mb: '40' }}
-        textAlign="center"
-        fontWeight="bold"
-        color={'#585858'}
+        title="線下實體"
+        customStyle={{
+          fontSize: 20,
+          margin: '0 0 40 0',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          color: '#585858',
+        }}
       />
       <Element
-        id="CraftBackground"
-        is={CraftBackground}
+        id="CraftSection"
+        is={CraftSection}
         canvas
-        backgroundType="none"
-        margin={{}}
-        padding={{ pl: '32px', pr: '32px' }}
+        customStyle={{
+          padding: '0 32',
+        }}
       >
         <CraftActivityCollection variant="card" sourceOptions={{ source: 'publishedAt', limit: 4 }}>
           <CraftImage
-            desktop={{
-              width: '100%',
-              padding: {},
-              margin: { mb: '8px' },
-              coverUrl: 'https://static.kolable.com/images/demo/cover-01.png',
-            }}
-            mobile={{
-              width: '100%',
-              padding: {},
-              margin: { mb: '8px' },
-              coverUrl: 'https://static.kolable.com/images/demo/cover-01-m.png',
+            src="https://static.kolable.com/images/demo/cover-01-m.png"
+            responsive={{
+              desktop: {
+                src: 'https://static.kolable.com/images/demo/cover-01.png',
+              },
             }}
           />
         </CraftActivityCollection>
       </Element>
       <div style={{ textAlign: 'center' }}>
-        <CraftButton
-          title="馬上查看 〉"
-          link="/programs"
-          openNewTab={false}
-          size="md"
-          block={false}
-          variant="text"
-          color={theme.colors.primary[500]}
-        />
+        <CraftButton title="馬上查看 〉" link="/programs" openNewTab={false} size="md" block={false} variant="text" />
       </div>
     </Element>
   )

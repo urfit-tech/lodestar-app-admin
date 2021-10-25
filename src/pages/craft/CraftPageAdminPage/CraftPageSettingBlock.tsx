@@ -1,6 +1,6 @@
 import { Editor, Element, Frame, useEditor } from '@craftjs/core'
 import { Button, message, Tabs } from 'antd'
-import { CraftContainer } from 'lodestar-app-element/src/components/craft'
+import { CraftSection } from 'lodestar-app-element/src/components/common/CraftElement'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import Draggable from 'react-draggable'
@@ -90,7 +90,7 @@ const CraftPageSettingBlock: React.VFC<{
           <StyledContent>
             <div style={{ height: 'auto', background: 'white' }}>
               <Frame data={pageAdmin?.craftData ? JSON.stringify(pageAdmin.craftData) : undefined}>
-                <Element is={CraftContainer} margin={{}} padding={{ pb: '40', pt: '40', pr: '40', pl: '40' }} canvas />
+                <Element is={CraftSection} customStyle={{ padding: 40 }} canvas />
               </Frame>
             </div>
           </StyledContent>

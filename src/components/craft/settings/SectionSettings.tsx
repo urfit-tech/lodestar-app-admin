@@ -1,21 +1,29 @@
-import { Form } from 'antd'
+import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
-import { CardProps } from 'lodestar-app-element/src/components/cards/Card'
-import React from 'react'
+import { SectionProps } from 'lodestar-app-element/src/components/common/Section'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import BackgroundInput from '../inputs/BackgroundStyleInput'
+import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import { CraftSettings } from './CraftSettings'
 
-type FieldValues = {
+type FieldProps = {
   spaceStyle: CSSObject
   borderStyle: CSSObject
-  backgroundStyle?: CSSObject
+  backgroundStyle: CSSObject
 }
 
-const CardSettings: CraftSettings<CardProps> = ({ props, onPropsChange }) => {
-  const [form] = useForm<FieldValues>()
+const SectionSettings: CraftSettings<SectionProps> = ({ props, onPropsChange }) => {
+  const { formatMessage } = useIntl()
+  const { authToken } = useAuth()
+  const { id: appId } = useApp()
+  const [form] = useForm<FieldProps>()
+  const [loading, setLoading] = useState(false)
+  const [backgroundImage, setBackgroundImage] = useState<File | null>(null)
 
   const handleChange = () => {
     form
@@ -32,33 +40,27 @@ const CardSettings: CraftSettings<CardProps> = ({ props, onPropsChange }) => {
       })
       .catch(() => {})
   }
-  const initialValues: FieldValues = {
-    spaceStyle: props?.customStyle || {},
-    borderStyle: props?.customStyle || {},
-    backgroundStyle: props?.customStyle || {},
-  }
+
   return (
     <Form
       form={form}
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={initialValues}
+      initialValues={props}
       onValuesChange={handleChange}
     >
       <Form.Item name="spaceStyle">
         <SpaceStyleInput />
       </Form.Item>
-
       <Form.Item name="borderStyle">
         <BorderStyleInput />
       </Form.Item>
-
       <Form.Item name="backgroundStyle">
-        <BackgroundInput />
+        <BackgroundStyleInput />
       </Form.Item>
     </Form>
   )
 }
 
-export default CardSettings
+export default SectionSettings

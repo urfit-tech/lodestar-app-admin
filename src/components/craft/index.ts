@@ -1,21 +1,12 @@
-import * as CraftElement from 'lodestar-app-element/src/components/craft'
+import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import * as CraftSetting from '../../components/craft/settings'
 import CraftToolBox from './CraftToolBox'
+import { withResponsive } from './settings/CraftSettings'
 
 const configureResolver = () => {
-  CraftElement.CraftActivityCollection.craft = {
-    related: {
-      settings: CraftSetting.ActivityCollectionSettings,
-    },
-    custom: {
-      button: {
-        label: 'deleteBlock',
-      },
-    },
-  }
   CraftElement.CraftProgramCollection.craft = {
     related: {
-      settings: CraftSetting.ProgramCollectionSettings,
+      settings: withResponsive(CraftSetting.ProgramCollectionSettings),
     },
     custom: {
       button: {
@@ -23,9 +14,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftElement.CraftBackground.craft = {
+  CraftElement.CraftSection.craft = {
     related: {
-      settings: CraftSetting.BackgroundSettings,
+      settings: withResponsive(CraftSetting.SectionSettings),
     },
     custom: {
       button: {
@@ -35,7 +26,7 @@ const configureResolver = () => {
   }
   CraftElement.CraftButton.craft = {
     related: {
-      settings: CraftSetting.ButtonSettings,
+      settings: withResponsive(CraftSetting.ButtonSettings),
     },
     custom: {
       button: {
@@ -45,7 +36,7 @@ const configureResolver = () => {
   }
   CraftElement.CraftCard.craft = {
     related: {
-      settings: CraftSetting.CardSettings,
+      settings: withResponsive(CraftSetting.CardSettings),
     },
     custom: {
       button: {
@@ -55,17 +46,7 @@ const configureResolver = () => {
   }
   CraftElement.CraftCarousel.craft = {
     related: {
-      settings: CraftSetting.CarouselSettings,
-    },
-    custom: {
-      button: {
-        label: 'deleteAllBlock',
-      },
-    },
-  }
-  CraftElement.CraftCarouselContainer.craft = {
-    related: {
-      settings: CraftSetting.CarouselContainerSettings,
+      settings: withResponsive(CraftSetting.CarouselSettings),
     },
     custom: {
       button: {
@@ -75,17 +56,7 @@ const configureResolver = () => {
   }
   CraftElement.CraftCollapse.craft = {
     related: {
-      settings: CraftSetting.CollapseSettings,
-    },
-    custom: {
-      button: {
-        label: 'deleteBlock',
-      },
-    },
-  }
-  CraftElement.CraftContainer.craft = {
-    related: {
-      settings: CraftSetting.ContainerSettings,
+      settings: withResponsive(CraftSetting.CollapseSettings),
     },
     custom: {
       button: {
@@ -95,7 +66,7 @@ const configureResolver = () => {
   }
   CraftElement.CraftImage.craft = {
     related: {
-      settings: CraftSetting.ImageSettings,
+      settings: withResponsive(CraftSetting.ImageSettings),
     },
     custom: {
       button: {
@@ -103,19 +74,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftElement.CraftInstructor.craft = {
-    related: {
-      settings: CraftSetting.InstructorSettings,
-    },
-  }
-  CraftElement.CraftCreator.craft = {
-    related: {
-      settings: CraftSetting.CreatorSettings,
-    },
-  }
   CraftElement.CraftLayout.craft = {
     related: {
-      settings: CraftSetting.LayoutSettings,
+      settings: withResponsive(CraftSetting.LayoutSettings),
     },
     custom: {
       button: {
@@ -125,27 +86,7 @@ const configureResolver = () => {
   }
   CraftElement.CraftParagraph.craft = {
     related: {
-      settings: CraftSetting.ParagraphSettings,
-    },
-    custom: {
-      button: {
-        label: 'deleteBlock',
-      },
-    },
-  }
-  CraftElement.CraftPodcastProgram.craft = {
-    related: {
-      settings: CraftSetting.PodcastProgramSettings,
-    },
-  }
-  CraftElement.CraftProject.craft = {
-    related: {
-      settings: CraftSetting.ProjectSettings,
-    },
-  }
-  CraftElement.CraftStatistics.craft = {
-    related: {
-      settings: CraftSetting.StatisticsSettings,
+      settings: withResponsive(CraftSetting.ParagraphSettings),
     },
     custom: {
       button: {
@@ -155,7 +96,7 @@ const configureResolver = () => {
   }
   CraftElement.CraftTitle.craft = {
     related: {
-      settings: CraftSetting.TitleSettings,
+      settings: withResponsive(CraftSetting.TitleSettings),
     },
     custom: {
       button: {
@@ -163,19 +104,9 @@ const configureResolver = () => {
       },
     },
   }
-  CraftElement.CraftTitleAndParagraph.craft = {
+  CraftElement.CraftEmbedded.craft = {
     related: {
-      settings: CraftSetting.TitleAndParagraphSettings,
-    },
-    custom: {
-      button: {
-        label: 'deleteBlock',
-      },
-    },
-  }
-  CraftElement.CraftEmbed.craft = {
-    related: {
-      settings: CraftSetting.EmbedSettings,
+      settings: withResponsive(CraftSetting.EmbeddedSettings),
     },
     custom: {
       button: {

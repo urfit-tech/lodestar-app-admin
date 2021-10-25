@@ -1,15 +1,15 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, Select } from 'antd'
 import gql from 'graphql-tag'
-import { CraftProgramCollectionProps } from 'lodestar-app-element/src/components/craft/CraftProgramCollection'
+import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledCraftSettingLabel } from '../craft/settings'
+import { StyledCraftSettingLabel } from '../craft/settings/CraftSettings'
 import ProgramCategorySelect from './ProgramCategorySelect'
 import ProgramTagSelect from './ProgramTagSelect'
 
-type ProgramSourceOptions = CraftProgramCollectionProps['sourceOptions']
+type ProgramSourceOptions = ProgramCollectionProps['sourceOptions']
 const ProgramCollectionSelector: React.FC<{
   value?: ProgramSourceOptions
   onChange?: (value: ProgramSourceOptions) => void

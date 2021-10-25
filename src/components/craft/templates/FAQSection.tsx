@@ -1,115 +1,80 @@
 import { Element } from '@craftjs/core'
 import {
-  CraftBackground,
   CraftCollapse,
   CraftLayout,
+  CraftSection,
   CraftTitle,
-  CraftTitleAndParagraph,
-} from 'lodestar-app-element/src/components/craft'
+} from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
 
 const FAQSection: React.VFC<{ variant?: 'accordion' }> = ({ variant }) => {
   return (
-    <Element
-      id="CraftBackground"
-      is={CraftBackground}
-      backgroundType="none"
-      padding={{ pt: '64', pb: '64' }}
-      margin={{ mb: '5' }}
-      canvas
-    >
+    <Element id="CraftSection" is={CraftSection} customStyle={{ padding: '64 0', margin: '0 0 5 0' }} canvas>
       <CraftTitle
-        titleContent="常見問題"
-        fontSize={20}
-        margin={{ mb: '40' }}
-        textAlign="center"
-        fontWeight="bold"
-        color={'#585858'}
+        title="常見問題"
+        customStyle={{
+          fontSize: 20,
+          margin: '0 0 40 0',
+          textAlign: 'center',
+          fontWeight: 'bold',
+          color: '#585858',
+        }}
       />
       {variant === 'accordion' ? (
         <Element
           id="CraftLayout"
           is={CraftLayout}
+          ratios={[12]}
+          customStyle={{
+            margin: '0 20',
+          }}
+          responsive={{
+            desktop: {
+              ratios: [12],
+              customStyle: {
+                margin: '0 200',
+              },
+            },
+          }}
           canvas
-          mobile={{ margin: { ml: '20', mr: '20' }, columnAmount: 1, columnRatio: [12], displayAmount: 3 }}
-          desktop={{ margin: { ml: '200', mr: '200' }, columnAmount: 1, columnRatio: [12], displayAmount: 3 }}
         >
           <Element
             id="CraftCollapse1"
             is={CraftCollapse}
-            title="什麼是線上課程? 請問在哪裡上課？上課時間？"
-            titleStyle={{
-              fontSize: 16,
-              margin: { mb: '0' },
-              textAlign: 'left',
-              fontWeight: 'bold',
-              color: '#585858',
+            list={[
+              {
+                title: '什麼是線上課程? 請問在哪裡上課？上課時間？',
+                description:
+                  '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+              },
+              {
+                title: '課程可以看幾次？',
+                description:
+                  '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+              },
+              {
+                title: '可以問老師問題嗎？',
+                description:
+                  '網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制',
+              },
+            ]}
+            customStyle={{
+              padding: 20,
+              '.title': {
+                fontSize: 16,
+                margin: 0,
+                textAlign: 'left',
+                fontWeight: 'bold',
+                color: '#585858',
+              },
+              '.paragraph': {
+                fontSize: 16,
+                margin: '0 0 20 0',
+                textAlign: 'left',
+                fontWeight: 'normal',
+                color: '#585858',
+              },
             }}
-            paragraph="網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！
-              都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制"
-            paragraphStyle={{
-              fontSize: 16,
-              margin: { mt: '20' },
-              textAlign: 'left',
-              fontWeight: 'normal',
-              color: '#585858',
-            }}
-            cardPadding={{ pb: '20', pt: '20', pl: '20', pr: '20' }}
-            cardMargin={{}}
-            variant="none"
-            backgroundType="none"
-            canvas
-          />
-          <Element
-            id="CraftCollapse2"
-            is={CraftCollapse}
-            title="課程可以看幾次？"
-            titleStyle={{
-              fontSize: 16,
-              margin: { mb: '0' },
-              textAlign: 'left',
-              fontWeight: 'bold',
-              color: '#585858',
-            }}
-            paragraph="網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！
-              都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制"
-            paragraphStyle={{
-              fontSize: 16,
-              margin: { mt: '20' },
-              textAlign: 'left',
-              fontWeight: 'normal',
-              color: '#585858',
-            }}
-            cardPadding={{ pb: '20', pt: '20', pl: '20', pr: '20' }}
-            cardMargin={{ mt: '-15' }}
-            variant="none"
-            backgroundType="none"
-            canvas
-          />
-          <Element
-            id="CraftCollapse3"
-            is={CraftCollapse}
-            title="可以問老師問題嗎？"
-            titleStyle={{
-              fontSize: 16,
-              margin: { mb: '0' },
-              textAlign: 'left',
-              fontWeight: 'bold',
-              color: '#585858',
-            }}
-            paragraph="網站的「線上課程」都可以隨時隨地透過電腦、手機、平板觀看購買後的課程影片，沒有時間和地點的限制！
-              都可以隨時隨地透過電腦手機平板觀看購買後的課程影片沒有時間和地點的限制"
-            paragraphStyle={{
-              fontSize: 16,
-              margin: { mt: '20' },
-              textAlign: 'left',
-              fontWeight: 'normal',
-              color: '#585858',
-            }}
-            cardPadding={{ pb: '20', pt: '20', pl: '20', pr: '20' }}
-            cardMargin={{ mt: '-15' }}
-            variant="none"
-            backgroundType="none"
             canvas
           />
         </Element>
@@ -117,11 +82,21 @@ const FAQSection: React.VFC<{ variant?: 'accordion' }> = ({ variant }) => {
         <Element
           id="CraftLayout"
           is={CraftLayout}
+          ratios={[12]}
+          customStyle={{
+            margin: '0 20',
+          }}
+          responsive={{
+            desktop: {
+              ratios: [12],
+              customStyle: {
+                margin: '0 200',
+              },
+            },
+          }}
           canvas
-          mobile={{ margin: { ml: '20', mr: '20' }, columnAmount: 1, columnRatio: [12], displayAmount: 5 }}
-          desktop={{ margin: { ml: '200', mr: '200' }, columnAmount: 2, columnRatio: [6, 6], displayAmount: 5 }}
         >
-          <CraftTitleAndParagraph
+          {/* <CraftTitleAndParagraph
             title={{
               titleContent: '完全沒有相關背景也可以學會嗎？',
               fontSize: 16,
@@ -230,7 +205,7 @@ const FAQSection: React.VFC<{ variant?: 'accordion' }> = ({ variant }) => {
               fontWeight: 'lighter',
               color: '#585858',
             }}
-          />
+          /> */}
         </Element>
       )}
     </Element>

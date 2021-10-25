@@ -1,4 +1,4 @@
-import * as CraftElement from 'lodestar-app-element/src/components/craft'
+import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import CraftTool from './CraftTool'
@@ -17,15 +17,19 @@ const CraftToolbox: React.VFC<{ category: CraftToolboxCategory }> = ({ category 
     <div className="px-3 mt-4">
       {category === 'basic' && (
         <>
-          <CraftTool
-            as={CraftElement.CraftBackground}
+          {/* <CraftTool
+            as={CraftElement.CraftSection}
             message={{ id: 'craft.toolbox.section', defaultMessage: '區塊' }}
-            backgroundType="none"
-            padding={{ pt: '64', pb: '64' }}
-            margin={{ mb: '5' }}
+            backgroundType="solidColor"
+            solidColor="white"
+            customStyle={{
+              paddingTop: 64,
+              paddingBottom: 64,
+              marginBottom: 5,
+            }}
             canvas
-          />
-          <CraftTool
+          /> 
+           <CraftTool
             as={CraftElement.CraftLayout}
             message={{ id: 'craft.toolbox.layout', defaultMessage: '佈局' }}
             mobile={{
@@ -41,113 +45,83 @@ const CraftToolbox: React.VFC<{ category: CraftToolboxCategory }> = ({ category 
               displayAmount: 3,
             }}
             canvas
-          />
+          /> */}
           <CraftTool
             as={CraftElement.CraftTitle}
             message={{ id: 'craft.toolbox.title', defaultMessage: '標題' }}
-            titleContent="Write down your incredible title!"
-            fontSize={28}
-            margin={{ mt: '25', mb: '25', ml: '25', mr: '25' }}
-            textAlign="center"
-            fontWeight="normal"
-            color="#585858"
+            customStyle={{
+              fontSize: 28,
+              margin: 25,
+              textAlign: 'center',
+              fontWeight: 'normal',
+              color: '#585858',
+            }}
+            title="Write down your incredible title!"
           />
           <CraftTool
             as={CraftElement.CraftParagraph}
             message={{ id: 'craft.toolbox.paragraph', defaultMessage: '段落' }}
-            paragraphContent="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-            fontSize={16}
-            margin={{ mt: '25', mb: '25', ml: '25', mr: '25' }}
-            lineHeight={1.69}
-            textAlign="center"
-            fontWeight="normal"
-            color="#585858"
+            customStyle={{
+              fontSize: 16,
+              margin: 25,
+              lineHeight: 1.69,
+              textAlign: 'center',
+              fontWeight: 'normal',
+              color: '#585858',
+            }}
+            content="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+          industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
+          electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of
+          Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like
+          Aldus PageMaker including versions of Lorem Ipsum."
           />
           <CraftTool
             as={CraftElement.CraftImage}
             message={{ id: 'craft.toolbox.message', defaultMessage: '圖片' }}
-            desktop={{
-              width: '100%',
-              padding: {},
-              margin: {},
-              coverUrl: 'https://static.kolable.com/images/default/craft/image.png',
-            }}
-            mobile={{
-              width: '100%',
-              padding: {},
-              margin: {},
-              coverUrl: 'https://static.kolable.com/images/default/craft/image.png',
-            }}
+            src="https://static.kolable.com/images/default/craft/image.png"
           />
           <CraftTool
             as={CraftElement.CraftButton}
             message={{ id: 'craft.toolbox.button', defaultMessage: '按鈕' }}
-            title="馬上查看"
             link=""
             openNewTab={false}
             size="lg"
             block={false}
             variant="solid"
-            color="#fff"
-            backgroundType="solidColor"
-            backgroundColor="#4c5b8f"
+            customStyle={{
+              color: '#fff',
+              backgroundColor: '#4c5b8f',
+            }}
+            title="馬上查看"
           />
           <CraftTool
-            as={CraftElement.CraftEmbed}
+            as={CraftElement.CraftEmbedded}
             message={{ id: 'craft.toolbox.embedded', defaultMessage: '嵌入元素' }}
             iframe=""
-            margin="0;0;0;0"
+            customStyle={{ margin: 0 }}
           />
           <CraftTool
             as={CraftElement.CraftCarousel}
             message={{ id: 'craft.toolbox.carousel', defaultMessage: '輪播' }}
-            type="normal"
-            covers={[
-              {
-                title: '換個方式說溝通更有效',
-                paragraph:
-                  '生命的目的是盡可能多地成為你自己，將你天生的才能和能力與你生活經驗中的智慧結合起來，並將它們與你內在的精神融合在一起，然後把自己作為禮物送回世界。',
-                mobileCoverUrl: 'https://static.kolable.com/images/demo/cover-01-m.png',
-                desktopCoverUrl: 'https://static.kolable.com/images/demo/cover-01.png',
-                link: '/programs',
-                openNewTab: false,
-              },
-              {
-                title: '',
-                paragraph: '',
-                mobileCoverUrl: 'https://static.kolable.com/images/demo/cover-02-m.jpg',
-                desktopCoverUrl: 'https://static.kolable.com/images/demo/cover-02.jpg',
-                link: '',
-                openNewTab: false,
-              },
-            ]}
-            titleStyle={{
-              color: '#ffffff',
-              margin: { mb: '0', ml: '0', mr: '0', mt: '0' },
-              fontSize: 26,
-              textAlign: 'center',
-              fontWeight: 'bold',
-            }}
-            paragraphStyle={{
-              color: '#ffffff',
-              margin: { mb: '0', ml: '0', mr: '0', mt: '0' },
-              fontSize: 16,
-              textAlign: 'center',
-              fontWeight: 'normal',
-              lineHeight: 1.5,
-            }}
+            canvas
+          />
+          <CraftTool
+            as={CraftElement.CraftCollapse}
+            message={{ id: 'craft.toolbox.collapse', defaultMessage: '折疊面板' }}
+            list={[]}
           />
         </>
       )}
       {category === 'product' && (
         <>
-          <CraftTool
+          {/* <CraftTool
             as={CraftElement.CraftActivityCollection}
             message={{ id: 'craft.toolbox.activity', defaultMessage: '活動' }}
             coverUrl="https://static.kolable.com/images/default/craft/activity.png"
             variant="card"
             sourceOptions={{ source: 'publishedAt', limit: 4 }}
-          />
+          /> */}
           <CraftTool
             as={CraftElement.CraftProgramCollection}
             message={{ id: 'craft.toolbox.program', defaultMessage: '課程' }}
@@ -155,7 +129,7 @@ const CraftToolbox: React.VFC<{ category: CraftToolboxCategory }> = ({ category 
             variant="card"
             sourceOptions={{ source: 'publishedAt', limit: 4 }}
           />
-          <CraftTool
+          {/* <CraftTool
             as={CraftElement.CraftProgramContentCollection}
             message={{ id: 'craft.toolbox.programContent', defaultMessage: '課程單元' }}
             coverUrl="https://static.kolable.com/images/default/craft/program.png"
@@ -168,7 +142,7 @@ const CraftToolbox: React.VFC<{ category: CraftToolboxCategory }> = ({ category 
             coverUrl="https://static.kolable.com/images/default/craft/program.png"
             variant="card"
             sourceOptions={{ source: 'publishedAt', limit: 4 }}
-          />
+          /> */}
         </>
       )}
       {category === 'template' && (

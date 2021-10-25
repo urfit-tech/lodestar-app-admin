@@ -1,24 +1,18 @@
-import { useNode } from '@craftjs/core'
 import { Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { EmbeddedProps } from 'lodestar-app-element/src/components/common/Embedded'
 import { useIntl } from 'react-intl'
-import { CraftCollapseSetting } from '.'
+import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import { CraftCollapseSetting, CraftSettings } from './CraftSettings'
 
-const EmbedSettings: React.VFC = () => {
+type FieldValues = {
+  content: string
+  spaceStyle: CSSObject
+}
+const EmbeddedSettings: CraftSettings<EmbeddedProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<{
-    iframe: string
-    margin: `${number};${number};${number};${number}`
-  }>()
-
-  const {
-    actions: { setProp },
-    props: { iframe, margin },
-  } = useNode(node => ({
-    props: node.data.props,
-    selected: node.events.selected,
-  }))
+  const [form] = useForm<FieldValues>()
 
   return (
     <Form
@@ -26,21 +20,29 @@ const EmbedSettings: React.VFC = () => {
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={{ iframe, margin }}
+      initialValues={props}
       onValuesChange={() => {
         form
           .validateFields()
           .then(values => {
-            setProp(props => {
-              props.margin = values.margin
+            onPropsChange?.({
+              iframe: values.content,
+              customStyle: {
+                ...props.customStyle,
+                ...values.spaceStyle,
+              },
             })
           })
           .catch(({ values, errorFields }) => {
             if (errorFields.length > 0) {
               return
             }
-            setProp(props => {
-              props.iframe = values.iframe
+            onPropsChange?.({
+              iframe: values.content,
+              customStyle: {
+                ...props.customStyle,
+                ...values.spaceStyle,
+              },
             })
           })
       }}
@@ -71,4 +73,4 @@ const EmbedSettings: React.VFC = () => {
   )
 }
 
-export default EmbedSettings
+export default EmbeddedSettings

@@ -1,42 +1,37 @@
-import { useNode } from '@craftjs/core'
 import { Checkbox, Form, Input, Radio, Space } from 'antd'
-import Collapse, { CollapseProps } from 'antd/lib/collapse'
+import Collapse from 'antd/lib/collapse'
 import { useForm } from 'antd/lib/form/Form'
-import { CraftButtonProps } from 'lodestar-app-element/src/types/craft'
+import { ButtonProps } from 'lodestar-app-element/src/components/buttons/Button'
 import { useIntl } from 'react-intl'
-import { AdminHeaderTitle, CraftSettingLabel, StyledCollapsePanel, StyledUnderLineInput } from '.'
 import { craftPageMessages } from '../../../helpers/translation'
-import ColorPickerBlock from './ColorPickerBlock'
+import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
+import BorderStyleInput from '../inputs/BorderStyleInput'
+import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import {
+  AdminHeaderTitle,
+  CraftSettingLabel,
+  CraftSettings,
+  StyledCollapsePanel,
+  StyledUnderLineInput,
+} from './CraftSettings'
 
-type FieldProps = CraftButtonProps
+type FieldProps = ButtonProps
 
-const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
+const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const {
-    actions: { setProp },
-    props,
-  } = useNode(node => ({
-    props: node.data.props as CraftButtonProps,
-    selected: node.events.selected,
-  }))
 
   const handleChange = () => {
     form
       .validateFields()
       .then(values => {
-        setProp((props: CraftButtonProps) => {
-          props.title = values.title
-          props.link = values.link
-          props.openNewTab = values.openNewTab
-          props.size = values.size
-          props.align = values.align
-          props.block = values.block
-          props.variant = values.variant
-          props.color = values.color
-          props.outlineColor = values.outlineColor
-          props.backgroundColor = values.backgroundType === 'solidColor' ? values.backgroundColor : undefined
-          props.backgroundType = values.backgroundType
+        onPropsChange?.({
+          title: values.title,
+          link: values.link,
+          openNewTab: values.openNewTab,
+          size: values.size,
+          block: values.block,
+          variant: values.variant,
         })
       })
       .catch(() => {})
@@ -48,23 +43,10 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={{
-        title: props.title || '',
-        link: props.link || '',
-        openNewTab: props.openNewTab || false,
-        size: props.size || 'md',
-        block: props.block || false,
-        align: props.align || 'start',
-        variant: props.variant || 'solid',
-        color: props.color || '#585858',
-        outlineColor: props.outlineColor,
-        backgroundColor: props.backgroundColor,
-        backgroundType: props.backgroundType || 'none',
-      }}
+      initialValues={props}
       onValuesChange={handleChange}
     >
       <Collapse
-        {...collapseProps}
         className="mt-2 p-0"
         bordered={false}
         expandIconPosition="right"
@@ -79,7 +61,7 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
             name="title"
             label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</CraftSettingLabel>}
           >
-            <Input className="mt-2" value={props.title} />
+            <Input className="mt-2" />
           </Form.Item>
 
           <Form.Item
@@ -96,7 +78,6 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
       </Collapse>
 
       <Collapse
-        {...collapseProps}
         className="mt-4 p-0"
         bordered={false}
         expandIconPosition="right"
@@ -150,45 +131,19 @@ const ButtonSetting: React.VFC<CollapseProps> = ({ ...collapseProps }) => {
             <Checkbox>{formatMessage(craftPageMessages.label.buttonBlock)}</Checkbox>
           </Form.Item>
 
-          <Form.Item
-            name="variant"
-            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.variant)}</CraftSettingLabel>}
-          >
-            <Radio.Group>
-              <Space direction="vertical">
-                <Radio value="text">{formatMessage(craftPageMessages.label.plainText)}</Radio>
-                <Radio value="solid">{formatMessage(craftPageMessages.label.coloring)}</Radio>
-                <Radio value="outline">{formatMessage(craftPageMessages.label.outline)}</Radio>
-              </Space>
-            </Radio.Group>
+          <Form.Item name="spaceStyle">
+            <SpaceStyleInput />
           </Form.Item>
-
-          <Form.Item name="color" noStyle={props.variant !== 'text'}>
-            {props.variant === 'text' && <ColorPickerBlock />}
+          <Form.Item name="borderStyle">
+            <BorderStyleInput />
           </Form.Item>
-
-          <Form.Item name="outlineColor" noStyle={props.variant !== 'outline'}>
-            {props.variant === 'outline' && <ColorPickerBlock />}
+          <Form.Item name="backgroundStyle">
+            <BackgroundStyleInput />
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
-      <Form.Item
-        name="backgroundType"
-        label={formatMessage(craftPageMessages.label.background)}
-        noStyle={props.variant !== 'solid'}
-      >
-        {props.variant === 'solid' && (
-          <Radio.Group buttonStyle="solid">
-            <Radio.Button value="none">{formatMessage(craftPageMessages.ui.empty)}</Radio.Button>
-            <Radio.Button value="solidColor">{formatMessage(craftPageMessages.ui.solidColor)}</Radio.Button>
-          </Radio.Group>
-        )}
-      </Form.Item>
-      <Form.Item name="backgroundColor" noStyle={props.variant !== 'solid' && props.backgroundType !== 'solidColor'}>
-        {props.variant === 'solid' && props.backgroundType === 'solidColor' && <ColorPickerBlock />}
-      </Form.Item>
     </Form>
   )
 }
 
-export default ButtonSetting
+export default ButtonSettings

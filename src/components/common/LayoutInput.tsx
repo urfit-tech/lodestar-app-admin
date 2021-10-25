@@ -1,6 +1,6 @@
 import { Form } from 'antd'
 import { CollectionLayout } from 'lodestar-app-element/src/components/collections/Collection'
-import ResponsiveInput, { ResponsiveInputValue } from './ResponsiveInput'
+import GridInput, { GridInputValue } from './GridInput'
 
 type LayoutInputProps = {
   value?: CollectionLayout
@@ -10,9 +10,9 @@ const LayoutInput: React.FC<LayoutInputProps> = ({ value, onChange }) => {
   return (
     <>
       <Form.Item name="columns">
-        <ResponsiveInput
+        <GridInput
           label="columns"
-          value={value?.columns as ResponsiveInputValue}
+          value={value?.columns as GridInputValue}
           onChange={columns =>
             onChange?.({
               ...value,
@@ -22,9 +22,9 @@ const LayoutInput: React.FC<LayoutInputProps> = ({ value, onChange }) => {
         />
       </Form.Item>
       <Form.Item name="gutter">
-        <ResponsiveInput
+        <GridInput
           label="gutter"
-          value={value?.gutter as ResponsiveInputValue}
+          value={value?.gutter as GridInputValue}
           onChange={gutter =>
             onChange?.({
               ...value,
@@ -34,9 +34,9 @@ const LayoutInput: React.FC<LayoutInputProps> = ({ value, onChange }) => {
         />
       </Form.Item>
       <Form.Item name="gap">
-        <ResponsiveInput
+        <GridInput
           label="gap"
-          value={value?.gap as ResponsiveInputValue}
+          value={value?.gap as GridInputValue}
           onChange={gap =>
             onChange?.({
               ...value,

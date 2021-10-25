@@ -1303,6 +1303,12 @@ export const craftPageMessages = {
     solidColor: { id: 'craft.ui.solidColor', defaultMessage: '純色' },
   }),
   label: defineMessages({
+    spaceStyle: { id: 'craft.label.spaceStyle', defaultMessage: '間距樣式' },
+    positionStyle: { id: 'craft.label.positionStyle', defaultMessage: '位置樣式' },
+    borderStyle: { id: 'craft.label.borderStyle', defaultMessage: '框線樣式' },
+    typographyStyle: { id: 'craft.label.typographyStyle', defaultMessage: '字體樣式' },
+    backgroundStyle: { id: 'craft.label.backgroundStyle', defaultMessage: '背景樣式' },
+
     emptyPage: { id: 'craft.label.emptyPage', defaultMessage: '空白頁' },
     settings: { id: 'craft.label.settings', defaultMessage: '基本設定' },
     pageEditor: { id: 'craft.label.pageEditor', defaultMessage: '首頁 - 編輯頁面' },
@@ -1313,8 +1319,6 @@ export const craftPageMessages = {
     url: { id: 'craft.label.url', defaultMessage: '網址' },
     latestUpdatedAt: { id: 'craft.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
     publish: { id: 'craft.label.publish', defaultMessage: '發佈' },
-    columnAmount: { id: 'craft.label.columnAmount', defaultMessage: '欄數' },
-    scrollAmount: { id: 'craft.label.scrollAmount', defaultMessage: '捲動數量' },
     ratio: { id: 'craft.label.ratio', defaultMessage: '比例' },
     displayAmount: { id: 'craft.label.displayAmount', defaultMessage: '資料顯示數量' },
     sort: { id: 'craft.label.sort', defaultMessage: '排序方式' },
