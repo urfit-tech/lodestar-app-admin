@@ -103,37 +103,7 @@ export const useOrderLog = (filters?: {
     }
     
   }, [currentMemberId,authStatus])
-  // const { data: allOrderLogs } = useQuery<hasura.GET_ALL_ORDER_LOG, hasura.GET_ALL_ORDER_LOGVariables>(
-  //   gql`
-  //     query GET_ALL_ORDER_LOG($allcondition: order_log_bool_exp) {
-  //       order_log_aggregate(where: $allcondition) {
-  //         aggregate {
-  //           count
-  //         }
-  //       }
-  //     }
-  //   `,
-  //   {
-  //     variables: {
-  //       allcondition: {
-  //         member_id: authStatus === 'None' ? { _eq: currentMemberId } : undefined,
-  //         order_products:
-  //           authStatus === 'Creator'
-  //             ? {
-  //                 product: {
-  //                   product_owner: {
-  //                     member_id: { _eq: currentMemberId },
-  //                   },
-  //                 },
-  //               }
-  //             : undefined,
-  //       },
-  //     },
-  //   },
-  // )
-
-  // const totalCount = allOrderLogs?.order_log_aggregate.aggregate?.count || 0
-
+  
   const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDERS, hasura.GET_ORDERSVariables>(
     GET_ORDERS,
     {

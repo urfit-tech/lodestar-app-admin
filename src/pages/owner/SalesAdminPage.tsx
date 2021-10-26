@@ -23,11 +23,6 @@ const SalesAdminPage: React.FC = () => {
     : permissions.GROSS_SALES_CREATOR
     ? { authStatus: 'Creator', memberId: currentMemberId }
     : { authStatus: 'None', memberId: currentMemberId }
-  const salesRecordPermission: SalesStatus = permissions.SALES_RECORDS_ADMIN
-    ? { authStatus: 'Admin', memberId: currentMemberId }
-    : permissions.SALES_RECORDS_CREATOR
-    ? { authStatus: 'Creator', memberId: currentMemberId }
-    : { authStatus: 'None', memberId: currentMemberId }
 
   return (
     <AdminLayout>
