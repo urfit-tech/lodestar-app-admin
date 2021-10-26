@@ -30,7 +30,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
     padding: 0 16px 8px 16px;
     && {
       .ant-tabs-content {
-        height: 70vh;
+        max-height: 70vh;
         overflow: auto;
       }
     }
@@ -110,18 +110,11 @@ export const CraftSettingLabel = styled.span`
   font-size: 14px;
   letter-spacing: 0.4px;
   font-weight: 500;
+  margin-bottom: 4px;
 `
 export const CraftSlider = styled(Slider)`
   .ant-slider-track {
-    background-color: ${props => props.theme['@primary-color'] || '#4c5b8f'};
-  }
-`
-export const StyledCollapsePanel = styled(Collapse.Panel)`
-  .ant-collapse-header {
-    padding-left: 0px !important;
-  }
-  .ant-collapse-content-box {
-    padding: 0px !important;
+    background-color: ${props => props.theme['@primary-color'] || '#000'};
   }
 `
 export const StyledSettingButtonWrapper = styled.div`
@@ -140,12 +133,6 @@ export const StyledUnderLineInput = styled(Input)`
     border-right-width: 0px !important;
     border-color: #d8d8d8;
   }
-`
-export const StyledCraftSettingLabel = styled.span`
-  color: var(--gray-dark);
-  font-size: 14px;
-  letter-spacing: 0.4px;
-  font-weight: 500;
 `
 
 type SettingProps = {
@@ -249,3 +236,12 @@ export const CraftSettingsModal: React.VFC = () => {
     </Draggable>
   ) : null
 }
+
+export const StyledCollapsePanel = styled(Collapse.Panel)`
+  .ant-collapse-header {
+    padding-left: 0px !important;
+  }
+  .ant-collapse-content-box {
+    padding: 0px !important;
+  }
+`

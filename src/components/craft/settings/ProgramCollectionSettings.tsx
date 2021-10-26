@@ -4,10 +4,9 @@ import { CollectionLayout } from 'lodestar-app-element/src/components/collection
 import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
-import { CraftSettingLabel } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramCollectionSelector from '../../program/ProgramCollectionSelector'
-import { CraftSettings } from './CraftSettings'
+import { CraftSettingLabel, CraftSettings } from './CraftSettings'
 
 const ProgramCollectionSettings: CraftSettings<ProgramCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()

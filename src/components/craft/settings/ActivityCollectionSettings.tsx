@@ -5,9 +5,8 @@ import { ActivityCollectionProps } from 'lodestar-app-element/src/components/col
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
 import ActivityCollectionSelector from '../../activity/ActivitySourceOptionSelector'
-import { CraftSettingLabel } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
-import { CraftSettings } from './CraftSettings'
+import { CraftSettingLabel, CraftSettings } from './CraftSettings'
 
 const ActivityCollectionSettings: CraftSettings<ActivityCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()

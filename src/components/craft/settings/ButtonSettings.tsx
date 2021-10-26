@@ -6,13 +6,7 @@ import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
 import CustomStyleInput from '../inputs/CustomStyleInput'
-import {
-  AdminHeaderTitle,
-  CraftSettingLabel,
-  CraftSettings,
-  StyledCollapsePanel,
-  StyledUnderLineInput,
-} from './CraftSettings'
+import { AdminHeaderTitle, CraftSettingLabel, CraftSettings, StyledUnderLineInput } from './CraftSettings'
 
 type FieldValues = {
   title: string
@@ -63,14 +57,8 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
       initialValues={initialValues}
       onValuesChange={handleChange}
     >
-      <Collapse
-        className="mt-2 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['buttonSetting']}
-      >
-        <StyledCollapsePanel
+      <Collapse accordion ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
+        <Collapse.Panel
           key="buttonSetting"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonSetting)}</AdminHeaderTitle>}
         >
@@ -91,18 +79,9 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
           <Form.Item name="openNewTab" valuePropName="checked">
             <Checkbox>{formatMessage(craftPageMessages.label.openNewTab)}</Checkbox>
           </Form.Item>
-        </StyledCollapsePanel>
-      </Collapse>
-
-      <Collapse
-        className="mt-4 p-0"
-        bordered={false}
-        expandIconPosition="right"
-        ghost
-        defaultActiveKey={['buttonStyle']}
-      >
-        <StyledCollapsePanel
-          key="buttonStyle"
+        </Collapse.Panel>
+        <Collapse.Panel
+          key="buttonStyleExtra"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonStyle)}</AdminHeaderTitle>}
         >
           <Form.Item className="mb-2">
@@ -147,11 +126,15 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
           >
             <Checkbox>{formatMessage(craftPageMessages.label.buttonBlock)}</Checkbox>
           </Form.Item>
-
+        </Collapse.Panel>
+        <Collapse.Panel
+          key="buttonStyle"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonStyle)}</AdminHeaderTitle>}
+        >
           <Form.Item name="customStyle">
             <CustomStyleInput space border background />
           </Form.Item>
-        </StyledCollapsePanel>
+        </Collapse.Panel>
       </Collapse>
     </Form>
   )

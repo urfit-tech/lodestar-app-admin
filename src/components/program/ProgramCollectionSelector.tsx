@@ -5,7 +5,7 @@ import { ProgramCollectionProps } from 'lodestar-app-element/src/components/coll
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { StyledCraftSettingLabel } from '../craft/settings/CraftSettings'
+import { CraftSettingLabel } from '../craft/settings/CraftSettings'
 import ProgramCategorySelect from './ProgramCategorySelect'
 import ProgramTagSelect from './ProgramTagSelect'
 
@@ -19,9 +19,7 @@ const ProgramCollectionSelector: React.FC<{
   const programOptions = data?.program.map(p => ({ id: p.id, title: p.title })) || []
   return (
     <div>
-      <Form.Item
-        label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</StyledCraftSettingLabel>}
-      >
+      <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</CraftSettingLabel>}>
         <Select<ProgramSourceOptions['source']>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
           value={value?.source}
@@ -57,18 +55,14 @@ const ProgramCollectionSelector: React.FC<{
       </Form.Item>
       {(value?.source === 'publishedAt' || value?.source === 'currentPrice') && (
         <>
-          <Form.Item
-            label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</StyledCraftSettingLabel>}
-          >
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</CraftSettingLabel>}>
             <Select value={value.asc ? 'asc' : 'desc'} onChange={v => onChange?.({ ...value, asc: v === 'asc' })}>
               <Select.Option value="asc">{formatMessage(craftPageMessages.label.sortAsc)}</Select.Option>
               <Select.Option value="desc">{formatMessage(craftPageMessages.label.sortDesc)}</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item
-            label={
-              <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</StyledCraftSettingLabel>
-            }
+            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</CraftSettingLabel>}
           >
             <InputNumber
               value={value.limit}
@@ -76,11 +70,7 @@ const ProgramCollectionSelector: React.FC<{
             />
           </Form.Item>
           <Form.Item
-            label={
-              <StyledCraftSettingLabel>
-                {formatMessage(craftPageMessages.label.defaultCategoryId)}
-              </StyledCraftSettingLabel>
-            }
+            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.defaultCategoryId)}</CraftSettingLabel>}
           >
             <ProgramCategorySelect
               value={value.defaultCategoryIds}
@@ -88,9 +78,7 @@ const ProgramCollectionSelector: React.FC<{
             />
           </Form.Item>
           <Form.Item
-            label={
-              <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.defaultTagName)}</StyledCraftSettingLabel>
-            }
+            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.defaultTagName)}</CraftSettingLabel>}
           >
             <ProgramTagSelect
               value={value.defaultTagNames}
@@ -100,11 +88,7 @@ const ProgramCollectionSelector: React.FC<{
         </>
       )}
       {value?.source === 'custom' && (
-        <Form.Item
-          label={
-            <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</StyledCraftSettingLabel>
-          }
-        >
+        <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
           {value.idList.map((programId, idx) => (
             <div key={programId} className="my-2">
               <Select

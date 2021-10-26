@@ -1,4 +1,4 @@
-import { Collapse, Input, InputNumber, Select, Slider } from 'antd'
+import { InputNumber, Select } from 'antd'
 import { SketchPicker } from 'react-color'
 import styled from 'styled-components'
 import { MemberTaskProps } from '../../types/member'
@@ -126,20 +126,6 @@ export const MemberTaskTag = styled.span<{ variant: MemberTaskProps['priority'] 
   line-height: 2rem;
 `
 
-export const StyledCollapsePanel = styled(Collapse.Panel)`
-  .ant-collapse-header {
-    padding-left: 0px !important;
-  }
-  .ant-collapse-content-box {
-    padding: 0px !important;
-  }
-`
-export const CraftSettingLabel = styled.span`
-  color: var(--gray-dark);
-  font-size: 14px;
-  letter-spacing: 0.4px;
-  font-weight: 500;
-`
 export const StyledInputNumber = styled(InputNumber)`
   width: 100% !important;
 `
@@ -152,18 +138,6 @@ export const StyledFullWidthSelect = styled(Select)`
     margin-right: 0.5rem;
   }
 `
-export const StyledUnderLineInput = styled(Input)`
-  border-color: #d8d8d8;
-  border-style: solid;
-  border-top-width: 0px;
-  border-right-width: 0px;
-  border-bottom-width: 1px;
-  border-left-width: 0px;
-  :hover {
-    border-right-width: 0px !important;
-    border-color: #d8d8d8;
-  }
-`
 export const StyledSketchPicker = styled(SketchPicker)`
   width: auto !important;
 `
@@ -173,14 +147,4 @@ export const StyleCircleColorInput = styled.div<{ background: string }>`
   width: 16px;
   height: 16px;
   border: 1px solid #d8d8d8;
-`
-export const CraftSlider = styled(Slider)`
-  .ant-slider-track {
-    background-color: ${props => props.theme['@primary-color'] || '#4c5b8f'};
-  }
-`
-export const StyledSettingButtonWrapper = styled.div`
-  position: absolute;
-  top: 0.5em;
-  right: 0.5em;
 `
