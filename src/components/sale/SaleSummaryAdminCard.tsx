@@ -104,14 +104,27 @@ const GET_TOTAL_ORDER_AMOUNT = gql`
 
 const GET_SELF_ORDER_AMOUNT = gql`
   query GET_SELF_ORDER_AMOUNT($memberId: String!) {
-    order_product_aggregate(where: { order_log: { status: { _eq: "SUCCESS" }, member_id: { _eq: $memberId } } }) {
+    order_product_aggregate(
+      where: {
+        order_log: { status: { _eq: "SUCCESS" }, member_id: { _eq: $memberId } }
+        product: { product_owner: { member_id: { _neq: $memberId } } }
+      }
+    ) {
       aggregate {
         sum {
           price
         }
       }
     }
-    order_discount_aggregate(where: { order_log: { status: { _eq: "SUCCESS" }, member_id: { _eq: $memberId } } }) {
+    order_discount_aggregate(
+      where: {
+        order_log: {
+          status: { _eq: "SUCCESS" }
+          member_id: { _eq: $memberId }
+          order_products: { product: { product_owner: { member_id: { _neq: $memberId } } } }
+        }
+      }
+    ) {
       aggregate {
         sum {
           price
