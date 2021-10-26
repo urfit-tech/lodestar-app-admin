@@ -77,18 +77,6 @@ const AdminCard = styled(Card)<{ variant?: string }>`
         }
       }
     `}
-
-    ${props =>
-    props.variant === 'unAuth' &&
-    css`
-      position: 'absolute';
-      z-index: 2;
-      width: '100%';
-      height: '100%';
-      display: 'flex';
-      justify-content: 'center';
-      align-items: 'center';
-    `}
 `
 
 export default AdminCard
