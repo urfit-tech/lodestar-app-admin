@@ -2,15 +2,18 @@ import { Form, Radio, Space } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import ColorPicker from './ColorPicker'
 
+export type Typography = Pick<
+  CSSObject,
+  'fontFamily' | 'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing' | 'textAlign' | 'fontStyle'
+>
 const messages = defineMessages({
   none: { id: 'craft.inputs.border.none', defaultMessage: '無框線' },
   solid: { id: 'craft.inputs.border.solid', defaultMessage: '實線' },
 })
 const TypographyStyleInput: React.VFC<{
-  value?: CSSObject
-  onChange?: (value: CSSObject) => void
+  value?: Typography
+  onChange?: (value: Typography) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const [radioType, setRadioType] = useState<'none' | 'solid'>('none')
@@ -26,7 +29,7 @@ const TypographyStyleInput: React.VFC<{
       </Form.Item>
       {radioType === 'solid' && (
         <Form.Item noStyle>
-          <ColorPicker value={value?.borderColor} onChange={color => onChange?.({ ...value, borderColor: color })} />
+          {/* <ColorPicker value={value?.borderColor} onChange={color => onChange?.({ ...value, borderColor: color })} /> */}
         </Form.Item>
       )}
     </div>

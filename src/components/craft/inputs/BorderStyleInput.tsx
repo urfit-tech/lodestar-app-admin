@@ -4,13 +4,14 @@ import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import ColorPicker from './ColorPicker'
 
+export type BorderStyle = Pick<CSSObject, 'borderColor'>
 const messages = defineMessages({
   none: { id: 'craft.inputs.border.none', defaultMessage: '無框線' },
   solid: { id: 'craft.inputs.border.solid', defaultMessage: '實線' },
 })
 const BorderStyleInput: React.VFC<{
-  value?: CSSObject
-  onChange?: (value: CSSObject) => void
+  value?: BorderStyle
+  onChange?: (value: BorderStyle) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const [radioType, setRadioType] = useState<'none' | 'solid'>('none')

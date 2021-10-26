@@ -5,9 +5,10 @@ import EmptyCover from '../../../images/default/empty-cover.png'
 import ColorPicker from './ColorPicker'
 import ImageInput from './ImageInput'
 
+export type BackgroundStyle = Pick<CSSObject, 'background'>
 type BackgroundStyleInputProps = {
-  value?: CSSObject
-  onChange?: (value: CSSObject) => void
+  value?: BackgroundStyle
+  onChange?: (value: BackgroundStyle) => void
 }
 
 const messages = defineMessages({

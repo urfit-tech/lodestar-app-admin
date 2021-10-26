@@ -5,17 +5,18 @@ import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
 import BoxModelInput from './BoxModelInput'
 
+export type SpaceStyle = Pick<CSSObject, 'margin' | 'padding'>
 const messages = defineMessages({
   margin: { id: 'craft.inputs.margin', defaultMessage: '外距' },
   padding: { id: 'craft.inputs.padding', defaultMessage: '內距' },
 })
 const SpaceStyleInput: React.VFC<{
-  value?: CSSObject
-  onChange?: (value: CSSObject) => void
+  value?: SpaceStyle
+  onChange?: (value: SpaceStyle) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   return (
-    <div>
+    <>
       <Form.Item
         label={formatMessage(messages.margin)}
         rules={[
@@ -40,7 +41,7 @@ const SpaceStyleInput: React.VFC<{
       >
         <BoxModelInput value={value?.padding?.toString()} onChange={padding => onChange?.({ ...value, padding })} />
       </Form.Item>
-    </div>
+    </>
   )
 }
 

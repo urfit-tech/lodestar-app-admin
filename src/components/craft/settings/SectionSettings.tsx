@@ -5,23 +5,19 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { CSSObject } from 'styled-components'
-import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
-import BorderStyleInput from '../inputs/BorderStyleInput'
-import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import CustomStyleInput from '../inputs/CustomStyleInput'
+import { SpaceStyle } from '../inputs/SpaceStyleInput'
 import { CraftSettings } from './CraftSettings'
 
-type FieldProps = {
-  spaceStyle: CSSObject
-  borderStyle: CSSObject
-  backgroundStyle: CSSObject
+type FieldValues = {
+  customStyle: SpaceStyle
 }
 
 const SectionSettings: CraftSettings<SectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const { id: appId } = useApp()
-  const [form] = useForm<FieldProps>()
+  const [form] = useForm<FieldValues>()
   const [loading, setLoading] = useState(false)
   const [backgroundImage, setBackgroundImage] = useState<File | null>(null)
 
@@ -32,32 +28,26 @@ const SectionSettings: CraftSettings<SectionProps> = ({ props, onPropsChange }) 
         onPropsChange?.({
           customStyle: {
             ...props.customStyle,
-            ...values.spaceStyle,
-            ...values.borderStyle,
-            ...values.backgroundStyle,
+            ...values.customStyle,
           },
         })
       })
       .catch(() => {})
   }
-
+  const initialVariables: FieldValues = {
+    customStyle: props.customStyle || {},
+  }
   return (
     <Form
       form={form}
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={props}
+      initialValues={initialVariables}
       onValuesChange={handleChange}
     >
-      <Form.Item name="spaceStyle">
-        <SpaceStyleInput />
-      </Form.Item>
-      <Form.Item name="borderStyle">
-        <BorderStyleInput />
-      </Form.Item>
-      <Form.Item name="backgroundStyle">
-        <BackgroundStyleInput />
+      <Form.Item name="customStyle">
+        <CustomStyleInput space border background />
       </Form.Item>
     </Form>
   )

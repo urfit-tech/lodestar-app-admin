@@ -1,3 +1,4 @@
 1. move sourceOptions type out of craft
 2. member/project/podcastProgram collection
 3. template do not use JSON to generate
+4. combine CraftSettings and CraftSettingsBlock: useNode() always cannot be detected in editor

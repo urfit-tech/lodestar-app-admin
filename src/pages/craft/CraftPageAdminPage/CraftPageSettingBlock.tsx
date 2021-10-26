@@ -3,13 +3,13 @@ import { Button, message, Tabs } from 'antd'
 import { CraftSection } from 'lodestar-app-element/src/components/common/CraftElement'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
-import Draggable from 'react-draggable'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { configureResolver, CraftToolBox } from '../../../components/craft'
 import { CraftToolboxCategory } from '../../../components/craft/CraftToolBox'
+import { CraftSettingsModal } from '../../../components/craft/settings/CraftSettings'
 import { handleError } from '../../../helpers'
-import { commonMessages, craftPageMessages } from '../../../helpers/translation'
+import { commonMessages } from '../../../helpers/translation'
 import { useMutateAppPage } from '../../../hooks/appPage'
 import { ReactComponent as PageIcon } from '../../../images/icon/page.svg'
 import { CraftPageAdminProps } from '../../../types/craft'
@@ -135,7 +135,7 @@ const SettingBlock: React.VFC<{
 
   return (
     <StyledSettingBlock>
-      <CraftSettingsPanel />
+      <CraftSettingsModal />
       <StyledTabs
         renderTabBar={(props, DefaultTabBar) => (
           <StyledTabBarWrapper>
@@ -157,79 +157,6 @@ const SettingBlock: React.VFC<{
         </StyledTabsPane>
       </StyledTabs>
     </StyledSettingBlock>
-  )
-}
-
-const CraftSettingsPanel: React.VFC = () => {
-  const { formatMessage } = useIntl()
-  const {
-    query: { node },
-    selected,
-    actions,
-  } = useEditor(state => {
-    const currentNodeId = state.events.selected
-    let selected
-    if (currentNodeId) {
-      selected = {
-        id: currentNodeId,
-        name: state.nodes[currentNodeId].data.name,
-        settings: state.nodes[currentNodeId].related && state.nodes[currentNodeId].related.settings,
-        labelName: state.nodes[currentNodeId].data?.custom?.button?.label,
-      }
-    }
-    return {
-      selected,
-    }
-  })
-
-  return (
-    <Draggable handle=".draggable" defaultPosition={{ x: -200, y: 32 }}>
-      <div
-        style={{
-          background: 'white',
-          position: 'fixed',
-          width: 400,
-          zIndex: 999,
-          border: '1px solid gray',
-          display: selected ? 'block' : 'none',
-        }}
-      >
-        <div
-          className="draggable cursor-pointer d-flex p-3 justify-content-between align-items-center"
-          style={{ borderBottom: '1px solid lightgrey' }}
-        >
-          {formatMessage(messages.settings)}
-          <button onClick={() => actions.selectNode()}>X</button>
-        </div>
-        <div
-          className="p-3"
-          style={{
-            height: '70vh',
-            overflow: 'auto',
-          }}
-        >
-          {selected && selected.settings && React.createElement(selected.settings)}
-          {selected && selected.labelName && (
-            <Button
-              block
-              danger
-              onClick={() => {
-                if (node(selected.id).isRoot()) {
-                  return
-                }
-                if (window.confirm(formatMessage(craftPageMessages.text.deleteWarning))) {
-                  actions.delete(selected.id)
-                }
-              }}
-            >
-              {selected.labelName === 'deleteBlock'
-                ? formatMessage(craftPageMessages.ui.deleteBlock)
-                : formatMessage(craftPageMessages.ui.deleteAllBlock)}
-            </Button>
-          )}
-        </div>
-      </div>
-    </Draggable>
   )
 }
 

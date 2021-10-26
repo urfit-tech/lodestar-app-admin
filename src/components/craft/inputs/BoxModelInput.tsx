@@ -18,15 +18,21 @@ const BoxModelInput: React.VFC<{
           <CraftSlider
             min={0}
             value={new Set(boxModelValue).size === 1 ? Number(boxModelValue[0]) : 0}
-            onChange={(v: number) => onChange?.(`${repeat(v, 4).join(';')}`)}
+            onChange={(v: number) =>
+              onChange?.(
+                `${repeat(v, 4)
+                  .map(v => v + 'px')
+                  .join(' ')}`,
+              )
+            }
           />
         </div>
         <Input
           className="col-4"
-          value={value}
+          value={boxModelValue.join(';')}
           onBlur={e => {
             const eventBoxModelValue = formatBoxModelValue(e.target.value)
-            onChange?.(`${eventBoxModelValue?.join(';')}`)
+            onChange?.(`${eventBoxModelValue?.map(v => v + 'px').join(' ')}`)
           }}
           onChange={e => onChange?.(e.target.value)}
         />
@@ -36,7 +42,7 @@ const BoxModelInput: React.VFC<{
 }
 
 export const formatBoxModelValue = (value?: string) => {
-  const slices = value?.split(';') || []
+  const slices = value?.split(' ').map(v => v.replace('px', '')) || []
   return range(0, 4).map(index => Number(slices[index]) || 0)
 }
 

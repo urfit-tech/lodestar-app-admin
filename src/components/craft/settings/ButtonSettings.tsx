@@ -3,10 +3,9 @@ import Collapse from 'antd/lib/collapse'
 import { useForm } from 'antd/lib/form/Form'
 import { ButtonProps } from 'lodestar-app-element/src/components/buttons/Button'
 import { useIntl } from 'react-intl'
+import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
-import BorderStyleInput from '../inputs/BorderStyleInput'
-import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import CustomStyleInput from '../inputs/CustomStyleInput'
 import {
   AdminHeaderTitle,
   CraftSettingLabel,
@@ -15,11 +14,19 @@ import {
   StyledUnderLineInput,
 } from './CraftSettings'
 
-type FieldProps = ButtonProps
+type FieldValues = {
+  title: string
+  link: string | null
+  openNewTab: boolean
+  block: boolean
+  size: ButtonProps['size']
+  variant: ButtonProps['variant']
+  customStyle: CSSObject
+}
 
 const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
+  const [form] = useForm<FieldValues>()
 
   const handleChange = () => {
     form
@@ -27,23 +34,33 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
       .then(values => {
         onPropsChange?.({
           title: values.title,
-          link: values.link,
+          link: values.link || undefined,
           openNewTab: values.openNewTab,
           size: values.size,
           block: values.block,
           variant: values.variant,
+          customStyle: values.customStyle,
         })
       })
       .catch(() => {})
   }
 
+  const initialValues: FieldValues = {
+    title: props.title,
+    link: props.link || null,
+    openNewTab: props.openNewTab || false,
+    size: props.size,
+    block: props.block || false,
+    variant: props.variant,
+    customStyle: props.customStyle || {},
+  }
   return (
     <Form
       form={form}
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={props}
+      initialValues={initialValues}
       onValuesChange={handleChange}
     >
       <Collapse
@@ -131,14 +148,8 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
             <Checkbox>{formatMessage(craftPageMessages.label.buttonBlock)}</Checkbox>
           </Form.Item>
 
-          <Form.Item name="spaceStyle">
-            <SpaceStyleInput />
-          </Form.Item>
-          <Form.Item name="borderStyle">
-            <BorderStyleInput />
-          </Form.Item>
-          <Form.Item name="backgroundStyle">
-            <BackgroundStyleInput />
+          <Form.Item name="customStyle">
+            <CustomStyleInput space border background />
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>

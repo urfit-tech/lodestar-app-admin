@@ -5,17 +5,8 @@ export const templateDefault = {
     },
     nodes: [],
     props: {
-      margin: {
-        mb: '0',
-        ml: '0',
-        mr: '0',
-        mt: '0',
-      },
-      padding: {
-        pb: 10,
-        pl: 0,
-        pr: 0,
-        pt: 0,
+      customStyle: {
+        padding: 10,
       },
     },
     custom: {
