@@ -454,14 +454,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
-  // content creator admin
-  creator_sales: {
-    path: '/studio/sales',
-    pageName: 'creator/SalesAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-
   // app settings admin
   app_basic: {
     path: '/app/basic',
