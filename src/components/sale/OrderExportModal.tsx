@@ -41,7 +41,7 @@ const OrderExportModal: React.FC = () => {
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
   const [loading, setLoading] = useState(false)
 
-  const isAuth = permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_CREATOR
+  const disabled = permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_CREATOR
 
   const getOrderLogContent: (startedAt: Date, endedAt: Date, orderStatuses: string[]) => Promise<string[][]> =
     useCallback(
@@ -412,7 +412,7 @@ const OrderExportModal: React.FC = () => {
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)} disabled={!isAuth}>
+        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)} disabled={!disabled}>
           {formatMessage(messages.exportOrder)}
         </Button>
       )}

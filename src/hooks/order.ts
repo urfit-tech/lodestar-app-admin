@@ -78,28 +78,30 @@ export const useOrderLog = (filters?: {
 
   useEffect(() => {
     if(currentMemberId){
-      apolloClient.query<hasura.GET_ALL_ORDER_LOG, hasura.GET_ALL_ORDER_LOGVariables>({
-        query: GET_ALL_ORDER_LOG,
-        variables: {
-          allcondition: {
-            member_id: authStatus === 'None' ? { _eq: currentMemberId } : undefined,
-            order_products:
-              authStatus === 'Creator'
-                ? {
-                    product: {
-                      product_owner: {
-                        member_id: { _eq: currentMemberId },
+      apolloClient
+        .query<hasura.GET_ALL_ORDER_LOG, hasura.GET_ALL_ORDER_LOGVariables>({
+          query: GET_ALL_ORDER_LOG,
+          variables: {
+            allcondition: {
+              member_id: authStatus === 'None' ? { _eq: currentMemberId } : undefined,
+              order_products:
+                authStatus === 'Creator'
+                  ? {
+                      product: {
+                        product_owner: {
+                          member_id: { _eq: currentMemberId },
+                        },
                       },
-                    },
-                  }
-                : undefined,
+                    }
+                  : undefined,
+            },
           },
-        },
-      }).then(({data}:{data?:hasura.GET_ALL_ORDER_LOG})=>{
-        const totalCount = data?.order_log_aggregate.aggregate?.count || 0
-        setTotalOrderLogCounts(totalCount)
-
-      }).catch(error=>console.error(error.stack))
+        })
+        .then(({ data }) => {
+          const totalCount = data?.order_log_aggregate.aggregate?.count || 0
+          setTotalOrderLogCounts(totalCount)
+        })
+        .catch(error => console.error(error.stack))
     }
     
   }, [currentMemberId,authStatus])

@@ -35,7 +35,7 @@ const SaleSummaryAdminCard: React.FC = () => {
         .query<hasura.GET_TOTAL_ORDER_AMOUNT>({
           query: GET_TOTAL_ORDER_AMOUNT,
         })
-        .then(({ data }: { data?: hasura.GET_TOTAL_ORDER_AMOUNT }) => {
+        .then(({ data }) => {
           setTotalOrderAmountResult(data)
           setLoading(false)
         })
