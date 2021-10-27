@@ -143,7 +143,16 @@ const VoucherPlanCollectionBlock: React.FC = () => {
             <div className="row">
               {tabContent.voucherPlans.map(voucherPlan => (
                 <div key={voucherPlan.id} className="col-12 col-lg-6">
-                  <VoucherPlanCard {...voucherPlan} />
+                  <VoucherPlanCard
+                    id={voucherPlan.id}
+                    title={voucherPlan.title}
+                    startedAt={voucherPlan.startedAt}
+                    endedAt={voucherPlan.endedAt}
+                    productQuantityLimit={voucherPlan.productQuantityLimit}
+                    available={voucherPlan.available}
+                    action={voucherPlan.action}
+                    isTransferable={voucherPlan.isTransferable}
+                  />
                 </div>
               ))}
             </div>
