@@ -1,6 +1,7 @@
 import { useApolloClient } from '@apollo/react-hooks'
 import { Statistic } from 'antd'
 import gql from 'graphql-tag'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -8,24 +9,28 @@ import { promotionMessages } from '../../helpers/translation'
 import AdminCard from '../admin/AdminCard'
 import UnAuthCover from '../common/UnAuthCover'
 
+type SalesStatus = 'Admin' | 'Creator' | 'None'
+
 const messages = defineMessages({
   totalSales: { id: 'common.label.totalSales', defaultMessage: '銷售總額' },
 })
 
-const SaleSummaryAdminCard: React.FC<{ authStatus: 'Admin' | 'Creator' | 'None'; memberId: string | null }> = ({
-  authStatus,
-  memberId,
-}) => {
+const SaleSummaryAdminCard: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { permissions, currentMemberId: memberId } = useAuth()
   const [loading, setLoading] = useState<boolean>(true)
   const apolloClient = useApolloClient()
   const [totalOrderAmountResult, setTotalOrderAmountResult] = useState<hasura.GET_TOTAL_ORDER_AMOUNT>()
   const [selfOrderAmountResult, setSelfOrderAmountResult] = useState<hasura.GET_SELF_ORDER_AMOUNT>()
 
-  const isAuth = authStatus && authStatus !== 'None'
+  const grossSalesPermission: SalesStatus = permissions.GROSS_SALES_ADMIN
+    ? 'Admin'
+    : permissions.GROSS_SALES_CREATOR
+    ? 'Creator'
+    : 'None'
 
   useEffect(() => {
-    if (isAuth) {
+    if (grossSalesPermission) {
       apolloClient
         .query<hasura.GET_TOTAL_ORDER_AMOUNT>({
           query: GET_TOTAL_ORDER_AMOUNT,
@@ -41,10 +46,10 @@ const SaleSummaryAdminCard: React.FC<{ authStatus: 'Admin' | 'Creator' | 'None';
     } else {
       setLoading(false)
     }
-  }, [isAuth])
+  }, [grossSalesPermission])
 
   useEffect(() => {
-    if (authStatus === 'Creator' && memberId) {
+    if (grossSalesPermission === 'Creator' && memberId) {
       apolloClient
         .query<hasura.GET_SELF_ORDER_AMOUNT, hasura.GET_SELF_ORDER_AMOUNTVariables>({
           query: GET_SELF_ORDER_AMOUNT,
@@ -61,7 +66,7 @@ const SaleSummaryAdminCard: React.FC<{ authStatus: 'Admin' | 'Creator' | 'None';
           console.log(error)
         })
     }
-  }, [authStatus])
+  }, [grossSalesPermission])
 
   const totalSales =
     (totalOrderAmountResult?.order_product_aggregate.aggregate?.sum?.price || 0) -
@@ -71,11 +76,11 @@ const SaleSummaryAdminCard: React.FC<{ authStatus: 'Admin' | 'Creator' | 'None';
 
   return (
     <>
-      {!isAuth && <UnAuthCover />}
+      {grossSalesPermission === 'None' && <UnAuthCover />}
       <AdminCard loading={loading}>
         <Statistic
           title={formatMessage(messages.totalSales)}
-          value={isAuth && totalSales >= 0 ? totalSales : '- -'}
+          value={grossSalesPermission === 'None' && totalSales >= 0 ? totalSales : '- -'}
           suffix={formatMessage(promotionMessages.label.dollar)}
         />
       </AdminCard>
