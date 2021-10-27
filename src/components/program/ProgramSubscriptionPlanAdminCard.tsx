@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
+import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import PriceLabel from '../common/PriceLabel'
@@ -22,9 +22,13 @@ const messages = defineMessages({
 const StyledCountDownBlock = styled.div`
   margin-top: 20px;
 `
+const StyledMenuItemText = styled.span`
+  display: block;
+`
+
 const ProgramSubscriptionPlanAdminCard: React.FC<{
   programId: string
-  programPlan: ProgramPlanProps
+  programPlan: ProgramPlan
   onRefetch?: () => void
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -70,7 +74,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
                   programId={programId}
                   programPlan={programPlan}
                   renderTrigger={({ setVisible }) => (
-                    <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                    <StyledMenuItemText onClick={() => setVisible(true)}>
+                      {formatMessage(commonMessages.ui.edit)}
+                    </StyledMenuItemText>
                   )}
                 />
               </Menu.Item>
@@ -80,7 +86,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
                   <ProductSkuModal
                     productId={`ProgramPlan_${programPlan.id}`}
                     renderTrigger={({ setVisible }) => (
-                      <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.label.skuSetting)}</span>
+                      <StyledMenuItemText onClick={() => setVisible(true)}>
+                        {formatMessage(commonMessages.label.skuSetting)}
+                      </StyledMenuItemText>
                     )}
                   />
                 </Menu.Item>

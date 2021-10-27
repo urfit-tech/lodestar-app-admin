@@ -14,7 +14,7 @@ type FieldProps = {
   sku?: string
 }
 
-const ProgramPlanAdminModal: React.FC<
+const ProductSkuModal: React.FC<
   AdminModalProps & {
     productId: string
     onRefetch?: () => void
@@ -105,4 +105,4 @@ const UPDATE_PRODUCT_SKU = gql`
   }
 `
 
-export default ProgramPlanAdminModal
+export default ProductSkuModal
