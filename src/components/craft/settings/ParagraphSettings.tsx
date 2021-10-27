@@ -5,19 +5,18 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import SpaceStyleInput from '../inputs/SpaceStyleInput'
-import TypographyStyleInput from '../inputs/TypographyStyleInput'
-import { AdminHeaderTitle, CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
+import { AdminHeaderTitle } from '../../admin'
+import CustomStyleInput from '../inputs/CustomStyleInput'
+import { CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
-type FieldProps = {
+type FieldValues = {
   content: string
-  spaceStyle: CSSObject
-  typographyStyle: CSSObject
+  customStyle: CSSObject
 }
 
 const ParagraphSettings: CraftSettings<ParagraphProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
+  const [form] = useForm<FieldValues>()
 
   const handleChange = () => {
     form
@@ -25,14 +24,15 @@ const ParagraphSettings: CraftSettings<ParagraphProps> = ({ props, onPropsChange
       .then(values => {
         onPropsChange?.({
           content: values.content,
-          customStyle: {
-            ...props.customStyle,
-            ...values.spaceStyle,
-            ...values.typographyStyle,
-          },
+          customStyle: values.customStyle,
         })
       })
       .catch(() => {})
+  }
+
+  const initialValues: FieldValues = {
+    content: props.content,
+    customStyle: props.customStyle || {},
   }
 
   return (
@@ -41,46 +41,31 @@ const ParagraphSettings: CraftSettings<ParagraphProps> = ({ props, onPropsChange
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={props}
+      initialValues={initialValues}
       onValuesChange={handleChange}
     >
-      <Form.Item name="content">
-        <ParagraphContentBlock />
-      </Form.Item>
-      <Form.Item name="spaceStyle">
-        <SpaceStyleInput />
-      </Form.Item>
-      <Form.Item name="typographyStyle">
-        <TypographyStyleInput />
-      </Form.Item>
+      <Collapse expandIconPosition="right" ghost defaultActiveKey={['paragraphContent']}>
+        <StyledCollapsePanel
+          key="paragraphContent"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphContent)}</AdminHeaderTitle>}
+        >
+          <div className="mb-2">
+            <CraftSettingLabel>{formatMessage(craftPageMessages.label.content)}</CraftSettingLabel>
+            <Form.Item name="content">
+              <Input.TextArea className="mt-2" rows={5} />
+            </Form.Item>
+          </div>
+        </StyledCollapsePanel>
+        <StyledCollapsePanel
+          key="paragraphStyle"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphStyle)}</AdminHeaderTitle>}
+        >
+          <Form.Item name="customStyle">
+            <CustomStyleInput space border background />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
     </Form>
-  )
-}
-
-const ParagraphContentBlock: React.VFC<{ value?: string; onChange?: (value?: string) => void }> = ({
-  value,
-  onChange,
-}) => {
-  const { formatMessage } = useIntl()
-
-  return (
-    <Collapse
-      className="mt-2 p-0"
-      bordered={false}
-      expandIconPosition="right"
-      ghost
-      defaultActiveKey={['paragraphContent']}
-    >
-      <StyledCollapsePanel
-        key="paragraphContent"
-        header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphContent)}</AdminHeaderTitle>}
-      >
-        <div className="mb-2">
-          <CraftSettingLabel>{formatMessage(craftPageMessages.label.content)}</CraftSettingLabel>
-          <Input.TextArea className="mt-2" rows={5} defaultValue={value} onChange={e => onChange?.(e.target.value)} />
-        </div>
-      </StyledCollapsePanel>
-    </Collapse>
   )
 }
 

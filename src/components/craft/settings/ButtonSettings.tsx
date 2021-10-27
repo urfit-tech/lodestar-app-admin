@@ -5,8 +5,9 @@ import { ButtonProps } from 'lodestar-app-element/src/components/buttons/Button'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import { AdminHeaderTitle } from '../../admin'
 import CustomStyleInput from '../inputs/CustomStyleInput'
-import { AdminHeaderTitle, CraftSettingLabel, CraftSettings, StyledUnderLineInput } from './CraftSettings'
+import { CraftSettingLabel, CraftSettings, StyledCollapsePanel, StyledUnderLineInput } from './CraftSettings'
 
 type FieldValues = {
   title: string
@@ -58,7 +59,7 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
       onValuesChange={handleChange}
     >
       <Collapse accordion ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
-        <Collapse.Panel
+        <StyledCollapsePanel
           key="buttonSetting"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonSetting)}</AdminHeaderTitle>}
         >
@@ -79,8 +80,8 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
           <Form.Item name="openNewTab" valuePropName="checked">
             <Checkbox>{formatMessage(craftPageMessages.label.openNewTab)}</Checkbox>
           </Form.Item>
-        </Collapse.Panel>
-        <Collapse.Panel
+        </StyledCollapsePanel>
+        <StyledCollapsePanel
           key="buttonStyleExtra"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonStyle)}</AdminHeaderTitle>}
         >
@@ -126,15 +127,15 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
           >
             <Checkbox>{formatMessage(craftPageMessages.label.buttonBlock)}</Checkbox>
           </Form.Item>
-        </Collapse.Panel>
-        <Collapse.Panel
+        </StyledCollapsePanel>
+        <StyledCollapsePanel
           key="buttonStyle"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonStyle)}</AdminHeaderTitle>}
         >
           <Form.Item name="customStyle">
-            <CustomStyleInput space border background />
+            <CustomStyleInput space border background typography />
           </Form.Item>
-        </Collapse.Panel>
+        </StyledCollapsePanel>
       </Collapse>
     </Form>
   )

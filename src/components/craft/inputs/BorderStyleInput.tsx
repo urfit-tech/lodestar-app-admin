@@ -16,12 +16,11 @@ const BorderStyleInput: React.VFC<{
   onChange?: (value: BorderStyle) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
-  const [radioType, setRadioType] = useState<'none' | 'solid'>('none')
-  console.log(value?.borderWidth)
+  const [radioType, setRadioType] = useState<'none' | 'solid'>(Number(value?.borderWidth) ? 'solid' : 'none')
   return (
     <div>
       <Form.Item>
-        <Radio.Group onChange={e => setRadioType(e.target.value)}>
+        <Radio.Group value={radioType} onChange={e => setRadioType(e.target.value)}>
           <Space direction="vertical">
             <Radio value="none">{formatMessage(messages.none)}</Radio>
             <Radio value="solid">{formatMessage(messages.solid)}</Radio>

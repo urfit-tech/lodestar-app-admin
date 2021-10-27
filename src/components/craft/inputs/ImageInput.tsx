@@ -4,7 +4,7 @@ import { CustomRatioImage } from 'lodestar-app-element/src/components/common/Ima
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError, uploadFile } from 'lodestar-app-element/src/helpers'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
@@ -71,19 +71,21 @@ const ImageInput: React.FC<ImageInputProps> = ({ value, onChange }) => {
   const [uploading, setUploading] = useState(false)
   const [files, setFiles] = useState<File[]>([])
 
-  useEffect(() => {
+  const handleFilesChange = (files: File[]) => {
     const file = files[0]
     if (file) {
       setUploading(true)
       const imageId = v4()
       uploadFile(`images/${appId}/craft/${imageId}`, file, authToken)
         .then(() => {
+          console.log(`https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${imageId}`)
           onChange?.(`https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${imageId}`)
         })
         .catch(handleError)
         .finally(() => setUploading(false))
     }
-  }, [appId, authToken, files, onChange])
+    setFiles(files)
+  }
   return (
     <StyledWrapper>
       <CustomRatioImage width="224px" ratio={9 / 16} src={value || EmptyCover} shape="rounded" />
@@ -95,7 +97,7 @@ const ImageInput: React.FC<ImageInputProps> = ({ value, onChange }) => {
             </StyledButton>
           )}
           accept="image/*"
-          onChange={setFiles}
+          onChange={files => handleFilesChange(files)}
           fileList={files}
         />
       </StyledMask>

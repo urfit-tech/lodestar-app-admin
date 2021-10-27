@@ -17,35 +17,33 @@ const CraftToolbox: React.VFC<{ category: CraftToolboxCategory }> = ({ category 
     <div className="px-3 mt-4">
       {category === 'basic' && (
         <>
-          {/* <CraftTool
+          <CraftTool
             as={CraftElement.CraftSection}
             message={{ id: 'craft.toolbox.section', defaultMessage: '區塊' }}
-            backgroundType="solidColor"
-            solidColor="white"
             customStyle={{
-              paddingTop: 64,
-              paddingBottom: 64,
-              marginBottom: 5,
+              padding: '64px 0px',
+              margin: '0 0 5px 0',
+              background: '#fff',
             }}
             canvas
-          /> 
-           <CraftTool
+          />
+          <CraftTool
             as={CraftElement.CraftLayout}
             message={{ id: 'craft.toolbox.layout', defaultMessage: '佈局' }}
-            mobile={{
-              padding: { p: '20' },
-              columnAmount: 1,
-              columnRatio: [12],
-              displayAmount: 3,
+            ratios={[12]}
+            customStyle={{
+              padding: 20,
             }}
-            desktop={{
-              padding: { p: '200' },
-              columnAmount: 3,
-              columnRatio: [4, 4, 4],
-              displayAmount: 3,
+            responsive={{
+              desktop: {
+                ratios: [4, 4, 4],
+                customStyle: {
+                  padding: 200,
+                },
+              },
             }}
             canvas
-          /> */}
+          />
           <CraftTool
             as={CraftElement.CraftTitle}
             message={{ id: 'craft.toolbox.title', defaultMessage: '標題' }}

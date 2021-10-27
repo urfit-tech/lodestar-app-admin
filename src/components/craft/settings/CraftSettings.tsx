@@ -6,6 +6,7 @@ import Draggable from 'react-draggable'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import { AdminHeaderTitle } from '../../admin'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import BoxModelInput from '../inputs/BoxModelInput'
@@ -48,6 +49,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
       props: node.data.props as PropsWithCraft<P>,
       selected: node.events.selected,
     }))
+
     return (
       <StyledTabs
         defaultActiveKey="desktop"
@@ -58,7 +60,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
       >
         <Tabs.TabPane tab="desktop" key="desktop">
           <WrappedSettings
-            props={props}
+            props={{ ...props, ...props.responsive?.desktop }}
             onPropsChange={changedProps =>
               setProp(proxy => {
                 proxy.responsive = {
@@ -71,7 +73,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
         </Tabs.TabPane>
         <Tabs.TabPane tab="tablet" key="tablet">
           <WrappedSettings
-            props={props}
+            props={{ ...props, ...props.responsive?.tablet }}
             onPropsChange={changedProps =>
               setProp(proxy => {
                 proxy.responsive = {
@@ -98,13 +100,6 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
   return ResponsiveSettings
 }
 
-export const AdminHeaderTitle = styled.div`
-  flex-grow: 1;
-  color: var(--gray-darker);
-  font-size: 16px;
-  font-weight: bold;
-  letter-spacing: 0.2px;
-`
 export const CraftSettingLabel = styled.span`
   color: var(--gray-dark);
   font-size: 14px;
@@ -241,7 +236,7 @@ export const StyledCollapsePanel = styled(Collapse.Panel)`
   .ant-collapse-header {
     padding-left: 0px !important;
   }
-  .ant-collapse-content-box {
+  /* .ant-collapse-content-box {
     padding: 0px !important;
-  }
+  } */
 `

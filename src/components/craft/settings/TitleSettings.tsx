@@ -5,31 +5,34 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import TypographyStyleInput from '../inputs/TypographyStyleInput'
-import { AdminHeaderTitle, CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
+import { AdminHeaderTitle } from '../../admin'
+import CustomStyleInput from '../inputs/CustomStyleInput'
+import { CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
-type FieldProps = {
-  titleContent: string
-  typographyStyle: CSSObject
+type FieldValues = {
+  content: string
+  customStyle: CSSObject
 }
 
 const TitleSettings: CraftSettings<TitleProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
+  const [form] = useForm<FieldValues>()
 
   const handleChange = () => {
     form
       .validateFields()
       .then(values => {
         onPropsChange?.({
-          title: values.titleContent,
-          customStyle: {
-            ...props.customStyle,
-            ...values.typographyStyle,
-          },
+          title: values.content,
+          customStyle: values.customStyle,
         })
       })
       .catch(() => {})
+  }
+
+  const initialValues: FieldValues = {
+    content: props.title,
+    customStyle: props.customStyle || {},
   }
 
   return (
@@ -38,40 +41,38 @@ const TitleSettings: CraftSettings<TitleProps> = ({ props, onPropsChange }) => {
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={props}
+      initialValues={initialValues}
       onValuesChange={handleChange}
     >
-      <Form.Item name="titleContent">
-        <TitleContentBlock />
-      </Form.Item>
-      <Form.Item name="typographyStyle">
-        <TypographyStyleInput />
-      </Form.Item>
-    </Form>
-  )
-}
-
-const TitleContentBlock: React.VFC<{ value?: string; onChange?: (value?: string) => void }> = ({ value, onChange }) => {
-  const { formatMessage } = useIntl()
-
-  return (
-    <Collapse
-      className="mt-2 p-0"
-      bordered={false}
-      expandIconPosition="right"
-      ghost
-      defaultActiveKey={['titleContent']}
-    >
-      <StyledCollapsePanel
-        key="titleContent"
-        header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleContent)}</AdminHeaderTitle>}
+      <Collapse
+        accordion
+        className="mt-2 p-0"
+        bordered={false}
+        expandIconPosition="right"
+        ghost
+        defaultActiveKey={['titleContent']}
       >
-        <div className="mb-2">
-          <CraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</CraftSettingLabel>
-          <Input className="mt-2" value={value} onChange={e => onChange?.(e.target.value)} />
-        </div>
-      </StyledCollapsePanel>
-    </Collapse>
+        <StyledCollapsePanel
+          key="titleContent"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleContent)}</AdminHeaderTitle>}
+        >
+          <div className="mb-2">
+            <CraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</CraftSettingLabel>
+            <Form.Item name="content">
+              <Input />
+            </Form.Item>
+          </div>
+        </StyledCollapsePanel>
+        <StyledCollapsePanel
+          key="titleStyle"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleStyle)}</AdminHeaderTitle>}
+        >
+          <Form.Item name="customStyle">
+            <CustomStyleInput space border typography />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
+    </Form>
   )
 }
 
