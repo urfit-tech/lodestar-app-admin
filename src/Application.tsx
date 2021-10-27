@@ -1,5 +1,6 @@
 import '@uppy/core/dist/style.css'
 import '@uppy/dashboard/dist/style.css'
+import '@uppy/drag-drop/dist/style.css'
 import '@uppy/file-input/dist/style.css'
 import '@uppy/status-bar/dist/style.css'
 import { ConfigProvider } from 'antd'

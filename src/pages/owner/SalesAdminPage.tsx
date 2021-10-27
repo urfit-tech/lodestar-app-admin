@@ -1,13 +1,19 @@
-import { DollarOutlined } from '@ant-design/icons'
+import { DollarOutlined, DownloadOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
 import React from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import OrderExportModal from '../../components/sale/OrderExportModal'
+import OrderImportModal from '../../components/sale/OrderImportModal'
 import SaleCollectionAdminCard from '../../components/sale/SaleCollectionAdminCard'
 import SaleSummaryCard from '../../components/sale/SaleSummaryAdminCard'
 import { commonMessages } from '../../helpers/translation'
 
+const messages = defineMessages({
+  import: { id: 'pages.salesAdminPage.import', defaultMessage: '匯入資料' },
+  export: { id: 'pages.salesAdminPage.export', defaultMessage: '匯出資料' },
+})
 const SalesAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
 
@@ -18,8 +24,22 @@ const SalesAdminPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
       </AdminPageTitle>
 
-      <div className="mb-4">
-        <OrderExportModal />
+      <div className="d-flex mb-4">
+        <OrderImportModal
+          title={formatMessage(messages.import)}
+          renderTrigger={({ show }) => (
+            <Button className="mr-2" onClick={() => show()}>
+              {formatMessage(messages.import)}
+            </Button>
+          )}
+        />
+        <OrderExportModal
+          renderTrigger={({ setVisible }) => (
+            <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
+              {formatMessage(messages.export)}
+            </Button>
+          )}
+        />
       </div>
 
       <div className="mb-3">
