@@ -38,7 +38,7 @@ const SalesAdminPage: React.FC = () => {
         />
       </div>
 
-      <div className="mb-3">
+      <div className="mb-3 position-relative">
         <SaleSummaryCard />
       </div>
 

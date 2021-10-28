@@ -4,6 +4,7 @@ import { Button, DatePicker, Dropdown, Form, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -35,10 +36,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
+  const { permissions } = useAuth()
   const { data: allOrderStatuses } = useOrderStatuses()
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
-
   const [loading, setLoading] = useState(false)
+
+  const ableToExport = permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_CREATOR
 
   const getOrderLogContent: (startedAt: Date, endedAt: Date, orderStatuses: string[]) => Promise<string[][]> =
     useCallback(

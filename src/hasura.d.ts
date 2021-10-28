@@ -82,28 +82,6 @@ export interface GET_ACTIVITY_CATEGORIES {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ACTIVITY_ID_LIST
-// ====================================================
-
-export interface GET_ACTIVITY_ID_LIST_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface GET_ACTIVITY_ID_LIST {
-  /**
-   * fetch data from the table: "activity"
-   */
-  activity: GET_ACTIVITY_ID_LIST_activity[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_COVER
 // ====================================================
 
@@ -305,6 +283,28 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
   onlineLink?: string | null;
   description?: string | null;
   threshold?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_ID_LIST
+// ====================================================
+
+export interface GET_ACTIVITY_ID_LIST_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_ACTIVITY_ID_LIST {
+  /**
+   * fetch data from the table: "activity"
+   */
+  activity: GET_ACTIVITY_ID_LIST_activity[];
 }
 
 /* tslint:disable */
@@ -6547,163 +6547,6 @@ export interface GET_PAYMENT_LOG_EXPORTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_ORDER_LOG
-// ====================================================
-
-export interface GET_ALL_ORDER_LOG_order_log_aggregate_aggregate {
-  __typename: "order_log_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ALL_ORDER_LOG_order_log_aggregate {
-  __typename: "order_log_aggregate";
-  aggregate: GET_ALL_ORDER_LOG_order_log_aggregate_aggregate | null;
-}
-
-export interface GET_ALL_ORDER_LOG {
-  /**
-   * fetch aggregated fields from the table: "order_log"
-   */
-  order_log_aggregate: GET_ALL_ORDER_LOG_order_log_aggregate;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDERS
-// ====================================================
-
-export interface GET_ORDERS_order_log_aggregate_aggregate {
-  __typename: "order_log_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ORDERS_order_log_aggregate {
-  __typename: "order_log_aggregate";
-  aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
-}
-
-export interface GET_ORDERS_order_log_member {
-  __typename: "member";
-  name: string;
-  email: string;
-}
-
-export interface GET_ORDERS_order_log_payment_logs {
-  __typename: "payment_log";
-  /**
-   * spgateway, tappay, ezfund,paypal
-   */
-  gateway: string | null;
-}
-
-export interface GET_ORDERS_order_log_order_products_product {
-  __typename: "product";
-  /**
-   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
-   */
-  id: string;
-  /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
-   */
-  type: string;
-}
-
-export interface GET_ORDERS_order_log_order_products {
-  __typename: "order_product";
-  id: any;
-  name: string;
-  price: any;
-  started_at: any | null;
-  ended_at: any | null;
-  /**
-   * An object relationship
-   */
-  product: GET_ORDERS_order_log_order_products_product;
-  options: any | null;
-}
-
-export interface GET_ORDERS_order_log_order_discounts {
-  __typename: "order_discount";
-  id: any;
-  name: string;
-  description: string | null;
-  price: any;
-}
-
-export interface GET_ORDERS_order_log_order_executors_member {
-  __typename: "member";
-  name: string;
-}
-
-export interface GET_ORDERS_order_log_order_executors {
-  __typename: "order_executor";
-  /**
-   * An object relationship
-   */
-  member: GET_ORDERS_order_log_order_executors_member;
-}
-
-export interface GET_ORDERS_order_log {
-  __typename: "order_log";
-  id: string;
-  created_at: any;
-  /**
-   * SUCCESS, MATCHING, REFUND, PARTIAL_REFUND, PARTIAL_EXPIRED, PARTIAL_PAID, EXPIRED, UNPAID
-   */
-  status: string;
-  shipping: any | null;
-  /**
-   * expired order cannot be paid
-   */
-  expired_at: any | null;
-  /**
-   * An object relationship
-   */
-  member: GET_ORDERS_order_log_member;
-  /**
-   * An array relationship
-   */
-  payment_logs: GET_ORDERS_order_log_payment_logs[];
-  /**
-   * An array relationship
-   */
-  order_products: GET_ORDERS_order_log_order_products[];
-  /**
-   * An array relationship
-   */
-  order_discounts: GET_ORDERS_order_log_order_discounts[];
-  /**
-   * An array relationship
-   */
-  order_executors: GET_ORDERS_order_log_order_executors[];
-}
-
-export interface GET_ORDERS {
-  /**
-   * fetch aggregated fields from the table: "order_log"
-   */
-  order_log_aggregate: GET_ORDERS_order_log_aggregate;
-  /**
-   * fetch data from the table: "order_log"
-   */
-  order_log: GET_ORDERS_order_log[];
-}
-
-export interface GET_ORDERSVariables {
-  condition?: order_log_bool_exp | null;
-  limit?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
 
@@ -6843,6 +6686,60 @@ export interface GET_TOTAL_ORDER_AMOUNT {
    * fetch aggregated fields from the table: "order_discount"
    */
   order_discount_aggregate: GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SELF_ORDER_AMOUNT
+// ====================================================
+
+export interface GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate_sum | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_product_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate_sum | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT_order_discount_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_SELF_ORDER_AMOUNT_order_discount_aggregate_aggregate | null;
+}
+
+export interface GET_SELF_ORDER_AMOUNT {
+  /**
+   * fetch aggregated fields from the table: "order_product"
+   */
+  order_product_aggregate: GET_SELF_ORDER_AMOUNT_order_product_aggregate;
+  /**
+   * fetch aggregated fields from the table: "order_discount"
+   */
+  order_discount_aggregate: GET_SELF_ORDER_AMOUNT_order_discount_aggregate;
+}
+
+export interface GET_SELF_ORDER_AMOUNTVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -10584,6 +10481,167 @@ export interface GET_ORDER_LOG_STATUS {
    * fetch data from the table: "order_log"
    */
   order_log: GET_ORDER_LOG_STATUS_order_log[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ALL_ORDER_LOG
+// ====================================================
+
+export interface GET_ALL_ORDER_LOG_order_log_aggregate_aggregate {
+  __typename: "order_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ALL_ORDER_LOG_order_log_aggregate {
+  __typename: "order_log_aggregate";
+  aggregate: GET_ALL_ORDER_LOG_order_log_aggregate_aggregate | null;
+}
+
+export interface GET_ALL_ORDER_LOG {
+  /**
+   * fetch aggregated fields from the table: "order_log"
+   */
+  order_log_aggregate: GET_ALL_ORDER_LOG_order_log_aggregate;
+}
+
+export interface GET_ALL_ORDER_LOGVariables {
+  allcondition?: order_log_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDERS
+// ====================================================
+
+export interface GET_ORDERS_order_log_aggregate_aggregate {
+  __typename: "order_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ORDERS_order_log_aggregate {
+  __typename: "order_log_aggregate";
+  aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
+}
+
+export interface GET_ORDERS_order_log_member {
+  __typename: "member";
+  name: string;
+  email: string;
+}
+
+export interface GET_ORDERS_order_log_payment_logs {
+  __typename: "payment_log";
+  /**
+   * spgateway, tappay, ezfund,paypal
+   */
+  gateway: string | null;
+}
+
+export interface GET_ORDERS_order_log_order_products_product {
+  __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
+  id: string;
+  /**
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   */
+  type: string;
+}
+
+export interface GET_ORDERS_order_log_order_products {
+  __typename: "order_product";
+  id: any;
+  name: string;
+  price: any;
+  started_at: any | null;
+  ended_at: any | null;
+  /**
+   * An object relationship
+   */
+  product: GET_ORDERS_order_log_order_products_product;
+  options: any | null;
+}
+
+export interface GET_ORDERS_order_log_order_discounts {
+  __typename: "order_discount";
+  id: any;
+  name: string;
+  description: string | null;
+  price: any;
+}
+
+export interface GET_ORDERS_order_log_order_executors_member {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_ORDERS_order_log_order_executors {
+  __typename: "order_executor";
+  /**
+   * An object relationship
+   */
+  member: GET_ORDERS_order_log_order_executors_member;
+}
+
+export interface GET_ORDERS_order_log {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  /**
+   * SUCCESS, MATCHING, REFUND, PARTIAL_REFUND, PARTIAL_EXPIRED, PARTIAL_PAID, EXPIRED, UNPAID
+   */
+  status: string;
+  shipping: any | null;
+  /**
+   * expired order cannot be paid
+   */
+  expired_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDERS_order_log_member;
+  /**
+   * An array relationship
+   */
+  payment_logs: GET_ORDERS_order_log_payment_logs[];
+  /**
+   * An array relationship
+   */
+  order_products: GET_ORDERS_order_log_order_products[];
+  /**
+   * An array relationship
+   */
+  order_discounts: GET_ORDERS_order_log_order_discounts[];
+  /**
+   * An array relationship
+   */
+  order_executors: GET_ORDERS_order_log_order_executors[];
+}
+
+export interface GET_ORDERS {
+  /**
+   * fetch aggregated fields from the table: "order_log"
+   */
+  order_log_aggregate: GET_ORDERS_order_log_aggregate;
+  /**
+   * fetch data from the table: "order_log"
+   */
+  order_log: GET_ORDERS_order_log[];
+}
+
+export interface GET_ORDERSVariables {
+  condition?: order_log_bool_exp | null;
+  limit?: number | null;
 }
 
 /* tslint:disable */
