@@ -30,7 +30,7 @@ const SaleSummaryAdminCard: React.FC = () => {
     : 'None'
 
   useEffect(() => {
-    if (grossSalesPermission) {
+    if (grossSalesPermission !== 'None') {
       apolloClient
         .query<hasura.GET_TOTAL_ORDER_AMOUNT>({
           query: GET_TOTAL_ORDER_AMOUNT,
@@ -80,7 +80,7 @@ const SaleSummaryAdminCard: React.FC = () => {
       <AdminCard loading={loading}>
         <Statistic
           title={formatMessage(messages.totalSales)}
-          value={grossSalesPermission === 'None' && totalSales >= 0 ? totalSales : '- -'}
+          value={grossSalesPermission !== 'None' && totalSales >= 0 ? totalSales : '- -'}
           suffix={formatMessage(promotionMessages.label.dollar)}
         />
       </AdminCard>
