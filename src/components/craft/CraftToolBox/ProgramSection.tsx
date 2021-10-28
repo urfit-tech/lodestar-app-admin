@@ -3,8 +3,7 @@ import { Image } from 'antd'
 import {
   CraftBackground,
   CraftButton,
-  CraftLayout,
-  CraftProgram,
+  CraftProgramCollection,
   CraftTitle,
 } from 'lodestar-app-element/src/components/craft'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
@@ -38,25 +37,7 @@ const ProblemSection: React.VFC = () => {
               fontWeight="bold"
               color={'#585858'}
             />
-            <Element
-              id="CraftLayout"
-              is={CraftLayout}
-              canvas
-              mobile={{
-                margin: { ml: '16', mr: '16', mb: '20' },
-                columnAmount: 1,
-                columnRatio: [12],
-                displayAmount: 3,
-              }}
-              desktop={{
-                margin: { ml: '120', mr: '120', mb: '20' },
-                columnAmount: 3,
-                columnRatio: [4, 4, 4],
-                displayAmount: 3,
-              }}
-            >
-              <CraftProgram />
-            </Element>
+            <CraftProgramCollection variant="card" sourceOptions={{ source: 'publishedAt', limit: 4 }} />
             <div style={{ textAlign: 'center' }}>
               <CraftButton
                 title="馬上查看 〉"

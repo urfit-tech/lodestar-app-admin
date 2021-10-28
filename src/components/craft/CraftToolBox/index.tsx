@@ -177,7 +177,10 @@ const CraftToolbox: React.VFC = () => {
         className="mb-3"
         ref={ref =>
           ref &&
-          connectors.create(ref, <Element is={CraftProgramCollection} options={{ source: 'publishedAt', limit: 4 }} />)
+          connectors.create(
+            ref,
+            <Element is={CraftProgramCollection} variant="card" sourceOptions={{ source: 'publishedAt', limit: 4 }} />,
+          )
         }
       >
         <Image preview={false} src="https://static.kolable.com/images/default/craft/banner-title-dark.png" />

@@ -96,7 +96,7 @@ export const CraftCollapseSetting: React.VFC<
   )
 }
 
-export { default as ActivitySettings } from './ActivitySettings'
+export { default as ActivityCollectionSettings } from './ActivityCollectionSettings'
 export { default as BackgroundSettings } from './BackgroundSettings'
 export { default as ButtonSettings } from './ButtonSettings'
 export { default as CardSettings } from './CardSettings'

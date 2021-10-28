@@ -151,6 +151,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
                     productQuantityLimit={voucherPlan.productQuantityLimit}
                     available={voucherPlan.available}
                     action={voucherPlan.action}
+                    isTransferable={voucherPlan.isTransferable}
                   />
                 </div>
               ))}

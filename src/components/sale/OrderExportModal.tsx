@@ -1,4 +1,4 @@
-import { DownloadOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons'
+import { DownOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, DatePicker, Dropdown, Form, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -11,7 +11,7 @@ import hasura from '../../hasura'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages, orderMessages } from '../../helpers/translation'
 import { useOrderStatuses } from '../../hooks/order'
-import AdminModal from '../admin/AdminModal'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
 const messages = defineMessages({
   exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
@@ -30,7 +30,7 @@ type FieldProps = {
   orderStatuses: ('UNPAID' | 'SUCCESS' | 'FAILED' | 'REFUND')[]
 }
 
-const OrderExportModal: React.FC = () => {
+const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
@@ -408,11 +408,7 @@ const OrderExportModal: React.FC = () => {
 
   return (
     <AdminModal
-      renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(messages.exportOrder)}
-        </Button>
-      )}
+      renderTrigger={renderTrigger}
       title={formatMessage(messages.exportOrder)}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -450,6 +446,7 @@ const OrderExportModal: React.FC = () => {
         </>
       )}
       maskClosable={false}
+      {...adminModalProps}
     >
       <Form
         form={form}

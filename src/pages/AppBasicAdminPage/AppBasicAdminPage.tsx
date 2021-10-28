@@ -1,5 +1,4 @@
 import { GlobalOutlined } from '@ant-design/icons'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
@@ -11,7 +10,6 @@ import AppNavAdminCard from './AppNavAdminCard'
 
 const AppBasicAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
 
   return (
     <AdminLayout>

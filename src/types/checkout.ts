@@ -47,7 +47,7 @@ export type VoucherPlanBriefProps = {
   startedAt: Date | null
   endedAt: Date | null
   productQuantityLimit: number
-
+  isTransferable: boolean
   available?: boolean
   action?: React.ReactNode
 }

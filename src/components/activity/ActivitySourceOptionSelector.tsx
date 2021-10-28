@@ -1,36 +1,33 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, Select } from 'antd'
 import gql from 'graphql-tag'
-import { CraftProgramCollectionProps } from 'lodestar-app-element/src/components/craft/CraftProgramCollection'
+import { CraftActivityCollectionProps } from 'lodestar-app-element/src/components/craft/CraftActivityCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
 import { StyledCraftSettingLabel } from '../craft/settings'
-import ProgramCategorySelect from './ProgramCategorySelect'
-import ProgramTagSelect from './ProgramTagSelect'
+import ActivityCategorySelect from './ActivityCategorySelect'
+import ActivityTagSelect from './ActivityTagSelect'
 
-type ProgramSourceOptions = CraftProgramCollectionProps['sourceOptions']
-const ProgramCollectionSelector: React.FC<{
-  value?: ProgramSourceOptions
-  onChange?: (value: ProgramSourceOptions) => void
+type ActivitySourceOption = CraftActivityCollectionProps['sourceOptions']
+const ActivitySourceOptionSelector: React.FC<{
+  value?: ActivitySourceOption
+  onChange?: (value: ActivitySourceOption) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
-  const { data } = useQuery<hasura.GET_PROGRAM_ID_LIST>(GET_PROGRAM_ID_LIST)
-  const programOptions = data?.program.map(p => ({ id: p.id, title: p.title })) || []
+  const { data } = useQuery<hasura.GET_ACTIVITY_ID_LIST>(GET_ACTIVITY_ID_LIST)
+  const activityOptions = data?.activity.map(p => ({ id: p.id, title: p.title })) || []
   return (
     <div>
       <Form.Item
         label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</StyledCraftSettingLabel>}
       >
-        <Select<ProgramSourceOptions['source']>
+        <Select<ActivitySourceOption['source']>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
           value={value?.source}
           onChange={source => {
             switch (source) {
               case 'publishedAt':
-                onChange?.({ source, limit: 4 })
-                break
-              case 'currentPrice':
                 onChange?.({ source, limit: 4 })
                 break
               case 'custom':
@@ -55,7 +52,7 @@ const ProgramCollectionSelector: React.FC<{
           </Select.Option>
         </Select>
       </Form.Item>
-      {(value?.source === 'publishedAt' || value?.source === 'currentPrice') && (
+      {value?.source === 'publishedAt' && (
         <>
           <Form.Item
             label={<StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</StyledCraftSettingLabel>}
@@ -82,7 +79,7 @@ const ProgramCollectionSelector: React.FC<{
               </StyledCraftSettingLabel>
             }
           >
-            <ProgramCategorySelect
+            <ActivityCategorySelect
               value={value.defaultCategoryIds}
               onChange={v => onChange?.({ ...value, defaultCategoryIds: typeof v === 'string' ? [v] : v })}
             />
@@ -92,7 +89,7 @@ const ProgramCollectionSelector: React.FC<{
               <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.defaultTagName)}</StyledCraftSettingLabel>
             }
           >
-            <ProgramTagSelect
+            <ActivityTagSelect
               value={value.defaultTagNames}
               onChange={v => onChange?.({ ...value, defaultTagNames: typeof v === 'string' ? [v] : v })}
             />
@@ -105,19 +102,19 @@ const ProgramCollectionSelector: React.FC<{
             <StyledCraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</StyledCraftSettingLabel>
           }
         >
-          {value.idList.map((programId, idx) => (
-            <div key={programId} className="my-2">
+          {value.idList.map((activityId, idx) => (
+            <div key={activityId} className="my-2">
               <Select
                 showSearch
                 allowClear
                 placeholder={formatMessage(craftPageMessages.label.choiceData)}
-                value={programId}
-                options={programOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
-                onChange={selectedProgramId =>
-                  selectedProgramId &&
+                value={activityId}
+                options={activityOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
+                onChange={selectedActivityId =>
+                  selectedActivityId &&
                   onChange?.({
                     ...value,
-                    idList: [...value.idList.slice(0, idx), selectedProgramId, ...value.idList.slice(idx + 1)],
+                    idList: [...value.idList.slice(0, idx), selectedActivityId, ...value.idList.slice(idx + 1)],
                   })
                 }
                 onClear={() =>
@@ -140,13 +137,13 @@ const ProgramCollectionSelector: React.FC<{
   )
 }
 
-const GET_PROGRAM_ID_LIST = gql`
-  query GET_PROGRAM_ID_LIST {
-    program(where: { published_at: { _lt: "now()" } }) {
+const GET_ACTIVITY_ID_LIST = gql`
+  query GET_ACTIVITY_ID_LIST {
+    activity(where: { published_at: { _lt: "now()" } }) {
       id
       title
     }
   }
 `
 
-export default ProgramCollectionSelector
+export default ActivitySourceOptionSelector

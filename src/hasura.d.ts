@@ -60,25 +60,42 @@ export interface UPDATE_ACTIVITY_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: SEARCH_ACTIVITY
+// GraphQL query operation: GET_ACTIVITY_CATEGORIES
 // ====================================================
 
-export interface SEARCH_ACTIVITY_activity {
+export interface GET_ACTIVITY_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_ACTIVITY_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_ACTIVITY_CATEGORIES_category[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_ID_LIST
+// ====================================================
+
+export interface GET_ACTIVITY_ID_LIST_activity {
   __typename: "activity";
   id: any;
   title: string;
 }
 
-export interface SEARCH_ACTIVITY {
+export interface GET_ACTIVITY_ID_LIST {
   /**
    * fetch data from the table: "activity"
    */
-  activity: SEARCH_ACTIVITY_activity[];
-}
-
-export interface SEARCH_ACTIVITYVariables {
-  appId: string;
-  searchText: string;
+  activity: GET_ACTIVITY_ID_LIST_activity[];
 }
 
 /* tslint:disable */
@@ -288,6 +305,27 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
   onlineLink?: string | null;
   description?: string | null;
   threshold?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_TAGS
+// ====================================================
+
+export interface GET_ACTIVITY_TAGS_activity_tag {
+  __typename: "activity_tag";
+  tag_name: string;
+}
+
+export interface GET_ACTIVITY_TAGS {
+  /**
+   * fetch data from the table: "activity_tag"
+   */
+  activity_tag: GET_ACTIVITY_TAGS_activity_tag[];
 }
 
 /* tslint:disable */
@@ -5166,115 +5204,6 @@ export interface UPDATE_PRACTICEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_BASIC
-// ====================================================
-
-export interface UPDATE_PROGRAM_BASIC_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_BASIC_update_product {
-  __typename: "product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_BASIC_delete_program_category {
-  __typename: "program_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_BASIC_insert_program_category {
-  __typename: "program_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_BASIC_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_BASIC_delete_program_tag {
-  __typename: "program_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_BASIC_insert_program_tag {
-  __typename: "program_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_BASIC {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: UPDATE_PROGRAM_BASIC_update_program | null;
-  /**
-   * update data of the table: "product"
-   */
-  update_product: UPDATE_PROGRAM_BASIC_update_product | null;
-  /**
-   * delete data from the table: "program_category"
-   */
-  delete_program_category: UPDATE_PROGRAM_BASIC_delete_program_category | null;
-  /**
-   * insert data into the table: "program_category"
-   */
-  insert_program_category: UPDATE_PROGRAM_BASIC_insert_program_category | null;
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_PROGRAM_BASIC_insert_tag | null;
-  /**
-   * delete data from the table: "program_tag"
-   */
-  delete_program_tag: UPDATE_PROGRAM_BASIC_delete_program_tag | null;
-  /**
-   * insert data into the table: "program_tag"
-   */
-  insert_program_tag: UPDATE_PROGRAM_BASIC_insert_program_tag | null;
-}
-
-export interface UPDATE_PROGRAM_BASICVariables {
-  programId: any;
-  title?: string | null;
-  supportLocales?: any | null;
-  isIssuesOpen?: boolean | null;
-  isIntroductionSectionVisible?: boolean | null;
-  productId?: string | null;
-  sku?: string | null;
-  programCategories: program_category_insert_input[];
-  tags: tag_insert_input[];
-  programTags: program_tag_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROGRAM_CATEGORIES
 // ====================================================
 
@@ -5479,34 +5408,6 @@ export interface DELETE_PROGRAM_CONTENT_SECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
-// ====================================================
-
-export interface UPDATE_PROGRAM_IS_DELETED_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_IS_DELETED {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
-}
-
-export interface UPDATE_PROGRAM_IS_DELETEDVariables {
-  programId?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPSERT_PROGRAM_GROUP_BUYING_PLAN
 // ====================================================
 
@@ -5540,66 +5441,6 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLAN {
 export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
   programPlans: program_plan_insert_input[];
   archivedProgramPlanIds: any[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_COVER
-// ====================================================
-
-export interface UPDATE_PROGRAM_COVER_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_COVER {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: UPDATE_PROGRAM_COVER_update_program | null;
-}
-
-export interface UPDATE_PROGRAM_COVERVariables {
-  programId: any;
-  coverUrl?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_INTRO
-// ====================================================
-
-export interface UPDATE_PROGRAM_INTRO_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_INTRO {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: UPDATE_PROGRAM_INTRO_update_program | null;
-}
-
-export interface UPDATE_PROGRAM_INTROVariables {
-  programId: any;
-  abstract?: string | null;
-  description?: string | null;
-  coverVideoUrl?: string | null;
 }
 
 /* tslint:disable */
@@ -5682,6 +5523,8 @@ export interface UPSERT_PROGRAM_PLANVariables {
   discountDownPrice: any;
   periodAmount?: any | null;
   periodType?: string | null;
+  remindPeriodAmount?: number | null;
+  remindPeriodType?: string | null;
   currencyId: string;
   autoRenewed: boolean;
   publishedAt?: any | null;
@@ -5712,352 +5555,6 @@ export interface GET_PROGRAM_PLANS {
 
 export interface GET_PROGRAM_PLANSVariables {
   programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_PROGRAM
-// ====================================================
-
-export interface PUBLISH_PROGRAM_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_PROGRAM {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: PUBLISH_PROGRAM_update_program | null;
-}
-
-export interface PUBLISH_PROGRAMVariables {
-  programId: any;
-  publishedAt?: any | null;
-  isPrivate?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: SEND_PROGRAM_APPROVAL
-// ====================================================
-
-export interface SEND_PROGRAM_APPROVAL_insert_program_approval {
-  __typename: "program_approval_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface SEND_PROGRAM_APPROVAL {
-  /**
-   * insert data into the table: "program_approval"
-   */
-  insert_program_approval: SEND_PROGRAM_APPROVAL_insert_program_approval | null;
-}
-
-export interface SEND_PROGRAM_APPROVALVariables {
-  programId: any;
-  description?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: CANCEL_PROGRAM_APPROVAL
-// ====================================================
-
-export interface CANCEL_PROGRAM_APPROVAL_update_program_approval {
-  __typename: "program_approval_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface CANCEL_PROGRAM_APPROVAL {
-  /**
-   * update data of the table: "program_approval"
-   */
-  update_program_approval: CANCEL_PROGRAM_APPROVAL_update_program_approval | null;
-}
-
-export interface CANCEL_PROGRAM_APPROVALVariables {
-  programApprovalId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_APPROVAL
-// ====================================================
-
-export interface UPDATE_PROGRAM_APPROVAL_update_program_approval {
-  __typename: "program_approval_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_APPROVAL {
-  /**
-   * update data of the table: "program_approval"
-   */
-  update_program_approval: UPDATE_PROGRAM_APPROVAL_update_program_approval | null;
-}
-
-export interface UPDATE_PROGRAM_APPROVALVariables {
-  programApprovalId: any;
-  status?: string | null;
-  feedback?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_ROLE
-// ====================================================
-
-export interface UPDATE_PROGRAM_ROLE_delete_program_role {
-  __typename: "program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_ROLE_insert_program_role {
-  __typename: "program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_ROLE {
-  /**
-   * delete data from the table: "program_role"
-   */
-  delete_program_role: UPDATE_PROGRAM_ROLE_delete_program_role | null;
-  /**
-   * insert data into the table: "program_role"
-   */
-  insert_program_role: UPDATE_PROGRAM_ROLE_insert_program_role | null;
-}
-
-export interface UPDATE_PROGRAM_ROLEVariables {
-  programId: any;
-  programRoles: program_role_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_ROLE
-// ====================================================
-
-export interface DELETE_PROGRAM_ROLE_delete_program_role {
-  __typename: "program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_ROLE {
-  /**
-   * delete data from the table: "program_role"
-   */
-  delete_program_role: DELETE_PROGRAM_ROLE_delete_program_role | null;
-}
-
-export interface DELETE_PROGRAM_ROLEVariables {
-  programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SHARING_CODE_COLLECTION
-// ====================================================
-
-export interface GET_SHARING_CODE_COLLECTION_sharing_code {
-  __typename: "sharing_code";
-  id: any;
-  path: string;
-  code: string;
-  note: string | null;
-}
-
-export interface GET_SHARING_CODE_COLLECTION {
-  /**
-   * fetch data from the table: "sharing_code"
-   */
-  sharing_code: GET_SHARING_CODE_COLLECTION_sharing_code[];
-}
-
-export interface GET_SHARING_CODE_COLLECTIONVariables {
-  path: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_SHARING_CODE
-// ====================================================
-
-export interface INSERT_SHARING_CODE_delete_sharing_code {
-  __typename: "sharing_code_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_SHARING_CODE_insert_sharing_code {
-  __typename: "sharing_code_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_SHARING_CODE {
-  /**
-   * delete data from the table: "sharing_code"
-   */
-  delete_sharing_code: INSERT_SHARING_CODE_delete_sharing_code | null;
-  /**
-   * insert data into the table: "sharing_code"
-   */
-  insert_sharing_code: INSERT_SHARING_CODE_insert_sharing_code | null;
-}
-
-export interface INSERT_SHARING_CODEVariables {
-  path: string;
-  sharingCodes: sharing_code_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
-// ====================================================
-
-export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning {
-  __typename: "program_content_section";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section {
-  __typename: "program_content_section_mutation_response";
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning[];
-}
-
-export interface INSERT_PROGRAM_CONTENT_SECTION {
-  /**
-   * insert data into the table: "program_content_section"
-   */
-  insert_program_content_section: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section | null;
-}
-
-export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
-  programId: any;
-  title: string;
-  position: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPSERT_PROGRAM_CONTENT_SECTIONS
-// ====================================================
-
-export interface UPSERT_PROGRAM_CONTENT_SECTIONS_insert_program_content_section {
-  __typename: "program_content_section_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_PROGRAM_CONTENT_SECTIONS {
-  /**
-   * insert data into the table: "program_content_section"
-   */
-  insert_program_content_section: UPSERT_PROGRAM_CONTENT_SECTIONS_insert_program_content_section | null;
-}
-
-export interface UPSERT_PROGRAM_CONTENT_SECTIONSVariables {
-  programContentSections: program_content_section_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPSERT_PROGRAM_CONTENTS
-// ====================================================
-
-export interface UPSERT_PROGRAM_CONTENTS_insert_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_PROGRAM_CONTENTS {
-  /**
-   * insert data into the table: "program_content"
-   */
-  insert_program_content: UPSERT_PROGRAM_CONTENTS_insert_program_content | null;
-}
-
-export interface UPSERT_PROGRAM_CONTENTSVariables {
-  programContents: program_content_insert_input[];
 }
 
 /* tslint:disable */
@@ -8804,6 +8301,7 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   started_at: any | null;
   ended_at: any | null;
   product_quantity_limit: number;
+  is_transferable: boolean;
   /**
    * An aggregated array relationship
    */
@@ -8858,6 +8356,7 @@ export interface INSERT_VOUCHER_PLANVariables {
   productQuantityLimit: number;
   voucherCodes: voucher_code_insert_input[];
   voucherPlanProducts: voucher_plan_product_insert_input[];
+  isTransferable?: boolean | null;
 }
 
 /* tslint:disable */
@@ -8917,6 +8416,7 @@ export interface UPDATE_VOUCHER_PLANVariables {
   endedAt?: any | null;
   productQuantityLimit: number;
   voucherPlanProducts: voucher_plan_product_insert_input[];
+  isTransferable?: boolean | null;
 }
 
 /* tslint:disable */
@@ -11729,6 +11229,8 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_plans {
   list_price: any;
   period_amount: any | null;
   period_type: string | null;
+  remind_period_amount: number | null;
+  remind_period_type: string | null;
   sold_at: any | null;
   currency_id: string;
   auto_renewed: boolean;
@@ -14314,6 +13816,549 @@ export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
   programContentId?: any | null;
   unreviewed?: boolean | null;
   programRoleMemberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_BASIC
+// ====================================================
+
+export interface UPDATE_PROGRAM_BASIC_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_BASIC_update_product {
+  __typename: "product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_BASIC_delete_program_category {
+  __typename: "program_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_BASIC_insert_program_category {
+  __typename: "program_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_BASIC_delete_program_tag {
+  __typename: "program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_BASIC_insert_program_tag {
+  __typename: "program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_BASIC {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_BASIC_update_program | null;
+  /**
+   * update data of the table: "product"
+   */
+  update_product: UPDATE_PROGRAM_BASIC_update_product | null;
+  /**
+   * delete data from the table: "program_category"
+   */
+  delete_program_category: UPDATE_PROGRAM_BASIC_delete_program_category | null;
+  /**
+   * insert data into the table: "program_category"
+   */
+  insert_program_category: UPDATE_PROGRAM_BASIC_insert_program_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PROGRAM_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "program_tag"
+   */
+  delete_program_tag: UPDATE_PROGRAM_BASIC_delete_program_tag | null;
+  /**
+   * insert data into the table: "program_tag"
+   */
+  insert_program_tag: UPDATE_PROGRAM_BASIC_insert_program_tag | null;
+}
+
+export interface UPDATE_PROGRAM_BASICVariables {
+  programId: any;
+  title?: string | null;
+  supportLocales?: any | null;
+  isIssuesOpen?: boolean | null;
+  isIntroductionSectionVisible?: boolean | null;
+  productId?: string | null;
+  sku?: string | null;
+  programCategories: program_category_insert_input[];
+  tags: tag_insert_input[];
+  programTags: program_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
+// ====================================================
+
+export interface UPDATE_PROGRAM_IS_DELETED_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETED {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETEDVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_COVER
+// ====================================================
+
+export interface UPDATE_PROGRAM_COVER_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_COVER {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_COVER_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_COVERVariables {
+  programId: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_INTRO
+// ====================================================
+
+export interface UPDATE_PROGRAM_INTRO_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_INTRO {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_INTRO_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_INTROVariables {
+  programId: any;
+  abstract?: string | null;
+  description?: string | null;
+  coverVideoUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PROGRAM
+// ====================================================
+
+export interface PUBLISH_PROGRAM_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PROGRAM {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: PUBLISH_PROGRAM_update_program | null;
+}
+
+export interface PUBLISH_PROGRAMVariables {
+  programId: any;
+  publishedAt?: any | null;
+  isPrivate?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: SEND_PROGRAM_APPROVAL
+// ====================================================
+
+export interface SEND_PROGRAM_APPROVAL_insert_program_approval {
+  __typename: "program_approval_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface SEND_PROGRAM_APPROVAL {
+  /**
+   * insert data into the table: "program_approval"
+   */
+  insert_program_approval: SEND_PROGRAM_APPROVAL_insert_program_approval | null;
+}
+
+export interface SEND_PROGRAM_APPROVALVariables {
+  programId: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CANCEL_PROGRAM_APPROVAL
+// ====================================================
+
+export interface CANCEL_PROGRAM_APPROVAL_update_program_approval {
+  __typename: "program_approval_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CANCEL_PROGRAM_APPROVAL {
+  /**
+   * update data of the table: "program_approval"
+   */
+  update_program_approval: CANCEL_PROGRAM_APPROVAL_update_program_approval | null;
+}
+
+export interface CANCEL_PROGRAM_APPROVALVariables {
+  programApprovalId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_APPROVAL
+// ====================================================
+
+export interface UPDATE_PROGRAM_APPROVAL_update_program_approval {
+  __typename: "program_approval_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_APPROVAL {
+  /**
+   * update data of the table: "program_approval"
+   */
+  update_program_approval: UPDATE_PROGRAM_APPROVAL_update_program_approval | null;
+}
+
+export interface UPDATE_PROGRAM_APPROVALVariables {
+  programApprovalId: any;
+  status?: string | null;
+  feedback?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_ROLE
+// ====================================================
+
+export interface UPDATE_PROGRAM_ROLE_delete_program_role {
+  __typename: "program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_ROLE_insert_program_role {
+  __typename: "program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_ROLE {
+  /**
+   * delete data from the table: "program_role"
+   */
+  delete_program_role: UPDATE_PROGRAM_ROLE_delete_program_role | null;
+  /**
+   * insert data into the table: "program_role"
+   */
+  insert_program_role: UPDATE_PROGRAM_ROLE_insert_program_role | null;
+}
+
+export interface UPDATE_PROGRAM_ROLEVariables {
+  programId: any;
+  programRoles: program_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_ROLE
+// ====================================================
+
+export interface DELETE_PROGRAM_ROLE_delete_program_role {
+  __typename: "program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_ROLE {
+  /**
+   * delete data from the table: "program_role"
+   */
+  delete_program_role: DELETE_PROGRAM_ROLE_delete_program_role | null;
+}
+
+export interface DELETE_PROGRAM_ROLEVariables {
+  programId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SHARING_CODE_COLLECTION
+// ====================================================
+
+export interface GET_SHARING_CODE_COLLECTION_sharing_code {
+  __typename: "sharing_code";
+  id: any;
+  path: string;
+  code: string;
+  note: string | null;
+}
+
+export interface GET_SHARING_CODE_COLLECTION {
+  /**
+   * fetch data from the table: "sharing_code"
+   */
+  sharing_code: GET_SHARING_CODE_COLLECTION_sharing_code[];
+}
+
+export interface GET_SHARING_CODE_COLLECTIONVariables {
+  path: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_SHARING_CODE
+// ====================================================
+
+export interface INSERT_SHARING_CODE_delete_sharing_code {
+  __typename: "sharing_code_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_SHARING_CODE_insert_sharing_code {
+  __typename: "sharing_code_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_SHARING_CODE {
+  /**
+   * delete data from the table: "sharing_code"
+   */
+  delete_sharing_code: INSERT_SHARING_CODE_delete_sharing_code | null;
+  /**
+   * insert data into the table: "sharing_code"
+   */
+  insert_sharing_code: INSERT_SHARING_CODE_insert_sharing_code | null;
+}
+
+export interface INSERT_SHARING_CODEVariables {
+  path: string;
+  sharingCodes: sharing_code_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
+// ====================================================
+
+export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning {
+  __typename: "program_content_section";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section {
+  __typename: "program_content_section_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning[];
+}
+
+export interface INSERT_PROGRAM_CONTENT_SECTION {
+  /**
+   * insert data into the table: "program_content_section"
+   */
+  insert_program_content_section: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section | null;
+}
+
+export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
+  programId: any;
+  title: string;
+  position: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROGRAM_CONTENT_SECTIONS
+// ====================================================
+
+export interface UPSERT_PROGRAM_CONTENT_SECTIONS_insert_program_content_section {
+  __typename: "program_content_section_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROGRAM_CONTENT_SECTIONS {
+  /**
+   * insert data into the table: "program_content_section"
+   */
+  insert_program_content_section: UPSERT_PROGRAM_CONTENT_SECTIONS_insert_program_content_section | null;
+}
+
+export interface UPSERT_PROGRAM_CONTENT_SECTIONSVariables {
+  programContentSections: program_content_section_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROGRAM_CONTENTS
+// ====================================================
+
+export interface UPSERT_PROGRAM_CONTENTS_insert_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROGRAM_CONTENTS {
+  /**
+   * insert data into the table: "program_content"
+   */
+  insert_program_content: UPSERT_PROGRAM_CONTENTS_insert_program_content | null;
+}
+
+export interface UPSERT_PROGRAM_CONTENTSVariables {
+  programContents: program_content_insert_input[];
 }
 
 /* tslint:disable */
@@ -17560,6 +17605,8 @@ export enum program_plan_update_column {
   period_type = "period_type",
   program_id = "program_id",
   published_at = "published_at",
+  remind_period_amount = "remind_period_amount",
+  remind_period_type = "remind_period_type",
   sale_price = "sale_price",
   sold_at = "sold_at",
   started_at = "started_at",
@@ -18028,6 +18075,7 @@ export enum voucher_plan_update_column {
   description = "description",
   ended_at = "ended_at",
   id = "id",
+  is_transferable = "is_transferable",
   product_quantity_limit = "product_quantity_limit",
   started_at = "started_at",
   title = "title",
@@ -31540,6 +31588,7 @@ export interface program_plan_avg_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -31571,6 +31620,8 @@ export interface program_plan_bool_exp {
   program_id?: uuid_comparison_exp | null;
   program_plan_enrollments?: program_plan_enrollment_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  remind_period_amount?: Int_comparison_exp | null;
+  remind_period_type?: String_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
@@ -31618,6 +31669,8 @@ export interface program_plan_insert_input {
   program_content_permissions?: program_content_plan_arr_rel_insert_input | null;
   program_id?: any | null;
   published_at?: any | null;
+  remind_period_amount?: number | null;
+  remind_period_type?: string | null;
   sale_price?: any | null;
   sold_at?: any | null;
   started_at?: any | null;
@@ -31641,6 +31694,8 @@ export interface program_plan_max_order_by {
   period_type?: order_by | null;
   program_id?: order_by | null;
   published_at?: order_by | null;
+  remind_period_amount?: order_by | null;
+  remind_period_type?: order_by | null;
   sale_price?: order_by | null;
   sold_at?: order_by | null;
   started_at?: order_by | null;
@@ -31664,6 +31719,8 @@ export interface program_plan_min_order_by {
   period_type?: order_by | null;
   program_id?: order_by | null;
   published_at?: order_by | null;
+  remind_period_amount?: order_by | null;
+  remind_period_type?: order_by | null;
   sale_price?: order_by | null;
   sold_at?: order_by | null;
   started_at?: order_by | null;
@@ -31696,6 +31753,7 @@ export interface program_plan_stddev_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -31708,6 +31766,7 @@ export interface program_plan_stddev_pop_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -31720,6 +31779,7 @@ export interface program_plan_stddev_samp_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -31732,6 +31792,7 @@ export interface program_plan_sum_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -31744,6 +31805,7 @@ export interface program_plan_var_pop_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -31756,6 +31818,7 @@ export interface program_plan_var_samp_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -31768,6 +31831,7 @@ export interface program_plan_variance_order_by {
   group_buying_people?: order_by | null;
   list_price?: order_by | null;
   period_amount?: order_by | null;
+  remind_period_amount?: order_by | null;
   sale_price?: order_by | null;
   type?: order_by | null;
 }
@@ -33896,6 +33960,7 @@ export interface voucher_plan_bool_exp {
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_transferable?: Boolean_comparison_exp | null;
   product_quantity_limit?: Int_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -33912,6 +33977,7 @@ export interface voucher_plan_insert_input {
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
+  is_transferable?: boolean | null;
   product_quantity_limit?: number | null;
   started_at?: any | null;
   title?: string | null;

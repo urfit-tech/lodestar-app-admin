@@ -41,7 +41,6 @@ const StatisticsSettings: React.VFC = () => {
   const {
     actions: { setProp },
     props,
-    selected,
   } = useNode(node => ({
     props: node.data.props as CraftBoxModelProps & CraftStatisticsProps,
     selected: node.events.selected,

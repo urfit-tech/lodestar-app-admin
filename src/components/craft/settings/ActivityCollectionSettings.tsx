@@ -1,42 +1,44 @@
 import { useNode } from '@craftjs/core'
 import { Form, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { CollectionLayout } from 'lodestar-app-element/src/components/collections/Collection'
-import { CraftProgramCollectionProps } from 'lodestar-app-element/src/components/craft/CraftProgramCollection'
+import gql from 'graphql-tag'
+import { CraftActivityCollectionProps } from 'lodestar-app-element/src/components/craft/CraftActivityCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
+import ActivityCollectionSelector from '../../activity/ActivitySourceOptionSelector'
 import { CraftSettingLabel } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
-import ProgramCollectionSelector from '../../program/ProgramCollectionSelector'
 
-const ProgramCollectionSettings: React.VFC = () => {
+const ActivityCollectionSettings: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<{ options: CraftProgramCollectionProps['sourceOptions']; layout: CollectionLayout }>()
+  const [form] = useForm<CraftActivityCollectionProps>()
+
   const node = useNode(node => ({
-    props: node.data.props as CraftProgramCollectionProps,
+    props: node.data.props as CraftActivityCollectionProps,
   }))
+
   return (
     <Form
-      className="pt-3"
       form={form}
       layout="vertical"
       colon={false}
       requiredMark={false}
       initialValues={node.props}
-      onValuesChange={(changedValues, currentValues) => {
+      onValuesChange={() => {
         form
           .validateFields()
           .then(values => {
             node.actions.setProp(props => {
               props.layout = values.layout
-              props.options = values.options
+              props.sourceOptions = values.sourceOptions
+              props.withSelector = values.withSelector
             })
           })
-          .catch(console.error)
+          .catch(() => {})
       }}
     >
-      <Form.Item name="options" className="mb-0">
-        <ProgramCollectionSelector />
+      <Form.Item name="sourceOptions" className="mb-0">
+        <ActivityCollectionSelector />
       </Form.Item>
       <Form.Item
         name="withSelector"
@@ -52,4 +54,13 @@ const ProgramCollectionSettings: React.VFC = () => {
   )
 }
 
-export default ProgramCollectionSettings
+const GET_APP_ACTIVITY_CATEGORIES = gql`
+  query GET_APP_ACTIVITY_CATEGORIES($appId: String!) {
+    category(where: { activity_categories: { activity: { app_id: { _eq: $appId } } } }) {
+      id
+      name
+    }
+  }
+`
+
+export default ActivityCollectionSettings

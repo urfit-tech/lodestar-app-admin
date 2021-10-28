@@ -1,5 +1,6 @@
-import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -12,6 +13,7 @@ import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
 const messages = defineMessages({
   exchangeItemsAmount: { id: 'promotion.label.exchangeItemsAmount', defaultMessage: '兌換項目數量' },
   exchangeItems: { id: 'promotion.label.exchangeItems', defaultMessage: '兌換項目' },
+  isTransferable: { id: 'promotion.label.isTransferable', defaultMessage: '允許用戶自行轉贈' },
 })
 
 export type VoucherPlanFields = {
@@ -22,6 +24,7 @@ export type VoucherPlanFields = {
   startedAt?: Date
   endedAt?: Date
   description: string
+  isTransferable: boolean
 }
 
 const VoucherPlanAdminModal: React.FC<
@@ -35,6 +38,7 @@ const VoucherPlanAdminModal: React.FC<
   }
 > = ({ voucherPlan, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [form] = useForm<VoucherPlanFields>()
   const [loading, setLoading] = useState(false)
 
@@ -79,6 +83,7 @@ const VoucherPlanAdminModal: React.FC<
           startedAt: voucherPlan?.startedAt ? moment(voucherPlan.startedAt) : null,
           endedAt: voucherPlan?.endedAt ? moment(voucherPlan.endedAt) : null,
           description: voucherPlan?.description,
+          isTransferable: !!voucherPlan?.isTransferable,
         }}
       >
         <Form.Item
@@ -121,7 +126,9 @@ const VoucherPlanAdminModal: React.FC<
         >
           <InputNumber min={1} />
         </Form.Item>
-
+        <Form.Item name="isTransferable" valuePropName="checked" noStyle={!enabledModules.transfer_voucher}>
+          {enabledModules.transfer_voucher && <Checkbox>{formatMessage(messages.isTransferable)}</Checkbox>}
+        </Form.Item>
         <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
           <Form.Item className="d-inline-block m-0" name="startedAt">
             <DatePicker
