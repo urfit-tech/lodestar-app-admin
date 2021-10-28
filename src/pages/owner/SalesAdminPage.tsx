@@ -25,20 +25,16 @@ const SalesAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="d-flex mb-4">
-        <OrderImportModal
-          title={formatMessage(messages.import)}
-          renderTrigger={({ show }) => (
-            <Button className="mr-2" onClick={() => show()}>
-              {formatMessage(messages.import)}
-            </Button>
-          )}
-        />
         <OrderExportModal
           renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
+            <Button className="mr-2" type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
               {formatMessage(messages.export)}
             </Button>
           )}
+        />
+        <OrderImportModal
+          title={formatMessage(messages.import)}
+          renderTrigger={({ show }) => <Button onClick={() => show()}>{formatMessage(messages.import)}</Button>}
         />
       </div>
 
