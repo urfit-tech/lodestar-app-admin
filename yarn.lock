@@ -84,15 +84,9 @@
     tslib "^1.10.0"
 
 "@antv/algorithm@^0.1.5":
-<<<<<<< HEAD
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@antv/algorithm/-/algorithm-0.1.13.tgz#f6258d999c658249dbc4fab8df3b3b774db282c0"
   integrity sha512-AXHybK/OQlbk99Qgj7Dix3hNsIP+GvpVS4Oisb9gJkCBZLML9lZIM2/0m/MRqLvVxoIyglEg6aNjGUWBRMGRRQ==
-=======
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@antv/algorithm/-/algorithm-0.1.11.tgz#91336f8674c4ada9fba329677a71c59e964983fb"
-  integrity sha512-Mda+EJzSTjTBO8uSEqh065xyntCYi9R3nVZCHRhCKVW/T5UCWzCuubo+Lbbu5Sjaffh85Pub6Vkb5GOxoW1IHA==
->>>>>>> [FEATURE] upgrade dependencies
   dependencies:
     "@antv/util" "^2.0.13"
     tslib "^2.0.0"
@@ -399,11 +393,7 @@
     gl-matrix "^3.3.0"
     tslib "^2.0.3"
 
-<<<<<<< HEAD
 "@antv/matrix-util@^3.1.0-beta.1", "@antv/matrix-util@^3.1.0-beta.2", "@antv/matrix-util@^3.1.0-beta.3":
-=======
-"@antv/matrix-util@^3.1.0-beta.1", "@antv/matrix-util@^3.1.0-beta.2":
->>>>>>> [FEATURE] upgrade dependencies
   version "3.1.0-beta.3"
   resolved "https://registry.yarnpkg.com/@antv/matrix-util/-/matrix-util-3.1.0-beta.3.tgz#e061de8fa7be04605a155c69cc5ce9082eedddee"
   integrity sha512-W2R6Za3A6CmG51Y/4jZUM/tFgYSq7vTqJL1VD9dKrvwxS4sE0ZcXINtkp55CdyBwJ6Cwm8pfoRpnD4FnHahN0A==
@@ -421,19 +411,10 @@
     "@antv/util" "^2.0.9"
     tslib "^2.0.3"
 
-"@antv/scale@^0.3.1", "@antv/scale@^0.3.14", "@antv/scale@^0.3.4":
+"@antv/scale@^0.3.1", "@antv/scale@^0.3.14", "@antv/scale@^0.3.4", "@antv/scale@~0.3.1":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@antv/scale/-/scale-0.3.14.tgz#0718f8651368e5c98db5612065132a8c8bbcde48"
   integrity sha512-G19Mh9VYPX/Z5PXKJrORIYCjrA+Fmko6ZB4HN6Y8K0T9FeKaSJq+idIe7AUJhIIXDCrFk4LzW+t908NsORqxPg==
-  dependencies:
-    "@antv/util" "~2.0.3"
-    fecha "~4.2.0"
-    tslib "^2.0.0"
-
-"@antv/scale@~0.3.1":
-  version "0.3.13"
-  resolved "https://registry.yarnpkg.com/@antv/scale/-/scale-0.3.13.tgz#f12bbccd8b46dcef410624fa7883181d8424ef73"
-  integrity sha512-2SPhhERTOGk3wi5+DiIDsqJrJHVT+v4MTqzqHdKxlTMP++KsI3BhvLZhl2uNS4v486dM+YxjRacpFwEXCOa+GA==
   dependencies:
     "@antv/util" "~2.0.3"
     fecha "~4.2.0"
@@ -1894,12 +1875,27 @@
     compute-scroll-into-view "1.0.14"
     copy-to-clipboard "3.3.1"
 
+"@chakra-ui/icon@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/icon/-/icon-1.0.0.tgz#b8f0e51a1f81227149fd6ea7d5f2512f1ba6ffc3"
+  integrity sha512-WyyAR2kpQphYQTUid+Ce2y+IyLGzoMrEQ4g+9yb1sdysMVlFJ9fp6r0cn/8WjZwHKM+roc5WiI8Q+bm9oZgF+A==
+  dependencies:
+    "@chakra-ui/utils" "1.0.0"
+
 "@chakra-ui/icon@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@chakra-ui/icon/-/icon-1.0.2.tgz#26f1aad4451c833c468751944ba613f09be19805"
   integrity sha512-iLuAaa8vAqVLCejl9+xn8ZKvr7axuS+4CrwIlTW/ta0rL76JZTH/b9w4/EpPVdzTXHk08Vae545YrDyy9shn2g==
   dependencies:
     "@chakra-ui/utils" "1.0.2"
+
+"@chakra-ui/icons@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/icons/-/icons-1.0.0.tgz#eb4d2592b471e8d59cabf8616bf20c85e877b756"
+  integrity sha512-Y/YaGtIYPoctY9vm5frmmcnSd7YQdRk6uksLqDqI9cJyfjfmuOaecyMG1ryKngovoxZeUlDGkC/Bef81RHIB9w==
+  dependencies:
+    "@chakra-ui/icon" "1.0.0"
+    "@types/react" "16.9.44"
 
 "@chakra-ui/image@1.0.2":
   version "1.0.2"
@@ -2236,6 +2232,17 @@
     "@chakra-ui/hooks" "1.0.2"
     "@chakra-ui/utils" "1.0.2"
 
+"@chakra-ui/utils@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/utils/-/utils-1.0.0.tgz#d3e693ed069c164034777ccca80d62fb16f1207e"
+  integrity sha512-1PZodfSDlbv9fwwJKaOyfCs+MRHqCiSGzSUab6+wQmm1MQQ0LQsBTDBz6d6NJ8ytalTsk8LzZmCSghN0P62a1w==
+  dependencies:
+    "@types/lodash.mergewith" "4.6.6"
+    "@types/object-assign" "4.0.30"
+    css-box-model "1.2.1"
+    lodash.mergewith "4.6.2"
+    object-assign "4.1.1"
+
 "@chakra-ui/utils@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@chakra-ui/utils/-/utils-1.0.2.tgz#c9ae5a71849b5d2f1f5d316ab66a40ca6f1ed32c"
@@ -2563,22 +2570,14 @@
     tslib "^2.0.1"
     typescript "^4.0"
 
-<<<<<<< HEAD
 "@fullcalendar/common@~5.10.1":
   version "5.10.1"
   resolved "https://registry.yarnpkg.com/@fullcalendar/common/-/common-5.10.1.tgz#a019951743852277a4095e536fd7716f6f85b9aa"
   integrity sha512-EumKIJcQTvQdTs75/9dmeREFgjcRVWzqHJS1Xvlz5mNsmB+w9EINCHETRjChtAQg1WD/lTQyVj4sHsKO7vCMSw==
-=======
-"@fullcalendar/common@~5.10.0":
-  version "5.10.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/common/-/common-5.10.0.tgz#8b30f3e77691eb70befb25a0edf3d9abec3a853e"
-  integrity sha512-se2N8QlV07igYrJpzn4sB1C53U2NkVwdbrZ9gca15iZWjq5EyKMryghxxfLIIt6nDuKEnL5IN/EN8JX5aU45VA==
->>>>>>> [FEATURE] upgrade dependencies
   dependencies:
     tslib "^2.1.0"
 
 "@fullcalendar/daygrid@^5.3.2":
-<<<<<<< HEAD
   version "5.10.1"
   resolved "https://registry.yarnpkg.com/@fullcalendar/daygrid/-/daygrid-5.10.1.tgz#bdee4f58364fdab631b2abf8b56094ab5776f203"
   integrity sha512-sfUMP+rew0krsBffgNcWWKhBCiyytGfRKZJoc64E8ohX7VWjPcPZuB1xgO5U4wPLmNkT0rZiHoGeQGTXw1+ZKg==
@@ -2592,21 +2591,6 @@
   integrity sha512-+kV5+o9qGjkoO5j0r3oawhig+hP3inE68bHKBl6dtGQ8mi3GkEGsTL12MY2n5N0hXon6+2psIQLnAjMyRYZbmg==
   dependencies:
     "@fullcalendar/common" "~5.10.1"
-=======
-  version "5.10.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/daygrid/-/daygrid-5.10.0.tgz#1dffcb6884859f0048755a428ff911906150a1af"
-  integrity sha512-KsPwyV6JF5zmcv0XVTbhTsDRbH7PQ9F7Jj2UuqS+rVh2gkpTZqkxKgFEUcRAwVQBymrRPTXzZXh04pvb6/FXIQ==
-  dependencies:
-    "@fullcalendar/common" "~5.10.0"
-    tslib "^2.1.0"
-
-"@fullcalendar/react@^5.3.1":
-  version "5.10.0"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/react/-/react-5.10.0.tgz#c7a0fa4d531a2231400e00eddc0b16cd4b2d413d"
-  integrity sha512-AayWCkt31ertFa+MLM4z1HFNQ1zHg1iUNjvaE2AgzN8YUjZGVo6QA3rhaUEI8JoA8ZNWpQ33pLYBt3yuLA9rfQ==
-  dependencies:
-    "@fullcalendar/common" "~5.10.0"
->>>>>>> [FEATURE] upgrade dependencies
     tslib "^2.1.0"
 
 "@gar/promisify@^1.0.1":
@@ -3489,6 +3473,11 @@
   dependencies:
     moment-timezone "*"
 
+"@types/mustache@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-4.0.1.tgz#e4d421ed2d06d463b120621774185a5cd1b92d77"
+  integrity sha512-wH6Tu9mbiOt0n5EvdoWy0VGQaJMHfLIxY/6wS0xLC7CV1taM6gESEzcYy0ZlWvxxiiljYvfDIvz4hHbUUDRlhw==
+
 "@types/mustache@^4.1.1":
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-4.1.2.tgz#d0e158013c81674a5b6d8780bc3fe234e1804eaf"
@@ -3519,15 +3508,9 @@
     form-data "^3.0.0"
 
 "@types/node@*", "@types/node@>=6":
-<<<<<<< HEAD
   version "16.11.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.7.tgz#36820945061326978c42a01e56b61cd223dfdc42"
   integrity sha512-QB5D2sqfSjCmTuWcBWyJ+/44bcjO7VbjSbOE0ucoVbAsSNQc4Lt6QkgkVXkTDwkL4z/beecZNDvVX15D4P8Jbw==
-=======
-  version "16.11.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.0.tgz#4b95f2327bacd1ef8f08d8ceda193039c5d7f52e"
-  integrity sha512-8MLkBIYQMuhRBQzGN9875bYsOhPnf/0rgXGo66S2FemHkhbn9qtsz9ywV1iCG+vbjigE4WUNVvw37Dx+L0qsPg==
->>>>>>> [FEATURE] upgrade dependencies
 
 "@types/node@12.0.0":
   version "12.0.0"
@@ -3653,9 +3636,9 @@
     "@types/react" "*"
 
 "@types/react-slick@^0.23.5":
-  version "0.23.6"
-  resolved "https://registry.yarnpkg.com/@types/react-slick/-/react-slick-0.23.6.tgz#d9e7e2cfc6f250da3db2d74c54dc7f1e8bb7ceb4"
-  integrity sha512-dSsiEWatKtI5HvmCmE3g5chAaMMosR9krZwtMryXeDuKSgFxzgtH1wh4+QqXT9Eq87HJ948w6vFKD0loc9X26Q==
+  version "0.23.7"
+  resolved "https://registry.yarnpkg.com/@types/react-slick/-/react-slick-0.23.7.tgz#2ef4f42dd0e9be5633502c3563572c7d7584a368"
+  integrity sha512-v5/puo5Ix+ZeWNo2wqzfEP5CaTtEMU3qByESGt3brp98mIyKhssNaB2hgGrshu+lHAXkV1ku78Tea6FtztyXug==
   dependencies:
     "@types/react" "*"
 
@@ -3667,18 +3650,20 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@17", "@types/react@^17.0.11", "@types/react@^17.0.5":
-<<<<<<< HEAD
   version "17.0.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.34.tgz#797b66d359b692e3f19991b6b07e4b0c706c0102"
   integrity sha512-46FEGrMjc2+8XhHXILr+3+/sTe3OfzSPU9YGKILLrUYbQ1CLQC9Daqo1KzENGXAWwrFwiY0l4ZbF20gRvgpWTg==
-=======
-  version "17.0.30"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.30.tgz#2f8e6f5ab6415c091cc5e571942ee9064b17609e"
-  integrity sha512-3Dt/A8gd3TCXi2aRe84y7cK1K8G+N9CZRDG8kDGguOKa0kf/ZkSwTmVIDPsm/KbQOVMaDJXwhBtuOXxqwdpWVg==
->>>>>>> [FEATURE] upgrade dependencies
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@16.9.44":
+  version "16.9.44"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.44.tgz#da84b179c031aef67dc92c33bd3401f1da2fa3bc"
+  integrity sha512-BtLoJrXdW8DVZauKP+bY4Kmiq7ubcJq+H/aCpRfvPF7RAT3RwR73Sg8szdc2YasbAlWBDrQ6Q+AFM0KwtQY+WQ==
+  dependencies:
+    "@types/prop-types" "*"
     csstype "^3.0.2"
 
 "@types/react@17.0.0":
@@ -3939,15 +3924,9 @@
     namespace-emitter "^2.0.1"
 
 "@uppy/core@^2.0.3":
-<<<<<<< HEAD
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@uppy/core/-/core-2.1.2.tgz#a06cf70902fac79d9def21456d845a2e0968b512"
   integrity sha512-w5wE2THkGxYxwxfZ/89q1s8umGNswCXmgjwUxB52faOnosvtu3BLp/hJltmWUQ6YNlsRsjrzxA5IyZ+/J3ApNQ==
-=======
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@uppy/core/-/core-2.1.1.tgz#503b3172ffe32e6cc7385f5b0c99f008ade815f1"
-  integrity sha512-dFlcy6+05zwsJk1KNeUKVWUyAfhOVwNpnPLaR1NX9Qsjv7KlYfUNRVW3uCCmIpd/EZsX44+haiqGrhLcYDAcxA==
->>>>>>> [FEATURE] upgrade dependencies
   dependencies:
     "@transloadit/prettier-bytes" "0.0.7"
     "@uppy/store-default" "^2.0.2"
@@ -4009,15 +3988,9 @@
     preact "^10.5.13"
 
 "@uppy/provider-views@^2.0.4":
-<<<<<<< HEAD
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@uppy/provider-views/-/provider-views-2.0.5.tgz#6b0fa8481eb5dcd482641c739f6d45b8aa91106d"
   integrity sha512-FdxgzwEOM0Q6TeXxwg5MtmpBiJ5AHAX/KciC+TUlpPYCZjf3g1/EHv/fQrLWou3LRV2H02qciJFAXtALCuE5JQ==
-=======
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@uppy/provider-views/-/provider-views-2.0.4.tgz#02e91b878e86cb637c4e80320ca24ad89bfe4a64"
-  integrity sha512-XzxxInsoewSv4FEWuhFtrOYcypZsShwyuxGFQB6RLVPtLk4qsaVQzWGn/SsyVlHpVt+15mK6sN+ZliaESvMpYw==
->>>>>>> [FEATURE] upgrade dependencies
   dependencies:
     "@uppy/utils" "^4.0.3"
     classnames "^2.2.6"
@@ -5564,7 +5537,7 @@ braft-convert@^2.3.0:
     draft-convert "^2.0.0"
     draft-js "^0.10.3"
 
-braft-editor@*, braft-editor@^2.3.9:
+braft-editor@*, braft-editor@2.3.9, braft-editor@^2.3.9:
   version "2.3.9"
   resolved "https://registry.yarnpkg.com/braft-editor/-/braft-editor-2.3.9.tgz#fd2b8e23ea71191016579a1ed8231d16ad8f5b4a"
   integrity sha512-mqdPk/zI2dhFK8tW/A4Qj/AkkARLh5L/niNw+iif5wFqb6zh15rMlrShgz1nWO/QXyAKr8XtDgxiBbR0zWwtRg==
@@ -5895,17 +5868,10 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-<<<<<<< HEAD
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001274:
   version "1.0.30001279"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001279.tgz#eb06818da481ef5096a3b3760f43e5382ed6b0ce"
   integrity sha512-VfEHpzHEXj6/CxggTwSFoZBBYGQfQv9Cf42KPlO79sWXCD1QNKWKsKzFeWL7QpZHJQYAvocqV6Rty1yJMkqWLQ==
-=======
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001265:
-  version "1.0.30001267"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001267.tgz#b1cf2937175afc0570e4615fc2d2f9069fa0ed30"
-  integrity sha512-r1mjTzAuJ9W8cPBGbbus8E0SKcUP7gn03R14Wk8FlAlqhH9hroy9nLqmpuXlfKEw/oILW+FGz47ipXV2O7x8lg==
->>>>>>> [FEATURE] upgrade dependencies
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -6100,7 +6066,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@2.x, classnames@^2.2.1, classnames@^2.2.3, classnames@^2.2.5, classnames@^2.2.6:
+classnames@2.x, classnames@^2.2.1, classnames@^2.2.3, classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
   integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
@@ -6289,14 +6255,11 @@ cliui@^7.0.2:
     strip-ansi "^6.0.0"
     wrap-ansi "^7.0.0"
 
-<<<<<<< HEAD
 clone@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
   integrity sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=
 
-=======
->>>>>>> [FEATURE] upgrade dependencies
 clsx@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.1.1.tgz#98b3134f9abbdf23b2663491ace13c5c03a73188"
@@ -7641,17 +7604,10 @@ ejs@^3.1.5:
   dependencies:
     jake "^10.6.1"
 
-<<<<<<< HEAD
 electron-to-chromium@^1.3.564, electron-to-chromium@^1.3.886:
   version "1.3.894"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.894.tgz#54554ecb40d40ddac7241c4a42887e86180015d8"
   integrity sha512-WY8pA4irAZ4cm/Pr7YFPtPLVqj3nU6d0SbfoHF6M7HZNONfPdAnYAarumqQ75go2LuN72uO9wGuCEqnfya/ytg==
-=======
-electron-to-chromium@^1.3.564, electron-to-chromium@^1.3.867:
-  version "1.3.869"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.869.tgz#c319171803d796639b1af3ddbf07a5a087037ccb"
-  integrity sha512-mcoyZ2jd691yAx0OHqqGw+aPCcRYVDw/bqPy660aBfcQkUcWcfAVsbL4M9WeevflKH4MfpKCtnOngVLM7HzSzA==
->>>>>>> [FEATURE] upgrade dependencies
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -7901,11 +7857,7 @@ eslint-import-resolver-node@^0.3.6:
     debug "^3.2.7"
     resolve "^1.20.0"
 
-<<<<<<< HEAD
 eslint-module-utils@^2.7.1:
-=======
-eslint-module-utils@^2.7.0:
->>>>>>> [FEATURE] upgrade dependencies
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/eslint-module-utils/-/eslint-module-utils-2.7.1.tgz#b435001c9f8dd4ab7f6d0efcae4b9696d4c24b7c"
   integrity sha512-fjoetBXQZq2tSTWZ9yWVl2KuFrTZZH3V+9iD1V1RfpDgxzJR+mPd/KZmMiA8gbPqdBzpNiEHOuT7IYEWxrH0zQ==
@@ -9947,11 +9899,7 @@ is-color-stop@^1.0.0:
     rgb-regex "^1.0.1"
     rgba-regex "^1.0.0"
 
-<<<<<<< HEAD
 is-core-module@^2.0.0, is-core-module@^2.2.0, is-core-module@^2.8.0:
-=======
-is-core-module@^2.0.0, is-core-module@^2.2.0, is-core-module@^2.7.0:
->>>>>>> [FEATURE] upgrade dependencies
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.8.0.tgz#0321336c3d0925e497fd97f5d95cb114a5ccd548"
   integrity sha512-vd15qHsaqrRL7dtH6QNuy0ndJmRDrS9HAM1CAiSifNUFv4x1a0CCVsj18hJ1mShxIG6T2i1sO78MkP56r0nYRw==
@@ -11530,11 +11478,7 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
   version "0.1.0"
-<<<<<<< HEAD
   resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/6f4f39d1dacddcbee8f31170c4fb5b5e00c3f161"
-=======
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/1ed4468fb4cd6d30f10bead3c792a7d6412cedb4"
->>>>>>> [FEATURE] upgrade dependencies
   dependencies:
     "@ant-design/charts" "^1.1.17"
     "@ant-design/compatible" "^1.0.8"
@@ -11598,11 +11542,7 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
     less-loader "^7.1.0"
     lint-staged "^10.5.4"
     lodash "^4.17.21"
-<<<<<<< HEAD
     lodestar-app-element urfit-tech/lodestar-app-element#v1.0.0
-=======
-    lodestar-app-element urfit-tech/lodestar-app-element#master
->>>>>>> [FEATURE] upgrade dependencies
     md5 "^2.3.0"
     moment "^2.29.1"
     moment-range "^4.0.2"
@@ -11643,20 +11583,18 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
     uuid "8.3.2"
     wavesurfer.js "^4.1.1"
 
-<<<<<<< HEAD
 lodestar-app-element@urfit-tech/lodestar-app-element#v1.0.0:
-=======
-lodestar-app-element@urfit-tech/lodestar-app-element#master:
->>>>>>> [FEATURE] upgrade dependencies
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/31c4993bd963367da5b45cf59ae893b310458a66"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/bb895a9ad73664ecedea48b8797302c10b45b701"
   dependencies:
     "@apollo/react-hooks" "3.1.5"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
+    "@chakra-ui/icons" "1.0.0"
     "@chakra-ui/react" "1.1.2"
     "@craftjs/core" "0.1.0-beta.20"
     "@emotion/react" "11"
     "@emotion/styled" "11"
+    "@types/mustache" "4.0.1"
     "@types/node" "12.0.0"
     "@types/ramda" "0.27.45"
     "@types/react" "17.0.0"
@@ -11674,11 +11612,14 @@ lodestar-app-element@urfit-tech/lodestar-app-element#master:
     apollo-link-error "1.1.13"
     apollo-link-http "1.5.17"
     axios "0.21.4"
+    braft-editor "2.3.9"
+    classnames "^2.3.1"
     framer-motion "2.9.4"
     graphql-tag "2.12.5"
     jsonwebtoken "8.5.1"
     libphonenumber-js "1.9.34"
     moment "^2.29.1"
+    mustache "4.2.0"
     node-sass "4.14.1"
     query-string "7.0.1"
     ramda "0.27.0"
@@ -11688,6 +11629,7 @@ lodestar-app-element@urfit-tech/lodestar-app-element#master:
     react-dom "17.0.2"
     react-facebook-pixel "1.0.4"
     react-ga "3.3.0"
+    react-icons "4.3.1"
     react-intl "5.20.9"
     react-is "^17.0.2"
     react-responsive "8.1.0"
@@ -12259,7 +12201,7 @@ multimatch@^4.0.0:
     arrify "^2.0.1"
     minimatch "^3.0.4"
 
-mustache@^4.1.0:
+mustache@4.2.0, mustache@^4.1.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/mustache/-/mustache-4.2.0.tgz#e5892324d60a12ec9c2a73359edca52972bf6f64"
   integrity sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==
@@ -12274,11 +12216,7 @@ nan@^2.12.1, nan@^2.13.2:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.15.0.tgz#3f34a473ff18e15c1b5626b62903b5ad6e665fee"
   integrity sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==
 
-<<<<<<< HEAD
 nanoid@^3.1.23, nanoid@^3.1.25, nanoid@^3.1.30:
-=======
-nanoid@^3.1.23, nanoid@^3.1.25, nanoid@^3.1.28:
->>>>>>> [FEATURE] upgrade dependencies
   version "3.1.30"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.30.tgz#63f93cc548d2a113dc5dfbc63bfa09e2b9b64362"
   integrity sha512-zJpuPDwOv8D2zq2WRoMe1HsfZthVewpel9CAvTfc/2mBD1uUT/agc5f7GHGWXlYkFvi1mVxe4IjvP2HNrop7nQ==
@@ -14859,6 +14797,11 @@ react-hot-loader@^4.13.0:
     react-lifecycles-compat "^3.0.4"
     shallowequal "^1.1.0"
     source-map "^0.7.3"
+
+react-icons@4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.3.1.tgz#2fa92aebbbc71f43d2db2ed1aed07361124e91ca"
+  integrity sha512-cB10MXLTs3gVuXimblAdI71jrJx8njrJZmNMEMC+sQu5B/BIOmlsAjskdqpn81y8UBVEGuHODd7/ci5DvoSzTQ==
 
 react-intl-translations-manager@^5.0.3:
   version "5.0.3"
