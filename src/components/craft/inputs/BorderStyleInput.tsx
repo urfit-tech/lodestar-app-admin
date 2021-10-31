@@ -20,7 +20,13 @@ const BorderStyleInput: React.VFC<{
   return (
     <div>
       <Form.Item>
-        <Radio.Group value={radioType} onChange={e => setRadioType(e.target.value)}>
+        <Radio.Group
+          value={radioType}
+          onChange={e => {
+            setRadioType(e.target.value)
+            e.target.value === 'none' && onChange?.({ ...value, borderWidth: 0 })
+          }}
+        >
           <Space direction="vertical">
             <Radio value="none">{formatMessage(messages.none)}</Radio>
             <Radio value="solid">{formatMessage(messages.solid)}</Radio>
