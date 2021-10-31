@@ -1,16 +1,10 @@
-import { useEditor, useNode } from '@craftjs/core'
-import { Button, Collapse, Form, Input, Slider, Tabs } from 'antd'
+import { useEditor } from '@craftjs/core'
+import { Collapse, Input, Slider, Tabs } from 'antd'
 import { PropsWithCraft } from 'lodestar-app-element/src/components/common/Craftize'
 import React from 'react'
 import Draggable from 'react-draggable'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
-import { AdminHeaderTitle } from '../../admin'
-import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
-import BorderStyleInput from '../inputs/BorderStyleInput'
-import BoxModelInput from '../inputs/BoxModelInput'
-import SpaceStyleInput from '../inputs/SpaceStyleInput'
 
 export type CraftSettings<P> = React.ElementType<{
   props: PropsWithCraft<P>
@@ -37,60 +31,69 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
     }
   `
   const ResponsiveSettings: React.VFC = () => {
-    const {
-      actions: { selectNode },
-    } = useEditor()
-    const {
-      title,
-      props,
-      actions: { setProp },
-    } = useNode(node => ({
-      title: node.data.name,
-      props: node.data.props as PropsWithCraft<P>,
-      selected: node.events.selected,
+    const editor = useEditor(state => ({
+      currentNode: state.events.selected ? state.nodes[state.events.selected] : null,
     }))
-
+    if (!editor.currentNode) {
+      return null
+    }
+    const currentProps = editor.currentNode.data.props as PropsWithCraft<P>
     return (
       <StyledTabs
         defaultActiveKey="desktop"
         tabBarExtraContent={{
-          left: <h3 className="draggable cursor-pointer mr-3">{title}</h3>,
-          right: <button onClick={() => selectNode()}>X</button>,
+          left: <h3 className="draggable cursor-pointer mr-3">{editor.currentNode.data.name}</h3>,
+          right: (
+            <button
+              onClick={() => {
+                editor.currentNode &&
+                  editor.actions.setCustom(editor.currentNode.id, custom => {
+                    custom.editing = false
+                  })
+                editor.actions.selectNode()
+              }}
+            >
+              X
+            </button>
+          ),
         }}
       >
         <Tabs.TabPane tab="desktop" key="desktop">
           <WrappedSettings
-            props={{ ...props, ...props.responsive?.desktop }}
+            props={{ ...currentProps, ...currentProps.responsive?.desktop }}
             onPropsChange={changedProps =>
-              setProp(proxy => {
+              editor.currentNode &&
+              editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
                 proxy.responsive = {
                   ...proxy.responsive,
                   desktop: changedProps,
                 }
-              }, THROTTLE_RATE)
+              })
             }
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="tablet" key="tablet">
           <WrappedSettings
-            props={{ ...props, ...props.responsive?.tablet }}
+            props={{ ...currentProps, ...currentProps.responsive?.tablet }}
             onPropsChange={changedProps =>
-              setProp(proxy => {
+              editor.currentNode &&
+              editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
                 proxy.responsive = {
                   ...proxy.responsive,
                   tablet: changedProps,
                 }
-              }, THROTTLE_RATE)
+              })
             }
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="mobile" key="mobile">
           <WrappedSettings
-            props={props}
+            props={currentProps}
             onPropsChange={changedProps =>
-              setProp(proxy => {
+              editor.currentNode &&
+              editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
                 mergePropsIntoProxy(changedProps, proxy)
-              }, THROTTLE_RATE)
+              })
             }
           />
         </Tabs.TabPane>
@@ -130,80 +133,12 @@ export const StyledUnderLineInput = styled(Input)`
   }
 `
 
-type SettingProps = {
-  title: string
-  label?: string
-  value?: string
-  onChange?: (value: string) => void
-}
-
-export const CraftCollapseSetting: React.VFC<
-  (
-    | {
-        variant: 'textarea'
-        placeholder?: string
-      }
-    | {
-        variant: 'slider'
-        placeholder?: never
-      }
-  ) &
-    SettingProps
-> = ({ variant, placeholder, title, label, value, onChange }) => {
-  return (
-    <Collapse className="mt-2 p-0" bordered={false} expandIconPosition="right" ghost defaultActiveKey={['key']}>
-      <StyledCollapsePanel key="key" header={<AdminHeaderTitle>{title}</AdminHeaderTitle>}>
-        <div className="mb-2">
-          {variant === 'textarea' && (
-            <>
-              {label && <CraftSettingLabel>{label}</CraftSettingLabel>}
-              <Input.TextArea
-                className="mt-2"
-                rows={5}
-                placeholder={placeholder}
-                defaultValue={value}
-                onChange={e => onChange?.(e.target.value)}
-              />
-            </>
-          )}
-          {variant === 'slider' && <BoxModelInput title={label} value={value} onChange={onChange} />}
-        </div>
-      </StyledCollapsePanel>
-    </Collapse>
-  )
-}
-
-export const TextSettingsPanel: React.VFC<{ title: string; key: string }> = ({ title, key }) => {
-  return (
-    <StyledCollapsePanel key={key} header={<AdminHeaderTitle>{title}</AdminHeaderTitle>}>
-      <Form.Item name={`${key}.spaceStyle`}>
-        <SpaceStyleInput />
-      </Form.Item>
-      <Form.Item name={`${key}.borderStyle`}>
-        <BorderStyleInput />
-      </Form.Item>
-      <Form.Item name={`${key}.backgroundStyle`}>
-        <BackgroundStyleInput />
-      </Form.Item>
-    </StyledCollapsePanel>
-  )
-}
-
 export const CraftSettingsModal: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const {
-    query: { node },
-    selectedNode,
-    NodeSettings,
-    actions,
-  } = useEditor(state => {
-    const selectedNode = state.events.selected ? state.nodes[state.events.selected] : null
-    return {
-      selectedNode,
-      NodeSettings: selectedNode?.related?.settings,
-    }
-  })
-  return selectedNode ? (
+  const { currentNode } = useEditor(state => ({
+    currentNode: state.events.selected ? state.nodes[state.events.selected] : null,
+  }))
+  return currentNode?.data.custom?.editing ? (
     <Draggable handle=".draggable" defaultPosition={{ x: -200, y: 32 }}>
       <div
         style={{
@@ -213,20 +148,7 @@ export const CraftSettingsModal: React.VFC = () => {
           zIndex: 999,
         }}
       >
-        {NodeSettings && React.createElement(NodeSettings)}
-        {!node(selectedNode.id).isRoot() && (
-          <Button
-            block
-            danger
-            onClick={() => {
-              if (window.confirm(formatMessage(craftPageMessages.text.deleteWarning))) {
-                actions.delete(selectedNode.id)
-              }
-            }}
-          >
-            {formatMessage(craftPageMessages.ui.deleteBlock)}
-          </Button>
-        )}
+        {currentNode.related?.settings && React.createElement(currentNode.related.settings)}
       </div>
     </Draggable>
   ) : null

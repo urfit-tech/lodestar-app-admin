@@ -1733,6 +1733,29 @@ export interface GET_SALES_MEMBERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APP_PAGE_TEMPLATES
+// ====================================================
+
+export interface GET_APP_PAGE_TEMPLATES_app_page_template {
+  __typename: "app_page_template";
+  id: any;
+  root_node_id: string;
+  data: any;
+}
+
+export interface GET_APP_PAGE_TEMPLATES {
+  /**
+   * fetch data from the table: "app_page_template"
+   */
+  app_page_template: GET_APP_PAGE_TEMPLATES_app_page_template[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APP_ACTIVITY_CATEGORIES
 // ====================================================
 
@@ -1751,164 +1774,6 @@ export interface GET_APP_ACTIVITY_CATEGORIES {
 
 export interface GET_APP_ACTIVITY_CATEGORIESVariables {
   appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_CONTENTS
-// ====================================================
-
-export interface GET_PROGRAM_CONTENTS_contents {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAM_CONTENTS {
-  /**
-   * fetch data from the table: "program"
-   */
-  contents: GET_PROGRAM_CONTENTS_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ACTIVITY
-// ====================================================
-
-export interface GET_ACTIVITY_contents {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface GET_ACTIVITY {
-  /**
-   * fetch data from the table: "activity"
-   */
-  contents: GET_ACTIVITY_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PODCAST_PROGRAM
-// ====================================================
-
-export interface GET_PODCAST_PROGRAM_contents {
-  __typename: "podcast_program";
-  id: any;
-  title: string;
-}
-
-export interface GET_PODCAST_PROGRAM {
-  /**
-   * fetch data from the table: "podcast_program"
-   */
-  contents: GET_PODCAST_PROGRAM_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CREATOR
-// ====================================================
-
-export interface GET_CREATOR_contents {
-  __typename: "creator";
-  id: string | null;
-  title: string | null;
-}
-
-export interface GET_CREATOR {
-  /**
-   * fetch data from the table: "creator"
-   */
-  contents: GET_CREATOR_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_FUNDING_PROJECT
-// ====================================================
-
-export interface GET_FUNDING_PROJECT_contents {
-  __typename: "project";
-  id: any;
-  title: string;
-}
-
-export interface GET_FUNDING_PROJECT {
-  /**
-   * fetch data from the table: "project"
-   */
-  contents: GET_FUNDING_PROJECT_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PRE_ORDER_PROJECT
-// ====================================================
-
-export interface GET_PRE_ORDER_PROJECT_contents {
-  __typename: "project";
-  id: any;
-  title: string;
-}
-
-export interface GET_PRE_ORDER_PROJECT {
-  /**
-   * fetch data from the table: "project"
-   */
-  contents: GET_PRE_ORDER_PROJECT_contents[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: SEARCH_CREATOR
-// ====================================================
-
-export interface SEARCH_CREATOR_creator {
-  __typename: "creator";
-  id: string | null;
-  name: string | null;
-}
-
-export interface SEARCH_CREATOR {
-  /**
-   * fetch data from the table: "creator"
-   */
-  creator: SEARCH_CREATOR_creator[];
-}
-
-export interface SEARCH_CREATORVariables {
-  searchText: string;
 }
 
 /* tslint:disable */
@@ -12946,6 +12811,33 @@ export interface GET_MEMBER_CONTRACT {
 
 export interface GET_MEMBER_CONTRACTVariables {
   memberContractId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_APP_PAGE_TEMPLATE
+// ====================================================
+
+export interface INSERT_APP_PAGE_TEMPLATE_insert_app_page_template_one {
+  __typename: "app_page_template";
+  id: any;
+}
+
+export interface INSERT_APP_PAGE_TEMPLATE {
+  /**
+   * insert a single row into the table: "app_page_template"
+   */
+  insert_app_page_template_one: INSERT_APP_PAGE_TEMPLATE_insert_app_page_template_one | null;
+}
+
+export interface INSERT_APP_PAGE_TEMPLATEVariables {
+  currentMemberId: string;
+  rootNodeId: string;
+  serializedNodes: any;
 }
 
 /* tslint:disable */

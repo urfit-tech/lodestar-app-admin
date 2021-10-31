@@ -57,7 +57,7 @@ const CraftPageAdminPage: React.VFC = () => {
           )}
         >
           <Tabs.TabPane key="editor" tab={formatMessage(craftPageMessages.label.editPage)}>
-            <CraftPageSettingBlock pageAdmin={appPage} onRefetch={refetchAppPage} />
+            <CraftPageSettingBlock pageAdmin={appPage} onAppPageUpdate={refetchAppPage} />
           </Tabs.TabPane>
           <Tabs.TabPane key="general" tab={formatMessage(craftPageMessages.label.settings)}>
             <CraftPageBasicSettingBlock pageAdmin={appPage} onRefetch={refetchAppPage} />

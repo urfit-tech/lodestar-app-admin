@@ -1,28 +1,15 @@
-import { Form, Input, InputNumber, Select } from 'antd'
+import { Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { LayoutProps } from 'lodestar-app-element/src/components/common/Layout'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import styled, { CSSObject } from 'styled-components'
+import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import PositionStyleInput from '../inputs/PositionStyleInput'
+import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import { CraftSettings } from './CraftSettings'
 
-const StyledFullWidthSelect = styled(Select)`
-  && {
-    width: 100%;
-  }
-
-  .ant-select-selection-selected-value {
-    margin-right: 0.5rem;
-  }
-`
-const StyledInputNumber = styled(InputNumber)`
-  width: 100% !important;
-`
-
-type FieldProps = {
+type FieldValues = {
   ratios: string
   spaceStyle: CSSObject
   positionStyle: CSSObject
@@ -30,41 +17,31 @@ type FieldProps = {
 
 const LayoutSettings: CraftSettings<LayoutProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
+  const [form] = useForm<FieldValues>()
 
   const handleChange = () => {
-    form
-      .validateFields()
-      .then(values => {
-        onPropsChange?.({
-          ratios: values.ratios.split(':').map(r => Number(r)),
-          customStyle: {
-            ...props.customStyle,
-            ...values.spaceStyle,
-            ...values.positionStyle,
-          },
-        })
-      })
-      .catch(() => {})
+    form.validateFields()
   }
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      colon={false}
-      requiredMark={false}
-      initialValues={props}
-      onValuesChange={handleChange}
-    >
+    <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
       <Form.Item name="ratios" label={formatMessage(craftPageMessages.label.ratio)}>
-        <Input />
+        <Input
+          value={props.ratios.join(':')}
+          onChange={e => onPropsChange?.({ ...props, ratios: e.target.value.split(':').map(v => Number(v.trim())) })}
+        />
       </Form.Item>
-      <Form.Item name="spaceStyle" label={formatMessage(craftPageMessages.label.spaceStyle)}>
-        <SpaceStyleInput />
+      <Form.Item label={formatMessage(craftPageMessages.label.spaceStyle)}>
+        <SpaceStyleInput
+          value={props.customStyle}
+          onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+        />
       </Form.Item>
-      <Form.Item name="spaceStyle" label={formatMessage(craftPageMessages.label.spaceStyle)}>
-        <PositionStyleInput />
+      <Form.Item label={formatMessage(craftPageMessages.label.borderStyle)}>
+        <BorderStyleInput
+          value={props.customStyle}
+          onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+        />
       </Form.Item>
     </Form>
   )

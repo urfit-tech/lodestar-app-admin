@@ -1,7 +1,8 @@
-import { Element, useEditor } from '@craftjs/core'
+import { Element, useEditor, UserComponent } from '@craftjs/core'
 import { Image } from 'antd'
+import { PropsWithCraft } from 'lodestar-app-element/src/components/common/Craftize'
 import { rgba } from 'lodestar-app-element/src/helpers'
-import React, { PropsWithChildren } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 
@@ -37,28 +38,27 @@ const StyledOverlay = styled.div<{ coverUrl?: string }>`
     background-color: ${props => rgba(props.theme['@primary-color'] || '#000', 0.8)};
   }
 `
-type CraftToolProps<E> = {
-  as: React.ElementType<E>
+type CraftToolProps<P> = {
+  as: UserComponent<PropsWithCraft<P>>
   message: { id: string; defaultMessage: string }
   coverUrl?: string
   canvas?: boolean
-} & E
-const CraftTool = <E extends object>({
-  as: CraftElement,
-  message,
-  coverUrl,
-  canvas,
-  ...elementProps
-}: PropsWithChildren<CraftToolProps<E>>) => {
+} & Element<UserComponent<PropsWithCraft<P>>>
+
+const CraftTool = <P extends object>({ as: CraftElement, message, coverUrl, ...elementProps }: CraftToolProps<P>) => {
   const { formatMessage } = useIntl()
   const { connectors } = useEditor()
   const name = formatMessage(message)
+
   return (
     <StyledBoxWrapper
       className="mb-3"
       ref={ref =>
         ref &&
-        connectors.create(ref, <Element id={message.id} is={CraftElement} canvas={canvas} {...(elementProps as E)} />)
+        connectors.create(
+          ref,
+          <Element {...(elementProps as Element<UserComponent<PropsWithCraft<P>>>)} is={CraftElement} />,
+        )
       }
     >
       {coverUrl ? <Image preview={false} src={coverUrl} /> : <StyledText>{name}</StyledText>}

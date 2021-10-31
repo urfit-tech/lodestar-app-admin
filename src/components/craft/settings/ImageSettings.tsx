@@ -3,8 +3,9 @@ import { useForm } from 'antd/lib/form/Form'
 import { ImageProps } from 'lodestar-app-element/src/components/common/Image'
 import React from 'react'
 import { CSSObject } from 'styled-components'
-import EmptyCover from '../../../images/default/empty-cover.png'
-import CustomStyleInput from '../inputs/CustomStyleInput'
+import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
+import BorderStyleInput from '../inputs/BorderStyleInput'
+import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import { CraftSettings } from './CraftSettings'
 
 type FieldValues = {
@@ -16,33 +17,28 @@ const ImageSettings: CraftSettings<ImageProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
 
   const handleChange = () => {
-    form
-      .validateFields()
-      .then(values => {
-        onPropsChange?.({
-          src: values.url,
-          customStyle: values.customStyle,
-        })
-      })
-      .catch(() => {})
-  }
-
-  const initialValues: FieldValues = {
-    url: props.src || EmptyCover,
-    customStyle: props.customStyle || {},
+    form.validateFields()
   }
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      colon={false}
-      requiredMark={false}
-      initialValues={initialValues}
-      onChange={handleChange}
-    >
-      <Form.Item name="customStyle">
-        <CustomStyleInput space border background />
+    <Form form={form} layout="vertical" colon={false} requiredMark={false} onChange={handleChange}>
+      <Form.Item>
+        <SpaceStyleInput
+          value={props.customStyle}
+          onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+        />
+      </Form.Item>
+      <Form.Item>
+        <BorderStyleInput
+          value={props.customStyle}
+          onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+        />
+      </Form.Item>
+      <Form.Item>
+        <BackgroundStyleInput
+          value={props.customStyle}
+          onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+        />
       </Form.Item>
     </Form>
   )

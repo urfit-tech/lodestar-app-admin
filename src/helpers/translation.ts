@@ -1339,6 +1339,7 @@ export const craftPageMessages = {
     buttonSetting: { id: 'craft.label.buttonSetting', defaultMessage: '按鈕設定' },
     buttonStyle: { id: 'craft.label.buttonStyle', defaultMessage: '按鈕樣式' },
     carouselSetting: { id: 'craft.label.carouselSetting', defaultMessage: '輪播設定' },
+    carouselStyle: { id: 'craft.label.carouselStyle', defaultMessage: '輪播樣式' },
     desktopDisplay: { id: 'craft.label.desktopDisplay', defaultMessage: '電腦版顯示' },
     mobileDisplay: { id: 'craft.label.mobileDisplay', defaultMessage: '手機版顯示' },
     link: { id: 'craft.label.link', defaultMessage: '連結' },

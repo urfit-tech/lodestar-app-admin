@@ -1,13 +1,15 @@
+import { useApolloClient } from '@apollo/react-hooks'
 import { Editor, Element, Frame, useEditor } from '@craftjs/core'
 import { Button, message, Tabs } from 'antd'
+import gql from 'graphql-tag'
 import { CraftSection } from 'lodestar-app-element/src/components/common/CraftElement'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { configureResolver, CraftToolBox } from '../../../components/craft'
-import { CraftToolboxCategory } from '../../../components/craft/CraftToolBox'
 import { CraftSettingsModal } from '../../../components/craft/settings/CraftSettings'
+import * as hasura from '../../../hasura'
 import { handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import { useMutateAppPage } from '../../../hooks/appPage'
@@ -80,9 +82,38 @@ const StyledTabBarWrapper = styled.div`
 
 const CraftPageSettingBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps | null
-  onRefetch?: () => void
-}> = ({ pageAdmin, onRefetch }) => {
-  const resolver = configureResolver()
+  onAppPageUpdate?: () => void
+}> = ({ pageAdmin, onAppPageUpdate }) => {
+  const { currentMemberId } = useAuth()
+  const apolloClient = useApolloClient()
+  const resolver = configureResolver({
+    onSave: template => {
+      currentMemberId &&
+        apolloClient
+          .mutate<hasura.INSERT_APP_PAGE_TEMPLATE, hasura.INSERT_APP_PAGE_TEMPLATEVariables>({
+            mutation: gql`
+              mutation INSERT_APP_PAGE_TEMPLATE(
+                $currentMemberId: String!
+                $rootNodeId: String!
+                $serializedNodes: jsonb!
+              ) {
+                insert_app_page_template_one(
+                  object: { author_id: $currentMemberId, root_node_id: $rootNodeId, data: $serializedNodes }
+                ) {
+                  id
+                }
+              }
+            `,
+            variables: {
+              currentMemberId,
+              rootNodeId: template.rootNodeId,
+              serializedNodes: template.serializedNodes,
+            },
+          })
+          .then(() => alert('add into template'))
+          .catch(() => alert('template already exists'))
+    },
+  })
   return (
     <Editor resolver={resolver}>
       <div className="d-flex">
@@ -95,7 +126,7 @@ const CraftPageSettingBlock: React.VFC<{
             </div>
           </StyledContent>
         </StyledScrollBar>
-        <SettingBlock pageId={pageAdmin?.id} onRefetch={onRefetch} />
+        <SettingBlock pageId={pageAdmin?.id} onSubmit={onAppPageUpdate} />
       </div>
     </Editor>
   )
@@ -103,12 +134,11 @@ const CraftPageSettingBlock: React.VFC<{
 
 const SettingBlock: React.VFC<{
   pageId?: string
-  onRefetch?: () => void
-}> = ({ pageId, onRefetch }) => {
+  onSubmit?: () => void
+}> = ({ pageId, onSubmit }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const { updateAppPage } = useMutateAppPage()
-  const [active, setActive] = useState<CraftToolboxCategory>('basic')
   const { isDataChanged, actions, query } = useEditor((state, query) => ({
     isDataChanged: query.history.canUndo(),
   }))
@@ -126,7 +156,7 @@ const SettingBlock: React.VFC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
+        onSubmit?.()
         actions.history.clear()
       })
       .catch(handleError)
@@ -147,13 +177,13 @@ const SettingBlock: React.VFC<{
         )}
       >
         <StyledTabsPane key="basic" tab={<StyledPageIcon />}>
-          <CraftToolBox category="basic" />
+          <CraftToolBox.BasicToolbox />
         </StyledTabsPane>
         <StyledTabsPane key="product" tab={<StyledPageIcon />}>
-          <CraftToolBox category="product" />
+          <CraftToolBox.ProductToolbox />
         </StyledTabsPane>
         <StyledTabsPane key="template" tab={<StyledPageIcon />}>
-          <CraftToolBox category="template" />
+          <CraftToolBox.TemplateToolbox />
         </StyledTabsPane>
       </StyledTabs>
     </StyledSettingBlock>

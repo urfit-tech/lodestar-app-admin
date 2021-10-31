@@ -6,7 +6,11 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { CraftSettings, TextSettingsPanel } from './CraftSettings'
+import { craftPageMessages } from '../../../helpers/translation'
+import { AdminHeaderTitle } from '../../admin'
+import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import TypographyStyleInput from '../inputs/TypographyStyleInput'
+import { CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
 const messages = defineMessages({
   titleStyle: { id: 'craft.settings.collapse.titleStyle', defaultMessage: '標題樣式' },
@@ -81,8 +85,72 @@ const CollapseSettings: CraftSettings<CollapseProps> = ({ props, onPropsChange }
         ghost
         defaultActiveKey={['collapseStyle']}
       >
-        <TextSettingsPanel key="titleStyle" title={formatMessage(messages.titleStyle)} />
-        <TextSettingsPanel key="paragraphStyle" title={formatMessage(messages.paragraphStyle)} />
+        <StyledCollapsePanel
+          key="titleStyle"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleStyle)}</AdminHeaderTitle>}
+        >
+          <Form.Item>
+            <TypographyStyleInput
+              value={props.customStyle?.['.title'] as CSSObject}
+              onChange={value =>
+                onPropsChange?.({
+                  ...props,
+                  customStyle: {
+                    ...props.customStyle,
+                    '.title': { ...(props.customStyle?.['.title'] as CSSObject), ...value },
+                  },
+                })
+              }
+            />
+          </Form.Item>
+          <Form.Item>
+            <SpaceStyleInput
+              value={props.customStyle?.['.title'] as CSSObject}
+              onChange={value =>
+                onPropsChange?.({
+                  ...props,
+                  customStyle: {
+                    ...props.customStyle,
+                    '.title': { ...(props.customStyle?.['.title'] as CSSObject), ...value },
+                  },
+                })
+              }
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
+        <StyledCollapsePanel
+          key="paragraphStyle"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphStyle)}</AdminHeaderTitle>}
+        >
+          <Form.Item>
+            <TypographyStyleInput
+              value={props.customStyle?.['.paragraph'] as CSSObject}
+              onChange={value =>
+                onPropsChange?.({
+                  ...props,
+                  customStyle: {
+                    ...props.customStyle,
+                    '.paragraph': { ...(props.customStyle?.['.paragraph'] as CSSObject), ...value },
+                  },
+                })
+              }
+            />
+          </Form.Item>
+          <Form.Item>
+            <SpaceStyleInput
+              value={props.customStyle?.['.paragraph'] as CSSObject}
+              onChange={value =>
+                onPropsChange?.({
+                  ...props,
+                  customStyle: {
+                    ...props.customStyle,
+                    '.paragraph': { ...(props.customStyle?.['.paragraph'] as CSSObject), ...value },
+                  },
+                })
+              }
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
       </Collapse>
     </Form>
   )

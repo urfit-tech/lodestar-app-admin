@@ -5,7 +5,7 @@ import EmptyCover from '../../../images/default/empty-cover.png'
 import ColorPicker from './ColorPicker'
 import ImageInput from './ImageInput'
 
-export type BackgroundStyle = Pick<CSSObject, 'background'>
+export type BackgroundStyle = Pick<CSSObject, 'background' | 'backgroundImage' | 'backgroundColor'>
 type BackgroundStyleInputProps = {
   value?: BackgroundStyle
   onChange?: (value: BackgroundStyle) => void
@@ -23,19 +23,25 @@ const defaultImage = EmptyCover
 
 const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
-  const color = value?.background && /#\w+/.exec(value.background.toString())?.[0]
-  const imageUrl = value?.background && /url\('?([\w\W]+?)'?\)/.exec(value.background.toString())?.[1]
-  const backgroundType = imageUrl ? 'image' : color ? 'solid' : 'none'
+  const backgroundType = value?.backgroundImage ? 'image' : value?.backgroundColor ? 'solid' : 'none'
   const handleTypeChange = (type: typeof backgroundType) => {
     switch (type) {
       case 'none':
-        onChange?.({ background: 'unset' })
+        onChange?.({ background: 'unset', backgroundColor: undefined, backgroundImage: undefined })
         break
       case 'solid':
-        onChange?.({ background: color || defaultColor })
+        onChange?.({
+          background: undefined,
+          backgroundColor: value?.backgroundColor || defaultColor,
+          backgroundImage: undefined,
+        })
         break
       case 'image':
-        onChange?.({ background: `url(${imageUrl || defaultImage}) no-repeat center` })
+        onChange?.({
+          background: undefined,
+          backgroundColor: undefined,
+          backgroundImage: value?.backgroundImage || `url(${defaultImage})`,
+        })
         break
     }
   }
@@ -50,14 +56,19 @@ const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onC
       </Form.Item>
 
       {backgroundType === 'solid' && (
-        <ColorPicker value={color || defaultColor} onChange={color => onChange?.({ background: color })} />
+        <ColorPicker
+          value={value?.backgroundColor || defaultColor}
+          onChange={color => onChange?.({ backgroundColor: color })}
+        />
       )}
 
       {backgroundType === 'image' && (
         <Form.Item name="url" noStyle>
           <ImageInput
-            value={imageUrl || defaultImage}
-            onChange={url => onChange?.({ background: `url(${url}) no-repeat center` })}
+            value={value?.backgroundImage?.slice(4, -1).replace(/"/g, '') || defaultImage}
+            onChange={url => {
+              onChange?.({ backgroundImage: `url(${url})` })
+            }}
           />
         </Form.Item>
       )}

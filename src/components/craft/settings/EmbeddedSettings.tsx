@@ -1,10 +1,12 @@
-import { Form } from 'antd'
+import { Collapse, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { EmbeddedProps } from 'lodestar-app-element/src/components/common/Embedded'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import { CraftCollapseSetting, CraftSettings } from './CraftSettings'
+import { AdminHeaderTitle } from '../../admin'
+import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import { CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
 type FieldValues = {
   content: string
@@ -20,55 +22,45 @@ const EmbeddedSettings: CraftSettings<EmbeddedProps> = ({ props, onPropsChange }
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={props}
       onValuesChange={() => {
-        form
-          .validateFields()
-          .then(values => {
-            onPropsChange?.({
-              iframe: values.content,
-              customStyle: {
-                ...props.customStyle,
-                ...values.spaceStyle,
-              },
-            })
-          })
-          .catch(({ values, errorFields }) => {
-            if (errorFields.length > 0) {
-              return
-            }
-            onPropsChange?.({
-              iframe: values.content,
-              customStyle: {
-                ...props.customStyle,
-                ...values.spaceStyle,
-              },
-            })
-          })
+        form.validateFields()
       }}
     >
-      <Form.Item
-        name="iframe"
-        rules={[
-          {
-            pattern: /(?:<iframe[^>]*)(?:(?:\/>)|(?:>.*?<\/iframe>))/g,
-            message: formatMessage(craftPageMessages.text.fillIframeFormatPlz),
-          },
-        ]}
-      >
-        <CraftCollapseSetting
-          variant="textarea"
-          placeholder="<iframe></iframe>"
-          title={formatMessage(craftPageMessages.label.embedSetting)}
-        />
-      </Form.Item>
-      <Form.Item name="margin">
-        <CraftCollapseSetting
-          variant="slider"
-          title={formatMessage(craftPageMessages.label.embedStyle)}
-          label={formatMessage(craftPageMessages.label.margin)}
-        />
-      </Form.Item>
+      <Collapse accordion ghost expandIconPosition="right" defaultActiveKey="setting">
+        <StyledCollapsePanel
+          key="setting"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.embedSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item
+            label={formatMessage(craftPageMessages.label.embedSetting)}
+            rules={[
+              {
+                pattern: /(?:<iframe[^>]*)(?:(?:\/>)|(?:>.*?<\/iframe>))/g,
+                message: formatMessage(craftPageMessages.text.fillIframeFormatPlz),
+              },
+            ]}
+          >
+            <Input.TextArea
+              className="mt-2"
+              rows={5}
+              placeholder="<iframe></iframe>"
+              value={props.iframe}
+              onChange={e => onPropsChange?.({ ...props, iframe: e.target.value })}
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
+        <StyledCollapsePanel
+          key="style"
+          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.embedStyle)}</AdminHeaderTitle>}
+        >
+          <Form.Item>
+            <SpaceStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
     </Form>
   )
 }

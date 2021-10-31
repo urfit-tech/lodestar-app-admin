@@ -6,7 +6,9 @@ import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
 import { AdminHeaderTitle } from '../../admin'
-import CustomStyleInput from '../inputs/CustomStyleInput'
+import BorderStyleInput from '../inputs/BorderStyleInput'
+import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import TypographyStyleInput from '../inputs/TypographyStyleInput'
 import { CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
 type FieldValues = {
@@ -19,31 +21,11 @@ const TitleSettings: CraftSettings<TitleProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
 
   const handleChange = () => {
-    form
-      .validateFields()
-      .then(values => {
-        onPropsChange?.({
-          title: values.content,
-          customStyle: values.customStyle,
-        })
-      })
-      .catch(() => {})
-  }
-
-  const initialValues: FieldValues = {
-    content: props.title,
-    customStyle: props.customStyle || {},
+    form.validateFields()
   }
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      colon={false}
-      requiredMark={false}
-      initialValues={initialValues}
-      onValuesChange={handleChange}
-    >
+    <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
       <Collapse
         accordion
         className="mt-2 p-0"
@@ -58,8 +40,8 @@ const TitleSettings: CraftSettings<TitleProps> = ({ props, onPropsChange }) => {
         >
           <div className="mb-2">
             <CraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</CraftSettingLabel>
-            <Form.Item name="content">
-              <Input />
+            <Form.Item>
+              <Input value={props.title} onChange={e => onPropsChange?.({ ...props, title: e.target.value })} />
             </Form.Item>
           </div>
         </StyledCollapsePanel>
@@ -67,8 +49,23 @@ const TitleSettings: CraftSettings<TitleProps> = ({ props, onPropsChange }) => {
           key="titleStyle"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleStyle)}</AdminHeaderTitle>}
         >
-          <Form.Item name="customStyle">
-            <CustomStyleInput space border typography />
+          <Form.Item>
+            <SpaceStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <BorderStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <TypographyStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>

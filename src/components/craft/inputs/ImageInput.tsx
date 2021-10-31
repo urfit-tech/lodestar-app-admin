@@ -78,7 +78,6 @@ const ImageInput: React.FC<ImageInputProps> = ({ value, onChange }) => {
       const imageId = v4()
       uploadFile(`images/${appId}/craft/${imageId}`, file, authToken)
         .then(() => {
-          console.log(`https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${imageId}`)
           onChange?.(`https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/craft/${imageId}`)
         })
         .catch(handleError)

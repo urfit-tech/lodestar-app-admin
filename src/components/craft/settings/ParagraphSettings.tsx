@@ -6,7 +6,10 @@ import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
 import { AdminHeaderTitle } from '../../admin'
-import CustomStyleInput from '../inputs/CustomStyleInput'
+import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
+import BorderStyleInput from '../inputs/BorderStyleInput'
+import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import TypographyStyleInput from '../inputs/TypographyStyleInput'
 import { CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
 type FieldValues = {
@@ -19,31 +22,11 @@ const ParagraphSettings: CraftSettings<ParagraphProps> = ({ props, onPropsChange
   const [form] = useForm<FieldValues>()
 
   const handleChange = () => {
-    form
-      .validateFields()
-      .then(values => {
-        onPropsChange?.({
-          content: values.content,
-          customStyle: values.customStyle,
-        })
-      })
-      .catch(() => {})
-  }
-
-  const initialValues: FieldValues = {
-    content: props.content,
-    customStyle: props.customStyle || {},
+    form.validateFields()
   }
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      colon={false}
-      requiredMark={false}
-      initialValues={initialValues}
-      onValuesChange={handleChange}
-    >
+    <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
       <Collapse expandIconPosition="right" ghost defaultActiveKey={['paragraphContent']}>
         <StyledCollapsePanel
           key="paragraphContent"
@@ -51,8 +34,13 @@ const ParagraphSettings: CraftSettings<ParagraphProps> = ({ props, onPropsChange
         >
           <div className="mb-2">
             <CraftSettingLabel>{formatMessage(craftPageMessages.label.content)}</CraftSettingLabel>
-            <Form.Item name="content">
-              <Input.TextArea className="mt-2" rows={5} />
+            <Form.Item>
+              <Input.TextArea
+                className="mt-2"
+                rows={5}
+                value={props.content}
+                onChange={e => onPropsChange?.({ ...props, content: e.target.value })}
+              />
             </Form.Item>
           </div>
         </StyledCollapsePanel>
@@ -60,8 +48,29 @@ const ParagraphSettings: CraftSettings<ParagraphProps> = ({ props, onPropsChange
           key="paragraphStyle"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphStyle)}</AdminHeaderTitle>}
         >
-          <Form.Item name="customStyle">
-            <CustomStyleInput space border background />
+          <Form.Item>
+            <TypographyStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <SpaceStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <BorderStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
+          </Form.Item>
+          <Form.Item>
+            <BackgroundStyleInput
+              value={props.customStyle}
+              onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
+            />
           </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
