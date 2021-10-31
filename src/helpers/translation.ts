@@ -1363,6 +1363,7 @@ export const craftPageMessages = {
     middle: { id: 'craft.label.middle', defaultMessage: '中' },
     small: { id: 'craft.label.small', defaultMessage: '小' },
     width: { id: 'craft.label.width', defaultMessage: '寬度' },
+    radius: { id: 'craft.label.radius', defaultMessage: '弧度' },
     buttonBlock: { id: 'craft.label.buttonBlock', defaultMessage: '滿版' },
     variant: { id: 'craft.label.variant', defaultMessage: '變化' },
     plainText: { id: 'craft.label.plainText', defaultMessage: '純文字' },

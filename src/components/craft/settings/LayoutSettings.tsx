@@ -25,7 +25,7 @@ const LayoutSettings: CraftSettings<LayoutProps> = ({ props, onPropsChange }) =>
 
   return (
     <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
-      <Form.Item name="ratios" label={formatMessage(craftPageMessages.label.ratio)}>
+      <Form.Item label={formatMessage(craftPageMessages.label.ratio)}>
         <Input
           value={props.ratios.join(':')}
           onChange={e => onPropsChange?.({ ...props, ratios: e.target.value.split(':').map(v => Number(v.trim())) })}

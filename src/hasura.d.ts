@@ -1739,6 +1739,7 @@ export interface GET_SALES_MEMBERSVariables {
 export interface GET_APP_PAGE_TEMPLATES_app_page_template {
   __typename: "app_page_template";
   id: any;
+  name: string;
   root_node_id: string;
   data: any;
 }
@@ -12836,6 +12837,7 @@ export interface INSERT_APP_PAGE_TEMPLATE {
 
 export interface INSERT_APP_PAGE_TEMPLATEVariables {
   currentMemberId: string;
+  templateName: string;
   rootNodeId: string;
   serializedNodes: any;
 }

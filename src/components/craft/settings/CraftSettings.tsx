@@ -37,7 +37,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
     if (!editor.currentNode) {
       return null
     }
-    const currentProps = editor.currentNode.data.props as PropsWithCraft<P>
+    const { responsive, ...currentProps } = editor.currentNode.data.props as PropsWithCraft<P>
     return (
       <StyledTabs
         defaultActiveKey="desktop"
@@ -60,7 +60,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
       >
         <Tabs.TabPane tab="desktop" key="desktop">
           <WrappedSettings
-            props={{ ...currentProps, ...currentProps.responsive?.desktop }}
+            props={{ ...currentProps, ...responsive?.desktop } as PropsWithCraft<P>}
             onPropsChange={changedProps =>
               editor.currentNode &&
               editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
@@ -74,7 +74,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
         </Tabs.TabPane>
         <Tabs.TabPane tab="tablet" key="tablet">
           <WrappedSettings
-            props={{ ...currentProps, ...currentProps.responsive?.tablet }}
+            props={{ ...currentProps, ...responsive?.tablet } as PropsWithCraft<P>}
             onPropsChange={changedProps =>
               editor.currentNode &&
               editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
@@ -88,7 +88,7 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
         </Tabs.TabPane>
         <Tabs.TabPane tab="mobile" key="mobile">
           <WrappedSettings
-            props={currentProps}
+            props={currentProps as PropsWithCraft<P>}
             onPropsChange={changedProps =>
               editor.currentNode &&
               editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {

@@ -85,20 +85,31 @@ const CraftPageSettingBlock: React.VFC<{
   onAppPageUpdate?: () => void
 }> = ({ pageAdmin, onAppPageUpdate }) => {
   const { currentMemberId } = useAuth()
+  const { formatMessage } = useIntl()
   const apolloClient = useApolloClient()
   const resolver = configureResolver({
     onSave: template => {
+      const templateName = window.prompt(
+        formatMessage({ id: 'pages.craft.promptTemplateName', defaultMessage: '請輸入樣板名稱' }),
+      )
       currentMemberId &&
+        templateName &&
         apolloClient
           .mutate<hasura.INSERT_APP_PAGE_TEMPLATE, hasura.INSERT_APP_PAGE_TEMPLATEVariables>({
             mutation: gql`
               mutation INSERT_APP_PAGE_TEMPLATE(
                 $currentMemberId: String!
+                $templateName: String!
                 $rootNodeId: String!
                 $serializedNodes: jsonb!
               ) {
                 insert_app_page_template_one(
-                  object: { author_id: $currentMemberId, root_node_id: $rootNodeId, data: $serializedNodes }
+                  object: {
+                    author_id: $currentMemberId
+                    name: $templateName
+                    root_node_id: $rootNodeId
+                    data: $serializedNodes
+                  }
                 ) {
                   id
                 }
@@ -106,6 +117,7 @@ const CraftPageSettingBlock: React.VFC<{
             `,
             variables: {
               currentMemberId,
+              templateName,
               rootNodeId: template.rootNodeId,
               serializedNodes: template.serializedNodes,
             },

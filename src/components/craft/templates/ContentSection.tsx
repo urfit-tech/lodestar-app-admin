@@ -59,7 +59,9 @@ const FeatureSection: React.VFC = () => {
           />
         </Element>
 
-        <CraftImage src="https://static.kolable.com/images/demo/home/feature-img2.jpg" />
+        <CraftImage
+          customStyle={{ backgroundImage: 'url("https://static.kolable.com/images/demo/home/feature-img2.jpg")' }}
+        />
       </Element>
     </Element>
   )

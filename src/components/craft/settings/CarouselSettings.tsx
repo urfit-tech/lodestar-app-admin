@@ -1,4 +1,4 @@
-import { Collapse, Form } from 'antd'
+import { Checkbox, Collapse, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CarouselProps } from 'lodestar-app-element/src/components/common/Carousel'
 import React from 'react'
@@ -18,6 +18,10 @@ type FieldValues = {
 }
 
 const messages = defineMessages({
+  autoplay: { id: 'craft.settings.carousel.autoplay', defaultMessage: '自動播放' },
+  infinite: { id: 'craft.settings.carousel.infinite', defaultMessage: '無限輪播' },
+  arrows: { id: 'craft.settings.carousel.arrows', defaultMessage: '顯示箭頭' },
+  dots: { id: 'craft.settings.carousel.dots', defaultMessage: '顯示圓點' },
   slideToShow: { id: 'craft.settings.carousel.slideToShow', defaultMessage: '欄數' },
   slideToScroll: { id: 'craft.settings.carousel.slideToScroll', defaultMessage: '捲動數量' },
 })
@@ -36,6 +40,32 @@ const CarouselSettings: CraftSettings<CarouselProps> = ({ props, onPropsChange }
           key="setting"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.carouselSetting)}</AdminHeaderTitle>}
         >
+          <Form.Item>
+            <Checkbox
+              checked={props.autoplay}
+              onChange={e => onPropsChange?.({ ...props, autoplay: e.target.checked })}
+            >
+              {formatMessage(messages.autoplay)}
+            </Checkbox>
+          </Form.Item>
+          <Form.Item>
+            <Checkbox
+              checked={props.infinite}
+              onChange={e => onPropsChange?.({ ...props, infinite: e.target.checked })}
+            >
+              {formatMessage(messages.infinite)}
+            </Checkbox>
+          </Form.Item>
+          <Form.Item>
+            <Checkbox checked={props.arrows} onChange={e => onPropsChange?.({ ...props, arrows: e.target.checked })}>
+              {formatMessage(messages.arrows)}
+            </Checkbox>
+          </Form.Item>
+          <Form.Item>
+            <Checkbox checked={props.dots} onChange={e => onPropsChange?.({ ...props, dots: e.target.checked })}>
+              {formatMessage(messages.dots)}
+            </Checkbox>
+          </Form.Item>
           <Form.Item label={formatMessage(messages.slideToShow)}>
             <StyledInputNumber
               min={1}

@@ -3,7 +3,6 @@ import { Element, SerializedNodes, useEditor } from '@craftjs/core'
 import gql from 'graphql-tag'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import React, { useCallback, useMemo } from 'react'
-import { useIntl } from 'react-intl'
 import * as hasura from '../../hasura'
 import CraftTool from './CraftTool'
 import ContentSection from './templates/ContentSection'
@@ -15,7 +14,6 @@ import StatisticsSection from './templates/StatisticsSection'
 import VerticalCTASection from './templates/VerticalCTASection'
 
 const BasicToolbox: React.FC = () => {
-  const { formatMessage } = useIntl()
   return (
     <div className="px-3 mt-4">
       <CraftTool
@@ -28,7 +26,7 @@ const BasicToolbox: React.FC = () => {
         }}
         canvas
       >
-        <CraftElement.CraftTitle title="Sample Title" />
+        <Element is={CraftElement.CraftTitle} title="Sample Title" />
       </CraftTool>
       <CraftTool
         as={CraftElement.CraftLayout}
@@ -46,7 +44,11 @@ const BasicToolbox: React.FC = () => {
           },
         }}
         canvas
-      />
+      >
+        <Element is={CraftElement.CraftTitle} title="Sample Title" />
+        <Element is={CraftElement.CraftTitle} title="Sample Title" />
+        <Element is={CraftElement.CraftTitle} title="Sample Title" />
+      </CraftTool>
       <CraftTool
         as={CraftElement.CraftTitle}
         message={{ id: 'craft.toolbox.title', defaultMessage: '標題' }}
@@ -80,7 +82,7 @@ const BasicToolbox: React.FC = () => {
       <CraftTool
         as={CraftElement.CraftImage}
         message={{ id: 'craft.toolbox.message', defaultMessage: '圖片' }}
-        src="https://static.kolable.com/images/default/craft/image.png"
+        customStyle={{ backgroundImage: `url("https://static.kolable.com/images/default/craft/image.png")` }}
       />
       <CraftTool
         as={CraftElement.CraftButton}
@@ -106,7 +108,17 @@ const BasicToolbox: React.FC = () => {
         as={CraftElement.CraftCarousel}
         message={{ id: 'craft.toolbox.carousel', defaultMessage: '輪播' }}
         canvas
-      />
+      >
+        <Element is={CraftElement.CraftSection} canvas>
+          <Element is={CraftElement.CraftTitle} title="Sample Title 1" />
+        </Element>
+        <Element is={CraftElement.CraftSection} canvas>
+          <Element is={CraftElement.CraftTitle} title="Sample Title 2" />
+        </Element>
+        <Element is={CraftElement.CraftSection} canvas>
+          <Element is={CraftElement.CraftTitle} title="Sample Title 3" />
+        </Element>
+      </CraftTool>
       <CraftTool
         as={CraftElement.CraftCollapse}
         message={{ id: 'craft.toolbox.collapse', defaultMessage: '折疊面板' }}
@@ -159,7 +171,7 @@ const TemplateToolbox: React.FC = () => {
         <CraftTool
           key={templateElement.id}
           as={templateElement.node.type}
-          message={{ id: `craft.template.${templateElement.id}`, defaultMessage: `樣板${idx}` }}
+          message={{ id: `craft.template.${templateElement.id}`, defaultMessage: templateElement.name }}
           {...templateElement.node.props}
         >
           {templateElement.node.children}
@@ -264,6 +276,7 @@ const useTemplateElement = () => {
       query GET_APP_PAGE_TEMPLATES {
         app_page_template {
           id
+          name
           root_node_id
           data
         }
@@ -297,6 +310,7 @@ const useTemplateElement = () => {
     () =>
       data?.app_page_template.map(apt => ({
         id: apt.id,
+        name: apt.name,
         node: generateTemplateElement(apt.root_node_id, apt.data),
       })),
     [data, generateTemplateElement],

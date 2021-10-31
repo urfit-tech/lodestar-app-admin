@@ -29,9 +29,17 @@ const BorderStyleInput: React.VFC<{
       </Form.Item>
       {radioType === 'solid' && (
         <>
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.radius)}</CraftSettingLabel>}>
+            <CraftSlider
+              min={0}
+              step={0.1}
+              value={Number(value?.borderRadius) || 0}
+              onChange={(borderRadius: number) => onChange?.({ ...value, borderRadius })}
+            />
+          </Form.Item>
           <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.width)}</CraftSettingLabel>}>
             <CraftSlider
-              min={0.1}
+              min={0}
               step={0.1}
               value={Number(value?.borderWidth) || 0}
               onChange={(borderWidth: number) => onChange?.({ ...value, borderWidth })}

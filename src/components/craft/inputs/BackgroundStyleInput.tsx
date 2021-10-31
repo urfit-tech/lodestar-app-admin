@@ -40,11 +40,12 @@ const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onC
         onChange?.({
           background: undefined,
           backgroundColor: undefined,
-          backgroundImage: value?.backgroundImage || `url(${defaultImage})`,
+          backgroundImage: value?.backgroundImage || `url()`,
         })
         break
     }
   }
+
   return (
     <div>
       <Form.Item>
@@ -56,14 +57,16 @@ const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onC
       </Form.Item>
 
       {backgroundType === 'solid' && (
-        <ColorPicker
-          value={value?.backgroundColor || defaultColor}
-          onChange={color => onChange?.({ backgroundColor: color })}
-        />
+        <Form.Item noStyle>
+          <ColorPicker
+            value={value?.backgroundColor || defaultColor}
+            onChange={color => onChange?.({ backgroundColor: color })}
+          />
+        </Form.Item>
       )}
 
       {backgroundType === 'image' && (
-        <Form.Item name="url" noStyle>
+        <Form.Item noStyle>
           <ImageInput
             value={value?.backgroundImage?.slice(4, -1).replace(/"/g, '') || defaultImage}
             onChange={url => {
