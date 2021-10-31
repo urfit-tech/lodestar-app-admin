@@ -173,6 +173,7 @@ const TemplateToolbox: React.FC = () => {
           key={templateElement.id}
           as={templateElement.node.type}
           message={{ id: `craft.template.${templateElement.id}`, defaultMessage: templateElement.name }}
+          canvas={templateElement.node.children.length > 0}
           {...templateElement.node.props}
         >
           {templateElement.node.children}
@@ -296,7 +297,7 @@ const useTemplateElement = () => {
           children: node.data.nodes.map(nodeId => {
             const childNode = nodeToElement(nodeId)
             return (
-              <Element is={childNode.type} {...childNode.props}>
+              <Element is={childNode.type} {...childNode.props} canvas={childNode.children.length > 0}>
                 {childNode.children}
               </Element>
             )
