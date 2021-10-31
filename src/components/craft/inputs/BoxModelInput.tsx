@@ -4,7 +4,7 @@ import React from 'react'
 import { CraftSettingLabel, CraftSlider } from '../settings/CraftSettings'
 
 const BoxModelInput: React.VFC<{
-  title?: string
+  title?: string // 3px 3px 3px 3px
   value?: string
   onChange?: (value: string) => void
 }> = ({ title, value, onChange }) => {
@@ -30,11 +30,14 @@ const BoxModelInput: React.VFC<{
         <Input
           className="col-4"
           value={boxModelValue.join(';')}
-          onBlur={e => {
-            const eventBoxModelValue = formatBoxModelValue(e.target.value)
-            onChange?.(`${eventBoxModelValue?.map(v => v + 'px').join(' ')}`)
-          }}
-          onChange={e => onChange?.(e.target.value)}
+          onChange={e =>
+            onChange?.(
+              e.target.value
+                .split(';')
+                .map(v => v + 'px')
+                .join(' '),
+            )
+          }
         />
       </div>
     </>
@@ -42,7 +45,12 @@ const BoxModelInput: React.VFC<{
 }
 
 export const formatBoxModelValue = (value?: string) => {
+  console.log(value)
   const slices = value?.split(' ').map(v => v.replace('px', '')) || []
+  console.log(
+    slices,
+    range(0, 4).map(index => Number(slices[index]) || 0),
+  )
   return range(0, 4).map(index => Number(slices[index]) || 0)
 }
 
