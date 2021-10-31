@@ -82,6 +82,7 @@ const BasicToolbox: React.FC = () => {
       <CraftTool
         as={CraftElement.CraftImage}
         message={{ id: 'craft.toolbox.message', defaultMessage: '圖片' }}
+        width={400}
         customStyle={{ backgroundImage: `url("https://static.kolable.com/images/default/craft/image.png")` }}
       />
       <CraftTool

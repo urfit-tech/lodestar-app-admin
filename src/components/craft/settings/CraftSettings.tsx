@@ -1,24 +1,18 @@
 import { useEditor } from '@craftjs/core'
 import { Collapse, Input, Slider, Tabs } from 'antd'
 import { PropsWithCraft } from 'lodestar-app-element/src/components/common/Craftize'
+import { mergeDeepRight } from 'ramda'
 import React from 'react'
 import Draggable from 'react-draggable'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 
+export type CraftSettingsProps<P> = Omit<PropsWithCraft<P>, 'responsive'>
 export type CraftSettings<P> = React.ElementType<{
-  props: PropsWithCraft<P>
-  onPropsChange?: (props: PropsWithCraft<P>) => void
+  props: CraftSettingsProps<P>
+  onPropsChange?: (changedProps: CraftSettingsProps<P>) => void
 }>
 export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<P>) => {
-  const THROTTLE_RATE = 500
-  const mergePropsIntoProxy = (props: { [key: string]: any }, proxy: any) => {
-    for (const key in props) {
-      if (Object.prototype.hasOwnProperty.call(props, key)) {
-        proxy[key] = props[key]
-      }
-    }
-  }
   const StyledTabs = styled(Tabs)`
     border: 1px solid lightgrey;
     margin-bottom: 8px;
@@ -60,13 +54,16 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
       >
         <Tabs.TabPane tab="desktop" key="desktop">
           <WrappedSettings
-            props={{ ...currentProps, ...responsive?.desktop } as PropsWithCraft<P>}
+            props={mergeDeepRight(currentProps, responsive?.desktop || {}) as PropsWithCraft<P>}
             onPropsChange={changedProps =>
               editor.currentNode &&
               editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
+                for (const key in changedProps) {
+                  proxy[key] = changedProps[key as keyof typeof changedProps]
+                }
                 proxy.responsive = {
                   ...proxy.responsive,
-                  desktop: changedProps,
+                  desktop: mergeDeepRight(proxy.responsive?.desktop, changedProps),
                 }
               })
             }
@@ -74,13 +71,16 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
         </Tabs.TabPane>
         <Tabs.TabPane tab="tablet" key="tablet">
           <WrappedSettings
-            props={{ ...currentProps, ...responsive?.tablet } as PropsWithCraft<P>}
+            props={mergeDeepRight(currentProps, responsive?.tablet || {}) as PropsWithCraft<P>}
             onPropsChange={changedProps =>
               editor.currentNode &&
               editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
+                for (const key in changedProps) {
+                  proxy[key] = changedProps[key as keyof typeof changedProps]
+                }
                 proxy.responsive = {
                   ...proxy.responsive,
-                  tablet: changedProps,
+                  tablet: mergeDeepRight(proxy.responsive?.tablet, changedProps),
                 }
               })
             }
@@ -88,11 +88,17 @@ export const withResponsive = <P extends object>(WrappedSettings: CraftSettings<
         </Tabs.TabPane>
         <Tabs.TabPane tab="mobile" key="mobile">
           <WrappedSettings
-            props={currentProps as PropsWithCraft<P>}
+            props={mergeDeepRight(currentProps, responsive?.mobile || {}) as PropsWithCraft<P>}
             onPropsChange={changedProps =>
               editor.currentNode &&
               editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
-                mergePropsIntoProxy(changedProps, proxy)
+                for (const key in changedProps) {
+                  proxy[key] = changedProps[key as keyof typeof changedProps]
+                }
+                proxy.responsive = {
+                  ...proxy.responsive,
+                  mobile: mergeDeepRight(proxy.responsive?.mobile, changedProps),
+                }
               })
             }
           />

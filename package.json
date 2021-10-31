@@ -94,7 +94,7 @@
     "less-loader": "^7.1.0",
     "lint-staged": "^10.5.4",
     "lodash": "^4.17.21",
-    "lodestar-app-element": "urfit-tech/lodestar-app-element#65ae247164d21cf09957f6297ee321bec5ae9f13",
+    "lodestar-app-element": "urfit-tech/lodestar-app-element#6bd807bb1606139091728034d1c1f7a460ae103e",
     "md5": "^2.3.0",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
