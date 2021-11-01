@@ -2842,6 +2842,37 @@ export interface UPDATE_MEMBER_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_ABSTRACT
+// ====================================================
+
+export interface UPDATE_MEMBER_ABSTRACT_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ABSTRACT {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_ABSTRACT_update_member | null;
+}
+
+export interface UPDATE_MEMBER_ABSTRACTVariables {
+  memberId: string;
+  description?: string | null;
+  title?: string | null;
+  abstract?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
 // ====================================================
 
