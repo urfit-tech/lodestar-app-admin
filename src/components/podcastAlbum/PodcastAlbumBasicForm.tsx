@@ -1,5 +1,6 @@
+import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
@@ -11,6 +12,7 @@ import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, podcastAlbumMessages } from '../../helpers/translation'
 import { PodcastAlbum } from '../../types/podcastAlbum'
+import { StyledTips } from '../admin'
 import ImageUploader from '../common/ImageUploader'
 import CategorySelector from '../form/CategorySelector'
 
@@ -116,7 +118,19 @@ const PodcastAlbumBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="podcastAlbum" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.label.cover)}>
+      <Form.Item
+        label={
+          <span className="d-flex align-items-center">
+            {formatMessage(commonMessages.label.cover)}
+            <Tooltip
+              placement="top"
+              title={<StyledTips>{formatMessage(podcastAlbumMessages.text.coverTips)}</StyledTips>}
+            >
+              <QuestionCircleFilled className="ml-2" />
+            </Tooltip>
+          </span>
+        }
+      >
         <ImageUploader
           file={coverImage}
           initialCoverUrl={podcastAlbum ? podcastAlbum?.coverUrl : null}
