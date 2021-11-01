@@ -32,7 +32,7 @@ const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) =>
 
   return (
     <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
-      <Collapse accordion ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
+      <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
         <StyledCollapsePanel
           key="buttonSetting"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonSetting)}</AdminHeaderTitle>}

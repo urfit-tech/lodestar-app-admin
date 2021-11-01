@@ -27,7 +27,6 @@ const TitleSettings: CraftSettings<TitleProps> = ({ props, onPropsChange }) => {
   return (
     <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
       <Collapse
-        accordion
         className="mt-2 p-0"
         bordered={false}
         expandIconPosition="right"

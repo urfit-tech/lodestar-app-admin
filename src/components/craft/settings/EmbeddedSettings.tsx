@@ -26,7 +26,7 @@ const EmbeddedSettings: CraftSettings<EmbeddedProps> = ({ props, onPropsChange }
         form.validateFields()
       }}
     >
-      <Collapse accordion ghost expandIconPosition="right" defaultActiveKey="setting">
+      <Collapse ghost expandIconPosition="right" defaultActiveKey="setting">
         <StyledCollapsePanel
           key="setting"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.embedSetting)}</AdminHeaderTitle>}

@@ -110,13 +110,13 @@ const BasicToolbox: React.FC = () => {
         message={{ id: 'craft.toolbox.carousel', defaultMessage: '輪播' }}
         canvas
       >
-        <Element is={CraftElement.CraftSection} canvas>
+        <Element is={CraftElement.CraftSection} canvas customStyle={{ padding: '40px 0', background: 'yellow' }}>
           <Element is={CraftElement.CraftTitle} title="Sample Title 1" />
         </Element>
-        <Element is={CraftElement.CraftSection} canvas>
+        <Element is={CraftElement.CraftSection} canvas customStyle={{ padding: '40px 0', background: 'yellow' }}>
           <Element is={CraftElement.CraftTitle} title="Sample Title 2" />
         </Element>
-        <Element is={CraftElement.CraftSection} canvas>
+        <Element is={CraftElement.CraftSection} canvas customStyle={{ padding: '40px 0', background: 'yellow' }}>
           <Element is={CraftElement.CraftTitle} title="Sample Title 3" />
         </Element>
       </CraftTool>

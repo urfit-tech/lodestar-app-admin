@@ -57,7 +57,7 @@ const CraftTool = <P extends object>({ as: CraftElement, message, coverUrl, ...e
         ref &&
         connectors.create(
           ref,
-          <Element {...(elementProps as Element<UserComponent<PropsWithCraft<P>>>)} is={CraftElement} />,
+          <Element is={CraftElement} {...(elementProps as Element<UserComponent<PropsWithCraft<P>>>)} />,
         )
       }
     >

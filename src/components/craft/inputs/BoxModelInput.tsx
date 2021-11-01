@@ -45,12 +45,7 @@ const BoxModelInput: React.VFC<{
 }
 
 export const formatBoxModelValue = (value?: string) => {
-  console.log(value)
   const slices = value?.split(' ').map(v => v.replace('px', '')) || []
-  console.log(
-    slices,
-    range(0, 4).map(index => Number(slices[index]) || 0),
-  )
   return range(0, 4).map(index => Number(slices[index]) || 0)
 }
 
