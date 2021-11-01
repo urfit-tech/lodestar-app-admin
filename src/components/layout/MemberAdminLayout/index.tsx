@@ -13,6 +13,7 @@ import { useCustomRenderer } from '../../../contexts/CustomRendererContext'
 import hasura from '../../../hasura'
 import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages, memberMessages, promotionMessages } from '../../../helpers/translation'
+import { useMutateMember } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../../images/icon/phone.svg'
@@ -99,6 +100,7 @@ const MemberAdminLayout: React.FC<{
       }
     }
   `)
+  const { updateMemberAvatar } = useMutateMember()
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
