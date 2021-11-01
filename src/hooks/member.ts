@@ -1006,3 +1006,15 @@ export const useProperty = () => {
     refetchProperties: refetch,
   }
 }
+export const useMutateMember = () => {
+  const [updateMemberAvatar] = useMutation<hasura.UPDATE_MEMBER_AVATAR, hasura.UPDATE_MEMBER_AVATARVariables>(gql`
+    mutation UPDATE_MEMBER_AVATAR($memberId: String!, $pictureUrl: String!) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { picture_url: $pictureUrl }) {
+        affected_rows
+      }
+    }
+  `)
+  return {
+    updateMemberAvatar,
+  }
+}
