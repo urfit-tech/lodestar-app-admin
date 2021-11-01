@@ -87,7 +87,7 @@ const BlogPostSettingForm: React.FC<{
     >
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             {formatMessage(commonMessages.label.cover)}
             <Tooltip
               placement="top"

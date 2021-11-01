@@ -121,7 +121,7 @@ const PodcastProgramBasicForm: React.FC<{
       </Form.Item>
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             {formatMessage(commonMessages.label.languages)}
             <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
               <QuestionCircleFilled className="ml-2" />

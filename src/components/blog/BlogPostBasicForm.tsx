@@ -108,7 +108,7 @@ const BlogPostBasicForm: React.FC<{
       </Form.Item>
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             {formatMessage(blogMessages.label.codeName)}
             <Tooltip placement="top" title={<StyledTips>{formatMessage(blogMessages.text.url)}</StyledTips>}>
               <QuestionCircleFilled className="ml-2" />

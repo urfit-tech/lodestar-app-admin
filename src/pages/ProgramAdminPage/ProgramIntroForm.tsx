@@ -92,7 +92,7 @@ const ProgramIntroForm: React.FC<{
     >
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             {formatMessage(programMessages.label.programCover)}
             <Tooltip placement="top" title={<StyledTips>{formatMessage(programMessages.text.imageTips)}</StyledTips>}>
               <QuestionCircleFilled className="ml-2" />
