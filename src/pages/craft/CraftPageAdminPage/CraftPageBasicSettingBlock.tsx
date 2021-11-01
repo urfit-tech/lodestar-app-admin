@@ -87,7 +87,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
           </Form.Item>
           <Form.Item
             label={
-              <span>
+              <span className="d-flex align-items-center">
                 {formatMessage(craftPageMessages.label.path)}
                 <Tooltip
                   placement="top"

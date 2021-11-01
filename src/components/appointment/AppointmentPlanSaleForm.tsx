@@ -68,7 +68,7 @@ const AppointmentPlanSaleForm: React.FC<{
     >
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             <span className="mr-2">{formatMessage(appointmentMessages.label.duration)}</span>
             <Tooltip
               placement="top"

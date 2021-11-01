@@ -168,10 +168,10 @@ const PodcastProgramContentForm: React.FC<{
     >
       <Form.Item
         label={
-          <span>
-            <span className="mr-2">{formatMessage(podcastMessages.label.audioFile)}</span>
+          <span className="d-flex align-items-center">
+            {formatMessage(podcastMessages.label.audioFile)}
             <Tooltip title={<StyledTips>{formatMessage(podcastMessages.text.audioFileTips)}</StyledTips>}>
-              <QuestionCircleFilled />
+              <QuestionCircleFilled className="ml-2" />
             </Tooltip>
           </span>
         }

@@ -113,7 +113,7 @@ const ProgramBasicForm: React.FC<{
       )}
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             {formatMessage(commonMessages.label.languages)}
             <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
               <QuestionCircleFilled className="ml-2" />
@@ -129,7 +129,7 @@ const ProgramBasicForm: React.FC<{
       {program.isSubscription && (
         <Form.Item
           label={
-            <span>
+            <span className="d-flex align-items-center">
               {formatMessage(programMessages.label.isIntroductionSectionVisible)}
               <Tooltip
                 placement="top"

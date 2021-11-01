@@ -110,7 +110,7 @@ const AppointmentPlanBasicForm: React.FC<{
 
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             {formatMessage(appointmentMessages.label.reservationPlan)}
             <Tooltip placement="top" title={<StyledTips>{formatMessage(messages.appointmentDeadline)}</StyledTips>}>
               <QuestionCircleFilled className="ml-2" />

@@ -262,7 +262,7 @@ const PracticeForm: React.FC<{
       </Form.Item>
       <Form.Item
         label={
-          <span>
+          <span className="d-flex align-items-center">
             {formatMessage(messages.uploadExample)}
             <Tooltip
               placement="top"
