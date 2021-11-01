@@ -3293,35 +3293,6 @@ export interface UPDATE_MEMBER_ACCOUNTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_AVATAR
-// ====================================================
-
-export interface UPDATE_MEMBER_AVATAR_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_AVATAR {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_AVATAR_update_member | null;
-}
-
-export interface UPDATE_MEMBER_AVATARVariables {
-  memberId: string;
-  pictureUrl: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_BASIC
 // ====================================================
 
@@ -9340,6 +9311,9 @@ export interface GET_MEMBER_ADMIN_member_by_pk {
    * app-owner / content-creator
    */
   role: string;
+  title: string | null;
+  description: string | null;
+  abstract: string | null;
   created_at: any | null;
   logined_at: any | null;
   assigned_at: any | null;
@@ -9998,6 +9972,35 @@ export interface GET_PROPERTY {
 
 export interface GET_PROPERTYVariables {
   type: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_AVATAR
+// ====================================================
+
+export interface UPDATE_MEMBER_AVATAR_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_AVATAR {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_AVATAR_update_member | null;
+}
+
+export interface UPDATE_MEMBER_AVATARVariables {
+  memberId: string;
+  pictureUrl: string;
 }
 
 /* tslint:disable */
