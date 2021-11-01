@@ -52,6 +52,9 @@ const StyledTag = styled.span`
     margin-right: 4px;
   }
 `
+const StyledName = styled.span`
+  color: ${props => props.theme['@primary-color']};
+`
 
 const CreatorCollectionAdminTable: React.FC<{
   creators: CreatorProps[]
@@ -142,10 +145,15 @@ const CreatorCollectionAdminTable: React.FC<{
           }),
       }),
       render: (name, record) => (
-        <div className="d-flex align-items-center justify-content-start">
+        <a
+          href={`/admin/members/${record.id}`}
+          className="d-flex align-items-center justify-content-start"
+          target="_blank"
+          rel="noreferrer"
+        >
           <AvatarImage size="36px" src={record.pictureUrl} className="mr-3" />
-          <span className="pl-1">{name}</span>
-        </div>
+          <StyledName className="pl-1">{name}</StyledName>
+        </a>
       ),
     },
     {
