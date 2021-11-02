@@ -1,4 +1,4 @@
-import { AddIcon, EditIcon } from '@chakra-ui/icons'
+import { FormOutlined, PlusSquareOutlined } from '@ant-design/icons'
 import { useEditor } from '@craftjs/core'
 import { Button, Collapse, Input, message, Slider, Tabs } from 'antd'
 import { PropsWithCraft } from 'lodestar-app-element/src/components/common/Craftize'
@@ -24,6 +24,7 @@ const StyledTabs = styled(Tabs)`
   height: 100%;
   min-width: 300px;
   position: relative;
+  border-bottom: 2px solid var(--gray);
   .ant-tabs-content {
     height: 100%;
   }
@@ -48,6 +49,10 @@ const StyledTabBarWrapper = styled.div`
   align-items: center;
   padding-right: 1rem;
   background: #ffffff;
+
+  .anticon {
+    margin: 0;
+  }
 
   .ant-tabs-tab {
     margin: 1em 1.5em;
@@ -135,15 +140,17 @@ const CraftSettingsPanel: React.VFC<{ pageId: string; onSave?: () => void }> = (
         </StyledTabBarWrapper>
       )}
     >
-      <StyledTabsPane key="toolbox" tab={<AddIcon />}>
+      <StyledTabsPane key="toolbox" tab={<PlusSquareOutlined />}>
         <CraftToolbox />
       </StyledTabsPane>
-      <StyledTabsPane key="settings" tab={<EditIcon />}>
+      <StyledTabsPane key="settings" tab={<FormOutlined />}>
         <div className="p-3" style={{ height: '100%' }}>
           <CraftResponsiveSelector />
-          {editor.currentNode?.related.settings
-            ? React.createElement(editor.currentNode?.related.settings)
-            : 'Please select an element.'}
+          <div className="py-3">
+            {editor.currentNode?.related.settings
+              ? React.createElement(editor.currentNode?.related.settings)
+              : 'Please select an element.'}
+          </div>
         </div>
       </StyledTabsPane>
     </StyledTabs>
