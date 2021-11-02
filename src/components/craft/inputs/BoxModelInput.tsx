@@ -1,7 +1,7 @@
 import { Input } from 'antd'
 import { range, repeat } from 'ramda'
 import React from 'react'
-import { CraftSettingLabel, CraftSlider } from '../settings/CraftSettings'
+import { CraftSettingLabel, CraftSlider } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 
 const BoxModelInput: React.VFC<{
   title?: string // 3px 3px 3px 3px

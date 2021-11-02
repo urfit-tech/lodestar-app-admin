@@ -3,8 +3,12 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import {
+  CraftSettingLabel,
+  CraftSlider,
+  StyledCollapsePanel,
+} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
-import { CraftSettingLabel, CraftSlider, StyledCollapsePanel } from '../settings/CraftSettings'
 import BoxModelInput from './BoxModelInput'
 import ColorPicker from './ColorPicker'
 

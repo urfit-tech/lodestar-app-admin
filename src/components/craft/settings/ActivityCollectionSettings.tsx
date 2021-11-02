@@ -4,11 +4,11 @@ import gql from 'graphql-tag'
 import { ActivityCollectionProps } from 'lodestar-app-element/src/components/collections/ActivityCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
+import { CraftElementSettings, CraftSettingLabel } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import ActivityCollectionSelector from '../../activity/ActivitySourceOptionSelector'
 import LayoutInput from '../../common/LayoutInput'
-import { CraftSettingLabel, CraftSettings } from './CraftSettings'
 
-const ActivityCollectionSettings: CraftSettings<ActivityCollectionProps> = ({ props, onPropsChange }) => {
+const ActivityCollectionSettings: CraftElementSettings<ActivityCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<ActivityCollectionProps>()
 

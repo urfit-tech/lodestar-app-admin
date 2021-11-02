@@ -5,12 +5,17 @@ import { ButtonProps } from 'lodestar-app-element/src/components/buttons/Button'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import {
+  CraftElementSettings,
+  CraftSettingLabel,
+  StyledCollapsePanel,
+  StyledUnderLineInput,
+} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import TypographyStyleInput from '../inputs/TypographyStyleInput'
-import { CraftSettingLabel, CraftSettings, StyledCollapsePanel, StyledUnderLineInput } from './CraftSettings'
 
 type FieldValues = {
   title: string
@@ -22,7 +27,7 @@ type FieldValues = {
   customStyle: CSSObject
 }
 
-const ButtonSettings: CraftSettings<ButtonProps> = ({ props, onPropsChange }) => {
+const ButtonSettings: CraftElementSettings<ButtonProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldValues>()
 

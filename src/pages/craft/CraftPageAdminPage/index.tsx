@@ -16,8 +16,8 @@ import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
 import { commonMessages, craftPageMessages } from '../../../helpers/translation'
 import { useAppPage } from '../../../hooks/appPage'
 import CraftPageBasicSettingBlock from './CraftPageBasicSettingBlock'
+import CraftPageBuilderBlock from './CraftPageBuilderBlock'
 import CraftPagePublishAdminBlock from './CraftPagePublishAdminBlock'
-import CraftPageSettingBlock from './CraftPageSettingBlock'
 
 const CraftPageAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -57,7 +57,7 @@ const CraftPageAdminPage: React.VFC = () => {
           )}
         >
           <Tabs.TabPane key="editor" tab={formatMessage(craftPageMessages.label.editPage)}>
-            <CraftPageSettingBlock pageAdmin={appPage} onAppPageUpdate={refetchAppPage} />
+            <CraftPageBuilderBlock pageAdmin={appPage} onAppPageUpdate={refetchAppPage} />
           </Tabs.TabPane>
           <Tabs.TabPane key="general" tab={formatMessage(craftPageMessages.label.settings)}>
             <CraftPageBasicSettingBlock pageAdmin={appPage} onRefetch={refetchAppPage} />

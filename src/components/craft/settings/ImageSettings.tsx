@@ -5,10 +5,10 @@ import { ImageProps } from 'lodestar-app-element/src/components/common/Image'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
+import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
-import { CraftSettings } from './CraftSettings'
 
 type FieldValues = {
   url: string
@@ -21,7 +21,7 @@ const messages = defineMessages({
   ratio: { id: 'craft.settings.image.ratio', defaultMessage: '比例' },
 })
 
-const ImageSettings: CraftSettings<ImageProps> = ({ props, onPropsChange }) => {
+const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
   const { formatMessage } = useIntl()
 

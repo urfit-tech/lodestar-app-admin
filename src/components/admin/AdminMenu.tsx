@@ -9,8 +9,8 @@ import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { isEmpty } from 'ramda'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
+import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -42,6 +42,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { enabledModules, settings } = useApp()
   const { permissions, currentUserRole } = useAuth()
   const { renderAdminMenu } = useCustomRenderer()
+  const [openKeys, setOpenKeys] = useState<React.Key[]>([])
 
   const defaultMenuItems: {
     permissionIsAllowed: boolean
@@ -470,6 +471,19 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     }
   }
 
+  const handleOpenChange = (keys: React.Key[]) => {
+    const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1)
+    if (
+      defaultMenuItems
+        .filter(v => v.permissionIsAllowed && v.subMenuItems)
+        .find(menuItem => menuItem.key === latestOpenKey)
+    ) {
+      setOpenKeys(latestOpenKey ? [latestOpenKey] : [])
+    } else {
+      setOpenKeys(keys)
+    }
+  }
+
   return (
     <>
       {renderAdminMenu?.({
@@ -482,7 +496,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         <StyledMenu
           {...menuProps}
           mode="inline"
-          defaultOpenKeys={defaultMenuItems.filter(v => !isEmpty(v.subMenuItems)).map(v => v.key)}
+          openKeys={openKeys.map(key => key.toString())}
+          onOpenChange={handleOpenChange}
           onClick={handleClick}
         >
           {defaultMenuItems

@@ -6,9 +6,13 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import {
+  CraftElementSettings,
+  CraftSlider,
+  StyledCollapsePanel,
+} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle, StyledInputNumber } from '../../admin'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
-import { CraftSettings, CraftSlider, StyledCollapsePanel } from './CraftSettings'
 
 type FieldValues = {
   slidesToShow: number
@@ -37,7 +41,7 @@ const messages = defineMessages({
   dotsMargin: { id: 'craft.settings.carousel.dotsMargin', defaultMessage: '圓點間距' },
   dotsRadius: { id: 'craft.settings.carousel.dotsRadius', defaultMessage: '圓點弧度' },
 })
-const CarouselSettings: CraftSettings<CarouselProps> = ({ props, onPropsChange }) => {
+const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
   const { formatMessage } = useIntl()
 

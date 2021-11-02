@@ -5,9 +5,9 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
-import { CraftSettings } from './CraftSettings'
 
 type FieldValues = {
   ratios: string
@@ -15,7 +15,7 @@ type FieldValues = {
   positionStyle: CSSObject
 }
 
-const LayoutSettings: CraftSettings<LayoutProps> = ({ props, onPropsChange }) => {
+const LayoutSettings: CraftElementSettings<LayoutProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldValues>()
 

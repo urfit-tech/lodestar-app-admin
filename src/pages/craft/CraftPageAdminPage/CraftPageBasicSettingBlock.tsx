@@ -8,11 +8,11 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, StyledTips } from '../../../components/admin'
 import AdminModal from '../../../components/admin/AdminModal'
-import { CraftSettingLabel } from '../../../components/craft/settings/CraftSettings'
 import { handleError } from '../../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../../helpers/translation'
 import { useMutateAppPage } from '../../../hooks/appPage'
 import { CraftPageAdminProps } from '../../../types/craft'
+import { CraftSettingLabel } from './CraftSettingsPanel'
 
 type FieldProps = {
   pageName: string

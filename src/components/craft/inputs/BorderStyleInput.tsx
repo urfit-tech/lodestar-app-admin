@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import { CraftSettingLabel, CraftSlider } from '../settings/CraftSettings'
+import { CraftSettingLabel, CraftSlider } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import ColorPicker from './ColorPicker'
 
 export type BorderStyle = Pick<CSSObject, 'borderColor' | 'borderWidth' | 'borderStyle' | 'borderRadius'>

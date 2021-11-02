@@ -7,10 +7,10 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import { CraftElementSettings, StyledCollapsePanel } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import TypographyStyleInput from '../inputs/TypographyStyleInput'
-import { CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
 const messages = defineMessages({
   titleStyle: { id: 'craft.settings.collapse.titleStyle', defaultMessage: '標題樣式' },
@@ -34,7 +34,7 @@ type FieldProps = {
   }
 }
 
-const CollapseSettings: CraftSettings<CollapseProps> = ({ props, onPropsChange }) => {
+const CollapseSettings: CraftElementSettings<CollapseProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const { authToken } = useAuth()

@@ -3,10 +3,10 @@ import { useForm } from 'antd/lib/form/Form'
 import { CardProps } from 'lodestar-app-element/src/components/cards/Card'
 import React from 'react'
 import { CSSObject } from 'styled-components'
+import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import BackgroundInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
-import { CraftSettings } from './CraftSettings'
 
 type FieldValues = {
   spaceStyle: CSSObject
@@ -14,7 +14,7 @@ type FieldValues = {
   backgroundStyle?: CSSObject
 }
 
-const CardSettings: CraftSettings<CardProps> = ({ props, onPropsChange }) => {
+const CardSettings: CraftElementSettings<CardProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
 
   const handleChange = () => {

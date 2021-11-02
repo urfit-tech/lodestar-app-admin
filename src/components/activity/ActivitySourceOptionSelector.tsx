@@ -5,7 +5,7 @@ import { ActivityCollectionProps } from 'lodestar-app-element/src/components/col
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel } from '../craft/settings/CraftSettings'
+import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import ActivityCategorySelect from './ActivityCategorySelect'
 import ActivityTagSelect from './ActivityTagSelect'
 

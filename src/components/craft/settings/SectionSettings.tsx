@@ -4,10 +4,10 @@ import { useForm } from 'antd/lib/form/Form'
 import { SectionProps } from 'lodestar-app-element/src/components/common/Section'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
-import { CraftSettings } from './CraftSettings'
 
 const messages = defineMessages({
   layout: { id: 'craft.settings.section.layout', defaultMessage: '排列方式' },
@@ -22,7 +22,7 @@ const messages = defineMessages({
   bottom: { id: 'craft.settings.section.bottom', defaultMessage: '置底' },
 })
 
-const SectionSettings: CraftSettings<SectionProps> = ({ props, onPropsChange }) => {
+const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsChange }) => {
   const [form] = useForm()
   const { formatMessage } = useIntl()
   const handleChange = () => {

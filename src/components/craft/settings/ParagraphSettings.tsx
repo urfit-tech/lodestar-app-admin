@@ -5,19 +5,23 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
+import {
+  CraftElementSettings,
+  CraftSettingLabel,
+  StyledCollapsePanel,
+} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import TypographyStyleInput from '../inputs/TypographyStyleInput'
-import { CraftSettingLabel, CraftSettings, StyledCollapsePanel } from './CraftSettings'
 
 type FieldValues = {
   content: string
   customStyle: CSSObject
 }
 
-const ParagraphSettings: CraftSettings<ParagraphProps> = ({ props, onPropsChange }) => {
+const ParagraphSettings: CraftElementSettings<ParagraphProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldValues>()
 

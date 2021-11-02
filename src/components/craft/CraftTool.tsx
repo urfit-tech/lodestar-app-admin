@@ -3,7 +3,6 @@ import { Image } from 'antd'
 import { PropsWithCraft } from 'lodestar-app-element/src/components/common/Craftize'
 import { rgba } from 'lodestar-app-element/src/helpers'
 import React from 'react'
-import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 
 const StyledBoxWrapper = styled.div`
@@ -40,15 +39,18 @@ const StyledOverlay = styled.div<{ coverUrl?: string }>`
 `
 type CraftToolProps<P> = {
   as: UserComponent<PropsWithCraft<P>>
-  message: { id: string; defaultMessage: string }
   coverUrl?: string
   canvas?: boolean
+  displayName?: string
 } & Element<UserComponent<PropsWithCraft<P>>>
 
-const CraftTool = <P extends object>({ as: CraftElement, message, coverUrl, ...elementProps }: CraftToolProps<P>) => {
-  const { formatMessage } = useIntl()
+const CraftTool = <P extends object>({
+  as: CraftElement,
+  coverUrl,
+  displayName,
+  ...elementProps
+}: CraftToolProps<P>) => {
   const { connectors } = useEditor()
-  const name = formatMessage(message)
 
   return (
     <StyledBoxWrapper
@@ -61,8 +63,12 @@ const CraftTool = <P extends object>({ as: CraftElement, message, coverUrl, ...e
         )
       }
     >
-      {coverUrl ? <Image preview={false} src={coverUrl} /> : <StyledText>{name}</StyledText>}
-      {coverUrl && <StyledOverlay>{name}</StyledOverlay>}
+      {coverUrl ? (
+        <Image preview={false} src={coverUrl} />
+      ) : (
+        <StyledText>{displayName || CraftElement.craft?.displayName}</StyledText>
+      )}
+      {coverUrl && <StyledOverlay>{CraftElement.craft?.displayName}</StyledOverlay>}
     </StyledBoxWrapper>
   )
 }

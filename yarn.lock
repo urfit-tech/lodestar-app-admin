@@ -2276,6 +2276,13 @@
     lodash "^4.17.20"
     tiny-invariant "^1.0.6"
 
+"@craftjs/layers@^0.1.0-beta.20":
+  version "0.1.0-beta.20"
+  resolved "https://registry.yarnpkg.com/@craftjs/layers/-/layers-0.1.0-beta.20.tgz#86adad803efd20e6295bc0a4d71a0e278baef696"
+  integrity sha512-HR54QkcQZOk/VwFP4l0l4OKk2RkBiYkSyKeKjzV7F2kGa9Vt6VyrTshASdwihSZrpo8jdz3qHVJIKhaRWcoGiQ==
+  dependencies:
+    "@craftjs/utils" "^0.1.0-beta.20"
+
 "@craftjs/utils@^0.1.0-beta.20":
   version "0.1.0-beta.20"
   resolved "https://registry.yarnpkg.com/@craftjs/utils/-/utils-0.1.0-beta.20.tgz#2ba535b043e45368dc60bcf06614dab5ba2d0899"
@@ -11431,12 +11438,10 @@ lodestar-app-element@urfit-tech/lodestar-app-element#b1d3ab6d3dda640bc1f18de0887
   dependencies:
     "@apollo/react-hooks" "3.1.5"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
-    "@chakra-ui/icons" "1.0.0"
     "@chakra-ui/react" "1.1.2"
     "@craftjs/core" "0.1.0-beta.20"
     "@emotion/react" "11"
     "@emotion/styled" "11"
-    "@types/mustache" "4.0.1"
     "@types/node" "12.0.0"
     "@types/ramda" "0.27.45"
     "@types/react" "17.0.0"
@@ -11454,14 +11459,11 @@ lodestar-app-element@urfit-tech/lodestar-app-element#b1d3ab6d3dda640bc1f18de0887
     apollo-link-error "1.1.13"
     apollo-link-http "1.5.17"
     axios "0.21.4"
-    braft-editor "2.3.9"
-    classnames "^2.3.1"
     framer-motion "2.9.4"
     graphql-tag "2.12.5"
     jsonwebtoken "8.5.1"
     libphonenumber-js "1.9.34"
     moment "^2.29.1"
-    mustache "4.2.0"
     node-sass "4.14.1"
     query-string "7.0.1"
     ramda "0.27.0"
@@ -11469,9 +11471,7 @@ lodestar-app-element@urfit-tech/lodestar-app-element#b1d3ab6d3dda640bc1f18de0887
     react "17.0.2"
     react-color "2.19.3"
     react-dom "17.0.2"
-    react-facebook-pixel "1.0.4"
     react-ga "3.3.0"
-    react-icons "4.3.1"
     react-intl "5.20.9"
     react-is "^17.0.2"
     react-responsive "8.1.0"
