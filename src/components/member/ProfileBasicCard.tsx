@@ -11,7 +11,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
-import { useMember } from '../../hooks/member'
+import { useMember, useMutateMember } from '../../hooks/member'
 import DefaultAvatarImage from '../../images/default/avatar.svg'
 import { AdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
@@ -46,10 +46,7 @@ const ProfileBasicCard: React.FC<
   const { id: appId } = useApp()
   const { member, refetchMember } = useMember(memberId)
   const { categories } = useCategory('creator')
-
-  const [updateMemberAvatar] = useMutation<hasura.UPDATE_MEMBER_AVATAR, hasura.UPDATE_MEMBER_AVATARVariables>(
-    UPDATE_MEMBER_AVATAR,
-  )
+  const { updateMemberAvatar } = useMutateMember()
   const [updateMemberBasic] = useMutation<hasura.UPDATE_MEMBER_BASIC, hasura.UPDATE_MEMBER_BASICVariables>(
     UPDATE_MEMBER_BASIC,
   )
@@ -239,13 +236,6 @@ const ProfileBasicCard: React.FC<
   )
 }
 
-const UPDATE_MEMBER_AVATAR = gql`
-  mutation UPDATE_MEMBER_AVATAR($memberId: String!, $pictureUrl: String!) {
-    update_member(where: { id: { _eq: $memberId } }, _set: { picture_url: $pictureUrl }) {
-      affected_rows
-    }
-  }
-`
 const UPDATE_MEMBER_BASIC = gql`
   mutation UPDATE_MEMBER_BASIC(
     $memberId: String!

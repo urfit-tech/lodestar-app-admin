@@ -1,18 +1,20 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Divider, Layout, Tabs } from 'antd'
+import { Button, Divider, Layout, message, Tabs } from 'antd'
+import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { useCustomRenderer } from '../../../contexts/CustomRendererContext'
 import hasura from '../../../hasura'
 import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages, memberMessages, promotionMessages } from '../../../helpers/translation'
+import { useMutateMember } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../../images/icon/phone.svg'
@@ -22,6 +24,7 @@ import { MemberAdminProps, UserRole } from '../../../types/member'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../../admin'
 import { routesProps } from '../../common/AdminRouter'
 import { CustomRatioImage } from '../../common/Image'
+import SingleUploader from '../../form/SingleUploader'
 import { StyledLayoutContent } from '../DefaultLayout'
 import { MemberRejectionBlock } from './MemberRejectionBlock'
 
@@ -59,6 +62,61 @@ export const StyledEmptyBlock = styled.div`
   letter-spacing: 0.4px;
   color: var(--gray-dark);
 `
+const StyledAvatarWrapper = styled.div`
+  position: relative;
+`
+const StyledSingleUploader = styled(SingleUploader)`
+  && {
+    width: auto;
+    margin-top: 50%;
+    margin-left: 50%;
+    transform: translate(-50%, -50%);
+    & button {
+      background: transparent;
+      color: white;
+    }
+  }
+
+  .ant-upload.ant-upload-select-picture-card {
+    margin: 0;
+    height: auto;
+    width: 120px;
+    border: none;
+    background: none;
+
+    .ant-upload {
+      padding: 0;
+    }
+  }
+`
+const StyledImageHoverMask = styled.div<{ loading: boolean }>`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0);
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: all 0.4s;
+  & ${StyledSingleUploader} {
+    opacity: 0;
+  }
+  ${props =>
+    props.loading &&
+    css`
+      & ${StyledSingleUploader} {
+        opacity: 1;
+      }
+      background-color: rgba(0, 0, 0, 0.5);
+    `}
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+    & ${StyledSingleUploader} {
+      opacity: 1;
+    }
+  }
+`
 
 const MemberAdminLayout: React.FC<{
   member: MemberAdminProps & {
@@ -79,8 +137,10 @@ const MemberAdminLayout: React.FC<{
   const location = useLocation()
   const match = useRouteMatch(routesProps.owner_member.path)
   const { currentMemberId, currentUserRole, permissions } = useAuth()
-  const { enabledModules, settings, host } = useApp()
+  const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
+  const [loading, setLoading] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<UploadFile | undefined>(undefined)
   const { renderMemberAdminLayout } = useCustomRenderer()
   const [insertMemberNoteRejectedAt] = useMutation<
     hasura.INSERT_MEMBER_NOTE_REJECTED_AT,
@@ -99,6 +159,7 @@ const MemberAdminLayout: React.FC<{
       }
     }
   `)
+  const { updateMemberAvatar } = useMutateMember()
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
@@ -146,6 +207,23 @@ const MemberAdminLayout: React.FC<{
     ),
   ]
 
+  const handleUpdateAvatar = () => {
+    setLoading(true)
+    const uploadTime = Date.now()
+    updateMemberAvatar({
+      variables: {
+        memberId: member.id,
+        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${member.id}/32?t=${uploadTime}`,
+      },
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
+  }
+
   return (
     <>
       <AdminHeader>
@@ -165,14 +243,33 @@ const MemberAdminLayout: React.FC<{
       <Layout>
         <StyledSider width="320">
           <div className="text-center">
-            <CustomRatioImage
-              ratio={1}
-              width="120px"
-              src={member?.avatarUrl || DefaultAvatar}
-              shape="circle"
-              className="mx-auto mb-3"
-            />
-            <StyledName className="mb-4">{member?.name || member?.username}</StyledName>
+            <StyledAvatarWrapper>
+              <CustomRatioImage
+                ratio={1}
+                width="120px"
+                src={member?.avatarUrl || DefaultAvatar}
+                shape="circle"
+                className="mx-auto"
+              />
+              <StyledImageHoverMask loading={loading}>
+                <StyledSingleUploader
+                  accept="image/*"
+                  listType="picture-card"
+                  showUploadList={false}
+                  path={`avatars/${appId}/${member.id}`}
+                  onUploading={() => setLoading(true)}
+                  onSuccess={() => {
+                    setAvatarFile(undefined)
+                    handleUpdateAvatar()
+                  }}
+                  onError={() => setLoading(false)}
+                  uploadText={formatMessage(commonMessages.ui.upload)}
+                  value={avatarFile}
+                  onChange={(value: any) => setAvatarFile(value as UploadFile)}
+                />
+              </StyledImageHoverMask>
+            </StyledAvatarWrapper>
+            <StyledName className="mt-3 mb-4">{member?.name || member?.username}</StyledName>
           </div>
           <StyledDescription>
             <Icon className="mr-2" component={() => <EmailIcon />} />

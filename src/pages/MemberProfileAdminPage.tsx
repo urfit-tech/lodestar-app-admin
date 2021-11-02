@@ -5,6 +5,7 @@ import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import { AdminBlock, AdminBlockTitle } from '../components/admin'
 import MemberAdminLayout from '../components/layout/MemberAdminLayout'
+import MemberProfileAbstractForm from '../components/member/MemberProfileAbstractForm'
 import MemberProfileBasicForm from '../components/member/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../components/member/MemberPropertyAdminForm'
 import { memberMessages } from '../helpers/translation'
@@ -33,6 +34,10 @@ const MemberProfileAdminPage: React.FC = () => {
             <MemberPropertyAdminForm memberId={memberId} />
           </AdminBlock>
         )}
+        <AdminBlock>
+          <AdminBlockTitle>{formatMessage(memberMessages.label.abstract)}</AdminBlockTitle>
+          <MemberProfileAbstractForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+        </AdminBlock>
       </div>
     </MemberAdminLayout>
   )
