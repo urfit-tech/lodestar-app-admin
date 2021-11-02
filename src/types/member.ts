@@ -81,6 +81,9 @@ export type MemberAdminProps = {
   createdAt: Date | null
   loginedAt: Date | null
   assignedAt: Date | null
+  title: string | null
+  abstract: string | null
+  description: string | null
   manager: MemberBriefProps | null
   tags: string[]
   specialities: string[]

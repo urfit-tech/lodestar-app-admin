@@ -90,6 +90,9 @@ export const useMemberAdmin = (memberId: string) => {
           email
           star
           role
+          title
+          description
+          abstract
           created_at
           logined_at
           assigned_at
@@ -215,6 +218,9 @@ export const useMemberAdmin = (memberId: string) => {
           email: data.member_by_pk.email,
           star: data.member_by_pk.star,
           role: data.member_by_pk.role as UserRole,
+          title: data.member_by_pk.title,
+          description: data.member_by_pk.description,
+          abstract: data.member_by_pk.abstract,
           createdAt: new Date(data.member_by_pk.created_at),
           loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
           assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
@@ -1004,5 +1010,17 @@ export const useProperty = () => {
     errorProperties: error,
     properties,
     refetchProperties: refetch,
+  }
+}
+export const useMutateMember = () => {
+  const [updateMemberAvatar] = useMutation<hasura.UPDATE_MEMBER_AVATAR, hasura.UPDATE_MEMBER_AVATARVariables>(gql`
+    mutation UPDATE_MEMBER_AVATAR($memberId: String!, $pictureUrl: String!) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { picture_url: $pictureUrl }) {
+        affected_rows
+      }
+    }
+  `)
+  return {
+    updateMemberAvatar,
   }
 }
