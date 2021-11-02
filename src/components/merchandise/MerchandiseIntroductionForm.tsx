@@ -80,16 +80,15 @@ const MerchandiseIntroductionForm: React.FC<{
     >
       <Form.Item
         label={
-          <>
-            <span>{formatMessage(merchandiseMessages.label.images)}</span>
+          <span className="d-flex align-items-center">
+            {formatMessage(merchandiseMessages.label.images)}
             <Tooltip
               placement="top"
               title={<StyledTips>{formatMessage(merchandiseMessages.text.imageTips)}</StyledTips>}
-              className="ml-1"
             >
-              <QuestionCircleFilled />
+              <QuestionCircleFilled className="ml-2" />
             </Tooltip>
-          </>
+          </span>
         }
         wrapperCol={{ span: 24, md: { span: 16 } }}
       >
@@ -97,16 +96,15 @@ const MerchandiseIntroductionForm: React.FC<{
       </Form.Item>
       <Form.Item
         label={
-          <>
-            <span>{formatMessage(merchandiseMessages.label.abstract)}</span>
+          <span className="d-flex align-items-center">
+            {formatMessage(merchandiseMessages.label.abstract)}
             <Tooltip
               placement="top"
               title={<StyledTips>{formatMessage(merchandiseMessages.text.abstractTips)}</StyledTips>}
-              className="ml-1"
             >
-              <QuestionCircleFilled />
+              <QuestionCircleFilled className="ml-2" />
             </Tooltip>
-          </>
+          </span>
         }
         name="abstract"
       >

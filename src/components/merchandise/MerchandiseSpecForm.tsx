@@ -193,13 +193,15 @@ const MerchandiseSpecForm: React.FC<{
                   <Form.Item
                     label={
                       <StyledLabel>
-                        <span className="mr-1">{formatMessage(merchandiseMessages.label.deliveryItem)}</span>
-                        <Tooltip
-                          placement="top"
-                          title={<StyledTips>{formatMessage(merchandiseMessages.text.deliveryItemHelp)}</StyledTips>}
-                        >
-                          <QuestionCircleFilled />
-                        </Tooltip>
+                        <span className="d-flex align-items-center">
+                          {formatMessage(merchandiseMessages.label.deliveryItem)}
+                          <Tooltip
+                            placement="top"
+                            title={<StyledTips>{formatMessage(merchandiseMessages.text.deliveryItemHelp)}</StyledTips>}
+                          >
+                            <QuestionCircleFilled className="ml-1" />
+                          </Tooltip>
+                        </span>
                       </StyledLabel>
                     }
                     className={!merchandise.isPhysical && !merchandise.isCustomized ? undefined : 'd-none'}

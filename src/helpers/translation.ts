@@ -1024,6 +1024,10 @@ export const podcastAlbumMessages = {
       id: 'podcastAlbum.text.deletePodcastAlbumConfirmation',
       defaultMessage: '音頻專輯一經刪除即不可恢復，確定要刪除嗎？',
     },
+    coverTips: {
+      id: 'podcastAlbum.text.coverTips',
+      defaultMessage: '建議圖片尺寸：1200*1200px',
+    },
   }),
 }
 export const merchandiseMessages = {

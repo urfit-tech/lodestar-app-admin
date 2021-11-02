@@ -91,13 +91,13 @@ const PodcastProgramIntroForm: React.FC<{
     >
       <Form.Item
         label={
-          <span>
-            <span className="mr-2">{formatMessage(podcastMessages.label.podcastCover)}</span>
+          <span className="d-flex align-items-center">
+            {formatMessage(podcastMessages.label.podcastCover)}
             <Tooltip
               placement="top"
               title={<StyledTips>{formatMessage(podcastMessages.text.podcastCoverTips)}</StyledTips>}
             >
-              <QuestionCircleFilled />
+              <QuestionCircleFilled className="ml-2" />
             </Tooltip>
           </span>
         }
