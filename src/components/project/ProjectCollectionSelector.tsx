@@ -1,22 +1,21 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, Select } from 'antd'
 import gql from 'graphql-tag'
-import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
+import { ProjectCollectionProps } from 'lodestar-app-element/src/components/collections/ProjectCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
 import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
-import ProgramCategorySelect from './ProgramCategorySelect'
-import ProgramTagSelect from './ProgramTagSelect'
+import ProjectCategorySelect from './ProjectCategorySelect'
 
-type ProgramSourceOptions = ProgramCollectionProps['source']
-const ProgramCollectionSelector: React.FC<{
-  value?: ProgramSourceOptions
-  onChange?: (value: ProgramSourceOptions) => void
+type ProjectSourceOptions = ProjectCollectionProps['source']
+const ProjectCollectionSelector: React.FC<{
+  value?: ProjectSourceOptions
+  onChange?: (value: ProjectSourceOptions) => void
 }> = ({ value = { from: 'publishedAt' }, onChange }) => {
   const { formatMessage } = useIntl()
-  const { data } = useQuery<hasura.GET_PROGRAM_ID_LIST>(GET_PROGRAM_ID_LIST)
-  const programOptions = data?.program.map(p => ({ id: p.id, title: p.title })) || []
+  const { data } = useQuery<hasura.GET_PROGRAM_PACKAGE_ID_LIST>(GET_PROGRAM_PACKAGE_ID_LIST)
+  const programPackageOptions = data?.program_package.map(pp => ({ id: pp.id, title: pp.title })) || []
   return (
     <div>
       <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</CraftSettingLabel>}>
@@ -26,9 +25,6 @@ const ProgramCollectionSelector: React.FC<{
           onChange={from => {
             switch (from) {
               case 'publishedAt':
-                onChange?.({ from, limit: 4 })
-                break
-              case 'currentPrice':
                 onChange?.({ from, limit: 4 })
                 break
               case 'custom':
@@ -45,15 +41,12 @@ const ProgramCollectionSelector: React.FC<{
           <Select.Option key="publishedAt" value="publishedAt">
             {formatMessage(craftPageMessages.label.publishedAt)}
           </Select.Option>
-          <Select.Option key="currentPrice" value="currentPrice">
-            {formatMessage(craftPageMessages.label.currentPrice)}
-          </Select.Option>
           <Select.Option key="custom" value="custom">
             {formatMessage(craftPageMessages.label.custom)}
           </Select.Option>
         </Select>
       </Form.Item>
-      {(value?.from === 'publishedAt' || value?.from === 'currentPrice') && (
+      {value?.from === 'publishedAt' && (
         <>
           <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</CraftSettingLabel>}>
             <Select value={value.asc ? 'asc' : 'desc'} onChange={v => onChange?.({ ...value, asc: v === 'asc' })}>
@@ -72,36 +65,28 @@ const ProgramCollectionSelector: React.FC<{
           <Form.Item
             label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.defaultCategoryId)}</CraftSettingLabel>}
           >
-            <ProgramCategorySelect
+            <ProjectCategorySelect
               value={value.defaultCategoryIds}
               onChange={v => onChange?.({ ...value, defaultCategoryIds: typeof v === 'string' ? [v] : v })}
-            />
-          </Form.Item>
-          <Form.Item
-            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.defaultTagName)}</CraftSettingLabel>}
-          >
-            <ProgramTagSelect
-              value={value.defaultTagNames}
-              onChange={v => onChange?.({ ...value, defaultTagNames: typeof v === 'string' ? [v] : v })}
             />
           </Form.Item>
         </>
       )}
       {value?.from === 'custom' && (
         <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
-          {value.idList.map((programId, idx) => (
-            <div key={programId} className="my-2">
+          {value.idList.map((programPackageId, idx) => (
+            <div key={programPackageId} className="my-2">
               <Select
                 showSearch
                 allowClear
                 placeholder={formatMessage(craftPageMessages.label.choiceData)}
-                value={programId}
-                options={programOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
-                onChange={selectedProgramId =>
-                  selectedProgramId &&
+                value={programPackageId}
+                options={programPackageOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
+                onChange={selectedProjectId =>
+                  selectedProjectId &&
                   onChange?.({
                     ...value,
-                    idList: [...value.idList.slice(0, idx), selectedProgramId, ...value.idList.slice(idx + 1)],
+                    idList: [...value.idList.slice(0, idx), selectedProjectId, ...value.idList.slice(idx + 1)],
                   })
                 }
                 onClear={() =>
@@ -124,13 +109,13 @@ const ProgramCollectionSelector: React.FC<{
   )
 }
 
-const GET_PROGRAM_ID_LIST = gql`
-  query GET_PROGRAM_ID_LIST {
-    program(where: { published_at: { _lt: "now()" } }) {
+const GET_PROGRAM_PACKAGE_ID_LIST = gql`
+  query GET_PROGRAM_PACKAGE_ID_LIST {
+    program_package(where: { published_at: { _lt: "now()" } }) {
       id
       title
     }
   }
 `
 
-export default ProgramCollectionSelector
+export default ProjectCollectionSelector

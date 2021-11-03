@@ -12,6 +12,30 @@ export const useResolver = (custom: { onSave?: (template: CraftTemplate) => void
       settings: withResponsive(CraftSetting.ProgramCollectionSettings),
     },
   }
+  CraftElement.CraftProgramContentCollection.craft = {
+    displayName: formatMessage({ id: 'craft.resolver.ProgramContentCollectionSettings', defaultMessage: '課程單元' }),
+    related: {
+      settings: withResponsive(CraftSetting.ProgramContentCollectionSettings),
+    },
+  }
+  CraftElement.CraftProgramPackageCollection.craft = {
+    displayName: formatMessage({ id: 'craft.resolver.ProgramPackageCollectionSettings', defaultMessage: '課程組合' }),
+    related: {
+      settings: withResponsive(CraftSetting.ProgramPackageCollectionSettings),
+    },
+  }
+  CraftElement.CraftActivityCollection.craft = {
+    displayName: formatMessage({ id: 'craft.resolver.ActivityCollectionSettings', defaultMessage: '活動' }),
+    related: {
+      settings: withResponsive(CraftSetting.ActivityCollectionSettings),
+    },
+  }
+  CraftElement.CraftProjectCollection.craft = {
+    displayName: formatMessage({ id: 'craft.resolver.ProjectCollectionSettings', defaultMessage: '專案' }),
+    related: {
+      settings: withResponsive(CraftSetting.ProjectCollectionSettings),
+    },
+  }
   CraftElement.CraftSection.craft = {
     displayName: formatMessage({ id: 'craft.resolver.SectionSettings', defaultMessage: '區塊' }),
     related: {
@@ -71,6 +95,18 @@ export const useResolver = (custom: { onSave?: (template: CraftTemplate) => void
     related: {
       settings: withResponsive(CraftSetting.EmbeddedSettings),
     },
+  }
+  for (const resolvedName in CraftElement) {
+    if (Object.prototype.hasOwnProperty.call(CraftElement, resolvedName)) {
+      const element = CraftElement[resolvedName as keyof typeof CraftElement]
+      element.craft = {
+        ...element.craft,
+        custom: {
+          ...element.craft?.custom,
+          ...custom,
+        },
+      }
+    }
   }
   return CraftElement
 }

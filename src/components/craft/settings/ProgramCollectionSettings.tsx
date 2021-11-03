@@ -1,6 +1,5 @@
 import { Form, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { CollectionLayout } from 'lodestar-app-element/src/components/collections/Collection'
 import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
@@ -10,7 +9,7 @@ import ProgramCollectionSelector from '../../program/ProgramCollectionSelector'
 
 const ProgramCollectionSettings: CraftElementSettings<ProgramCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<{ options: ProgramCollectionProps['sourceOptions']; layout: CollectionLayout }>()
+  const [form] = useForm()
   return (
     <Form
       className="pt-3"
@@ -18,31 +17,21 @@ const ProgramCollectionSettings: CraftElementSettings<ProgramCollectionProps> = 
       layout="vertical"
       colon={false}
       requiredMark={false}
-      initialValues={props}
-      onValuesChange={(changedValues, currentValues) => {
-        form
-          .validateFields()
-          .then(values => {
-            onPropsChange?.({
-              layout: values.layout,
-              sourceOptions: values.options,
-            })
-          })
-          .catch(console.error)
+      onValuesChange={() => {
+        form.validateFields()
       }}
     >
-      <Form.Item name="options" className="mb-0">
-        <ProgramCollectionSelector />
+      <Form.Item className="mb-0">
+        <ProgramCollectionSelector value={props.source} onChange={source => onPropsChange?.({ ...props, source })} />
       </Form.Item>
       <Form.Item
-        name="withSelector"
         valuePropName="checked"
         label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.categorySelectorEnabled)}</CraftSettingLabel>}
       >
-        <Switch />
+        <Switch checked={props.withSelector} onChange={withSelector => onPropsChange?.({ ...props, withSelector })} />
       </Form.Item>
-      <Form.Item name="layout">
-        <LayoutInput />
+      <Form.Item>
+        <LayoutInput value={props.layout} onChange={layout => onPropsChange?.({ ...props, layout })} />
       </Form.Item>
     </Form>
   )
