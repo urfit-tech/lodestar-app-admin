@@ -1,10 +1,15 @@
-import { Radio } from 'antd'
+import { Checkbox, Radio } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { SectionProps } from 'lodestar-app-element/src/components/common/Section'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { craftPageMessages } from '../../../helpers/translation'
+import {
+  CraftElementSettings,
+  CraftSettingLabel,
+  StyledUnderLineInput,
+} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
@@ -147,6 +152,22 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
           <Radio.Button value="center">{formatMessage(messages.center)}</Radio.Button>
           <Radio.Button value="bottom">{formatMessage(messages.bottom)}</Radio.Button>
         </Radio.Group>
+      </Form.Item>
+      <Form.Item
+        className="m-0"
+        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.link)}</CraftSettingLabel>}
+      >
+        <StyledUnderLineInput
+          className="mb-2"
+          placeholder="https://"
+          value={props.link}
+          onChange={e => onPropsChange?.({ ...props, link: e.target.value })}
+        />
+      </Form.Item>
+      <Form.Item valuePropName="checked">
+        <Checkbox checked={props.openTab} onChange={e => onPropsChange?.({ ...props, openTab: e.target.checked })}>
+          {formatMessage(craftPageMessages.label.openNewTab)}
+        </Checkbox>
       </Form.Item>
       <Form.Item>
         <SpaceStyleInput
