@@ -1419,6 +1419,7 @@ export const craftPageMessages = {
     fundraising: { id: 'craft.label.fundraising', defaultMessage: '募資' },
     preOrder: { id: 'craft.label.preOrder', defaultMessage: '預購' },
     newest: { id: 'craft.label.newest', defaultMessage: '最新上架' },
+    recentWatched: { id: 'craft.label.recentWatched', defaultMessage: '依最近觀看' },
     publishedAt: { id: 'craft.label.publishedAt', defaultMessage: '依上架日期' },
     currentPrice: { id: 'craft.label.currentPrice', defaultMessage: '依產品價錢' },
     custom: { id: 'craft.label.newest', defaultMessage: '自訂項目' },

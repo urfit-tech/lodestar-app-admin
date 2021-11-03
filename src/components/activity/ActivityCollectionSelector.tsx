@@ -9,27 +9,27 @@ import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSet
 import ActivityCategorySelect from './ActivityCategorySelect'
 import ActivityTagSelect from './ActivityTagSelect'
 
-type ActivitySourceOption = ActivityCollectionProps['sourceOptions']
-const ActivitySourceOptionSelector: React.FC<{
-  value?: ActivitySourceOption
-  onChange?: (value: ActivitySourceOption) => void
-}> = ({ value, onChange }) => {
+type ActivitySourceOptions = ActivityCollectionProps['source']
+const ActivityCollectionSelector: React.FC<{
+  value?: ActivitySourceOptions
+  onChange?: (value: ActivitySourceOptions) => void
+}> = ({ value = { from: 'publishedAt' }, onChange }) => {
   const { formatMessage } = useIntl()
   const { data } = useQuery<hasura.GET_ACTIVITY_ID_LIST>(GET_ACTIVITY_ID_LIST)
-  const activityOptions = data?.activity.map(p => ({ id: p.id, title: p.title })) || []
+  const activityOptions = data?.activity.map(a => ({ id: a.id, title: a.title })) || []
   return (
     <div>
       <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</CraftSettingLabel>}>
-        <Select<ActivitySourceOption['source']>
+        <Select<typeof value.from>
           placeholder={formatMessage(craftPageMessages.label.choiceData)}
-          value={value?.source}
-          onChange={source => {
-            switch (source) {
+          value={value?.from}
+          onChange={from => {
+            switch (from) {
               case 'publishedAt':
-                onChange?.({ source, limit: 4 })
+                onChange?.({ from, limit: 4 })
                 break
               case 'custom':
-                onChange?.({ source, idList: [] })
+                onChange?.({ from, idList: [] })
                 break
             }
           }}
@@ -42,15 +42,12 @@ const ActivitySourceOptionSelector: React.FC<{
           <Select.Option key="publishedAt" value="publishedAt">
             {formatMessage(craftPageMessages.label.publishedAt)}
           </Select.Option>
-          <Select.Option key="currentPrice" value="currentPrice">
-            {formatMessage(craftPageMessages.label.currentPrice)}
-          </Select.Option>
           <Select.Option key="custom" value="custom">
             {formatMessage(craftPageMessages.label.custom)}
           </Select.Option>
         </Select>
       </Form.Item>
-      {value?.source === 'publishedAt' && (
+      {value?.from === 'publishedAt' && (
         <>
           <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</CraftSettingLabel>}>
             <Select value={value.asc ? 'asc' : 'desc'} onChange={v => onChange?.({ ...value, asc: v === 'asc' })}>
@@ -84,7 +81,7 @@ const ActivitySourceOptionSelector: React.FC<{
           </Form.Item>
         </>
       )}
-      {value?.source === 'custom' && (
+      {value?.from === 'custom' && (
         <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
           {value.idList.map((activityId, idx) => (
             <div key={activityId} className="my-2">
@@ -130,4 +127,4 @@ const GET_ACTIVITY_ID_LIST = gql`
   }
 `
 
-export default ActivitySourceOptionSelector
+export default ActivityCollectionSelector

@@ -133,7 +133,9 @@ const CraftSettingsPanel: React.VFC<{ pageId: string; onSave?: () => void }> = (
             disabled={!editor.query.history.canUndo()}
             loading={loading}
             type="primary"
-            onClick={() => handleSave?.(editor.query.serialize())}
+            onClick={() => {
+              handleSave?.(editor.query.serialize())
+            }}
           >
             {formatMessage({ id: 'craft.setting.saveAndUpdate', defaultMessage: '儲存並更新' })}
           </Button>

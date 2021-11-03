@@ -82,6 +82,28 @@ export interface GET_ACTIVITY_CATEGORIES {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ACTIVITY_ID_LIST
+// ====================================================
+
+export interface GET_ACTIVITY_ID_LIST_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_ACTIVITY_ID_LIST {
+  /**
+   * fetch data from the table: "activity"
+   */
+  activity: GET_ACTIVITY_ID_LIST_activity[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_COVER
 // ====================================================
 
@@ -283,28 +305,6 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
   onlineLink?: string | null;
   description?: string | null;
   threshold?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ACTIVITY_ID_LIST
-// ====================================================
-
-export interface GET_ACTIVITY_ID_LIST_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface GET_ACTIVITY_ID_LIST {
-  /**
-   * fetch data from the table: "activity"
-   */
-  activity: GET_ACTIVITY_ID_LIST_activity[];
 }
 
 /* tslint:disable */
@@ -1724,56 +1724,6 @@ export interface GET_SALES_MEMBERS {
 }
 
 export interface GET_SALES_MEMBERSVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APP_PAGE_TEMPLATES
-// ====================================================
-
-export interface GET_APP_PAGE_TEMPLATES_app_page_template {
-  __typename: "app_page_template";
-  id: any;
-  name: string;
-  root_node_id: string;
-  data: any;
-}
-
-export interface GET_APP_PAGE_TEMPLATES {
-  /**
-   * fetch data from the table: "app_page_template"
-   */
-  app_page_template: GET_APP_PAGE_TEMPLATES_app_page_template[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APP_ACTIVITY_CATEGORIES
-// ====================================================
-
-export interface GET_APP_ACTIVITY_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_APP_ACTIVITY_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_APP_ACTIVITY_CATEGORIES_category[];
-}
-
-export interface GET_APP_ACTIVITY_CATEGORIESVariables {
   appId: string;
 }
 
@@ -5145,6 +5095,28 @@ export interface PUBLISH_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_CONTENT_ID_LIST
+// ====================================================
+
+export interface GET_PROGRAM_CONTENT_ID_LIST_program_content {
+  __typename: "program_content";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_CONTENT_ID_LIST {
+  /**
+   * fetch data from the table: "program_content"
+   */
+  program_content: GET_PROGRAM_CONTENT_ID_LIST_program_content[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
 
@@ -5309,6 +5281,50 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLAN {
 export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
   programPlans: program_plan_insert_input[];
   archivedProgramPlanIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_CATEGORIES
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_PROGRAM_PACKAGE_CATEGORIES_category[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_ID_LIST
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_ID_LIST_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_ID_LIST {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PROGRAM_PACKAGE_ID_LIST_program_package[];
 }
 
 /* tslint:disable */
@@ -12874,6 +12890,30 @@ export interface INSERT_APP_PAGE_TEMPLATEVariables {
   templateName: string;
   rootNodeId: string;
   serializedNodes: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP_PAGE_TEMPLATES
+// ====================================================
+
+export interface GET_APP_PAGE_TEMPLATES_app_page_template {
+  __typename: "app_page_template";
+  id: any;
+  name: string;
+  root_node_id: string;
+  data: any;
+}
+
+export interface GET_APP_PAGE_TEMPLATES {
+  /**
+   * fetch data from the table: "app_page_template"
+   */
+  app_page_template: GET_APP_PAGE_TEMPLATES_app_page_template[];
 }
 
 /* tslint:disable */

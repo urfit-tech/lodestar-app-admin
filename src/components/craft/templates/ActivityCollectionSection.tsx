@@ -40,7 +40,7 @@ const ActivityCollectionSection: React.VFC = () => {
           padding: '0 32',
         }}
       >
-        <CraftActivityCollection variant="card" sourceOptions={{ source: 'publishedAt', limit: 4 }}>
+        <CraftActivityCollection variant="card" source={{ from: 'publishedAt', limit: 4 }}>
           <CraftImage
             customStyle={{ backgroundImage: `url("https://static.kolable.com/images/demo/cover-01-m.png")` }}
             responsive={{

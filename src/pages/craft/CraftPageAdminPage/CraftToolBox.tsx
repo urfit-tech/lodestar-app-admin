@@ -137,30 +137,36 @@ const BasicToolbox: React.FC = () => {
 const ProductToolbox: React.FC = () => {
   return (
     <div>
-      {/* <CraftTool
-            as={CraftElement.CraftActivityCollection}
-            coverUrl="https://static.kolable.com/images/default/craft/activity.png"
-            variant="card"
-            sourceOptions={{ source: 'publishedAt', limit: 4 }}
-          /> */}
+      <CraftTool
+        as={CraftElement.CraftActivityCollection}
+        coverUrl="https://static.kolable.com/images/default/craft/activity.png"
+        variant="card"
+        source={{ from: 'publishedAt', limit: 4 }}
+      />
       <CraftTool
         as={CraftElement.CraftProgramCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
         variant="card"
-        sourceOptions={{ source: 'publishedAt', limit: 4 }}
+        source={{ from: 'publishedAt', limit: 4 }}
       />
-      {/* <CraftTool
-            as={CraftElement.CraftProgramContentCollection}
-            coverUrl="https://static.kolable.com/images/default/craft/program.png"
-            variant="card"
-            sourceOptions={{ source: 'recentWatched', limit: 3 }}
-          />
-          <CraftTool
-            as={CraftElement.CraftProgramPackageCollection}
-            coverUrl="https://static.kolable.com/images/default/craft/program.png"
-            variant="card"
-            sourceOptions={{ source: 'publishedAt', limit: 4 }}
-          /> */}
+      <CraftTool
+        as={CraftElement.CraftProgramContentCollection}
+        coverUrl="https://static.kolable.com/images/default/craft/program.png"
+        variant="card"
+        source={{ from: 'recentWatched', limit: 3 }}
+      />
+      <CraftTool
+        as={CraftElement.CraftProgramPackageCollection}
+        coverUrl="https://static.kolable.com/images/default/craft/program.png"
+        variant="card"
+        source={{ from: 'publishedAt', limit: 4 }}
+      />
+      <CraftTool
+        as={CraftElement.CraftProjectCollection}
+        coverUrl="https://static.kolable.com/images/default/craft/program.png"
+        variant="card"
+        source={{ from: 'publishedAt', limit: 4 }}
+      />
     </div>
   )
 }
@@ -169,7 +175,7 @@ const TemplateToolbox: React.FC = () => {
   const { templateElements, refetch } = useTemplateElement()
   return (
     <div>
-      {templateElements?.map((templateElement, idx) => (
+      {templateElements?.map(templateElement => (
         <CraftTool
           key={templateElement.id}
           as={templateElement.node.type}

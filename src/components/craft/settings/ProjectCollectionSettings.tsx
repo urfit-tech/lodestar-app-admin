@@ -1,13 +1,13 @@
 import { Form, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { ActivityCollectionProps } from 'lodestar-app-element/src/components/collections/ActivityCollection'
+import { ProjectCollectionProps } from 'lodestar-app-element/src/components/collections/ProjectCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
 import { CraftElementSettings, CraftSettingLabel } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
-import ActivityCollectionSelector from '../../activity/ActivityCollectionSelector'
 import LayoutInput from '../../common/LayoutInput'
+import ProjectCollectionSelector from '../../project/ProjectCollectionSelector'
 
-const ActivityCollectionSettings: CraftElementSettings<ActivityCollectionProps> = ({ props, onPropsChange }) => {
+const ProjectCollectionSettings: CraftElementSettings<ProjectCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   return (
@@ -22,7 +22,12 @@ const ActivityCollectionSettings: CraftElementSettings<ActivityCollectionProps> 
       }}
     >
       <Form.Item className="mb-0">
-        <ActivityCollectionSelector value={props.source} onChange={source => onPropsChange?.({ ...props, source })} />
+        <ProjectCollectionSelector
+          value={props.source}
+          onChange={source => {
+            onPropsChange?.({ ...props, source })
+          }}
+        />
       </Form.Item>
       <Form.Item
         valuePropName="checked"
@@ -37,4 +42,4 @@ const ActivityCollectionSettings: CraftElementSettings<ActivityCollectionProps> 
   )
 }
 
-export default ActivityCollectionSettings
+export default ProjectCollectionSettings
