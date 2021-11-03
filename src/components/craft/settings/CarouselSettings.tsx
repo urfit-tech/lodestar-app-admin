@@ -1,5 +1,5 @@
 import { useNode } from '@craftjs/core'
-import { Checkbox, Collapse, Form } from 'antd'
+import { Checkbox, Collapse, Form, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CarouselProps } from 'lodestar-app-element/src/components/common/Carousel'
 import React from 'react'
@@ -108,6 +108,15 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
           key="style"
           header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.carouselStyle)}</AdminHeaderTitle>}
         >
+          <Form.Item label={formatMessage(craftPageMessages.label.height)}>
+            <InputNumber
+              min={100}
+              value={Number(props.customStyle?.height?.toString().replace('px', ''))}
+              onChange={v =>
+                onPropsChange?.({ ...props, customStyle: { ...props.customStyle, height: Number(v) + 'px' } })
+              }
+            />
+          </Form.Item>
           <Form.Item>
             <SpaceStyleInput
               value={props.customStyle}
