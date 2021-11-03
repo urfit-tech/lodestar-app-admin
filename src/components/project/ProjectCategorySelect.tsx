@@ -8,7 +8,7 @@ import { craftPageMessages } from '../../helpers/translation'
 
 const ProjectCategorySelect: React.VFC<SelectProps<string | string[]>> = props => {
   const { formatMessage } = useIntl()
-  const { data, loading } = useQuery<hasura.GET_PROGRAM_PACKAGE_CATEGORIES>(GET_PROGRAM_PACKAGE_CATEGORIES)
+  const { data, loading } = useQuery<hasura.GET_PROJECT_CATEGORIES>(GET_PROJECT_CATEGORIES)
   return (
     <Select
       loading={loading}
@@ -30,8 +30,8 @@ const ProjectCategorySelect: React.VFC<SelectProps<string | string[]>> = props =
   )
 }
 
-const GET_PROGRAM_PACKAGE_CATEGORIES = gql`
-  query GET_PROGRAM_PACKAGE_CATEGORIES {
+const GET_PROJECT_CATEGORIES = gql`
+  query GET_PROJECT_CATEGORIES {
     category(where: { class: { _eq: "project" } }) {
       id
       name

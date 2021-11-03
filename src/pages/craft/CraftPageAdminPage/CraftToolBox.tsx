@@ -167,6 +167,11 @@ const ProductToolbox: React.FC = () => {
         variant="card"
         source={{ from: 'publishedAt', limit: 4 }}
       />
+      <CraftTool
+        as={CraftElement.CraftMemberCollection}
+        coverUrl="https://static.kolable.com/images/default/craft/program.png"
+        source={{ from: 'role', role: 'content-creator', limit: 4 }}
+      />
     </div>
   )
 }

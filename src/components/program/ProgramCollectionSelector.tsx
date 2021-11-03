@@ -89,7 +89,7 @@ const ProgramCollectionSelector: React.FC<{
       )}
       {value?.from === 'custom' && (
         <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
-          {value.idList.map((programId, idx) => (
+          {(value.idList || []).map((programId, idx) => (
             <div key={programId} className="my-2">
               <Select
                 showSearch
@@ -101,11 +101,18 @@ const ProgramCollectionSelector: React.FC<{
                   selectedProgramId &&
                   onChange?.({
                     ...value,
-                    idList: [...value.idList.slice(0, idx), selectedProgramId, ...value.idList.slice(idx + 1)],
+                    idList: [
+                      ...(value.idList || []).slice(0, idx),
+                      selectedProgramId,
+                      ...(value.idList || []).slice(idx + 1),
+                    ],
                   })
                 }
                 onClear={() =>
-                  onChange?.({ ...value, idList: [...value.idList.slice(0, idx), ...value.idList.slice(idx + 1)] })
+                  onChange?.({
+                    ...value,
+                    idList: [...(value.idList || []).slice(0, idx), ...(value.idList || []).slice(idx + 1)],
+                  })
                 }
                 filterOption={(input, option) =>
                   option?.props?.children
@@ -115,7 +122,7 @@ const ProgramCollectionSelector: React.FC<{
               />
             </div>
           ))}
-          <Button type="link" onClick={() => onChange?.({ ...value, idList: [...value.idList, ''] })}>
+          <Button type="link" onClick={() => onChange?.({ ...value, idList: [...(value.idList || []), ''] })}>
             {formatMessage(craftPageMessages.label.addItem)}
           </Button>
         </Form.Item>

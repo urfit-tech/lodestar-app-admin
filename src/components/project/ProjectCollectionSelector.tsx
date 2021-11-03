@@ -14,7 +14,7 @@ const ProjectCollectionSelector: React.FC<{
   onChange?: (value: ProjectSourceOptions) => void
 }> = ({ value = { from: 'publishedAt' }, onChange }) => {
   const { formatMessage } = useIntl()
-  const { data } = useQuery<hasura.GET_PROGRAM_PACKAGE_ID_LIST>(GET_PROGRAM_PACKAGE_ID_LIST)
+  const { data } = useQuery<hasura.GET_PROJECT_ID_LIST>(GET_PROJECT_ID_LIST)
   const programPackageOptions = data?.program_package.map(pp => ({ id: pp.id, title: pp.title })) || []
   return (
     <div>
@@ -74,7 +74,7 @@ const ProjectCollectionSelector: React.FC<{
       )}
       {value?.from === 'custom' && (
         <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
-          {value.idList.map((programPackageId, idx) => (
+          {(value.idList || []).map((programPackageId, idx) => (
             <div key={programPackageId} className="my-2">
               <Select
                 showSearch
@@ -86,11 +86,18 @@ const ProjectCollectionSelector: React.FC<{
                   selectedProjectId &&
                   onChange?.({
                     ...value,
-                    idList: [...value.idList.slice(0, idx), selectedProjectId, ...value.idList.slice(idx + 1)],
+                    idList: [
+                      ...(value.idList || []).slice(0, idx),
+                      selectedProjectId,
+                      ...(value.idList || []).slice(idx + 1),
+                    ],
                   })
                 }
                 onClear={() =>
-                  onChange?.({ ...value, idList: [...value.idList.slice(0, idx), ...value.idList.slice(idx + 1)] })
+                  onChange?.({
+                    ...value,
+                    idList: [...(value.idList || []).slice(0, idx), ...(value.idList || []).slice(idx + 1)],
+                  })
                 }
                 filterOption={(input, option) =>
                   option?.props?.children
@@ -100,7 +107,7 @@ const ProjectCollectionSelector: React.FC<{
               />
             </div>
           ))}
-          <Button type="link" onClick={() => onChange?.({ ...value, idList: [...value.idList, ''] })}>
+          <Button type="link" onClick={() => onChange?.({ ...value, idList: [...(value.idList || []), ''] })}>
             {formatMessage(craftPageMessages.label.addItem)}
           </Button>
         </Form.Item>
@@ -109,8 +116,8 @@ const ProjectCollectionSelector: React.FC<{
   )
 }
 
-const GET_PROGRAM_PACKAGE_ID_LIST = gql`
-  query GET_PROGRAM_PACKAGE_ID_LIST {
+const GET_PROJECT_ID_LIST = gql`
+  query GET_PROJECT_ID_LIST {
     program_package(where: { published_at: { _lt: "now()" } }) {
       id
       title

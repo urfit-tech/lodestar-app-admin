@@ -6,6 +6,12 @@ import { withResponsive } from './settings/ResponsiveSettings'
 
 export const useResolver = (custom: { onSave?: (template: CraftTemplate) => void }) => {
   const { formatMessage } = useIntl()
+  CraftElement.CraftMemberCollection.craft = {
+    displayName: formatMessage({ id: 'craft.resolver.MemberCollectionSettings', defaultMessage: '會員' }),
+    related: {
+      settings: withResponsive(CraftSetting.MemberCollectionSettings),
+    },
+  }
   CraftElement.CraftProgramCollection.craft = {
     displayName: formatMessage({ id: 'craft.resolver.ProgramCollectionSettings', defaultMessage: '課程' }),
     related: {
