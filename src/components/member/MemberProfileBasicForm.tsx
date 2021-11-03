@@ -23,6 +23,7 @@ type FieldProps = {
   star: number
   phones: string[]
   categoryIds: string[]
+  specialities: string[]
   tags?: string[]
   managerId?: string
 }
@@ -87,6 +88,10 @@ const MemberProfileBasicForm: React.FC<{
             category_id: categoryId,
             position: index,
           })),
+          memberSpecialities: values.specialities.map(speciality => ({
+            member_id: memberAdmin.id,
+            tag_name: speciality,
+          })),
         },
       })
         .then(() => {
@@ -150,7 +155,7 @@ const MemberProfileBasicForm: React.FC<{
         </Form.Item>
       )}
       <Form.Item label={formatMessage(commonMessages.label.speciality)} name="specialities">
-        <TagSelector disabled />
+        <TagSelector />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.memberCategory)} name="categoryIds">
         <CategorySelector classType="member" />
@@ -208,6 +213,7 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $memberTags: [member_tag_insert_input!]!
     $phones: [member_phone_insert_input!]!
     $memberCategories: [member_category_insert_input!]!
+    $memberSpecialities: [member_speciality_insert_input!]!
   ) {
     update_member(
       where: { id: { _eq: $memberId } }
@@ -246,6 +252,14 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
       affected_rows
     }
     insert_member_category(objects: $memberCategories) {
+      affected_rows
+    }
+
+    # update specialities
+    delete_member_speciality(where: { member_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    insert_member_speciality(objects: $memberSpecialities) {
       affected_rows
     }
   }
