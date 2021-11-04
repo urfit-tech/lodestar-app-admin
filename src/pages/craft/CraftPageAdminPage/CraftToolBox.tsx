@@ -118,7 +118,7 @@ const BasicToolbox: React.FC = () => {
         title="馬上查看"
       />
       <CraftTool as={CraftElement.CraftEmbedded} iframe="" customStyle={{ margin: 0 }} />
-      <CraftTool as={CraftElement.CraftCarousel} canvas>
+      {/* <CraftTool as={CraftElement.CraftCarousel} canvas>
         <Element is={CraftElement.CraftSection} canvas customStyle={{ padding: '40px 0', background: 'yellow' }}>
           <Element is={CraftElement.CraftTitle} title="Sample Title 1" />
         </Element>
@@ -129,7 +129,7 @@ const BasicToolbox: React.FC = () => {
           <Element is={CraftElement.CraftTitle} title="Sample Title 3" />
         </Element>
       </CraftTool>
-      <CraftTool as={CraftElement.CraftCollapse} list={[]} />
+      <CraftTool as={CraftElement.CraftCollapse} list={[]} /> */}
     </div>
   )
 }
@@ -149,12 +149,12 @@ const ProductToolbox: React.FC = () => {
         variant="card"
         source={{ from: 'publishedAt', limit: 4 }}
       />
-      <CraftTool
+      {/* <CraftTool
         as={CraftElement.CraftProgramContentCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
         variant="card"
         source={{ from: 'recentWatched', limit: 3 }}
-      />
+      /> */}
       <CraftTool
         as={CraftElement.CraftProgramPackageCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
