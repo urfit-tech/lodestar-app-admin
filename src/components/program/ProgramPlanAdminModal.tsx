@@ -153,7 +153,7 @@ const ProgramPlanAdminModal: React.FC<
           period: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
           type: programPlan?.type || 1,
           discountDownPrice: programPlan?.discountDownPrice,
-          remindPeriod: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
+          remindPeriod: { amount: programPlan?.remindPeriodAmount || 1, type: programPlan?.remindPeriodType || 'D' },
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
         }}
       >
