@@ -12998,6 +12998,7 @@ export interface GET_APP_PAGE_TEMPLATES_app_page_template {
   name: string;
   root_node_id: string;
   data: any;
+  cover_url: string | null;
 }
 
 export interface GET_APP_PAGE_TEMPLATES {

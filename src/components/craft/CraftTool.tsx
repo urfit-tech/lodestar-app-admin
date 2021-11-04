@@ -68,7 +68,7 @@ const CraftTool = <P extends object>({
       ) : (
         <StyledText>{displayName || CraftElement.craft?.displayName}</StyledText>
       )}
-      {coverUrl && <StyledOverlay>{CraftElement.craft?.displayName}</StyledOverlay>}
+      {coverUrl && <StyledOverlay>{displayName || CraftElement.craft?.displayName}</StyledOverlay>}
     </StyledBoxWrapper>
   )
 }

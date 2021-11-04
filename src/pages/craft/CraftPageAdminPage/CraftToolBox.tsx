@@ -186,6 +186,7 @@ const TemplateToolbox: React.FC = () => {
           as={templateElement.node.type}
           canvas={templateElement.node.children.length > 0}
           displayName={templateElement.name}
+          coverUrl={templateElement.coverUrl}
           {...templateElement.node.props}
         >
           {templateElement.node.children}
@@ -253,6 +254,7 @@ const useTemplateElement = () => {
           name
           root_node_id
           data
+          cover_url
         }
       }
     `,
@@ -285,6 +287,7 @@ const useTemplateElement = () => {
       data?.app_page_template.map(apt => ({
         id: apt.id,
         name: apt.name,
+        coverUrl: apt.cover_url,
         node: generateTemplateElement(apt.root_node_id, apt.data),
       })) || [],
     [data, generateTemplateElement],
