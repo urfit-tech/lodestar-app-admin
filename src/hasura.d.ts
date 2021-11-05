@@ -2992,83 +2992,6 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_PROPERTY_COLLECTION
-// ====================================================
-
-export interface GET_MEMBER_PROPERTY_COLLECTION_member_property_property {
-  __typename: "property";
-  id: any;
-  name: string;
-}
-
-export interface GET_MEMBER_PROPERTY_COLLECTION_member_property {
-  __typename: "member_property";
-  id: any;
-  /**
-   * An object relationship
-   */
-  property: GET_MEMBER_PROPERTY_COLLECTION_member_property_property;
-  value: string;
-}
-
-export interface GET_MEMBER_PROPERTY_COLLECTION {
-  /**
-   * fetch data from the table: "member_property"
-   */
-  member_property: GET_MEMBER_PROPERTY_COLLECTION_member_property[];
-}
-
-export interface GET_MEMBER_PROPERTY_COLLECTIONVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
-// ====================================================
-
-export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
-  __typename: "member_property_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
-  __typename: "member_property_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROPERTY {
-  /**
-   * delete data from the table: "member_property"
-   */
-  delete_member_property: UPDATE_MEMBER_PROPERTY_delete_member_property | null;
-  /**
-   * insert data into the table: "member_property"
-   */
-  insert_member_property: UPDATE_MEMBER_PROPERTY_insert_member_property | null;
-}
-
-export interface UPDATE_MEMBER_PROPERTYVariables {
-  memberId: string;
-  memberProperties: member_property_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
 
@@ -6267,6 +6190,35 @@ export interface PUBLISH_PROJECT {
 export interface PUBLISH_PROJECTVariables {
   projectId: any;
   publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_LATEST_MEMBER_NOTE_STATUS
+// ====================================================
+
+export interface GET_LATEST_MEMBER_NOTE_STATUS_member_note {
+  __typename: "member_note";
+  id: string;
+  /**
+   * NULL | answered | missed
+   */
+  status: string | null;
+}
+
+export interface GET_LATEST_MEMBER_NOTE_STATUS {
+  /**
+   * fetch data from the table: "member_note"
+   */
+  member_note: GET_LATEST_MEMBER_NOTE_STATUS_member_note[];
+}
+
+export interface GET_LATEST_MEMBER_NOTE_STATUSVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -10108,6 +10060,83 @@ export interface UPDATE_MEMBER_AVATAR {
 export interface UPDATE_MEMBER_AVATARVariables {
   memberId: string;
   pictureUrl: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_PROPERTY_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_PROPERTY_COLLECTION_member_property_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTION_member_property {
+  __typename: "member_property";
+  id: any;
+  /**
+   * An object relationship
+   */
+  property: GET_MEMBER_PROPERTY_COLLECTION_member_property_property;
+  value: string;
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTION {
+  /**
+   * fetch data from the table: "member_property"
+   */
+  member_property: GET_MEMBER_PROPERTY_COLLECTION_member_property[];
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTIONVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
+// ====================================================
+
+export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY {
+  /**
+   * delete data from the table: "member_property"
+   */
+  delete_member_property: UPDATE_MEMBER_PROPERTY_delete_member_property | null;
+  /**
+   * insert data into the table: "member_property"
+   */
+  insert_member_property: UPDATE_MEMBER_PROPERTY_insert_member_property | null;
+}
+
+export interface UPDATE_MEMBER_PROPERTYVariables {
+  memberId: string;
+  memberProperties: member_property_insert_input[];
 }
 
 /* tslint:disable */
