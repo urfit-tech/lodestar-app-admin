@@ -82,7 +82,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
   const { permissions, currentUserRole, currentMemberId } = useAuth()
-  const { id: appId, enabledModules } = useApp()
+  const { id: appId, enabledModules, settings } = useApp()
 
   // table column filter
   const { properties } = useProperty()
@@ -270,7 +270,10 @@ const MemberCollectionAdminPage: React.FC = () => {
             </StyledTag>
           )}
           {record.role === 'content-creator' && (
-            <StyledTag color={theme['@primary-color']} className="ml-2 mr-0">
+            <StyledTag
+              color={theme ? theme['@primary-color'] : settings['theme.@primary-color'] || '#2d313a'}
+              className="ml-2 mr-0"
+            >
               {formatMessage(commonMessages.label.contentCreator)}
             </StyledTag>
           )}
