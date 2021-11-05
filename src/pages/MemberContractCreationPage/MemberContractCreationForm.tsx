@@ -145,11 +145,11 @@ const MemberContractCreationForm: React.FC<
                         </Form.Item>
 
                         <Form.Item label={index === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
-                          <StyledPriceField>
+                          <div style={{ width: '150px' }}>
                             {contractProduct?.name === '業師諮詢' && isAppointmentOnly
                               ? contractProduct?.price
                               : contractProduct?.addonPrice || contractProduct?.price || 0}
-                          </StyledPriceField>
+                          </div>
                         </Form.Item>
 
                         <Form.Item
