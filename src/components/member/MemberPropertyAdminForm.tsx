@@ -1,14 +1,10 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useProperty } from '../../hooks/member'
-import { MemberPropertyProps } from '../../types/member'
+import { useMemberPropertyCollection, useMutateMemberProperty, useProperty } from '../../hooks/member'
 
 type FieldProps = {
   [propertyId: string]: string
@@ -21,9 +17,7 @@ const MemberPropertyAdminForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { loadingProperties, properties } = useProperty()
   const { loadingMemberProperties, memberProperties, refetchMemberProperties } = useMemberPropertyCollection(memberId)
-  const [updateMemberProperty] = useMutation<hasura.UPDATE_MEMBER_PROPERTY, hasura.UPDATE_MEMBER_PROPERTYVariables>(
-    UPDATE_MEMBER_PROPERTY,
-  )
+  const { updateMemberProperty } = useMutateMemberProperty()
   const [loading, setLoading] = useState(false)
 
   if (loadingProperties || loadingMemberProperties) {
@@ -96,58 +90,5 @@ const MemberPropertyAdminForm: React.FC<{
     </Form>
   )
 }
-
-const useMemberPropertyCollection = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    hasura.GET_MEMBER_PROPERTY_COLLECTION,
-    hasura.GET_MEMBER_PROPERTY_COLLECTIONVariables
-  >(
-    gql`
-      query GET_MEMBER_PROPERTY_COLLECTION($memberId: String!) {
-        member_property(where: { member: { id: { _eq: $memberId } } }) {
-          id
-          property {
-            id
-            name
-          }
-          value
-        }
-      }
-    `,
-    {
-      variables: {
-        memberId,
-      },
-      context: {
-        important: true,
-      },
-    },
-  )
-
-  const memberProperties: MemberPropertyProps[] =
-    data?.member_property.map(v => ({
-      id: v.property.id,
-      name: v.property.name,
-      value: v.value,
-    })) || []
-
-  return {
-    loadingMemberProperties: loading,
-    errorMemberProperties: error,
-    memberProperties,
-    refetchMemberProperties: refetch,
-  }
-}
-
-const UPDATE_MEMBER_PROPERTY = gql`
-  mutation UPDATE_MEMBER_PROPERTY($memberId: String!, $memberProperties: [member_property_insert_input!]!) {
-    delete_member_property(where: { member_id: { _eq: $memberId } }) {
-      affected_rows
-    }
-    insert_member_property(objects: $memberProperties) {
-      affected_rows
-    }
-  }
-`
 
 export default MemberPropertyAdminForm
