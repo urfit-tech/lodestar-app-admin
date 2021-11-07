@@ -7,6 +7,7 @@ import { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages } from '../../../helpers/translation'
 import { useMutateAppPage } from '../../../hooks/appPage'
+import { Device } from '../../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
 
 const messages = defineMessages({
@@ -15,7 +16,7 @@ const messages = defineMessages({
   mobile: { id: 'craft.settings.responsiveSelector.mobile', defaultMessage: '手機' },
 })
 const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
-  const editor = useEditor()
+  const editor = useEditor(state => ({ nodes: state.nodes }))
   const [loading, setLoading] = useState(false)
   const { device, onDeviceChange } = useContext(CraftPageBuilderContext)
   const { formatMessage } = useIntl()
@@ -40,19 +41,30 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
       .finally(() => setLoading(false))
   }
 
+  const handleDeviceChange = (device: Device) => {
+    for (const nodeId in editor.nodes) {
+      if (Object.prototype.hasOwnProperty.call(editor.nodes, nodeId)) {
+        editor.actions.setCustom(nodeId, custom => {
+          custom.device = device
+        })
+      }
+    }
+    onDeviceChange?.(device)
+  }
+
   return (
     <div
       className="d-flex align-items-center justify-content-between px-3"
       style={{ height: '40px', backgroundColor: 'var(--gray-light)' }}
     >
       <div className="d-flex">
-        <Tag.CheckableTag className="mr-1" checked={device === 'desktop'} onClick={() => onDeviceChange?.('desktop')}>
+        <Tag.CheckableTag className="mr-1" checked={device === 'desktop'} onClick={() => handleDeviceChange('desktop')}>
           {formatMessage(messages.desktop)}
         </Tag.CheckableTag>
-        <Tag.CheckableTag className="mr-1" checked={device === 'tablet'} onClick={() => onDeviceChange?.('tablet')}>
+        <Tag.CheckableTag className="mr-1" checked={device === 'tablet'} onClick={() => handleDeviceChange('tablet')}>
           {formatMessage(messages.tablet)}
         </Tag.CheckableTag>
-        <Tag.CheckableTag checked={device === 'mobile'} onClick={() => onDeviceChange?.('mobile')}>
+        <Tag.CheckableTag checked={device === 'mobile'} onClick={() => handleDeviceChange('mobile')}>
           {formatMessage(messages.mobile)}
         </Tag.CheckableTag>
       </div>

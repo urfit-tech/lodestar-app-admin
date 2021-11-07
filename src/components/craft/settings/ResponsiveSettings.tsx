@@ -16,7 +16,7 @@ export const withResponsive = (Settings: CraftElementSettings) => {
     const { responsive, ...currentProps } = editor.currentNode?.data.props || {}
     return (
       <Settings
-        props={{ ...currentProps, customStyle: { ...currentProps.customStyle, ...responsive?.[device]?.customStyle } }}
+        props={mergeDeepRight(currentProps, responsive?.[device] || {})}
         onPropsChange={changedProps =>
           editor.currentNode &&
           editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
