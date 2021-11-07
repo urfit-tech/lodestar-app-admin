@@ -1,17 +1,10 @@
-import { FormOutlined, PlusSquareOutlined } from '@ant-design/icons'
+import { CloseOutlined, DragOutlined } from '@ant-design/icons'
 import { useEditor } from '@craftjs/core'
-import { Button, Collapse, Input, message, Slider, Tabs } from 'antd'
+import { Collapse, Input, Slider } from 'antd'
 import { PropsWithCraft } from 'lodestar-app-element/src/components/common/Craftize'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { handleError } from 'lodestar-app-element/src/helpers'
-import React, { useState } from 'react'
-import { useIntl } from 'react-intl'
+import React from 'react'
+import Draggable from 'react-draggable'
 import styled from 'styled-components'
-import { commonMessages } from '../../../helpers/translation'
-import { useMutateAppPage } from '../../../hooks/appPage'
-import { PageIcon } from '../../../images/icon'
-import CraftResponsiveSelector from './CraftResponsiveSelector'
-import CraftToolbox from './CraftToolBox'
 
 export type CraftSettingsProps<P> = Omit<PropsWithCraft<P>, 'responsive'>
 export type CraftElementSettings<P = any> = React.ElementType<{
@@ -19,45 +12,13 @@ export type CraftElementSettings<P = any> = React.ElementType<{
   onPropsChange?: (changedProps: CraftSettingsProps<P>) => void
 }>
 
-const StyledTabs = styled(Tabs)`
-  width: 100%;
-  height: 100%;
-  min-width: 300px;
-  position: relative;
-  border-bottom: 2px solid var(--gray);
-  .ant-tabs-content {
-    height: 100%;
-  }
-  .ant-tabs-content-holder {
-    background: #ffffff;
-  }
-`
-const StyledPageIcon = styled(PageIcon)<{ active?: boolean }>`
-  font-size: 21px;
-  g {
-    fill: ${props => (props.active ? props.theme['@primary-color'] : '#585858')};
-  }
-`
-
-const StyledTabsPane = styled(Tabs.TabPane)`
-  background: #ffffff;
-  overflow-y: scroll;
-`
-const StyledTabBarWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-right: 1rem;
-  background: #ffffff;
-
-  .anticon {
-    margin: 0;
-  }
-
-  .ant-tabs-tab {
-    margin: 1em 1.5em;
-    padding: 0 0;
-  }
+export const StyledPanel = styled.div`
+  position: fixed;
+  width: 400px;
+  height: 70vh;
+  background-color: white;
+  border: 1px solid var(--gray);
+  overflow: auto;
 `
 export const CraftSettingLabel = styled.span`
   color: var(--gray-dark);
@@ -98,64 +59,37 @@ export const StyledCollapsePanel = styled(Collapse.Panel)`
   } */
 `
 
-const CraftSettingsPanel: React.VFC<{ pageId: string; onSave?: () => void }> = ({ pageId, onSave }) => {
-  const { formatMessage } = useIntl()
+const CraftSettingsPanel: React.VFC = () => {
   const editor = useEditor(state => ({
     currentNode: state.events.selected ? state.nodes[state.events.selected] : null,
   }))
-  const { currentMemberId } = useAuth()
-  const { updateAppPage } = useMutateAppPage()
-  const [loading, setLoading] = useState(false)
-  const handleSave = (serializedData: string) => {
-    if (!currentMemberId || !pageId) {
-      return
-    }
-    setLoading(true)
-    updateAppPage({
-      pageId,
-      editorId: currentMemberId,
-      craftData: JSON.parse(serializedData),
-    })
-      .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onSave?.()
-        editor.actions.history.clear()
-      })
-      .catch(handleError)
-      .finally(() => setLoading(false))
-  }
   return (
-    <StyledTabs
-      renderTabBar={(props, DefaultTabBar) => (
-        <StyledTabBarWrapper>
-          <DefaultTabBar {...props} className="mb-0" />
-          <Button
-            disabled={!editor.query.history.canUndo()}
-            loading={loading}
-            type="primary"
-            onClick={() => {
-              handleSave?.(editor.query.serialize())
-            }}
-          >
-            {formatMessage({ id: 'craft.setting.saveAndUpdate', defaultMessage: '儲存並更新' })}
-          </Button>
-        </StyledTabBarWrapper>
-      )}
-    >
-      <StyledTabsPane key="toolbox" tab={<PlusSquareOutlined />}>
-        <CraftToolbox />
-      </StyledTabsPane>
-      <StyledTabsPane key="settings" tab={<FormOutlined />}>
-        <div className="p-3" style={{ height: '100%' }}>
-          <CraftResponsiveSelector />
-          <div className="py-3">
-            {editor.currentNode?.related.settings
-              ? React.createElement(editor.currentNode?.related.settings)
-              : 'Please select an element.'}
-          </div>
+    <Draggable handle=".draggable" defaultPosition={{ x: 200, y: 32 }}>
+      <StyledPanel style={{ display: editor.currentNode?.data.custom?.editing ? 'block' : 'none' }}>
+        <div
+          className="d-flex align-items-center justify-content-between mb-2 draggable cursor-pointer p-3"
+          style={{ backgroundColor: 'var(--gray-light)' }}
+        >
+          <h3 className="d-flex align-items-center">
+            <DragOutlined className="mr-2" />
+            <span>{editor.currentNode?.data.displayName}</span>
+          </h3>
+          <CloseOutlined
+            onClick={() =>
+              editor.currentNode &&
+              editor.actions.setCustom(editor.currentNode.id, custom => {
+                custom.editing = false
+              })
+            }
+          />
         </div>
-      </StyledTabsPane>
-    </StyledTabs>
+        <div className="px-3">
+          {editor.currentNode?.related.settings
+            ? React.createElement(editor.currentNode?.related.settings)
+            : 'Please select an element.'}
+        </div>
+      </StyledPanel>
+    </Draggable>
   )
 }
 

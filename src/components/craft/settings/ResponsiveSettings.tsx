@@ -1,9 +1,12 @@
 import { useEditor } from '@craftjs/core'
 import { mergeDeepRight } from 'ramda'
+import { useContext } from 'react'
+import CraftPageBuilderContext from '../../../pages/craft/CraftPageAdminPage/CraftPageBuilderContext'
 import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 
 export const withResponsive = (Settings: CraftElementSettings) => {
   const ResponsiveSettings: React.FC = () => {
+    const { device } = useContext(CraftPageBuilderContext)
     const editor = useEditor(state => ({
       currentNode: state.events.selected ? state.nodes[state.events.selected] : null,
     }))
@@ -11,62 +14,23 @@ export const withResponsive = (Settings: CraftElementSettings) => {
       return <div>Please select an element.</div>
     }
     const { responsive, ...currentProps } = editor.currentNode?.data.props || {}
-    switch (editor.currentNode?.data.custom?.responsive) {
-      case 'mobile':
-        return (
-          <Settings
-            props={mergeDeepRight(currentProps, responsive?.mobile || {})}
-            onPropsChange={changedProps =>
-              editor.currentNode &&
-              editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
-                for (const key in changedProps) {
-                  proxy[key] = changedProps[key as keyof typeof changedProps]
-                }
-                proxy.responsive = {
-                  ...proxy.responsive,
-                  mobile: mergeDeepRight(proxy.responsive?.mobile, changedProps),
-                }
-              })
+    return (
+      <Settings
+        props={{ ...currentProps, customStyle: { ...currentProps.customStyle, ...responsive?.[device]?.customStyle } }}
+        onPropsChange={changedProps =>
+          editor.currentNode &&
+          editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
+            for (const key in changedProps) {
+              proxy[key] = changedProps[key as keyof typeof changedProps]
             }
-          />
-        )
-      case 'tablet':
-        return (
-          <Settings
-            props={mergeDeepRight(currentProps, responsive?.tablet || {})}
-            onPropsChange={changedProps =>
-              editor.currentNode &&
-              editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
-                for (const key in changedProps) {
-                  proxy[key] = changedProps[key as keyof typeof changedProps]
-                }
-                proxy.responsive = {
-                  ...proxy.responsive,
-                  tablet: mergeDeepRight(proxy.responsive?.tablet, changedProps),
-                }
-              })
+            proxy.responsive = {
+              ...proxy.responsive,
+              [device]: mergeDeepRight(proxy.responsive?.[device], changedProps),
             }
-          />
-        )
-      default:
-        return (
-          <Settings
-            props={mergeDeepRight(currentProps, responsive?.desktop || {})}
-            onPropsChange={changedProps =>
-              editor.currentNode &&
-              editor.actions.history.throttle().setProp(editor.currentNode.id, proxy => {
-                for (const key in changedProps) {
-                  proxy[key] = changedProps[key as keyof typeof changedProps]
-                }
-                proxy.responsive = {
-                  ...proxy.responsive,
-                  desktop: mergeDeepRight(proxy.responsive?.desktop, changedProps),
-                }
-              })
-            }
-          />
-        )
-    }
+          })
+        }
+      />
+    )
   }
   return ResponsiveSettings
 }

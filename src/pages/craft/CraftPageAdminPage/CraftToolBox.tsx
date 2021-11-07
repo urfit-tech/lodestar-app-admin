@@ -18,7 +18,7 @@ const CraftToolbox: React.FC = () => {
   const [selected, setSelected] = useState<'basic' | 'product' | 'template'>()
   const { formatMessage } = useIntl()
   return (
-    <div className="p-3">
+    <div className="p-3" style={{ flex: 1, overflow: 'auto' }}>
       <Select
         className="mb-3"
         style={{ width: '100%' }}

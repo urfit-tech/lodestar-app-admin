@@ -1,3 +1,4 @@
+export type Device = 'desktop' | 'tablet' | 'mobile'
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
 export type ClassType =
   | 'program'

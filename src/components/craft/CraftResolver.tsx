@@ -1,10 +1,15 @@
+import { useApolloClient } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
-import { CraftTemplate } from 'lodestar-app-element/src/components/common/Craftize'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useIntl } from 'react-intl'
 import * as CraftSetting from '../../components/craft/settings'
+import * as hasura from '../../hasura'
 import { withResponsive } from './settings/ResponsiveSettings'
 
-export const useResolver = (custom: { onSave?: (template: CraftTemplate) => void }) => {
+export const useResolver = () => {
+  const apolloClient = useApolloClient()
+  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   CraftElement.CraftMemberCollection.craft = {
     displayName: formatMessage({ id: 'craft.resolver.MemberCollectionSettings', defaultMessage: '會員' }),
@@ -109,7 +114,44 @@ export const useResolver = (custom: { onSave?: (template: CraftTemplate) => void
         ...element.craft,
         custom: {
           ...element.craft?.custom,
-          ...custom,
+          editing: false,
+          onSave: (template: { rootNodeId: string; serializedNodes: any }) => {
+            const templateName = window.prompt(
+              formatMessage({ id: 'pages.craft.promptTemplateName', defaultMessage: '請輸入樣板名稱' }),
+            )
+            currentMemberId &&
+              templateName &&
+              apolloClient
+                .mutate<hasura.INSERT_APP_PAGE_TEMPLATE, hasura.INSERT_APP_PAGE_TEMPLATEVariables>({
+                  mutation: gql`
+                    mutation INSERT_APP_PAGE_TEMPLATE(
+                      $currentMemberId: String!
+                      $templateName: String!
+                      $rootNodeId: String!
+                      $serializedNodes: jsonb!
+                    ) {
+                      insert_app_page_template_one(
+                        object: {
+                          author_id: $currentMemberId
+                          name: $templateName
+                          root_node_id: $rootNodeId
+                          data: $serializedNodes
+                        }
+                      ) {
+                        id
+                      }
+                    }
+                  `,
+                  variables: {
+                    currentMemberId,
+                    templateName,
+                    rootNodeId: template.rootNodeId,
+                    serializedNodes: template.serializedNodes,
+                  },
+                })
+                .then(() => alert('add into template'))
+                .catch(() => alert('template already exists'))
+          },
         },
       }
     }
