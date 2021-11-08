@@ -55,11 +55,11 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
       colon={false}
       hideRequiredMark
       initialValues={{
-        listPrice: program.listPrice || 0,
-        sale: program.soldAt
+        listPrice: program.plans[0]?.listPrice || 0,
+        sale: program.plans[0]?.soldAt
           ? {
-              price: program.salePrice,
-              soldAt: program.soldAt,
+              price: program.plans[0]?.salePrice,
+              soldAt: program.plans[0]?.soldAt,
               timerVisible: !!program?.isCountdownTimerVisible,
             }
           : null,

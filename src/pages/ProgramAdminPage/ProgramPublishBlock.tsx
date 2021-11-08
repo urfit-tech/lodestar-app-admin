@@ -71,15 +71,7 @@ const ProgramPublishBlock: React.FC<{
       to: `/programs/${program.id}?tab=content`,
     })
 
-  program.isSubscription &&
-    program.plans.length === 0 &&
-    errors.push({
-      message: formatMessage(programMessages.text.noPrice),
-      to: `/programs/${program.id}?tab=plan`,
-    })
-
-  !program.isSubscription &&
-    program.listPrice === null &&
+  program.plans.length === 0 &&
     errors.push({
       message: formatMessage(programMessages.text.noPrice),
       to: `/programs/${program.id}?tab=plan`,

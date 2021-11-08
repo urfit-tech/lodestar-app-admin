@@ -144,12 +144,12 @@ const ProgramPlanAdminModal: React.FC<
         return (
           renderTrigger?.({
             onPlanCreate: programProgramPlanType => {
-              setVisible(true)
               setProgramPlanType(programProgramPlanType)
+              setVisible(true)
             },
             onPlanChange: programPlan => {
-              setVisible(true)
               setProgramPlan(programPlan)
+              setVisible(true)
             },
           }) || null
         )

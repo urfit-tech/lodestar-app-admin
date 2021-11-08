@@ -104,7 +104,7 @@ const ProgramContentAdminItem: React.FC<{
         {programContent.metadata?.private && (
           <StyledPrivateTag className="mr-3">{formatMessage(commonMessages.ui.private)}</StyledPrivateTag>
         )}
-        {program && program.isSubscription ? (
+        {program ? (
           programContent.publishedAt && (
             <StyledDescriptions type="secondary" className="mr-3">
               {dateFormatter(programContent.publishedAt)}

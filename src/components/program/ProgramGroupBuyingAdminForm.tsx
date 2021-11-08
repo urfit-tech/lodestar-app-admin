@@ -64,7 +64,7 @@ const ProgramGroupBuyingAdminForm: React.FC<{
             sale_price: groupBuy.salePrice ?? null,
             period_type: null,
             auto_renewed: false,
-            sold_at: program.soldAt,
+            sold_at: program.plans.find(v => v.id === groupBuy.id)?.soldAt,
             published_at: program.plans.find(v => v.id === groupBuy.id)?.publishedAt || new Date(),
             group_buying_people: groupBuy.people,
           })),
@@ -142,7 +142,7 @@ const ProgramGroupBuyingAdminForm: React.FC<{
                       parser={value => (value ? value.replace(/\D/g, '') : '')}
                     />
                   </Form.Item>
-                  {!!program.soldAt && (
+                  {!!program.plans[0]?.soldAt && (
                     <Form.Item
                       name={[field.name, 'salePrice']}
                       fieldKey={[field.fieldKey, 'salePrice']}

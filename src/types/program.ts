@@ -28,13 +28,9 @@ export type ProgramProps = {
   id: string
   title: string
   appId: string
-  isSubscription: boolean
-  soldAt: Date | null
   coverUrl: string | null
   abstract: string | null
   description: string | null
-  salePrice: number | null
-  listPrice: number
   coverVideoUrl: string | null
   publishedAt: Date | null
   inAdvance: boolean

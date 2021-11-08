@@ -98,12 +98,7 @@ const ProgramContentSectionAdminCard: React.FC<{
 
       {programContentSection.programContents.map(programContent => (
         <div key={programContent.id} className="mb-2">
-          <ProgramContentAdminItem
-            program={program}
-            programContent={programContent}
-            showPlans={program && program.isSubscription}
-            onRefetch={onRefetch}
-          />
+          <ProgramContentAdminItem program={program} programContent={programContent} showPlans onRefetch={onRefetch} />
         </div>
       ))}
       <Dropdown
