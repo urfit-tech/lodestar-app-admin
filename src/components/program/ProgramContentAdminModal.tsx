@@ -254,11 +254,9 @@ const ProgramContentAdminModal: React.FC<{
             <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
               <Input />
             </Form.Item>
-            {program.isSubscription && (
-              <Form.Item label={formatMessage(messages.contentPlan)} name="planIds">
-                <ProgramPlanSelector programId={program.id} placeholder={formatMessage(messages.contentPlan)} />
-              </Form.Item>
-            )}
+            <Form.Item label={formatMessage(messages.contentPlan)} name="planIds">
+              <ProgramPlanSelector programId={program.id} placeholder={formatMessage(messages.contentPlan)} />
+            </Form.Item>
             <Form.Item label={formatMessage(commonMessages.label.video)} name="videoAttachment">
               <AttachmentSelector contentType="video/*" />
             </Form.Item>
