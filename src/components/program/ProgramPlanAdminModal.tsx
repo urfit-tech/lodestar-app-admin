@@ -62,14 +62,15 @@ type ProgramPlanType = 'perpetual' | 'period' | 'subscription'
 const ProgramPlanAdminModal: React.FC<
   Omit<AdminModalProps, 'renderTrigger'> & {
     programId: string
+    programPlan?: ProgramPlan
     onRefetch?: () => void
     renderTrigger?: React.FC<{
+      onOpen?: () => void
+      onClose?: () => void
       onPlanCreate?: (programProgramPlanType: ProgramPlanType) => void
-      onPlanChange?: (programPlanId: ProgramPlan) => void
     }>
   }
-> = ({ programId, onRefetch, renderTrigger, ...modalProps }) => {
-  const [programPlan, setProgramPlan] = useState<ProgramPlan>()
+> = ({ programId, programPlan, onRefetch, renderTrigger, ...modalProps }) => {
   const [programPlanType, setProgramPlanType] = useState<ProgramPlanType>()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -79,7 +80,6 @@ const ProgramPlanAdminModal: React.FC<
   )
   const [currencyId, setCurrencyId] = useState(programPlan?.currencyId || '')
   const [loading, setLoading] = useState(false)
-
   const withPeriod = programPlanType === 'period' || programPlanType === 'subscription'
   const withRemind = programPlanType === 'period' || programPlanType === 'subscription'
   const withDiscountDownPrice = programPlanType === 'subscription'
@@ -115,7 +115,6 @@ const ProgramPlanAdminModal: React.FC<
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
-            form.resetFields()
             onSuccess()
             onRefetch?.()
           })
@@ -143,12 +142,10 @@ const ProgramPlanAdminModal: React.FC<
       renderTrigger={({ setVisible }) => {
         return (
           renderTrigger?.({
+            onOpen: () => setVisible(true),
+            onClose: () => setVisible(false),
             onPlanCreate: programProgramPlanType => {
               setProgramPlanType(programProgramPlanType)
-              setVisible(true)
-            },
-            onPlanChange: programPlan => {
-              setProgramPlan(programPlan)
               setVisible(true)
             },
           }) || null
