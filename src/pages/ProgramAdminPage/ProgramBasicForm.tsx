@@ -23,7 +23,6 @@ type FieldProps = {
   languages?: string[]
   isIssuesOpen: boolean
   isIntroductionSectionVisible?: boolean
-  sku?: string
 }
 
 const ProgramBasicForm: React.FC<{
@@ -67,7 +66,6 @@ const ProgramBasicForm: React.FC<{
           position: index,
         })),
         productId: `Program_${program.id}`,
-        sku: values.sku || null,
       },
     })
       .then(() => {
@@ -92,7 +90,6 @@ const ProgramBasicForm: React.FC<{
         tags: program.tags,
         languages: program.supportLocales,
         isIssuesOpen: program.isIssuesOpen,
-        sku: product?.sku,
         isIntroductionSectionVisible: program.isIntroductionSectionVisible,
       }}
       onFinish={handleSubmit}
@@ -106,11 +103,6 @@ const ProgramBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
         <TagSelector />
       </Form.Item>
-      {enabledModules.sku && (
-        <Form.Item label={formatMessage(commonMessages.label.sku)} name="sku">
-          <Input />
-        </Form.Item>
-      )}
       <Form.Item
         label={
           <span className="d-flex align-items-center">

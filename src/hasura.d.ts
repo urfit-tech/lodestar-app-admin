@@ -1733,6 +1733,34 @@ export interface GET_SALES_MEMBERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_APP_PAGE_TEMPLATE
+// ====================================================
+
+export interface INSERT_APP_PAGE_TEMPLATE_insert_app_page_template_one {
+  __typename: "app_page_template";
+  id: any;
+}
+
+export interface INSERT_APP_PAGE_TEMPLATE {
+  /**
+   * insert a single row into the table: "app_page_template"
+   */
+  insert_app_page_template_one: INSERT_APP_PAGE_TEMPLATE_insert_app_page_template_one | null;
+}
+
+export interface INSERT_APP_PAGE_TEMPLATEVariables {
+  currentMemberId: string;
+  templateName: string;
+  rootNodeId: string;
+  serializedNodes: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_CREATOR_DISPLAY
 // ====================================================
 
@@ -5460,6 +5488,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   autoRenewed: boolean;
   publishedAt?: any | null;
   isCountdownTimerVisible: boolean;
+  groupBuyingPeople?: any | null;
 }
 
 /* tslint:disable */
@@ -12953,34 +12982,6 @@ export interface GET_MEMBER_CONTRACT {
 
 export interface GET_MEMBER_CONTRACTVariables {
   memberContractId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_APP_PAGE_TEMPLATE
-// ====================================================
-
-export interface INSERT_APP_PAGE_TEMPLATE_insert_app_page_template_one {
-  __typename: "app_page_template";
-  id: any;
-}
-
-export interface INSERT_APP_PAGE_TEMPLATE {
-  /**
-   * insert a single row into the table: "app_page_template"
-   */
-  insert_app_page_template_one: INSERT_APP_PAGE_TEMPLATE_insert_app_page_template_one | null;
-}
-
-export interface INSERT_APP_PAGE_TEMPLATEVariables {
-  currentMemberId: string;
-  templateName: string;
-  rootNodeId: string;
-  serializedNodes: any;
 }
 
 /* tslint:disable */

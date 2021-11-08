@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages, merchandiseMessages, programMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
@@ -146,16 +146,6 @@ const ProductCreationModal: React.FC<
         {categoryClassType && (
           <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
             <CategorySelector classType={categoryClassType} />
-          </Form.Item>
-        )}
-        {withProgramType && (
-          <Form.Item label={formatMessage(programMessages.label.programPlanType)} name="isSubscription">
-            <Radio.Group
-              options={[
-                { label: formatMessage(programMessages.label.perpetualPlanType), value: false },
-                { label: formatMessage(programMessages.label.subscriptionPlanType), value: true },
-              ]}
-            />
           </Form.Item>
         )}
         {withMerchandiseType && (

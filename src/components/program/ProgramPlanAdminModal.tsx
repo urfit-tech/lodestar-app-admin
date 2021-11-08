@@ -1,6 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Form, Input, message, Radio } from 'antd'
+import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
@@ -36,9 +36,9 @@ const messages = defineMessages({
   unpublished: { id: 'program.label.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
   subscriptionPlan: { id: 'program.label.subscriptionPlan', defaultMessage: '訂閱付費方案' },
   permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
-  availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
-  unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '不可看過去內容' },
-  availableForAllContent: { id: 'program.label.availableForAllContent', defaultMessage: '可看所有內容' },
+  availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看指定方案過去內容' },
+  unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '可看指定方案未來內容' },
+  availableForAllContent: { id: 'program.label.availableForAllContent', defaultMessage: '可看課程所有內容' },
   subscriptionPeriodType: { id: 'program.label.subscriptionPeriodType', defaultMessage: '訂閱週期' },
   programExpirationNotice: { id: 'program.label.programExpirationNotice', defaultMessage: '課程到期通知' },
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
@@ -55,29 +55,35 @@ type FieldProps = {
   discountDownPrice?: number
   type: 1 | 2 | 3
   description: EditorState
+  groupBuyingPeople?: number
 }
 
+type ProgramPlanType = 'perpetual' | 'period' | 'subscription'
 const ProgramPlanAdminModal: React.FC<
-  AdminModalProps & {
+  Omit<AdminModalProps, 'renderTrigger'> & {
     programId: string
-    programPlan?: ProgramPlan
     onRefetch?: () => void
+    renderTrigger?: React.FC<{
+      onPlanCreate?: (programProgramPlanType: ProgramPlanType) => void
+      onPlanChange?: (programPlanId: ProgramPlan) => void
+    }>
   }
-> = ({ programId, programPlan, onRefetch, ...modalProps }) => {
+> = ({ programId, onRefetch, renderTrigger, ...modalProps }) => {
+  const [programPlan, setProgramPlan] = useState<ProgramPlan>()
+  const [programPlanType, setProgramPlanType] = useState<ProgramPlanType>()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
   const [upsertProgramPlan] = useMutation<hasura.UPSERT_PROGRAM_PLAN, hasura.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )
-
-  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!programPlan?.discountDownPrice)
-  const [withPeriod, setWithPeriod] = useState(!!(programPlan?.periodAmount && programPlan?.periodType))
-  const [withRemind, setWithRemind] = useState(!!(programPlan?.remindPeriodAmount && programPlan?.remindPeriodType))
-  const [withAutoRenewed, setWithAutoRenewed] = useState(!!programPlan?.autoRenewed)
   const [currencyId, setCurrencyId] = useState(programPlan?.currencyId || '')
-
   const [loading, setLoading] = useState(false)
+
+  const withPeriod = programPlanType === 'period' || programPlanType === 'subscription'
+  const withRemind = programPlanType === 'period' || programPlanType === 'subscription'
+  const withDiscountDownPrice = programPlanType === 'subscription'
+  const withAutoRenewed = programPlanType === 'subscription'
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -104,10 +110,12 @@ const ProgramPlanAdminModal: React.FC<
             autoRenewed: withPeriod ? withAutoRenewed : false,
             publishedAt: values.isPublished ? new Date() : null,
             isCountdownTimerVisible: !!values.sale?.isTimerVisible,
+            groupBuyingPeople: values.groupBuyingPeople,
           },
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
+            form.resetFields()
             onSuccess()
             onRefetch?.()
           })
@@ -131,6 +139,21 @@ const ProgramPlanAdminModal: React.FC<
           </Button>
         </>
       )}
+      // TODO: too nested to understand
+      renderTrigger={({ setVisible }) => {
+        return (
+          renderTrigger?.({
+            onPlanCreate: programProgramPlanType => {
+              setVisible(true)
+              setProgramPlanType(programProgramPlanType)
+            },
+            onPlanChange: programPlan => {
+              setVisible(true)
+              setProgramPlan(programPlan)
+            },
+          }) || null
+        )
+      }}
       {...modalProps}
     >
       <Form
@@ -155,6 +178,7 @@ const ProgramPlanAdminModal: React.FC<
           discountDownPrice: programPlan?.discountDownPrice,
           remindPeriod: { amount: programPlan?.remindPeriodAmount || 1, type: programPlan?.remindPeriodType || 'D' },
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
+          groupBuyingPeople: programPlan?.groupBuyingPeople || 1,
         }}
       >
         <Form.Item
@@ -181,22 +205,28 @@ const ProgramPlanAdminModal: React.FC<
             </Radio>
           </Radio.Group>
         </Form.Item>
-        <div className="mb-4">
-          <Checkbox defaultChecked={withPeriod} onChange={e => setWithPeriod(e.target.checked)}>
-            {formatMessage(commonMessages.label.period)}
-          </Checkbox>
-        </div>
+        <Form.Item label={formatMessage(messages.permissionType)} name="type" rules={[{ required: true }]}>
+          <Radio.Group>
+            <Radio value={1} className="d-block">
+              {formatMessage(messages.availableForPastContent)}
+            </Radio>
+            <Radio value={2} className="d-block">
+              {formatMessage(messages.unavailableForPastContent)}
+            </Radio>
+            <Radio value={3} className="d-block">
+              {formatMessage(messages.availableForAllContent)}
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
         {withPeriod && (
-          <Form.Item name="period">
+          <Form.Item name="period" label={formatMessage(commonMessages.label.period)}>
             <PeriodSelector />
           </Form.Item>
         )}
-        {withPeriod && (
-          <div className="mb-4">
-            <Checkbox checked={withAutoRenewed} onChange={e => setWithAutoRenewed(e.target.checked)}>
-              {formatMessage(commonMessages.label.autoRenewed)}
-            </Checkbox>
-          </div>
+        {withRemind && (
+          <Form.Item name="remindPeriod" label={formatMessage(messages.programExpirationNotice)}>
+            <PeriodSelector />
+          </Form.Item>
         )}
         {enabledModules?.currency && (
           <Form.Item
@@ -211,11 +241,11 @@ const ProgramPlanAdminModal: React.FC<
               },
             ]}
           >
-            <CurrencySelector onChange={value => setCurrencyId(value && value !== currencyId ? value : currencyId)} />
+            <CurrencySelector />
           </Form.Item>
         )}
         <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
-          <CurrencyInput noLabel currencyId={currencyId} />
+          <CurrencyInput currencyId={currencyId} />
         </Form.Item>
         <Form.Item
           name="sale"
@@ -223,46 +253,22 @@ const ProgramPlanAdminModal: React.FC<
         >
           <SaleInput currencyId={currencyId} withTimer />
         </Form.Item>
-        {withPeriod && withAutoRenewed && (
-          <div className="mb-4">
-            <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
-              {formatMessage(commonMessages.label.discountDownPrice)}
-            </Checkbox>
-            {withDiscountDownPrice && (
-              <StyledNotation>{formatMessage(commonMessages.text.discountDownNotation)}</StyledNotation>
-            )}
-          </div>
-        )}
-        {withPeriod && withAutoRenewed && withDiscountDownPrice && (
-          <Form.Item name="discountDownPrice">
-            <CurrencyInput noLabel currencyId={currencyId} />
+        {programPlanType === 'subscription' && (
+          <Form.Item
+            name="discountDownPrice"
+            label={formatMessage(commonMessages.label.discountDownPrice)}
+            help={
+              <StyledNotation className="mt-2 mb-4">
+                {formatMessage(commonMessages.text.discountDownNotation)}
+              </StyledNotation>
+            }
+          >
+            <CurrencyInput currencyId={currencyId} />
           </Form.Item>
         )}
-        {withPeriod && (
-          <Form.Item label={formatMessage(messages.permissionType)} name="type" rules={[{ required: true }]}>
-            <Radio.Group>
-              <Radio value={1} className="d-block">
-                {formatMessage(messages.availableForPastContent)}
-              </Radio>
-              <Radio value={2} className="d-block">
-                {formatMessage(messages.unavailableForPastContent)}
-              </Radio>
-              <Radio value={3} className="d-block">
-                {formatMessage(messages.availableForAllContent)}
-              </Radio>
-            </Radio.Group>
-          </Form.Item>
-        )}
-        <div className="mb-4">
-          <Checkbox defaultChecked={withRemind} onChange={e => setWithRemind(e.target.checked)}>
-            {formatMessage(messages.programExpirationNotice)}
-          </Checkbox>
-        </div>
-        <PeriodSelector />
-
-        {withRemind && (
-          <Form.Item name="remindPeriod">
-            <PeriodSelector />
+        {enabledModules['group_buying'] && (
+          <Form.Item name="groupBuyingPeople" label={formatMessage(commonMessages.text.groupBuyingPeople)}>
+            <InputNumber min={1} />
           </Form.Item>
         )}
         <Form.Item label={formatMessage(messages.planDescription)} name="description">
@@ -292,6 +298,7 @@ const UPSERT_PROGRAM_PLAN = gql`
     $autoRenewed: Boolean!
     $publishedAt: timestamptz
     $isCountdownTimerVisible: Boolean!
+    $groupBuyingPeople: numeric
   ) {
     insert_program_plan(
       objects: {
@@ -312,6 +319,7 @@ const UPSERT_PROGRAM_PLAN = gql`
         auto_renewed: $autoRenewed
         published_at: $publishedAt
         is_countdown_timer_visible: $isCountdownTimerVisible
+        group_buying_people: $groupBuyingPeople
       }
       on_conflict: {
         constraint: program_plan_pkey
@@ -331,6 +339,7 @@ const UPSERT_PROGRAM_PLAN = gql`
           auto_renewed
           published_at
           is_countdown_timer_visible
+          group_buying_people
         ]
       }
     ) {

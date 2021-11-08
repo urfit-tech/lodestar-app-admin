@@ -113,10 +113,8 @@ const ActivityTicketsAdminBlock: React.FC<{
                         <Menu.Item>
                           <ProductSkuModal
                             productId={`ActivityTicket_${ticket.id}`}
-                            renderTrigger={({ setVisible }) => (
-                              <span onClick={() => setVisible(true)}>
-                                {formatMessage(commonMessages.label.skuSetting)}
-                              </span>
+                            renderTrigger={({ sku, onOpen }) => (
+                              <span onClick={() => onOpen?.()}>{formatMessage(commonMessages.label.skuSetting)}</span>
                             )}
                           />
                         </Menu.Item>

@@ -12,7 +12,7 @@ export const useCurrency = (currencyId?: string) => {
     const currency: Currency = currencies[currentCurrencyId]
 
     if (currentCurrencyId === 'LSC') {
-      return value + ' ' + settings['coin.unit']
+      return value + ' ' + (settings['coin.unit'] || 'LSC')
     }
     return (
       value.toLocaleString(locale || navigator.language, {

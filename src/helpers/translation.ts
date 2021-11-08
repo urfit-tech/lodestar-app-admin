@@ -65,6 +65,9 @@ export const commonMessages = {
     uploadCertification: { id: 'common.ui.uploadCertification', defaultMessage: '上傳證明' },
     createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
     createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
+    perpetualPlan: { id: 'common.ui.perpetualPlan', defaultMessage: '永久方案' },
+    periodPlan: { id: 'common.ui.periodPlan', defaultMessage: '限時方案' },
+    subscriptionPlan: { id: 'common.ui.subscriptionPlan', defaultMessage: '訂閱方案' },
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
     download: { id: 'common.ui.download', defaultMessage: '下載' },
     private: { id: 'common.ui.private', defaultMessage: '私密' },
@@ -237,7 +240,7 @@ export const commonMessages = {
     tags: { id: 'common.label.tags', defaultMessage: '標籤' },
     memberCategory: { id: 'common.label.memberCategory', defaultMessage: '會員分類' },
     material: { id: 'common.label.material', defaultMessage: '教材' },
-    sku: { id: 'common.label.sku', defaultMessage: '料號（SKU)' },
+    sku: { id: 'common.label.sku', defaultMessage: 'SKU' },
     skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
     roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
     permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
@@ -262,6 +265,10 @@ export const commonMessages = {
     salePriceNotation: {
       id: 'program.text.salePriceNotation',
       defaultMessage: '購買到優惠價的會員，往後每期皆以優惠價收款',
+    },
+    groupBuyingPeople: {
+      id: 'program.text.groupBuyingPeople',
+      defaultMessage: '團購總人數',
     },
     discountDownNotation: {
       id: 'program.text.discountDownNotation',

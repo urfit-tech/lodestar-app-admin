@@ -15,11 +15,16 @@ type FieldProps = {
 }
 
 const ProductSkuModal: React.FC<
-  AdminModalProps & {
+  Omit<AdminModalProps, 'renderTrigger'> & {
     productId: string
     onRefetch?: () => void
+    renderTrigger?: React.FC<{
+      sku: string | null
+      onOpen?: () => void
+      onClose?: () => void
+    }>
   }
-> = ({ productId, onRefetch, ...modalProps }) => {
+> = ({ productId, onRefetch, renderTrigger, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
@@ -79,6 +84,16 @@ const ProductSkuModal: React.FC<
           </Button>
         </>
       )}
+      // TODO: too difficult to understand
+      renderTrigger={({ setVisible }) => {
+        return (
+          renderTrigger?.({
+            sku: product?.sku || null,
+            onOpen: () => setVisible(true),
+            onClose: () => setVisible(false),
+          }) || null
+        )
+      }}
       {...modalProps}
     >
       <Form

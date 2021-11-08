@@ -1,6 +1,6 @@
-import { MoreOutlined } from '@ant-design/icons'
+import { EditOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Divider, Dropdown, Menu } from 'antd'
+import { Button, Divider, Tag } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
@@ -37,9 +37,31 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
+  const description = programPlan.description?.trim() || ''
+  const programPlanType = programPlan.autoRenewed
+    ? 'subscription'
+    : programPlan.periodAmount && programPlan.periodType
+    ? 'period'
+    : 'perpetual'
   return (
     <AdminBlock>
-      <AdminBlockTitle className="mb-3">{programPlan.title}</AdminBlockTitle>
+      <AdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center">
+          <Tag className="mr-2">
+            {programPlanType === 'subscription'
+              ? formatMessage(commonMessages.ui.subscriptionPlan)
+              : programPlanType === 'period'
+              ? formatMessage(commonMessages.ui.periodPlan)
+              : formatMessage(commonMessages.ui.perpetualPlan)}
+          </Tag>
+          {programPlan.title}
+        </div>
+        <ProgramPlanAdminModal
+          onRefetch={onRefetch}
+          programId={programId}
+          renderTrigger={({ onPlanChange }) => <EditOutlined onClick={() => onPlanChange?.(programPlan)} />}
+        />
+      </AdminBlockTitle>
       <PriceLabel
         listPrice={listPrice}
         salePrice={isOnSale ? salePrice : undefined}
@@ -55,49 +77,28 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
       )}
       <Divider />
 
-      <div className="mb-3">
-        <BraftContent>{programPlan.description}</BraftContent>
-      </div>
+      {description.length && (
+        <div className="mb-3">
+          <BraftContent>{description}</BraftContent>
+        </div>
+      )}
 
       <div className="d-flex align-items-center justify-content-between">
         <div className="flex-grow-1">
           {!loadingEnrollmentCount && formatMessage(messages.subscriptionCount, { count: `${enrollmentCount}` })}
         </div>
-        <Dropdown
-          trigger={['click']}
-          placement="bottomRight"
-          overlay={
-            <Menu>
-              <Menu.Item>
-                <ProgramPlanAdminModal
-                  onRefetch={onRefetch}
-                  programId={programId}
-                  programPlan={programPlan}
-                  renderTrigger={({ setVisible }) => (
-                    <StyledMenuItemText onClick={() => setVisible(true)}>
-                      {formatMessage(commonMessages.ui.edit)}
-                    </StyledMenuItemText>
-                  )}
-                />
-              </Menu.Item>
-
-              {enabledModules.sku && (
-                <Menu.Item>
-                  <ProductSkuModal
-                    productId={`ProgramPlan_${programPlan.id}`}
-                    renderTrigger={({ setVisible }) => (
-                      <StyledMenuItemText onClick={() => setVisible(true)}>
-                        {formatMessage(commonMessages.label.skuSetting)}
-                      </StyledMenuItemText>
-                    )}
-                  />
-                </Menu.Item>
-              )}
-            </Menu>
-          }
-        >
-          <MoreOutlined style={{ fontSize: '24px' }} />
-        </Dropdown>
+        {enabledModules.sku && (
+          <ProductSkuModal
+            productId={`ProgramPlan_${programPlan.id}`}
+            renderTrigger={({ onOpen, sku }) => (
+              <Button type="link" onClick={() => onOpen?.()}>
+                {sku
+                  ? `${formatMessage(commonMessages.label.sku)}: ${sku}`
+                  : formatMessage(commonMessages.label.skuSetting)}
+              </Button>
+            )}
+          />
+        )}
       </div>
     </AdminBlock>
   )

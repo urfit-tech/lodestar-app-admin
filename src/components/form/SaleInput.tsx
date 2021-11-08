@@ -57,7 +57,6 @@ const SaleInput: React.FC<{
         {!noPrice && (
           <Form.Item className="d-inline-block mb-0 mr-3">
             <CurrencyInput
-              noLabel
               currencyId={currencyId}
               value={value?.price || 0}
               onChange={price =>
