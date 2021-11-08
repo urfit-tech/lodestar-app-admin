@@ -106,13 +106,7 @@ const ProgramContentAdminModal: React.FC<{
         variables: {
           programContentId: programContent.id,
           price: isTrial ? 0 : null,
-          publishedAt: program.isSubscription
-            ? values.publishedAt
-              ? values.publishedAt.toDate()
-              : null
-            : isPublished
-            ? new Date()
-            : null,
+          publishedAt: values.publishedAt ? values.publishedAt.toDate() : null,
           title: values.title,
           duration: values.duration,
           isNotifyUpdate: values.isNotifyUpdate,
@@ -132,9 +126,7 @@ const ProgramContentAdminModal: React.FC<{
         },
       })
 
-      if (program.isSubscription) {
-        await updatePlans(values.planIds || [])
-      }
+      await updatePlans(values.planIds || [])
 
       if (!uploadError.materials) {
         await updateMaterials(materialFiles)
@@ -207,7 +199,7 @@ const ProgramContentAdminModal: React.FC<{
                   {formatMessage(programMessages.label.show)}
                 </Checkbox>
 
-                {program.isSubscription && isPublished && (
+                {isPublished && (
                   <Form.Item name="publishedAt" className="mb-0 mr-2">
                     <DatePicker
                       format="YYYY-MM-DD HH:mm"
