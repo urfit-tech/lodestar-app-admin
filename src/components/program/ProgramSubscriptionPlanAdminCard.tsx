@@ -59,7 +59,8 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         <ProgramPlanAdminModal
           onRefetch={onRefetch}
           programId={programId}
-          renderTrigger={({ onPlanChange }) => <EditOutlined onClick={() => onPlanChange?.(programPlan)} />}
+          programPlan={programPlan}
+          renderTrigger={({ onOpen }) => <EditOutlined onClick={() => onOpen?.()} />}
         />
       </AdminBlockTitle>
       <PriceLabel
