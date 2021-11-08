@@ -53,7 +53,7 @@ const SaleCollectionAdminCard: React.VFC<{
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
-  const { currentUserRole } = useAuth()
+  const { currentUserRole, permissions } = useAuth()
 
   const [isLoading, setIsLoading] = useState(false)
   const [statuses, setStatuses] = useState<string[] | null>(null)
@@ -135,7 +135,9 @@ const SaleCollectionAdminCard: React.VFC<{
       },
     },
     {
-      title: formatMessage(commonMessages.label.nameAndEmail),
+      title: formatMessage(
+        permissions['SALES_RECORDS_DETAILS'] ? commonMessages.label.nameAndEmail : commonMessages.label.memberName,
+      ),
       key: 'nameAndEmail',
       ...getColumnSearchProps({
         onReset: clearFilters => {
@@ -149,8 +151,8 @@ const SaleCollectionAdminCard: React.VFC<{
       }),
       render: (_, record) => (
         <StyledCell>
-          <div>{`${record.name} /`}</div>
-          <div>{record.email}</div>
+          <div>{`${record.name}`}</div>
+          {permissions['SALES_RECORDS_DETAILS'] && <div>{`/${record.email}`}</div>}
         </StyledCell>
       ),
     },
@@ -232,9 +234,13 @@ const SaleCollectionAdminCard: React.VFC<{
 
       <div className="row">
         <div className="col-3" style={{ fontSize: '14px' }}>
-          {orderExecutors.length !== 0 && <div>承辦人：{orderExecutors.join('、')}</div>}
-          {paymentMethod && <div>付款方式：{paymentMethod}</div>}
-          {expiredAt && <div>付款期限：{moment(expiredAt).format('YYYY-MM-DD')}</div>}
+          {orderExecutors.length !== 0 && permissions['SALES_RECORDS_DETAILS'] && (
+            <div>承辦人：{orderExecutors.join('、')}</div>
+          )}
+          {paymentMethod && permissions['SALES_RECORDS_DETAILS'] && <div>付款方式：{paymentMethod}</div>}
+          {expiredAt && permissions['SALES_RECORDS_DETAILS'] && (
+            <div>付款期限：{moment(expiredAt).format('YYYY-MM-DD')}</div>
+          )}
         </div>
 
         <div className="col-9">
@@ -275,9 +281,10 @@ const SaleCollectionAdminCard: React.VFC<{
           />
         )}
 
-        {orderProducts.some(v =>
-          ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.product.type),
-        ) &&
+        {currentUserRole === 'app-owner' &&
+          orderProducts.some(v =>
+            ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.product.type),
+          ) &&
           (orderProducts.some(v => v.options?.unsubscribedAt) ? (
             <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
               {formatMessage(commonMessages.text.cancelSubscriptionDate, {
