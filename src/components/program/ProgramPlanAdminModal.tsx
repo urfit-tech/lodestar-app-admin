@@ -5,7 +5,7 @@ import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
@@ -80,6 +80,18 @@ const ProgramPlanAdminModal: React.FC<
   )
   const [currencyId, setCurrencyId] = useState(programPlan?.currencyId || '')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    programPlan &&
+      setProgramPlanType(
+        programPlan.autoRenewed
+          ? 'subscription'
+          : programPlan.periodType && programPlan.periodAmount
+          ? 'period'
+          : 'perpetual',
+      )
+  }, [programPlan])
+
   const withPeriod = programPlanType === 'period' || programPlanType === 'subscription'
   const withRemind = programPlanType === 'period' || programPlanType === 'subscription'
   const withDiscountDownPrice = programPlanType === 'subscription'
@@ -98,8 +110,8 @@ const ProgramPlanAdminModal: React.FC<
             type: values.type || 1,
             title: values.title,
             description: values.description.toRAW(),
-            listPrice: values.listPrice,
-            salePrice: values.sale ? values.sale.price : null,
+            listPrice: values.listPrice || 0,
+            salePrice: values.sale ? values.sale.price || 0 : null,
             soldAt: values.sale?.soldAt || null,
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             periodAmount: withPeriod ? values.period.amount : null,
