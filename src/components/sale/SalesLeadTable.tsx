@@ -21,11 +21,13 @@ import { commonMessages, memberMessages, salesMessages } from '../../helpers/tra
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
+import { ReactComponent as UserOutlinedIcon } from '../../images/icon/user-o.svg'
 import { LeadProps, SalesProps } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../member/MemberTaskAdminModal'
 import JitsiDemoModal from './JitsiDemoModal'
+import MemberPropertyModal from './MemberPropertyModal'
 
 const StyledButton = styled(Button)`
   display: flex;
@@ -76,10 +78,13 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
     categoryName?: string
     status?: string
   }>({})
+  const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
   const [taskModalVisible, setTaskModalVisible] = useState(false)
   const [memberNoteModalVisible, setMemberNoteModalVisible] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<{ id: string; name: string } | null>(null)
+  const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
+    null,
+  )
 
   const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<LeadProps> = onSetFilter => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -131,12 +136,25 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
           <StyledButton
+            icon={<Icon component={() => <UserOutlinedIcon />} />}
+            className="mr-2"
+            onClick={() => {
+              setSelectedMember({
+                id: record.id,
+                name: record.name,
+                categoryNames: record.categoryNames,
+              })
+              setPropertyModalVisible(true)
+            }}
+          />
+          <StyledButton
             icon={<CheckSquareOutlined />}
             className="mr-2"
             onClick={() => {
               setSelectedMember({
                 id: record.id,
                 name: record.name,
+                categoryNames: record.categoryNames,
               })
               setTaskModalVisible(true)
             }}
@@ -148,19 +166,9 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
               setSelectedMember({
                 id: record.id,
                 name: record.name,
+                categoryNames: record.categoryNames,
               })
               setMemberNoteModalVisible(true)
-            }}
-          />
-          <StyledButton
-            icon={<Icon component={() => <DemoIcon />} />}
-            className="mr-2"
-            onClick={() => {
-              setSelectedMember({
-                id: record.id,
-                name: record.name,
-              })
-              setJitsiModalVisible(true)
             }}
           />
         </div>
@@ -264,6 +272,18 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
           <StyledButton
+            icon={<Icon component={() => <DemoIcon />} />}
+            className="mr-2"
+            onClick={() => {
+              setSelectedMember({
+                id: record.id,
+                name: record.name,
+                categoryNames: record.categoryNames,
+              })
+              setJitsiModalVisible(true)
+            }}
+          />
+          <StyledButton
             icon={<SwapOutlined />}
             className="mr-2"
             onClick={() => {
@@ -310,6 +330,22 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
 
   return (
     <StyledAdminCard>
+      {selectedMember && (
+        <MemberPropertyModal
+          key={selectedMember.id}
+          visible={propertyModalVisible}
+          onCancel={() => setPropertyModalVisible(false)}
+          member={selectedMember}
+          sales={{
+            id: sales.id,
+            name: sales.name,
+            email: sales.email,
+          }}
+          onClose={() => {
+            setPropertyModalVisible(false)
+          }}
+        />
+      )}
       {selectedMember && (
         <MemberTaskAdminModal
           key={selectedMember.id}

@@ -9,6 +9,7 @@ import { commonMessages } from '../helpers/translation'
 import { CouponPlanProps } from '../types/checkout'
 import { PermissionGroupProps } from '../types/general'
 import {
+  MemberPropertyProps,
   MemberAdminProps,
   MemberInfoProps,
   MemberOptionProps,
@@ -1023,4 +1024,60 @@ export const useMutateMember = () => {
   return {
     updateMemberAvatar,
   }
+}
+
+export const useMemberPropertyCollection = (memberId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_MEMBER_PROPERTY_COLLECTION,
+    hasura.GET_MEMBER_PROPERTY_COLLECTIONVariables
+  >(
+    gql`
+      query GET_MEMBER_PROPERTY_COLLECTION($memberId: String!) {
+        member_property(where: { member: { id: { _eq: $memberId } } }) {
+          id
+          property {
+            id
+            name
+          }
+          value
+        }
+      }
+    `,
+    {
+      variables: {
+        memberId,
+      },
+      context: {
+        important: true,
+      },
+    },
+  )
+
+  const memberProperties: MemberPropertyProps[] =
+    data?.member_property.map(v => ({
+      id: v.property.id,
+      name: v.property.name,
+      value: v.value,
+    })) || []
+
+  return {
+    loadingMemberProperties: loading,
+    errorMemberProperties: error,
+    memberProperties,
+    refetchMemberProperties: refetch,
+  }
+}
+
+export const useMutateMemberProperty = () => {
+  const [updateMemberProperty] = useMutation<hasura.UPDATE_MEMBER_PROPERTY, hasura.UPDATE_MEMBER_PROPERTYVariables>(gql`
+    mutation UPDATE_MEMBER_PROPERTY($memberId: String!, $memberProperties: [member_property_insert_input!]!) {
+      delete_member_property(where: { member_id: { _eq: $memberId } }) {
+        affected_rows
+      }
+      insert_member_property(objects: $memberProperties) {
+        affected_rows
+      }
+    }
+  `)
+  return { updateMemberProperty }
 }
