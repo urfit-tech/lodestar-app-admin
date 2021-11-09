@@ -336,25 +336,13 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
           visible={propertyModalVisible}
           onCancel={() => setPropertyModalVisible(false)}
           member={selectedMember}
+          sales={{
+            id: sales.id,
+            name: sales.name,
+            email: sales.email,
+          }}
           onRefetch={() => {
             setPropertyModalVisible(false)
-          }}
-          onSubmit={({ note }) => {
-            if (note?.status && note?.description) {
-              insertMemberNote({
-                variables: {
-                  memberId: selectedMember.id,
-                  authorId: sales.id,
-                  status: note.status,
-                  description: note.description,
-                  duration: 0,
-                },
-              })
-                .then(() => {
-                  onRefetch?.()
-                })
-                .catch(handleError)
-            }
           }}
         />
       )}
