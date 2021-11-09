@@ -9,7 +9,12 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useMemberPropertyCollection, useMutateMemberProperty, useProperty } from '../../hooks/member'
+import {
+  useMemberPropertyCollection,
+  useMutateMemberNote,
+  useMutateMemberProperty,
+  useProperty,
+} from '../../hooks/member'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
 const messages = defineMessages({
@@ -50,15 +55,20 @@ const MemberPropertyModal: React.FC<
       name: string
       categoryNames: string[]
     } | null
-    onSubmit?: (values: FieldProps) => void
+    sales: {
+      id: string
+      name: string
+      email: string
+    }
     onRefetch?: () => void
   }
-> = ({ member, onSubmit, onRefetch, ...modalProps }) => {
+> = ({ member, sales, onRefetch, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { loadingProperties, properties } = useProperty()
   const { loadingMemberProperties, memberProperties } = useMemberPropertyCollection(member?.id || '')
   const { updateMemberProperty } = useMutateMemberProperty()
+  const { insertMemberNote } = useMutateMemberNote()
   const { loading: loadingMemberNoteStatus, data: memberNoteStatus } = useQuery<
     hasura.GET_LATEST_MEMBER_NOTE_STATUS,
     hasura.GET_LATEST_MEMBER_NOTE_STATUSVariables
@@ -103,8 +113,21 @@ const MemberPropertyModal: React.FC<
           },
         })
           .then(() => {
+            const { note } = values
+            if (note.status && note.description) {
+              insertMemberNote({
+                variables: {
+                  memberId: member.id,
+                  authorId: sales.id,
+                  status: note.status,
+                  description: note.description,
+                  duration: 0,
+                },
+              })
+            }
+          })
+          .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
-            onSubmit?.(values)
             onRefetch?.()
           })
           .catch(handleError)
