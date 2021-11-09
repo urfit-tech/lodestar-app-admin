@@ -60,9 +60,9 @@ const MemberPropertyModal: React.FC<
       name: string
       email: string
     }
-    onRefetch?: () => void
+    onClose?: () => void
   }
-> = ({ member, sales, onRefetch, ...modalProps }) => {
+> = ({ member, sales, onClose, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { loadingProperties, properties } = useProperty()
@@ -129,7 +129,7 @@ const MemberPropertyModal: React.FC<
       })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
+        onClose?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
