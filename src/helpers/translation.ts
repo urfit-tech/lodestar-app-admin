@@ -1539,6 +1539,7 @@ export const permissionMessages = defineMessages({
   SALES_RECORDS_CREATOR: { id: 'permission.SALES_RECORDS_CREATOR', defaultMessage: '查看創作者銷售紀錄' },
   GROSS_SALES_CREATOR: { id: 'permission.GROSS_SALES_CREATOR', defaultMessage: '查看創作者銷售總額' },
   GROSS_SALES_ADMIN: { id: 'permission.GROSS_SALES_ADMIN', defaultMessage: '查看所有銷售總額' },
+  SALES_RECORDS_DETAILS: { id: 'permission.SALES_RECORDS_DETAILS', defaultMessage: '查看消費者細項' },
 
   // program
   PROGRAM_ADMIN: { id: 'permission.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },
