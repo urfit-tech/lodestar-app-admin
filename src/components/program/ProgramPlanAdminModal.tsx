@@ -1,6 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, InputNumber, message, Radio } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
@@ -36,8 +36,14 @@ const messages = defineMessages({
   unpublished: { id: 'program.label.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
   subscriptionPlan: { id: 'program.label.subscriptionPlan', defaultMessage: '訂閱付費方案' },
   permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
-  availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看指定方案過去內容' },
-  unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '可看指定方案未來內容' },
+  availableForPastContent: {
+    id: 'program.label.availableForPastContent',
+    defaultMessage: '可看指定方案過去與未來內容',
+  },
+  unavailableForPastContent: {
+    id: 'program.label.unavailableForPastContent',
+    defaultMessage: '僅可看指定方案未來內容',
+  },
   availableForAllContent: { id: 'program.label.availableForAllContent', defaultMessage: '可看課程所有內容' },
   subscriptionPeriodType: { id: 'program.label.subscriptionPeriodType', defaultMessage: '訂閱週期' },
   programExpirationNotice: { id: 'program.label.programExpirationNotice', defaultMessage: '課程到期通知' },
@@ -65,13 +71,16 @@ const ProgramPlanAdminModal: React.FC<
     programPlan?: ProgramPlan
     onRefetch?: () => void
     renderTrigger?: React.FC<{
-      onOpen?: () => void
+      onOpen?: (programProgramPlanType: ProgramPlanType) => void
       onClose?: () => void
-      onPlanCreate?: (programProgramPlanType: ProgramPlanType) => void
     }>
   }
 > = ({ programId, programPlan, onRefetch, renderTrigger, ...modalProps }) => {
   const [programPlanType, setProgramPlanType] = useState<ProgramPlanType>()
+  const [toggle, setToggle] = useState({
+    withDiscountDownPrice: false,
+    withRemind: false,
+  })
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
@@ -107,17 +116,17 @@ const ProgramPlanAdminModal: React.FC<
           variables: {
             id: programPlan ? programPlan.id : uuid(),
             programId,
-            type: values.type || 1,
+            type: values.type,
             title: values.title,
             description: values.description.toRAW(),
             listPrice: values.listPrice || 0,
             salePrice: values.sale ? values.sale.price || 0 : null,
             soldAt: values.sale?.soldAt || null,
-            discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
+            discountDownPrice: toggle.withDiscountDownPrice && values.discountDownPrice ? values.discountDownPrice : 0,
             periodAmount: withPeriod ? values.period.amount : null,
             periodType: withPeriod ? values.period.type : null,
-            remindPeriodAmount: withRemind ? values.remindPeriod.amount : null,
-            remindPeriodType: withRemind ? values.remindPeriod.type : null,
+            remindPeriodAmount: withRemind && toggle.withRemind ? values.remindPeriod.amount : null,
+            remindPeriodType: withRemind && toggle.withRemind ? values.remindPeriod.type : null,
             currencyId: values.currencyId || programPlan?.currencyId || 'TWD',
             autoRenewed: withPeriod ? withAutoRenewed : false,
             publishedAt: values.isPublished ? new Date() : null,
@@ -154,12 +163,11 @@ const ProgramPlanAdminModal: React.FC<
       renderTrigger={({ setVisible }) => {
         return (
           renderTrigger?.({
-            onOpen: () => setVisible(true),
-            onClose: () => setVisible(false),
-            onPlanCreate: programProgramPlanType => {
+            onOpen: programProgramPlanType => {
               setProgramPlanType(programProgramPlanType)
               setVisible(true)
             },
+            onClose: () => setVisible(false),
           }) || null
         )
       }}
@@ -174,7 +182,7 @@ const ProgramPlanAdminModal: React.FC<
           title: programPlan?.title,
           isPublished: !!programPlan?.publishedAt,
           currencyId: programPlan?.currencyId,
-          listPrice: programPlan?.listPrice,
+          listPrice: programPlan?.listPrice || 0,
           sale: programPlan?.soldAt
             ? {
                 price: programPlan.salePrice,
@@ -183,8 +191,8 @@ const ProgramPlanAdminModal: React.FC<
               }
             : null,
           period: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
-          type: programPlan?.type || 1,
-          discountDownPrice: programPlan?.discountDownPrice,
+          type: programPlan?.type || 3,
+          discountDownPrice: programPlan?.discountDownPrice || 0,
           remindPeriod: { amount: programPlan?.remindPeriodAmount || 1, type: programPlan?.remindPeriodType || 'D' },
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
           groupBuyingPeople: programPlan?.groupBuyingPeople || 1,
@@ -216,14 +224,14 @@ const ProgramPlanAdminModal: React.FC<
         </Form.Item>
         <Form.Item label={formatMessage(messages.permissionType)} name="type" rules={[{ required: true }]}>
           <Radio.Group>
+            <Radio value={3} className="default d-block">
+              {formatMessage(messages.availableForAllContent)}
+            </Radio>
             <Radio value={1} className="d-block">
               {formatMessage(messages.availableForPastContent)}
             </Radio>
             <Radio value={2} className="d-block">
               {formatMessage(messages.unavailableForPastContent)}
-            </Radio>
-            <Radio value={3} className="d-block">
-              {formatMessage(messages.availableForAllContent)}
             </Radio>
           </Radio.Group>
         </Form.Item>
@@ -233,9 +241,20 @@ const ProgramPlanAdminModal: React.FC<
           </Form.Item>
         )}
         {withRemind && (
-          <Form.Item name="remindPeriod" label={formatMessage(messages.programExpirationNotice)}>
-            <PeriodSelector />
-          </Form.Item>
+          <div>
+            <Checkbox
+              checked={toggle.withRemind}
+              className="mb-2"
+              onChange={e => setToggle({ ...toggle, withRemind: e.target.checked })}
+            >
+              {formatMessage(messages.programExpirationNotice)}
+            </Checkbox>
+            {toggle.withRemind && (
+              <Form.Item name="remindPeriod">
+                <PeriodSelector />
+              </Form.Item>
+            )}
+          </div>
         )}
         {enabledModules?.currency && (
           <Form.Item
@@ -263,17 +282,27 @@ const ProgramPlanAdminModal: React.FC<
           <SaleInput currencyId={currencyId} withTimer />
         </Form.Item>
         {programPlanType === 'subscription' && (
-          <Form.Item
-            name="discountDownPrice"
-            label={formatMessage(commonMessages.label.discountDownPrice)}
-            help={
-              <StyledNotation className="mt-2 mb-4">
-                {formatMessage(commonMessages.text.discountDownNotation)}
-              </StyledNotation>
-            }
-          >
-            <CurrencyInput currencyId={currencyId} />
-          </Form.Item>
+          <div>
+            <Checkbox
+              checked={toggle.withDiscountDownPrice}
+              className="mb-2"
+              onChange={e => setToggle({ ...toggle, withDiscountDownPrice: e.target.checked })}
+            >
+              {formatMessage(commonMessages.label.discountDownPrice)}
+            </Checkbox>
+            {toggle.withDiscountDownPrice && (
+              <Form.Item
+                name="discountDownPrice"
+                help={
+                  <StyledNotation className="mt-2 mb-4">
+                    {formatMessage(commonMessages.text.discountDownNotation)}
+                  </StyledNotation>
+                }
+              >
+                <CurrencyInput currencyId={currencyId} />
+              </Form.Item>
+            )}
+          </div>
         )}
         {enabledModules['group_buying'] && (
           <Form.Item name="groupBuyingPeople" label={formatMessage(commonMessages.text.groupBuyingPeople)}>

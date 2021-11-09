@@ -23,20 +23,15 @@ const ProgramPlanAdminBlock: React.FC<{
     <>
       <ProgramPlanAdminModal
         programId={program.id}
-        renderTrigger={({ onPlanCreate }) => (
+        renderTrigger={({ onOpen }) => (
           <div className="d-flex mb-4">
-            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onPlanCreate?.('perpetual')}>
+            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('perpetual')}>
               {formatMessage(commonMessages.ui.perpetualPlan)}
             </Button>
-            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onPlanCreate?.('period')}>
+            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('period')}>
               {formatMessage(commonMessages.ui.periodPlan)}
             </Button>
-            <Button
-              icon={<PlusOutlined />}
-              type="primary"
-              className="mr-2"
-              onClick={() => onPlanCreate?.('subscription')}
-            >
+            <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('subscription')}>
               {formatMessage(commonMessages.ui.subscriptionPlan)}
             </Button>
           </div>
