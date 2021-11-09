@@ -341,7 +341,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
             name: sales.name,
             email: sales.email,
           }}
-          onRefetch={() => {
+          onClose={() => {
             setPropertyModalVisible(false)
           }}
         />
