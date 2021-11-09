@@ -95,45 +95,44 @@ const MemberPropertyModal: React.FC<
     form
       .validateFields()
       .then(values => {
-        updateMemberProperty({
-          variables: {
-            memberId: member.id,
-            memberProperties: properties.map(property => {
-              const displayPropertiesName = displayProperties.map(displayProperty => displayProperty.name)
-              if (displayPropertiesName.includes(property.name)) {
-                return { member_id: member.id, property_id: property.id, value: values.property[property.id] || '' }
-              }
+        setLoading(true)
+        return Promise.allSettled([
+          updateMemberProperty({
+            variables: {
+              memberId: member.id,
+              memberProperties: properties.map(property => {
+                const displayPropertiesName = displayProperties.map(displayProperty => displayProperty.name)
+                if (displayPropertiesName.includes(property.name)) {
+                  return { member_id: member.id, property_id: property.id, value: values.property[property.id] || '' }
+                }
 
-              return {
-                member_id: member.id,
-                property_id: property.id,
-                value: memberProperties.find(memberProperty => memberProperty.id === property.id)?.value || '',
-              }
+                return {
+                  member_id: member.id,
+                  property_id: property.id,
+                  value: memberProperties.find(memberProperty => memberProperty.id === property.id)?.value || '',
+                }
+              }),
+            },
+          }),
+          values.note.status &&
+            values.note.description &&
+            insertMemberNote({
+              variables: {
+                memberId: member.id,
+                authorId: sales.id,
+                status: values.note.status,
+                description: values.note.description,
+                duration: 0,
+              },
             }),
-          },
-        })
-          .then(() => {
-            const { note } = values
-            if (note.status && note.description) {
-              insertMemberNote({
-                variables: {
-                  memberId: member.id,
-                  authorId: sales.id,
-                  status: note.status,
-                  description: note.description,
-                  duration: 0,
-                },
-              })
-            }
-          })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            onRefetch?.()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+        ])
       })
-      .catch(() => {})
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
