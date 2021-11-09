@@ -60,7 +60,19 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           onRefetch={onRefetch}
           programId={programId}
           programPlan={programPlan}
-          renderTrigger={({ onOpen }) => <EditOutlined onClick={() => onOpen?.()} />}
+          renderTrigger={({ onOpen }) => (
+            <EditOutlined
+              onClick={() =>
+                onOpen?.(
+                  programPlan.periodAmount && programPlan.periodType
+                    ? programPlan.autoRenewed
+                      ? 'subscription'
+                      : 'period'
+                    : 'perpetual',
+                )
+              }
+            />
+          )}
         />
       </AdminBlockTitle>
       <PriceLabel
