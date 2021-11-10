@@ -91,7 +91,7 @@ const ProgramPlanAdminModal: React.FC<
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    programPlan &&
+    if (programPlan) {
       setProgramPlanType(
         programPlan.autoRenewed
           ? 'subscription'
@@ -99,11 +99,15 @@ const ProgramPlanAdminModal: React.FC<
           ? 'period'
           : 'perpetual',
       )
+      setToggle({
+        withDiscountDownPrice: !!programPlan.discountDownPrice,
+        withRemind: !!programPlan.remindPeriodAmount && !!programPlan.remindPeriodType,
+      })
+    }
   }, [programPlan])
 
   const withPeriod = programPlanType === 'period' || programPlanType === 'subscription'
   const withRemind = programPlanType === 'period' || programPlanType === 'subscription'
-  const withDiscountDownPrice = programPlanType === 'subscription'
   const withAutoRenewed = programPlanType === 'subscription'
 
   const handleSubmit = (onSuccess: () => void) => {
