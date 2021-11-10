@@ -304,7 +304,7 @@ const ProgramPlanAdminModal: React.FC<
             )}
           </div>
         )}
-        {enabledModules['group_buying'] && (
+        {enabledModules['group_buying'] && programPlanType === 'perpetual' && (
           <Form.Item name="groupBuyingPeople" label={formatMessage(commonMessages.text.groupBuyingPeople)}>
             <InputNumber min={1} />
           </Form.Item>
