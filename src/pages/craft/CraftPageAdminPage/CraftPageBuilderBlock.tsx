@@ -1,13 +1,11 @@
-import { Editor, Element, Frame } from '@craftjs/core'
+import { Element, Frame } from '@craftjs/core'
 import { CraftSection } from 'lodestar-app-element/src/components/common/CraftElement'
 import React, { useContext, useEffect, useState } from 'react'
 import ReactStyledFrame from 'react-styled-frame'
 import styled from 'styled-components'
-import { useResolver } from '../../../components/craft/CraftResolver'
 import { CraftPageAdminProps } from '../../../types/craft'
 import { Device } from '../../../types/general'
-import CraftPageBuilderContext, { CraftPageBuilderProvider } from './CraftPageBuilderContext'
-import CraftPageBuilderController from './CraftPageBuilderController'
+import CraftPageBuilderContext from './CraftPageBuilderContext'
 import CraftPageBuilderLayer from './CraftPageBuilderLayer'
 import CraftSettingsPanel from './CraftSettingsPanel'
 import CraftToolbox from './CraftToolBox'
@@ -50,23 +48,17 @@ const CraftPageBuilderBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps
   onAppPageUpdate?: () => void
 }> = ({ pageAdmin, onAppPageUpdate }) => {
-  const resolver = useResolver()
   return (
-    <Editor resolver={resolver}>
-      <CraftPageBuilderProvider>
-        <StyledContent>
-          <StyledSettingBlock>
-            <CraftPageBuilderController pageId={pageAdmin.id} />
-            <CraftToolbox />
-            <CraftSettingsPanel />
-            <CraftPageBuilderLayer />
-          </StyledSettingBlock>
-          <StyledPreviewBlock>
-            <PreviewFrame data={pageAdmin?.craftData} />
-          </StyledPreviewBlock>
-        </StyledContent>
-      </CraftPageBuilderProvider>
-    </Editor>
+    <StyledContent>
+      <StyledSettingBlock>
+        <CraftToolbox />
+        <CraftSettingsPanel />
+        <CraftPageBuilderLayer />
+      </StyledSettingBlock>
+      <StyledPreviewBlock>
+        <PreviewFrame data={pageAdmin?.craftData} />
+      </StyledPreviewBlock>
+    </StyledContent>
   )
 }
 

@@ -1,6 +1,7 @@
-import { RedoOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons'
+import { DesktopOutlined, MobileOutlined, RedoOutlined, TabletOutlined, UndoOutlined } from '@ant-design/icons'
 import { useEditor } from '@craftjs/core'
-import { message, Tag } from 'antd'
+import { Button, message } from 'antd'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { useContext, useState } from 'react'
@@ -15,6 +16,7 @@ const messages = defineMessages({
   tablet: { id: 'craft.settings.responsiveSelector.tablet', defaultMessage: '平板' },
   mobile: { id: 'craft.settings.responsiveSelector.mobile', defaultMessage: '手機' },
 })
+
 const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
   const [loading, setLoading] = useState(false)
@@ -22,6 +24,7 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { updateAppPage } = useMutateAppPage()
+  const theme = useAppTheme()
 
   const handleSave = () => {
     if (!currentMemberId) {
@@ -52,35 +55,46 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
     onDeviceChange?.(device)
   }
 
+  const activeColor = theme['@primary-color'] || '#4C5B8F'
+  const inactiveColor = 'var(--gray)'
   return (
-    <div
-      className="d-flex align-items-center justify-content-between px-3"
-      style={{ height: '40px', backgroundColor: 'var(--gray-light)' }}
-    >
-      <div className="d-flex">
-        <Tag.CheckableTag className="mr-1" checked={device === 'desktop'} onClick={() => handleDeviceChange('desktop')}>
-          {formatMessage(messages.desktop)}
-        </Tag.CheckableTag>
-        <Tag.CheckableTag className="mr-1" checked={device === 'tablet'} onClick={() => handleDeviceChange('tablet')}>
-          {formatMessage(messages.tablet)}
-        </Tag.CheckableTag>
-        <Tag.CheckableTag checked={device === 'mobile'} onClick={() => handleDeviceChange('mobile')}>
-          {formatMessage(messages.mobile)}
-        </Tag.CheckableTag>
-      </div>
-      <div className="d-flex">
-        <UndoOutlined
-          className="mr-2"
-          disabled={!editor.query.history.canUndo()}
-          onClick={() => editor.actions.history.undo()}
-        />
-        <RedoOutlined
-          className="mr-2"
-          disabled={!editor.query.history.canRedo()}
-          onClick={() => editor.actions.history.redo()}
-        />
-        <SaveOutlined onClick={() => handleSave()} />
-      </div>
+    <div className="d-flex align-items-center">
+      <DesktopOutlined
+        style={{ color: device === 'desktop' ? activeColor : inactiveColor }}
+        className="mr-2"
+        onClick={() => handleDeviceChange('desktop')}
+      />
+      <TabletOutlined
+        style={{ color: device === 'tablet' ? activeColor : inactiveColor }}
+        className="mr-2"
+        onClick={() => handleDeviceChange('tablet')}
+      />
+      <MobileOutlined
+        style={{ color: device === 'mobile' ? activeColor : inactiveColor }}
+        className="mr-3"
+        onClick={() => handleDeviceChange('mobile')}
+      />
+
+      <UndoOutlined
+        className="mr-2"
+        style={{
+          cursor: editor.query.history.canUndo() ? 'pointer' : 'not-allowed',
+          color: editor.query.history.canUndo() ? activeColor : inactiveColor,
+        }}
+        disabled={!editor.query.history.canUndo()}
+        onClick={() => editor.actions.history.undo()}
+      />
+      <RedoOutlined
+        className="mr-3"
+        style={{
+          cursor: editor.query.history.canRedo() ? 'pointer' : 'not-allowed',
+          color: editor.query.history.canRedo() ? activeColor : inactiveColor,
+        }}
+        onClick={() => editor.actions.history.redo()}
+      />
+      <Button type="primary" className="mr-2" disabled={!editor.query.history.canUndo()} onClick={() => handleSave()}>
+        {formatMessage(commonMessages.ui.save)}
+      </Button>
     </div>
   )
 }
