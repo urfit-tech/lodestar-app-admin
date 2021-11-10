@@ -1,6 +1,6 @@
 import { Editor, Element, Frame } from '@craftjs/core'
 import { CraftSection } from 'lodestar-app-element/src/components/common/CraftElement'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ReactStyledFrame from 'react-styled-frame'
 import styled from 'styled-components'
 import { useResolver } from '../../../components/craft/CraftResolver'
@@ -72,9 +72,14 @@ const CraftPageBuilderBlock: React.VFC<{
 
 const PreviewFrame: React.VFC<{ data: { [key: string]: string } | null }> = ({ data }) => {
   const { device } = useContext(CraftPageBuilderContext)
+  // FIXME: turn into event trigger
+  const [headInnerHTML, setHeadInnerHTML] = useState<string>()
+  useEffect(() => {
+    setTimeout(() => setHeadInnerHTML(document.head.innerHTML), 500)
+  }, [])
   return (
     <StyledFrame device={device}>
-      <div dangerouslySetInnerHTML={{ __html: document.head.innerHTML }}></div>
+      {headInnerHTML && <div dangerouslySetInnerHTML={{ __html: headInnerHTML }}></div>}
       <Frame data={data ? JSON.stringify(data) : undefined}>
         <Element is={CraftSection} customStyle={{ padding: 40 }} canvas />
       </Frame>
