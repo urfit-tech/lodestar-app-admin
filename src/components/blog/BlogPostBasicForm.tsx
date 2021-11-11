@@ -27,6 +27,7 @@ type FieldProps = {
   title: string
   categoryIds: string[]
   tags: string[]
+  codeName: string
 }
 
 const BlogPostBasicForm: React.FC<{
@@ -51,7 +52,6 @@ const BlogPostBasicForm: React.FC<{
       message.error(formatMessage(errorMessages.event.checkSameCodeName))
       return
     }
-
     setLoading(true)
     updatePostBasic({
       variables: {
@@ -71,7 +71,7 @@ const BlogPostBasicForm: React.FC<{
           tag_name: tag,
           position: index,
         })),
-        codeName: codeName || null,
+        codeName: values.codeName || null,
       },
     })
       .then(() => {
