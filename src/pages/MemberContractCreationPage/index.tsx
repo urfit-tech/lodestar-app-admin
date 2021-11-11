@@ -16,7 +16,18 @@ import MemberContractCreationBlock from './MemberContractCreationBlock'
 import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
 
-const paymentMethods = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富', '遠信'] as const
+const paymentMethods = [
+  '藍新',
+  '歐付寶',
+  '富比世',
+  '新仲信',
+  '舊仲信',
+  '匯款',
+  '現金',
+  '裕富',
+  '遠信',
+  '萬事達',
+] as const
 const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30, 36] as const
 
 type FieldProps = {
