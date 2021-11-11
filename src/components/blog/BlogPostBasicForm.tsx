@@ -94,6 +94,7 @@ const BlogPostBasicForm: React.FC<{
         title: post.title,
         categoryIds: post.categories.map(category => category.id),
         tags: post.tagNames,
+        codeName: post.codeName,
       }}
       onFinish={handleSubmit}
     >
@@ -118,6 +119,7 @@ const BlogPostBasicForm: React.FC<{
         hasFeedback
         validateStatus={codeName.length ? (canCodeNameUse ? 'success' : 'error') : ''}
         extra={<StyledText className="mt-2">{`https://${host}/posts/${codeName || post.codeName || ''}`}</StyledText>}
+        name="codeName"
       >
         <Input maxLength={20} placeholder={post.codeName || ''} onChange={e => setCodeName(e.target.value)} />
       </Form.Item>
