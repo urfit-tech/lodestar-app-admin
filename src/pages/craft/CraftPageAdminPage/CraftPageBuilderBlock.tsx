@@ -64,10 +64,15 @@ const CraftPageBuilderBlock: React.VFC<{
 
 const PreviewFrame: React.VFC<{ data: { [key: string]: string } | null }> = ({ data }) => {
   const { device } = useContext(CraftPageBuilderContext)
-  // FIXME: turn into event trigger
-  const [headInnerHTML, setHeadInnerHTML] = useState<string>()
+  const [headInnerHTML, setHeadInnerHTML] = useState<string>(document.head.innerHTML)
   useEffect(() => {
-    setTimeout(() => setHeadInnerHTML(document.head.innerHTML), 500)
+    const mutationObserver = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        setHeadInnerHTML((mutation.target as HTMLHeadElement).innerHTML)
+      })
+    })
+    mutationObserver.observe(document.head, { childList: true })
+    return () => mutationObserver.disconnect()
   }, [])
   return (
     <StyledFrame device={device}>
