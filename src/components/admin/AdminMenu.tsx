@@ -70,7 +70,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     {
       permissionIsAllowed: currentUserRole === 'app-owner',
       key: 'media_library',
-      icon: () => <DatabaseOutlined />,
+      icon: () => <DatabaseOutlined className="m-0" />,
       name: formatMessage(commonMessages.menu.mediaLibrary),
     },
     {
