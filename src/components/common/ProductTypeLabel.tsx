@@ -1,15 +1,19 @@
 import React from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
+
+const messages = defineMessages({
+  program: { id: 'common.programPlan', defaultMessage: '課程方案' },
+})
 
 const ProductTypeLabel: React.FC<{ productType?: string }> = ({ productType }) => {
   const { formatMessage } = useIntl()
 
   switch (productType) {
+    //FIXME: switch perpetual, subscription, period program type label
     case 'Program':
-      return <>{formatMessage(commonMessages.product.program)}</>
     case 'ProgramPlan':
-      return <>{formatMessage(commonMessages.product.programPlan)}</>
+      return <>{formatMessage(messages.program)}</>
     case 'ProgramContent':
       return <>{formatMessage(commonMessages.product.programContent)}</>
     case 'ProgramPackagePlan':
