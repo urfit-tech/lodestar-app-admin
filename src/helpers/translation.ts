@@ -1320,7 +1320,6 @@ export const craftPageMessages = {
     borderStyle: { id: 'craft.label.borderStyle', defaultMessage: '框線樣式' },
     typographyStyle: { id: 'craft.label.typographyStyle', defaultMessage: '字體樣式' },
     backgroundStyle: { id: 'craft.label.backgroundStyle', defaultMessage: '背景樣式' },
-
     emptyPage: { id: 'craft.label.emptyPage', defaultMessage: '空白頁' },
     settings: { id: 'craft.label.settings', defaultMessage: '基本設定' },
     pageEditor: { id: 'craft.label.pageEditor', defaultMessage: '首頁 - 編輯頁面' },
@@ -1355,6 +1354,7 @@ export const craftPageMessages = {
     desktopDisplay: { id: 'craft.label.desktopDisplay', defaultMessage: '電腦版顯示' },
     mobileDisplay: { id: 'craft.label.mobileDisplay', defaultMessage: '手機版顯示' },
     link: { id: 'craft.label.link', defaultMessage: '連結' },
+    openLink: { id: 'craft.label.openLink', defaultMessage: '開啟連結' },
     openNewTab: { id: 'craft.label.openNewTab', defaultMessage: '另開分頁' },
     fontSize: { id: 'craft.label.fontSize', defaultMessage: '字級' },
     lineHeight: { id: 'craft.label.lineHeight', defaultMessage: '行高' },
@@ -1438,6 +1438,9 @@ export const craftPageMessages = {
     deletePage: { id: 'craft.label.deletePage', defaultMessage: '刪除頁面' },
     embedSetting: { id: 'craft.label.embedSettings', defaultMessage: '嵌入設定' },
     embedStyle: { id: 'craft.label.embedStyle', defaultMessage: '嵌入樣式' },
+    actionSetting: { id: 'craft.label.actionSetting', defaultMessage: '行為設定' },
+    purchaseProduct: { id: 'craft.label.purchaseProduct', defaultMessage: '購買產品' },
+    choiceProduct: { id: 'craft.label.choiceProduct', defaultMessage: '選擇產品' },
   }),
   text: defineMessages({
     chooseCategories: {
