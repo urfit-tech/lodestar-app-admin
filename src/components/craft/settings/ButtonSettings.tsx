@@ -9,9 +9,9 @@ import {
   CraftElementSettings,
   CraftSettingLabel,
   StyledCollapsePanel,
-  StyledUnderLineInput,
 } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
+import ButtonActionSelector from '../../common/ButtonActionSelector'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
@@ -25,6 +25,7 @@ type FieldValues = {
   size: ButtonProps['size']
   variant: ButtonProps['variant']
   customStyle: CSSObject
+  source: ButtonProps['source']
 }
 
 const ButtonSettings: CraftElementSettings<ButtonProps> = ({ props, onPropsChange }) => {
@@ -50,24 +51,13 @@ const ButtonSettings: CraftElementSettings<ButtonProps> = ({ props, onPropsChang
             />
           </Form.Item>
 
-          <Form.Item
-            className="m-0"
-            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.link)}</CraftSettingLabel>}
-          >
-            <StyledUnderLineInput
-              className="mb-2"
-              placeholder="https://"
-              value={props.link}
-              onChange={e => onPropsChange?.({ ...props, link: e.target.value })}
+          <Form.Item className="mb-0">
+            <ButtonActionSelector
+              value={props.source}
+              onChange={source => {
+                onPropsChange?.({ ...props, source })
+              }}
             />
-          </Form.Item>
-          <Form.Item valuePropName="checked">
-            <Checkbox
-              checked={props.openNewTab}
-              onChange={e => onPropsChange?.({ ...props, openNewTab: e.target.checked })}
-            >
-              {formatMessage(craftPageMessages.label.openNewTab)}
-            </Checkbox>
           </Form.Item>
         </StyledCollapsePanel>
         <StyledCollapsePanel
