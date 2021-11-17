@@ -53,6 +53,7 @@ const ExerciseSummaryBlock: React.VFC<{
     ? (sum(exercises.map(exercise => exercise.score)) / exercises.length).toFixed(1)
     : 0
   const submittedStudents = uniqBy(exercise => exercise.memberId, exercises).length
+  // NOTE: ramda pipe for new version ts may not work
   // const getAcceptedMemberIds = pipe(
   //   filter<ExerciseDisplayProps, 'array'>(v => v.status === 'accepted'),
   //   uniqBy(v => v.memberId),
