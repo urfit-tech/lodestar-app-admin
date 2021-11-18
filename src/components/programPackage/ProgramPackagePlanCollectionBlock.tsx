@@ -1,7 +1,8 @@
-import Icon, { EditOutlined } from '@ant-design/icons'
+import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Popover } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -17,6 +18,7 @@ import PositionAdminLayout, {
   OverlayWrapper,
 } from '../admin/PositionAdminLayout'
 import PriceLabel from '../common/PriceLabel'
+import ProductSkuModal from '../common/ProductSkuModal'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 
@@ -61,6 +63,7 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ programPackageId, plans, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [updatePosition] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
     hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables
@@ -133,6 +136,20 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                       {formatMessage(commonMessages.ui.changePosition)}
                     </StyledButton>
                   </Popover>
+
+                  {enabledModules.sku && (
+                    <ProductSkuModal
+                      productId={`ProgramPackagePlan_${plan.id}`}
+                      renderTrigger={({ onOpen, sku }) => (
+                        <StyledButton block className="mt-4" onClick={() => onOpen?.()}>
+                          <Icon component={() => <BarcodeOutlined />} />
+                          {sku
+                            ? `${formatMessage(commonMessages.label.sku)}: ${sku}`
+                            : formatMessage(commonMessages.label.skuSetting)}
+                        </StyledButton>
+                      )}
+                    />
+                  )}
                 </div>
               </OverlayBlock>
             </OverlayWrapper>
