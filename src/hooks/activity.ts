@@ -121,6 +121,7 @@ export const useActivityAdmin = (activityId: string) => {
             count
             description
             is_published
+            currency_id
             activity_session_tickets {
               id
               activity_session_type
@@ -190,6 +191,7 @@ export const useActivityAdmin = (activityId: string) => {
             title: ticket.title,
             startedAt: new Date(ticket.started_at),
             endedAt: new Date(ticket.ended_at),
+            currencyId: ticket.currency_id,
             price: ticket.price,
             count: ticket.count,
             description: ticket.description,

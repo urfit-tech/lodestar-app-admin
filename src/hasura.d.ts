@@ -359,6 +359,7 @@ export interface INSERT_ACTIVITY_TICKETVariables {
   isPublished: boolean;
   startedAt: any;
   endedAt: any;
+  currencyId: string;
   price: any;
   count?: number | null;
   description?: string | null;
@@ -418,6 +419,7 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
   activitySessionTickets: activity_session_ticket_insert_input[];
   isPublished: boolean;
   startedAt: any;
+  currencyId: string;
   endedAt: any;
   price: any;
   count?: number | null;
@@ -7149,6 +7151,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets {
   count: number;
   description: string | null;
   is_published: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
