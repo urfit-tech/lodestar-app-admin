@@ -77,6 +77,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             formatMessage(orderMessages.label.orderLogId),
             formatMessage(orderMessages.label.paymentLogNo),
             formatMessage(orderMessages.label.orderLogStatus),
+            formatMessage(orderMessages.label.paymentLogGateway),
             formatMessage(orderMessages.label.orderLogCreatedAt),
             formatMessage(orderMessages.label.paymentLogPaidAt),
             formatMessage(orderMessages.label.memberName),
@@ -108,6 +109,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               orderLog.order_log_id,
               orderLog.payment_no?.split('\\n').join('\n') || '',
               orderLog.status,
+              orderLog.payment_gateway,
               dateFormatter(orderLog.created_at),
               orderLog.paid_at
                 ?.split('\\n')
@@ -553,6 +555,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       order_discount_total_price
       order_executors
       shipping
+      payment_gateway
     }
   }
 `

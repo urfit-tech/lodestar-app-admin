@@ -6364,6 +6364,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   order_discount_total_price: any | null;
   order_executors: string | null;
   shipping: any | null;
+  payment_gateway: string | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {
@@ -26386,6 +26387,7 @@ export interface order_log_export_bool_exp {
   order_product_total_price?: numeric_comparison_exp | null;
   order_products?: String_comparison_exp | null;
   paid_at?: String_comparison_exp | null;
+  payment_gateway?: String_comparison_exp | null;
   payment_no?: String_comparison_exp | null;
   payment_options?: String_comparison_exp | null;
   referrer_email?: String_comparison_exp | null;
@@ -26415,6 +26417,7 @@ export interface order_log_export_order_by {
   order_product_total_price?: order_by | null;
   order_products?: order_by | null;
   paid_at?: order_by | null;
+  payment_gateway?: order_by | null;
   payment_no?: order_by | null;
   payment_options?: order_by | null;
   referrer_email?: order_by | null;

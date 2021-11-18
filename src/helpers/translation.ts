@@ -1284,6 +1284,7 @@ export const orderMessages = {
     orderDiscountTotalPrice: { id: 'order.label.orderDiscountTotalPrice', defaultMessage: '折扣總額' },
     // payment log
     paymentLogNo: { id: 'order.label.paymentLogNo', defaultMessage: '交易編號' },
+    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道'},
     paymentLogPaidAt: { id: 'order.label.paymentLogPaidAt', defaultMessage: '付款時間' },
     paymentLogDetails: { id: 'order.label.paymentLogDetails', defaultMessage: '付款方式' },
     // member
