@@ -10644,6 +10644,11 @@ export interface GET_ORDERS_order_log_order_discounts {
   name: string;
   description: string | null;
   price: any;
+  /**
+   * Coupon / Voucher / Card / DownPrice
+   */
+  type: string;
+  target: string;
 }
 
 export interface GET_ORDERS_order_log_order_executors_member {

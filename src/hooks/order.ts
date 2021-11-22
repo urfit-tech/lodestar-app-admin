@@ -6,7 +6,6 @@ import { OrderLogProps } from '../types/general'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useEffect, useState } from 'react'
 
-
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
     query GET_ORDER_LOG_STATUS {
@@ -77,7 +76,7 @@ export const useOrderLog = (filters?: {
   }
 
   useEffect(() => {
-    if(currentMemberId){
+    if (currentMemberId) {
       apolloClient
         .query<hasura.GET_ALL_ORDER_LOG, hasura.GET_ALL_ORDER_LOGVariables>({
           query: GET_ALL_ORDER_LOG,
@@ -103,9 +102,8 @@ export const useOrderLog = (filters?: {
         })
         .catch(error => console.error(error.stack))
     }
-    
-  }, [currentMemberId,authStatus])
-  
+  }, [currentMemberId, authStatus])
+
   const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDERS, hasura.GET_ORDERSVariables>(
     GET_ORDERS,
     {
@@ -177,6 +175,8 @@ export const useOrderLog = (filters?: {
         name: w.name,
         description: w.description,
         price: w.price,
+        type: w.type,
+        target: w.target,
       })),
 
       totalPrice: Math.max(
@@ -250,6 +250,8 @@ const GET_ORDERS = gql`
         name
         description
         price
+        type
+        target
       }
 
       order_executors {
