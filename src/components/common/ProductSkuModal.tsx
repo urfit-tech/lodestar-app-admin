@@ -28,7 +28,7 @@ const ProductSkuModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-  const { loadingProduct, product } = useProductSku(productId)
+  const { loadingProduct, product, refetchProduct } = useProductSku(productId)
   const [upsertProductSku] = useMutation<hasura.UPDATE_PRODUCT_SKU, hasura.UPDATE_PRODUCT_SKUVariables>(
     UPDATE_PRODUCT_SKU,
   )
@@ -52,6 +52,7 @@ const ProductSkuModal: React.FC<
           .then(() => {
             callback?.onSuccess?.()
             onRefetch?.()
+            refetchProduct()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
