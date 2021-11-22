@@ -384,7 +384,7 @@ const DiscountCode: React.VFC<{ type: string; target: string }> = ({ type, targe
   }
 
   useEffect(() => {
-    getDiscountCode({ type, target }).then(value => value && setCode(value))
+    getDiscountCode({ type, target }).then(setCode)
   }, [type, target])
 
   return code ? <> - {code}</> : <></>
