@@ -352,7 +352,7 @@ const DiscountCode: React.VFC<{ type: string; target: string }> = ({ type, targe
   const apolloClient = useApolloClient()
   const [code, setCode] = useState('')
 
-  const getDiscountCode = async ({ type, target }: { type: string; target: string }) => {
+  const getDiscountCode = async ({ type, target }: { type: string; target: string }): Promise<string> => {
     switch (type) {
       case 'Coupon':
         const { data: coupon } = await apolloClient.query<
