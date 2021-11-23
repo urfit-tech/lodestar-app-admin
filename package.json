@@ -5,7 +5,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "PUBLIC_URL=/admin react-app-rewired start",
-    "build": "PUBLIC_URL=/admin CI=false env-cmd -f .env.${NODE_ENV:-production} react-app-rewired build --max-old-space-size=16384",
+    "build": "PUBLIC_URL=/admin CI=false env-cmd -f .env.${NODE_ENV:-production} react-app-rewired --max-old-space-size=4096 build",
     "test": "react-scripts test",
     "typegen": "apollo client:codegen ./src/hasura.d.ts --outputFlat --target typescript",
     "format:organize-imports": "organize-imports-cli ./src/**/*.ts[x]",
