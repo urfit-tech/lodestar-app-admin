@@ -32,6 +32,11 @@ const StyledButton = styled(Button)`
     background: none;
     border: 1px solid white;
     color: white;
+    span:nth-child(2) {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 `
 const StyledCard = styled.div`
