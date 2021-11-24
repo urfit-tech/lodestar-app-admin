@@ -2,6 +2,7 @@ import { SearchOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Divider, Input, Table, Tooltip, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import ApolloClient from 'apollo-client'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -257,13 +258,15 @@ const SaleCollectionAdminCard: React.VFC<{
             </div>
           )}
 
-          {orderDiscounts.map(v => (
+          {orderDiscounts.map(orderDiscount => (
             <div className="row text-right">
               <div className="col-9">
-                {v.name}
-                <DiscountCode type={v.type} target={v.target} />
+                {orderDiscount.name}
+                {(orderDiscount.type === 'Coupon' || orderDiscount.type === 'Voucher') && (
+                  <DiscountCode type={orderDiscount.type} target={orderDiscount.target} />
+                )}
               </div>
-              <div className="col-3">- {currencyFormatter(v.price)}</div>
+              <div className="col-3">- {currencyFormatter(orderDiscount.price)}</div>
             </div>
           ))}
 
@@ -347,44 +350,45 @@ const SaleCollectionAdminCard: React.VFC<{
     </AdminCard>
   )
 }
+const getDiscountCode = async (
+  apolloClient: ApolloClient<object>,
+  type: 'Coupon' | 'Voucher',
+  target: string,
+): Promise<string> => {
+  switch (type) {
+    case 'Coupon':
+      const { data: coupon } = await apolloClient.query<
+        hasura.GET_COUPON_CODE_BY_COUPON,
+        hasura.GET_COUPON_CODE_BY_COUPONVariables
+      >({
+        query: GET_COUPON_CODE_BY_COUPON,
+        variables: {
+          id: target,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      return coupon.coupon_by_pk?.coupon_code.code || ''
+    case 'Voucher':
+      const { data: voucher } = await apolloClient.query<
+        hasura.GET_VOUCHER_CODE_BY_VOUCHER,
+        hasura.GET_VOUCHER_CODE_BY_VOUCHERVariables
+      >({
+        query: GET_VOUCHER_CODE_BY_VOUCHER,
+        variables: {
+          id: target,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      return voucher.voucher_by_pk?.voucher_code.code || ''
+  }
+}
 
-const DiscountCode: React.VFC<{ type: string; target: string }> = ({ type, target }) => {
+const DiscountCode: React.VFC<{ type: 'Coupon' | 'Voucher'; target: string }> = ({ type, target }) => {
   const apolloClient = useApolloClient()
   const [code, setCode] = useState('')
 
-  const getDiscountCode = async ({ type, target }: { type: string; target: string }): Promise<string> => {
-    switch (type) {
-      case 'Coupon':
-        const { data: coupon } = await apolloClient.query<
-          hasura.GET_COUPON_CODE_BY_COUPON,
-          hasura.GET_COUPON_CODE_BY_COUPONVariables
-        >({
-          query: GET_COUPON_CODE_BY_COUPON,
-          variables: {
-            id: target,
-          },
-          fetchPolicy: 'no-cache',
-        })
-        return coupon.coupon_by_pk?.coupon_code.code || ''
-      case 'Voucher':
-        const { data: voucher } = await apolloClient.query<
-          hasura.GET_VOUCHER_CODE_BY_VOUCHER,
-          hasura.GET_VOUCHER_CODE_BY_VOUCHERVariables
-        >({
-          query: GET_VOUCHER_CODE_BY_VOUCHER,
-          variables: {
-            id: target,
-          },
-          fetchPolicy: 'no-cache',
-        })
-        return voucher.voucher_by_pk?.voucher_code.code || ''
-      default:
-        return ''
-    }
-  }
-
   useEffect(() => {
-    getDiscountCode({ type, target }).then(setCode)
+    getDiscountCode(apolloClient, type, target).then(setCode)
   }, [type, target])
 
   return code ? <> - {code}</> : <></>
