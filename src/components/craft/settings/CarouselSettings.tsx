@@ -25,6 +25,7 @@ type FieldValues = {
 const messages = defineMessages({
   currentSlide: { id: 'craft.settings.carousel.currentSlide', defaultMessage: '目前輪播' },
   autoplay: { id: 'craft.settings.carousel.autoplay', defaultMessage: '自動播放' },
+  autoplaySpeed: { id: 'craft.settings.carousel.autoplaySpeed', defaultMessage: '自動播放速度（毫秒）' },
   infinite: { id: 'craft.settings.carousel.infinite', defaultMessage: '無限輪播' },
   arrows: { id: 'craft.settings.carousel.arrows', defaultMessage: '顯示箭頭' },
   dots: { id: 'craft.settings.carousel.dots', defaultMessage: '顯示圓點' },
@@ -81,6 +82,15 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
               {formatMessage(messages.autoplay)}
             </Checkbox>
           </Form.Item>
+          {props.autoplay && (
+            <Form.Item label={formatMessage(messages.autoplaySpeed)}>
+              <StyledInputNumber
+                min={1}
+                value={props.autoplaySpeed}
+                onChange={value => onPropsChange?.({ ...props, autoplaySpeed: Number(value) || 3000 })}
+              />
+            </Form.Item>
+          )}
           <Form.Item>
             <Checkbox
               checked={props.infinite}

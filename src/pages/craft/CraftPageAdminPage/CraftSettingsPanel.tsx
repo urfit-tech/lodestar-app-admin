@@ -65,10 +65,10 @@ const CraftSettingsPanel: React.VFC = () => {
   }))
   return (
     <Draggable handle=".draggable" defaultPosition={{ x: 200, y: 32 }}>
-      <StyledPanel style={{ display: editor.currentNode?.data.custom?.editing ? 'block' : 'none' }}>
+      <StyledPanel style={{ zIndex: 1, display: editor.currentNode?.data.custom?.editing ? 'block' : 'none' }}>
         <div
-          className="d-flex align-items-center justify-content-between mb-2 draggable cursor-pointer p-3"
-          style={{ backgroundColor: 'var(--gray-light)' }}
+          className="d-flex align-items-center justify-content-between mb-2 draggable p-3"
+          style={{ backgroundColor: 'var(--gray-light)', cursor: 'move' }}
         >
           <h3 className="d-flex align-items-center">
             <DragOutlined className="mr-2" />
