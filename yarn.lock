@@ -2318,17 +2318,17 @@
     lodash "^4.17.20"
     tiny-invariant "^1.0.6"
 
-"@craftjs/layers@^0.1.0-beta.20":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@craftjs/layers/-/layers-0.1.0.tgz#a80d69582cb1642c3251b627b27aa124983c9e2a"
-  integrity sha512-tCUej3tovqMxL0LAathewt6kFXUdcG0bQEoUEAtoOTUhEHVpv6/Eh275pEEDQ0MyNkNJeKljjumD9n6lvMp/kA==
+"@craftjs/layers@0.1.0-beta.20":
+  version "0.1.0-beta.20"
+  resolved "https://registry.yarnpkg.com/@craftjs/layers/-/layers-0.1.0-beta.20.tgz#86adad803efd20e6295bc0a4d71a0e278baef696"
+  integrity sha512-HR54QkcQZOk/VwFP4l0l4OKk2RkBiYkSyKeKjzV7F2kGa9Vt6VyrTshASdwihSZrpo8jdz3qHVJIKhaRWcoGiQ==
   dependencies:
-    "@craftjs/utils" "^0.1.0"
+    "@craftjs/utils" "^0.1.0-beta.20"
 
-"@craftjs/utils@^0.1.0", "@craftjs/utils@^0.1.0-beta.20":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@craftjs/utils/-/utils-0.1.0.tgz#843a6cf500d156950b90f413a57eda4e1413570f"
-  integrity sha512-ah6Bc/LDWNbqIS26tp8yrzBIegra27JtkQc/Ufvr/XVTrDqV1GQZNmDmIqAJ/uPEpj78mM36Lo6Ym70gD4V0DA==
+"@craftjs/utils@^0.1.0-beta.20":
+  version "0.1.0-beta.20"
+  resolved "https://registry.yarnpkg.com/@craftjs/utils/-/utils-0.1.0-beta.20.tgz#2ba535b043e45368dc60bcf06614dab5ba2d0899"
+  integrity sha512-KevLljnpEvHxpB2nxRZyQG2i4GDivIkY58depi+ynQP2ALonNuxEGVO2QsuDJ+p1z4eOtv0Xi/D3o6Qr84eAzQ==
   dependencies:
     "@types/react" "^17.0.5"
     immer "^8.0.1"
