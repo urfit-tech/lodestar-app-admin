@@ -6667,6 +6667,76 @@ export interface GET_PAYMENT_LOG_EXPORTVariables {
 
 
 // ====================================================
+// GraphQL query operation: GET_VOUCHER_CODE_BY_VOUCHER
+// ====================================================
+
+export interface GET_VOUCHER_CODE_BY_VOUCHER_voucher_by_pk_voucher_code {
+  __typename: "voucher_code";
+  id: any;
+  code: string;
+}
+
+export interface GET_VOUCHER_CODE_BY_VOUCHER_voucher_by_pk {
+  __typename: "voucher";
+  id: any;
+  /**
+   * An object relationship
+   */
+  voucher_code: GET_VOUCHER_CODE_BY_VOUCHER_voucher_by_pk_voucher_code;
+}
+
+export interface GET_VOUCHER_CODE_BY_VOUCHER {
+  /**
+   * fetch data from the table: "voucher" using primary key columns
+   */
+  voucher_by_pk: GET_VOUCHER_CODE_BY_VOUCHER_voucher_by_pk | null;
+}
+
+export interface GET_VOUCHER_CODE_BY_VOUCHERVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_COUPON_CODE_BY_COUPON
+// ====================================================
+
+export interface GET_COUPON_CODE_BY_COUPON_coupon_by_pk_coupon_code {
+  __typename: "coupon_code";
+  id: any;
+  code: string;
+}
+
+export interface GET_COUPON_CODE_BY_COUPON_coupon_by_pk {
+  __typename: "coupon";
+  id: any;
+  /**
+   * An object relationship
+   */
+  coupon_code: GET_COUPON_CODE_BY_COUPON_coupon_by_pk_coupon_code;
+}
+
+export interface GET_COUPON_CODE_BY_COUPON {
+  /**
+   * fetch data from the table: "coupon" using primary key columns
+   */
+  coupon_by_pk: GET_COUPON_CODE_BY_COUPON_coupon_by_pk | null;
+}
+
+export interface GET_COUPON_CODE_BY_COUPONVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
 
@@ -11126,6 +11196,11 @@ export interface GET_ORDERS_order_log_order_discounts {
   name: string;
   description: string | null;
   price: any;
+  /**
+   * Coupon / Voucher / Card / DownPrice
+   */
+  type: string;
+  target: string;
 }
 
 export interface GET_ORDERS_order_log_order_executors_member {

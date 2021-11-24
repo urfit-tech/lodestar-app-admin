@@ -82,6 +82,8 @@ type OrderDiscountProps = {
   name: string
   description: string | null
   price: number
+  type: string
+  target: string
 }
 
 export type OrderLogProps = {

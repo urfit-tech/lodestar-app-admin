@@ -1,12 +1,16 @@
 import { SearchOutlined } from '@ant-design/icons'
+import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Divider, Input, Table, Tooltip, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import ApolloClient from 'apollo-client'
+import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
+import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLog } from '../../hooks/order'
@@ -52,6 +56,7 @@ const SaleCollectionAdminCard: React.VFC<{
   memberId?: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
+
   const { settings } = useApp()
   const { currentUserRole, permissions } = useAuth()
 
@@ -253,10 +258,15 @@ const SaleCollectionAdminCard: React.VFC<{
             </div>
           )}
 
-          {orderDiscounts.map(v => (
+          {orderDiscounts.map(orderDiscount => (
             <div className="row text-right">
-              <div className="col-9">{v.name}</div>
-              <div className="col-3">- {currencyFormatter(v.price)}</div>
+              <div className="col-9">
+                {orderDiscount.name}
+                {(orderDiscount.type === 'Coupon' || orderDiscount.type === 'Voucher') && (
+                  <DiscountCode type={orderDiscount.type} target={orderDiscount.target} />
+                )}
+              </div>
+              <div className="col-3">- {currencyFormatter(orderDiscount.price)}</div>
             </div>
           ))}
 
@@ -340,5 +350,70 @@ const SaleCollectionAdminCard: React.VFC<{
     </AdminCard>
   )
 }
+const getDiscountCode = async (
+  apolloClient: ApolloClient<object>,
+  type: 'Coupon' | 'Voucher',
+  target: string,
+): Promise<string> => {
+  switch (type) {
+    case 'Coupon':
+      const { data: coupon } = await apolloClient.query<
+        hasura.GET_COUPON_CODE_BY_COUPON,
+        hasura.GET_COUPON_CODE_BY_COUPONVariables
+      >({
+        query: GET_COUPON_CODE_BY_COUPON,
+        variables: {
+          id: target,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      return coupon.coupon_by_pk?.coupon_code.code || ''
+    case 'Voucher':
+      const { data: voucher } = await apolloClient.query<
+        hasura.GET_VOUCHER_CODE_BY_VOUCHER,
+        hasura.GET_VOUCHER_CODE_BY_VOUCHERVariables
+      >({
+        query: GET_VOUCHER_CODE_BY_VOUCHER,
+        variables: {
+          id: target,
+        },
+        fetchPolicy: 'no-cache',
+      })
+      return voucher.voucher_by_pk?.voucher_code.code || ''
+  }
+}
 
+const DiscountCode: React.VFC<{ type: 'Coupon' | 'Voucher'; target: string }> = ({ type, target }) => {
+  const apolloClient = useApolloClient()
+  const [code, setCode] = useState('')
+
+  useEffect(() => {
+    getDiscountCode(apolloClient, type, target).then(setCode)
+  }, [type, target])
+
+  return code ? <> - {code}</> : <></>
+}
+
+const GET_VOUCHER_CODE_BY_VOUCHER = gql`
+  query GET_VOUCHER_CODE_BY_VOUCHER($id: uuid!) {
+    voucher_by_pk(id: $id) {
+      id
+      voucher_code {
+        id
+        code
+      }
+    }
+  }
+`
+const GET_COUPON_CODE_BY_COUPON = gql`
+  query GET_COUPON_CODE_BY_COUPON($id: uuid!) {
+    coupon_by_pk(id: $id) {
+      id
+      coupon_code {
+        id
+        code
+      }
+    }
+  }
+`
 export default SaleCollectionAdminCard
