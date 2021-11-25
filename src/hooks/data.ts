@@ -1086,7 +1086,7 @@ export const useAllBriefProductCollection = () => {
         }
         project_plan(
           where: {
-            project: { published_at: { _is_null: false }, expired_at: { _gt: "now()" } }
+            project: { published_at: { _is_null: false }, expired_at: { _gt: "now()" }, type: { _neq: "modular" } }
             published_at: { _is_null: false }
           }
         ) {
