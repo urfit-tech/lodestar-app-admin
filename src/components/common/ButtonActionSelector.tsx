@@ -11,6 +11,13 @@ import { CraftSettingLabel, StyledUnderLineInput } from '../../pages/craft/Craft
 import { ProductType } from '../../types/general'
 
 type ButtonActionOptions = ButtonProps['source']
+type PartBriefProductType =
+  | 'ActivityTicket'
+  | 'PodcastPlan'
+  | 'PodcastProgram'
+  | 'ProgramPackagePlan'
+  | 'ProgramPlan'
+  | 'ProjectPlan'
 
 const StyledProductParent = styled.div`
   max-width: 10rem;
@@ -100,6 +107,8 @@ const PurchaseProductSelector: React.FC<{
   const { briefProducts } = useAllBriefProductCollection()
   const [selectedProductId, setSelectedProductId] = useState<string | undefined>(value?.productId)
 
+  const { Program, MerchandiseSpec, AppointmentPlan, PodcastAlbum, ...partBriefProducts } = briefProducts
+
   return (
     <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.purchaseProduct)}</CraftSettingLabel>}>
       <TreeSelect
@@ -117,21 +126,23 @@ const PurchaseProductSelector: React.FC<{
               productId: selectedValue,
             })
         }}
+        treeNodeFilterProp="name"
       >
-        {Object.keys(briefProducts).map(
+        {Object.keys(partBriefProducts).map(
           productType =>
-            briefProducts[productType as ProductType]?.length && (
+            partBriefProducts[productType as PartBriefProductType]?.length && (
               <TreeSelect.TreeNode
                 disable
                 key={productType}
                 value={productType}
-                title={<ProductTypeLabel productType={productType as ProductType} />}
+                title={<ProductTypeLabel productType={productType as PartBriefProductType} />}
                 checkable={false}
               >
                 {briefProducts[productType as ProductType]?.map(product => (
                   <TreeSelect.TreeNode
                     key={product.productId}
                     value={product.productId}
+                    name={product.title}
                     title={
                       <div className="d-flex">
                         {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}

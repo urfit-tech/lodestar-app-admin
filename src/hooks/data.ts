@@ -1023,11 +1023,16 @@ export const useAllBriefProductCollection = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
     gql`
       query GET_ALL_BRIEF_PRODUCT_COLLECTION {
-        program(where: { published_at: { _is_null: false } }) {
+        program(where: { published_at: { _is_null: false }, is_deleted: { _eq: false } }) {
           id
           title
         }
-        program_plan(where: { program: { published_at: { _is_null: false } } }) {
+        program_plan(
+          where: {
+            program: { published_at: { _is_null: false }, is_deleted: { _eq: false } }
+            published_at: { _is_null: false }
+          }
+        ) {
           id
           title
           program {
@@ -1065,7 +1070,7 @@ export const useAllBriefProductCollection = () => {
             username
           }
         }
-        merchandise_spec(where: { merchandise: { published_at: { _is_null: false } } }) {
+        merchandise_spec(where: { merchandise: { published_at: { _is_null: false } }, is_deleted: { _eq: false } }) {
           id
           title
           merchandise {
@@ -1073,7 +1078,7 @@ export const useAllBriefProductCollection = () => {
             title
           }
         }
-        project_plan(where: { project: { published_at: { _is_null: false } } }) {
+        project_plan(where: { project: { published_at: { _is_null: false } }, published_at: { _is_null: false } }) {
           id
           title
           project {
