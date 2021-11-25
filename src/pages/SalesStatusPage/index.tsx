@@ -147,7 +147,7 @@ const useSalesGroups = (appId: string) => {
   const { loading, error, data } = useQuery<hasura.GET_SALES_GROUPS, hasura.GET_SALES_GROUPSVariables>(
     gql`
       query GET_SALES_GROUPS($appId: String!) {
-        member_property(where: { property: { app_id: { _eq: $appId }, name: { _eq: "組別" } } }) {
+        member_property(where: { value: { _neq: "" }, property: { app_id: { _eq: $appId }, name: { _eq: "組別" } } }) {
           value
           member {
             id
