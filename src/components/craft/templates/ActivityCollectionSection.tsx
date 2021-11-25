@@ -23,7 +23,7 @@ const ActivityCollectionSection: React.VFC = () => {
       canvas
     >
       <CraftTitle
-        title="線下實體"
+        title="活動"
         customStyle={{
           fontSize: 20,
           margin: '0 0 40 0',

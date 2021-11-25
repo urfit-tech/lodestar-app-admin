@@ -33,7 +33,7 @@
     ]
   },
   "dependencies": {
-    "@ant-design/charts": "^1.1.17",
+    "@ant-design/charts": "1.2.14",
     "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.6.2",
     "@apollo/react-hooks": "3",

@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@ant-design/charts@^1.1.17":
+"@ant-design/charts@1.2.14":
   version "1.2.14"
   resolved "https://registry.yarnpkg.com/@ant-design/charts/-/charts-1.2.14.tgz#f2f6dd5048799d588a41a1bd29921b40ef12104b"
   integrity sha512-vVK5ThFmPdJELRvs9Pgfx+qtjdJuqGFdUpMEGhuoxGxjjITl8zGFIyr7aVc1iHQ/WZefUEZhv3txgIPVFaWvSA==
@@ -3678,9 +3678,9 @@
     "@types/react" "*"
 
 "@types/react@*":
-  version "17.0.36"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.36.tgz#0d81e0e2419e6a8e9ba6af5e3a0608e70835d7d1"
-  integrity sha512-CUFUp01OdfbpN/76v4koqgcpcRGT3sYOq3U3N6q0ZVGcyeP40NUdVU+EWe3hs34RNaTefiYyBzOpxBBidCc5zw==
+  version "17.0.37"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.37.tgz#6884d0aa402605935c397ae689deed115caad959"
+  integrity sha512-2FS1oTqBGcH/s0E+CjrCCR9+JMpsu9b69RTFO+40ua43ZqP5MmQ4iUde/dMjWR909KxZwmOQIFq6AV6NjEG5xg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -11616,7 +11616,7 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-element@urfit-tech/lodestar-app-element#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/8a0a6d022073ef803c74092c25d31983b1f74e58"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/323ff8614111556d8aa8cc0786d3dcf6938de182"
   dependencies:
     "@apollo/react-hooks" "3.1.5"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
