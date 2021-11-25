@@ -117,6 +117,7 @@ const PurchaseProductSelector: React.FC<{
               productId: selectedValue,
             })
         }}
+        treeNodeFilterProp="name"
       >
         {Object.keys(briefProducts).map(
           productType =>
@@ -132,6 +133,7 @@ const PurchaseProductSelector: React.FC<{
                   <TreeSelect.TreeNode
                     key={product.productId}
                     value={product.productId}
+                    name={product.title}
                     title={
                       <div className="d-flex">
                         {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
