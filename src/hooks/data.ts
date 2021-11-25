@@ -1040,7 +1040,13 @@ export const useAllBriefProductCollection = () => {
             title
           }
         }
-        activity_ticket(where: { is_published: { _eq: true }, activity: { published_at: { _is_null: false } } }) {
+        activity_ticket(
+          where: {
+            is_published: { _eq: true }
+            ended_at: { _gt: "now()" }
+            activity: { published_at: { _is_null: false } }
+          }
+        ) {
           id
           title
           activity {
@@ -1078,7 +1084,12 @@ export const useAllBriefProductCollection = () => {
             title
           }
         }
-        project_plan(where: { project: { published_at: { _is_null: false } }, published_at: { _is_null: false } }) {
+        project_plan(
+          where: {
+            project: { published_at: { _is_null: false }, expired_at: { _gt: "now()" } }
+            published_at: { _is_null: false }
+          }
+        ) {
           id
           title
           project {
