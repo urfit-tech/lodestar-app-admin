@@ -14,7 +14,7 @@ import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/statu
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
-import { AdminBlock } from '../admin'
+import { StyledAdminBlock } from '../admin'
 
 const AppointmentPlanPublishBlock: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
@@ -133,7 +133,7 @@ const AppointmentPlanPublishBlock: React.FC<{
   )
 
   return (
-    <AdminBlock>
+    <StyledAdminBlock>
       <div className="d-flex flex-column align-items-center py-3">
         <div className="mb-3">
           {appointmentPlanStatus === 'notValidated' ? (
@@ -196,7 +196,7 @@ const AppointmentPlanPublishBlock: React.FC<{
           </Button>
         ) : null}
       </div>
-    </AdminBlock>
+    </StyledAdminBlock>
   )
 }
 

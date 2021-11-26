@@ -10,7 +10,7 @@ import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
-import { AdminBlock } from '../../components/admin'
+import { StyledAdminBlock } from '../../components/admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../../components/common'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -245,7 +245,7 @@ const ProgramPublishBlock: React.FC<{
   )
 
   return (
-    <AdminBlock>
+    <StyledAdminBlock>
       <div className="d-flex flex-column align-items-center py-3">
         <div className="mb-3">
           {programStatus === 'notValidated' || programStatus === 'rejected' ? (
@@ -380,7 +380,7 @@ const ProgramPublishBlock: React.FC<{
           </Form>
         </StyledModal>
       )}
-    </AdminBlock>
+    </StyledAdminBlock>
   )
 }
 

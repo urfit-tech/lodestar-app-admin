@@ -5,7 +5,7 @@ import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { AdminBlock, AdminPageTitle } from '../components/admin'
+import { AdminPageTitle, StyledAdminBlock } from '../components/admin'
 import AdminModal from '../components/admin/AdminModal'
 import { AvatarImage } from '../components/common/Image'
 import DatetimePicker from '../components/form/DatetimePicker'
@@ -119,7 +119,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.tempoDelivery)}</span>
       </AdminPageTitle>
 
-      <AdminBlock>
+      <StyledAdminBlock>
         <div className="text-center">
           {loadingProgramPackage ? (
             <Spin />
@@ -290,7 +290,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
             />
           )}
         </StyledTableBlock>
-      </AdminBlock>
+      </StyledAdminBlock>
     </AdminLayout>
   )
 }

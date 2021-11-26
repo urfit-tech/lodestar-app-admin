@@ -7,7 +7,7 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { AdminBlock, AdminPageTitle } from '../../components/admin'
+import { AdminPageTitle, StyledAdminBlock } from '../../components/admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../../components/common'
 import { AvatarImage } from '../../components/common/Image'
 import PointSendingModal from '../../components/common/PointSendingModal'
@@ -122,7 +122,7 @@ const PointHistoryAdminPage: React.FC = () => {
         }}
       >
         <Tabs.TabPane key="point-log" tab={formatMessage(messages.pointReleaseHistory)} className="pt-3">
-          <AdminBlock>
+          <StyledAdminBlock>
             {loadingPointLogs ? (
               <Skeleton active />
             ) : (
@@ -231,11 +231,11 @@ const PointHistoryAdminPage: React.FC = () => {
                 </Button>
               </div>
             )}
-          </AdminBlock>
+          </StyledAdminBlock>
         </Tabs.TabPane>
 
         <Tabs.TabPane key="order-log" tab={formatMessage(messages.pointConsumptionHistory)} className="pt-3">
-          <AdminBlock>
+          <StyledAdminBlock>
             {loadingOrderLogs ? (
               <Skeleton active />
             ) : (
@@ -289,7 +289,7 @@ const PointHistoryAdminPage: React.FC = () => {
                 </Button>
               </div>
             )}
-          </AdminBlock>
+          </StyledAdminBlock>
         </Tabs.TabPane>
       </Tabs>
     </AdminLayout>

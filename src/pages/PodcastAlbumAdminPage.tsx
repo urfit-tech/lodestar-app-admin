@@ -7,13 +7,13 @@ import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
   EmptyBlock,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../components/admin'
 import ItemsSortingModal from '../components/common/ItemsSortingModal'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
@@ -120,29 +120,31 @@ const PodcastAlbumAdminPage: React.VFC = () => {
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminPaneTitle>
 
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                <StyledAdminBlock>
+                  <StyledAdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</StyledAdminBlockTitle>
                   <PodcastAlbumBasicForm podcastAlbum={podcastAlbum} onRefetch={refetch} />
-                </AdminBlock>
+                </StyledAdminBlock>
 
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(commonMessages.label.description)}</AdminBlockTitle>
+                <StyledAdminBlock>
+                  <StyledAdminBlockTitle>{formatMessage(commonMessages.label.description)}</StyledAdminBlockTitle>
                   <PodcastAlbumDescriptionForm podcastAlbum={podcastAlbum} onRefetch={refetch} />
-                </AdminBlock>
+                </StyledAdminBlock>
 
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(podcastAlbumMessages.label.deletePodcastAlbum)}</AdminBlockTitle>
+                <StyledAdminBlock>
+                  <StyledAdminBlockTitle>
+                    {formatMessage(podcastAlbumMessages.label.deletePodcastAlbum)}
+                  </StyledAdminBlockTitle>
                   <PodcastAlbumDeletionAdminCard podcastAlbum={podcastAlbum} onRefetch={refetch} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
 
             <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishAdmin)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(commonMessages.label.publishAdmin)}</AdminPaneTitle>
-                <AdminBlock>
+                <StyledAdminBlock>
                   <PodcastAlbumPublishAdminBlock podcastAlbum={podcastAlbum} onRefetch={refetch} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
           </Tabs>

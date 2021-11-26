@@ -6,7 +6,7 @@ import { last } from 'ramda'
 import React, { memo, useState } from 'react'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps, installmentPlans, paymentMethods } from '.'
-import { AdminBlockTitle } from '../../../components/admin'
+import { StyledAdminBlockTitle } from '../../../components/admin'
 import PeriodSelector from '../../../components/form/PeriodSelector'
 import CertificationUploader from './CertificationUploader'
 import ReferralMemberSelector from './ReferralMemberSelector'
@@ -78,7 +78,7 @@ const MemberContractCreationForm: React.FC<
         </Descriptions>
 
         <div className="mb-5">
-          <AdminBlockTitle>合約內容</AdminBlockTitle>
+          <StyledAdminBlockTitle>合約內容</StyledAdminBlockTitle>
           <Form.List name="contractProducts">
             {(fields, { add, remove }) => {
               return (

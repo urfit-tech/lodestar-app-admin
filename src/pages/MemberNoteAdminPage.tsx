@@ -3,7 +3,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
-import { AdminBlock } from '../components/admin'
+import { StyledAdminBlock } from '../components/admin'
 import MemberAdminLayout, { StyledEmptyBlock } from '../components/layout/MemberAdminLayout'
 import MemberNoteAdminItem from '../components/member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../components/member/MemberNoteAdminModal'
@@ -66,7 +66,7 @@ const MemberProfileAdminPage: React.FC = () => {
               .catch(handleError)
           }
         />
-        <AdminBlock className="mt-4">
+        <StyledAdminBlock className="mt-4">
           {notes.length === 0 ? (
             <StyledEmptyBlock>
               <span>{formatMessage(memberMessages.text.noMemberNote)}</span>
@@ -96,7 +96,7 @@ const MemberProfileAdminPage: React.FC = () => {
               {formatMessage(commonMessages.ui.showMore)}
             </Button>
           )}
-        </AdminBlock>
+        </StyledAdminBlock>
       </div>
     </MemberAdminLayout>
   )

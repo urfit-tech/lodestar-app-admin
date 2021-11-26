@@ -13,7 +13,7 @@ import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
 import { useMember, useMutateMember } from '../../hooks/member'
 import DefaultAvatarImage from '../../images/default/avatar.svg'
-import { AdminBlockTitle } from '../admin'
+import { StyledAdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
@@ -56,7 +56,7 @@ const ProfileBasicCard: React.FC<
   if (!member) {
     return (
       <AdminCard {...cardProps}>
-        <AdminBlockTitle className="mb-4">{formatMessage(messages.profileBasic)}</AdminBlockTitle>
+        <StyledAdminBlockTitle className="mb-4">{formatMessage(messages.profileBasic)}</StyledAdminBlockTitle>
         <Skeleton active />
       </AdminCard>
     )
@@ -115,7 +115,7 @@ const ProfileBasicCard: React.FC<
 
   return (
     <AdminCard {...cardProps}>
-      <AdminBlockTitle className="mb-4">{formatMessage(messages.profileBasic)}</AdminBlockTitle>
+      <StyledAdminBlockTitle className="mb-4">{formatMessage(messages.profileBasic)}</StyledAdminBlockTitle>
 
       <Form
         form={form}

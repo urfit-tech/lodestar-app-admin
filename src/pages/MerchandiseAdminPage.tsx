@@ -7,13 +7,13 @@ import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
   AdminBlockSubTitle,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../components/admin'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import MerchandiseBasicForm from '../components/merchandise/MerchandiseBasicForm'
@@ -110,60 +110,60 @@ const MerchandiseAdminPage: React.FC = () => {
                   ? formatMessage(merchandiseMessages.text.generalPhysicalDescription)
                   : formatMessage(merchandiseMessages.text.generalVirtualDescription)}
               </AdminBlockSubTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(messages.basicSettings)}</StyledAdminBlockTitle>
                 <MerchandiseBasicForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
                   onRefetch={refetchMerchandise}
                 />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.introduction)}</AdminBlockTitle>
+              </StyledAdminBlock>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(messages.introduction)}</StyledAdminBlockTitle>
                 <MerchandiseIntroductionForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
                   onRefetch={refetchMerchandise}
                 />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.description)}</AdminBlockTitle>
+              </StyledAdminBlock>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(messages.description)}</StyledAdminBlockTitle>
                 <MerchandiseDescriptionForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
                   onRefetch={refetchMerchandise}
                 />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(merchandiseMessages.label.delete)}</AdminBlockTitle>
+              </StyledAdminBlock>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(merchandiseMessages.label.delete)}</StyledAdminBlockTitle>
                 <MerchandiseDeleteBlock
                   merchandiseId={merchandiseId}
                   memberShopId={merchandise.memberShopId}
                   onRefetch={refetchMerchandise}
                 />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
           <Tabs.TabPane key="spec" tab={formatMessage(messages.specAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.specAdmin)}</AdminPaneTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.salesAdmin)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(messages.salesAdmin)}</StyledAdminBlockTitle>
                 <MerchandiseSalesForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
                   onRefetch={refetchMerchandise}
                 />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.specDetail)}</AdminBlockTitle>
+              </StyledAdminBlock>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(messages.specDetail)}</StyledAdminBlockTitle>
                 <MerchandiseSpecForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
                   onRefetch={refetchMerchandise}
                 />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
           {merchandise.isLimited && (
@@ -194,13 +194,13 @@ const MerchandiseAdminPage: React.FC = () => {
           <Tabs.TabPane key="publish" tab={formatMessage(messages.publishAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.publishAdmin)}</AdminPaneTitle>
-              <AdminBlock>
+              <StyledAdminBlock>
                 <MerchandisePublishBlock
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
                   onRefetch={refetchMerchandise}
                 />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>

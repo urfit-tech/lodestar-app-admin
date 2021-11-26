@@ -9,7 +9,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
-import { AdminBlockTitle } from '../admin'
+import { StyledAdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
@@ -37,7 +37,7 @@ const ProfileAccountAdminCard: React.FC<
   if (!member) {
     return (
       <AdminCard {...cardProps}>
-        <AdminBlockTitle className="mb-4">{formatMessage(messages.profileAdminTitle)}</AdminBlockTitle>
+        <StyledAdminBlockTitle className="mb-4">{formatMessage(messages.profileAdminTitle)}</StyledAdminBlockTitle>
         <Skeleton active />
       </AdminCard>
     )
@@ -58,7 +58,7 @@ const ProfileAccountAdminCard: React.FC<
   }
   return (
     <AdminCard {...cardProps}>
-      <AdminBlockTitle className="mb-4">{formatMessage(messages.profileAdminTitle)}</AdminBlockTitle>
+      <StyledAdminBlockTitle className="mb-4">{formatMessage(messages.profileAdminTitle)}</StyledAdminBlockTitle>
 
       <Form
         form={form}

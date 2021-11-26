@@ -2,7 +2,7 @@ import { Skeleton } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
-import { AdminBlock, AdminPageTitle } from '../components/admin'
+import { AdminPageTitle, StyledAdminBlock } from '../components/admin'
 import MemberShopLayout from '../components/layout/MemberShopLayout'
 import MemberShopPublishBlock from '../components/merchandise/MemberShopPublishBlock'
 import { useMemberShop } from '../hooks/merchandise'
@@ -23,9 +23,9 @@ const MemberShopAdminPage: React.FC = () => {
   return (
     <MemberShopLayout memberShopTitle={memberShop.title} member={memberShop.member}>
       <AdminPageTitle>{formatMessage(messages.publishAdmin)}</AdminPageTitle>
-      <AdminBlock>
+      <StyledAdminBlock>
         <MemberShopPublishBlock memberShop={memberShop} onRefetch={refetchMemberShop} />
-      </AdminBlock>
+      </StyledAdminBlock>
     </MemberShopLayout>
   )
 }

@@ -11,12 +11,12 @@ import ActivityPublishAdminBlock from '../components/activity/ActivityPublishAdm
 import ActivitySessionsAdminBlock from '../components/activity/ActivitySessionsAdminBlock'
 import ActivityTicketsAdminBlock from '../components/activity/ActivityTicketsAdminBlock'
 import {
-  AdminBlock,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../components/admin'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import { activityMessages, commonMessages } from '../helpers/translation'
@@ -67,14 +67,14 @@ const ActivityAdminPage: React.FC = () => {
             <Tabs.TabPane key="settings" tab={formatMessage(messages.settings)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                <StyledAdminBlock>
+                  <StyledAdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</StyledAdminBlockTitle>
                   <ActivityBasicForm activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
-                </AdminBlock>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(messages.activityIntroduction)}</AdminBlockTitle>
+                </StyledAdminBlock>
+                <StyledAdminBlock>
+                  <StyledAdminBlockTitle>{formatMessage(messages.activityIntroduction)}</StyledAdminBlockTitle>
                   <ActivityIntroductionForm activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
 
@@ -99,9 +99,9 @@ const ActivityAdminPage: React.FC = () => {
             <Tabs.TabPane key="publish" tab={formatMessage(messages.publishSettings)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.publishSettings)}</AdminPaneTitle>
-                <AdminBlock>
+                <StyledAdminBlock>
                   <ActivityPublishAdminBlock activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
           </Tabs>

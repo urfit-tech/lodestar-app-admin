@@ -3,7 +3,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
-import { AdminBlock, AdminBlockTitle } from '../components/admin'
+import { StyledAdminBlock, StyledAdminBlockTitle } from '../components/admin'
 import MemberAdminLayout from '../components/layout/MemberAdminLayout'
 import MemberProfileAbstractForm from '../components/member/MemberProfileAbstractForm'
 import MemberProfileBasicForm from '../components/member/MemberProfileBasicForm'
@@ -24,20 +24,20 @@ const MemberProfileAdminPage: React.FC = () => {
   return (
     <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
       <div className="p-5">
-        <AdminBlock>
-          <AdminBlockTitle>{formatMessage(memberMessages.label.basic)}</AdminBlockTitle>
+        <StyledAdminBlock>
+          <StyledAdminBlockTitle>{formatMessage(memberMessages.label.basic)}</StyledAdminBlockTitle>
           <MemberProfileBasicForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
-        </AdminBlock>
+        </StyledAdminBlock>
         {enabledModules.member_property && (
-          <AdminBlock>
-            <AdminBlockTitle>{formatMessage(memberMessages.label.property)}</AdminBlockTitle>
+          <StyledAdminBlock>
+            <StyledAdminBlockTitle>{formatMessage(memberMessages.label.property)}</StyledAdminBlockTitle>
             <MemberPropertyAdminForm memberId={memberId} />
-          </AdminBlock>
+          </StyledAdminBlock>
         )}
-        <AdminBlock>
-          <AdminBlockTitle>{formatMessage(memberMessages.label.abstract)}</AdminBlockTitle>
+        <StyledAdminBlock>
+          <StyledAdminBlockTitle>{formatMessage(memberMessages.label.abstract)}</StyledAdminBlockTitle>
           <MemberProfileAbstractForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
-        </AdminBlock>
+        </StyledAdminBlock>
       </div>
     </MemberAdminLayout>
   )

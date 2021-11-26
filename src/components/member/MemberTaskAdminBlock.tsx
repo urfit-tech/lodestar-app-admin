@@ -15,7 +15,7 @@ import { useCategory } from '../../hooks/data'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import hasura from '../../hasura'
 import { MemberTaskProps } from '../../types/member'
-import { AdminBlock, MemberTaskTag } from '../admin'
+import { StyledAdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 
@@ -445,7 +445,7 @@ const MemberTaskAdminBlock: React.FC<{
         </div>
       </div>
 
-      <AdminBlock>
+      <StyledAdminBlock>
         {display === 'calendar' ? (
           <Spin spinning={loadingMemberTasks}>
             <StyledFullCalendarWrapper>
@@ -511,7 +511,7 @@ const MemberTaskAdminBlock: React.FC<{
             </Button>
           </div>
         )}
-      </AdminBlock>
+      </StyledAdminBlock>
 
       {selectedMemberTask && (
         <MemberTaskAdminModal

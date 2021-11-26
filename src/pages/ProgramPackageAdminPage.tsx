@@ -8,12 +8,12 @@ import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../components/admin'
 import ItemsSortingModal from '../components/common/ItemsSortingModal'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
@@ -118,15 +118,17 @@ const ProgramPackageAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programPackageMessages.label.generalSetting)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>
+                  {formatMessage(programPackageMessages.label.generalSetting)}
+                </StyledAdminBlockTitle>
                 <ProgramPackageBasicForm programPackage={programPackage} onRefetch={refetch} />
-              </AdminBlock>
+              </StyledAdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.description)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(commonMessages.label.description)}</StyledAdminBlockTitle>
                 <ProgramPackageDescriptionForm programPackage={programPackage} onRefetch={refetch} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
@@ -157,9 +159,9 @@ const ProgramPackageAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishAdmin)}</AdminPaneTitle>
 
-              <AdminBlock>
+              <StyledAdminBlock>
                 <ProgramPackagePublishBlock programPackage={programPackage} onRefetch={refetch} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>

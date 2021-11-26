@@ -13,7 +13,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { ReactComponent as TextIcon } from '../../images/icon/text.svg'
 import { MemberBriefProps } from '../../types/member'
-import { AdminBlock } from '../admin'
+import { StyledAdminBlock } from '../admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../common'
 import CoinSendingModal from '../common/CoinSendingModal'
 import { AvatarImage } from '../common/Image'
@@ -206,7 +206,7 @@ const CoinLogTabs: React.VFC<{
         }}
       >
         <Tabs.TabPane key="coin-log" tab={formatMessage(messages.coinReleaseHistory)} className="pt-3">
-          <AdminBlock>
+          <StyledAdminBlock>
             <Table<CustomizeColumnProps>
               columns={[
                 {
@@ -310,11 +310,11 @@ const CoinLogTabs: React.VFC<{
                 </Button>
               </div>
             )}
-          </AdminBlock>
+          </StyledAdminBlock>
         </Tabs.TabPane>
 
         <Tabs.TabPane key="future-log" tab={formatMessage(messages.coinAboutToSend)} className="pt-3">
-          <AdminBlock>
+          <StyledAdminBlock>
             <Table<CustomizeColumnProps>
               columns={[
                 {
@@ -418,11 +418,11 @@ const CoinLogTabs: React.VFC<{
                 </Button>
               </div>
             )}
-          </AdminBlock>
+          </StyledAdminBlock>
         </Tabs.TabPane>
 
         <Tabs.TabPane key="order-log" tab={formatMessage(messages.coinConsumptionHistory)} className="pt-3">
-          <AdminBlock>
+          <StyledAdminBlock>
             <Table<CustomizeColumnProps>
               columns={[
                 {
@@ -484,7 +484,7 @@ const CoinLogTabs: React.VFC<{
                 </Button>
               </div>
             )}
-          </AdminBlock>
+          </StyledAdminBlock>
         </Tabs.TabPane>
       </Tabs>
     </>

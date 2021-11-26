@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { AdminBlock, AdminBlockTitle, AdminPaneTitle, StyledTips } from '../../../components/admin'
+import { AdminPaneTitle, StyledAdminBlock, StyledAdminBlockTitle, StyledTips } from '../../../components/admin'
 import AdminModal from '../../../components/admin/AdminModal'
 import { handleError } from '../../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../../helpers/translation'
@@ -55,7 +55,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
   return (
     <div className="container py-5">
       <AdminPaneTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminPaneTitle>
-      <AdminBlock>
+      <StyledAdminBlock>
         <Form
           form={form}
           colon={false}
@@ -134,14 +134,14 @@ const CraftPageBasicSettingBlock: React.VFC<{
             </Button>
           </Form.Item>
         </Form>
-      </AdminBlock>
-      <AdminBlock>
-        <AdminBlockTitle>{formatMessage(craftPageMessages.label.deletePage)}</AdminBlockTitle>
+      </StyledAdminBlock>
+      <StyledAdminBlock>
+        <StyledAdminBlockTitle>{formatMessage(craftPageMessages.label.deletePage)}</StyledAdminBlockTitle>
         <CraftPageDeletionAdminCard
           page={pageAdmin}
           // onRefetch={refetchCraftPage}
         />
-      </AdminBlock>
+      </StyledAdminBlock>
     </div>
   )
 }

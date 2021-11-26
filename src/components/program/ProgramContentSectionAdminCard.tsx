@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
-import { AdminBlock } from '../admin'
+import { StyledAdminBlock } from '../admin'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
 
 const messages = defineMessages({
@@ -54,7 +54,7 @@ const ProgramContentSectionAdminCard: React.FC<{
   >(DELETE_PROGRAM_CONTENT_SECTION)
 
   return (
-    <AdminBlock>
+    <StyledAdminBlock>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <Typography.Title
           className="flex-grow-1 m-0"
@@ -172,7 +172,7 @@ const ProgramContentSectionAdminCard: React.FC<{
           {formatMessage(messages.createContent)}
         </Button>
       </Dropdown>
-    </AdminBlock>
+    </StyledAdminBlock>
   )
 }
 

@@ -4,7 +4,7 @@ import { Button, Form, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { AdminBlock, AdminBlockTitle } from '../../components/admin'
+import { StyledAdminBlock, StyledAdminBlockTitle } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import MemberAvatar from '../../components/common/MemberAvatar'
@@ -63,17 +63,17 @@ const ProgramRoleAdminPane: React.FC<{
 
   return (
     <>
-      <AdminBlock>
-        <AdminBlockTitle>{formatMessage(programMessages.label.programOwner)}</AdminBlockTitle>
+      <StyledAdminBlock>
+        <StyledAdminBlockTitle>{formatMessage(programMessages.label.programOwner)}</StyledAdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'owner')
           .map(role => (
             <MemberAvatar key={role.id} size="32px" memberId={role.member?.id || ''} withName />
           ))}
-      </AdminBlock>
+      </StyledAdminBlock>
 
-      <AdminBlock>
-        <AdminBlockTitle>{formatMessage(commonMessages.label.instructor)}</AdminBlockTitle>
+      <StyledAdminBlock>
+        <StyledAdminBlockTitle>{formatMessage(commonMessages.label.instructor)}</StyledAdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'instructor')
           .map(role => (
@@ -120,16 +120,16 @@ const ProgramRoleAdminPane: React.FC<{
             </Form.Item>
           </Form>
         </AdminModal>
-      </AdminBlock>
+      </StyledAdminBlock>
 
-      <AdminBlock>
-        <AdminBlockTitle>{formatMessage(commonMessages.label.teachingAssistant)}</AdminBlockTitle>
+      <StyledAdminBlock>
+        <StyledAdminBlockTitle>{formatMessage(commonMessages.label.teachingAssistant)}</StyledAdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'assistant')
           .map(role => (
             <MemberAvatar key={role.id} size="32px" memberId={role.member?.id || ''} withName />
           ))}
-      </AdminBlock>
+      </StyledAdminBlock>
     </>
   )
 }

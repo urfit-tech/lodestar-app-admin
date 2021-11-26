@@ -6,7 +6,7 @@ import moment, { Moment } from 'moment'
 import { sum, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { AdminBlock } from '../../../components/admin'
+import { StyledAdminBlock } from '../../../components/admin'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import hasura from '../../../hasura'
 import { notEmpty } from '../../../helpers'
@@ -258,7 +258,7 @@ const MemberContractCreationPage: React.VFC = () => {
   return (
     <DefaultLayout>
       <div className="container py-5">
-        <AdminBlock>
+        <StyledAdminBlock>
           <MemberDescriptionBlock member={member} properties={properties} memberBlockRef={memberBlockRef} />
           <MemberContractCreationForm
             form={form}
@@ -312,7 +312,7 @@ const MemberContractCreationPage: React.VFC = () => {
             totalPrice={totalPrice}
             totalCoins={totalCoins}
           />
-        </AdminBlock>
+        </StyledAdminBlock>
       </div>
     </DefaultLayout>
   )

@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
-import { AdminBlock, AdminBlockTitle } from '../admin'
+import { StyledAdminBlock, StyledAdminBlockTitle } from '../admin'
 import AdminModal from '../admin/AdminModal'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import PriceLabel from '../common/PriceLabel'
@@ -65,8 +65,8 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   }
 
   return (
-    <AdminBlock>
-      <AdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
+    <StyledAdminBlock>
+      <StyledAdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center h-100">
           <Tag className="mr-2">
             {programPlanType === 'subscription'
@@ -124,7 +124,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
             <MoreOutlined />
           </Dropdown>
         </div>
-      </AdminBlockTitle>
+      </StyledAdminBlockTitle>
       <PriceLabel
         listPrice={listPrice}
         salePrice={isOnSale ? salePrice : undefined}
@@ -163,7 +163,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           />
         )}
       </div>
-    </AdminBlock>
+    </StyledAdminBlock>
   )
 }
 

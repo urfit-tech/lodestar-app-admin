@@ -9,11 +9,11 @@ import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
 } from '../../../components/admin'
 import { useResolver } from '../../../components/craft/CraftResolver'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
@@ -103,9 +103,9 @@ const CraftPageAdminPage: React.VFC = () => {
             <Tabs.TabPane key="publish" tab={formatMessage(craftPageMessages.label.publish)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
-                <AdminBlock>
+                <StyledAdminBlock>
                   <CraftPagePublishAdminBlock pageAdmin={appPage} onRefetch={refetchAppPage} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
           </Tabs>

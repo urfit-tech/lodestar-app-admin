@@ -7,12 +7,12 @@ import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../components/admin'
 import AppointmentPlanBasicForm from '../components/appointment/AppointmentPlanBasicForm'
 import AppointmentPlanIntroForm from '../components/appointment/AppointmentPlanIntroForm'
@@ -86,32 +86,32 @@ const AppointmentPlanAdminPage: React.FC = () => {
           <Tabs.TabPane tab={formatMessage(messages.planSettings)} key="settings">
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.planSettings)}</AdminPaneTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</StyledAdminBlockTitle>
                 <AppointmentPlanBasicForm
                   appointmentPlanAdmin={appointmentPlanAdmin}
                   onRefetch={refetchAppointmentPlanAdmin}
                 />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.planDescription)}</AdminBlockTitle>
+              </StyledAdminBlock>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(messages.planDescription)}</StyledAdminBlockTitle>
                 <AppointmentPlanIntroForm
                   appointmentPlanAdmin={appointmentPlanAdmin}
                   onRefetch={refetchAppointmentPlanAdmin}
                 />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
           <Tabs.TabPane tab={formatMessage(messages.salesSettings)} key="sale">
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.salesSettings)}</AdminPaneTitle>
-              <AdminBlock>
+              <StyledAdminBlock>
                 <AppointmentPlanSaleForm
                   appointmentPlanAdmin={appointmentPlanAdmin}
                   onRefetch={refetchAppointmentPlanAdmin}
                 />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
@@ -131,12 +131,12 @@ const AppointmentPlanAdminPage: React.FC = () => {
                   />
                 )}
               </div>
-              <AdminBlock>
+              <StyledAdminBlock>
                 <AppointmentPlanScheduleBlock
                   appointmentPlanAdmin={appointmentPlanAdmin}
                   onRefetch={refetchAppointmentPlanAdmin}
                 />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 

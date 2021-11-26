@@ -6,13 +6,13 @@ import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneDescription,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -86,18 +86,20 @@ const ProgramAdminPage: React.FC = () => {
           <Tabs.TabPane key="general" tab={formatMessage(programMessages.label.programSettings)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(programMessages.label.programSettings)}</AdminPaneTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</StyledAdminBlockTitle>
                 <ProgramBasicForm program={program} onRefetch={refetchProgram} />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programMessages.label.programIntroduction)}</AdminBlockTitle>
+              </StyledAdminBlock>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>
+                  {formatMessage(programMessages.label.programIntroduction)}
+                </StyledAdminBlockTitle>
                 <ProgramIntroForm program={program} onRefetch={refetchProgram} />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programMessages.label.deleteProgram)}</AdminBlockTitle>
+              </StyledAdminBlock>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(programMessages.label.deleteProgram)}</StyledAdminBlockTitle>
                 <ProgramDeletionAdminCard program={program} onRefetch={refetchProgram} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
@@ -115,9 +117,9 @@ const ProgramAdminPage: React.FC = () => {
                 <AdminPaneDescription className="mb-4">
                   {formatMessage(programMessages.text.sharingCodeDescription)}
                 </AdminPaneDescription>
-                <AdminBlock>
+                <StyledAdminBlock>
                   <ProgramSharingCodeAdminForm programId={programId} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
           )}
@@ -133,10 +135,10 @@ const ProgramAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
               <ProgramPublishBlock program={program} onRefetch={refetchProgram} />
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programMessages.label.approvalHistory)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(programMessages.label.approvalHistory)}</StyledAdminBlockTitle>
                 <ProgramApprovalHistoryBlock program={program} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>

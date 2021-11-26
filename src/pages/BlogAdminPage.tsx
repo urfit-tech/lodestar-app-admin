@@ -6,12 +6,12 @@ import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../components/admin'
 import RoleAdminBlock from '../components/admin/RoleAdminBlock'
 import BlogPostAuthorCollectionBlock from '../components/blog/BlogPostAuthorCollectionBlock'
@@ -65,15 +65,15 @@ const BlogAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(blogMessages.label.postContent)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.ui.video)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(blogMessages.ui.video)}</StyledAdminBlockTitle>
                 <BlogPostVideoForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              </StyledAdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</StyledAdminBlockTitle>
                 <BlogPostContentForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
@@ -81,20 +81,20 @@ const BlogAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(blogMessages.label.postManagement)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</StyledAdminBlockTitle>
                 <BlogPostBasicForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              </StyledAdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</StyledAdminBlockTitle>
                 <BlogPostSettingForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              </StyledAdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.label.deletePost)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(blogMessages.label.deletePost)}</StyledAdminBlockTitle>
                 <BlogPostDeletionModal post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
@@ -102,15 +102,15 @@ const BlogAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.owner)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(commonMessages.label.owner)}</StyledAdminBlockTitle>
                 <RoleAdminBlock name={member?.name || ''} pictureUrl={member?.pictureUrl || ''} />
-              </AdminBlock>
+              </StyledAdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.postAuthor)}</AdminBlockTitle>
+              <StyledAdminBlock>
+                <StyledAdminBlockTitle>{formatMessage(commonMessages.label.postAuthor)}</StyledAdminBlockTitle>
                 <BlogPostAuthorCollectionBlock post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
 
@@ -118,9 +118,9 @@ const BlogAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
 
-              <AdminBlock>
+              <StyledAdminBlock>
                 <BlogPostPublishBlock post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              </StyledAdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>

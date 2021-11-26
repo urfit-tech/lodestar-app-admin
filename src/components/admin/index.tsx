@@ -63,14 +63,14 @@ export const AdminPaneDescription = styled.div`
   font-size: 14px;
   white-space: pre-line;
 `
-export const AdminBlock = styled.div`
+export const StyledAdminBlock = styled.div`
   margin-bottom: 1.25rem;
   padding: 2rem;
   background: white;
   border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
-export const AdminBlockTitle = styled.h2`
+export const StyledAdminBlockTitle = styled.h2`
   margin-bottom: 2.5rem;
   color: var(--gray-darker);
   font-size: 18px;

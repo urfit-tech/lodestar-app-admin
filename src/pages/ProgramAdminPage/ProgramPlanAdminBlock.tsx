@@ -50,15 +50,15 @@ const ProgramPlanAdminBlock: React.FC<{
 
   // return (
   //   <>
-  //     <AdminBlock>
-  //       <AdminBlockTitle>售價設定</AdminBlockTitle>
+  //     <StyledAdminBlock>
+  //       <StyledAdminBlockTitle>售價設定</StyledAdminBlockTitle>
   //       <ProgramPerpetualPlanAdminCard program={program} onRefetch={onRefetch} />
-  //     </AdminBlock>
+  //     </StyledAdminBlock>
   //     {enabledModules['group_buying'] && (
-  //       <AdminBlock>
-  //         <AdminBlockTitle>多人方案</AdminBlockTitle>
+  //       <StyledAdminBlock>
+  //         <StyledAdminBlockTitle>多人方案</StyledAdminBlockTitle>
   //         <ProgramGroupBuyingAdminForm program={program} onRefetch={onRefetch} />
-  //       </AdminBlock>
+  //       </StyledAdminBlock>
   //     )}
   //   </>
   // )

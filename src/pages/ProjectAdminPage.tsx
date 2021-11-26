@@ -8,12 +8,12 @@ import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
-  AdminBlock,
-  AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
   AdminTabBarWrapper,
+  StyledAdminBlock,
+  StyledAdminBlockTitle,
 } from '../components/admin'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import ProjectBasicForm from '../components/project/ProjectBasicForm'
@@ -70,14 +70,16 @@ const ProjectAdminPage: React.FC<{}> = () => {
             <Tabs.TabPane key="settings" tab={formatMessage(projectMessages.label.settings)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(projectMessages.label.settings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                <StyledAdminBlock>
+                  <StyledAdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</StyledAdminBlockTitle>
                   <ProjectBasicForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
-                </AdminBlock>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(projectMessages.label.projectIntroduction)}</AdminBlockTitle>
+                </StyledAdminBlock>
+                <StyledAdminBlock>
+                  <StyledAdminBlockTitle>
+                    {formatMessage(projectMessages.label.projectIntroduction)}
+                  </StyledAdminBlockTitle>
                   <ProjectIntroForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
 
@@ -91,9 +93,9 @@ const ProjectAdminPage: React.FC<{}> = () => {
             <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
-                <AdminBlock>
+                <StyledAdminBlock>
                   <ProjectPublishAdminBlock type="funding" project={projectAdmin} onRefetch={refetchProjectAdmin} />
-                </AdminBlock>
+                </StyledAdminBlock>
               </div>
             </Tabs.TabPane>
           </Tabs>
