@@ -5579,6 +5579,79 @@ export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables {
 
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PLAN_PRIMARY
+// ====================================================
+
+
+export interface UPDATE_PROGRAM_PLAN_PRIMARY_clearPrimary {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PLAN_PRIMARY_setPrimary {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PLAN_PRIMARY {
+  /**
+   * update data of the table: "program_plan"
+   */
+  clearPrimary: UPDATE_PROGRAM_PLAN_PRIMARY_clearPrimary | null;
+  /**
+   * update data of the table: "program_plan"
+   */
+  setPrimary: UPDATE_PROGRAM_PLAN_PRIMARY_setPrimary | null;
+}
+
+export interface UPDATE_PROGRAM_PLAN_PRIMARYVariables {
+  programPlanId: any;
+  programId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_PLAN
+// ====================================================
+
+
+export interface DELETE_PROGRAM_PLAN_update_program_plan {
+  __typename: "program_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_PLAN {
+  /**
+   * update data of the table: "program_plan"
+   */
+  update_program_plan: DELETE_PROGRAM_PLAN_update_program_plan | null;
+}
+
+export interface DELETE_PROGRAM_PLANVariables {
+  programPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM_TAGS
 // ====================================================
 
@@ -11940,6 +12013,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_plans {
   is_countdown_timer_visible: boolean;
   published_at: any | null;
   group_buying_people: any | null;
+  is_primary: boolean;
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_categories_category {
@@ -18496,7 +18570,9 @@ export enum program_plan_update_column {
   group_buying_people = "group_buying_people",
   id = "id",
   is_countdown_timer_visible = "is_countdown_timer_visible",
+  is_deleted = "is_deleted",
   is_participants_visible = "is_participants_visible",
+  is_primary = "is_primary",
   list_price = "list_price",
   period_amount = "period_amount",
   period_type = "period_type",
@@ -32512,7 +32588,9 @@ export interface program_plan_bool_exp {
   group_buying_people?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
+  is_primary?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
@@ -32562,7 +32640,9 @@ export interface program_plan_insert_input {
   group_buying_people?: any | null;
   id?: any | null;
   is_countdown_timer_visible?: boolean | null;
+  is_deleted?: boolean | null;
   is_participants_visible?: boolean | null;
+  is_primary?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;
   period_type?: string | null;

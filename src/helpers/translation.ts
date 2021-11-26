@@ -250,6 +250,8 @@ export const commonMessages = {
     },
     default: { id: 'common.label.default', defaultMessage: '預設' },
     desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
+    setPrimaryPlan: { id: 'common.label.setPrimaryPlan', defaultMessage: '設為主方案' },
+    removePlan: { id: 'common.label.removePlan', defaultMessage: '刪除方案' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -874,6 +876,10 @@ export const programMessages = {
     searchExerciseMember: { id: 'program.text. searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
     searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
     emptyPractice: { id: 'practice.text.emptyPractice', defaultMessage: '尚未有任何作業' },
+    deleteProgramPlanConfirmation: {
+      id: 'program.text.deleteProgramPlanConfirmation',
+      defaultMessage: '課程方案一經刪除即不可恢復，確定要刪除嗎？',
+    },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -1284,7 +1290,7 @@ export const orderMessages = {
     orderDiscountTotalPrice: { id: 'order.label.orderDiscountTotalPrice', defaultMessage: '折扣總額' },
     // payment log
     paymentLogNo: { id: 'order.label.paymentLogNo', defaultMessage: '交易編號' },
-    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道'},
+    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道' },
     paymentLogPaidAt: { id: 'order.label.paymentLogPaidAt', defaultMessage: '付款時間' },
     paymentLogDetails: { id: 'order.label.paymentLogDetails', defaultMessage: '付款方式' },
     // member

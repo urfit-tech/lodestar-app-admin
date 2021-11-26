@@ -1,15 +1,16 @@
-import { EditOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
-import { Button, Divider, Tag } from 'antd'
+import { EditOutlined, MoreOutlined } from '@ant-design/icons'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Button, Divider, Dropdown, Menu, message, Tag } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
+import AdminModal from '../admin/AdminModal'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import PriceLabel from '../common/PriceLabel'
 import ProductSkuModal from '../common/ProductSkuModal'
@@ -22,9 +23,6 @@ const messages = defineMessages({
 const StyledCountDownBlock = styled.div`
   margin-top: 20px;
 `
-const StyledMenuItemText = styled.span`
-  display: block;
-`
 
 const ProgramSubscriptionPlanAdminCard: React.FC<{
   programId: string
@@ -36,6 +34,15 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
+  const [setProgramPlanPrimary] = useMutation<
+    hasura.UPDATE_PROGRAM_PLAN_PRIMARY,
+    hasura.UPDATE_PROGRAM_PLAN_PRIMARYVariables
+  >(UPDATE_PROGRAM_PLAN_PRIMARY)
+
+  const [archiveProgramPlan] = useMutation<hasura.DELETE_PROGRAM_PLAN, hasura.DELETE_PROGRAM_PLANVariables>(
+    DELETE_PROGRAM_PLAN,
+  )
+
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
   const description = programPlan.description?.trim() || ''
   const programPlanType = programPlan.autoRenewed
@@ -43,10 +50,24 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     : programPlan.periodAmount && programPlan.periodType
     ? 'period'
     : 'perpetual'
+
+  const handleSetProgramPlanPrimary = () => {
+    setProgramPlanPrimary({ variables: { programId: programId, programPlanId: programPlan.id } }).then(() => {
+      message.success(formatMessage(commonMessages.event.successfullySaved))
+      onRefetch?.()
+    })
+  }
+  const handleArchiveProgramPlan = () => {
+    archiveProgramPlan({ variables: { programPlanId: programPlan.id } }).then(() => {
+      message.success(formatMessage(commonMessages.event.successfullyDeleted))
+      onRefetch?.()
+    })
+  }
+
   return (
     <AdminBlock>
       <AdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center h-100">
           <Tag className="mr-2">
             {programPlanType === 'subscription'
               ? formatMessage(commonMessages.ui.subscriptionPlan)
@@ -56,24 +77,53 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           </Tag>
           {programPlan.title}
         </div>
-        <ProgramPlanAdminModal
-          onRefetch={onRefetch}
-          programId={programId}
-          programPlan={programPlan}
-          renderTrigger={({ onOpen }) => (
-            <EditOutlined
-              onClick={() =>
-                onOpen?.(
-                  programPlan.periodAmount && programPlan.periodType
-                    ? programPlan.autoRenewed
-                      ? 'subscription'
-                      : 'period'
-                    : 'perpetual',
-                )
-              }
-            />
-          )}
-        />
+        <div>
+          <ProgramPlanAdminModal
+            onRefetch={onRefetch}
+            programId={programId}
+            programPlan={programPlan}
+            renderTrigger={({ onOpen }) => (
+              <EditOutlined
+                className="mr-3"
+                onClick={() =>
+                  onOpen?.(
+                    programPlan.periodAmount && programPlan.periodType
+                      ? programPlan.autoRenewed
+                        ? 'subscription'
+                        : 'period'
+                      : 'perpetual',
+                  )
+                }
+              />
+            )}
+          />
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item onClick={() => handleSetProgramPlanPrimary()}>
+                  {formatMessage(commonMessages.label.setPrimaryPlan)}
+                </Menu.Item>
+                <Menu.Item>
+                  <AdminModal
+                    title={''}
+                    renderTrigger={({ setVisible }) => (
+                      <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.label.removePlan)}</span>
+                    )}
+                    okText={formatMessage(commonMessages.ui.delete)}
+                    okButtonProps={{ danger: true }}
+                    cancelText={formatMessage(commonMessages.ui.back)}
+                    onOk={() => handleArchiveProgramPlan()}
+                  >
+                    <div>{formatMessage(programMessages.text.deleteProgramPlanConfirmation)}</div>
+                  </AdminModal>
+                </Menu.Item>
+              </Menu>
+            }
+            trigger={['click']}
+          >
+            <MoreOutlined />
+          </Dropdown>
+        </div>
       </AdminBlockTitle>
       <PriceLabel
         listPrice={listPrice}
@@ -144,4 +194,21 @@ const useProgramPlanEnrollmentCount = (programPlanId: string) => {
   }
 }
 
+const UPDATE_PROGRAM_PLAN_PRIMARY = gql`
+  mutation UPDATE_PROGRAM_PLAN_PRIMARY($programPlanId: uuid!, $programId: uuid!) {
+    clearPrimary: update_program_plan(where: { program: { id: { _eq: $programId } } }, _set: { is_primary: false }) {
+      affected_rows
+    }
+    setPrimary: update_program_plan(where: { id: { _eq: $programPlanId } }, _set: { is_primary: true }) {
+      affected_rows
+    }
+  }
+`
+const DELETE_PROGRAM_PLAN = gql`
+  mutation DELETE_PROGRAM_PLAN($programPlanId: uuid!) {
+    update_program_plan(where: { id: { _eq: $programPlanId } }, _set: { is_deleted: true }) {
+      affected_rows
+    }
+  }
+`
 export default ProgramSubscriptionPlanAdminCard
