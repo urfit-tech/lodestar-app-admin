@@ -5510,6 +5510,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   publishedAt?: any | null;
   isCountdownTimerVisible: boolean;
   groupBuyingPeople?: any | null;
+  isPrimary: boolean;
 }
 
 /* tslint:disable */

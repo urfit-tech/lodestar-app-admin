@@ -69,13 +69,14 @@ const ProgramPlanAdminModal: React.FC<
   Omit<AdminModalProps, 'renderTrigger'> & {
     programId: string
     programPlan?: ProgramPlan
+    havePrimary?: boolean
     onRefetch?: () => void
     renderTrigger?: React.FC<{
       onOpen?: (programProgramPlanType: ProgramPlanType) => void
       onClose?: () => void
     }>
   }
-> = ({ programId, programPlan, onRefetch, renderTrigger, ...modalProps }) => {
+> = ({ programId, programPlan, havePrimary, onRefetch, renderTrigger, ...modalProps }) => {
   const [programPlanType, setProgramPlanType] = useState<ProgramPlanType>()
   const [toggle, setToggle] = useState({
     withDiscountDownPrice: false,
@@ -136,6 +137,7 @@ const ProgramPlanAdminModal: React.FC<
             publishedAt: values.isPublished ? new Date() : null,
             isCountdownTimerVisible: !!values.sale?.isTimerVisible,
             groupBuyingPeople: values.groupBuyingPeople,
+            isPrimary: !havePrimary,
           },
         })
           .then(() => {
@@ -341,6 +343,7 @@ const UPSERT_PROGRAM_PLAN = gql`
     $publishedAt: timestamptz
     $isCountdownTimerVisible: Boolean!
     $groupBuyingPeople: numeric
+    $isPrimary: Boolean!
   ) {
     insert_program_plan(
       objects: {
@@ -362,6 +365,7 @@ const UPSERT_PROGRAM_PLAN = gql`
         published_at: $publishedAt
         is_countdown_timer_visible: $isCountdownTimerVisible
         group_buying_people: $groupBuyingPeople
+        is_primary: $isPrimary
       }
       on_conflict: {
         constraint: program_plan_pkey

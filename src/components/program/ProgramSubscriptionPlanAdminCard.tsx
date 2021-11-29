@@ -28,8 +28,9 @@ const StyledCountDownBlock = styled.div`
 const ProgramSubscriptionPlanAdminCard: React.FC<{
   programId: string
   programPlan: ProgramPlan
+  programPlans?: ProgramPlan[]
   onRefetch?: () => void
-}> = ({ programId, programPlan, onRefetch }) => {
+}> = ({ programId, programPlan, programPlans, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const theme = useAppTheme()
@@ -60,10 +61,22 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     })
   }
   const handleArchiveProgramPlan = () => {
-    archiveProgramPlan({ variables: { programPlanId: programPlan.id } }).then(() => {
-      message.success(formatMessage(commonMessages.event.successfullyDeleted))
-      onRefetch?.()
-    })
+    archiveProgramPlan({ variables: { programPlanId: programPlan.id } })
+      .then(() => {
+        onRefetch?.()
+      })
+      .then(() => {
+        if (programPlan.isPrimary && programPlans && programPlans.length > 1) {
+          setProgramPlanPrimary({
+            variables: {
+              programId: programId,
+              programPlanId: programPlans.filter(plan => plan.id !== programPlan.id)[0].id,
+            },
+          })
+          onRefetch?.()
+        }
+        message.success(formatMessage(commonMessages.event.successfullyDeleted))
+      })
   }
 
   return (

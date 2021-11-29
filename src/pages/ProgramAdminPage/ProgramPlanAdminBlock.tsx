@@ -23,6 +23,7 @@ const ProgramPlanAdminBlock: React.FC<{
     <>
       <ProgramPlanAdminModal
         programId={program.id}
+        havePrimary={!!program.plans.find(plan => plan.isPrimary)}
         renderTrigger={({ onOpen }) => (
           <div className="d-flex mb-4">
             <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('perpetual')}>
@@ -41,7 +42,12 @@ const ProgramPlanAdminBlock: React.FC<{
       <div className="row">
         {program.plans.map(programPlan => (
           <div className="col-12 col-sm-6 col-lg-4 mb-3" key={programPlan.id}>
-            <ProgramSubscriptionPlanAdminCard programId={program.id} programPlan={programPlan} onRefetch={onRefetch} />
+            <ProgramSubscriptionPlanAdminCard
+              programId={program.id}
+              programPlan={programPlan}
+              programPlans={program.plans}
+              onRefetch={onRefetch}
+            />
           </div>
         ))}
       </div>
