@@ -880,6 +880,10 @@ export const programMessages = {
       id: 'program.text.deleteProgramPlanConfirmation',
       defaultMessage: '課程方案一經刪除即不可恢復，確定要刪除嗎？',
     },
+    deleteProgramPlanConfirmationRemark: {
+      id: 'program.text.deleteProgramPlanConfirmationRemark',
+      defaultMessage: '備註：此刪除不會影響已購買此方案的用戶',
+    },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },

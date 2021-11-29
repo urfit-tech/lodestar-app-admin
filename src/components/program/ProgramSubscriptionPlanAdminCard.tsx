@@ -130,6 +130,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
                     onOk={() => handleArchiveProgramPlan()}
                   >
                     <div>{formatMessage(programMessages.text.deleteProgramPlanConfirmation)}</div>
+                    <div>{formatMessage(programMessages.text.deleteProgramPlanConfirmationRemark)}</div>
                   </AdminModal>
                 </Menu.Item>
               </Menu>
