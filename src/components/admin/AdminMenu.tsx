@@ -420,11 +420,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           key: 'craft_page_collection',
           name: formatMessage(commonMessages.menu.pageSetup),
         },
-        {
-          permissionIsAllowed: permissions.CRAFT_MENU_ADMIN,
-          key: 'craft_menu',
-          name: formatMessage(commonMessages.menu.menuSetup),
-        },
+        // {
+        //   permissionIsAllowed: permissions.CRAFT_MENU_ADMIN,
+        //   key: 'craft_menu',
+        //   name: formatMessage(commonMessages.menu.menuSetup),
+        // },
       ],
     },
     {
