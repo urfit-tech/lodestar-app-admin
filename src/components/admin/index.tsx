@@ -1,6 +1,6 @@
 import { InputNumber, Select } from 'antd'
 import { SketchPicker } from 'react-color'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { MemberTaskProps } from '../../types/member'
 
 export const AdminPageTitle = styled.h1`
@@ -63,12 +63,27 @@ export const AdminPaneDescription = styled.div`
   font-size: 14px;
   white-space: pre-line;
 `
-export const StyledAdminBlock = styled.div`
+export const StyledAdminBlock = styled.div<{ isPrimary?: boolean; color?: string }>`
   margin-bottom: 1.25rem;
   padding: 2rem;
   background: white;
   border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+  position: relative;
+  ${props =>
+    props.isPrimary &&
+    props.color &&
+    css`
+      ::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 2rem;
+        background-color: ${props.color};
+        width: 4px;
+        height: 80px;
+      }
+    `}
 `
 export const StyledAdminBlockTitle = styled.h2`
   margin-bottom: 2.5rem;

@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Dropdown, Menu, message, Tag } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -31,6 +32,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
+  const theme = useAppTheme()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
@@ -65,7 +67,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   }
 
   return (
-    <StyledAdminBlock>
+    <StyledAdminBlock isPrimary={programPlan.isPrimary} color={theme.colors.primary[500]}>
       <StyledAdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center h-100">
           <Tag className="mr-2">
