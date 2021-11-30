@@ -56,6 +56,7 @@ const ActivityTicketsAdminBlock: React.FC<{
               isPublished: values.isPublished,
               startedAt: values.startedAt,
               endedAt: values.endedAt,
+              currencyId: values.currencyId,
               price: values.price,
               count: values.count,
               description: values.description,
@@ -100,6 +101,7 @@ const ActivityTicketsAdminBlock: React.FC<{
                                 isPublished: values.isPublished,
                                 startedAt: values.startedAt,
                                 endedAt: values.endedAt,
+                                currencyId: values.currencyId,
                                 price: values.price,
                                 count: values.count,
                                 description: values.description,
@@ -142,6 +144,7 @@ const INSERT_ACTIVITY_TICKET = gql`
     $isPublished: Boolean!
     $startedAt: timestamptz!
     $endedAt: timestamptz!
+    $currencyId: String!
     $price: numeric!
     $count: Int
     $description: String
@@ -153,6 +156,7 @@ const INSERT_ACTIVITY_TICKET = gql`
         is_published: $isPublished
         started_at: $startedAt
         ended_at: $endedAt
+        currency_id: $currencyId
         price: $price
         count: $count
         description: $description
@@ -170,6 +174,7 @@ const UPDATE_ACTIVITY_TICKET = gql`
     $activitySessionTickets: [activity_session_ticket_insert_input!]!
     $isPublished: Boolean!
     $startedAt: timestamptz!
+    $currencyId: String!
     $endedAt: timestamptz!
     $price: numeric!
     $count: Int
@@ -182,6 +187,7 @@ const UPDATE_ACTIVITY_TICKET = gql`
         is_published: $isPublished
         started_at: $startedAt
         ended_at: $endedAt
+        currency_id: $currencyId
         price: $price
         count: $count
         description: $description

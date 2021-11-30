@@ -4,8 +4,9 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { currencyFormatter, dateRangeFormatter } from '../../helpers'
+import { dateRangeFormatter } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
+import { useCurrency } from '../../hooks/currency'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { ActivityTicketProps, ActivityTicketSessionProps } from '../../types/activity'
 import { BraftContent } from '../common/StyledBraftEditor'
@@ -81,9 +82,22 @@ const ActivityTicket: React.FC<
     sessions: ActivityTicketSessionProps[]
     extra?: React.ReactNode
   }
-> = ({ title, description, price, count, startedAt, endedAt, isPublished, sessions, enrollmentsCount, extra }) => {
+> = ({
+  title,
+  description,
+  currencyId,
+  price,
+  count,
+  startedAt,
+  endedAt,
+  isPublished,
+  sessions,
+  enrollmentsCount,
+  extra,
+}) => {
   const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
+  const { formatCurrency } = useCurrency(currencyId)
 
   const status =
     !isPublished || Date.now() < startedAt.getTime()
@@ -100,7 +114,8 @@ const ActivityTicket: React.FC<
         <span>{title}</span>
         <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
       </StyledTitle>
-      <StyledPrice>{currencyFormatter(price)}</StyledPrice>
+
+      <StyledPrice>{formatCurrency(price)}</StyledPrice>
 
       <Divider />
 

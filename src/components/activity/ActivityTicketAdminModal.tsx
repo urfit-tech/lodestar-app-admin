@@ -13,6 +13,7 @@ import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
 import { ActivitySessionProps, ActivityTicketProps, ActivityTicketSessionProps } from '../../types/activity'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
+import CurrencySelector from '../form/CurrencySelector'
 
 type FieldProps = {
   title: string
@@ -20,6 +21,7 @@ type FieldProps = {
   isPublished: 'public' | 'private'
   startedAt: Moment
   endedAt: Moment
+  currencyId: string
   price: number
   count: number
   description: EditorState
@@ -37,6 +39,7 @@ const ActivityTicketAdminModal: React.FC<
       isPublished: boolean
       startedAt: Date | null
       endedAt: Date | null
+      currencyId: string
       price: number
       count: number
       description: string | null
@@ -81,6 +84,7 @@ const ActivityTicketAdminModal: React.FC<
           isPublished: values.isPublished === 'public',
           startedAt: values.startedAt.toDate(),
           endedAt: values.endedAt.toDate(),
+          currencyId: values.currencyId,
           price: values.price,
           count: values.count,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
@@ -124,6 +128,7 @@ const ActivityTicketAdminModal: React.FC<
           startedAt: activityTicket ? moment(activityTicket.startedAt) : null,
           endedAt: activityTicket ? moment(activityTicket.endedAt) : null,
           sessions: activityTicket?.sessions ? generateInitialSessions(activityTicket.sessions) : null,
+          currencyId: activityTicket?.currencyId,
           price: activityTicket?.price || 0,
           count: activityTicket?.count || 0,
           description: activityTicket ? BraftEditor.createEditorState(activityTicket.description) : null,
@@ -219,6 +224,22 @@ const ActivityTicketAdminModal: React.FC<
             disabledDate={current => current < moment().startOf('day')}
           />
         </Form.Item>
+        {enabledModules?.currency && (
+          <Form.Item
+            label={formatMessage(commonMessages.label.currency)}
+            name="currencyId"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.currency),
+                }),
+              },
+            ]}
+          >
+            <CurrencySelector />
+          </Form.Item>
+        )}
         <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="price">
           <InputNumber min={0} formatter={value => `NT$ ${value}`} parser={value => value?.replace(/\D/g, '') || ''} />
         </Form.Item>
