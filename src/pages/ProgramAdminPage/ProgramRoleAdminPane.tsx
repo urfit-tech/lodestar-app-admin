@@ -85,6 +85,7 @@ const ProgramRoleAdminPane: React.FC<{
                 deleteProgramRole({
                   variables: {
                     programId: program.id,
+                    roleId: role.id,
                   },
                 })
                   .then(() => onRefetch?.())
@@ -94,13 +95,11 @@ const ProgramRoleAdminPane: React.FC<{
           ))}
 
         <AdminModal
-          renderTrigger={({ setVisible }) =>
-            !program.roles.find(role => role.name === 'instructor') ? (
-              <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
-                {formatMessage(commonMessages.ui.addInstructor)}
-              </Button>
-            ) : null
-          }
+          renderTrigger={({ setVisible }) => (
+            <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
+              {formatMessage(commonMessages.ui.addInstructor)}
+            </Button>
+          )}
           title={formatMessage(commonMessages.ui.addInstructor)}
           footer={null}
           renderFooter={({ setVisible }) => (
@@ -145,8 +144,8 @@ const UPDATE_PROGRAM_ROLE = gql`
   }
 `
 const DELETE_PROGRAM_ROLE = gql`
-  mutation DELETE_PROGRAM_ROLE($programId: uuid!) {
-    delete_program_role(where: { program_id: { _eq: $programId }, name: { _eq: "instructor" } }) {
+  mutation DELETE_PROGRAM_ROLE($programId: uuid!, $roleId: uuid!) {
+    delete_program_role(where: { id: { _eq: $roleId }, program_id: { _eq: $programId }, name: { _eq: "instructor" } }) {
       affected_rows
     }
   }

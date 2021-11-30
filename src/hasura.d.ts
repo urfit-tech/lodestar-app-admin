@@ -15056,6 +15056,7 @@ export interface DELETE_PROGRAM_ROLE {
 
 export interface DELETE_PROGRAM_ROLEVariables {
   programId: any;
+  roleId: any;
 }
 
 /* tslint:disable */
@@ -18499,7 +18500,9 @@ export enum program_plan_update_column {
   group_buying_people = "group_buying_people",
   id = "id",
   is_countdown_timer_visible = "is_countdown_timer_visible",
+  is_deleted = "is_deleted",
   is_participants_visible = "is_participants_visible",
+  is_primary = "is_primary",
   list_price = "list_price",
   period_amount = "period_amount",
   period_type = "period_type",
@@ -32515,7 +32518,9 @@ export interface program_plan_bool_exp {
   group_buying_people?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
+  is_primary?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
@@ -32565,7 +32570,9 @@ export interface program_plan_insert_input {
   group_buying_people?: any | null;
   id?: any | null;
   is_countdown_timer_visible?: boolean | null;
+  is_deleted?: boolean | null;
   is_participants_visible?: boolean | null;
+  is_primary?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
