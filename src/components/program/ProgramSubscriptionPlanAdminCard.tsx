@@ -54,29 +54,25 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
     ? 'period'
     : 'perpetual'
 
-  const handleSetProgramPlanPrimary = () => {
+  const handleProgramPlanPrimarySet = () => {
     setProgramPlanPrimary({ variables: { programId: programId, programPlanId: programPlan.id } }).then(() => {
       message.success(formatMessage(commonMessages.event.successfullySaved))
       onRefetch?.()
     })
   }
   const handleArchiveProgramPlan = () => {
-    archiveProgramPlan({ variables: { programPlanId: programPlan.id } })
-      .then(() => {
+    archiveProgramPlan({ variables: { programPlanId: programPlan.id } }).then(() => {
+      if (programPlan.isPrimary && programPlans && programPlans.length > 1) {
+        setProgramPlanPrimary({
+          variables: {
+            programId: programId,
+            programPlanId: programPlans.filter(plan => plan.id !== programPlan.id)[0].id,
+          },
+        })
         onRefetch?.()
-      })
-      .then(() => {
-        if (programPlan.isPrimary && programPlans && programPlans.length > 1) {
-          setProgramPlanPrimary({
-            variables: {
-              programId: programId,
-              programPlanId: programPlans.filter(plan => plan.id !== programPlan.id)[0].id,
-            },
-          })
-          onRefetch?.()
-        }
-        message.success(formatMessage(commonMessages.event.successfullyDeleted))
-      })
+      }
+      message.success(formatMessage(commonMessages.event.successfullyDeleted))
+    })
   }
 
   return (
@@ -115,7 +111,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item onClick={() => handleSetProgramPlanPrimary()}>
+                <Menu.Item onClick={() => handleProgramPlanPrimarySet()}>
                   {formatMessage(commonMessages.label.setPrimaryPlan)}
                 </Menu.Item>
                 <Menu.Item>
