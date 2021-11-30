@@ -122,14 +122,14 @@ const ProgramRoleAdminPane: React.FC<{
         </AdminModal>
       </AdminBlock>
 
-      <AdminBlock>
+      {/* <AdminBlock>
         <AdminBlockTitle>{formatMessage(commonMessages.label.teachingAssistant)}</AdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'assistant')
           .map(role => (
             <MemberAvatar key={role.id} size="32px" memberId={role.member?.id || ''} withName />
           ))}
-      </AdminBlock>
+      </AdminBlock> */}
     </>
   )
 }
