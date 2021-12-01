@@ -44,14 +44,15 @@ const ProgramPackageProgramConnectionModal: React.FC<{
         const programsId = values.programValues.map((value: string) => value.split('_')[0])
         insertProgramPackageProgram({
           variables: {
-            programs: programsId.map((programId: string) => ({
+            programs: programsId.map((programId: string, index: number) => ({
               program_package_id: programPackageId,
               program_id: programId,
+              position: index,
             })),
-            program_package_id: programPackageId,
             delete_programs_id: programs
               .filter(program => !programsId.includes(program.id))
               .map(program => program.programPackageProgramId),
+            program_package_id: programPackageId,
           },
         })
           .then(() => {
@@ -183,20 +184,18 @@ const INSERT_PROGRAM_PACKAGE_PROGRAM = gql`
     $program_package_id: uuid!
     $delete_programs_id: [uuid!]!
   ) {
+    delete_program_tempo_delivery(where: { program_package_program_id: { _in: $delete_programs_id } }) {
+      affected_rows
+    }
+    delete_program_package_program(where: { program_package_id: { _eq: $program_package_id } }) {
+      affected_rows
+    }
     insert_program_package_program(
       objects: $programs
       on_conflict: {
         constraint: program_package_program_program_package_id_program_id_key
-        update_columns: program_package_id
+        update_columns: [program_package_id, position]
       }
-    ) {
-      affected_rows
-    }
-    delete_program_tempo_delivery(where: { program_package_program_id: { _in: $delete_programs_id } }) {
-      affected_rows
-    }
-    delete_program_package_program(
-      where: { _and: [{ program_package_id: { _eq: $program_package_id } }, { id: { _in: $delete_programs_id } }] }
     ) {
       affected_rows
     }
