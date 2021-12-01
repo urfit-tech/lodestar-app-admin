@@ -195,7 +195,7 @@ const MemberAdminLayout: React.FC<{
         {activeKey === 'contract' && children}
       </Tabs.TabPane>
     ),
-    currentUserRole === 'app-owner' && (
+    permissions.SALES_RECORDS_ADMIN && (
       <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
         {activeKey === 'order' && children}
       </Tabs.TabPane>
