@@ -21,7 +21,7 @@ type FieldProps = {
   isPublished: 'public' | 'private'
   startedAt: Moment
   endedAt: Moment
-  currencyId: string
+  currencyId?: string
   price: number
   count: number
   description: EditorState
@@ -84,7 +84,7 @@ const ActivityTicketAdminModal: React.FC<
           isPublished: values.isPublished === 'public',
           startedAt: values.startedAt.toDate(),
           endedAt: values.endedAt.toDate(),
-          currencyId: values.currencyId,
+          currencyId: values.currencyId || 'TWD',
           price: values.price,
           count: values.count,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
