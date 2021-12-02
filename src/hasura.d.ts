@@ -5816,14 +5816,6 @@ export interface GET_AVAILABLE_PROGRAM_COLLECTIONVariables {
 // ====================================================
 
 
-export interface INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
-  __typename: "program_package_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
   __typename: "program_tempo_delivery_mutation_response";
   /**
@@ -5840,11 +5832,15 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
   affected_rows: number;
 }
 
-export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
+  __typename: "program_package_program_mutation_response";
   /**
-   * insert data into the table: "program_package_program"
+   * number of affected rows by the mutation
    */
-  insert_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
   /**
    * delete data from the table: "program_tempo_delivery"
    */
@@ -5853,6 +5849,10 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
    * delete data from the table: "program_package_program"
    */
   delete_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
+  /**
+   * insert data into the table: "program_package_program"
+   */
+  insert_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
 }
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
@@ -9018,7 +9018,10 @@ export interface GET_PRODUCT_SIMPLE_program_package_plan_by_pk {
   sold_at: any | null;
   discount_down_price: any | null;
   period_amount: any;
-  period_type: string;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
   is_subscription: boolean;
   /**
    * An object relationship
@@ -12974,7 +12977,10 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans
   list_price: any;
   sale_price: any | null;
   sold_at: any | null;
-  period_type: string;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
   period_amount: any;
   description: string | null;
   is_subscription: boolean;
@@ -18547,6 +18553,7 @@ export enum program_role_constraint {
  * update columns of table "program_role"
  */
 export enum program_role_update_column {
+  created_at = "created_at",
   id = "id",
   member_id = "member_id",
   name = "name",
@@ -32908,6 +32915,7 @@ export interface program_role_bool_exp {
   _and?: (program_role_bool_exp | null)[] | null;
   _not?: program_role_bool_exp | null;
   _or?: (program_role_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -32920,6 +32928,7 @@ export interface program_role_bool_exp {
  * input type for inserting data into table "program_role"
  */
 export interface program_role_insert_input {
+  created_at?: any | null;
   id?: any | null;
   member_id?: string | null;
   name?: string | null;
@@ -32931,6 +32940,7 @@ export interface program_role_insert_input {
  * order by max() on columns of table "program_role"
  */
 export interface program_role_max_order_by {
+  created_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   name?: order_by | null;
@@ -32941,6 +32951,7 @@ export interface program_role_max_order_by {
  * order by min() on columns of table "program_role"
  */
 export interface program_role_min_order_by {
+  created_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   name?: order_by | null;
