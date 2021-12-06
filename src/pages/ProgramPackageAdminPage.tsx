@@ -137,7 +137,6 @@ const ProgramPackageAdminPage: React.FC = () => {
               <ProgramPackagePlanAdminModal
                 programPackageId={programPackageId}
                 onRefetch={refetch}
-                title={formatMessage(commonMessages.ui.createPlan)}
                 renderTrigger={({ setVisible, setProgramPackagePlanType }) => (
                   <div className="d-flex mb-4">
                     <Button

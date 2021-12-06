@@ -105,7 +105,13 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                     programPackageId={programPackageId}
                     onRefetch={onRefetch}
                     plan={plan}
-                    title={formatMessage(programPackageMessages.ui.editPlan)}
+                    title={
+                      plan.isSubscription
+                        ? formatMessage(programPackageMessages.ui.editSubscriptionPlan)
+                        : plan.periodType && plan.periodAmount
+                        ? formatMessage(programPackageMessages.ui.editPeriodPlan)
+                        : formatMessage(programPackageMessages.ui.editPerpetualPlan)
+                    }
                     renderTrigger={({ setVisible }) => (
                       <StyledButton block icon={<EditOutlined />} onClick={() => setVisible?.(true)}>
                         {formatMessage(programPackageMessages.ui.editPlan)}

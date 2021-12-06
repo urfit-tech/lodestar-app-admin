@@ -65,6 +65,9 @@ export const commonMessages = {
     uploadCertification: { id: 'common.ui.uploadCertification', defaultMessage: '上傳證明' },
     createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
     createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
+    createPerpetualPlan: { id: 'common.ui.createPerpetualPlan', defaultMessage: '建立永久方案' },
+    createPeriodPlan: { id: 'common.ui.createPeriodPlan', defaultMessage: '建立限時方案' },
+    createSubscriptionPlan: { id: 'common.ui.createSubscriptionPlan', defaultMessage: '建立訂閱方案' },
     perpetualPlan: { id: 'common.ui.perpetualPlan', defaultMessage: '永久方案' },
     periodPlan: { id: 'common.ui.periodPlan', defaultMessage: '限時方案' },
     subscriptionPlan: { id: 'common.ui.subscriptionPlan', defaultMessage: '訂閱方案' },
@@ -902,6 +905,9 @@ export const programPackageMessages = {
     createProgramPackage: { id: 'programPackage.ui.createProgramPackage', defaultMessage: '建立課程組合' },
     connectProgram: { id: 'programPackage.ui.connectProgram', defaultMessage: '加入課程' },
     editPlan: { id: 'programPackage.ui.editPlan', defaultMessage: '編輯方案' },
+    editPerpetualPlan: { id: 'programPackage.ui.editPerpetualPlan', defaultMessage: '編輯永久方案' },
+    editPeriodPlan: { id: 'programPackage.ui.editPeriodPlan', defaultMessage: '編輯限時方案' },
+    editSubscriptionPlan: { id: 'programPackage.ui.editSubscriptionPlan', defaultMessage: '編輯訂閱方案' },
   }),
   label: defineMessages({
     generalSetting: { id: 'programPackage.label.generalSetting', defaultMessage: '一般設定' },
@@ -1284,7 +1290,7 @@ export const orderMessages = {
     orderDiscountTotalPrice: { id: 'order.label.orderDiscountTotalPrice', defaultMessage: '折扣總額' },
     // payment log
     paymentLogNo: { id: 'order.label.paymentLogNo', defaultMessage: '交易編號' },
-    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道'},
+    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道' },
     paymentLogPaidAt: { id: 'order.label.paymentLogPaidAt', defaultMessage: '付款時間' },
     paymentLogDetails: { id: 'order.label.paymentLogDetails', defaultMessage: '付款方式' },
     // member

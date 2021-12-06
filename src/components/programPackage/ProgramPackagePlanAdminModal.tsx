@@ -135,6 +135,15 @@ const ProgramPackagePlanAdminModal: React.FC<
 
   return (
     <AdminModal
+      title={
+        programPackagePlanType === 'perpetual'
+          ? formatMessage(commonMessages.ui.createPerpetualPlan)
+          : programPackagePlanType === 'period'
+          ? formatMessage(commonMessages.ui.createPeriodPlan)
+          : programPackagePlanType === 'subscription'
+          ? formatMessage(commonMessages.ui.createSubscriptionPlan)
+          : ''
+      }
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (
