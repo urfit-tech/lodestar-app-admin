@@ -5,7 +5,7 @@ import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -60,13 +60,18 @@ type FieldProps = {
   description: EditorState
 }
 
+type ProgramPackagePlanType = 'perpetual' | 'period' | 'subscription'
 const ProgramPackagePlanAdminModal: React.FC<
-  AdminModalProps & {
+  Omit<AdminModalProps, 'renderTrigger'> & {
     programPackageId: string
     plan?: ProgramPackagePlanProps
     onRefetch?: () => void
+    renderTrigger?: React.FC<{
+      setVisible?: React.Dispatch<React.SetStateAction<boolean>>
+      setProgramPackagePlanType?: React.Dispatch<React.SetStateAction<ProgramPackagePlanType | undefined>>
+    }>
   }
-> = ({ programPackageId, plan, onRefetch, ...modalProps }) => {
+> = ({ programPackageId, plan, onRefetch, renderTrigger, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
@@ -75,9 +80,21 @@ const ProgramPackagePlanAdminModal: React.FC<
     hasura.INSERT_PROGRAM_PACKAGE_PLANVariables
   >(INSERT_PROGRAM_PACKAGE_PLAN)
 
-  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(typeof plan?.discountDownPrice === 'number')
-  const [isSubscription, setIsSubscription] = useState(!!plan?.isSubscription)
   const [loading, setLoading] = useState(false)
+
+  const [programPackagePlanType, setProgramPackagePlanType] = useState<ProgramPackagePlanType>()
+  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!plan?.discountDownPrice)
+
+  useEffect(() => {
+    if (plan) {
+      setProgramPackagePlanType(
+        plan.isSubscription ? 'subscription' : plan.periodType && plan.periodAmount ? 'period' : 'perpetual',
+      )
+    }
+  }, [plan])
+
+  const withPeriod = programPackagePlanType === 'period' || programPackagePlanType === 'subscription'
+  const isSubscription = programPackagePlanType === 'subscription'
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
@@ -136,6 +153,14 @@ const ProgramPackagePlanAdminModal: React.FC<
           </Button>
         </div>
       )}
+      renderTrigger={({ setVisible }) => {
+        return (
+          renderTrigger?.({
+            setProgramPackagePlanType: ProgramPackagePlanType => setProgramPackagePlanType(ProgramPackagePlanType),
+            setVisible: setVisible,
+          }) || null
+        )
+      }}
       {...modalProps}
     >
       <Form
@@ -148,7 +173,6 @@ const ProgramPackagePlanAdminModal: React.FC<
           isTempoDelivery: !!plan?.isTempoDelivery,
           isPublished: !!plan?.publishedAt,
           isParticipantsVisible: !!plan?.isParticipantsVisible,
-          isSubscription: !!plan?.isSubscription,
           periodAmount: plan?.periodAmount || 1,
           periodType: plan?.periodType || 'M',
           listPrice: plan?.listPrice || 0,
@@ -161,9 +185,6 @@ const ProgramPackagePlanAdminModal: React.FC<
 
           discountDownPrice: plan?.discountDownPrice || null,
           description: BraftEditor.createEditorState(plan?.description),
-        }}
-        onValuesChange={values => {
-          typeof values.isSubscription === 'boolean' && setIsSubscription(values.isSubscription)
         }}
       >
         <Form.Item
@@ -209,28 +230,21 @@ const ProgramPackagePlanAdminModal: React.FC<
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.paymentType)} name="isSubscription">
-          <Radio.Group>
-            <Radio value={false} className="d-block">
-              {formatMessage(messages.perpetual)}
-            </Radio>
-            <Radio value={true} className="d-block">
-              {formatMessage(messages.subscription)}
-            </Radio>
-          </Radio.Group>
-        </Form.Item>
-
-        <Form.Item
-          label={isSubscription ? formatMessage(messages.subscriptionPeriod) : formatMessage(messages.perpetualPeriod)}
-          className="mb-0"
-        >
-          <Form.Item className="d-inline-block mr-2" name="periodAmount">
-            <InputNumber min={0} parser={value => (value ? value.replace(/\D/g, '') : '')} />
+        {withPeriod && (
+          <Form.Item
+            label={
+              isSubscription ? formatMessage(messages.subscriptionPeriod) : formatMessage(messages.perpetualPeriod)
+            }
+            className="mb-0"
+          >
+            <Form.Item className="d-inline-block mr-2" name="periodAmount">
+              <InputNumber min={0} parser={value => (value ? value.replace(/\D/g, '') : '')} />
+            </Form.Item>
+            <Form.Item className="d-inline-block mr-2" name="periodType">
+              <ProgramPeriodTypeDropdown isShortenPeriodType />
+            </Form.Item>
           </Form.Item>
-          <Form.Item className="d-inline-block mr-2" name="periodType">
-            <ProgramPeriodTypeDropdown isShortenPeriodType />
-          </Form.Item>
-        </Form.Item>
+        )}
 
         <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
           <InputNumber
