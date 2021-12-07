@@ -2,6 +2,7 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Form, Input, InputNumber, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { ModalProps } from 'antd/lib/modal'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -12,7 +13,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
-import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import AdminModal from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
@@ -62,13 +63,13 @@ type FieldProps = {
 
 type ProgramPackagePlanType = 'perpetual' | 'period' | 'subscription'
 const ProgramPackagePlanAdminModal: React.FC<
-  Omit<AdminModalProps, 'renderTrigger'> & {
+  Omit<ModalProps, 'renderTrigger'> & {
     programPackageId: string
     plan?: ProgramPackagePlanProps
     onRefetch?: () => void
     renderTrigger?: React.FC<{
       setVisible?: React.Dispatch<React.SetStateAction<boolean>>
-      setProgramPackagePlanType?: React.Dispatch<React.SetStateAction<ProgramPackagePlanType | undefined>>
+      setProgramPackagePlanType?: (programPackagePlanType: ProgramPackagePlanType) => void
     }>
   }
 > = ({ programPackageId, plan, onRefetch, renderTrigger, ...modalProps }) => {
@@ -156,7 +157,7 @@ const ProgramPackagePlanAdminModal: React.FC<
       renderTrigger={({ setVisible }) => {
         return (
           renderTrigger?.({
-            setProgramPackagePlanType: ProgramPackagePlanType => setProgramPackagePlanType(ProgramPackagePlanType),
+            setProgramPackagePlanType: programPackagePlanType => setProgramPackagePlanType(programPackagePlanType),
             setVisible: setVisible,
           }) || null
         )
