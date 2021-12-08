@@ -218,6 +218,7 @@ export const useMemberContractCollection = ({
           v.values?.coinAmount ||
           v.values?.coinLogs?.find((coinLog: any) => coinLog.description === '私塾課代幣')?.amount ||
           null,
+        orderOptions: { recognizePerformance: v.values.orderOptions?.recognizePerformance },
         paymentOptions: {
           paymentMethod: v.values.paymentOptions?.paymentMethod || '',
           paymentNumber: v.values.paymentOptions?.paymentNumber || '',

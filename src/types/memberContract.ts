@@ -40,6 +40,9 @@ export type MemberContractProps = {
   projectPlanName: string | null
   price: number | null
   coinAmount: number | null
+  orderOptions: {
+    recognizePerformance?: number
+  }
   paymentOptions: {
     paymentMethod: string
     paymentNumber: string

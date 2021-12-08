@@ -39,7 +39,7 @@ export const memberContractMessages = {
     refundApply: { id: 'memberContract.label.refundApply', defaultMessage: '提出退費' },
     refundApplyAt: { id: 'memberContract.label.refundApplyAt', defaultMessage: '提出退費日期' },
     payment: { id: 'memberContract.label.payment', defaultMessage: '付款' },
-
+    recognizePerformance: { id: 'memberContract.label.recognizePerformance', defaultMessage: '績效金額' },
     installmentPlan: { id: 'memberContract.label.installmentPlan', defaultMessage: '期數' },
     paymentNumber: { id: 'memberContract.label.paymentNumber', defaultMessage: '金流編號' },
     note: { id: 'memberContract.label.note', defaultMessage: '備註' },
