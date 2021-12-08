@@ -32,7 +32,7 @@ const ProgramPackageCategorySelect: React.VFC<SelectProps<string | string[]>> = 
 
 const GET_PROGRAM_PACKAGE_CATEGORIES = gql`
   query GET_PROGRAM_PACKAGE_CATEGORIES {
-    category(where: { class: { _eq: "program_package" } }) {
+    category(where: { class: { _eq: "programPackage" } }) {
       id
       name
     }
