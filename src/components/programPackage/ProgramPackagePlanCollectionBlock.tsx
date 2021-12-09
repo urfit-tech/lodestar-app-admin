@@ -1,6 +1,6 @@
 import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Divider, Popover } from 'antd'
+import { Button, Divider, Popover, Tag } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
@@ -107,7 +107,7 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                     plan={plan}
                     title={formatMessage(programPackageMessages.ui.editPlan)}
                     renderTrigger={({ setVisible }) => (
-                      <StyledButton block icon={<EditOutlined />} onClick={() => setVisible(true)}>
+                      <StyledButton block icon={<EditOutlined />} onClick={() => setVisible?.(true)}>
                         {formatMessage(programPackageMessages.ui.editPlan)}
                       </StyledButton>
                     )}
@@ -203,10 +203,21 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
       ? formatMessage(commonMessages.status.selling)
       : formatMessage(commonMessages.status.notSold)
 
+  const programPackagePlanType = isSubscription ? 'subscription' : periodAmount && periodType ? 'period' : 'perpetual'
+
   return (
     <StyledCard>
       <StyledTitle className="mb-3 d-flex justify-content-between">
-        <span>{title}</span>
+        <div className="d-flex align-items-center">
+          <Tag className="mr-2">
+            {programPackagePlanType === 'subscription'
+              ? formatMessage(commonMessages.ui.subscriptionPlan)
+              : programPackagePlanType === 'period'
+              ? formatMessage(commonMessages.ui.periodPlan)
+              : formatMessage(commonMessages.ui.perpetualPlan)}
+          </Tag>
+          {title}
+        </div>
         <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
       </StyledTitle>
       <PriceLabel

@@ -9017,7 +9017,7 @@ export interface GET_PRODUCT_SIMPLE_program_package_plan_by_pk {
   sale_price: any | null;
   sold_at: any | null;
   discount_down_price: any | null;
-  period_amount: any;
+  period_amount: any | null;
   /**
    * Y / M / W / D
    */
@@ -12981,7 +12981,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans
    * Y / M / W / D
    */
   period_type: string | null;
-  period_amount: any;
+  period_amount: any | null;
   description: string | null;
   is_subscription: boolean;
   discount_down_price: any | null;
@@ -17540,6 +17540,7 @@ export enum order_product_update_column {
   created_at = "created_at",
   currency_id = "currency_id",
   deliverables = "deliverables",
+  delivered_at = "delivered_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -27447,6 +27448,7 @@ export interface order_product_bool_exp {
   currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
   deliverables?: jsonb_comparison_exp | null;
+  delivered_at?: timestamp_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -27567,6 +27569,7 @@ export interface order_product_insert_input {
   currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
   deliverables?: any | null;
+  delivered_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -27589,6 +27592,7 @@ export interface order_product_max_order_by {
   accumulated_errors?: order_by | null;
   created_at?: order_by | null;
   currency_id?: order_by | null;
+  delivered_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -27607,6 +27611,7 @@ export interface order_product_min_order_by {
   accumulated_errors?: order_by | null;
   created_at?: order_by | null;
   currency_id?: order_by | null;
+  delivered_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -27646,6 +27651,7 @@ export interface order_product_order_by {
   currency?: currency_order_by | null;
   currency_id?: order_by | null;
   deliverables?: order_by | null;
+  delivered_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -34665,6 +34671,21 @@ export interface tag_on_conflict {
   constraint: tag_constraint;
   update_columns: tag_update_column[];
   where?: tag_bool_exp | null;
+}
+
+/**
+ * expression to compare columns of type timestamp. All fields are combined with logical 'AND'.
+ */
+export interface timestamp_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
 }
 
 /**
