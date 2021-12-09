@@ -63,7 +63,7 @@ type FieldProps = {
 
 type ProgramPackagePlanType = 'perpetual' | 'period' | 'subscription'
 const ProgramPackagePlanAdminModal: React.FC<
-  Omit<ModalProps, 'renderTrigger'> & {
+  ModalProps & {
     programPackageId: string
     plan?: ProgramPackagePlanProps
     onRefetch?: () => void
