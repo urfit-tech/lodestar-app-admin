@@ -1680,6 +1680,10 @@ export const permissionMessages = defineMessages({
     defaultMessage: '編輯與新增業務分潤',
   },
   CONTRACT_ATTACHMENT_EDIT: { id: 'permission.CONTRACT_ATTACHMENT_EDIT', defaultMessage: '編輯上傳檔案' },
+  CONTRACT_RECOGNIZE_PERFORMANCE_EDIT: {
+    id: 'permission.CONTRACT_RECOGNIZE_PERFORMANCE_EDIT',
+    defaultMessage: '編輯績效金額',
+  },
 })
 
 export const salesMessages = defineMessages({

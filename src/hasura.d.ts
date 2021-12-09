@@ -14998,11 +14998,11 @@ export interface UPDATE_PROGRAM_APPROVALVariables {
 
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_ROLE
+// GraphQL mutation operation: INSERT_PROGRAM_ROLE
 // ====================================================
 
 
-export interface UPDATE_PROGRAM_ROLE_delete_program_role {
+export interface INSERT_PROGRAM_ROLE_insert_program_role {
   __typename: "program_role_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -15010,28 +15010,15 @@ export interface UPDATE_PROGRAM_ROLE_delete_program_role {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_ROLE_insert_program_role {
-  __typename: "program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_ROLE {
-  /**
-   * delete data from the table: "program_role"
-   */
-  delete_program_role: UPDATE_PROGRAM_ROLE_delete_program_role | null;
+export interface INSERT_PROGRAM_ROLE {
   /**
    * insert data into the table: "program_role"
    */
-  insert_program_role: UPDATE_PROGRAM_ROLE_insert_program_role | null;
+  insert_program_role: INSERT_PROGRAM_ROLE_insert_program_role | null;
 }
 
-export interface UPDATE_PROGRAM_ROLEVariables {
-  programId: any;
-  programRoles: program_role_insert_input[];
+export interface INSERT_PROGRAM_ROLEVariables {
+  programRole: program_role_insert_input[];
 }
 
 /* tslint:disable */

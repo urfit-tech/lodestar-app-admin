@@ -10,7 +10,7 @@ import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import MemberAvatar from '../../components/common/MemberAvatar'
 import ContentCreatorSelector from '../../components/form/ContentCreatorSelector'
 import hasura from '../../hasura'
-import { handleError, notEmpty } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
 
@@ -19,8 +19,8 @@ const ProgramRoleAdminPane: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [updateProgramRole] = useMutation<hasura.UPDATE_PROGRAM_ROLE, hasura.UPDATE_PROGRAM_ROLEVariables>(
-    UPDATE_PROGRAM_ROLE,
+  const [insertProgramRole] = useMutation<hasura.INSERT_PROGRAM_ROLE, hasura.INSERT_PROGRAM_ROLEVariables>(
+    INSERT_PROGRAM_ROLE,
   )
   const [deleteProgramRole] = useMutation<hasura.DELETE_PROGRAM_ROLE, hasura.DELETE_PROGRAM_ROLEVariables>(
     DELETE_PROGRAM_ROLE,
@@ -37,19 +37,15 @@ const ProgramRoleAdminPane: React.FC<{
       return
     }
     setLoading(true)
-    updateProgramRole({
+    insertProgramRole({
       variables: {
-        programId: program.id,
-        programRoles: [
-          ...program.roles
-            .filter(role => notEmpty(role.member?.id))
-            .map(role => ({ memberId: role.member?.id || '', name: role.name || '' })),
-          { memberId: selectedMemberId, name: 'instructor' },
-        ].map(instructorId => ({
-          program_id: program.id,
-          member_id: instructorId.memberId,
-          name: instructorId.name,
-        })),
+        programRole: [
+          {
+            program_id: program.id,
+            member_id: selectedMemberId,
+            name: 'instructor',
+          },
+        ],
       },
     })
       .then(() => {
@@ -133,12 +129,9 @@ const ProgramRoleAdminPane: React.FC<{
   )
 }
 
-const UPDATE_PROGRAM_ROLE = gql`
-  mutation UPDATE_PROGRAM_ROLE($programId: uuid!, $programRoles: [program_role_insert_input!]!) {
-    delete_program_role(where: { program_id: { _eq: $programId } }) {
-      affected_rows
-    }
-    insert_program_role(objects: $programRoles) {
+const INSERT_PROGRAM_ROLE = gql`
+  mutation INSERT_PROGRAM_ROLE($programRole: [program_role_insert_input!]!) {
+    insert_program_role(objects: $programRole) {
       affected_rows
     }
   }
