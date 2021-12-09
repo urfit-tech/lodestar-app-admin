@@ -6,7 +6,7 @@ import { ModalProps } from 'antd/lib/modal'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -83,16 +83,10 @@ const ProgramPackagePlanAdminModal: React.FC<
 
   const [loading, setLoading] = useState(false)
 
-  const [programPackagePlanType, setProgramPackagePlanType] = useState<ProgramPackagePlanType>()
+  const [programPackagePlanType, setProgramPackagePlanType] = useState<ProgramPackagePlanType>(
+    plan?.isSubscription ? 'subscription' : plan?.periodType && plan?.periodAmount ? 'period' : 'perpetual',
+  )
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!plan?.discountDownPrice)
-
-  useEffect(() => {
-    if (plan) {
-      setProgramPackagePlanType(
-        plan.isSubscription ? 'subscription' : plan.periodType && plan.periodAmount ? 'period' : 'perpetual',
-      )
-    }
-  }, [plan])
 
   const withPeriod = programPackagePlanType === 'period' || programPackagePlanType === 'subscription'
   const isSubscription = programPackagePlanType === 'subscription'
