@@ -51,6 +51,7 @@ const MemberContractFieldSelector: React.FC<{
         { title: '合約建立者', key: 'authorName' },
         { title: '金額', key: 'price' },
         { title: '產品', key: 'projectPlanName' },
+        { title: '績效金額', key: 'recognizePerformance' },
         { title: '備註', key: 'note' },
         // { title: '成交聯絡紀錄', key: 'memberNotes' },
         { title: '代幣', key: 'coin' },

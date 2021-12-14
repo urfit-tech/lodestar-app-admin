@@ -4,7 +4,12 @@ import AdminModal, { AdminModalProps } from 'lodestar-app-admin/src/components/a
 import FileItem from 'lodestar-app-admin/src/components/common/FileItem'
 import FileUploader from 'lodestar-app-admin/src/components/common/FileUploader'
 import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from 'lodestar-app-admin/src/helpers'
-import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
+import {
+  commonMessages,
+  errorMessages,
+  memberMessages,
+  orderMessages,
+} from 'lodestar-app-admin/src/helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from 'lodestar-app-admin/src/hooks/data'
 import { ReactComponent as ExternalLinkIcon } from 'lodestar-app-admin/src/images/icon/external-link-square.svg'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -92,6 +97,9 @@ type MemberContractModalProps = {
     installmentPlan: number
   } | null
   note?: string | null
+  orderOptions?: {
+    recognizePerformance?: number
+  }
   orderExecutors: {
     memberId: string
     ratio: number
@@ -109,6 +117,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   purchasedItem,
   isRevoked,
   status,
+  orderOptions,
   paymentOptions,
   note,
   orderExecutors,
@@ -126,6 +135,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     loanCanceledAt: Moment | null
     refundAppliedAt: Moment | null
     paymentMethod: string
+    recognizePerformance: number
     paymentNumber: number
     installmentPlan: string
     note: string
@@ -211,6 +221,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           approvedAt,
           loanCanceledAt,
           refundAppliedAt,
+          recognizePerformance,
           paymentMethod,
           paymentNumber,
           installmentPlan,
@@ -222,6 +233,13 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           variables: {
             memberContractId,
             values: {
+              ...(orderOptions?.recognizePerformance
+                ? {
+                    orderOptions: {
+                      recognizePerformance,
+                    },
+                  }
+                : {}),
               paymentOptions: {
                 paymentMethod,
                 paymentNumber,
@@ -375,7 +393,6 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               </Form.Item>
             </Col>
           </StyledRow>
-
           <StyledAreaTitle>{formatMessage(memberContractMessages.label.payment)}</StyledAreaTitle>
           <StyledRow className="mb-3">
             <Col span={8} className="pr-3">
@@ -386,9 +403,9 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 initialValue={paymentOptions?.paymentMethod || null}
               >
                 <StyledSelect disabled={!permissions.CONTRACT_PAYMENT_METHOD_EDIT}>
-                  {paymentMethods.map((payment: string) => (
-                    <Select.Option key={payment} value={payment}>
-                      {payment}
+                  {paymentMethods.map(paymentMethod => (
+                    <Select.Option key={paymentMethod.method} value={paymentMethod.method}>
+                      {paymentMethod.method}
                     </Select.Option>
                   ))}
                 </StyledSelect>
@@ -413,7 +430,6 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               </Form.Item>
             </Col>
           </StyledRow>
-
           <StyledAreaTitle>{formatMessage(memberContractMessages.label.note)}</StyledAreaTitle>
           <StyledRow className="mb-3">
             <Col span={24}>
@@ -422,10 +438,29 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               </Form.Item>
             </Col>
           </StyledRow>
-
-          <StyledAreaTitle>{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
+          <StyledAreaTitle className="mb-3">{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
+          {formatMessage(memberContractMessages.label.recognizePerformance)}
+          <Form.Item
+            name="recognizePerformance"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(memberContractMessages.label.recognizePerformance),
+                }),
+              },
+            ]}
+            initialValue={orderOptions?.recognizePerformance || null}
+          >
+            <InputNumber
+              style={{ width: '150px' }}
+              min={0}
+              disabled={!orderOptions?.recognizePerformance || !permissions.CONTRACT_RECOGNIZE_PERFORMANCE_EDIT}
+              formatter={value => `NT$ ${value}`}
+              parser={value => value?.replace(/\D/g, '') || ''}
+            />
+          </Form.Item>
           {formatMessage(memberMessages.label.manager)}
-
           <Form.List name="orderExecutors" initialValue={orderExecutors || undefined}>
             {(orderExecutors, { add, remove }) => (
               <div>

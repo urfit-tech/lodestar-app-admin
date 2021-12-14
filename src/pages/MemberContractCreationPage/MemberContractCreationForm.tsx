@@ -265,9 +265,9 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item label="付款方式">
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
               <Select<string> style={{ width: 120 }}>
-                {paymentMethods.map((payment: string) => (
-                  <Select.Option key={payment} value={payment}>
-                    {payment}
+                {paymentMethods.map(paymentMethod => (
+                  <Select.Option key={paymentMethod.method} value={paymentMethod.method}>
+                    {paymentMethod.method}
                   </Select.Option>
                 ))}
               </Select>

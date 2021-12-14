@@ -9,7 +9,7 @@ import { flatten, range, sum, uniqBy } from 'ramda'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
-import { ContractInfo, ContractItem, FieldProps } from '.'
+import { ContractInfo, ContractItem, FieldProps, paymentMethods } from '.'
 import hasura from '../../hasura'
 
 const StyledOrder = styled.div`
@@ -215,6 +215,16 @@ const MemberContractCreationBlock: React.FC<{
             ...coupons,
           ],
           orderId: `${moment().format('YYYYMMDDHHmmssSSS')}00`,
+          orderOptions: {
+            recognizePerformance:
+              finalPrice -
+              finalPrice *
+                (paymentMethods
+                  .find(paymentMethod => paymentMethod.method === fieldValue.paymentMethod)
+                  ?.feeWithInstallmentPlans.find(
+                    feeWithInstallmentPlan => feeWithInstallmentPlan.installmentPlan === fieldValue.installmentPlan,
+                  )?.fee || 0),
+          },
           orderProducts: [
             {
               product_id: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
