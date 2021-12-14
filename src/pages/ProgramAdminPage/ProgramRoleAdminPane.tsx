@@ -72,20 +72,24 @@ const ProgramRoleAdminPane: React.FC<{
         <AdminBlockTitle>{formatMessage(commonMessages.label.instructor)}</AdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'instructor')
-          .map(role => (
+          .map((role, index) => (
             <RoleAdminBlock
               key={role.id}
               name={role.member?.name || ''}
               pictureUrl={role.member?.pictureUrl || ''}
-              onDelete={() =>
-                deleteProgramRole({
-                  variables: {
-                    programId: program.id,
-                    roleId: role.id,
-                  },
-                })
-                  .then(() => onRefetch?.())
-                  .catch(handleError)
+              onDelete={
+                index === 0
+                  ? undefined
+                  : () => {
+                      deleteProgramRole({
+                        variables: {
+                          programId: program.id,
+                          roleId: role.id,
+                        },
+                      })
+                        .then(() => onRefetch?.())
+                        .catch(handleError)
+                    }
               }
             />
           ))}
