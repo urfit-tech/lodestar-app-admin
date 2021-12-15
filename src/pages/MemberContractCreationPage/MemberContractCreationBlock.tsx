@@ -218,12 +218,14 @@ const MemberContractCreationBlock: React.FC<{
           orderOptions: {
             recognizePerformance:
               finalPrice -
-              finalPrice *
-                (paymentMethods
-                  .find(paymentMethod => paymentMethod.method === fieldValue.paymentMethod)
-                  ?.feeWithInstallmentPlans.find(
-                    feeWithInstallmentPlan => feeWithInstallmentPlan.installmentPlan === fieldValue.installmentPlan,
-                  )?.fee || 0),
+              Math.round(
+                finalPrice *
+                  (paymentMethods
+                    .find(paymentMethod => paymentMethod.method === fieldValue.paymentMethod)
+                    ?.feeWithInstallmentPlans.find(
+                      feeWithInstallmentPlan => feeWithInstallmentPlan.installmentPlan === fieldValue.installmentPlan,
+                    )?.fee || 0),
+              ),
           },
           orderProducts: [
             {

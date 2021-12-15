@@ -46,7 +46,7 @@ export const memberContractMessages = {
     executors: { id: 'memberContract.label.executors', defaultMessage: '承辦人' },
     appointment: { id: 'memberContract.label.appointment', defaultMessage: '諮詢' },
 
-    price: { id: 'memberContract.label.price', defaultMessage: '金額' },
+    price: { id: 'memberContract.label.price', defaultMessage: '訂單金額' },
     coins: { id: 'memberContract.label.coins', defaultMessage: '代幣' },
 
     rebateGift: { id: 'memberContract.label.rebateGift', defaultMessage: '滿額學習工具' },

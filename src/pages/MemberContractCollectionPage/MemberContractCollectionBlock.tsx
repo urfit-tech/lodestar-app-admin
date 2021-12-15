@@ -379,6 +379,11 @@ export const MemberContractCollectionBlock: React.FC<{
       render: price => currencyFormatter(price),
     },
     {
+      title: formatMessage(memberContractMessages.label.recognizePerformance),
+      key: 'recognizePerformance',
+      render: (text, record, index) => currencyFormatter(record.orderOptions?.recognizePerformance),
+    },
+    {
       title: formatMessage(memberContractMessages.label.product),
       dataIndex: 'projectPlanName',
       key: 'projectPlanName',
@@ -394,11 +399,6 @@ export const MemberContractCollectionBlock: React.FC<{
     { title: '介紹人', key: 'referralMember', render: (_, record, text) => record.referral.name },
 
     // payment
-    {
-      title: formatMessage(memberContractMessages.label.recognizePerformance),
-      key: 'recognizePerformance',
-      render: (text, record, index) => record.orderOptions?.recognizePerformance,
-    },
     {
       title: formatMessage(memberContractMessages.label.paymentMethod),
       key: 'paymentMethod',

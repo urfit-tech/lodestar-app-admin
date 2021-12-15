@@ -192,6 +192,12 @@ const SalesPerformanceTable: React.VFC<{
       render: v => v && moment(v).format('MM/DD'),
     },
     {
+      title: '解約日',
+      dataIndex: 'revokedAt',
+      key: 'revokedAt',
+      render: v => v && moment(v).format('MM/DD'),
+    },
+    {
       title: '顧問',
       dataIndex: 'executor',
       key: 'executor',
