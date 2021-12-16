@@ -9,8 +9,6 @@ import { ProductType } from '../../types/general'
 
 const productTypeLabel = (productType: string) => {
   switch (productType) {
-    case 'Program':
-      return commonMessages.label.allProgram
     case 'ProgramPackagePlan':
       return commonMessages.label.allProgramPackagePlan
     case 'ProgramPlan':
@@ -33,7 +31,7 @@ const messages = defineMessages({
 })
 
 const ProductSelector: React.FC<{
-  allowTypes: ProductType[]
+  allowTypes: Exclude<ProductType, 'Program'>[]
   value?: string[]
   onChange?: (value: string[]) => void
 }> = ({ allowTypes, value, onChange }) => {
@@ -92,13 +90,19 @@ const useProductSelections = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SELECTION_COLLECTION>(
     gql`
       query GET_PRODUCT_SELECTION_COLLECTION {
-        program(
-          where: { published_at: { _is_null: false }, is_deleted: { _eq: false }, is_subscription: { _eq: false } }
-          order_by: { position: asc }
+        program_plan(
+          where: {
+            is_deleted: { _eq: false }
+            published_at: { _is_null: false }
+            program: { is_deleted: { _eq: false }, published_at: { _is_null: false } }
+          }
         ) {
           id
           title
-          published_at
+          program {
+            id
+            title
+          }
         }
         program_package_plan {
           id
@@ -134,18 +138,18 @@ const useProductSelections = () => {
   )
 
   const productSelections: {
-    productType: ProductType
+    productType: Exclude<ProductType, 'Program'>
     products: {
       id: string
       title: string
     }[]
   }[] = [
     {
-      productType: 'Program',
+      productType: 'ProgramPlan',
       products:
-        data?.program.map(v => ({
-          id: `Program_${v.id}`,
-          title: v.title,
+        data?.program_plan.map(v => ({
+          id: `ProgramPlan_${v.id}`,
+          title: `${v.program.title} - ${v.title}`,
         })) || [],
     },
     {

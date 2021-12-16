@@ -35,8 +35,10 @@ const StyledColumns = styled.div`
   columns: 2;
 `
 
+// TODO: unify all ProductType someday
+
 export type ScopeProps = {
-  productTypes: ProductType[] | null
+  productTypes: Exclude<ProductType, 'Program'>[] | null
   productIds: string[]
 }
 
@@ -54,7 +56,9 @@ const ScopeSelector: React.FC<{
   const [scopeType, setScopeType] = useState<'all' | 'specific'>(
     !value || (value.productTypes === null && value.productIds.length === 0) ? 'all' : 'specific',
   )
-  const [selectedProductTypes, setSelectedProductTypes] = useState<ProductType[]>(value?.productTypes || [])
+  const [selectedProductTypes, setSelectedProductTypes] = useState<Exclude<ProductType, 'Program'>[]>(
+    value?.productTypes || [],
+  )
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>(value?.productIds || [])
 
   return (
@@ -87,19 +91,16 @@ const ScopeSelector: React.FC<{
           className="mb-3"
           value={selectedProductTypes}
           onChange={value => {
-            setSelectedProductTypes(value as ProductType[])
+            setSelectedProductTypes(value as Exclude<ProductType, 'Program'>[])
             onChange &&
               onChange({
-                productTypes: value as ProductType[],
+                productTypes: value as Exclude<ProductType, 'Program'>[],
                 productIds: selectedProductIds,
               })
           }}
           style={{ width: '100%' }}
         >
           <StyledColumns>
-            <div className="mb-3">
-              <Checkbox value="Program">{formatMessage(commonMessages.product.allProgram)}</Checkbox>
-            </div>
             <div className="mb-3">
               <Checkbox value="ProgramPlan">{formatMessage(commonMessages.product.allProgramPlan)}</Checkbox>
             </div>
@@ -162,14 +163,14 @@ const ScopeSelector: React.FC<{
         >
           {Object.keys(briefProducts).map(
             productType =>
-              briefProducts[productType as ProductType]?.length && (
+              briefProducts[productType as Exclude<ProductType, 'Program'>]?.length && (
                 <TreeSelect.TreeNode
                   key={productType}
                   value={productType}
                   title={<ProductTypeLabel productType={productType} />}
                   checkable={false}
                 >
-                  {briefProducts[productType as ProductType]?.map(product => (
+                  {briefProducts[productType as Exclude<ProductType, 'Program'>]?.map(product => (
                     <TreeSelect.TreeNode
                       key={product.productId}
                       value={product.productId}

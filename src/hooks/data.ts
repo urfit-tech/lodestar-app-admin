@@ -1023,10 +1023,6 @@ export const useAllBriefProductCollection = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
     gql`
       query GET_ALL_BRIEF_PRODUCT_COLLECTION {
-        program(where: { published_at: { _is_null: false }, is_deleted: { _eq: false } }) {
-          id
-          title
-        }
         program_plan(
           where: {
             program: { published_at: { _is_null: false }, is_deleted: { _eq: false } }
@@ -1112,7 +1108,7 @@ export const useAllBriefProductCollection = () => {
   )
 
   const briefProducts: {
-    [key in ProductType]?: {
+    [key in Exclude<ProductType, 'Program'>]?: {
       productId: string
       title: string
       parent?: string
@@ -1121,10 +1117,6 @@ export const useAllBriefProductCollection = () => {
     loading || error || !data
       ? {}
       : {
-          Program: data.program.map(program => ({
-            productId: `Program_${program.id}`,
-            title: program.title,
-          })),
           ProgramPlan: data.program_plan.map(programPlan => ({
             productId: `ProgramPlan_${programPlan.id}`,
             title: programPlan.title || '',
