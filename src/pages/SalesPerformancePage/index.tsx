@@ -37,6 +37,7 @@ export type MemberContract = {
     id: string
     name: string
   }
+  recognizePerformance: number
   performance: number
   products: string[]
   paymentMethod: string
@@ -191,6 +192,12 @@ const SalesPerformanceTable: React.VFC<{
       render: v => v && moment(v).format('MM/DD'),
     },
     {
+      title: '解約日',
+      dataIndex: 'revokedAt',
+      key: 'revokedAt',
+      render: v => v && moment(v).format('MM/DD'),
+    },
+    {
       title: '顧問',
       dataIndex: 'executor',
       key: 'executor',
@@ -207,9 +214,15 @@ const SalesPerformanceTable: React.VFC<{
       ),
     },
     {
-      title: '業績',
+      title: '訂單金額',
       dataIndex: 'performance',
       key: 'performance',
+      render: v => v.toFixed(0),
+    },
+    {
+      title: '績效金額',
+      dataIndex: 'recognizePerformance',
+      key: 'recognizePerformance',
       render: v => v.toFixed(0),
     },
     {
@@ -249,8 +262,11 @@ const SalesPerformanceTable: React.VFC<{
 
   const calculatePerformance = (condition: (mc: MemberContract) => boolean) =>
     sum(managerMemberContracts.filter(condition).map(mc => mc.performance))
+  const calculateRecognizePerformance = (condition: (mc: MemberContract) => boolean) =>
+    sum(managerMemberContracts.filter(condition).map(mc => mc.recognizePerformance))
 
   const performance = {
+    currentPerformance: calculateRecognizePerformance(isApproved),
     agreed: calculatePerformance(isAgreed),
     approved: calculatePerformance(isApproved),
     refundApplied: calculatePerformance(isRefundApplied),
@@ -263,6 +279,7 @@ const SalesPerformanceTable: React.VFC<{
       <Table
         title={() => (
           <div className="d-flex">
+            <span className="mr-3">目前績效：{new Intl.NumberFormat('zh').format(performance.currentPerformance)}</span>
             <span className="mr-3">審核中：{new Intl.NumberFormat('zh').format(performance.agreed)}</span>
             <span className="mr-3">審核通過：{new Intl.NumberFormat('zh').format(performance.approved)}</span>
             <span className="mr-3">提出退費：{new Intl.NumberFormat('zh').format(performance.refundApplied)}</span>
@@ -346,6 +363,9 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
               const executor = managers.find(v => v.id === orderExecutor.member_id)
               const isGuaranteed = v.options?.note?.includes('保買') || false
               const performance = orderExecutor.ratio * v.values.price
+              const recognizePerformance = Math.round(
+                orderExecutor.ratio * (v.values.orderOptions?.recognizePerformance || v.values.price),
+              )
               return {
                 id: v.id,
                 author: {
@@ -367,6 +387,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                 canceledAt: v.options?.loanCanceledAt,
                 refundAppliedAt: v.options?.refundAppliedAt,
                 performance: isGuaranteed ? performance * 0.7 : performance,
+                recognizePerformance,
                 products: v.values.orderProducts
                   ?.filter((op: any) => op.price >= 1500)
                   .map((op: any) => op.name + (op.options ? `(${op.options.quantity})` : '')),

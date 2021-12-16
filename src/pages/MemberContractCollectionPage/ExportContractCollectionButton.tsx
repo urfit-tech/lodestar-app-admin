@@ -114,6 +114,7 @@ const ExportContractCollectionButton: React.FC<{
               v.values?.coinAmount ||
               v.values?.coinLogs?.find((coinLog: any) => coinLog.description === '私塾課代幣')?.amount ||
               null,
+            orderOptions: { recognizePerformance: v.values.orderOptions?.recognizePerformance },
             paymentOptions: {
               paymentMethod: v.values.paymentOptions?.paymentMethod || '',
               paymentNumber: v.values.paymentOptions?.paymentNumber || '',
@@ -210,6 +211,8 @@ const ExportContractCollectionButton: React.FC<{
                 return contract.appointmentCreatorName || ''
               case 'referralMember':
                 return contract.referral.name || ''
+              case 'recognizePerformance':
+                return `${contract.orderOptions?.recognizePerformance}`
               case 'paymentMethod':
                 return contract.paymentOptions?.paymentMethod || ''
               case 'installmentPlan':

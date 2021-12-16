@@ -110,6 +110,7 @@ export const MemberContractCollectionBlock: React.FC<{
     'projectPlanName',
     'note',
     'status',
+    'recognizePerformance',
     'paymentMethod',
     'paymentNumber',
     'orderExecutors',
@@ -378,6 +379,11 @@ export const MemberContractCollectionBlock: React.FC<{
       render: price => currencyFormatter(price),
     },
     {
+      title: formatMessage(memberContractMessages.label.recognizePerformance),
+      key: 'recognizePerformance',
+      render: (text, record, index) => currencyFormatter(record.orderOptions?.recognizePerformance),
+    },
+    {
       title: formatMessage(memberContractMessages.label.product),
       dataIndex: 'projectPlanName',
       key: 'projectPlanName',
@@ -513,6 +519,7 @@ export const MemberContractCollectionBlock: React.FC<{
             loanCanceledAt: activeMemberContract?.loanCanceledAt,
             refundAppliedAt: activeMemberContract?.refundAppliedAt,
           }}
+          orderOptions={activeMemberContract?.orderOptions}
           paymentOptions={activeMemberContract?.paymentOptions}
           note={activeMemberContract?.note}
           orderExecutors={activeMemberContract?.orderExecutors || []}
