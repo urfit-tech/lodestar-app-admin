@@ -42,12 +42,6 @@ const CouponPlanDescriptionScopeBlock: React.FC<{
       <StyledTitle>{formatMessage(promotionMessages.label.discountTarget)}</StyledTitle>
       <div className="mb-4">
         {scope === null && <div>{formatMessage(commonMessages.product.allScope)}</div>}
-        {scope?.includes('Program') && (
-          <div className="mb-2">
-            <Icon component={() => <CheckIcon />} className="mr-2" />
-            <span>{formatMessage(commonMessages.product.allProgram)}</span>
-          </div>
-        )}
         {scope?.includes('ProgramPlan') && (
           <div className="mb-2">
             <Icon component={() => <CheckIcon />} className="mr-2" />

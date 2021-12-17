@@ -13,7 +13,6 @@ export type ClassType =
   | 'creator'
   | 'podcastAlbum'
 export type ProductType =
-  | 'Program'
   | 'ProgramPlan'
   | 'ProgramContent'
   | 'ProgramPackagePlan'

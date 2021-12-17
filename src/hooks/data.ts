@@ -507,18 +507,6 @@ export const useSimpleProduct = (
   } | null =
     loading || error || !data
       ? null
-      : data.program_by_pk
-      ? {
-          id: data.program_by_pk.id,
-          productType: 'Program',
-          title: data.program_by_pk.title,
-          coverUrl: data.program_by_pk.cover_url || undefined,
-          listPrice: data.program_by_pk.list_price,
-          salePrice:
-            data.program_by_pk.sold_at && new Date(data.program_by_pk.sold_at).getTime() > Date.now()
-              ? data.program_by_pk.sale_price
-              : undefined,
-        }
       : data.program_plan_by_pk
       ? {
           id: data.program_plan_by_pk.id,
@@ -1108,7 +1096,7 @@ export const useAllBriefProductCollection = () => {
   )
 
   const briefProducts: {
-    [key in Exclude<ProductType, 'Program'>]?: {
+    [key in ProductType]?: {
       productId: string
       title: string
       parent?: string
