@@ -107,7 +107,7 @@ const PurchaseProductSelector: React.FC<{
   const { briefProducts } = useAllBriefProductCollection()
   const [selectedProductId, setSelectedProductId] = useState<string | undefined>(value?.productId)
 
-  const { Program, MerchandiseSpec, AppointmentPlan, PodcastAlbum, ...partBriefProducts } = briefProducts
+  const { MerchandiseSpec, AppointmentPlan, PodcastAlbum, ...partBriefProducts } = briefProducts
 
   return (
     <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.purchaseProduct)}</CraftSettingLabel>}>
@@ -138,7 +138,7 @@ const PurchaseProductSelector: React.FC<{
                 title={<ProductTypeLabel productType={productType as PartBriefProductType} />}
                 checkable={false}
               >
-                {briefProducts[productType as ProductType]?.map(product => (
+                {briefProducts[productType as Exclude<ProductType, 'Program'>]?.map(product => (
                   <TreeSelect.TreeNode
                     key={product.productId}
                     value={product.productId}
