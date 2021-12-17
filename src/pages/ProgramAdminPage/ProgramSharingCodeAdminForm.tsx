@@ -165,7 +165,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
             <Button
               type="link"
               icon={<PlusIcon />}
-              className="mb-4"
+              className="mb-4 align-items-center"
               onClick={() =>
                 add({
                   code: '',

@@ -1,9 +1,9 @@
 // ant design
 .ant-btn {
   display: inline-flex;
+  line-height: 1;
   span {
     margin: auto;
-    line-height: 1;
   }
   .anticon {
     line-height: 0;
@@ -39,6 +39,6 @@
   overflow: hidden;
   max-width: 432px;
 }
-.position-relative{
+.position-relative {
   position: relative;
 }
