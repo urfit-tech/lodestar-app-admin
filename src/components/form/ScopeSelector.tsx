@@ -1,5 +1,6 @@
 import { Checkbox, Radio, TreeSelect } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { keys } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -34,6 +35,8 @@ const StyledProductTitle = styled.div`
 const StyledColumns = styled.div`
   columns: 2;
 `
+
+// TODO: unify all ProductType someday
 
 export type ScopeProps = {
   productTypes: ProductType[] | null
@@ -98,9 +101,6 @@ const ScopeSelector: React.FC<{
         >
           <StyledColumns>
             <div className="mb-3">
-              <Checkbox value="Program">{formatMessage(commonMessages.product.allProgram)}</Checkbox>
-            </div>
-            <div className="mb-3">
               <Checkbox value="ProgramPlan">{formatMessage(commonMessages.product.allProgramPlan)}</Checkbox>
             </div>
             {enabledModules.activity && (
@@ -160,16 +160,16 @@ const ScopeSelector: React.FC<{
               })
           }}
         >
-          {Object.keys(briefProducts).map(
+          {keys(briefProducts).map(
             productType =>
-              briefProducts[productType as ProductType]?.length && (
+              briefProducts[productType]?.length && (
                 <TreeSelect.TreeNode
                   key={productType}
                   value={productType}
                   title={<ProductTypeLabel productType={productType} />}
                   checkable={false}
                 >
-                  {briefProducts[productType as ProductType]?.map(product => (
+                  {briefProducts[productType]?.map(product => (
                     <TreeSelect.TreeNode
                       key={product.productId}
                       value={product.productId}

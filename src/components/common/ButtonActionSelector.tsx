@@ -2,22 +2,15 @@ import { Checkbox, Form, Select, TreeSelect } from 'antd'
 import { ButtonProps } from 'lodestar-app-element/src/components/buttons/Button'
 import ProductTypeLabel from 'lodestar-app-element/src/components/labels/ProductTypeLabel'
 import { ProductPurchaseProductSource } from 'lodestar-app-element/src/types/options'
+import { keys, pick } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { useAllBriefProductCollection } from '../../hooks/data'
 import { CraftSettingLabel, StyledUnderLineInput } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
-import { ProductType } from '../../types/general'
 
 type ButtonActionOptions = ButtonProps['source']
-type PartBriefProductType =
-  | 'ActivityTicket'
-  | 'PodcastPlan'
-  | 'PodcastProgram'
-  | 'ProgramPackagePlan'
-  | 'ProgramPlan'
-  | 'ProjectPlan'
 
 const StyledProductParent = styled.div`
   max-width: 10rem;
@@ -107,7 +100,10 @@ const PurchaseProductSelector: React.FC<{
   const { briefProducts } = useAllBriefProductCollection()
   const [selectedProductId, setSelectedProductId] = useState<string | undefined>(value?.productId)
 
-  const { Program, MerchandiseSpec, AppointmentPlan, PodcastAlbum, ...partBriefProducts } = briefProducts
+  const partBriefProducts = pick(
+    ['ActivityTicket', 'PodcastPlan', 'PodcastProgram', 'ProgramPackagePlan', 'ProgramPlan', 'ProjectPlan'],
+    briefProducts,
+  )
 
   return (
     <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.purchaseProduct)}</CraftSettingLabel>}>
@@ -128,17 +124,17 @@ const PurchaseProductSelector: React.FC<{
         }}
         treeNodeFilterProp="name"
       >
-        {Object.keys(partBriefProducts).map(
+        {keys(partBriefProducts).map(
           productType =>
-            partBriefProducts[productType as PartBriefProductType]?.length && (
+            partBriefProducts[productType]?.length && (
               <TreeSelect.TreeNode
                 disable
                 key={productType}
                 value={productType}
-                title={<ProductTypeLabel productType={productType as PartBriefProductType} />}
+                title={<ProductTypeLabel productType={productType} />}
                 checkable={false}
               >
-                {briefProducts[productType as ProductType]?.map(product => (
+                {briefProducts[productType]?.map(product => (
                   <TreeSelect.TreeNode
                     key={product.productId}
                     value={product.productId}

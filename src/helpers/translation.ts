@@ -426,7 +426,7 @@ export const commonMessages = {
     specificItem: { id: 'common.product.specificItem', defaultMessage: '指定項目' },
     otherItem: { id: 'common.product.otherItem', defaultMessage: '其他指定項目' },
     allProgram: { id: 'common.product.allProgram', defaultMessage: '全部單次課程' },
-    allProgramPlan: { id: 'common.product.allProgramPlan', defaultMessage: '全部訂閱課程' },
+    allProgramPlan: { id: 'common.product.allProgramPlan', defaultMessage: '全部課程方案' },
     allActivityTicket: { id: 'common.product.allActivityTicket', defaultMessage: '全部活動' },
     allPodcastProgram: { id: 'common.product.allPodcastProgram', defaultMessage: '全部廣播' },
     allPodcastPlan: { id: 'common.product.allPodcastPlan', defaultMessage: '全部廣播訂閱頻道' },
