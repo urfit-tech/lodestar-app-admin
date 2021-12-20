@@ -31,7 +31,7 @@ const messages = defineMessages({
 })
 
 const ProductSelector: React.FC<{
-  allowTypes: Exclude<ProductType, 'Program'>[]
+  allowTypes: ProductType[]
   value?: string[]
   onChange?: (value: string[]) => void
 }> = ({ allowTypes, value, onChange }) => {
@@ -138,7 +138,7 @@ const useProductSelections = () => {
   )
 
   const productSelections: {
-    productType: Exclude<ProductType, 'Program'>
+    productType: 'ProgramPlan' | 'ProgramPackagePlan' | 'ActivityTicket' | 'PodcastProgram' | 'Card'
     products: {
       id: string
       title: string

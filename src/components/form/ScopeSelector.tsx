@@ -1,5 +1,6 @@
 import { Checkbox, Radio, TreeSelect } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { keys } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -38,7 +39,7 @@ const StyledColumns = styled.div`
 // TODO: unify all ProductType someday
 
 export type ScopeProps = {
-  productTypes: Exclude<ProductType, 'Program'>[] | null
+  productTypes: ProductType[] | null
   productIds: string[]
 }
 
@@ -56,9 +57,7 @@ const ScopeSelector: React.FC<{
   const [scopeType, setScopeType] = useState<'all' | 'specific'>(
     !value || (value.productTypes === null && value.productIds.length === 0) ? 'all' : 'specific',
   )
-  const [selectedProductTypes, setSelectedProductTypes] = useState<Exclude<ProductType, 'Program'>[]>(
-    value?.productTypes || [],
-  )
+  const [selectedProductTypes, setSelectedProductTypes] = useState<ProductType[]>(value?.productTypes || [])
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>(value?.productIds || [])
 
   return (
@@ -91,10 +90,10 @@ const ScopeSelector: React.FC<{
           className="mb-3"
           value={selectedProductTypes}
           onChange={value => {
-            setSelectedProductTypes(value as Exclude<ProductType, 'Program'>[])
+            setSelectedProductTypes(value as ProductType[])
             onChange &&
               onChange({
-                productTypes: value as Exclude<ProductType, 'Program'>[],
+                productTypes: value as ProductType[],
                 productIds: selectedProductIds,
               })
           }}
@@ -161,16 +160,16 @@ const ScopeSelector: React.FC<{
               })
           }}
         >
-          {Object.keys(briefProducts).map(
+          {keys(briefProducts).map(
             productType =>
-              briefProducts[productType as Exclude<ProductType, 'Program'>]?.length && (
+              briefProducts[productType]?.length && (
                 <TreeSelect.TreeNode
                   key={productType}
                   value={productType}
                   title={<ProductTypeLabel productType={productType} />}
                   checkable={false}
                 >
-                  {briefProducts[productType as Exclude<ProductType, 'Program'>]?.map(product => (
+                  {briefProducts[productType]?.map(product => (
                     <TreeSelect.TreeNode
                       key={product.productId}
                       value={product.productId}
