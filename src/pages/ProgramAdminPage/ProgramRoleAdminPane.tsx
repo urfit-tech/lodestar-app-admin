@@ -72,13 +72,13 @@ const ProgramRoleAdminPane: React.FC<{
         <AdminBlockTitle>{formatMessage(commonMessages.label.instructor)}</AdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'instructor')
-          .map((role, index) => (
+          .map((role, _, arr) => (
             <RoleAdminBlock
               key={role.id}
               name={role.member?.name || ''}
               pictureUrl={role.member?.pictureUrl || ''}
               onDelete={
-                index === 0
+                arr.length === 1
                   ? undefined
                   : () => {
                       deleteProgramRole({
