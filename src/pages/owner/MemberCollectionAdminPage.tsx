@@ -403,7 +403,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
           </div>
           <div className="mr-2">
-            <MemberImportModal appId={appId} filter={fieldFilter} />
+            <MemberImportModal onRefetch={refetchMembers} />
           </div>
           <MemberExportModal appId={appId} filter={fieldFilter} />
         </div>
