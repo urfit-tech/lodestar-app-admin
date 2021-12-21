@@ -257,8 +257,7 @@ const MerchandiseSpecForm: React.FC<{
                 setSpecFiles([...specFiles, []])
               }}
             >
-              123
-              {/* {formatMessage(merchandiseMessages.ui.addSpec)} */}
+              {formatMessage(merchandiseMessages.ui.addSpec)}
             </Button>
           </>
         )}
