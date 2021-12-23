@@ -184,12 +184,12 @@ const MediaLibrary: React.FC = () => {
             />
           </div>
         </Tabs.TabPane>
-        <Tabs.TabPane tab={formatMessage(commonMessages.ui.image)} key="image">
+        {/* <Tabs.TabPane tab={formatMessage(commonMessages.ui.image)} key="image">
           Content of Tab Pane 2
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={formatMessage(commonMessages.ui.other)} key="other">
+        </Tabs.TabPane> */}
+        {/* <Tabs.TabPane tab={formatMessage(commonMessages.ui.other)} key="other">
           Content of Tab Pane 3
-        </Tabs.TabPane>
+        </Tabs.TabPane> */}
       </Tabs>
       {uppy && (
         <DashboardModal
