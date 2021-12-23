@@ -4,12 +4,7 @@ import AdminModal, { AdminModalProps } from 'lodestar-app-admin/src/components/a
 import FileItem from 'lodestar-app-admin/src/components/common/FileItem'
 import FileUploader from 'lodestar-app-admin/src/components/common/FileUploader'
 import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from 'lodestar-app-admin/src/helpers'
-import {
-  commonMessages,
-  errorMessages,
-  memberMessages,
-  orderMessages,
-} from 'lodestar-app-admin/src/helpers/translation'
+import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from 'lodestar-app-admin/src/hooks/data'
 import { ReactComponent as ExternalLinkIcon } from 'lodestar-app-admin/src/images/icon/external-link-square.svg'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -135,7 +130,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     loanCanceledAt: Moment | null
     refundAppliedAt: Moment | null
     paymentMethod: string
-    recognizePerformance: number
+    recognizePerformance?: number
     paymentNumber: number
     installmentPlan: string
     note: string
@@ -233,7 +228,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           variables: {
             memberContractId,
             values: {
-              ...(orderOptions?.recognizePerformance
+              ...(recognizePerformance
                 ? {
                     orderOptions: {
                       recognizePerformance,
@@ -440,18 +435,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           </StyledRow>
           <StyledAreaTitle className="mb-3">{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
           {formatMessage(memberContractMessages.label.recognizePerformance)}
-          <Form.Item
-            name="recognizePerformance"
-            rules={[
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(memberContractMessages.label.recognizePerformance),
-                }),
-              },
-            ]}
-            initialValue={orderOptions?.recognizePerformance || null}
-          >
+          <Form.Item name="recognizePerformance" initialValue={orderOptions?.recognizePerformance}>
             <InputNumber
               style={{ width: '150px' }}
               min={0}
