@@ -41,9 +41,6 @@
   "devDependencies": {
     "@types/chance": "^1.1.1"
   },
-  "devDependencies": {
-    "@types/chance": "^1.1.1"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
