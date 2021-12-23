@@ -2003,11 +2003,20 @@ export interface GET_PERMISSION {
 // ====================================================
 
 
-export interface GET_PRODUCT_SELECTION_COLLECTION_program {
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_plan_program {
   __typename: "program";
   id: any;
   title: string;
-  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_plan {
+  __typename: "program_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program: GET_PRODUCT_SELECTION_COLLECTION_program_plan_program;
 }
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package {
@@ -2066,9 +2075,9 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_card {
 
 export interface GET_PRODUCT_SELECTION_COLLECTION {
   /**
-   * fetch data from the table: "program"
+   * fetch data from the table: "program_plan"
    */
-  program: GET_PRODUCT_SELECTION_COLLECTION_program[];
+  program_plan: GET_PRODUCT_SELECTION_COLLECTION_program_plan[];
   /**
    * fetch data from the table: "program_package_plan"
    */
@@ -9017,7 +9026,7 @@ export interface GET_PRODUCT_SIMPLE_program_package_plan_by_pk {
   sale_price: any | null;
   sold_at: any | null;
   discount_down_price: any | null;
-  period_amount: any;
+  period_amount: any | null;
   /**
    * Y / M / W / D
    */
@@ -9493,12 +9502,6 @@ export interface GET_ATTACHMENTSVariables {
 // ====================================================
 
 
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
   __typename: "program";
   id: any;
@@ -9620,10 +9623,6 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
 }
 
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program[];
   /**
    * fetch data from the table: "program_plan"
    */
@@ -12981,7 +12980,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans
    * Y / M / W / D
    */
   period_type: string | null;
-  period_amount: any;
+  period_amount: any | null;
   description: string | null;
   is_subscription: boolean;
   discount_down_price: any | null;
@@ -16293,6 +16292,7 @@ export enum app_setting_constraint {
  */
 export enum app_setting_update_column {
   app_id = "app_id",
+  created_at = "created_at",
   id = "id",
   key = "key",
   value = "value",
@@ -17540,6 +17540,7 @@ export enum order_product_update_column {
   created_at = "created_at",
   currency_id = "currency_id",
   deliverables = "deliverables",
+  delivered_at = "delivered_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -20560,6 +20561,7 @@ export interface app_setting_bool_exp {
   _or?: (app_setting_bool_exp | null)[] | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   key?: String_comparison_exp | null;
   setting?: setting_bool_exp | null;
@@ -20572,6 +20574,7 @@ export interface app_setting_bool_exp {
 export interface app_setting_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  created_at?: any | null;
   id?: any | null;
   key?: string | null;
   setting?: setting_obj_rel_insert_input | null;
@@ -20583,6 +20586,7 @@ export interface app_setting_insert_input {
  */
 export interface app_setting_max_order_by {
   app_id?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   key?: order_by | null;
   value?: order_by | null;
@@ -20593,6 +20597,7 @@ export interface app_setting_max_order_by {
  */
 export interface app_setting_min_order_by {
   app_id?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   key?: order_by | null;
   value?: order_by | null;
@@ -26947,6 +26952,7 @@ export interface order_executor_bool_exp {
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
   ratio?: numeric_comparison_exp | null;
+  sharing?: order_executor_sharing_bool_exp | null;
 }
 
 /**
@@ -26988,6 +26994,24 @@ export interface order_executor_on_conflict {
   constraint: order_executor_constraint;
   update_columns: order_executor_update_column[];
   where?: order_executor_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_executor_sharing". All fields are combined with a logical 'AND'.
+ */
+export interface order_executor_sharing_bool_exp {
+  _and?: (order_executor_sharing_bool_exp | null)[] | null;
+  _not?: order_executor_sharing_bool_exp | null;
+  _or?: (order_executor_sharing_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  executor?: member_bool_exp | null;
+  executor_id?: String_comparison_exp | null;
+  order_executor?: order_executor_bool_exp | null;
+  order_executor_id?: uuid_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  ratio?: numeric_comparison_exp | null;
+  total_price?: numeric_comparison_exp | null;
 }
 
 /**
@@ -27447,6 +27471,7 @@ export interface order_product_bool_exp {
   currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
   deliverables?: jsonb_comparison_exp | null;
+  delivered_at?: timestamp_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -27567,6 +27592,7 @@ export interface order_product_insert_input {
   currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
   deliverables?: any | null;
+  delivered_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -27589,6 +27615,7 @@ export interface order_product_max_order_by {
   accumulated_errors?: order_by | null;
   created_at?: order_by | null;
   currency_id?: order_by | null;
+  delivered_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -27607,6 +27634,7 @@ export interface order_product_min_order_by {
   accumulated_errors?: order_by | null;
   created_at?: order_by | null;
   currency_id?: order_by | null;
+  delivered_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -27646,6 +27674,7 @@ export interface order_product_order_by {
   currency?: currency_order_by | null;
   currency_id?: order_by | null;
   deliverables?: order_by | null;
+  delivered_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -34665,6 +34694,21 @@ export interface tag_on_conflict {
   constraint: tag_constraint;
   update_columns: tag_update_column[];
   where?: tag_bool_exp | null;
+}
+
+/**
+ * expression to compare columns of type timestamp. All fields are combined with logical 'AND'.
+ */
+export interface timestamp_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
 }
 
 /**

@@ -6,7 +6,6 @@ import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { Redirect } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -40,10 +39,6 @@ const BlogPostAuthorCollectionBlock: React.FC<{
 
   if (!post) {
     return <Skeleton active />
-  }
-
-  if (post.creatorId !== currentMemberId && !post.authors?.find(author => author.id === currentMemberId)) {
-    return <Redirect to="/blog" />
   }
 
   const handleDelete = () => {

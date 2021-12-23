@@ -251,7 +251,7 @@ const MerchandiseSpecForm: React.FC<{
             <Button
               type="link"
               icon={<PlusIcon />}
-              className="my-4"
+              className="my-4 d-flex align-items-center"
               onClick={() => {
                 add({ listPrice: 0 })
                 setSpecFiles([...specFiles, []])

@@ -138,10 +138,42 @@ const ProgramPackageAdminPage: React.FC = () => {
                 programPackageId={programPackageId}
                 onRefetch={refetch}
                 title={formatMessage(commonMessages.ui.createPlan)}
-                renderTrigger={({ setVisible }) => (
-                  <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-                    {formatMessage(commonMessages.ui.createPlan)}
-                  </Button>
+                renderTrigger={({ setVisible, setProgramPackagePlanType }) => (
+                  <div className="d-flex mb-4">
+                    <Button
+                      icon={<FileAddOutlined />}
+                      type="primary"
+                      className="mr-2"
+                      onClick={() => {
+                        setVisible?.(true)
+                        setProgramPackagePlanType?.('perpetual')
+                      }}
+                    >
+                      {formatMessage(commonMessages.ui.perpetualPlan)}
+                    </Button>
+                    <Button
+                      icon={<FileAddOutlined />}
+                      type="primary"
+                      className="mr-2"
+                      onClick={() => {
+                        setVisible?.(true)
+                        setProgramPackagePlanType?.('period')
+                      }}
+                    >
+                      {formatMessage(commonMessages.ui.periodPlan)}
+                    </Button>
+                    <Button
+                      icon={<FileAddOutlined />}
+                      type="primary"
+                      className="mr-2"
+                      onClick={() => {
+                        setVisible?.(true)
+                        setProgramPackagePlanType?.('subscription')
+                      }}
+                    >
+                      {formatMessage(commonMessages.ui.subscriptionPlan)}
+                    </Button>
+                  </div>
                 )}
               />
 
