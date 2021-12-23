@@ -5,31 +5,11 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import { UserRole } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 
-type ImportMemberProps = {
-  id: string
-  name: string
-  email: string
-  role: UserRole
-  createdAt: Date | null
-  loginedAt: Date | null
-  phones: string[]
-  categories: string[]
-  consumption: number
-}
 const MemberImportModal: React.FC<{
-  appId: string
-  filter?: {
-    name?: string
-    email?: string
-    phone?: string | undefined
-    category?: string | undefined
-    tag?: string | undefined
-    managerId?: string
-  }
-}> = ({ appId, filter }) => {
+  onRefetch?: () => void
+}> = ({ onRefetch }) => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm()
@@ -70,6 +50,7 @@ const MemberImportModal: React.FC<{
               if (info.file.status === 'done') {
                 const response = info.file.response
                 setResponseList(state => [...state, response])
+                onRefetch?.()
               } else if (info.file.status === 'error') {
                 message.error(`${info.file.name} file upload failed.`)
               }
