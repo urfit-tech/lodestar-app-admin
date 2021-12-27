@@ -115,9 +115,7 @@ const ProgramCollectionSelector: React.FC<{
                   })
                 }
                 filterOption={(input, option) =>
-                  option?.props?.children
-                    ? (option.props.children as string).toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    : true
+                  option?.label ? (option.label as string).toLowerCase().indexOf(input.toLowerCase()) >= 0 : true
                 }
               />
             </div>
