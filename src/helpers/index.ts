@@ -288,3 +288,34 @@ export const call = async ({
       message.error('連線異常，請再嘗試')
     })
 }
+
+export const getVideoIDByURL = (url: string, source: string) => {
+  switch (source) {
+    case 'youtube':
+      const regex =
+        /.*(?:(?:youtu.be\/|v\/|vi\/|u\/w\/|embed\/)|shorts\/|(?:(?:watch)??v(?:i)?=|&v(?:i)?=))([^#&?\/\s]*).*/
+      const res = url.match(regex)?.[1] || null
+      return res
+    default:
+      return null
+  }
+}
+
+export const generateUrlWithID = (id: string, source: string) => {
+  switch (source) {
+    case 'youtube':
+      return `https://www.youtube.com/watch?v=${id}`
+    default:
+      return null
+  }
+}
+
+// MIME
+export const contentTypeFormat = (source: string) => {
+  switch (source.toLowerCase()) {
+    case 'youtube':
+      return 'vnd.youtube.yt'
+    default:
+      return null
+  }
+}

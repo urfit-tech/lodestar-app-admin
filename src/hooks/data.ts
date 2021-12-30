@@ -629,20 +629,26 @@ export const useSimpleProduct = (
     target,
   }
 }
+export const useInsertAttachment = () => {
+  const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(
+    gql`
+      mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
+        insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
+          returning {
+            id
+          }
+        }
+      }
+    `,
+  )
+  return insertAttachment
+}
 
 export const useUploadAttachments = () => {
   const { authToken } = useAuth()
   const { id: appId } = useApp()
-  const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(gql`
-    mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
-      insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
-        returning {
-          id
-        }
-      }
-    }
-  `)
 
+  const insertAttachment = useInsertAttachment()
   return async (type: string, target: string, files: File[], uploadFileConfig?: (file: File) => AxiosRequestConfig) => {
     const { data } = await insertAttachment({
       variables: {
