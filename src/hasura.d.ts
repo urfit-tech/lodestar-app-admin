@@ -6142,17 +6142,17 @@ export interface UPDATE_PROJECT_POSITION_COLLECTIONVariables {
 // ====================================================
 
 
-export interface GET_PROJECT_ID_LIST_program_package {
-  __typename: "program_package";
+export interface GET_PROJECT_ID_LIST_project {
+  __typename: "project";
   id: any;
   title: string;
 }
 
 export interface GET_PROJECT_ID_LIST {
   /**
-   * fetch data from the table: "program_package"
+   * fetch data from the table: "project"
    */
-  program_package: GET_PROJECT_ID_LIST_program_package[];
+  project: GET_PROJECT_ID_LIST_project[];
 }
 
 /* tslint:disable */

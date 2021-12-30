@@ -15,7 +15,7 @@ const ProjectCollectionSelector: React.FC<{
 }> = ({ value = { from: 'publishedAt' }, onChange }) => {
   const { formatMessage } = useIntl()
   const { data } = useQuery<hasura.GET_PROJECT_ID_LIST>(GET_PROJECT_ID_LIST)
-  const programPackageOptions = data?.program_package.map(pp => ({ id: pp.id, title: pp.title })) || []
+  const projectOptions = data?.project.map(p => ({ id: p.id, title: p.title })) || []
   return (
     <div>
       <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</CraftSettingLabel>}>
@@ -74,14 +74,14 @@ const ProjectCollectionSelector: React.FC<{
       )}
       {value?.from === 'custom' && (
         <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
-          {(value.idList || []).map((programPackageId, idx) => (
-            <div key={programPackageId} className="my-2">
+          {(value.idList || []).map((projectId, idx) => (
+            <div key={projectId} className="my-2">
               <Select
                 showSearch
                 allowClear
                 placeholder={formatMessage(craftPageMessages.label.choiceData)}
-                value={programPackageId}
-                options={programPackageOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
+                value={projectId}
+                options={projectOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
                 onChange={selectedProjectId =>
                   selectedProjectId &&
                   onChange?.({
@@ -100,9 +100,7 @@ const ProjectCollectionSelector: React.FC<{
                   })
                 }
                 filterOption={(input, option) =>
-                  option?.props?.children
-                    ? (option.props.children as string).toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    : true
+                  option?.label ? (option.label as string).toLowerCase().indexOf(input.toLowerCase()) >= 0 : true
                 }
               />
             </div>
@@ -118,7 +116,7 @@ const ProjectCollectionSelector: React.FC<{
 
 const GET_PROJECT_ID_LIST = gql`
   query GET_PROJECT_ID_LIST {
-    program_package(where: { published_at: { _lt: "now()" } }) {
+    project(where: { published_at: { _lt: "now()" } }) {
       id
       title
     }
