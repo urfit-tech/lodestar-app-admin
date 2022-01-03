@@ -25,7 +25,7 @@ import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
 import { contentTypeFormat, generateUrlWithID, getVideoIDByURL, handleError, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
-import { useInsertAttachment } from '../../hooks/data'
+import { useMutateAttachment } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentActions } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ProgramContentBodyProps, ProgramContentProps, ProgramProps } from '../../types/program'
@@ -118,7 +118,7 @@ const ProgramContentAdminModal: React.FC<{
   const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
   const { updatePlans, updateMaterials, updateVideos } = useProgramContentActions(programContent.id)
 
-  const insertAttachment = useInsertAttachment()
+  const { insertAttachment } = useMutateAttachment()
 
   const [visible, setVisible] = useState(false)
   const [isTrial, setIsTrial] = useState(programContent?.listPrice === 0)
@@ -146,14 +146,12 @@ const ProgramContentAdminModal: React.FC<{
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number
   }>({})
-  console.log(programContentBody)
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
     setIsUploadFailed({})
     setFailedUploadFiles([])
     setUploadProgress({})
-
     if (
       enabledModules.program_content_external_file &&
       videoPipeline === 'externalLink' &&

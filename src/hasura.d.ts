@@ -9478,6 +9478,7 @@ export interface GET_ATTACHMENTS_attachment_aggregate_nodes {
   created_at: any;
   updated_at: any;
   options: any | null;
+  data: any | null;
 }
 
 export interface GET_ATTACHMENTS_attachment_aggregate {
