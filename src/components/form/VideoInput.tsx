@@ -27,6 +27,7 @@ const VideoInput: React.FC<{
 }> = ({ value, onChange, appId, productId, productType }) => {
   const { formatMessage } = useIntl()
   const [file, setFile] = useState<UploadFile | undefined>(undefined)
+  const uploadTime = Date.now()
 
   return (
     <StyleInputGroup compact>
@@ -42,13 +43,15 @@ const VideoInput: React.FC<{
         value={file}
         accept="video/*"
         uploadText={formatMessage(programMessages.text.uploadVideo)}
-        path={`${productType}_covers/${appId}/${productId}_video`}
+        path={`${productType}_covers/${appId}/${productId}_video_${uploadTime}`}
         showUploadList={false}
         isPublic
         onChange={(value: any) => setFile(value as UploadFile)}
         onSuccess={() =>
           onChange &&
-          onChange(`https://${process.env.REACT_APP_S3_BUCKET}/${productType}_covers/${appId}/${productId}_video`)
+          onChange(
+            `https://${process.env.REACT_APP_S3_BUCKET}/${productType}_covers/${appId}/${productId}_video_${uploadTime}`,
+          )
         }
       />
     </StyleInputGroup>
