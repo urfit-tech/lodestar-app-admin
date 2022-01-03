@@ -7,9 +7,13 @@ import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import ReactPlayer from 'react-player'
+import styled from 'styled-components'
 import { DeepPick } from 'ts-deep-pick'
+import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
 import VideoPlayer from './VideoPlayer'
@@ -19,11 +23,19 @@ const messages = defineMessages({
   reUpload: { id: 'program.ui.reUpload', defaultMessage: '重新上傳' },
   chooseFile: { id: 'program.ui.chooseFile', defaultMessage: '選擇檔案' },
   manageCaption: { id: 'program.ui.manageCaption', defaultMessage: '管理字幕' },
+  uploadCaptions: { id: 'program.ui.uploadCaptions', defaultMessage: '上傳字幕' },
   uploadedCaptions: { id: 'program.ui.uploadedCaptions', defaultMessage: '已上傳字幕' },
   delete: { id: 'program.ui.delete', defaultMessage: '刪除檔案' },
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
   chooseCaptionLanguage: { id: 'program.label.chooseCaptionLanguage', defaultMessage: '選擇字幕語系' },
 })
+
+const StyledButton = styled(Button)`
+  && {
+    width: 2rem;
+    height: 2rem;
+  }
+`
 
 const VideoLibraryItem: React.VFC<
   Pick<Attachment, 'id' | 'name'> &
@@ -71,6 +83,7 @@ const VideoLibraryItem: React.VFC<
 export const DeleteButton: React.VFC<
   { videoId: string; isExternalLink: boolean; onDelete?: () => void } & ButtonProps
 > = ({ videoId, isExternalLink, onDelete, ...buttonProps }) => {
+  const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const [deleting, setDeleting] = useState(false)
   const { deleteAttachments } = useMutateAttachment()
@@ -80,6 +93,11 @@ export const DeleteButton: React.VFC<
       setDeleting(true)
       if (isExternalLink) {
         deleteAttachments({ variables: { attachmentIds: [videoId] } })
+          .then(() => {
+            onDelete?.()
+          })
+          .catch(handleError)
+          .finally(() => setDeleting(false))
       } else {
         axios
           .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}`, {
@@ -99,40 +117,61 @@ export const DeleteButton: React.VFC<
     }
   }
   return (
-    <Button size="small" loading={deleting} danger onClick={handleClick} {...buttonProps}>
-      <DeleteOutlined />
-    </Button>
+    <div>
+      <StyledButton
+        title={formatMessage(messages.delete)}
+        loading={deleting}
+        danger
+        onClick={handleClick}
+        {...buttonProps}
+        icon={<DeleteOutlined />}
+      />
+    </div>
   )
 }
 
-export const PreviewButton: React.VFC<{ videoId: string; title: string } & ButtonProps> = ({
-  videoId,
-  title,
-  ...buttonProps
-}) => {
+export const PreviewButton: React.VFC<
+  { videoId: string; title: string; isExternalLink: boolean; videoUrl?: string } & ButtonProps
+> = ({ videoId, title, isExternalLink, videoUrl, ...buttonProps }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
   return (
     <div>
       <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
-        <VideoPlayer videoId={videoId} width="100%" />
+        {isExternalLink ? (
+          <ReactPlayer url={videoUrl} width="100%" controls />
+        ) : (
+          <VideoPlayer videoId={videoId} width="100%" />
+        )}
       </Modal>
-      <Button size="small" type="primary" onClick={() => setIsModalVisible(true)} {...buttonProps}>
-        <EyeOutlined />
-      </Button>
+      <StyledButton
+        title={formatMessage(commonMessages.ui.preview)}
+        type="primary"
+        onClick={() => setIsModalVisible(true)}
+        {...buttonProps}
+        icon={<EyeOutlined />}
+      />
     </div>
   )
 }
 
-export const CaptionUploadButton: React.VFC<{ videoId: string } & ButtonProps> = ({ videoId, ...buttonProps }) => {
+export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: boolean } & ButtonProps> = ({
+  videoId,
+  isExternalLink,
+  ...buttonProps
+}) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
     <div>
-      <Button size="small" onClick={() => setIsModalVisible(true)} {...buttonProps}>
-        <FileWordOutlined />
-      </Button>
+      <StyledButton
+        disabled={isExternalLink}
+        title={formatMessage(messages.reUpload)}
+        onClick={() => setIsModalVisible(true)}
+        {...buttonProps}
+        icon={<FileWordOutlined />}
+      />
       {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
     </div>
   )
@@ -250,14 +289,13 @@ export const ReUploadButton: React.VFC<
   })
   return (
     <div>
-      <Button
-        size="small"
+      <StyledButton
         disabled={uploadState === 'uploading' || isExternalLink}
+        title={formatMessage(messages.reUpload)}
         onClick={() => inputRef.current?.click()}
         {...buttonProps}
-      >
-        <UploadOutlined />
-      </Button>
+        icon={<UploadOutlined />}
+      />
       <input
         accept="video/*"
         ref={inputRef}

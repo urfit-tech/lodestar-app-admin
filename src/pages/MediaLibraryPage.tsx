@@ -80,7 +80,13 @@ const MediaLibrary: React.FC = () => {
       render: (_, attachment) => (
         <div>
           <div className="d-flex mb-1">
-            <PreviewButton className="mr-1" videoId={attachment.id} title={attachment.name} />
+            <PreviewButton
+              className="mr-1"
+              videoId={attachment.id}
+              title={attachment.name}
+              isExternalLink={!!attachment.data?.source}
+              videoUrl={attachment?.data?.url}
+            />
             <ReUploadButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
@@ -88,7 +94,7 @@ const MediaLibrary: React.FC = () => {
             />
           </div>
           <div className="d-flex">
-            <CaptionUploadButton className="mr-1" videoId={attachment.id} />
+            <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
             <DeleteButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
