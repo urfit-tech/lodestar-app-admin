@@ -857,6 +857,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
             created_at
             updated_at
             options
+            data
           }
         }
       }
@@ -890,6 +891,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
         createdAt: v.created_at,
         updatedAt: v.updated_at,
         options: v.options,
+        data: v.data,
       })) || [],
     [data],
   )
