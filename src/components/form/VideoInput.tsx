@@ -32,6 +32,7 @@ const VideoInput: React.FC<{
   return (
     <StyleInputGroup compact>
       <Input
+        className="mr-2"
         value={value || ''}
         placeholder={formatMessage(programMessages.text.videoPlaceholder)}
         onChange={e => {

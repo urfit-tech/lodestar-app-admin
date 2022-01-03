@@ -126,7 +126,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
       {trigger ? (
         trigger({ loading, value })
       ) : loading ? (
-        <div>
+        <div className="text-center">
           <Spin />
           <div style={{ color: '#585858' }}>{formatMessage(messages.uploading)}</div>
         </div>
