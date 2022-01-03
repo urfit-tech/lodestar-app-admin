@@ -690,16 +690,22 @@ export const useMutateAttachment = () => {
       }
     `,
   )
-
-  const [deleteAttachments] = useMutation<hasura.DELETE_ATTACHMENTS, hasura.DELETE_ATTACHMENTSVariables>(gql`
-    mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
+  const [archiveAttachments] = useMutation<hasura.ARCHIVE_ATTACHMENTS, hasura.ARCHIVE_ATTACHMENTSVariables>(gql`
+    mutation ARCHIVE_ATTACHMENTS($attachmentIds: [uuid!]!) {
       update_attachment(where: { id: { _in: $attachmentIds } }, _set: { is_deleted: true }) {
         affected_rows
       }
     }
   `)
+  const [deleteAttachments] = useMutation<hasura.DELETE_ATTACHMENTS, hasura.DELETE_ATTACHMENTSVariables>(gql`
+    mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
+      delete_attachment(where: { id: { _in: $attachmentIds } }) {
+        affected_rows
+      }
+    }
+  `)
 
-  return { insertAttachment, deleteAttachments }
+  return { insertAttachment, archiveAttachments, deleteAttachments }
 }
 
 export const useCouponCollection = (memberId: string) => {
