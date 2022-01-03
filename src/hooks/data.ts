@@ -904,7 +904,8 @@ export const useAttachments = (options?: { contentType?: string; status?: string
           },
         },
       )
-      .finally(() => refetch())
+      .catch(handleError)
+      .finally(() => refetch?.())
   }, [authToken, refetch])
   return {
     maxSize: data?.attachment_aggregate.aggregate?.max?.size || 0,
