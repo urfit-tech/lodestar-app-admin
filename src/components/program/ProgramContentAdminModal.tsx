@@ -199,12 +199,10 @@ const ProgramContentAdminModal: React.FC<{
           programContentBodyId: updatedProgramContentBodyId,
         },
       })
-
       if (videoPipeline === 'attachment') {
         await updateVideos(values.videoAttachment ? [values.videoAttachment.id] : [])
       }
-
-      if (videoPipeline === 'externalLink') {
+      if (videoPipeline === 'externalLink' && externalVideoInfo?.status === 'success') {
         const attachmentId = uuidV4()
         await insertAttachment({
           variables: {
@@ -219,6 +217,7 @@ const ProgramContentAdminModal: React.FC<{
                 filename: externalVideoInfo.title,
                 thumbnail_url: externalVideoInfo.thumbnailUrl,
                 content_type: `video/${contentTypeFormat(externalVideoInfo?.source || '')}`,
+                duration: values.duration,
                 data: {
                   id: externalVideoInfo.id,
                   source: externalVideoInfo.source,
@@ -228,10 +227,8 @@ const ProgramContentAdminModal: React.FC<{
             ],
           },
         })
-
         await updateVideos([attachmentId])
       }
-
       await updateProgramContentBody({
         variables: {
           programContentId: programContent.id,
@@ -240,13 +237,10 @@ const ProgramContentAdminModal: React.FC<{
           data: {},
         },
       })
-
       await updatePlans(values.planIds || [])
-
       if (!uploadError.materials) {
         await updateMaterials(materialFiles)
       }
-
       if (Object.values(uploadError).some(v => v)) {
         message.error(formatMessage(commonMessages.event.failedUpload))
       } else {
@@ -259,6 +253,9 @@ const ProgramContentAdminModal: React.FC<{
       message.error(formatMessage(commonMessages.event.failedSave))
     }
 
+    //init and reset form
+    form.resetFields()
+    setVideoPipeline('attachment')
     setExternalVideoInfo({ status: 'idle' })
     setLoading(false)
   }
@@ -407,11 +404,18 @@ const ProgramContentAdminModal: React.FC<{
                               const id = getVideoIDByURL(e.target.value, externalVideoInfo?.source || '')
                               const url = generateUrlWithID(id || '', externalVideoInfo?.source || '')
                               const res = await axios.get(`https://noembed.com/embed?url=${url}`)
-                              if (e.target.value !== '' && res.data.error) {
-                                setExternalVideoInfo({ status: 'error' })
-                              } else {
+                              if (e.target.value === '') {
+                                setExternalVideoInfo({ status: 'idle', source: externalVideoInfo.source })
+                              } else if (e.target.value !== '' && res.data.error) {
                                 setExternalVideoInfo({
-                                  id: id || '',
+                                  status: 'error',
+                                  source: externalVideoInfo.source,
+                                  url: e.target.value,
+                                })
+                              } else if (id && url) {
+                                form.setFieldsValue({ externalLink: url })
+                                setExternalVideoInfo({
+                                  id: id,
                                   status: 'success',
                                   source: externalVideoInfo.source,
                                   thumbnailUrl: res.data?.thumbnail_url,
