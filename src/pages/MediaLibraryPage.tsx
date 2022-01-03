@@ -81,11 +81,19 @@ const MediaLibrary: React.FC = () => {
         <div>
           <div className="d-flex mb-1">
             <PreviewButton className="mr-1" videoId={attachment.id} title={attachment.name} />
-            <ReUploadButton videoId={attachment.id} onFinish={() => refetchAttachments()} />
+            <ReUploadButton
+              videoId={attachment.id}
+              isExternalLink={!!attachment.data?.source}
+              onFinish={() => refetchAttachments()}
+            />
           </div>
           <div className="d-flex">
             <CaptionUploadButton className="mr-1" videoId={attachment.id} />
-            <DeleteButton videoId={attachment.id} onDelete={() => refetchAttachments()} />
+            <DeleteButton
+              videoId={attachment.id}
+              isExternalLink={!!attachment.data?.source}
+              onDelete={() => refetchAttachments()}
+            />
           </div>
         </div>
       ),

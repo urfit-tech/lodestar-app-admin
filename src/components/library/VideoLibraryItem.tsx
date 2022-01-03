@@ -10,7 +10,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { DeepPick } from 'ts-deep-pick'
-import { useCaptions } from '../../hooks/data'
+import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
 import VideoPlayer from './VideoPlayer'
 
@@ -68,31 +68,34 @@ const VideoLibraryItem: React.VFC<
   )
 }
 
-export const DeleteButton: React.VFC<{ videoId: string; onDelete?: () => void } & ButtonProps> = ({
-  videoId,
-  onDelete,
-  ...buttonProps
-}) => {
-  const { formatMessage } = useIntl()
+export const DeleteButton: React.VFC<
+  { videoId: string; isExternalLink: boolean; onDelete?: () => void } & ButtonProps
+> = ({ videoId, isExternalLink, onDelete, ...buttonProps }) => {
   const { authToken } = useAuth()
   const [deleting, setDeleting] = useState(false)
+  const { deleteAttachments } = useMutateAttachment()
+
   const handleClick = () => {
     if (window.confirm('This action cannot be reverted.')) {
       setDeleting(true)
-      axios
-        .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}`, {
-          headers: {
-            Authorization: `bearer ${authToken}`,
-          },
-        })
-        .then(({ data: { code, error } }) => {
-          if (code === 'SUCCESS') {
-            onDelete?.()
-          } else {
-            alert(error)
-          }
-        })
-        .finally(() => setDeleting(false))
+      if (isExternalLink) {
+        deleteAttachments({ variables: { attachmentIds: [videoId] } })
+      } else {
+        axios
+          .delete(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}`, {
+            headers: {
+              Authorization: `bearer ${authToken}`,
+            },
+          })
+          .then(({ data: { code, error } }) => {
+            if (code === 'SUCCESS') {
+              onDelete?.()
+            } else {
+              alert(error)
+            }
+          })
+          .finally(() => setDeleting(false))
+      }
     }
   }
   return (
@@ -212,11 +215,9 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
   )
 }
 
-export const ReUploadButton: React.VFC<{ videoId: string; onFinish?: () => void } & ButtonProps> = ({
-  videoId,
-  onFinish,
-  ...buttonProps
-}) => {
+export const ReUploadButton: React.VFC<
+  { videoId: string; isExternalLink: boolean; onFinish?: () => void } & ButtonProps
+> = ({ videoId, isExternalLink, onFinish, ...buttonProps }) => {
   const [uploadState, setUploadState] = useState<UploadState>('idle')
   const inputRef = useRef<HTMLInputElement>(null)
   const { authToken } = useAuth()
@@ -251,7 +252,7 @@ export const ReUploadButton: React.VFC<{ videoId: string; onFinish?: () => void 
     <div>
       <Button
         size="small"
-        disabled={uploadState === 'uploading'}
+        disabled={uploadState === 'uploading' || isExternalLink}
         onClick={() => inputRef.current?.click()}
         {...buttonProps}
       >
