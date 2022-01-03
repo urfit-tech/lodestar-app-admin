@@ -629,26 +629,12 @@ export const useSimpleProduct = (
     target,
   }
 }
-export const useInsertAttachment = () => {
-  const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(
-    gql`
-      mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
-        insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
-          returning {
-            id
-          }
-        }
-      }
-    `,
-  )
-  return insertAttachment
-}
 
 export const useUploadAttachments = () => {
   const { authToken } = useAuth()
   const { id: appId } = useApp()
 
-  const insertAttachment = useInsertAttachment()
+  const { insertAttachment } = useMutateAttachment()
   return async (type: string, target: string, files: File[], uploadFileConfig?: (file: File) => AxiosRequestConfig) => {
     const { data } = await insertAttachment({
       variables: {
@@ -693,6 +679,18 @@ export const useUploadAttachments = () => {
 }
 
 export const useMutateAttachment = () => {
+  const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(
+    gql`
+      mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
+        insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
+          returning {
+            id
+          }
+        }
+      }
+    `,
+  )
+
   const [deleteAttachments] = useMutation<hasura.DELETE_ATTACHMENTS, hasura.DELETE_ATTACHMENTSVariables>(gql`
     mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
       update_attachment(where: { id: { _in: $attachmentIds } }, _set: { is_deleted: true }) {
@@ -701,7 +699,7 @@ export const useMutateAttachment = () => {
     }
   `)
 
-  return { deleteAttachments }
+  return { insertAttachment, deleteAttachments }
 }
 
 export const useCouponCollection = (memberId: string) => {
