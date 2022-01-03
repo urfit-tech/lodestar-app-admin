@@ -699,6 +699,9 @@ export const useMutateAttachment = () => {
   `)
   const [deleteAttachments] = useMutation<hasura.DELETE_ATTACHMENTS, hasura.DELETE_ATTACHMENTSVariables>(gql`
     mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
+      delete_program_content_video(where: { attachment_id: { _in: $attachmentIds } }) {
+        affected_rows
+      }
       delete_attachment(where: { id: { _in: $attachmentIds } }) {
         affected_rows
       }
