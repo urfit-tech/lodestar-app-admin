@@ -11,7 +11,6 @@ import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
-import styled from 'styled-components'
 import { DeepPick } from 'ts-deep-pick'
 import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
@@ -29,13 +28,6 @@ const messages = defineMessages({
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
   chooseCaptionLanguage: { id: 'program.label.chooseCaptionLanguage', defaultMessage: '選擇字幕語系' },
 })
-
-const StyledButton = styled(Button)`
-  && {
-    width: 2rem;
-    height: 2rem;
-  }
-`
 
 const VideoLibraryItem: React.VFC<
   Pick<Attachment, 'id' | 'name'> &
@@ -117,16 +109,17 @@ export const DeleteButton: React.VFC<
     }
   }
   return (
-    <div>
-      <StyledButton
+    <>
+      <Button
         title={formatMessage(messages.delete)}
+        size="small"
         loading={deleting}
         danger
         onClick={handleClick}
         {...buttonProps}
         icon={<DeleteOutlined />}
       />
-    </div>
+    </>
   )
 }
 
@@ -136,7 +129,7 @@ export const PreviewButton: React.VFC<
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
   return (
-    <div>
+    <>
       <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
         {isExternalLink ? (
           <ReactPlayer url={videoUrl} width="100%" controls />
@@ -144,14 +137,15 @@ export const PreviewButton: React.VFC<
           <VideoPlayer videoId={videoId} width="100%" />
         )}
       </Modal>
-      <StyledButton
+      <Button
+        size="small"
         title={formatMessage(commonMessages.ui.preview)}
         type="primary"
         onClick={() => setIsModalVisible(true)}
         {...buttonProps}
         icon={<EyeOutlined />}
       />
-    </div>
+    </>
   )
 }
 
@@ -164,8 +158,9 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
-    <div>
-      <StyledButton
+    <>
+      <Button
+        size="small"
         disabled={isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => setIsModalVisible(true)}
@@ -173,7 +168,7 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
         icon={<FileWordOutlined />}
       />
       {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
-    </div>
+    </>
   )
 }
 
@@ -288,8 +283,9 @@ export const ReUploadButton: React.VFC<
       })
   })
   return (
-    <div>
-      <StyledButton
+    <>
+      <Button
+        size="small"
         disabled={uploadState === 'uploading' || isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => inputRef.current?.click()}
@@ -327,7 +323,7 @@ export const ReUploadButton: React.VFC<
         }}
       />
       <StatusBar uppy={uppy} hideUploadButton hideAfterFinish />
-    </div>
+    </>
   )
 }
 
