@@ -1,4 +1,4 @@
-import { Checkbox, Radio, TreeSelect } from 'antd'
+import { Checkbox, Radio, Tag, TreeSelect } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { keys } from 'ramda'
 import React, { useState } from 'react'
@@ -174,7 +174,15 @@ const ScopeSelector: React.FC<{
                       key={product.productId}
                       value={product.productId}
                       title={
-                        <div className="d-flex">
+                        <div className="d-flex align-items-center flex-wrap">
+                          <div className="mr-1">
+                            {product.publishedAt === null
+                              ? `(${formatMessage(commonMessages.label.unPublished)})`
+                              : product.publishedAt && product.publishedAt.getTime() > Date.now()
+                              ? `(${formatMessage(commonMessages.status.notSold)})`
+                              : ''}
+                          </div>
+                          {product.tag && <Tag className="mr-2">{product.tag}</Tag>}
                           {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
                           <StyledProductTitle>{product.title}</StyledProductTitle>
                         </div>

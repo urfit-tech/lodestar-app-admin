@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Spin, TreeSelect } from 'antd'
+import { Spin, Tag, TreeSelect } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -54,7 +54,17 @@ const ProductSelector: React.FC<{
       value: productSelection.productType,
       children: productSelection.products.map(product => ({
         key: product.id,
-        title: product.title,
+        title: (
+          <div className="d-flex align-items-center flex-wrap">
+            {product.publishedAt === null
+              ? `(${formatMessage(commonMessages.label.unPublished)}) `
+              : product.publishedAt && product.publishedAt.getTime() > Date.now()
+              ? `(${formatMessage(commonMessages.status.notSold)}) `
+              : ''}
+            {product.tag && <Tag className="mr-2">{product.tag}</Tag>}
+            {product.title}
+          </div>
+        ),
         value: product.id,
       })),
     }))
