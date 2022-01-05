@@ -1,3 +1,4 @@
+import { FileAddOutlined } from '@ant-design/icons'
 import { Button, message, Skeleton } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -12,7 +13,6 @@ import { handleError } from '../helpers'
 import { commonMessages, memberMessages } from '../helpers/translation'
 import { useUploadAttachments } from '../hooks/data'
 import { useMemberAdmin, useMemberNotesAdmin, useMutateMemberNote } from '../hooks/member'
-import { ReactComponent as FilePlusIcon } from '../images/icon/file-plus.svg'
 
 const MemberProfileAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -39,7 +39,7 @@ const MemberProfileAdminPage: React.FC = () => {
         <MemberNoteAdminModal
           title={formatMessage(memberMessages.label.createMemberNote)}
           renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon={<FilePlusIcon />} onClick={() => setVisible(true)}>
+            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
               {formatMessage(memberMessages.label.createMemberNote)}
             </Button>
           )}
