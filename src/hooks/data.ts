@@ -1007,18 +1007,17 @@ export const useCaptions = (videoAttachmentId: string) => {
 
 export const useAllBriefProductCollection = () => {
   const { enabledModules } = useApp()
-
+  const { formatMessage } = useIntl()
   const { loading, error, data, refetch } = useQuery<hasura.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
     gql`
       query GET_ALL_BRIEF_PRODUCT_COLLECTION {
-        program_plan(
-          where: {
-            program: { published_at: { _is_null: false }, is_deleted: { _eq: false } }
-            published_at: { _is_null: false }
-          }
-        ) {
+        program_plan(where: { program: { published_at: { _is_null: false }, is_deleted: { _eq: false } } }) {
           id
           title
+          auto_renewed
+          period_amount
+          period_type
+          published_at
           program {
             id
             title
@@ -1033,6 +1032,8 @@ export const useAllBriefProductCollection = () => {
         ) {
           id
           title
+          started_at
+          ended_at
           activity {
             id
             title
@@ -1041,10 +1042,12 @@ export const useAllBriefProductCollection = () => {
         podcast_program(where: { published_at: { _is_null: false } }) {
           id
           title
+          published_at
         }
         podcast_plan(where: { published_at: { _is_null: false } }) {
           id
           title
+          published_at
           creator {
             id
             name
@@ -1054,6 +1057,7 @@ export const useAllBriefProductCollection = () => {
         appointment_plan(where: { published_at: { _is_null: false } }) {
           id
           title
+          published_at
           creator {
             id
             name
@@ -1076,6 +1080,7 @@ export const useAllBriefProductCollection = () => {
         ) {
           id
           title
+          published_at
           project {
             id
             title
@@ -1086,6 +1091,7 @@ export const useAllBriefProductCollection = () => {
         ) {
           id
           title
+          published_at
           program_package {
             id
             title
@@ -1100,6 +1106,8 @@ export const useAllBriefProductCollection = () => {
       productId: string
       title: string
       parent?: string
+      publishedAt?: Date | null
+      tag?: string
     }[]
   } =
     loading || error || !data
@@ -1107,26 +1115,35 @@ export const useAllBriefProductCollection = () => {
       : {
           ProgramPlan: data.program_plan.map(programPlan => ({
             productId: `ProgramPlan_${programPlan.id}`,
-            title: programPlan.title || '',
+            title: programPlan.title,
             parent: programPlan.program.title,
+            publishedAt: programPlan.published_at ? new Date(programPlan.published_at) : null,
+            tag: programPlan.auto_renewed
+              ? formatMessage(commonMessages.ui.subscriptionPlan)
+              : programPlan.period_amount && programPlan.period_type
+              ? formatMessage(commonMessages.ui.periodPlan)
+              : formatMessage(commonMessages.ui.perpetualPlan),
           })),
           ActivityTicket: enabledModules.activity
             ? data.activity_ticket.map(activityTicket => ({
                 productId: `ActivityTicket_${activityTicket.id}`,
                 title: activityTicket.title,
                 parent: activityTicket.activity.title,
+                publishedAt: activityTicket.started_at ? new Date(activityTicket.started_at) : null,
               }))
             : undefined,
           PodcastProgram: enabledModules.podcast
             ? data.podcast_program.map(podcastProgram => ({
                 productId: `PodcastProgram_${podcastProgram.id}`,
                 title: podcastProgram.title,
+                publishedAt: podcastProgram.published_at ? new Date(podcastProgram.published_at) : null,
               }))
             : undefined,
           PodcastPlan: enabledModules.podcast
             ? data.podcast_plan.map(podcastPlan => ({
                 productId: `PodcastPlan_${podcastPlan.id}`,
                 title: `${podcastPlan.creator?.name || podcastPlan.creator?.username || ''}`,
+                publishedAt: podcastPlan.published_at ? new Date(podcastPlan.published_at) : null,
               }))
             : undefined,
           AppointmentPlan: enabledModules.appointment
@@ -1134,6 +1151,7 @@ export const useAllBriefProductCollection = () => {
                 productId: `AppointmentPlan_${appointmentPlan.id}`,
                 title: appointmentPlan.title,
                 parent: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
+                publishedAt: appointmentPlan.published_at ? new Date(appointmentPlan.published_at) : null,
               }))
             : undefined,
           MerchandiseSpec: enabledModules.merchandise
@@ -1148,12 +1166,14 @@ export const useAllBriefProductCollection = () => {
             productId: `ProjectPlan_${projectPlan.id}`,
             title: projectPlan.title,
             parent: projectPlan.project.title,
+            publishedAt: projectPlan.published_at ? new Date(projectPlan.published_at) : null,
           })),
           ProgramPackagePlan: enabledModules.program_package
             ? data.program_package_plan.map(programPackagePlan => ({
                 productId: `ProgramPackagePlan_${programPackagePlan.id}`,
                 title: programPackagePlan.title,
                 parent: programPackagePlan.program_package.title,
+                publishedAt: programPackagePlan.published_at ? new Date(programPackagePlan.published_at) : null,
               }))
             : undefined,
         }
