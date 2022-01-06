@@ -21,7 +21,7 @@ const MemberProfileAdminPage: React.FC = () => {
 
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
-    { created_at: 'desc' as hasura.order_by },
+    { created_at: 'desc' as hasura.order_by, id: 'asc' as hasura.order_by },
     { member: memberId },
   )
   const { insertMemberNote } = useMutateMemberNote()
