@@ -293,15 +293,15 @@ export const useMemberShop = (shopId: string) => {
             isPhysical: v.is_physical,
             isCustomized: v.is_customized,
             publishedAt: v.published_at ? new Date(v.published_at) : null,
-            soldQuantity: sum(
-              v.merchandise_specs
-                .filter(notEmpty)
-                .map(
-                  w =>
-                    (w.merchandise_spec_inventory_status?.delivered_quantity || 0) +
-                    (w.merchandise_spec_inventory_status?.undelivered_quantity || 0),
-                ),
-            ),
+            // soldQuantity: sum(
+            //   v.merchandise_specs
+            //     .filter(notEmpty)
+            //     .map(
+            //       w =>
+            //         (w.merchandise_spec_inventory_status?.delivered_quantity || 0) +
+            //         (w.merchandise_spec_inventory_status?.undelivered_quantity || 0),
+            //     ),
+            // ),
           })),
         }
 
