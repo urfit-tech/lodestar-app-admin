@@ -517,10 +517,11 @@ export const useMemberNotesAdmin = (
               if (!fetchMoreResult) {
                 return prev
               }
+              const result = prev ? prev.member_note : []
               return {
                 ...prev,
                 member_note_aggregate: fetchMoreResult.member_note_aggregate,
-                member_note: [...(prev ? prev.member_note : []), ...fetchMoreResult.member_note],
+                member_note: [...result, ...fetchMoreResult.member_note],
               }
             },
           })
