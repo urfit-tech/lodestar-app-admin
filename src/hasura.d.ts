@@ -11012,6 +11012,33 @@ export interface GET_MEMBER_SHOPVariables {
 
 
 // ====================================================
+// GraphQL query operation: GET_MERCHANDISE_SPEC_INVENTORY_STATUS
+// ====================================================
+
+
+export interface GET_MERCHANDISE_SPEC_INVENTORY_STATUS_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  merchandise_spec_id: any | null;
+  buyable_quantity: any | null;
+  delivered_quantity: any | null;
+  undelivered_quantity: any | null;
+  unpaid_quantity: any | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_INVENTORY_STATUS {
+  /**
+   * fetch data from the table: "merchandise_spec_inventory_status"
+   */
+  merchandise_spec_inventory_status: GET_MERCHANDISE_SPEC_INVENTORY_STATUS_merchandise_spec_inventory_status[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_MERCHANDISE_SPEC_COLLECTION
 // ====================================================
 
@@ -16222,7 +16249,7 @@ export enum app_nav_update_column {
  * unique or primary key constraints on table "app_page"
  */
 export enum app_page_constraint {
-  app_page_path_app_id_key = "app_page_path_app_id_key",
+  app_page_path_app_id_is_deleted_key = "app_page_path_app_id_is_deleted_key",
   app_page_pkey = "app_page_pkey",
 }
 
@@ -16991,6 +17018,7 @@ export enum member_oauth_constraint {
 export enum member_oauth_update_column {
   id = "id",
   member_id = "member_id",
+  options = "options",
   provider = "provider",
   provider_user_id = "provider_user_id",
 }
@@ -24902,6 +24930,7 @@ export interface member_oauth_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   provider?: String_comparison_exp | null;
   provider_user_id?: String_comparison_exp | null;
 }
@@ -24913,6 +24942,7 @@ export interface member_oauth_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  options?: any | null;
   provider?: string | null;
   provider_user_id?: string | null;
 }
