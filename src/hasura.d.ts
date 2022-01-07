@@ -11154,6 +11154,33 @@ export interface GET_MEMBER_SHOPVariables {
 
 
 // ====================================================
+// GraphQL query operation: GET_MERCHANDISE_SPEC_INVENTORY_STATUS
+// ====================================================
+
+
+export interface GET_MERCHANDISE_SPEC_INVENTORY_STATUS_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  merchandise_spec_id: any | null;
+  buyable_quantity: any | null;
+  delivered_quantity: any | null;
+  undelivered_quantity: any | null;
+  unpaid_quantity: any | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_INVENTORY_STATUS {
+  /**
+   * fetch data from the table: "merchandise_spec_inventory_status"
+   */
+  merchandise_spec_inventory_status: GET_MERCHANDISE_SPEC_INVENTORY_STATUS_merchandise_spec_inventory_status[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_MERCHANDISE_SPEC_COLLECTION
 // ====================================================
 
