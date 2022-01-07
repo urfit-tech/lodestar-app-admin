@@ -215,7 +215,7 @@ const MemberAdminLayout: React.FC<{
     updateMemberAvatar({
       variables: {
         memberId: member.id,
-        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${member.id}/32?t=${uploadTime}`,
+        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${member.id}/256?t=${uploadTime}`,
       },
     })
       .then(() => {
