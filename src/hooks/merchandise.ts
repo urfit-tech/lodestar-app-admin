@@ -245,10 +245,10 @@ export const useMemberShop = (shopId: string) => {
               id
               list_price
               sale_price
-              merchandise_spec_inventory_status {
-                undelivered_quantity
-                delivered_quantity
-              }
+              # merchandise_spec_inventory_status {
+              #   undelivered_quantity
+              #   delivered_quantity
+              # }
             }
           }
         }

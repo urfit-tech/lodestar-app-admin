@@ -10942,21 +10942,11 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs
   url: string;
 }
 
-export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status {
-  __typename: "merchandise_spec_inventory_status";
-  undelivered_quantity: any | null;
-  delivered_quantity: any | null;
-}
-
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs {
   __typename: "merchandise_spec";
   id: any;
   list_price: any;
   sale_price: any | null;
-  /**
-   * An object relationship
-   */
-  merchandise_spec_inventory_status: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status | null;
 }
 
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
