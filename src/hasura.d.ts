@@ -2013,6 +2013,10 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_program_plan {
   __typename: "program_plan";
   id: any;
   title: string;
+  auto_renewed: boolean;
+  period_amount: any | null;
+  period_type: string | null;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -2029,6 +2033,7 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan {
   __typename: "program_package_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -2045,6 +2050,8 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket {
   __typename: "activity_ticket";
   id: any;
   title: string;
+  started_at: any;
+  ended_at: any;
   /**
    * An object relationship
    */
@@ -2061,6 +2068,7 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program {
   __typename: "podcast_program";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9512,6 +9520,10 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
   __typename: "program_plan";
   id: any;
   title: string;
+  auto_renewed: boolean;
+  period_amount: any | null;
+  period_type: string | null;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9528,6 +9540,8 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket {
   __typename: "activity_ticket";
   id: any;
   title: string;
+  started_at: any;
+  ended_at: any;
   /**
    * An object relationship
    */
@@ -9538,6 +9552,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program {
   __typename: "podcast_program";
   id: any;
   title: string;
+  published_at: any | null;
 }
 
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator {
@@ -9551,6 +9566,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan {
   __typename: "podcast_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9568,6 +9584,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
   __typename: "appointment_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9600,6 +9617,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan {
   __typename: "project_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9616,6 +9634,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
   __typename: "program_package_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */

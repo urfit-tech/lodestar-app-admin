@@ -250,6 +250,7 @@ export const commonMessages = {
     },
     default: { id: 'common.label.default', defaultMessage: '預設' },
     desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
+    unPublished: { id: 'common.label.unPublished', defaultMessage: '停售' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -316,9 +317,9 @@ export const commonMessages = {
     unpublished: { id: 'common.status.unpublished', defaultMessage: '尚未發佈' },
     published: { id: 'common.status.published', defaultMessage: '已發佈' },
     notPublished: { id: 'common.status.notPublished', defaultMessage: '未發佈' },
-    publiclyPublished: { id: 'common.status.publicyPublished', defaultMessage: '已公開發佈' },
+    publiclyPublished: { id: 'common.status.publiclyPublished', defaultMessage: '已公開發佈' },
     privatelyPublished: { id: 'common.status.privatelyPublished', defaultMessage: '已私密發佈' },
-    publiclyPublish: { id: 'common.status.publicyPublish', defaultMessage: '公開發佈' },
+    publiclyPublish: { id: 'common.status.publiclyPublish', defaultMessage: '公開發佈' },
     privatelyPublish: { id: 'common.status.privatelyPublish', defaultMessage: '私密發佈' },
     draft: { id: 'common.label.draft', defaultMessage: '草稿' },
     notSold: { id: 'common.status.notSold', defaultMessage: '尚未發售' },
@@ -1284,7 +1285,7 @@ export const orderMessages = {
     orderDiscountTotalPrice: { id: 'order.label.orderDiscountTotalPrice', defaultMessage: '折扣總額' },
     // payment log
     paymentLogNo: { id: 'order.label.paymentLogNo', defaultMessage: '交易編號' },
-    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道'},
+    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道' },
     paymentLogPaidAt: { id: 'order.label.paymentLogPaidAt', defaultMessage: '付款時間' },
     paymentLogDetails: { id: 'order.label.paymentLogDetails', defaultMessage: '付款方式' },
     // member
