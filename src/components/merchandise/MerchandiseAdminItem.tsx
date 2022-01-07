@@ -41,7 +41,7 @@ const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
   title,
   minPrice,
   maxPrice,
-  soldQuantity,
+  // soldQuantity,
 }) => {
   return (
     <Link to={`/merchandises/${id}`}>
@@ -53,7 +53,7 @@ const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
         <StyledPriceLabel className="flex-shrink-0">
           {currencyFormatter(minPrice)} ~ {currencyFormatter(maxPrice)}
         </StyledPriceLabel>
-        {<StyledQuantityLabel className="flex-shrink-0">{soldQuantity}</StyledQuantityLabel>}
+        {/* {<StyledQuantityLabel className="flex-shrink-0">{soldQuantity}</StyledQuantityLabel>} */}
       </StyledWrapper>
     </Link>
   )
