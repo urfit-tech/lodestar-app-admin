@@ -88,7 +88,7 @@ const PracticeForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const uploadAttachments = useUploadAttachments()
-  const { deleteAttachments } = useMutateAttachment()
+  const { archiveAttachments } = useMutateAttachment()
   const { deleteProgramContent } = useMutateProgramContent()
   const [updatePractice] = useMutation<hasura.UPDATE_PRACTICE, hasura.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
 
@@ -138,7 +138,7 @@ const PracticeForm: React.FC<{
           )
 
           if (deletedAttachmentIds.length) {
-            await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+            await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
           }
           if (newAttachments.length) {
             await uploadAttachments('ProgramContent', programContent.id, newAttachments)

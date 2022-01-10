@@ -127,6 +127,7 @@ export type Attachment = {
   createdAt: Date
   updatedAt: Date
   options: any
+  data: any
 }
 
 export type UploadState = 'idle' | 'uploading' | 'upload-success' | 'upload-error'
