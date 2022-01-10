@@ -251,6 +251,7 @@ export const commonMessages = {
     default: { id: 'common.label.default', defaultMessage: '預設' },
     desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
     unPublished: { id: 'common.label.unPublished', defaultMessage: '停售' },
+    externalLink: { id: 'common.label.externalLink', defaultMessage: '外部連結' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -422,7 +423,6 @@ export const commonMessages = {
     podcastPlan: { id: 'common.product.podcastPlan', defaultMessage: '廣播頻道' },
     appointmentPlan: { id: 'common.product.appointmentPlan', defaultMessage: '預約' },
     unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
-
     allItem: { id: 'common.product.allItem', defaultMessage: '全部項目' },
     specificItem: { id: 'common.product.specificItem', defaultMessage: '指定項目' },
     otherItem: { id: 'common.product.otherItem', defaultMessage: '其他指定項目' },
@@ -436,7 +436,6 @@ export const commonMessages = {
     allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
-
     allScope: { id: 'common.product.allScope', defaultMessage: '全站折抵' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
   }),
@@ -448,6 +447,9 @@ export const commonMessages = {
     week: { id: 'common.unit.week', defaultMessage: '週' },
     month: { id: 'common.unit.month', defaultMessage: '月' },
     year: { id: 'common.label.year', defaultMessage: '年' },
+  }),
+  placeholder: defineMessages({
+    enterUrlLink: { id: 'common.placeholder.enterUrlLink', defaultMessage: '輸入網址連結' },
   }),
 }
 
@@ -487,6 +489,7 @@ export const errorMessages = {
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
     memberAlreadyExist: { id: 'error.text.memberAlreadyExist', defaultMessage: '會員已存在' },
+    invalidUrl: { id: 'error.text.invalidURL', defaultMessage: '無效的網址' },
   }),
 }
 

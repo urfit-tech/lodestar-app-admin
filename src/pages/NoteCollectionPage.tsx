@@ -88,7 +88,7 @@ const NoteCollectionPage: React.FC = () => {
   )
   const { updateMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  const { deleteAttachments } = useMutateAttachment()
+  const { archiveAttachments } = useMutateAttachment()
 
   const searchInputRef = useRef<Input | null>(null)
 
@@ -415,7 +415,7 @@ const NoteCollectionPage: React.FC = () => {
                           ),
                         )
                         if (memberNoteId && attachments.length) {
-                          await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                          await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
                           await uploadAttachments('MemberNote', memberNoteId, newAttachments)
                         }
                         message.success(formatMessage(commonMessages.event.successfullyEdited))

@@ -9298,11 +9298,41 @@ export interface INSERT_ATTACHMENTVariables {
 
 
 // ====================================================
+// GraphQL mutation operation: ARCHIVE_ATTACHMENTS
+// ====================================================
+
+
+export interface ARCHIVE_ATTACHMENTS_update_attachment {
+  __typename: "attachment_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_ATTACHMENTS {
+  /**
+   * update data of the table: "attachment"
+   */
+  update_attachment: ARCHIVE_ATTACHMENTS_update_attachment | null;
+}
+
+export interface ARCHIVE_ATTACHMENTSVariables {
+  attachmentIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL mutation operation: DELETE_ATTACHMENTS
 // ====================================================
 
 
-export interface DELETE_ATTACHMENTS_update_attachment {
+export interface DELETE_ATTACHMENTS_delete_attachment {
   __typename: "attachment_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -9312,9 +9342,9 @@ export interface DELETE_ATTACHMENTS_update_attachment {
 
 export interface DELETE_ATTACHMENTS {
   /**
-   * update data of the table: "attachment"
+   * delete data from the table: "attachment"
    */
-  update_attachment: DELETE_ATTACHMENTS_update_attachment | null;
+  delete_attachment: DELETE_ATTACHMENTS_delete_attachment | null;
 }
 
 export interface DELETE_ATTACHMENTSVariables {
@@ -9478,6 +9508,7 @@ export interface GET_ATTACHMENTS_attachment_aggregate_nodes {
   created_at: any;
   updated_at: any;
   options: any | null;
+  data: any | null;
 }
 
 export interface GET_ATTACHMENTS_attachment_aggregate {

@@ -633,16 +633,8 @@ export const useSimpleProduct = (
 export const useUploadAttachments = () => {
   const { authToken } = useAuth()
   const { id: appId } = useApp()
-  const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(gql`
-    mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
-      insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
-        returning {
-          id
-        }
-      }
-    }
-  `)
 
+  const { insertAttachment } = useMutateAttachment()
   return async (type: string, target: string, files: File[], uploadFileConfig?: (file: File) => AxiosRequestConfig) => {
     const { data } = await insertAttachment({
       variables: {
@@ -687,15 +679,36 @@ export const useUploadAttachments = () => {
 }
 
 export const useMutateAttachment = () => {
-  const [deleteAttachments] = useMutation<hasura.DELETE_ATTACHMENTS, hasura.DELETE_ATTACHMENTSVariables>(gql`
-    mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
+  const [insertAttachment] = useMutation<hasura.INSERT_ATTACHMENT, hasura.INSERT_ATTACHMENTVariables>(
+    gql`
+      mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
+        insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
+          returning {
+            id
+          }
+        }
+      }
+    `,
+  )
+  const [archiveAttachments] = useMutation<hasura.ARCHIVE_ATTACHMENTS, hasura.ARCHIVE_ATTACHMENTSVariables>(gql`
+    mutation ARCHIVE_ATTACHMENTS($attachmentIds: [uuid!]!) {
       update_attachment(where: { id: { _in: $attachmentIds } }, _set: { is_deleted: true }) {
         affected_rows
       }
     }
   `)
+  const [deleteAttachments] = useMutation<hasura.DELETE_ATTACHMENTS, hasura.DELETE_ATTACHMENTSVariables>(gql`
+    mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
+      delete_program_content_video(where: { attachment_id: { _in: $attachmentIds } }) {
+        affected_rows
+      }
+      delete_attachment(where: { id: { _in: $attachmentIds } }) {
+        affected_rows
+      }
+    }
+  `)
 
-  return { deleteAttachments }
+  return { insertAttachment, archiveAttachments, deleteAttachments }
 }
 
 export const useCouponCollection = (memberId: string) => {
@@ -851,6 +864,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
             created_at
             updated_at
             options
+            data
           }
         }
       }
@@ -884,6 +898,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
         createdAt: v.created_at,
         updatedAt: v.updated_at,
         options: v.options,
+        data: v.data,
       })) || [],
     [data],
   )
@@ -898,7 +913,8 @@ export const useAttachments = (options?: { contentType?: string; status?: string
           },
         },
       )
-      .finally(() => refetch())
+      .catch(handleError)
+      .finally(() => refetch?.())
   }, [authToken, refetch])
   return {
     maxSize: data?.attachment_aggregate.aggregate?.max?.size || 0,
