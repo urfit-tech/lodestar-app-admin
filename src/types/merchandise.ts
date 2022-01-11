@@ -48,6 +48,9 @@ export type MerchandiseSpecProps = {
   salePrice: number | null
   quota: number
   files: { id: string; data: any }[]
+  coinBack: number | null
+  coinBackPeriodAmount: number | null
+  coinBackPeriodType: string | null
 }
 
 export type MerchandiseSpec = {
