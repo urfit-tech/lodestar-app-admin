@@ -229,7 +229,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
       />
       <Divider className="my-3" />
 
-      {!isSubscription && (
+      {!isSubscription && periodAmount && periodType && (
         <StyledText>
           {formatMessage(messages.availableForLimitTime, {
             amount: periodAmount,
