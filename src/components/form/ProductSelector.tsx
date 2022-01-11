@@ -65,6 +65,7 @@ const ProductSelector: React.FC<{
             {product.title}
           </div>
         ),
+        name: product.title,
         value: product.id,
       })),
     }))
@@ -88,7 +89,7 @@ const ProductSelector: React.FC<{
       treeCheckable
       showCheckedStrategy="SHOW_PARENT"
       placeholder={formatMessage(messages.selectProducts)}
-      treeNodeFilterProp="title"
+      treeNodeFilterProp="name"
       dropdownStyle={{
         maxHeight: '30vh',
       }}

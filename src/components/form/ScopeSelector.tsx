@@ -159,6 +159,7 @@ const ScopeSelector: React.FC<{
                 productIds: value,
               })
           }}
+          treeNodeFilterProp="name"
         >
           {keys(briefProducts).map(
             productType =>
@@ -173,6 +174,7 @@ const ScopeSelector: React.FC<{
                     <TreeSelect.TreeNode
                       key={product.productId}
                       value={product.productId}
+                      name={(product.parent || '') + product.title}
                       title={
                         <div className="d-flex align-items-center flex-wrap">
                           <div className="mr-1">
