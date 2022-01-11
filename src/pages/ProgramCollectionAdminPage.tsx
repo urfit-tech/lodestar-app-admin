@@ -347,19 +347,13 @@ const useProgramPreviewCollection = (
           name: programRole.member?.name || programRole.member?.username || '',
         })),
         isSubscription: program.is_subscription,
-        listPrice: program.is_subscription ? plan?.list_price || null : program.list_price,
-        salePrice: program.is_subscription
-          ? plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now()
-            ? plan.sale_price
-            : null
-          : program.sold_at && new Date(program.sold_at).getTime() > Date.now()
-          ? program.sale_price
-          : null,
-        periodAmount: program.is_subscription && plan ? 1 : null,
-        periodType: program.is_subscription && plan ? (plan.period_type as ProgramPlanPeriodType) : null,
-        enrollment: program.is_subscription
-          ? sum(program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0))
-          : program.program_enrollments_aggregate.aggregate?.count || 0,
+        listPrice: plan?.list_price || null,
+        salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
+        periodAmount: plan.period_amount || null,
+        periodType: (plan.period_type as ProgramPlanPeriodType) || null,
+        enrollment: sum(
+          program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0),
+        ),
         isPrivate: program.is_private,
       }
     }) || []
@@ -472,6 +466,7 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
         sale_price
         sold_at
         period_type
+        period_amount
         program_plan_enrollments_aggregate {
           aggregate {
             count

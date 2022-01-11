@@ -15316,6 +15316,7 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
   sale_price: any | null;
   sold_at: any | null;
   period_type: string | null;
+  period_amount: any | null;
   /**
    * An aggregated array relationship
    */
