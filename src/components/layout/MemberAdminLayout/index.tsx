@@ -48,6 +48,8 @@ const StyledName = styled.div`
 const StyledDescription = styled.div`
   margin-bottom: 0.75rem;
   color: var(--gray-darker);
+  display: flex;
+  align-items: center;
 `
 const StyledDescriptionLabel = styled.span`
   color: var(--gray-dark);

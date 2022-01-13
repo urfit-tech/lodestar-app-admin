@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useApolloClient, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { max, min } from 'lodash'
 import { sum } from 'ramda'
@@ -12,6 +12,7 @@ import {
   MerchandiseProps,
   MerchandiseSpec,
 } from '../types/merchandise'
+import { useEffect, useState } from 'react'
 
 export const useMerchandiseCollection = (isNotPublished?: boolean) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MERCHANDISE_COLLECTION>(
@@ -61,7 +62,9 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
 }
 
 export const useMerchandise = (id: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_MERCHANDISE, hasura.GET_MERCHANDISEVariables>(
+  const apolloClient = useApolloClient()
+  const [merchandiseProducts, setMerchandiseProducts] = useState<hasura.GET_MERCHANDISE_SPEC_PRODUCTS_product[]>([])
+  const { loading:loadingMerchandise, error:errorMerchandise, data:merchandiseData, refetch:refetchMerchandise } = useQuery<hasura.GET_MERCHANDISE, hasura.GET_MERCHANDISEVariables>(
     gql`
       query GET_MERCHANDISE($id: uuid!) {
         merchandise_by_pk(id: $id) {
@@ -111,34 +114,70 @@ export const useMerchandise = (id: string) => {
     `,
     { variables: { id } },
   )
+
+  const merchandiseSpecIds:string[] = merchandiseData?.merchandise_by_pk?.merchandise_specs.map(spec=>spec.id) || []
+
+  useEffect(() => {
+    if (merchandiseSpecIds.length > 0) {
+      apolloClient
+        .query<hasura.GET_MERCHANDISE_SPEC_PRODUCTS, hasura.GET_MERCHANDISE_SPEC_PRODUCTSVariables>({
+          query: gql`
+            query GET_MERCHANDISE_SPEC_PRODUCTS($merchandiseSpecIds: [String!]) {
+              product(where: { target: { _in: $merchandiseSpecIds } }) {
+                id
+                type
+                target
+                coin_back
+                coin_period_type
+                coin_period_amount
+              }
+            }
+          `,
+          variables: { merchandiseSpecIds },
+        })
+        .then(({ data }) => {
+          const products = data.product
+          setMerchandiseProducts(products)
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
+  }, [merchandiseData])
+
+
+  const loading = loadingMerchandise
+  const error = errorMerchandise
   const merchandise: MerchandiseProps | null =
-    loading || error || !data || !data.merchandise_by_pk
+    loading || error || !merchandiseData || !merchandiseData.merchandise_by_pk
       ? null
       : {
           id,
-          title: data.merchandise_by_pk.title,
-          categories: data.merchandise_by_pk.merchandise_categories.map(merchandiseCategory => ({
+          title: merchandiseData.merchandise_by_pk.title,
+          categories: merchandiseData.merchandise_by_pk.merchandise_categories.map(merchandiseCategory => ({
             id: merchandiseCategory.category.id,
             name: merchandiseCategory.category.name,
           })),
-          tags: data.merchandise_by_pk.merchandise_tags.map(merchandiseTag => merchandiseTag.tag_name),
-          images: data.merchandise_by_pk.merchandise_imgs.map(img => ({
+          tags: merchandiseData.merchandise_by_pk.merchandise_tags.map(merchandiseTag => merchandiseTag.tag_name),
+          images: merchandiseData.merchandise_by_pk.merchandise_imgs.map(img => ({
             url: img.url,
             isCover: img.type === 'cover',
           })),
-          abstract: data.merchandise_by_pk.abstract,
-          link: data.merchandise_by_pk.link,
-          description: data.merchandise_by_pk.description,
-          soldAt: data.merchandise_by_pk.sold_at,
-          startedAt: data.merchandise_by_pk.started_at,
-          endedAt: data.merchandise_by_pk.ended_at,
-          publishedAt: data.merchandise_by_pk.published_at ? new Date(data.merchandise_by_pk.published_at) : null,
-          memberShopId: data.merchandise_by_pk.member_shop_id,
-          isPhysical: data.merchandise_by_pk.is_physical,
-          isCustomized: data.merchandise_by_pk.is_customized,
-          isLimited: data.merchandise_by_pk.is_limited,
-          isCountdownTimerVisible: data.merchandise_by_pk.is_countdown_timer_visible,
-          specs: data.merchandise_by_pk.merchandise_specs.map(v => ({
+          abstract: merchandiseData.merchandise_by_pk.abstract,
+          link: merchandiseData.merchandise_by_pk.link,
+          description: merchandiseData.merchandise_by_pk.description,
+          soldAt: merchandiseData.merchandise_by_pk.sold_at,
+          startedAt: merchandiseData.merchandise_by_pk.started_at,
+          endedAt: merchandiseData.merchandise_by_pk.ended_at,
+          publishedAt: merchandiseData.merchandise_by_pk.published_at
+            ? new Date(merchandiseData.merchandise_by_pk.published_at)
+            : null,
+          memberShopId: merchandiseData.merchandise_by_pk.member_shop_id,
+          isPhysical: merchandiseData.merchandise_by_pk.is_physical,
+          isCustomized: merchandiseData.merchandise_by_pk.is_customized,
+          isLimited: merchandiseData.merchandise_by_pk.is_limited,
+          isCountdownTimerVisible: merchandiseData.merchandise_by_pk.is_countdown_timer_visible,
+          specs: merchandiseData.merchandise_by_pk.merchandise_specs.map(v => ({
             id: v.id,
             title: v.title,
             listPrice: v.list_price,
@@ -148,6 +187,9 @@ export const useMerchandise = (id: string) => {
               id: u.id,
               data: u.data,
             })),
+            coinBack: merchandiseProducts?.find(p => p.target === v.id)?.coin_back || 0,
+            coinBackPeriodAmount: merchandiseProducts?.find(p => p.target === v.id)?.coin_period_amount || null,
+            coinBackPeriodType: merchandiseProducts?.find(p => p.target === v.id)?.coin_period_type || null,
           })),
         }
 
@@ -155,9 +197,10 @@ export const useMerchandise = (id: string) => {
     loadingMerchandise: loading,
     errorMerchandise: error,
     merchandise,
-    refetchMerchandise: refetch,
+    refetchMerchandise
   }
 }
+
 
 export const useMemberShopCollection = (memberId?: string | null) => {
   const { loading, error, data, refetch } = useQuery<
@@ -388,6 +431,7 @@ export const useMerchandiseSpecCollection = (options?: {
       fetchPolicy: 'no-cache',
     },
   )
+  //const {loading, error, data, refetch } = useQuery<>
 
   let merchandiseSpecs: MerchandiseSpec[] =
     loading || error || !data

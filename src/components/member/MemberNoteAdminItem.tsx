@@ -53,7 +53,7 @@ const MemberNoteAdminItem: React.FC<{
   const { currentMemberId } = useAuth()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  const { deleteAttachments } = useMutateAttachment()
+  const { archiveAttachments } = useMutateAttachment()
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -133,7 +133,7 @@ const MemberNoteAdminItem: React.FC<{
                         ),
                       )
                       if (memberNoteId && attachments.length) {
-                        await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                        await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
                         await uploadAttachments('MemberNote', memberNoteId, newAttachments)
                       }
                       message.success(formatMessage(commonMessages.event.successfullyEdited))

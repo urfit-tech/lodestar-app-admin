@@ -2013,6 +2013,10 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_program_plan {
   __typename: "program_plan";
   id: any;
   title: string;
+  auto_renewed: boolean;
+  period_amount: any | null;
+  period_type: string | null;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -2029,6 +2033,7 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan {
   __typename: "program_package_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -2045,6 +2050,8 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket {
   __typename: "activity_ticket";
   id: any;
   title: string;
+  started_at: any;
+  ended_at: any;
   /**
    * An object relationship
    */
@@ -2061,6 +2068,7 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program {
   __typename: "podcast_program";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -3793,6 +3801,7 @@ export interface INSERT_MERCHANDISE_SPEC_COLLECTION_delete_merchandise_spec_file
 export interface INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec_returning {
   __typename: "merchandise_spec";
   id: any;
+  title: string;
 }
 
 export interface INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec {
@@ -3830,6 +3839,57 @@ export interface INSERT_MERCHANDISE_SPEC_COLLECTIONVariables {
   merchandiseId: any;
   data: merchandise_spec_insert_input[];
   archivedMerchandiseSpecIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PRODUCT_COIN_BACK
+// ====================================================
+
+
+export interface UPDATE_PRODUCT_COIN_BACK_update_product_returning {
+  __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
+  id: string;
+  target: string;
+  /**
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   */
+  type: string;
+  coin_back: any;
+  coin_period_type: string | null;
+  coin_period_amount: number | null;
+}
+
+export interface UPDATE_PRODUCT_COIN_BACK_update_product {
+  __typename: "product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: UPDATE_PRODUCT_COIN_BACK_update_product_returning[];
+}
+
+export interface UPDATE_PRODUCT_COIN_BACK {
+  /**
+   * update data of the table: "product"
+   */
+  update_product: UPDATE_PRODUCT_COIN_BACK_update_product | null;
+}
+
+export interface UPDATE_PRODUCT_COIN_BACKVariables {
+  merchandiseSpecId: string;
+  updated: product_set_input;
 }
 
 /* tslint:disable */
@@ -9290,11 +9350,49 @@ export interface INSERT_ATTACHMENTVariables {
 
 
 // ====================================================
+// GraphQL mutation operation: ARCHIVE_ATTACHMENTS
+// ====================================================
+
+
+export interface ARCHIVE_ATTACHMENTS_update_attachment {
+  __typename: "attachment_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_ATTACHMENTS {
+  /**
+   * update data of the table: "attachment"
+   */
+  update_attachment: ARCHIVE_ATTACHMENTS_update_attachment | null;
+}
+
+export interface ARCHIVE_ATTACHMENTSVariables {
+  attachmentIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL mutation operation: DELETE_ATTACHMENTS
 // ====================================================
 
 
-export interface DELETE_ATTACHMENTS_update_attachment {
+export interface DELETE_ATTACHMENTS_delete_program_content_video {
+  __typename: "program_content_video_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_ATTACHMENTS_delete_attachment {
   __typename: "attachment_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -9304,9 +9402,13 @@ export interface DELETE_ATTACHMENTS_update_attachment {
 
 export interface DELETE_ATTACHMENTS {
   /**
-   * update data of the table: "attachment"
+   * delete data from the table: "program_content_video"
    */
-  update_attachment: DELETE_ATTACHMENTS_update_attachment | null;
+  delete_program_content_video: DELETE_ATTACHMENTS_delete_program_content_video | null;
+  /**
+   * delete data from the table: "attachment"
+   */
+  delete_attachment: DELETE_ATTACHMENTS_delete_attachment | null;
 }
 
 export interface DELETE_ATTACHMENTSVariables {
@@ -9470,6 +9572,7 @@ export interface GET_ATTACHMENTS_attachment_aggregate_nodes {
   created_at: any;
   updated_at: any;
   options: any | null;
+  data: any | null;
 }
 
 export interface GET_ATTACHMENTS_attachment_aggregate {
@@ -9512,6 +9615,10 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
   __typename: "program_plan";
   id: any;
   title: string;
+  auto_renewed: boolean;
+  period_amount: any | null;
+  period_type: string | null;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9528,6 +9635,8 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket {
   __typename: "activity_ticket";
   id: any;
   title: string;
+  started_at: any;
+  ended_at: any;
   /**
    * An object relationship
    */
@@ -9538,6 +9647,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program {
   __typename: "podcast_program";
   id: any;
   title: string;
+  published_at: any | null;
 }
 
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator {
@@ -9551,6 +9661,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan {
   __typename: "podcast_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9568,6 +9679,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
   __typename: "appointment_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9600,6 +9712,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan {
   __typename: "project_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -9616,6 +9729,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
   __typename: "program_package_plan";
   id: any;
   title: string;
+  published_at: any | null;
   /**
    * An object relationship
    */
@@ -10869,6 +10983,44 @@ export interface GET_MERCHANDISEVariables {
 
 
 // ====================================================
+// GraphQL query operation: GET_MERCHANDISE_SPEC_PRODUCTS
+// ====================================================
+
+
+export interface GET_MERCHANDISE_SPEC_PRODUCTS_product {
+  __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
+  id: string;
+  /**
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   */
+  type: string;
+  target: string;
+  coin_back: any;
+  coin_period_type: string | null;
+  coin_period_amount: number | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_PRODUCTS {
+  /**
+   * fetch data from the table: "product"
+   */
+  product: GET_MERCHANDISE_SPEC_PRODUCTS_product[];
+}
+
+export interface GET_MERCHANDISE_SPEC_PRODUCTSVariables {
+  merchandiseSpecIds?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_SHOP_COLLECTION
 // ====================================================
 
@@ -11197,7 +11349,7 @@ export interface GET_ORDERS_order_log_order_products_product {
    */
   id: string;
   /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
    */
   type: string;
 }
@@ -18200,6 +18352,9 @@ export enum product_inventory_update_column {
  * update columns of table "product"
  */
 export enum product_update_column {
+  coin_back = "coin_back",
+  coin_period_amount = "coin_period_amount",
+  coin_period_type = "coin_period_type",
   id = "id",
   sku = "sku",
   target = "target",
@@ -30332,6 +30487,9 @@ export interface product_bool_exp {
   _or?: (product_bool_exp | null)[] | null;
   card_discounts?: card_discount_bool_exp | null;
   cart_products?: cart_product_bool_exp | null;
+  coin_back?: numeric_comparison_exp | null;
+  coin_period_amount?: Int_comparison_exp | null;
+  coin_period_type?: String_comparison_exp | null;
   coupon_plan_products?: coupon_plan_product_bool_exp | null;
   id?: String_comparison_exp | null;
   order_products?: order_product_bool_exp | null;
@@ -30390,6 +30548,9 @@ export interface product_enrollment_min_order_by {
 export interface product_insert_input {
   card_discounts?: card_discount_arr_rel_insert_input | null;
   cart_products?: cart_product_arr_rel_insert_input | null;
+  coin_back?: any | null;
+  coin_period_amount?: number | null;
+  coin_period_type?: string | null;
   coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
   id?: string | null;
   order_products?: order_product_arr_rel_insert_input | null;
@@ -30597,6 +30758,9 @@ export interface product_on_conflict {
 export interface product_order_by {
   card_discounts_aggregate?: card_discount_aggregate_order_by | null;
   cart_products_aggregate?: cart_product_aggregate_order_by | null;
+  coin_back?: order_by | null;
+  coin_period_amount?: order_by | null;
+  coin_period_type?: order_by | null;
   coupon_plan_products_aggregate?: coupon_plan_product_aggregate_order_by | null;
   id?: order_by | null;
   order_products_aggregate?: order_product_aggregate_order_by | null;
@@ -30635,6 +30799,19 @@ export interface product_owner_order_by {
   product_id?: order_by | null;
   target?: order_by | null;
   type?: order_by | null;
+}
+
+/**
+ * input type for updating data in table "product"
+ */
+export interface product_set_input {
+  coin_back?: any | null;
+  coin_period_amount?: number | null;
+  coin_period_type?: string | null;
+  id?: string | null;
+  sku?: string | null;
+  target?: string | null;
+  type?: string | null;
 }
 
 /**

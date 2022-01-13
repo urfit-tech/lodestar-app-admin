@@ -250,6 +250,8 @@ export const commonMessages = {
     },
     default: { id: 'common.label.default', defaultMessage: '預設' },
     desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
+    unPublished: { id: 'common.label.unPublished', defaultMessage: '停售' },
+    externalLink: { id: 'common.label.externalLink', defaultMessage: '外部連結' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -316,9 +318,9 @@ export const commonMessages = {
     unpublished: { id: 'common.status.unpublished', defaultMessage: '尚未發佈' },
     published: { id: 'common.status.published', defaultMessage: '已發佈' },
     notPublished: { id: 'common.status.notPublished', defaultMessage: '未發佈' },
-    publiclyPublished: { id: 'common.status.publicyPublished', defaultMessage: '已公開發佈' },
+    publiclyPublished: { id: 'common.status.publiclyPublished', defaultMessage: '已公開發佈' },
     privatelyPublished: { id: 'common.status.privatelyPublished', defaultMessage: '已私密發佈' },
-    publiclyPublish: { id: 'common.status.publicyPublish', defaultMessage: '公開發佈' },
+    publiclyPublish: { id: 'common.status.publiclyPublish', defaultMessage: '公開發佈' },
     privatelyPublish: { id: 'common.status.privatelyPublish', defaultMessage: '私密發佈' },
     draft: { id: 'common.label.draft', defaultMessage: '草稿' },
     notSold: { id: 'common.status.notSold', defaultMessage: '尚未發售' },
@@ -421,7 +423,6 @@ export const commonMessages = {
     podcastPlan: { id: 'common.product.podcastPlan', defaultMessage: '廣播頻道' },
     appointmentPlan: { id: 'common.product.appointmentPlan', defaultMessage: '預約' },
     unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
-
     allItem: { id: 'common.product.allItem', defaultMessage: '全部項目' },
     specificItem: { id: 'common.product.specificItem', defaultMessage: '指定項目' },
     otherItem: { id: 'common.product.otherItem', defaultMessage: '其他指定項目' },
@@ -435,7 +436,6 @@ export const commonMessages = {
     allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
-
     allScope: { id: 'common.product.allScope', defaultMessage: '全站折抵' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
   }),
@@ -447,6 +447,9 @@ export const commonMessages = {
     week: { id: 'common.unit.week', defaultMessage: '週' },
     month: { id: 'common.unit.month', defaultMessage: '月' },
     year: { id: 'common.label.year', defaultMessage: '年' },
+  }),
+  placeholder: defineMessages({
+    enterUrlLink: { id: 'common.placeholder.enterUrlLink', defaultMessage: '輸入網址連結' },
   }),
 }
 
@@ -486,6 +489,7 @@ export const errorMessages = {
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
     memberAlreadyExist: { id: 'error.text.memberAlreadyExist', defaultMessage: '會員已存在' },
+    invalidUrl: { id: 'error.text.invalidURL', defaultMessage: '無效的網址' },
   }),
 }
 
@@ -1284,7 +1288,7 @@ export const orderMessages = {
     orderDiscountTotalPrice: { id: 'order.label.orderDiscountTotalPrice', defaultMessage: '折扣總額' },
     // payment log
     paymentLogNo: { id: 'order.label.paymentLogNo', defaultMessage: '交易編號' },
-    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道'},
+    paymentLogGateway: { id: 'order.label.paymentLogGateway', defaultMessage: '交易渠道' },
     paymentLogPaidAt: { id: 'order.label.paymentLogPaidAt', defaultMessage: '付款時間' },
     paymentLogDetails: { id: 'order.label.paymentLogDetails', defaultMessage: '付款方式' },
     // member

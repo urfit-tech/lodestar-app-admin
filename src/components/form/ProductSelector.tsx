@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Spin, TreeSelect } from 'antd'
+import { Spin, Tag, TreeSelect } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -54,7 +54,18 @@ const ProductSelector: React.FC<{
       value: productSelection.productType,
       children: productSelection.products.map(product => ({
         key: product.id,
-        title: product.title,
+        title: (
+          <div className="d-flex align-items-center flex-wrap">
+            {product.publishedAt === null
+              ? `(${formatMessage(commonMessages.label.unPublished)}) `
+              : product.publishedAt && product.publishedAt.getTime() > Date.now()
+              ? `(${formatMessage(commonMessages.status.notSold)}) `
+              : ''}
+            {product.tag && <Tag className="mr-2">{product.tag}</Tag>}
+            {product.title}
+          </div>
+        ),
+        name: product.title,
         value: product.id,
       })),
     }))
@@ -78,7 +89,7 @@ const ProductSelector: React.FC<{
       treeCheckable
       showCheckedStrategy="SHOW_PARENT"
       placeholder={formatMessage(messages.selectProducts)}
-      treeNodeFilterProp="title"
+      treeNodeFilterProp="name"
       dropdownStyle={{
         maxHeight: '30vh',
       }}
@@ -87,18 +98,23 @@ const ProductSelector: React.FC<{
 }
 
 const useProductSelections = () => {
+  const { formatMessage } = useIntl()
+
   const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SELECTION_COLLECTION>(
     gql`
       query GET_PRODUCT_SELECTION_COLLECTION {
         program_plan(
           where: {
             is_deleted: { _eq: false }
-            published_at: { _is_null: false }
             program: { is_deleted: { _eq: false }, published_at: { _is_null: false } }
           }
         ) {
           id
           title
+          auto_renewed
+          period_amount
+          period_type
+          published_at
           program {
             id
             title
@@ -107,6 +123,7 @@ const useProductSelections = () => {
         program_package_plan {
           id
           title
+          published_at
           program_package {
             id
             title
@@ -115,6 +132,8 @@ const useProductSelections = () => {
         activity_ticket {
           id
           title
+          started_at
+          ended_at
           activity {
             id
             title
@@ -123,6 +142,7 @@ const useProductSelections = () => {
         podcast_program(order_by: { published_at: desc_nulls_last, updated_at: desc_nulls_last }) {
           id
           title
+          published_at
           creator {
             id
             name
@@ -142,6 +162,8 @@ const useProductSelections = () => {
     products: {
       id: string
       title: string
+      publishedAt?: Date | null
+      tag?: string
     }[]
   }[] = [
     {
@@ -150,6 +172,12 @@ const useProductSelections = () => {
         data?.program_plan.map(v => ({
           id: `ProgramPlan_${v.id}`,
           title: `${v.program.title} - ${v.title}`,
+          publishedAt: v.published_at ? new Date(v.published_at) : null,
+          tag: v.auto_renewed
+            ? formatMessage(commonMessages.ui.subscriptionPlan)
+            : v.period_amount && v.period_type
+            ? formatMessage(commonMessages.ui.periodPlan)
+            : formatMessage(commonMessages.ui.perpetualPlan),
         })) || [],
     },
     {
@@ -158,6 +186,7 @@ const useProductSelections = () => {
         data?.program_package_plan.map(v => ({
           id: `ProgramPackagePlan_${v.id}`,
           title: `${v.program_package.title} - ${v.title}`,
+          publishedAt: v.published_at ? new Date(v.published_at) : null,
         })) || [],
     },
     {
@@ -166,6 +195,8 @@ const useProductSelections = () => {
         data?.activity_ticket.map(v => ({
           id: `ActivityTicket_${v.id}`,
           title: `${v.activity.title} - ${v.title}`,
+          publishedAt:
+            v.started_at && v.ended_at && Date.now() < new Date(v.ended_at).getTime() ? new Date(v.started_at) : null,
         })) || [],
     },
     {
@@ -174,6 +205,7 @@ const useProductSelections = () => {
         data?.podcast_program.map(v => ({
           id: `PodcastProgram_${v.id}`,
           title: v.title,
+          publishedAt: v.published_at ? new Date(v.published_at) : null,
         })) || [],
     },
     {
