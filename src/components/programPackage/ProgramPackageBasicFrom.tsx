@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -33,6 +34,7 @@ const ProgramPackageBasicForm: React.FC<{
     hasura.UPDATE_PROGRAM_PACKAGE_COVERVariables
   >(UPDATE_PROGRAM_PACKAGE_COVER)
   const [loading, setLoading] = useState(false)
+  const [coverId, setCoverId] = useState(uuid())
 
   if (!programPackage) {
     return <Skeleton active />
@@ -40,15 +42,15 @@ const ProgramPackageBasicForm: React.FC<{
 
   const handleUpload = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateProgramPackageCover({
       variables: {
         programPackageId: programPackage.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}/400?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}/${coverId}/400`,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)
@@ -111,7 +113,7 @@ const ProgramPackageBasicForm: React.FC<{
 
       <Form.Item label={formatMessage(commonMessages.label.cover)}>
         <ImageInput
-          path={`program_package_covers/${appId}/${programPackage.id}`}
+          path={`program_package_covers/${appId}/${programPackage.id}/${coverId}`}
           image={{
             width: '160px',
             ratio: 9 / 16,
