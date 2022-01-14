@@ -252,6 +252,7 @@ export const commonMessages = {
     desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
     unPublished: { id: 'common.label.unPublished', defaultMessage: '停售' },
     externalLink: { id: 'common.label.externalLink', defaultMessage: '外部連結' },
+    example: { id: 'common.label.example', defaultMessage: '範例' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
