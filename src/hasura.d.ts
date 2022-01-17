@@ -11212,14 +11212,6 @@ export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise {
   member_shop: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_member_shop | null;
 }
 
-export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status {
-  __typename: "merchandise_spec_inventory_status";
-  buyable_quantity: any | null;
-  delivered_quantity: any | null;
-  undelivered_quantity: any | null;
-  unpaid_quantity: any | null;
-}
-
 export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec {
   __typename: "merchandise_spec";
   id: any;
@@ -11228,10 +11220,6 @@ export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec {
    * An object relationship
    */
   merchandise: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise;
-  /**
-   * An object relationship
-   */
-  merchandise_spec_inventory_status: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status | null;
 }
 
 export interface GET_MERCHANDISE_SPEC_COLLECTION {
@@ -15444,21 +15432,12 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
   list_price: any;
   sale_price: any | null;
   sold_at: any | null;
+  period_amount: any | null;
   period_type: string | null;
   /**
    * An aggregated array relationship
    */
   program_plan_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate {
-  __typename: "program_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate {
-  __typename: "program_enrollment_aggregate";
-  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate | null;
 }
 
 export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
@@ -15478,15 +15457,10 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
   updated_at: any | null;
   published_at: any | null;
   is_private: boolean;
-  is_subscription: boolean;
   /**
    * An array relationship
    */
   program_plans: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans[];
-  /**
-   * An aggregated array relationship
-   */
-  program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate;
 }
 
 export interface GET_PROGRAM_PREVIEW_COLLECTION {
@@ -15521,7 +15495,6 @@ export interface GET_PROGRAM_SORT_COLLECTION_program {
   __typename: "program";
   id: any;
   title: string;
-  is_subscription: boolean;
 }
 
 export interface GET_PROGRAM_SORT_COLLECTION {
@@ -15571,7 +15544,6 @@ export interface INSERT_PROGRAMVariables {
   instructorId: string;
   appId: string;
   title: string;
-  isSubscription: boolean;
   programCategories: program_category_insert_input[];
 }
 
@@ -16238,6 +16210,7 @@ export enum activity_session_ticket_update_column {
  */
 export enum activity_session_update_column {
   activity_id = "activity_id",
+  deleted_at = "deleted_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -16279,6 +16252,7 @@ export enum activity_ticket_update_column {
   activity_id = "activity_id",
   count = "count",
   currency_id = "currency_id",
+  deleted_at = "deleted_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -16294,6 +16268,7 @@ export enum activity_ticket_update_column {
 export enum activity_update_column {
   app_id = "app_id",
   cover_url = "cover_url",
+  deleted_at = "deleted_at",
   description = "description",
   id = "id",
   is_participants_visible = "is_participants_visible",
@@ -19390,6 +19365,7 @@ export interface activity_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
@@ -19478,6 +19454,7 @@ export interface activity_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   cover_url?: string | null;
+  deleted_at?: any | null;
   description?: string | null;
   id?: any | null;
   is_participants_visible?: boolean | null;
@@ -19495,6 +19472,7 @@ export interface activity_insert_input {
 export interface activity_max_order_by {
   app_id?: order_by | null;
   cover_url?: order_by | null;
+  deleted_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
   organizer_id?: order_by | null;
@@ -19509,6 +19487,7 @@ export interface activity_max_order_by {
 export interface activity_min_order_by {
   app_id?: order_by | null;
   cover_url?: order_by | null;
+  deleted_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
   organizer_id?: order_by | null;
@@ -19554,6 +19533,7 @@ export interface activity_session_bool_exp {
   activity_enrollments?: activity_enrollment_bool_exp | null;
   activity_id?: uuid_comparison_exp | null;
   activity_session_tickets?: activity_session_ticket_bool_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -19573,6 +19553,7 @@ export interface activity_session_insert_input {
   activity_attendances?: activity_attendance_arr_rel_insert_input | null;
   activity_id?: any | null;
   activity_session_tickets?: activity_session_ticket_arr_rel_insert_input | null;
+  deleted_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -19753,6 +19734,7 @@ export interface activity_ticket_bool_exp {
   count?: Int_comparison_exp | null;
   currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -19787,6 +19769,7 @@ export interface activity_ticket_insert_input {
   count?: number | null;
   currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
+  deleted_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
