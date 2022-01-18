@@ -660,16 +660,6 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator 
   abstract: string | null;
 }
 
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate | null;
-}
-
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   __typename: "appointment_plan";
   id: any;
@@ -685,10 +675,6 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   duration: any;
   price: any;
   published_at: any | null;
-  /**
-   * An aggregated array relationship
-   */
-  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {

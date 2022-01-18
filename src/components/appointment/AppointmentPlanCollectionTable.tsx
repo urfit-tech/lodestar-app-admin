@@ -140,12 +140,12 @@ const AppointmentPlanCollectionTable: React.FC<{
       render: (text, record, index) => <StyledPlanPrice>{currencyFormatter(text)}</StyledPlanPrice>,
       sorter: (a, b) => b.listPrice - a.listPrice,
     },
-    {
-      dataIndex: 'enrollments',
-      title: formatMessage(messages.enrollments),
-      render: (text, record, index) => <StyledText>{formatMessage(messages.people, { count: `${text}` })}</StyledText>,
-      sorter: (a, b) => b.enrollments - a.enrollments,
-    },
+    // {
+    //   dataIndex: 'enrollments',
+    //   title: formatMessage(messages.enrollments),
+    //   render: (text, record, index) => <StyledText>{formatMessage(messages.people, { count: `${text}` })}</StyledText>,
+    //   sorter: (a, b) => b.enrollments - a.enrollments,
+    // },
   ]
   const appointmentButtonColumn: ColumnProps<AppointmentPlanProps> = {
     key: 'appointmentButton',
@@ -210,11 +210,6 @@ const useAppointmentPlansAdmin = (condition: hasura.GET_APPOINTMENT_PLAN_COLLECT
           duration
           price
           published_at
-          appointment_enrollments_aggregate {
-            aggregate {
-              count
-            }
-          }
         }
       }
     `,
@@ -236,7 +231,8 @@ const useAppointmentPlansAdmin = (condition: hasura.GET_APPOINTMENT_PLAN_COLLECT
       title: appointmentPlan.title,
       duration: appointmentPlan.duration,
       listPrice: appointmentPlan.price,
-      enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate?.count || 0,
+      enrollments: 0,
+      // enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate?.count || 0,
       isPublished: !!appointmentPlan.published_at,
     })) || []
 
