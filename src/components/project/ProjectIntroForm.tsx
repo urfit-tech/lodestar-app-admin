@@ -54,7 +54,7 @@ const ProjectIntroForm: React.FC<{
     UPDATE_PROJECT_INTRO,
   )
   const [loading, setLoading] = useState(false)
-  const [coverId, setCoverId] = useState(uuid())
+  const coverId = uuid()
 
   if (!project) {
     return <Skeleton active />
@@ -62,20 +62,18 @@ const ProjectIntroForm: React.FC<{
 
   const handleUpdateCover = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateProjectCover({
       variables: {
         projectId: project.id,
-        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}?t=${uploadTime}`,
+        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`,
         coverUrl:
           project.coverUrl === null
-            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}?t=${uploadTime}`
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`
             : project.coverUrl,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)
@@ -92,9 +90,7 @@ const ProjectIntroForm: React.FC<{
         introductionDesktop: values.introductionDesktop?.getCurrentContent().hasText()
           ? values.introductionDesktop.toRAW()
           : null,
-        coverUrl: values.coverUrl
-          ? values.coverUrl
-          : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${Date.now()}`,
+        coverUrl: values.coverUrl || project.coverUrl,
         coverType: values.coverUrl ? 'video' : 'image',
       },
     })
