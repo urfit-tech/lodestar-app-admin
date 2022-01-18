@@ -34,8 +34,8 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
       tab: formatMessage(promotionMessages.status.available),
       couponPlans: couponPlans.filter(
         couponPlan =>
-          (!couponPlan.startedAt || couponPlan.startedAt.getTime() < Date.now()) &&
-          (!couponPlan.endedAt || couponPlan.endedAt.getTime() < Date.now()),
+          (!couponPlan.startedAt || couponPlan.startedAt.getTime() <= Date.now()) &&
+          (!couponPlan.endedAt || couponPlan.endedAt.getTime() >= Date.now()),
       ),
     },
     {
