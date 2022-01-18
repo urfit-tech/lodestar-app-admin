@@ -1,4 +1,4 @@
-import { Form, Switch } from 'antd'
+import { Form, Input, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ProgramPackageCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramPackageCollection'
 import { useIntl } from 'react-intl'
@@ -24,6 +24,11 @@ const ProgramPackageCollectionSettings: CraftElementSettings<ProgramPackageColle
         form.validateFields()
       }}
     >
+      <Form.Item
+        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.programPackageSectionId)}</CraftSettingLabel>}
+      >
+        <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+      </Form.Item>
       <Form.Item className="mb-0">
         <ProgramPackageCollectionSelector
           value={props.source}

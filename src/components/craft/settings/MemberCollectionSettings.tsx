@@ -1,9 +1,10 @@
 import { defineMessages } from '@formatjs/intl'
-import { Form, Select } from 'antd'
+import { Form, Input, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { MemberCollectionProps } from 'lodestar-app-element/src/components/collections/MemberCollection'
 import { useIntl } from 'react-intl'
-import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { craftPageMessages } from '../../../helpers/translation'
+import { CraftElementSettings, CraftSettingLabel } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import LayoutInput from '../../common/LayoutInput'
 import MemberCollectionSelector from '../../member/MemberCollectionSelector'
 
@@ -26,7 +27,12 @@ const MemberCollectionSettings: CraftElementSettings<MemberCollectionProps> = ({
         form.validateFields()
       }}
     >
-      <Form.Item label={formatMessage(messages.variant)}>
+      <Form.Item
+        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.memberSectionId)}</CraftSettingLabel>}
+      >
+        <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+      </Form.Item>
+      <Form.Item label={<CraftSettingLabel>{formatMessage(messages.variant)}</CraftSettingLabel>}>
         <Select value={props.variant} onChange={variant => onPropsChange?.({ ...props, variant })}>
           <Select.Option value="primary">{formatMessage(messages.primary)}</Select.Option>
           <Select.Option value="secondary">{formatMessage(messages.secondary)}</Select.Option>
