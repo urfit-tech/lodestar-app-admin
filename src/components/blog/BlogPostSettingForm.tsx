@@ -32,7 +32,7 @@ const BlogPostSettingForm: React.FC<{
     hasura.UPDATE_POST_MERCHANDISE_COLLECTIONVariables
   >(UPDATE_POST_MERCHANDISE_COLLECTION)
   const [loading, setLoading] = useState(false)
-  const [coverId, setCoverId] = useState(uuid())
+  const coverId = uuid()
 
   if (!post) {
     return <Skeleton active />
@@ -48,7 +48,6 @@ const BlogPostSettingForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)

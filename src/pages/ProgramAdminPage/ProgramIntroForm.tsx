@@ -37,24 +37,21 @@ const ProgramIntroForm: React.FC<{
     UPDATE_PROGRAM_INTRO,
   )
   const [loading, setLoading] = useState(false)
-  const [coverId, setCoverId] = useState(uuid())
-
+  const coverId = uuid()
   if (!program) {
     return <Skeleton active />
   }
 
   const handleUpdateCover = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateProgramCover({
       variables: {
         programId: program.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}/${coverId}?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}/${coverId}`,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)

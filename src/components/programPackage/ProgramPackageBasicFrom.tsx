@@ -34,7 +34,7 @@ const ProgramPackageBasicForm: React.FC<{
     hasura.UPDATE_PROGRAM_PACKAGE_COVERVariables
   >(UPDATE_PROGRAM_PACKAGE_COVER)
   const [loading, setLoading] = useState(false)
-  const [coverId, setCoverId] = useState(uuid())
+  const coverId = uuid()
 
   if (!programPackage) {
     return <Skeleton active />
@@ -50,7 +50,6 @@ const ProgramPackageBasicForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)

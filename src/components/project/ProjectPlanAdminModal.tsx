@@ -129,9 +129,7 @@ const ProjectPlanAdminModal: React.FC<
               updateProjectPlanCoverUrl({
                 variables: {
                   id: id,
-                  coverUrl: `https://${
-                    process.env.REACT_APP_S3_BUCKET
-                  }/project_covers/${appId}/${projectId}/${id}/${coverId}?t=${Date.now()}`,
+                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${id}/${coverId}`,
                 },
               })
             }

@@ -26,7 +26,7 @@ const PodcastProgramIntroForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const [loading, setLoading] = useState(false)
-  const [coverId, setCoverId] = useState(uuid())
+  const coverId = uuid()
 
   const [updatePodcastProgramCover] = useMutation<
     hasura.UPDATE_PODCAST_PROGRAM_COVER,
@@ -48,14 +48,11 @@ const PodcastProgramIntroForm: React.FC<{
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${appId}/${
-          podcastProgramAdmin.id
-        }/${coverId}?t=${Date.now()}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${appId}/${podcastProgramAdmin.id}/${coverId}`,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullyUpload))
-        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)

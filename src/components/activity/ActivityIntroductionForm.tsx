@@ -35,7 +35,7 @@ const ActivityIntroductionForm: React.FC<{
     hasura.UPDATE_ACTIVITY_INTRODUCTIONVariables
   >(UPDATE_ACTIVITY_INTRODUCTION)
   const [loading, setLoading] = useState(false)
-  const [coverId, setCoverId] = useState(uuid())
+  const coverId = uuid()
 
   if (!activityAdmin) {
     return <Skeleton active />
@@ -43,16 +43,14 @@ const ActivityIntroductionForm: React.FC<{
 
   const handleUpdateCover = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateActivityCover({
       variables: {
         activityId: activityAdmin.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activityAdmin.id}/${coverId}?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activityAdmin.id}/${coverId}`,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)

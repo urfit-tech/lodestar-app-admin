@@ -36,7 +36,7 @@ const MemberShopBasicForm: React.FC<{
     hasura.UPDATE_MEMBER_SHOP_COVERVariables
   >(UPDATE_MEMBER_SHOP_COVER)
   const [loading, setLoading] = useState(false)
-  const [coverId, setCoverId] = useState(uuid())
+  const coverId = uuid()
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
@@ -64,7 +64,6 @@ const MemberShopBasicForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        setCoverId(uuid())
         onRefetch?.()
       })
       .catch(handleError)
