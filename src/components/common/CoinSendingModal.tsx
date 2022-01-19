@@ -7,6 +7,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -39,6 +40,11 @@ type FieldProps = {
   endedAt: Moment | null
   note: string
 }
+
+const StyledLink = styled.a`
+  display: inline-block;
+  color: ${props => props.theme['@primary-color']};
+`
 
 const CoinSendingModal: React.FC<{
   onRefetch?: () => Promise<any>
@@ -137,11 +143,11 @@ const CoinSendingModal: React.FC<{
               </Form.Item>
             )}
             <Space direction="horizontal" align="center">
-              <Radio value="csv">
+              <Radio value="uploader">
                 {formatMessage(messages.bathSelectMember)} ({formatMessage(messages.scheme)}
-                <a className="d-inline-block" href={process.env.PUBLIC_URL + '/sample_members.csv'}>
+                <StyledLink href={process.env.PUBLIC_URL + '/sample_members.csv'}>
                   {formatMessage(commonMessages.label.example)}
-                </a>
+                </StyledLink>
                 )
               </Radio>
               {memberSelectionMode === 'uploader' && (
