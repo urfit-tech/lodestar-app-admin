@@ -344,7 +344,7 @@ const useProgramPreviewCollection = (
           name: programRole.member?.name || programRole.member?.username || '',
         })),
         isSubscription: false, // TODO: remove this in the future
-        listPrice: plan?.list_price || null,
+        listPrice: plan?.list_price ?? null,
         salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
         periodAmount: plan?.period_amount || null,
         periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
@@ -439,7 +439,7 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       cover_url
       title
       abstract
-      program_roles(where: { name: { _eq: "instructor" } }, limit: 1) {
+      program_roles(where: { name: { _eq: "instructor" } }, order_by: { created_at: asc, id: desc }, limit: 1) {
         id
         member {
           id
@@ -455,7 +455,7 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       updated_at
       published_at
       is_private
-      program_plans {
+      program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
         id
         list_price
         sale_price
