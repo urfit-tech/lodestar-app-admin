@@ -1,8 +1,9 @@
-import { Form } from 'antd'
+import { Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ProgramContentCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramContentCollection'
 import { useIntl } from 'react-intl'
-import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { craftPageMessages } from '../../../helpers/translation'
+import { CraftElementSettings, CraftSettingLabel } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramContentCollectionSelector from '../../program/ProgramContentCollectionSelector'
 
@@ -23,6 +24,11 @@ const ProgramContentCollectionSettings: CraftElementSettings<ProgramContentColle
         form.validateFields()
       }}
     >
+      <Form.Item
+        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.programContentSectionId)}</CraftSettingLabel>}
+      >
+        <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+      </Form.Item>
       <Form.Item className="mb-0">
         <ProgramContentCollectionSelector
           value={props.source}

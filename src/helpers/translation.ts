@@ -1321,6 +1321,12 @@ export const craftPageMessages = {
     solidColor: { id: 'craft.ui.solidColor', defaultMessage: '純色' },
   }),
   label: defineMessages({
+    programSectionId: { id: 'craft.label.programSectionId', defaultMessage: '課程區塊 ID' },
+    programContentSectionId: { id: 'craft.label.programContentSectionId', defaultMessage: '課程內容區塊 ID' },
+    activitySectionId: { id: 'craft.label.activitySectionId', defaultMessage: '活動區塊 ID' },
+    programPackageSectionId: { id: 'craft.label.programPackageSectionId', defaultMessage: '課程組合區塊 ID' },
+    memberSectionId: { id: 'craft.label.memberSectionId', defaultMessage: '會員區塊 ID' },
+    projectSectionId: { id: 'craft.label.projectSectionId', defaultMessage: '專案區塊 ID' },
     spaceStyle: { id: 'craft.label.spaceStyle', defaultMessage: '間距樣式' },
     positionStyle: { id: 'craft.label.positionStyle', defaultMessage: '位置樣式' },
     borderStyle: { id: 'craft.label.borderStyle', defaultMessage: '框線樣式' },
