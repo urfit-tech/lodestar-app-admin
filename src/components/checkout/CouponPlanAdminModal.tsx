@@ -30,7 +30,7 @@ type FieldProps = {
 
 const CouponPlanAdminModal: React.FC<
   AdminModalProps & {
-    couponPlan?: CouponPlanProps & { productIds: string[] }
+    couponPlan?: CouponPlanProps
     onRefetch?: () => void
   }
 > = ({ couponPlan, onRefetch, ...props }) => {

@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
@@ -35,6 +36,7 @@ const MemberShopBasicForm: React.FC<{
     hasura.UPDATE_MEMBER_SHOP_COVERVariables
   >(UPDATE_MEMBER_SHOP_COVER)
   const [loading, setLoading] = useState(false)
+  const coverId = uuid()
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
@@ -57,9 +59,7 @@ const MemberShopBasicForm: React.FC<{
     updateMembersShopCover({
       variables: {
         memberShopId: memberShop.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/member_shop_covers/${appId}/${
-          memberShop.id
-        }/400?t=${Date.now()}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/member_shop_covers/${appId}/${memberShop.id}/${coverId}/400`,
       },
     })
       .then(() => {
@@ -97,7 +97,7 @@ const MemberShopBasicForm: React.FC<{
       </Form.Item>
       <Form.Item label={<span>{formatMessage(messages.memberShopCover)}</span>}>
         <ImageInput
-          path={`member_shop_covers/${appId}/${memberShop.id}`}
+          path={`member_shop_covers/${appId}/${memberShop.id}/${coverId}`}
           image={{
             width: '160px',
             ratio: 9 / 16,

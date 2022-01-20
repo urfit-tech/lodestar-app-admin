@@ -1573,6 +1573,34 @@ export interface DELETE_COIN_LOGVariables {
 
 
 // ====================================================
+// GraphQL query operation: GET_COUPON_PLAN_PRODUCTS
+// ====================================================
+
+
+export interface GET_COUPON_PLAN_PRODUCTS_coupon_plan_product {
+  __typename: "coupon_plan_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_COUPON_PLAN_PRODUCTS {
+  /**
+   * fetch data from the table: "coupon_plan_product"
+   */
+  coupon_plan_product: GET_COUPON_PLAN_PRODUCTS_coupon_plan_product[];
+}
+
+export interface GET_COUPON_PLAN_PRODUCTSVariables {
+  couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL mutation operation: INSERT_COUPON_PLAN
 // ====================================================
 
@@ -14050,6 +14078,44 @@ export interface INSERT_MERCHANDISEVariables {
   isPhysical?: boolean | null;
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL query operation: GET_SIMPLE_COUPON_PLAN_COLLECTION
+// ====================================================
+
+
+export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan {
+  __typename: "coupon_plan";
+  id: any;
+  title: string;
+  amount: any;
+  scope: any | null;
+  /**
+   * 1 - cash / 2 - percent
+   */
+  type: number;
+  constraint: any | null;
+  started_at: any | null;
+  ended_at: any | null;
+  description: string | null;
+}
+
+export interface GET_SIMPLE_COUPON_PLAN_COLLECTION {
+  /**
+   * fetch data from the table: "coupon_plan"
+   */
+  coupon_plan: GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan[];
+}
+
+export interface GET_SIMPLE_COUPON_PLAN_COLLECTIONVariables {
+  appId: string;
 }
 
 /* tslint:disable */

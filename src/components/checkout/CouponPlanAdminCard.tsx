@@ -1,7 +1,10 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Modal } from 'antd'
+import gql from 'graphql-tag'
 import React, { ReactElement, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { CouponPlanProps } from '../../types/checkout'
@@ -114,11 +117,9 @@ const StyledModalTitle = styled.div`
   letter-spacing: 0.2px;
 `
 const CouponPlanAdminCard: React.FC<{
-  couponPlan: CouponPlanProps & {
-    productIds: string[]
-  }
+  couponPlan: CouponPlanProps
   isAvailable?: boolean
-  renderDescription?: ReactElement
+  renderDescription?: (props: { productIds: string[] }) => ReactElement
   renderCount?: ReactElement
   renderEditDropdown?: ReactElement
 }> = ({ couponPlan, isAvailable, renderDescription, renderCount, renderEditDropdown }) => {
@@ -174,12 +175,41 @@ const CouponPlanAdminCard: React.FC<{
         <div className="flex-grow-1">{renderCount}</div>
         {renderEditDropdown}
       </div>
-
-      <StyledModal visible={isModalVisible} title={null} footer={null} onCancel={() => setIsModalVisible(false)}>
-        <StyledModalTitle className="mb-3">{couponPlan.title}</StyledModalTitle>
-        {renderDescription}
-      </StyledModal>
+      {isModalVisible && (
+        <CouponPlanPreviewModal
+          couponPlanId={couponPlan.id}
+          title={couponPlan.title}
+          renderDescription={renderDescription}
+          onClose={() => setIsModalVisible(false)}
+        />
+      )}
     </StyledAdminCard>
+  )
+}
+
+const CouponPlanPreviewModal: React.FC<{
+  couponPlanId: string
+  title: string
+  onClose?: () => void
+  renderDescription?: (props: { productIds: string[] }) => ReactElement
+}> = ({ couponPlanId, title, renderDescription, onClose }) => {
+  const { data } = useQuery<hasura.GET_COUPON_PLAN_PRODUCTS, hasura.GET_COUPON_PLAN_PRODUCTSVariables>(
+    gql`
+      query GET_COUPON_PLAN_PRODUCTS($couponPlanId: uuid!) {
+        coupon_plan_product(where: { coupon_plan_id: { _eq: $couponPlanId } }) {
+          id
+          product_id
+        }
+      }
+    `,
+    { variables: { couponPlanId } },
+  )
+  const productIds = data?.coupon_plan_product.map(v => v.product_id) || []
+  return (
+    <StyledModal visible title={null} footer={null} onCancel={onClose}>
+      <StyledModalTitle className="mb-3">{title}</StyledModalTitle>
+      {renderDescription?.({ productIds })}
+    </StyledModal>
   )
 }
 

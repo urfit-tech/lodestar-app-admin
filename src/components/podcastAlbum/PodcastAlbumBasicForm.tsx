@@ -8,6 +8,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, podcastAlbumMessages } from '../../helpers/translation'
@@ -55,7 +56,6 @@ const PodcastAlbumBasicForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    const uploadTime = Date.now()
     updatePodcastAlbumBasic({
       variables: {
         id: podcastAlbum.id,
@@ -71,8 +71,9 @@ const PodcastAlbumBasicForm: React.FC<{
     })
       .then(async () => {
         if (coverImage) {
+          const coverId = uuid()
           try {
-            await uploadFile(`podcast_album_covers/${appId}/${podcastAlbum.id}/400`, coverImage, authToken, {
+            await uploadFile(`podcast_album_covers/${appId}/${podcastAlbum.id}/${coverId}`, coverImage, authToken, {
               cancelToken: new axios.CancelToken(canceler => {
                 uploadCanceler.current = canceler
               }),
@@ -84,7 +85,7 @@ const PodcastAlbumBasicForm: React.FC<{
           await updatePodcastAlbumCover({
             variables: {
               id: podcastAlbum.id,
-              coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_album_covers/${appId}/${podcastAlbum.id}/400?t=${uploadTime}`,
+              coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_album_covers/${appId}/${podcastAlbum.id}/${coverId}/400`,
             },
           })
         }
