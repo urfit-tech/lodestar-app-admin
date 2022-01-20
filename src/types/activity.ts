@@ -12,6 +12,7 @@ export type ActivityProps = {
   isParticipantsVisible: boolean
   organizerId: string
   supportLocales: string[]
+  isDeleted: boolean
 }
 
 export type ActivityTicketProps = {
@@ -25,6 +26,7 @@ export type ActivityTicketProps = {
   description: string | null
   isPublished: boolean
   enrollmentsCount?: number
+  isDeleted: boolean
 }
 
 export type ActivitySessionProps = {
@@ -36,6 +38,7 @@ export type ActivitySessionProps = {
   onlineLink: string | null
   threshold: number | null
   description: string | null
+  isDeleted: boolean
 }
 
 export type ActivityTicketSessionType = 'offline' | 'online'

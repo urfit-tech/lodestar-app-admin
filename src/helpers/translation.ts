@@ -500,6 +500,8 @@ export const activityMessages = {
     createSession: { id: 'activity.ui.createSession', defaultMessage: '建立場次' },
     addTicketPlan: { id: 'activity.ui.addTicketPlan', defaultMessage: '加入票券方案' },
     addTicketSession: { id: 'activity.ui.addTicketSession', defaultMessage: '新增場次' },
+    deleteSession: { id: 'activity.ui.deleteSession', defaultMessage: '刪除場次' },
+    deleteTicket: { id: 'activity.ui.deleteTicket', defaultMessage: '刪除票券' },
   }),
   label: defineMessages({
     showParticipantsNumber: { id: 'activity.label.showParticipantsNumber', defaultMessage: '顯示人數' },
@@ -550,6 +552,8 @@ export const activityMessages = {
   }),
   text: defineMessages({
     imageTips: { id: 'activity.text.imageTips', defaultMessage: '建議圖片尺寸：1200*675px' },
+    deleteActivitySessionWarning: { id: 'activity.text.deleteActivitySessionWarning', defaultMessage: '刪除場次' },
+    deleteActivityTicketWarning: { id: 'activity.text.deleteActivityTicketWarning', defaultMessage: '刪除票券' },
   }),
 }
 

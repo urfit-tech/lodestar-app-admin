@@ -332,6 +332,36 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
 
 
 // ====================================================
+// GraphQL mutation operation: ARCHIVE_ACTIVITY_SESSION
+// ====================================================
+
+
+export interface ARCHIVE_ACTIVITY_SESSION_update_activity_session {
+  __typename: "activity_session_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_ACTIVITY_SESSION {
+  /**
+   * update data of the table: "activity_session"
+   */
+  update_activity_session: ARCHIVE_ACTIVITY_SESSION_update_activity_session | null;
+}
+
+export interface ARCHIVE_ACTIVITY_SESSIONVariables {
+  activitySessionId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_ACTIVITY_TAGS
 // ====================================================
 
@@ -1753,6 +1783,36 @@ export interface INSERT_COIN_LOG_COLLECTION {
 
 export interface INSERT_COIN_LOG_COLLECTIONVariables {
   data: coin_log_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: ARCHIVE_ACTIVITY
+// ====================================================
+
+
+export interface ARCHIVE_ACTIVITY_update_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_ACTIVITY {
+  /**
+   * update data of the table: "activity"
+   */
+  update_activity: ARCHIVE_ACTIVITY_update_activity | null;
+}
+
+export interface ARCHIVE_ACTIVITYVariables {
+  activityId?: any | null;
 }
 
 /* tslint:disable */
@@ -7515,6 +7575,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets {
   description: string | null;
   is_published: boolean;
   currency_id: string;
+  deleted_at: any | null;
   /**
    * An array relationship
    */
@@ -7571,6 +7632,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
   online_link: string | null;
   threshold: any | null;
   description: string | null;
+  deleted_at: any | null;
   /**
    * An aggregated array relationship
    */
@@ -7595,6 +7657,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk {
   organizer_id: string;
   published_at: any | null;
   support_locales: any | null;
+  deleted_at: any | null;
   /**
    * An array relationship
    */

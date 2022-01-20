@@ -105,6 +105,7 @@ export const useActivityAdmin = (activityId: string) => {
           organizer_id
           published_at
           support_locales
+          deleted_at
           activity_categories(order_by: { position: asc }) {
             id
             category {
@@ -122,6 +123,7 @@ export const useActivityAdmin = (activityId: string) => {
             description
             is_published
             currency_id
+            deleted_at
             activity_session_tickets {
               id
               activity_session_type
@@ -147,6 +149,7 @@ export const useActivityAdmin = (activityId: string) => {
             online_link
             threshold
             description
+            deleted_at
             activity_enrollments_aggregate {
               aggregate {
                 count
@@ -181,54 +184,56 @@ export const useActivityAdmin = (activityId: string) => {
           isParticipantsVisible: data.activity_by_pk.is_participants_visible,
           organizerId: data.activity_by_pk.organizer_id,
           supportLocales: data.activity_by_pk.support_locales || [],
-
-          categories: data.activity_by_pk.activity_categories.map(activityCategory => ({
-            id: activityCategory.category.id,
-            name: activityCategory.category.name,
+          categories: data.activity_by_pk.activity_categories.map(v => ({
+            id: v.category.id,
+            name: v.category.name,
           })),
-          tickets: data.activity_by_pk.activity_tickets.map(ticket => ({
-            id: ticket.id,
-            title: ticket.title,
-            startedAt: new Date(ticket.started_at),
-            endedAt: new Date(ticket.ended_at),
-            currencyId: ticket.currency_id,
-            price: ticket.price,
-            count: ticket.count,
-            description: ticket.description,
-            isPublished: ticket.is_published,
-            sessions: ticket.activity_session_tickets.map(sessionTicket => ({
-              id: sessionTicket.activity_session.id,
-              type: sessionTicket.activity_session_type as ActivityTicketSessionType,
-              title: sessionTicket.activity_session.title,
-              location: sessionTicket.activity_session.location,
-              onlineLink: sessionTicket.activity_session.online_link,
+          isDeleted: data.activity_by_pk.deleted_at,
+          tickets: data.activity_by_pk.activity_tickets.map(v => ({
+            id: v.id,
+            title: v.title,
+            startedAt: new Date(v.started_at),
+            endedAt: new Date(v.ended_at),
+            currencyId: v.currency_id,
+            price: v.price,
+            count: v.count,
+            description: v.description,
+            isPublished: v.is_published,
+            isDeleted: v.deleted_at,
+            sessions: v.activity_session_tickets.map(v => ({
+              id: v.activity_session.id,
+              type: v.activity_session_type as ActivityTicketSessionType,
+              title: v.activity_session.title,
+              location: v.activity_session.location,
+              onlineLink: v.activity_session.online_link,
             })),
-            enrollmentsCount: ticket.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
+            enrollmentsCount: v.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
           })),
-          sessions: data.activity_by_pk.activity_sessions.map(session => ({
-            id: session.id,
-            title: session.title,
-            startedAt: new Date(session.started_at),
-            endedAt: new Date(session.ended_at),
-            location: session.location,
-            onlineLink: session.online_link,
-            threshold: session.threshold,
-            description: session.description,
+          sessions: data.activity_by_pk.activity_sessions.map(v => ({
+            id: v.id,
+            title: v.title,
+            startedAt: new Date(v.started_at),
+            endedAt: new Date(v.ended_at),
+            location: v.location,
+            onlineLink: v.online_link,
+            threshold: v.threshold,
+            description: v.description,
+            isDeleted: v.deleted_at,
             maxAmount: {
               online: sum(
-                session.activity_session_tickets
-                  .filter(v => ['online', 'both'].includes(v.activity_session_type))
-                  .map(sessionTicket => sessionTicket.activity_ticket?.count || 0),
+                v.activity_session_tickets
+                  .filter(w => ['online', 'both'].includes(w.activity_session_type))
+                  .map(x => x.activity_ticket?.count || 0),
               ),
               offline: sum(
-                session.activity_session_tickets
-                  .filter(v => ['offline', 'both'].includes(v.activity_session_type))
-                  .map(sessionTicket => sessionTicket.activity_ticket?.count || 0),
+                v.activity_session_tickets
+                  .filter(w => ['offline', 'both'].includes(w.activity_session_type))
+                  .map(x => x.activity_ticket?.count || 0),
               ),
             },
             enrollmentsCount: {
-              online: session.ticket_enrollment_count?.online_session_ticket_count || 0,
-              offline: session.ticket_enrollment_count?.offline_session_ticket_count || 0,
+              online: v.ticket_enrollment_count?.online_session_ticket_count || 0,
+              offline: v.ticket_enrollment_count?.offline_session_ticket_count || 0,
             },
           })),
         }

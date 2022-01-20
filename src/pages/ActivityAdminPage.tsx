@@ -18,6 +18,7 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../components/admin'
+import MetaProductDeletionBlock from '../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import { activityMessages, commonMessages } from '../helpers/translation'
 import { useActivityAdmin } from '../hooks/activity'
@@ -75,6 +76,11 @@ const ActivityAdminPage: React.FC = () => {
                   <AdminBlockTitle>{formatMessage(messages.activityIntroduction)}</AdminBlockTitle>
                   <ActivityIntroductionForm activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
                 </AdminBlock>
+                <MetaProductDeletionBlock
+                  metaProductType="Activity"
+                  targetId={activityId}
+                  isDeleted={!!activityAdmin?.isDeleted}
+                />
               </div>
             </Tabs.TabPane>
 
