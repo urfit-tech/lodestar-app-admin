@@ -1,6 +1,6 @@
 import Icon, { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Menu, Skeleton } from 'antd'
+import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { map } from 'ramda'
@@ -8,7 +8,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { dateRangeFormatter } from '../../helpers'
+import { dateRangeFormatter, handleError } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as MapOIcon } from '../../images/icon/map-o.svg'
@@ -182,6 +182,11 @@ const ActivitySessionsAdminBlock: React.FC<{
                       onClick={() => {
                         window.confirm(formatMessage(activityMessages.text.deleteActivitySessionWarning)) &&
                           archiveActivitySession({ variables: { activitySessionId: session.id } })
+                            .then(() => {
+                              message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                              onRefetch?.()
+                            })
+                            .catch(handleError)
                       }}
                     >
                       {formatMessage(commonMessages.ui.delete)}
@@ -264,6 +269,9 @@ const useMutationActivitySession = () => {
     hasura.ARCHIVE_ACTIVITY_SESSIONVariables
   >(gql`
     mutation ARCHIVE_ACTIVITY_SESSION($activitySessionId: uuid!) {
+      delete_activity_session_ticket(where: { activity_session_id: { _eq: $activitySessionId } }) {
+        affected_rows
+      }
       update_activity_session(where: { id: { _eq: $activitySessionId } }, _set: { deleted_at: "now()" }) {
         affected_rows
       }

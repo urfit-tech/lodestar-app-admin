@@ -1,8 +1,9 @@
 import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Menu, Skeleton } from 'antd'
+import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { handleError } from 'lodestar-app-element/src/helpers'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -110,6 +111,11 @@ const ActivityTicketsAdminBlock: React.FC<{
                         onClick={() => {
                           window.confirm(formatMessage(activityMessages.text.deleteActivityTicketWarning)) &&
                             archiveActivityTicket({ variables: { activityTicketId: ticket.id } })
+                              .then(() => {
+                                message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                                onRefetch?.()
+                              })
+                              .catch(handleError)
                         }}
                       >
                         {formatMessage(commonMessages.ui.delete)}
@@ -217,6 +223,9 @@ const useMutationActivityTicket = () => {
     hasura.ARCHIVE_ACTIVITY_TICKETVariables
   >(gql`
     mutation ARCHIVE_ACTIVITY_TICKET($activityTicketId: uuid!) {
+      delete_activity_session_ticket(where: { activity_ticket_id: { _eq: $activityTicketId } }) {
+        affected_rows
+      }
       update_activity_ticket(where: { id: { _eq: $activityTicketId } }, _set: { deleted_at: "now()" }) {
         affected_rows
       }

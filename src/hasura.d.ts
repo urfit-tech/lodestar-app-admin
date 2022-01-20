@@ -336,6 +336,14 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
 // ====================================================
 
 
+export interface ARCHIVE_ACTIVITY_SESSION_delete_activity_session_ticket {
+  __typename: "activity_session_ticket_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface ARCHIVE_ACTIVITY_SESSION_update_activity_session {
   __typename: "activity_session_mutation_response";
   /**
@@ -345,6 +353,10 @@ export interface ARCHIVE_ACTIVITY_SESSION_update_activity_session {
 }
 
 export interface ARCHIVE_ACTIVITY_SESSION {
+  /**
+   * delete data from the table: "activity_session_ticket"
+   */
+  delete_activity_session_ticket: ARCHIVE_ACTIVITY_SESSION_delete_activity_session_ticket | null;
   /**
    * update data of the table: "activity_session"
    */
@@ -491,6 +503,14 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // ====================================================
 
 
+export interface ARCHIVE_ACTIVITY_TICKET_delete_activity_session_ticket {
+  __typename: "activity_session_ticket_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface ARCHIVE_ACTIVITY_TICKET_update_activity_ticket {
   __typename: "activity_ticket_mutation_response";
   /**
@@ -500,6 +520,10 @@ export interface ARCHIVE_ACTIVITY_TICKET_update_activity_ticket {
 }
 
 export interface ARCHIVE_ACTIVITY_TICKET {
+  /**
+   * delete data from the table: "activity_session_ticket"
+   */
+  delete_activity_session_ticket: ARCHIVE_ACTIVITY_TICKET_delete_activity_session_ticket | null;
   /**
    * update data of the table: "activity_ticket"
    */
