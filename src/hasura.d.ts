@@ -172,81 +172,6 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_co
   aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_aggregate_aggregate | null;
 }
 
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate | null;
-}
-
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT {
   /**
    * fetch data from the table: "xuemi.member_private_teach_contract"
@@ -256,35 +181,123 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT {
    * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
    */
   xuemi_member_private_teach_contract_aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_aggregate;
-  __typename: "query_root";
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_pending_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_loan_canceled_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_approved_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_refund_applied_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_revoked_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract;
 }
 
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables {
-  withAmount: boolean;
   condition?: xuemi_member_private_teach_contract_bool_exp | null;
-  dateRangeCondition?: xuemi_member_private_teach_contract_bool_exp | null;
   limit?: number | null;
   orderBy?: xuemi_member_private_teach_contract_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_CONTRACT_PRICE_AMOUNT
+// ====================================================
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_pending_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_pending_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_pending_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_pending_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_pending_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_loan_canceled_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_loan_canceled_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_loan_canceled_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_loan_canceled_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_loan_canceled_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_approved_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_approved_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_approved_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_approved_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_approved_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_refund_applied_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_refund_applied_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_refund_applied_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_refund_applied_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_refund_applied_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_revoked_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_revoked_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_revoked_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_revoked_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_revoked_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNT {
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_pending_contract: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_pending_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_loan_canceled_contract: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_loan_canceled_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_approved_contract: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_approved_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_refund_applied_contract: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_refund_applied_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_revoked_contract: GET_MEMBER_CONTRACT_PRICE_AMOUNT_private_teach_revoked_contract;
+}
+
+export interface GET_MEMBER_CONTRACT_PRICE_AMOUNTVariables {
+  dateRangeCondition?: xuemi_member_private_teach_contract_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -2353,114 +2366,6 @@ export interface GET_SALES_GROUPSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-// ====================================================
-// GraphQL fragment: private_teach_contract_aggregate
-// ====================================================
-
-export interface private_teach_contract_aggregate_private_teach_pending_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_pending_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: private_teach_contract_aggregate_private_teach_pending_contract_aggregate_sum | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_pending_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: private_teach_contract_aggregate_private_teach_pending_contract_aggregate | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_loan_canceled_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_loan_canceled_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: private_teach_contract_aggregate_private_teach_loan_canceled_contract_aggregate_sum | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_loan_canceled_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: private_teach_contract_aggregate_private_teach_loan_canceled_contract_aggregate | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_approved_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_approved_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: private_teach_contract_aggregate_private_teach_approved_contract_aggregate_sum | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_approved_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: private_teach_contract_aggregate_private_teach_approved_contract_aggregate | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_refund_applied_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_refund_applied_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: private_teach_contract_aggregate_private_teach_refund_applied_contract_aggregate_sum | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_refund_applied_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: private_teach_contract_aggregate_private_teach_refund_applied_contract_aggregate | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_revoked_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_revoked_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: private_teach_contract_aggregate_private_teach_revoked_contract_aggregate_sum | null;
-}
-
-export interface private_teach_contract_aggregate_private_teach_revoked_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: private_teach_contract_aggregate_private_teach_revoked_contract_aggregate | null;
-}
-
-export interface private_teach_contract_aggregate {
-  __typename: "query_root";
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_pending_contract: private_teach_contract_aggregate_private_teach_pending_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_loan_canceled_contract: private_teach_contract_aggregate_private_teach_loan_canceled_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_approved_contract: private_teach_contract_aggregate_private_teach_approved_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_refund_applied_contract: private_teach_contract_aggregate_private_teach_refund_applied_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_revoked_contract: private_teach_contract_aggregate_private_teach_revoked_contract;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -2537,6 +2442,7 @@ export enum activity_session_ticket_update_column {
  */
 export enum activity_session_update_column {
   activity_id = "activity_id",
+  deleted_at = "deleted_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -2578,6 +2484,7 @@ export enum activity_ticket_update_column {
   activity_id = "activity_id",
   count = "count",
   currency_id = "currency_id",
+  deleted_at = "deleted_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -2593,6 +2500,7 @@ export enum activity_ticket_update_column {
 export enum activity_update_column {
   app_id = "app_id",
   cover_url = "cover_url",
+  deleted_at = "deleted_at",
   description = "description",
   id = "id",
   is_participants_visible = "is_participants_visible",
@@ -2690,7 +2598,7 @@ export enum app_nav_update_column {
  * unique or primary key constraints on table "app_page"
  */
 export enum app_page_constraint {
-  app_page_path_app_id_key = "app_page_path_app_id_key",
+  app_page_path_app_id_is_deleted_key = "app_page_path_app_id_is_deleted_key",
   app_page_pkey = "app_page_pkey",
 }
 
@@ -2760,6 +2668,7 @@ export enum app_setting_constraint {
  */
 export enum app_setting_update_column {
   app_id = "app_id",
+  created_at = "created_at",
   id = "id",
   key = "key",
   value = "value",
@@ -2776,6 +2685,7 @@ export enum app_update_column {
   point_discount_ratio = "point_discount_ratio",
   point_exchange_rate = "point_exchange_rate",
   point_validity_period = "point_validity_period",
+  symbol = "symbol",
   title = "title",
   updated_at = "updated_at",
   vimeo_project_id = "vimeo_project_id",
@@ -3457,6 +3367,7 @@ export enum member_oauth_constraint {
 export enum member_oauth_update_column {
   id = "id",
   member_id = "member_id",
+  options = "options",
   provider = "provider",
   provider_user_id = "provider_user_id",
 }
@@ -4006,6 +3917,7 @@ export enum order_product_update_column {
   created_at = "created_at",
   currency_id = "currency_id",
   deliverables = "deliverables",
+  delivered_at = "delivered_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -4565,6 +4477,9 @@ export enum product_inventory_update_column {
  * update columns of table "product"
  */
 export enum product_update_column {
+  coin_back = "coin_back",
+  coin_period_amount = "coin_period_amount",
+  coin_period_type = "coin_period_type",
   id = "id",
   sku = "sku",
   target = "target",
@@ -4877,7 +4792,9 @@ export enum program_plan_update_column {
   group_buying_people = "group_buying_people",
   id = "id",
   is_countdown_timer_visible = "is_countdown_timer_visible",
+  is_deleted = "is_deleted",
   is_participants_visible = "is_participants_visible",
+  is_primary = "is_primary",
   list_price = "list_price",
   period_amount = "period_amount",
   period_type = "period_type",
@@ -4922,6 +4839,7 @@ export enum program_role_constraint {
  * update columns of table "program_role"
  */
 export enum program_role_update_column {
+  created_at = "created_at",
   id = "id",
   member_id = "member_id",
   name = "name",
@@ -5568,6 +5486,7 @@ export interface activity_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
@@ -5656,6 +5575,7 @@ export interface activity_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   cover_url?: string | null;
+  deleted_at?: any | null;
   description?: string | null;
   id?: any | null;
   is_participants_visible?: boolean | null;
@@ -5673,6 +5593,7 @@ export interface activity_insert_input {
 export interface activity_max_order_by {
   app_id?: order_by | null;
   cover_url?: order_by | null;
+  deleted_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
   organizer_id?: order_by | null;
@@ -5687,6 +5608,7 @@ export interface activity_max_order_by {
 export interface activity_min_order_by {
   app_id?: order_by | null;
   cover_url?: order_by | null;
+  deleted_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
   organizer_id?: order_by | null;
@@ -5732,6 +5654,7 @@ export interface activity_session_bool_exp {
   activity_enrollments?: activity_enrollment_bool_exp | null;
   activity_id?: uuid_comparison_exp | null;
   activity_session_tickets?: activity_session_ticket_bool_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -5751,6 +5674,7 @@ export interface activity_session_insert_input {
   activity_attendances?: activity_attendance_arr_rel_insert_input | null;
   activity_id?: any | null;
   activity_session_tickets?: activity_session_ticket_arr_rel_insert_input | null;
+  deleted_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -5931,6 +5855,7 @@ export interface activity_ticket_bool_exp {
   count?: Int_comparison_exp | null;
   currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -5965,6 +5890,7 @@ export interface activity_ticket_insert_input {
   count?: number | null;
   currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
+  deleted_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -6181,6 +6107,7 @@ export interface app_bool_exp {
   programs?: program_bool_exp | null;
   properties?: property_bool_exp | null;
   sharing_codes?: sharing_code_bool_exp | null;
+  symbol?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
   vimeo_project_id?: String_comparison_exp | null;
@@ -6349,6 +6276,7 @@ export interface app_insert_input {
   programs?: program_arr_rel_insert_input | null;
   properties?: property_arr_rel_insert_input | null;
   sharing_codes?: sharing_code_arr_rel_insert_input | null;
+  symbol?: string | null;
   title?: string | null;
   updated_at?: any | null;
   vimeo_project_id?: string | null;
@@ -6641,6 +6569,7 @@ export interface app_order_by {
   programs_aggregate?: program_aggregate_order_by | null;
   properties_aggregate?: property_aggregate_order_by | null;
   sharing_codes_aggregate?: sharing_code_aggregate_order_by | null;
+  symbol?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
   vimeo_project_id?: order_by | null;
@@ -6675,7 +6604,7 @@ export interface app_page_bool_exp {
   app_page_sections?: app_page_section_bool_exp | null;
   craft_data?: jsonb_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
-  editor?: member_bool_exp | null;
+  editor?: member_public_bool_exp | null;
   editor_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
@@ -6694,7 +6623,6 @@ export interface app_page_insert_input {
   app_page_sections?: app_page_section_arr_rel_insert_input | null;
   craft_data?: any | null;
   created_at?: any | null;
-  editor?: member_obj_rel_insert_input | null;
   editor_id?: string | null;
   id?: any | null;
   is_deleted?: boolean | null;
@@ -6893,6 +6821,7 @@ export interface app_setting_bool_exp {
   _or?: (app_setting_bool_exp | null)[] | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   key?: String_comparison_exp | null;
   setting?: setting_bool_exp | null;
@@ -6905,6 +6834,7 @@ export interface app_setting_bool_exp {
 export interface app_setting_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  created_at?: any | null;
   id?: any | null;
   key?: string | null;
   setting?: setting_obj_rel_insert_input | null;
@@ -6916,6 +6846,7 @@ export interface app_setting_insert_input {
  */
 export interface app_setting_max_order_by {
   app_id?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   key?: order_by | null;
   value?: order_by | null;
@@ -6926,6 +6857,7 @@ export interface app_setting_max_order_by {
  */
 export interface app_setting_min_order_by {
   app_id?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   key?: order_by | null;
   value?: order_by | null;
@@ -10631,6 +10563,7 @@ export interface member_oauth_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   provider?: String_comparison_exp | null;
   provider_user_id?: String_comparison_exp | null;
 }
@@ -10642,6 +10575,7 @@ export interface member_oauth_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  options?: any | null;
   provider?: string | null;
   provider_user_id?: string | null;
 }
@@ -12560,6 +12494,7 @@ export interface order_executor_bool_exp {
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
   ratio?: numeric_comparison_exp | null;
+  sharing?: order_executor_sharing_bool_exp | null;
 }
 
 /**
@@ -12601,6 +12536,24 @@ export interface order_executor_on_conflict {
   constraint: order_executor_constraint;
   update_columns: order_executor_update_column[];
   where?: order_executor_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_executor_sharing". All fields are combined with a logical 'AND'.
+ */
+export interface order_executor_sharing_bool_exp {
+  _and?: (order_executor_sharing_bool_exp | null)[] | null;
+  _not?: order_executor_sharing_bool_exp | null;
+  _or?: (order_executor_sharing_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  executor?: member_bool_exp | null;
+  executor_id?: String_comparison_exp | null;
+  order_executor?: order_executor_bool_exp | null;
+  order_executor_id?: uuid_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  ratio?: numeric_comparison_exp | null;
+  total_price?: numeric_comparison_exp | null;
 }
 
 /**
@@ -12933,6 +12886,7 @@ export interface order_product_bool_exp {
   currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
   deliverables?: jsonb_comparison_exp | null;
+  delivered_at?: timestamp_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -13003,6 +12957,7 @@ export interface order_product_insert_input {
   currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
   deliverables?: any | null;
+  delivered_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -15227,6 +15182,9 @@ export interface product_bool_exp {
   _or?: (product_bool_exp | null)[] | null;
   card_discounts?: card_discount_bool_exp | null;
   cart_products?: cart_product_bool_exp | null;
+  coin_back?: numeric_comparison_exp | null;
+  coin_period_amount?: Int_comparison_exp | null;
+  coin_period_type?: String_comparison_exp | null;
   coupon_plan_products?: coupon_plan_product_bool_exp | null;
   id?: String_comparison_exp | null;
   order_products?: order_product_bool_exp | null;
@@ -15260,6 +15218,9 @@ export interface product_enrollment_bool_exp {
 export interface product_insert_input {
   card_discounts?: card_discount_arr_rel_insert_input | null;
   cart_products?: cart_product_arr_rel_insert_input | null;
+  coin_back?: any | null;
+  coin_period_amount?: number | null;
+  coin_period_type?: string | null;
   coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
   id?: string | null;
   order_products?: order_product_arr_rel_insert_input | null;
@@ -16654,7 +16615,9 @@ export interface program_plan_bool_exp {
   group_buying_people?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
+  is_primary?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
@@ -16704,7 +16667,9 @@ export interface program_plan_insert_input {
   group_buying_people?: any | null;
   id?: any | null;
   is_countdown_timer_visible?: boolean | null;
+  is_deleted?: boolean | null;
   is_participants_visible?: boolean | null;
+  is_primary?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
@@ -16806,6 +16771,7 @@ export interface program_role_bool_exp {
   _and?: (program_role_bool_exp | null)[] | null;
   _not?: program_role_bool_exp | null;
   _or?: (program_role_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -16818,6 +16784,7 @@ export interface program_role_bool_exp {
  * input type for inserting data into table "program_role"
  */
 export interface program_role_insert_input {
+  created_at?: any | null;
   id?: any | null;
   member_id?: string | null;
   name?: string | null;
@@ -16829,6 +16796,7 @@ export interface program_role_insert_input {
  * order by max() on columns of table "program_role"
  */
 export interface program_role_max_order_by {
+  created_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   name?: order_by | null;
@@ -16839,6 +16807,7 @@ export interface program_role_max_order_by {
  * order by min() on columns of table "program_role"
  */
 export interface program_role_min_order_by {
+  created_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   name?: order_by | null;
@@ -18095,6 +18064,21 @@ export interface tag_on_conflict {
   constraint: tag_constraint;
   update_columns: tag_update_column[];
   where?: tag_bool_exp | null;
+}
+
+/**
+ * expression to compare columns of type timestamp. All fields are combined with logical 'AND'.
+ */
+export interface timestamp_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
 }
 
 /**
