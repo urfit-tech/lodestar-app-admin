@@ -7,6 +7,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
@@ -34,6 +35,7 @@ const ActivityIntroductionForm: React.FC<{
     hasura.UPDATE_ACTIVITY_INTRODUCTIONVariables
   >(UPDATE_ACTIVITY_INTRODUCTION)
   const [loading, setLoading] = useState(false)
+  const coverId = uuid()
 
   if (!activityAdmin) {
     return <Skeleton active />
@@ -41,11 +43,10 @@ const ActivityIntroductionForm: React.FC<{
 
   const handleUpdateCover = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateActivityCover({
       variables: {
         activityId: activityAdmin.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activityAdmin.id}?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activityAdmin.id}/${coverId}`,
       },
     })
       .then(() => {
@@ -96,7 +97,7 @@ const ActivityIntroductionForm: React.FC<{
         }
       >
         <ImageInput
-          path={`activity_covers/${app.id}/${activityAdmin.id}`}
+          path={`activity_covers/${app.id}/${activityAdmin.id}/${coverId}`}
           image={{
             width: '160px',
             ratio: 9 / 16,

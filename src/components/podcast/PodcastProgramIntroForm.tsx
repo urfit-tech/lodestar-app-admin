@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
@@ -25,6 +26,7 @@ const PodcastProgramIntroForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const [loading, setLoading] = useState(false)
+  const coverId = uuid()
 
   const [updatePodcastProgramCover] = useMutation<
     hasura.UPDATE_PODCAST_PROGRAM_COVER,
@@ -46,9 +48,7 @@ const PodcastProgramIntroForm: React.FC<{
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${appId}/${
-          podcastProgramAdmin.id
-        }?t=${Date.now()}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${appId}/${podcastProgramAdmin.id}/${coverId}`,
       },
     })
       .then(() => {
@@ -103,7 +103,7 @@ const PodcastProgramIntroForm: React.FC<{
         }
       >
         <ImageInput
-          path={`podcast_program_covers/${appId}/${podcastProgramAdmin.id}`}
+          path={`podcast_program_covers/${appId}/${podcastProgramAdmin.id}/${coverId}`}
           image={{
             width: '120px',
             ratio: 1,

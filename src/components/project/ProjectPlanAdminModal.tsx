@@ -10,6 +10,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
@@ -114,8 +115,9 @@ const ProjectPlanAdminModal: React.FC<
           .then(async ({ data }) => {
             const id = data?.insert_project_plan?.returning.map(v => v.id)[0]
             if (coverImage) {
+              const coverId = uuid()
               try {
-                await uploadFile(`project_covers/${appId}/${projectId}/${id}`, coverImage, authToken, {
+                await uploadFile(`project_covers/${appId}/${projectId}/${id}/${coverId}`, coverImage, authToken, {
                   cancelToken: new axios.CancelToken(canceler => {
                     uploadCanceler.current = canceler
                   }),
@@ -127,9 +129,7 @@ const ProjectPlanAdminModal: React.FC<
               updateProjectPlanCoverUrl({
                 variables: {
                   id: id,
-                  coverUrl: `https://${
-                    process.env.REACT_APP_S3_BUCKET
-                  }/project_covers/${appId}/${projectId}/${id}?t=${Date.now()}`,
+                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${id}/${coverId}`,
                 },
               })
             }

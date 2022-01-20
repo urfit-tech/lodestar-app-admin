@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
@@ -31,6 +32,7 @@ const BlogPostSettingForm: React.FC<{
     hasura.UPDATE_POST_MERCHANDISE_COLLECTIONVariables
   >(UPDATE_POST_MERCHANDISE_COLLECTION)
   const [loading, setLoading] = useState(false)
+  const coverId = uuid()
 
   if (!post) {
     return <Skeleton active />
@@ -38,11 +40,10 @@ const BlogPostSettingForm: React.FC<{
 
   const handleUpload = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updatePostCover({
       variables: {
         postId: post.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}/400?t=${uploadTime}`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}/${coverId}/400`,
       },
     })
       .then(() => {
@@ -99,7 +100,7 @@ const BlogPostSettingForm: React.FC<{
         }
       >
         <ImageInput
-          path={`post_covers/${appId}/${post.id}`}
+          path={`post_covers/${appId}/${post.id}/${coverId}`}
           image={{
             width: '160px',
             ratio: 9 / 16,
