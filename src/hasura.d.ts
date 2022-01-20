@@ -352,7 +352,7 @@ export interface ARCHIVE_ACTIVITY_SESSION {
 }
 
 export interface ARCHIVE_ACTIVITY_SESSIONVariables {
-  activitySessionId?: any | null;
+  activitySessionId: any;
 }
 
 /* tslint:disable */
@@ -478,6 +478,36 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
   price: any;
   count?: number | null;
   description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: ARCHIVE_ACTIVITY_TICKET
+// ====================================================
+
+
+export interface ARCHIVE_ACTIVITY_TICKET_update_activity_ticket {
+  __typename: "activity_ticket_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_ACTIVITY_TICKET {
+  /**
+   * update data of the table: "activity_ticket"
+   */
+  update_activity_ticket: ARCHIVE_ACTIVITY_TICKET_update_activity_ticket | null;
+}
+
+export interface ARCHIVE_ACTIVITY_TICKETVariables {
+  activityTicketId: any;
 }
 
 /* tslint:disable */

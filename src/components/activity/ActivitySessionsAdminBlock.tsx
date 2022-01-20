@@ -184,7 +184,7 @@ const ActivitySessionsAdminBlock: React.FC<{
                           archiveActivitySession({ variables: { activitySessionId: session.id } })
                       }}
                     >
-                      {formatMessage(activityMessages.ui.deleteSession)}
+                      {formatMessage(commonMessages.ui.delete)}
                     </Menu.Item>
                   </Menu>
                 }

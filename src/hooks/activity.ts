@@ -189,55 +189,57 @@ export const useActivityAdmin = (activityId: string) => {
             name: v.category.name,
           })),
           isDeleted: data.activity_by_pk.deleted_at,
-          tickets: data.activity_by_pk.activity_tickets.map(v => ({
-            id: v.id,
-            title: v.title,
-            startedAt: new Date(v.started_at),
-            endedAt: new Date(v.ended_at),
-            currencyId: v.currency_id,
-            price: v.price,
-            count: v.count,
-            description: v.description,
-            isPublished: v.is_published,
-            isDeleted: v.deleted_at,
-            sessions: v.activity_session_tickets.map(v => ({
-              id: v.activity_session.id,
-              type: v.activity_session_type as ActivityTicketSessionType,
-              title: v.activity_session.title,
-              location: v.activity_session.location,
-              onlineLink: v.activity_session.online_link,
-            })),
-            enrollmentsCount: v.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
-          })),
-          sessions: data.activity_by_pk.activity_sessions.map(v => ({
-            id: v.id,
-            title: v.title,
-            startedAt: new Date(v.started_at),
-            endedAt: new Date(v.ended_at),
-            location: v.location,
-            onlineLink: v.online_link,
-            threshold: v.threshold,
-            description: v.description,
-            isDeleted: v.deleted_at,
-            maxAmount: {
-              online: sum(
-                v.activity_session_tickets
-                  .filter(w => ['online', 'both'].includes(w.activity_session_type))
-                  .map(x => x.activity_ticket?.count || 0),
-              ),
-              offline: sum(
-                v.activity_session_tickets
-                  .filter(w => ['offline', 'both'].includes(w.activity_session_type))
-                  .map(x => x.activity_ticket?.count || 0),
-              ),
-            },
-            enrollmentsCount: {
-              online: v.ticket_enrollment_count?.online_session_ticket_count || 0,
-              offline: v.ticket_enrollment_count?.offline_session_ticket_count || 0,
-            },
-          })),
+          tickets:
+            data?.activity_by_pk.activity_tickets?.map(v => ({
+              id: v.id,
+              title: v.title,
+              startedAt: new Date(v.started_at),
+              endedAt: new Date(v.ended_at),
+              currencyId: v.currency_id,
+              price: v.price,
+              count: v.count,
+              description: v.description,
+              isPublished: v.is_published,
+              isDeleted: v.deleted_at,
+              sessions: v.activity_session_tickets.map(v => ({
+                id: v.activity_session.id,
+                type: v.activity_session_type as ActivityTicketSessionType,
+                title: v.activity_session.title,
+                location: v.activity_session.location,
+                onlineLink: v.activity_session.online_link,
+              })),
+              enrollmentsCount: v.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
+            })) || [],
+          sessions:
+            data?.activity_by_pk.activity_sessions?.map(v => ({
+              id: v.id,
+              title: v.title,
+              startedAt: new Date(v.started_at),
+              endedAt: new Date(v.ended_at),
+              location: v.location,
+              onlineLink: v.online_link,
+              threshold: v.threshold,
+              description: v.description,
+              isDeleted: v.deleted_at,
+              maxAmount: {
+                online: sum(
+                  v.activity_session_tickets
+                    .filter(w => ['online', 'both'].includes(w.activity_session_type))
+                    .map(x => x.activity_ticket?.count || 0),
+                ),
+                offline: sum(
+                  v.activity_session_tickets
+                    .filter(w => ['offline', 'both'].includes(w.activity_session_type))
+                    .map(x => x.activity_ticket?.count || 0),
+                ),
+              },
+              enrollmentsCount: {
+                online: v.ticket_enrollment_count?.online_session_ticket_count || 0,
+                offline: v.ticket_enrollment_count?.offline_session_ticket_count || 0,
+              },
+            })) || [],
         }
-
+  console.log(data)
   return {
     loadingActivityAdmin: loading,
     errorActivityAdmin: error,

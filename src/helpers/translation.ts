@@ -552,8 +552,14 @@ export const activityMessages = {
   }),
   text: defineMessages({
     imageTips: { id: 'activity.text.imageTips', defaultMessage: '建議圖片尺寸：1200*675px' },
-    deleteActivitySessionWarning: { id: 'activity.text.deleteActivitySessionWarning', defaultMessage: '刪除場次' },
-    deleteActivityTicketWarning: { id: 'activity.text.deleteActivityTicketWarning', defaultMessage: '刪除票券' },
+    deleteActivitySessionWarning: {
+      id: 'activity.text.deleteActivitySessionWarning',
+      defaultMessage: '你確定要刪除此場次？此動作無法還原',
+    },
+    deleteActivityTicketWarning: {
+      id: 'activity.text.deleteActivityTicketWarning',
+      defaultMessage: '你確定要刪除此票券？此動作無法還原',
+    },
   }),
 }
 
