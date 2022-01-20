@@ -363,6 +363,23 @@ export const useMerchandiseSpecCollection = (options?: {
   merchandiseId?: string
   memberId?: string
 }) => {
+  const { data: inventoryStatusData } = useQuery<hasura.GET_MERCHANDISE_SPEC_INVENTORY_STATUS>(
+    gql`
+      query GET_MERCHANDISE_SPEC_INVENTORY_STATUS {
+        merchandise_spec_inventory_status {
+          merchandise_spec_id
+          buyable_quantity
+          delivered_quantity
+          undelivered_quantity
+          unpaid_quantity
+        }
+      }
+    `,
+    {
+      fetchPolicy: 'no-cache',
+    },
+  )
+
   const { loading, error, data, refetch } = useQuery<hasura.GET_MERCHANDISE_SPEC_COLLECTION>(
     gql`
       query GET_MERCHANDISE_SPEC_COLLECTION(
@@ -400,13 +417,6 @@ export const useMerchandiseSpecCollection = (options?: {
               title
             }
           }
-
-          merchandise_spec_inventory_status {
-            buyable_quantity
-            delivered_quantity
-            undelivered_quantity
-            unpaid_quantity
-          }
         }
       }
     `,
@@ -423,7 +433,7 @@ export const useMerchandiseSpecCollection = (options?: {
   )
   //const {loading, error, data, refetch } = useQuery<>
 
-  const merchandiseSpecs: MerchandiseSpec[] =
+  let merchandiseSpecs: MerchandiseSpec[] =
     loading || error || !data
       ? []
       : data.merchandise_spec.map(v => ({
@@ -432,10 +442,10 @@ export const useMerchandiseSpecCollection = (options?: {
           coverUrl: v.merchandise.merchandise_imgs[0]?.url || null,
           publishedAt: v.merchandise.published_at,
           inventoryStatus: {
-            buyableQuantity: v.merchandise_spec_inventory_status?.buyable_quantity || 0,
-            deliveredQuantity: v.merchandise_spec_inventory_status?.delivered_quantity || 0,
-            undeliveredQuantity: v.merchandise_spec_inventory_status?.undelivered_quantity || 0,
-            unpaidQuantity: v.merchandise_spec_inventory_status?.unpaid_quantity || 0,
+            buyableQuantity: 0,
+            deliveredQuantity: 0,
+            undeliveredQuantity: 0,
+            unpaidQuantity: 0,
           },
           isPhysical: v.merchandise.is_physical,
           isCustomized: v.merchandise.is_customized,
@@ -445,6 +455,21 @@ export const useMerchandiseSpecCollection = (options?: {
             title: v.merchandise?.member_shop?.title || '',
           },
         }))
+
+  if (inventoryStatusData) {
+    inventoryStatusData.merchandise_spec_inventory_status.forEach(v => {
+      merchandiseSpecs.forEach(merchandiseSpec => {
+        if (merchandiseSpec.id === v.merchandise_spec_id) {
+          merchandiseSpec.inventoryStatus = {
+            buyableQuantity: v.buyable_quantity || 0,
+            deliveredQuantity: v.delivered_quantity || 0,
+            undeliveredQuantity: v.undelivered_quantity || 0,
+            unpaidQuantity: v.unpaid_quantity || 0,
+          }
+        }
+      })
+    })
+  }
   return {
     loadingMerchandiseSpecs: loading,
     errorMerchandiseSpecs: error,

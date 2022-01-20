@@ -68,7 +68,7 @@ const ProfileBasicCard: React.FC<
     updateMemberAvatar({
       variables: {
         memberId,
-        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}/32?t=${uploadTime}`,
+        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}/256?t=${uploadTime}`,
       },
     })
       .then(() => {

@@ -25,7 +25,6 @@ import LoadingPage from './LoadingPage'
 type ProgramSortProps = {
   id: string
   title: string
-  isSubscription: boolean
 }
 
 const AvatarPlaceHolder = styled.div`
@@ -137,14 +136,13 @@ const ProgramCollectionAdminPage: React.FC = () => {
             categoryClassType="program"
             withCreatorSelector={currentUserRole === 'app-owner'}
             withProgramType
-            onCreate={({ title, categoryIds, creatorId, isSubscription }) =>
+            onCreate={({ title, categoryIds, creatorId }) =>
               insertProgram({
                 variables: {
                   ownerId: currentMemberId,
                   instructorId: creatorId || currentMemberId,
                   appId,
                   title,
-                  isSubscription: isSubscription || false,
                   programCategories:
                     categoryIds?.map((categoryId, index) => ({
                       category_id: categoryId,
@@ -250,7 +248,6 @@ const ProgramCollectionBlock: React.FC<{
                     app_id: appId,
                     id: value.id,
                     title: value.title,
-                    is_subscription: value.isSubscription,
                     position: index,
                   })),
                 },
@@ -346,20 +343,14 @@ const useProgramPreviewCollection = (
           avatarUrl: programRole.member?.picture_url || null,
           name: programRole.member?.name || programRole.member?.username || '',
         })),
-        isSubscription: program.is_subscription,
-        listPrice: program.is_subscription ? plan?.list_price || null : program.list_price,
-        salePrice: program.is_subscription
-          ? plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now()
-            ? plan.sale_price
-            : null
-          : program.sold_at && new Date(program.sold_at).getTime() > Date.now()
-          ? program.sale_price
-          : null,
-        periodAmount: program.is_subscription && plan ? 1 : null,
-        periodType: program.is_subscription && plan ? (plan.period_type as ProgramPlanPeriodType) : null,
-        enrollment: program.is_subscription
-          ? sum(program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0))
-          : program.program_enrollments_aggregate.aggregate?.count || 0,
+        isSubscription: false, // TODO: remove this in the future
+        listPrice: plan?.list_price ?? null,
+        salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
+        periodAmount: plan?.period_amount || null,
+        periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
+        enrollment: sum(
+          program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0),
+        ),
         isPrivate: program.is_private,
       }
     }) || []
@@ -426,7 +417,6 @@ const useProgramSortCollection = (condition: hasura.GET_PROGRAM_PREVIEW_COLLECTI
           return {
             id: program.id,
             title: program.title,
-            isSubscription: program.is_subscription,
           }
         })
 
@@ -449,7 +439,7 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       cover_url
       title
       abstract
-      program_roles(where: { name: { _eq: "instructor" } }, limit: 1) {
+      program_roles(where: { name: { _eq: "instructor" } }, order_by: { created_at: asc, id: desc }, limit: 1) {
         id
         member {
           id
@@ -465,22 +455,17 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       updated_at
       published_at
       is_private
-      is_subscription
-      program_plans {
+      program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
         id
         list_price
         sale_price
         sold_at
+        period_amount
         period_type
         program_plan_enrollments_aggregate {
           aggregate {
             count
           }
-        }
-      }
-      program_enrollments_aggregate {
-        aggregate {
-          count
         }
       }
     }
@@ -491,7 +476,6 @@ const GET_PROGRAM_SORT_COLLECTION = gql`
     program(where: $condition, order_by: { position: asc }) {
       id
       title
-      is_subscription
     }
   }
 `
@@ -502,14 +486,12 @@ const INSERT_PROGRAM = gql`
     $instructorId: String!
     $appId: String!
     $title: String!
-    $isSubscription: Boolean!
     $programCategories: [program_category_insert_input!]!
   ) {
     insert_program(
       objects: {
         app_id: $appId
         title: $title
-        is_subscription: $isSubscription
         program_roles: {
           data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
         }

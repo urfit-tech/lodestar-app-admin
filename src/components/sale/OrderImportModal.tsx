@@ -2,15 +2,12 @@ import { StringLiteral } from '@babel/types'
 import Uppy from '@uppy/core'
 import { DragDrop, useUppy } from '@uppy/react'
 import XHRUpload from '@uppy/xhr-upload'
-import { Alert, Modal } from 'antd'
+import { Alert, Button, Modal } from 'antd'
 import { ModalProps } from 'antd/lib/modal'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 
-type OrderImportModalProps = ModalProps & {
-  renderTrigger?: (ctx: { show: () => void }) => React.ReactElement
-}
 const messages = defineMessages({
   description: { id: 'sales.orderImportModal.description', defaultMessage: '點此下載範本' },
   note: { id: 'sales.orderImportModal.note', defaultMessage: '檔案上限 10MB' },
@@ -20,6 +17,10 @@ const messages = defineMessages({
   numFailed: { id: 'sales.orderImportModal.numFailed', defaultMessage: '失敗筆數' },
   numTotal: { id: 'sales.orderImportModal.numTotal', defaultMessage: '總筆數' },
 })
+
+type OrderImportModalProps = ModalProps & {
+  renderTrigger?: (ctx: { show: () => void }) => React.ReactElement
+}
 type ResponseBody =
   | { code: 'SUCCESS'; message: string; result: { total: number; success: number; failed: string[] } }
   | {
@@ -27,6 +28,7 @@ type ResponseBody =
       message: StringLiteral
       result: null
     }
+
 const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
@@ -65,9 +67,16 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
           }}
           {...modalProps}
         >
-          <a href={process.env.PUBLIC_URL + '/sample_orders.csv'}>
-            <div className="mb-3 text-center">{formatMessage(messages.description)}</div>
-          </a>
+          <div className="text-center">
+            <Button
+              type="link"
+              onClick={() =>
+                (window.location.href = `https://${process.env.REACT_APP_S3_BUCKET}/public/sample_orders.csv`)
+              }
+            >
+              {formatMessage(messages.description)}
+            </Button>
+          </div>
           {bodies.length === 0 && (
             <DragDrop uppy={uppy} width="100%" height="100%" note={formatMessage(messages.note)} />
           )}

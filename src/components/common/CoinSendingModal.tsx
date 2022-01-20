@@ -1,8 +1,9 @@
-import { FileAddOutlined } from '@ant-design/icons'
+import { FileAddOutlined, UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, message, Radio, Space, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -17,7 +18,10 @@ const messages = defineMessages({
   sendingCoin: { id: 'promotion.label.sendingCoin', defaultMessage: '發送代幣' },
   sendCoin: { id: 'promotion.ui.sendCoin', defaultMessage: '發送代幣' },
   selectMember: { id: 'promotion.label.selectMember', defaultMessage: '選擇會員' },
+  bathSelectMember: { id: 'promotion.label.bathSelectMember', defaultMessage: '批次選擇名單' },
+  uploadMember: { id: 'promotion.label.uploadMember', defaultMessage: '上傳名單' },
   title: { id: 'promotion.label.title', defaultMessage: '項目' },
+  scheme: { id: 'promotion.label.scheme', defaultMessage: '格式' },
   description: { id: 'promotion.label.description', defaultMessage: '項目描述' },
   increaseCoins: { id: 'promotion.label.increaseCoins', defaultMessage: '增加代幣' },
   availableDateRange: { id: 'promotion.label.availableDateRange', defaultMessage: '有效期限' },
@@ -47,6 +51,7 @@ const CoinSendingModal: React.FC<{
     hasura.INSERT_COIN_LOG_COLLECTIONVariables
   >(INSERT_COIN_LOG_COLLECTION)
   const [loading, setLoading] = useState(false)
+  const [memberSelectionMode, setMemberSelectionMode] = useState<'selector' | 'uploader'>('selector')
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -71,6 +76,7 @@ const CoinSendingModal: React.FC<{
             onRefetch?.().then(() => {
               onSuccess()
               form.resetFields()
+              setMemberSelectionMode('selector')
             }),
           )
           .catch(handleError)
@@ -101,13 +107,6 @@ const CoinSendingModal: React.FC<{
     >
       <Form form={form} layout="vertical" colon={false} hideRequiredMark initialValues={{ description: '', amount: 1 }}>
         <Form.Item
-          label={formatMessage(messages.selectMember)}
-          name="memberIds"
-          rules={[{ required: true, message: formatMessage(errorMessages.form.memberIdIsRequired) }]}
-        >
-          <MemberSelector mode="multiple" members={members} />
-        </Form.Item>
-        <Form.Item
           label={formatMessage(messages.title)}
           name="title"
           rules={[
@@ -121,6 +120,48 @@ const CoinSendingModal: React.FC<{
         >
           <Input placeholder={formatMessage(messages.titlePlaceholder)} />
         </Form.Item>
+        <Radio.Group
+          buttonStyle="solid"
+          value={memberSelectionMode}
+          onChange={e => setMemberSelectionMode(e.target.value)}
+          style={{ width: '100%' }}
+        >
+          <Space direction="vertical" className="mb-4" style={{ width: '100%' }}>
+            <Radio value="selector">{formatMessage(messages.selectMember)}</Radio>
+            {memberSelectionMode === 'selector' && (
+              <Form.Item
+                name="memberIds"
+                rules={[{ required: true, message: formatMessage(errorMessages.form.memberIdIsRequired) }]}
+              >
+                <MemberSelector mode="multiple" members={members} maxTagCount={1000} />
+              </Form.Item>
+            )}
+            <Space direction="horizontal" align="center">
+              <Radio value="uploader">
+                {formatMessage(messages.bathSelectMember)} ({formatMessage(messages.scheme)}
+                <Button
+                  className="p-0"
+                  type="link"
+                  onClick={() =>
+                    (window.location.href = `https://${process.env.REACT_APP_S3_BUCKET}/public/sample_members.csv`)
+                  }
+                >
+                  {formatMessage(commonMessages.label.example)}
+                </Button>
+                )
+              </Radio>
+              {memberSelectionMode === 'uploader' && (
+                <Form.Item
+                  name="memberIds"
+                  noStyle
+                  rules={[{ required: true, message: formatMessage(errorMessages.form.memberIdIsRequired) }]}
+                >
+                  <MemberUploader />
+                </Form.Item>
+              )}
+            </Space>
+          </Space>
+        </Radio.Group>
         <Form.Item
           className="d-none"
           label={formatMessage(messages.description)}
@@ -157,6 +198,32 @@ const CoinSendingModal: React.FC<{
         </Form.Item>
       </Form>
     </AdminModal>
+  )
+}
+
+const MemberUploader: React.VFC<{
+  onChange?: (memberIds: string[]) => void
+}> = ({ onChange }) => {
+  const { authToken } = useAuth()
+  const { formatMessage } = useIntl()
+  return (
+    <Upload
+      name="memberList"
+      method="POST"
+      action={`${process.env.REACT_APP_API_BASE_ROOT}/sys/import-leads`}
+      headers={{ authorization: `Bearer ${authToken}` }}
+      accept=".csv"
+      onChange={info => {
+        if (info.file.status === 'done') {
+          const response = info.file.response
+          Array.isArray(response?.result?.leadIds) && onChange?.(response.result.leadIds)
+        } else if (info.file.status === 'error') {
+          message.error(`${info.file.name} file upload failed.`)
+        }
+      }}
+    >
+      <Button icon={<UploadOutlined />}>{formatMessage(messages.uploadMember)}</Button>
+    </Upload>
   )
 }
 
