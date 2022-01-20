@@ -30,7 +30,8 @@ const MemberSelector: React.FC<{
   disabled?: boolean
   allowClear?: boolean
   mode?: SelectProps<string[]>['mode']
-}> = ({ members, value, onChange, onSelect, disabled, allowClear = false, mode }) => {
+  maxTagCount?: SelectProps<string[]>['maxTagCount']
+}> = ({ members, value, onChange, onSelect, disabled, allowClear = false, mode, maxTagCount }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -47,6 +48,7 @@ const MemberSelector: React.FC<{
       disabled={disabled}
       style={{ width: '100%' }}
       allowClear={allowClear}
+      maxTagCount={maxTagCount}
     >
       {members.map(member => (
         <Select.Option

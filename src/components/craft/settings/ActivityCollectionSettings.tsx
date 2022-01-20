@@ -1,4 +1,4 @@
-import { Form, Switch } from 'antd'
+import { Form, Input, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ActivityCollectionProps } from 'lodestar-app-element/src/components/collections/ActivityCollection'
 import { useIntl } from 'react-intl'
@@ -21,6 +21,11 @@ const ActivityCollectionSettings: CraftElementSettings<ActivityCollectionProps> 
         form.validateFields()
       }}
     >
+      <Form.Item
+        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.activitySectionId)}</CraftSettingLabel>}
+      >
+        <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+      </Form.Item>
       <Form.Item className="mb-0">
         <ActivityCollectionSelector value={props.source} onChange={source => onPropsChange?.({ ...props, source })} />
       </Form.Item>
