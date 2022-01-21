@@ -12,7 +12,7 @@ export const useActivityCollection = (memberId: string | null) => {
   >(
     gql`
       query GET_ACTIVITY_COLLECTION_ADMIN($memberId: String) {
-        activity(where: { organizer_id: { _eq: $memberId } }) {
+        activity(where: { organizer_id: { _eq: $memberId }, deleted_at: { _is_null: true } }) {
           id
           cover_url
           title
@@ -96,7 +96,7 @@ export const useActivityAdmin = (activityId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ACTIVITY_ADMIN, hasura.GET_ACTIVITY_ADMINVariables>(
     gql`
       query GET_ACTIVITY_ADMIN($activityId: uuid!) {
-        activity_by_pk(id: $activityId) {
+        activity(where: { id: { _eq: $activityId }, deleted_at: { _is_null: true } }) {
           id
           title
           description
@@ -105,7 +105,6 @@ export const useActivityAdmin = (activityId: string) => {
           organizer_id
           published_at
           support_locales
-          deleted_at
           activity_categories(order_by: { position: asc }) {
             id
             category {
@@ -113,7 +112,7 @@ export const useActivityAdmin = (activityId: string) => {
               name
             }
           }
-          activity_tickets(order_by: { started_at: asc }) {
+          activity_tickets(where: { deleted_at: { _is_null: true } }, order_by: { started_at: asc }) {
             id
             title
             started_at
@@ -123,7 +122,6 @@ export const useActivityAdmin = (activityId: string) => {
             description
             is_published
             currency_id
-            deleted_at
             activity_session_tickets {
               id
               activity_session_type
@@ -140,7 +138,7 @@ export const useActivityAdmin = (activityId: string) => {
               }
             }
           }
-          activity_sessions(order_by: { started_at: asc }) {
+          activity_sessions(where: { deleted_at: { _is_null: true } }, order_by: { started_at: asc }) {
             id
             title
             started_at
@@ -149,7 +147,6 @@ export const useActivityAdmin = (activityId: string) => {
             online_link
             threshold
             description
-            deleted_at
             activity_enrollments_aggregate {
               aggregate {
                 count
@@ -188,7 +185,6 @@ export const useActivityAdmin = (activityId: string) => {
             id: v.category.id,
             name: v.category.name,
           })),
-          isDeleted: data.activity_by_pk.deleted_at,
           tickets:
             data?.activity_by_pk.activity_tickets?.map(v => ({
               id: v.id,
@@ -200,7 +196,6 @@ export const useActivityAdmin = (activityId: string) => {
               count: v.count,
               description: v.description,
               isPublished: v.is_published,
-              isDeleted: v.deleted_at,
               sessions: v.activity_session_tickets.map(v => ({
                 id: v.activity_session.id,
                 type: v.activity_session_type as ActivityTicketSessionType,
@@ -220,7 +215,6 @@ export const useActivityAdmin = (activityId: string) => {
               onlineLink: v.online_link,
               threshold: v.threshold,
               description: v.description,
-              isDeleted: v.deleted_at,
               maxAmount: {
                 online: sum(
                   v.activity_session_tickets

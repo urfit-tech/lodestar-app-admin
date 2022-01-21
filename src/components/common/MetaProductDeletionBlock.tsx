@@ -56,8 +56,7 @@ const StyledText = styled.div`
 const MetaProductDeletionBlock: React.FC<{
   metaProductType: MetaProductType
   targetId: string
-  isDeleted: boolean
-}> = ({ metaProductType, targetId, isDeleted }) => {
+}> = ({ metaProductType, targetId }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const history = useHistory()
@@ -107,15 +106,11 @@ const MetaProductDeletionBlock: React.FC<{
 
         <AdminModal
           title={formatMessage(messages.deleteProduct, { metaProduct })}
-          renderTrigger={({ setVisible }) =>
-            isDeleted ? (
-              <Button disabled>{formatMessage(commonMessages.status.deleted)}</Button>
-            ) : (
-              <Button type="primary" danger onClick={() => setVisible(true)}>
-                {formatMessage(messages.deleteProduct, { metaProduct })}
-              </Button>
-            )
-          }
+          renderTrigger={({ setVisible }) => (
+            <Button type="primary" danger onClick={() => setVisible(true)}>
+              {formatMessage(messages.deleteProduct, { metaProduct })}
+            </Button>
+          )}
           okText={formatMessage(commonMessages.ui.delete)}
           okButtonProps={{ danger: true, loading }}
           cancelText={formatMessage(commonMessages.ui.back)}

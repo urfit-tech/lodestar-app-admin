@@ -76,11 +76,7 @@ const ActivityAdminPage: React.FC = () => {
                   <AdminBlockTitle>{formatMessage(messages.activityIntroduction)}</AdminBlockTitle>
                   <ActivityIntroductionForm activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
                 </AdminBlock>
-                <MetaProductDeletionBlock
-                  metaProductType="Activity"
-                  targetId={activityId}
-                  isDeleted={!!activityAdmin?.isDeleted}
-                />
+                <MetaProductDeletionBlock metaProductType="Activity" targetId={activityId} />
               </div>
             </Tabs.TabPane>
 
