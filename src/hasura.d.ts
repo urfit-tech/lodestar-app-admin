@@ -5194,6 +5194,55 @@ export interface UPDATE_PRACTICEVariables {
 
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_ENROLLMENT
+// ====================================================
+
+
+export interface GET_PROGRAM_ENROLLMENT_program_program_plans_program_plan_enrollments_aggregate_aggregate {
+  __typename: "program_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_ENROLLMENT_program_program_plans_program_plan_enrollments_aggregate {
+  __typename: "program_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_ENROLLMENT_program_program_plans_program_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_ENROLLMENT_program_program_plans {
+  __typename: "program_plan";
+  id: any;
+  /**
+   * An aggregated array relationship
+   */
+  program_plan_enrollments_aggregate: GET_PROGRAM_ENROLLMENT_program_program_plans_program_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_ENROLLMENT_program {
+  __typename: "program";
+  /**
+   * An array relationship
+   */
+  program_plans: GET_PROGRAM_ENROLLMENT_program_program_plans[];
+}
+
+export interface GET_PROGRAM_ENROLLMENT {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_ENROLLMENT_program[];
+}
+
+export interface GET_PROGRAM_ENROLLMENTVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM_CATEGORIES
 // ====================================================
 
@@ -15482,16 +15531,6 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles {
   member: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member | null;
 }
 
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate {
-  __typename: "program_plan_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate {
-  __typename: "program_plan_enrollment_aggregate";
-  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate | null;
-}
-
 export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
   __typename: "program_plan";
   id: any;
@@ -15500,10 +15539,6 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
   sold_at: any | null;
   period_amount: any | null;
   period_type: string | null;
-  /**
-   * An aggregated array relationship
-   */
-  program_plan_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate;
 }
 
 export interface GET_PROGRAM_PREVIEW_COLLECTION_program {

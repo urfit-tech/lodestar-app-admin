@@ -4,7 +4,6 @@ import { Button, Input, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
@@ -343,14 +342,10 @@ const useProgramPreviewCollection = (
           avatarUrl: programRole.member?.picture_url || null,
           name: programRole.member?.name || programRole.member?.username || '',
         })),
-        isSubscription: false, // TODO: remove this in the future
         listPrice: plan?.list_price ?? null,
         salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
         periodAmount: plan?.period_amount || null,
         periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
-        enrollment: sum(
-          program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0),
-        ),
         isPrivate: program.is_private,
       }
     }) || []
@@ -462,11 +457,6 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
         sold_at
         period_amount
         period_type
-        program_plan_enrollments_aggregate {
-          aggregate {
-            count
-          }
-        }
       }
     }
   }
