@@ -170,23 +170,23 @@ export const useActivityAdmin = (activityId: string) => {
   )
 
   const activityAdmin: ActivityAdminProps | null =
-    loading || error || !data || !data?.activity_by_pk
+    loading || error || !data || !data?.activity
       ? null
       : {
-          id: data.activity_by_pk.id,
-          coverUrl: data.activity_by_pk.cover_url,
-          title: data.activity_by_pk.title,
-          publishedAt: data.activity_by_pk.published_at && new Date(data.activity_by_pk.published_at),
-          description: data.activity_by_pk.description,
-          isParticipantsVisible: data.activity_by_pk.is_participants_visible,
-          organizerId: data.activity_by_pk.organizer_id,
-          supportLocales: data.activity_by_pk.support_locales || [],
-          categories: data.activity_by_pk.activity_categories.map(v => ({
+          id: data.activity[0]?.id,
+          coverUrl: data.activity[0]?.cover_url,
+          title: data.activity[0]?.title,
+          publishedAt: data.activity[0]?.published_at && new Date(data.activity[0]?.published_at),
+          description: data.activity[0]?.description,
+          isParticipantsVisible: data.activity[0]?.is_participants_visible,
+          organizerId: data.activity[0]?.organizer_id,
+          supportLocales: data.activity[0]?.support_locales || [],
+          categories: data.activity[0]?.activity_categories.map(v => ({
             id: v.category.id,
             name: v.category.name,
           })),
           tickets:
-            data?.activity_by_pk.activity_tickets?.map(v => ({
+            data?.activity[0]?.activity_tickets?.map(v => ({
               id: v.id,
               title: v.title,
               startedAt: new Date(v.started_at),
@@ -206,7 +206,7 @@ export const useActivityAdmin = (activityId: string) => {
               enrollmentsCount: v.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
             })) || [],
           sessions:
-            data?.activity_by_pk.activity_sessions?.map(v => ({
+            data?.activity[0]?.activity_sessions?.map(v => ({
               id: v.id,
               title: v.title,
               startedAt: new Date(v.started_at),
@@ -233,7 +233,7 @@ export const useActivityAdmin = (activityId: string) => {
               },
             })) || [],
         }
-  console.log(data)
+
   return {
     loadingActivityAdmin: loading,
     errorActivityAdmin: error,
