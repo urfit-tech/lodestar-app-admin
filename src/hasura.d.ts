@@ -1876,6 +1876,66 @@ export interface ARCHIVE_ACTIVITYVariables {
 
 
 // ====================================================
+// GraphQL mutation operation: ARCHIVE_PROGRAM
+// ====================================================
+
+
+export interface ARCHIVE_PROGRAM_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_PROGRAM {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: ARCHIVE_PROGRAM_update_program | null;
+}
+
+export interface ARCHIVE_PROGRAMVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: ARCHIVE_POST
+// ====================================================
+
+
+export interface ARCHIVE_POST_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_POST {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: ARCHIVE_POST_update_post | null;
+}
+
+export interface ARCHIVE_POSTVariables {
+  postId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -7569,22 +7629,22 @@ export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
 // ====================================================
 
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories_category {
+export interface GET_ACTIVITY_ADMIN_activity_activity_categories_category {
   __typename: "category";
   id: string;
   name: string;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories {
+export interface GET_ACTIVITY_ADMIN_activity_activity_categories {
   __typename: "activity_category";
   id: any;
   /**
    * An object relationship
    */
-  category: GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories_category;
+  category: GET_ACTIVITY_ADMIN_activity_activity_categories_category;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets_activity_session {
+export interface GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_session_tickets_activity_session {
   __typename: "activity_session";
   id: any;
   title: string;
@@ -7592,7 +7652,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ses
   online_link: string | null;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets {
+export interface GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_session_tickets {
   __typename: "activity_session_ticket";
   id: any;
   /**
@@ -7602,20 +7662,20 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ses
   /**
    * An object relationship
    */
-  activity_session: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets_activity_session;
+  activity_session: GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_session_tickets_activity_session;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate {
+export interface GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_ticket_enrollments_aggregate_aggregate {
   __typename: "activity_ticket_enrollment_aggregate_fields";
   count: number | null;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate {
+export interface GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_ticket_enrollments_aggregate {
   __typename: "activity_ticket_enrollment_aggregate";
-  aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate | null;
+  aggregate: GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_ticket_enrollments_aggregate_aggregate | null;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets {
+export interface GET_ACTIVITY_ADMIN_activity_activity_tickets {
   __typename: "activity_ticket";
   id: any;
   title: string;
@@ -7629,28 +7689,27 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets {
   description: string | null;
   is_published: boolean;
   currency_id: string;
-  deleted_at: any | null;
   /**
    * An array relationship
    */
-  activity_session_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets[];
+  activity_session_tickets: GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_session_tickets[];
   /**
    * An aggregated array relationship
    */
-  activity_ticket_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate;
+  activity_ticket_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_ticket_enrollments_aggregate;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate_aggregate {
+export interface GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_enrollments_aggregate_aggregate {
   __typename: "activity_enrollment_aggregate_fields";
   count: number | null;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate {
+export interface GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_enrollments_aggregate {
   __typename: "activity_enrollment_aggregate";
-  aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate_aggregate | null;
+  aggregate: GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_enrollments_aggregate_aggregate | null;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets_activity_ticket {
+export interface GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_session_tickets_activity_ticket {
   __typename: "activity_ticket";
   /**
    * unlimited as 99999999
@@ -7658,7 +7717,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_se
   count: number;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets {
+export interface GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_session_tickets {
   __typename: "activity_session_ticket";
   /**
    * offline | online
@@ -7667,16 +7726,16 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_se
   /**
    * An object relationship
    */
-  activity_ticket: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets_activity_ticket;
+  activity_ticket: GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_session_tickets_activity_ticket;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_ticket_enrollment_count {
+export interface GET_ACTIVITY_ADMIN_activity_activity_sessions_ticket_enrollment_count {
   __typename: "activity_session_ticket_enrollment_count";
   offline_session_ticket_count: any | null;
   online_session_ticket_count: any | null;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
+export interface GET_ACTIVITY_ADMIN_activity_activity_sessions {
   __typename: "activity_session";
   id: any;
   title: string;
@@ -7686,22 +7745,21 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
   online_link: string | null;
   threshold: any | null;
   description: string | null;
-  deleted_at: any | null;
   /**
    * An aggregated array relationship
    */
-  activity_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate;
+  activity_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_enrollments_aggregate;
   /**
    * An array relationship
    */
-  activity_session_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_session_tickets[];
+  activity_session_tickets: GET_ACTIVITY_ADMIN_activity_activity_sessions_activity_session_tickets[];
   /**
    * An object relationship
    */
-  ticket_enrollment_count: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_ticket_enrollment_count | null;
+  ticket_enrollment_count: GET_ACTIVITY_ADMIN_activity_activity_sessions_ticket_enrollment_count | null;
 }
 
-export interface GET_ACTIVITY_ADMIN_activity_by_pk {
+export interface GET_ACTIVITY_ADMIN_activity {
   __typename: "activity";
   id: any;
   title: string;
@@ -7711,26 +7769,25 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk {
   organizer_id: string;
   published_at: any | null;
   support_locales: any | null;
-  deleted_at: any | null;
   /**
    * An array relationship
    */
-  activity_categories: GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories[];
+  activity_categories: GET_ACTIVITY_ADMIN_activity_activity_categories[];
   /**
    * An array relationship
    */
-  activity_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets[];
+  activity_tickets: GET_ACTIVITY_ADMIN_activity_activity_tickets[];
   /**
    * An array relationship
    */
-  activity_sessions: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions[];
+  activity_sessions: GET_ACTIVITY_ADMIN_activity_activity_sessions[];
 }
 
 export interface GET_ACTIVITY_ADMIN {
   /**
-   * fetch data from the table: "activity" using primary key columns
+   * fetch data from the table: "activity"
    */
-  activity_by_pk: GET_ACTIVITY_ADMIN_activity_by_pk | null;
+  activity: GET_ACTIVITY_ADMIN_activity[];
 }
 
 export interface GET_ACTIVITY_ADMINVariables {
@@ -15109,36 +15166,6 @@ export interface UPDATE_PROGRAM_BASICVariables {
   programCategories: program_category_insert_input[];
   tags: tag_insert_input[];
   programTags: program_tag_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
-// ====================================================
-
-
-export interface UPDATE_PROGRAM_IS_DELETED_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_IS_DELETED {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
-}
-
-export interface UPDATE_PROGRAM_IS_DELETEDVariables {
-  programId?: any | null;
 }
 
 /* tslint:disable */

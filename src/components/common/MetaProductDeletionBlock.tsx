@@ -8,11 +8,12 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useTransformProductToString } from '../../hooks/data'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import AdminModal from '../admin/AdminModal'
 
 // TODO: import from element, after package.json element version update
-type MetaProductType =
+export type MetaProductType =
   | 'Program'
   | 'ProgramPackage'
   | 'Project'
@@ -20,16 +21,9 @@ type MetaProductType =
   | 'Merchandise'
   | 'PodcastProgram'
   | 'PodcastAlbum'
+  | 'Post'
 
 const messages = defineMessages({
-  program: {
-    id: 'common.label.program',
-    defaultMessage: '課程',
-  },
-  activity: {
-    id: 'common.label.activity',
-    defaultMessage: '活動',
-  },
   deleteProduct: {
     id: 'common.ui.deleteProduct',
     defaultMessage: '刪除{metaProduct}',
@@ -56,34 +50,52 @@ const StyledText = styled.div`
 const MetaProductDeletionBlock: React.FC<{
   metaProductType: MetaProductType
   targetId: string
-}> = ({ metaProductType, targetId }) => {
+  options?: { memberShopId: string }
+}> = ({ metaProductType, targetId, options }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const history = useHistory()
-  const { archiveActivity } = useArchiveMetaProduct()
+  const { archiveActivity, archiveProgram, archivePost, archiveMerchandise } = useArchiveMetaProduct()
 
   let metaProduct = ''
-  switch (metaProductType) {
-    case 'Program':
-      metaProduct = formatMessage(messages.program)
-      break
-    case 'Activity':
-      metaProduct = formatMessage(messages.activity)
-      break
-    default:
-      break
-  }
+  metaProduct = useTransformProductToString(metaProductType)
 
   const handleArchive = (metaProductType: MetaProductType, targetId: string) => {
     setLoading(true)
     switch (metaProductType) {
       case 'Program':
+        archiveProgram({
+          variables: { programId: targetId },
+        })
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullyDeleted))
+            history.push(`/programs`)
+          })
+          .catch(handleError)
         break
       case 'Activity':
         archiveActivity({ variables: { activityId: targetId } })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullyDeleted))
             history.push(`/activities`)
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+        break
+      case 'Post':
+        archivePost({ variables: { postId: targetId } })
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullyDeleted))
+            history.push(`/blog`)
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+        break
+      case 'Merchandise':
+        archiveMerchandise({ variables: { merchandiseId: targetId } })
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullyDeleted))
+            history.push(`/member-shops/${options?.memberShopId}`)
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -101,7 +113,9 @@ const MetaProductDeletionBlock: React.FC<{
       <div className="d-flex align-items-center justify-content-between">
         <div>
           <div className="mb-2">{formatMessage(messages.deleteProductWarning, { metaProduct })}</div>
-          {metaProduct === 'Program' ? <StyledText>{formatMessage(messages.deleteProductDanger)}</StyledText> : null}
+          {metaProductType === ('Program' || 'ProgramPackage') ? (
+            <StyledText>{formatMessage(messages.deleteProductDanger)}</StyledText>
+          ) : null}
         </div>
 
         <AdminModal
@@ -132,7 +146,31 @@ const useArchiveMetaProduct = () => {
       }
     }
   `)
-  return { archiveActivity }
+
+  const [archiveProgram] = useMutation<hasura.ARCHIVE_PROGRAM, hasura.ARCHIVE_PROGRAMVariables>(gql`
+    mutation ARCHIVE_PROGRAM($programId: uuid) {
+      update_program(where: { id: { _eq: $programId } }, _set: { is_deleted: true }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [archivePost] = useMutation<hasura.ARCHIVE_POST, hasura.ARCHIVE_POSTVariables>(gql`
+    mutation ARCHIVE_POST($postId: uuid) {
+      update_post(where: { id: { _eq: $postId } }, _set: { is_deleted: true }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [archiveMerchandise] = useMutation<hasura.DELETE_MERCHANDISE, hasura.DELETE_MERCHANDISEVariables>(gql`
+    mutation ARCHIVE_MERCHANDISE($merchandiseId: uuid!) {
+      update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { is_deleted: true }) {
+        affected_rows
+      }
+    }
+  `)
+  return { archiveActivity, archiveProgram, archivePost, archiveMerchandise }
 }
 
 export default MetaProductDeletionBlock
