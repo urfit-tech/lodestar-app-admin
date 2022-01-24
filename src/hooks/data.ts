@@ -16,6 +16,8 @@ import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
 import { Uppy } from '@uppy/core'
 import XHRUpload from '@uppy/xhr-upload'
+import { MetaProductType } from '../components/common/MetaProductDeletionBlock'
+import { defineMessage } from '@formatjs/intl'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
@@ -1200,4 +1202,39 @@ export const useAllBriefProductCollection = () => {
     briefProducts,
     refetchBriefProducts: refetch,
   }
+}
+
+export const useTransformProductToString = (productType: MetaProductType) => {
+  const { formatMessage } = useIntl()
+
+  let res = ''
+  switch (productType) {
+    case 'Program':
+      res = formatMessage(commonMessages.label.program)
+      break
+    case 'ProgramPackage':
+      res = formatMessage(commonMessages.label.programPackage)
+      break
+    case 'Activity':
+      res = formatMessage(commonMessages.label.activity)
+      break
+    case 'Post':
+      res = formatMessage(commonMessages.label.post)
+      break
+    case 'Merchandise':
+      res = formatMessage(commonMessages.label.merchandise)
+      break
+    case 'Project':
+      res = formatMessage(commonMessages.label.project)
+      break
+    case 'PodcastProgram':
+      res = formatMessage(commonMessages.label.podcastProgram)
+      break
+    case 'PodcastAlbum':
+      res = formatMessage(commonMessages.label.podcastAlbum)
+      break
+    default:
+      break
+  }
+  return res
 }

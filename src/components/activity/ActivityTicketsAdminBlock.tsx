@@ -1,12 +1,13 @@
 import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Menu, Skeleton } from 'antd'
+import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { handleError } from 'lodestar-app-element/src/helpers'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-import { commonMessages } from '../../helpers/translation'
+import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ActivityAdminProps } from '../../types/activity'
 import ProductSkuModal from '../common/ProductSkuModal'
 import ActivityTicket from './ActivityTicket'
@@ -18,12 +19,7 @@ const ActivityTicketsAdminBlock: React.FC<{
 }> = ({ activityAdmin, onRefetch }) => {
   const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
-  const [insertActivityTicket] = useMutation<hasura.INSERT_ACTIVITY_TICKET, hasura.INSERT_ACTIVITY_TICKETVariables>(
-    INSERT_ACTIVITY_TICKET,
-  )
-  const [updateActivityTicket] = useMutation<hasura.UPDATE_ACTIVITY_TICKET, hasura.UPDATE_ACTIVITY_TICKETVariables>(
-    UPDATE_ACTIVITY_TICKET,
-  )
+  const { insertActivityTicket, updateActivityTicket, archiveActivityTicket } = useMutationActivityTicket()
 
   if (!activityAdmin) {
     return <Skeleton active />
@@ -111,6 +107,19 @@ const ActivityTicketsAdminBlock: React.FC<{
                           onRefetch={onRefetch}
                         />
                       </Menu.Item>
+                      <Menu.Item
+                        onClick={() => {
+                          window.confirm(formatMessage(activityMessages.text.deleteActivityTicketWarning)) &&
+                            archiveActivityTicket({ variables: { activityTicketId: ticket.id } })
+                              .then(() => {
+                                message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                                onRefetch?.()
+                              })
+                              .catch(handleError)
+                        }}
+                      >
+                        {formatMessage(commonMessages.ui.delete)}
+                      </Menu.Item>
                       {enabledModules.sku && (
                         <Menu.Item>
                           <ProductSkuModal
@@ -136,72 +145,97 @@ const ActivityTicketsAdminBlock: React.FC<{
   )
 }
 
-const INSERT_ACTIVITY_TICKET = gql`
-  mutation INSERT_ACTIVITY_TICKET(
-    $activityId: uuid!
-    $title: String!
-    $activitySessionTickets: [activity_session_ticket_insert_input!]!
-    $isPublished: Boolean!
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $currencyId: String!
-    $price: numeric!
-    $count: Int
-    $description: String
-  ) {
-    insert_activity_ticket(
-      objects: {
-        activity_id: $activityId
-        title: $title
-        is_published: $isPublished
-        started_at: $startedAt
-        ended_at: $endedAt
-        currency_id: $currencyId
-        price: $price
-        count: $count
-        description: $description
-        activity_session_tickets: { data: $activitySessionTickets }
+const useMutationActivityTicket = () => {
+  const [insertActivityTicket] = useMutation<hasura.INSERT_ACTIVITY_TICKET, hasura.INSERT_ACTIVITY_TICKETVariables>(
+    gql`
+      mutation INSERT_ACTIVITY_TICKET(
+        $activityId: uuid!
+        $title: String!
+        $activitySessionTickets: [activity_session_ticket_insert_input!]!
+        $isPublished: Boolean!
+        $startedAt: timestamptz!
+        $endedAt: timestamptz!
+        $currencyId: String!
+        $price: numeric!
+        $count: Int
+        $description: String
+      ) {
+        insert_activity_ticket(
+          objects: {
+            activity_id: $activityId
+            title: $title
+            is_published: $isPublished
+            started_at: $startedAt
+            ended_at: $endedAt
+            currency_id: $currencyId
+            price: $price
+            count: $count
+            description: $description
+            activity_session_tickets: { data: $activitySessionTickets }
+          }
+        ) {
+          affected_rows
+        }
       }
-    ) {
-      affected_rows
-    }
-  }
-`
-const UPDATE_ACTIVITY_TICKET = gql`
-  mutation UPDATE_ACTIVITY_TICKET(
-    $activityTicketId: uuid!
-    $title: String!
-    $activitySessionTickets: [activity_session_ticket_insert_input!]!
-    $isPublished: Boolean!
-    $startedAt: timestamptz!
-    $currencyId: String!
-    $endedAt: timestamptz!
-    $price: numeric!
-    $count: Int
-    $description: String
-  ) {
-    update_activity_ticket(
-      where: { id: { _eq: $activityTicketId } }
-      _set: {
-        title: $title
-        is_published: $isPublished
-        started_at: $startedAt
-        ended_at: $endedAt
-        currency_id: $currencyId
-        price: $price
-        count: $count
-        description: $description
+    `,
+  )
+  const [updateActivityTicket] = useMutation<hasura.UPDATE_ACTIVITY_TICKET, hasura.UPDATE_ACTIVITY_TICKETVariables>(
+    gql`
+      mutation UPDATE_ACTIVITY_TICKET(
+        $activityTicketId: uuid!
+        $title: String!
+        $activitySessionTickets: [activity_session_ticket_insert_input!]!
+        $isPublished: Boolean!
+        $startedAt: timestamptz!
+        $currencyId: String!
+        $endedAt: timestamptz!
+        $price: numeric!
+        $count: Int
+        $description: String
+      ) {
+        update_activity_ticket(
+          where: { id: { _eq: $activityTicketId } }
+          _set: {
+            title: $title
+            is_published: $isPublished
+            started_at: $startedAt
+            ended_at: $endedAt
+            currency_id: $currencyId
+            price: $price
+            count: $count
+            description: $description
+          }
+        ) {
+          affected_rows
+        }
+        delete_activity_session_ticket(where: { activity_ticket_id: { _eq: $activityTicketId } }) {
+          affected_rows
+        }
+        insert_activity_session_ticket(objects: $activitySessionTickets) {
+          affected_rows
+        }
       }
-    ) {
-      affected_rows
+    `,
+  )
+
+  const [archiveActivityTicket] = useMutation<
+    hasura.ARCHIVE_ACTIVITY_TICKET,
+    hasura.ARCHIVE_ACTIVITY_TICKETVariables
+  >(gql`
+    mutation ARCHIVE_ACTIVITY_TICKET($activityTicketId: uuid!) {
+      delete_activity_session_ticket(where: { activity_ticket_id: { _eq: $activityTicketId } }) {
+        affected_rows
+      }
+      update_activity_ticket(where: { id: { _eq: $activityTicketId } }, _set: { deleted_at: "now()" }) {
+        affected_rows
+      }
     }
-    delete_activity_session_ticket(where: { activity_ticket_id: { _eq: $activityTicketId } }) {
-      affected_rows
-    }
-    insert_activity_session_ticket(objects: $activitySessionTickets) {
-      affected_rows
-    }
+  `)
+  return {
+    insertActivityTicket,
+    updateActivityTicket,
+    archiveActivityTicket,
   }
-`
+}
 
 export default ActivityTicketsAdminBlock

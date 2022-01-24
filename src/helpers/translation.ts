@@ -80,6 +80,14 @@ export const commonMessages = {
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
   }),
   label: defineMessages({
+    program: { id: 'common.label.program', defaultMessage: '課程' },
+    activity: { id: 'common.label.activity', defaultMessage: '活動' },
+    merchandise: { id: 'common.label.merchandise', defaultMessage: '商品' },
+    post: { id: 'common.label.post', defaultMessage: '文章' },
+    programPackage: { id: 'common.label.programPackage', defaultMessage: '課程組合' },
+    project: { id: 'common.label.project', defaultMessage: '專案' },
+    podcastProgram: { id: 'common.label.podcastProgram', defaultMessage: '廣播' },
+    podcastAlbum: { id: 'common.label.podcastAlbum', defaultMessage: '專輯' },
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
     selectAuthor: { id: 'common.label.selectAuthor', defaultMessage: '選擇作者' },
     goToLogin: { id: 'common.label.goToLogin', defaultMessage: '前往登入' },
@@ -226,12 +234,10 @@ export const commonMessages = {
     contentCreator: { id: 'common.label.contentCreator', defaultMessage: '創作者' },
     appOwner: { id: 'common.label.appOwner', defaultMessage: '管理員' },
     unknownRole: { id: 'common.label.unknownRole', defaultMessage: '未知身份' },
-    program: { id: 'common.label.program', defaultMessage: '單次課程' },
     programPlan: { id: 'common.label.programPlan', defaultMessage: '訂閱方案' },
     programContent: { id: 'common.label.programContent', defaultMessage: '課程內容' },
     card: { id: 'common.label.card', defaultMessage: '會員卡' },
     activityTicket: { id: 'common.label.activityTicket', defaultMessage: '實體活動票券' },
-    merchandise: { id: 'common.label.merchandise', defaultMessage: '商品' },
     unknownProduct: { id: 'common.label.unknownProduct', defaultMessage: '未知類別' },
     owner: { id: 'common.label.owner', defaultMessage: '建立者' },
     author: { id: 'common.label.author', defaultMessage: '作者' },
@@ -500,6 +506,8 @@ export const activityMessages = {
     createSession: { id: 'activity.ui.createSession', defaultMessage: '建立場次' },
     addTicketPlan: { id: 'activity.ui.addTicketPlan', defaultMessage: '加入票券方案' },
     addTicketSession: { id: 'activity.ui.addTicketSession', defaultMessage: '新增場次' },
+    deleteSession: { id: 'activity.ui.deleteSession', defaultMessage: '刪除場次' },
+    deleteTicket: { id: 'activity.ui.deleteTicket', defaultMessage: '刪除票券' },
   }),
   label: defineMessages({
     showParticipantsNumber: { id: 'activity.label.showParticipantsNumber', defaultMessage: '顯示人數' },
@@ -550,6 +558,14 @@ export const activityMessages = {
   }),
   text: defineMessages({
     imageTips: { id: 'activity.text.imageTips', defaultMessage: '建議圖片尺寸：1200*675px' },
+    deleteActivitySessionWarning: {
+      id: 'activity.text.deleteActivitySessionWarning',
+      defaultMessage: '你確定要刪除此場次？此動作無法還原',
+    },
+    deleteActivityTicketWarning: {
+      id: 'activity.text.deleteActivityTicketWarning',
+      defaultMessage: '你確定要刪除此票券？此動作無法還原',
+    },
   }),
 }
 
