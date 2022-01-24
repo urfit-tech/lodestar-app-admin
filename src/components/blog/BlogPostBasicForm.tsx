@@ -121,7 +121,7 @@ const BlogPostBasicForm: React.FC<{
         extra={<StyledText className="mt-2">{`https://${host}/posts/${codeName || post.codeName || ''}`}</StyledText>}
         name="codeName"
       >
-        <Input maxLength={20} placeholder={post.codeName || ''} onChange={e => setCodeName(e.target.value)} />
+        <Input maxLength={50} placeholder={post.codeName || ''} onChange={e => setCodeName(e.target.value)} />
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
