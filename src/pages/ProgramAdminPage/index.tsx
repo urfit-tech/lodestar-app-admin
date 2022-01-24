@@ -14,12 +14,12 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../components/admin'
+import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
 import ProgramBasicForm from './ProgramBasicForm'
-import ProgramDeletionAdminCard from './ProgramDeletionAdminCard'
 import ProgramIntroForm from './ProgramIntroForm'
 import ProgramPlanAdminBlock from './ProgramPlanAdminBlock'
 import ProgramPublishBlock from './ProgramPublishBlock'
@@ -94,10 +94,7 @@ const ProgramAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(programMessages.label.programIntroduction)}</AdminBlockTitle>
                 <ProgramIntroForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programMessages.label.deleteProgram)}</AdminBlockTitle>
-                <ProgramDeletionAdminCard program={program} onRefetch={refetchProgram} />
-              </AdminBlock>
+              <MetaProductDeletionBlock metaProductType="Program" targetId={programId} />
             </div>
           </Tabs.TabPane>
 

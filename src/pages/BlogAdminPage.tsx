@@ -17,10 +17,10 @@ import RoleAdminBlock from '../components/admin/RoleAdminBlock'
 import BlogPostAuthorCollectionBlock from '../components/blog/BlogPostAuthorCollectionBlock'
 import BlogPostBasicForm from '../components/blog/BlogPostBasicForm'
 import BlogPostContentForm from '../components/blog/BlogPostContentForm'
-import BlogPostDeletionModal from '../components/blog/BlogPostDeletionModal'
 import BlogPostPublishBlock from '../components/blog/BlogPostPublishBlock'
 import BlogPostSettingForm from '../components/blog/BlogPostSettingForm'
 import BlogPostVideoForm from '../components/blog/BlogPostVideoForm'
+import MetaProductDeletionBlock from '../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import { blogMessages, commonMessages } from '../helpers/translation'
 import { usePost } from '../hooks/blog'
@@ -91,10 +91,7 @@ const BlogAdminPage: React.FC = () => {
                 <BlogPostSettingForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.label.deletePost)}</AdminBlockTitle>
-                <BlogPostDeletionModal post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+              <MetaProductDeletionBlock metaProductType="Post" targetId={postId} />
             </div>
           </Tabs.TabPane>
 

@@ -1,6 +1,6 @@
 import Icon, { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Menu, Skeleton } from 'antd'
+import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { map } from 'ramda'
@@ -8,7 +8,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { dateRangeFormatter } from '../../helpers'
+import { dateRangeFormatter, handleError } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as MapOIcon } from '../../images/icon/map-o.svg'
@@ -51,12 +51,7 @@ const ActivitySessionsAdminBlock: React.FC<{
 }> = ({ activityAdmin, onRefetch, onChangeTab }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const [insertActivitySession] = useMutation<hasura.INSERT_ACTIVITY_SESSION, hasura.INSERT_ACTIVITY_SESSIONVariables>(
-    INSERT_ACTIVITY_SESSION,
-  )
-  const [updateActivitySession] = useMutation<hasura.UPDATE_ACTIVITY_SESSION, hasura.UPDATE_ACTIVITY_SESSIONVariables>(
-    UPDATE_ACTIVITY_SESSION,
-  )
+  const { insertActivitySession, updateActivitySession, archiveActivitySession } = useMutationActivitySession()
 
   if (!activityAdmin) {
     return <Skeleton active />
@@ -183,6 +178,19 @@ const ActivitySessionsAdminBlock: React.FC<{
                         onRefetch={onRefetch}
                       />
                     </Menu.Item>
+                    <Menu.Item
+                      onClick={() => {
+                        window.confirm(formatMessage(activityMessages.text.deleteActivitySessionWarning)) &&
+                          archiveActivitySession({ variables: { activitySessionId: session.id } })
+                            .then(() => {
+                              message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                              onRefetch?.()
+                            })
+                            .catch(handleError)
+                      }}
+                    >
+                      {formatMessage(commonMessages.ui.delete)}
+                    </Menu.Item>
                   </Menu>
                 }
                 trigger={['click']}
@@ -197,59 +205,83 @@ const ActivitySessionsAdminBlock: React.FC<{
   )
 }
 
-const INSERT_ACTIVITY_SESSION = gql`
-  mutation INSERT_ACTIVITY_SESSION(
-    $activityId: uuid!
-    $title: String!
-    $startedAt: timestamptz
-    $endedAt: timestamptz
-    $location: String
-    $onlineLink: String
-    $description: String
-    $threshold: numeric
-  ) {
-    insert_activity_session(
-      objects: {
-        activity_id: $activityId
-        title: $title
-        started_at: $startedAt
-        ended_at: $endedAt
-        location: $location
-        online_link: $onlineLink
-        description: $description
-        threshold: $threshold
+const useMutationActivitySession = () => {
+  const [insertActivitySession] = useMutation<hasura.INSERT_ACTIVITY_SESSION, hasura.INSERT_ACTIVITY_SESSIONVariables>(
+    gql`
+      mutation INSERT_ACTIVITY_SESSION(
+        $activityId: uuid!
+        $title: String!
+        $startedAt: timestamptz
+        $endedAt: timestamptz
+        $location: String
+        $onlineLink: String
+        $description: String
+        $threshold: numeric
+      ) {
+        insert_activity_session(
+          objects: {
+            activity_id: $activityId
+            title: $title
+            started_at: $startedAt
+            ended_at: $endedAt
+            location: $location
+            online_link: $onlineLink
+            description: $description
+            threshold: $threshold
+          }
+        ) {
+          affected_rows
+        }
       }
-    ) {
-      affected_rows
-    }
-  }
-`
-const UPDATE_ACTIVITY_SESSION = gql`
-  mutation UPDATE_ACTIVITY_SESSION(
-    $activitySessionId: uuid!
-    $title: String!
-    $startedAt: timestamptz
-    $endedAt: timestamptz
-    $location: String
-    $onlineLink: String
-    $description: String
-    $threshold: numeric
-  ) {
-    update_activity_session(
-      where: { id: { _eq: $activitySessionId } }
-      _set: {
-        title: $title
-        started_at: $startedAt
-        ended_at: $endedAt
-        location: $location
-        online_link: $onlineLink
-        description: $description
-        threshold: $threshold
+    `,
+  )
+  const [updateActivitySession] = useMutation<hasura.UPDATE_ACTIVITY_SESSION, hasura.UPDATE_ACTIVITY_SESSIONVariables>(
+    gql`
+      mutation UPDATE_ACTIVITY_SESSION(
+        $activitySessionId: uuid!
+        $title: String!
+        $startedAt: timestamptz
+        $endedAt: timestamptz
+        $location: String
+        $onlineLink: String
+        $description: String
+        $threshold: numeric
+      ) {
+        update_activity_session(
+          where: { id: { _eq: $activitySessionId } }
+          _set: {
+            title: $title
+            started_at: $startedAt
+            ended_at: $endedAt
+            location: $location
+            online_link: $onlineLink
+            description: $description
+            threshold: $threshold
+          }
+        ) {
+          affected_rows
+        }
       }
-    ) {
-      affected_rows
+    `,
+  )
+  const [archiveActivitySession] = useMutation<
+    hasura.ARCHIVE_ACTIVITY_SESSION,
+    hasura.ARCHIVE_ACTIVITY_SESSIONVariables
+  >(gql`
+    mutation ARCHIVE_ACTIVITY_SESSION($activitySessionId: uuid!) {
+      delete_activity_session_ticket(where: { activity_session_id: { _eq: $activitySessionId } }) {
+        affected_rows
+      }
+      update_activity_session(where: { id: { _eq: $activitySessionId } }, _set: { deleted_at: "now()" }) {
+        affected_rows
+      }
     }
+  `)
+  return {
+    insertActivitySession,
+    updateActivitySession,
+    archiveActivitySession,
   }
-`
+}
 
 export default ActivitySessionsAdminBlock

@@ -12,7 +12,7 @@ export const useActivityCollection = (memberId: string | null) => {
   >(
     gql`
       query GET_ACTIVITY_COLLECTION_ADMIN($memberId: String) {
-        activity(where: { organizer_id: { _eq: $memberId } }) {
+        activity(where: { organizer_id: { _eq: $memberId }, deleted_at: { _is_null: true } }) {
           id
           cover_url
           title
@@ -96,7 +96,7 @@ export const useActivityAdmin = (activityId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ACTIVITY_ADMIN, hasura.GET_ACTIVITY_ADMINVariables>(
     gql`
       query GET_ACTIVITY_ADMIN($activityId: uuid!) {
-        activity_by_pk(id: $activityId) {
+        activity(where: { id: { _eq: $activityId }, deleted_at: { _is_null: true } }) {
           id
           title
           description
@@ -112,7 +112,7 @@ export const useActivityAdmin = (activityId: string) => {
               name
             }
           }
-          activity_tickets(order_by: { started_at: asc }) {
+          activity_tickets(where: { deleted_at: { _is_null: true } }, order_by: { started_at: asc }) {
             id
             title
             started_at
@@ -138,7 +138,7 @@ export const useActivityAdmin = (activityId: string) => {
               }
             }
           }
-          activity_sessions(order_by: { started_at: asc }) {
+          activity_sessions(where: { deleted_at: { _is_null: true } }, order_by: { started_at: asc }) {
             id
             title
             started_at
@@ -170,67 +170,68 @@ export const useActivityAdmin = (activityId: string) => {
   )
 
   const activityAdmin: ActivityAdminProps | null =
-    loading || error || !data || !data?.activity_by_pk
+    loading || error || !data || !data?.activity
       ? null
       : {
-          id: data.activity_by_pk.id,
-          coverUrl: data.activity_by_pk.cover_url,
-          title: data.activity_by_pk.title,
-          publishedAt: data.activity_by_pk.published_at && new Date(data.activity_by_pk.published_at),
-          description: data.activity_by_pk.description,
-          isParticipantsVisible: data.activity_by_pk.is_participants_visible,
-          organizerId: data.activity_by_pk.organizer_id,
-          supportLocales: data.activity_by_pk.support_locales || [],
-
-          categories: data.activity_by_pk.activity_categories.map(activityCategory => ({
-            id: activityCategory.category.id,
-            name: activityCategory.category.name,
+          id: data.activity[0]?.id,
+          coverUrl: data.activity[0]?.cover_url,
+          title: data.activity[0]?.title,
+          publishedAt: data.activity[0]?.published_at && new Date(data.activity[0]?.published_at),
+          description: data.activity[0]?.description,
+          isParticipantsVisible: data.activity[0]?.is_participants_visible,
+          organizerId: data.activity[0]?.organizer_id,
+          supportLocales: data.activity[0]?.support_locales || [],
+          categories: data.activity[0]?.activity_categories.map(v => ({
+            id: v.category.id,
+            name: v.category.name,
           })),
-          tickets: data.activity_by_pk.activity_tickets.map(ticket => ({
-            id: ticket.id,
-            title: ticket.title,
-            startedAt: new Date(ticket.started_at),
-            endedAt: new Date(ticket.ended_at),
-            currencyId: ticket.currency_id,
-            price: ticket.price,
-            count: ticket.count,
-            description: ticket.description,
-            isPublished: ticket.is_published,
-            sessions: ticket.activity_session_tickets.map(sessionTicket => ({
-              id: sessionTicket.activity_session.id,
-              type: sessionTicket.activity_session_type as ActivityTicketSessionType,
-              title: sessionTicket.activity_session.title,
-              location: sessionTicket.activity_session.location,
-              onlineLink: sessionTicket.activity_session.online_link,
-            })),
-            enrollmentsCount: ticket.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
-          })),
-          sessions: data.activity_by_pk.activity_sessions.map(session => ({
-            id: session.id,
-            title: session.title,
-            startedAt: new Date(session.started_at),
-            endedAt: new Date(session.ended_at),
-            location: session.location,
-            onlineLink: session.online_link,
-            threshold: session.threshold,
-            description: session.description,
-            maxAmount: {
-              online: sum(
-                session.activity_session_tickets
-                  .filter(v => ['online', 'both'].includes(v.activity_session_type))
-                  .map(sessionTicket => sessionTicket.activity_ticket?.count || 0),
-              ),
-              offline: sum(
-                session.activity_session_tickets
-                  .filter(v => ['offline', 'both'].includes(v.activity_session_type))
-                  .map(sessionTicket => sessionTicket.activity_ticket?.count || 0),
-              ),
-            },
-            enrollmentsCount: {
-              online: session.ticket_enrollment_count?.online_session_ticket_count || 0,
-              offline: session.ticket_enrollment_count?.offline_session_ticket_count || 0,
-            },
-          })),
+          tickets:
+            data?.activity[0]?.activity_tickets?.map(v => ({
+              id: v.id,
+              title: v.title,
+              startedAt: new Date(v.started_at),
+              endedAt: new Date(v.ended_at),
+              currencyId: v.currency_id,
+              price: v.price,
+              count: v.count,
+              description: v.description,
+              isPublished: v.is_published,
+              sessions: v.activity_session_tickets.map(v => ({
+                id: v.activity_session.id,
+                type: v.activity_session_type as ActivityTicketSessionType,
+                title: v.activity_session.title,
+                location: v.activity_session.location,
+                onlineLink: v.activity_session.online_link,
+              })),
+              enrollmentsCount: v.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
+            })) || [],
+          sessions:
+            data?.activity[0]?.activity_sessions?.map(v => ({
+              id: v.id,
+              title: v.title,
+              startedAt: new Date(v.started_at),
+              endedAt: new Date(v.ended_at),
+              location: v.location,
+              onlineLink: v.online_link,
+              threshold: v.threshold,
+              description: v.description,
+              maxAmount: {
+                online: sum(
+                  v.activity_session_tickets
+                    .filter(w => ['online', 'both'].includes(w.activity_session_type))
+                    .map(x => x.activity_ticket?.count || 0),
+                ),
+                offline: sum(
+                  v.activity_session_tickets
+                    .filter(w => ['offline', 'both'].includes(w.activity_session_type))
+                    .map(x => x.activity_ticket?.count || 0),
+                ),
+              },
+              enrollmentsCount: {
+                online: v.ticket_enrollment_count?.online_session_ticket_count || 0,
+                offline: v.ticket_enrollment_count?.offline_session_ticket_count || 0,
+              },
+            })) || [],
         }
 
   return {
