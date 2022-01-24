@@ -12977,6 +12977,7 @@ export interface GET_PROGRAM_PACKAGE_COLLECTION_program_package {
   __typename: "program_package";
   id: any;
   title: string;
+  cover_url: string | null;
   published_at: any | null;
 }
 
@@ -13159,32 +13160,6 @@ export interface DELIVER_PROGRAM_COLLECTION {
 
 export interface DELIVER_PROGRAM_COLLECTIONVariables {
   data: program_tempo_delivery_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGES
-// ====================================================
-
-
-export interface GET_PROGRAM_PACKAGES_program_package {
-  __typename: "program_package";
-  id: any;
-  cover_url: string | null;
-  title: string;
-  published_at: any | null;
-}
-
-export interface GET_PROGRAM_PACKAGES {
-  /**
-   * fetch data from the table: "program_package"
-   */
-  program_package: GET_PROGRAM_PACKAGES_program_package[];
 }
 
 /* tslint:disable */

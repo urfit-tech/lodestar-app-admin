@@ -12,6 +12,7 @@ export const useProgramPackageCollection = () => {
       program_package(order_by: { published_at: desc_nulls_last }) {
         id
         title
+        cover_url
         published_at
       }
     }
@@ -20,21 +21,23 @@ export const useProgramPackageCollection = () => {
   const programPackages: {
     id: string
     title: string
-    published_at: string
+    coverUrl?: string | null
+    publishedAt: string
   }[] =
     loading || error || !data
       ? []
-      : data.program_package.map(programPackage => ({
-          id: programPackage.id,
-          title: programPackage.title,
-          published_at: programPackage.published_at,
+      : data.program_package.map(v => ({
+          id: v.id,
+          title: v.title,
+          coverUrl: v?.cover_url || '',
+          publishedAt: v.published_at,
         }))
 
   return {
-    loadingProgramPackage: loading,
-    errorProgramPackage: error,
+    loading,
+    error,
     programPackages,
-    refetchProgramPackage: refetch,
+    refetch,
   }
 }
 
@@ -263,43 +266,6 @@ export const useDeliverProgramCollection = () => {
     })
 
   return deliverPrograms
-}
-
-export const useGetProgramPackageCollection = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGES>(
-    gql`
-      query GET_PROGRAM_PACKAGES {
-        program_package {
-          id
-          cover_url
-          title
-          published_at
-        }
-      }
-    `,
-  )
-
-  const programPackages: {
-    id: string
-    coverUrl?: string | null
-    title: string
-    publishedAt: Date
-  }[] =
-    loading || error || !data
-      ? []
-      : data?.program_package.map(v => ({
-          id: v.id,
-          coverUrl: v.cover_url,
-          title: v.title,
-          publishedAt: v.published_at,
-        }))
-
-  return {
-    loading,
-    error,
-    programPackages,
-    refetch,
-  }
 }
 
 export const useGetProgramPackage = (id: string) => {
