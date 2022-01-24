@@ -20,7 +20,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { id: appId } = useApp()
-  const { programPackages, refetch } = useGetProgramPackageCollection(appId)
+  const { programPackages, refetch } = useGetProgramPackageCollection()
   const [createProgramPackage] = useMutation<hasura.INSERT_PROGRAM_PACKAGE, hasura.INSERT_PROGRAM_PACKAGEVariables>(
     INSERT_PROGRAM_PACKAGE,
   )
@@ -84,7 +84,6 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
                       id={programPackage.id}
                       coverUrl={programPackage.coverUrl}
                       title={programPackage.title}
-                      soldQuantity={programPackage.soldQuantity}
                     />
                   </div>
                 ))}

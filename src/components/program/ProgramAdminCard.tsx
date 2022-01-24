@@ -110,9 +110,10 @@ const useProgramEnrollment = (programId: string) => {
     `,
     { variables: { programId } },
   )
-  const programEnrollment = data?.program.map(v =>
-    sum(v.program_plans.map(w => w.program_plan_enrollments_aggregate.aggregate?.count || 0)),
-  )
+  const programEnrollment =
+    data?.program.map(v =>
+      sum(v.program_plans.map(w => w.program_plan_enrollments_aggregate.aggregate?.count || 0)),
+    )[0] || 0
 
   return {
     loading,

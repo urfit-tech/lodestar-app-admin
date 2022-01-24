@@ -265,26 +265,18 @@ export const useDeliverProgramCollection = () => {
   return deliverPrograms
 }
 
-export const useGetProgramPackageCollection = (appId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGES, hasura.GET_PROGRAM_PACKAGESVariables>(
+export const useGetProgramPackageCollection = () => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGES>(
     gql`
-      query GET_PROGRAM_PACKAGES($appId: String!) {
-        program_package(where: { app: { id: { _eq: $appId } } }) {
+      query GET_PROGRAM_PACKAGES {
+        program_package {
           id
           cover_url
           title
           published_at
-          program_package_plans {
-            program_package_plan_enrollments_aggregate {
-              aggregate {
-                count
-              }
-            }
-          }
         }
       }
     `,
-    { variables: { appId } },
   )
 
   const programPackages: {
@@ -292,21 +284,14 @@ export const useGetProgramPackageCollection = (appId: string) => {
     coverUrl?: string | null
     title: string
     publishedAt: Date
-    soldQuantity: number
   }[] =
     loading || error || !data
       ? []
-      : data?.program_package.map(programPackage => ({
-          id: programPackage.id,
-          coverUrl: programPackage.cover_url,
-          title: programPackage.title,
-          publishedAt: programPackage.published_at,
-          soldQuantity: sum(
-            programPackage.program_package_plans.map(
-              programPackagePlan =>
-                programPackagePlan?.program_package_plan_enrollments_aggregate?.aggregate?.count ?? 0,
-            ),
-          ),
+      : data?.program_package.map(v => ({
+          id: v.id,
+          coverUrl: v.cover_url,
+          title: v.title,
+          publishedAt: v.published_at,
         }))
 
   return {

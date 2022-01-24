@@ -1,8 +1,13 @@
-import { Typography } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
+import { useQuery } from '@apollo/react-hooks'
+import { Spin, Typography } from 'antd'
+import gql from 'graphql-tag'
+import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { programMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 
@@ -43,9 +48,9 @@ const ProgramPackageAdminCard: React.FC<{
   id: string
   coverUrl?: string | null
   title: string
-  soldQuantity: number
-}> = ({ id, coverUrl, title, soldQuantity }) => {
+}> = ({ id, coverUrl, title }) => {
   const { formatMessage } = useIntl()
+  const { loading, error, programPackageEnrollment } = useProgramPackageEnrollment(id)
 
   return (
     <StyledWrapper>
@@ -57,11 +62,48 @@ const ProgramPackageAdminCard: React.FC<{
         </StyledDescription>
 
         <StyledSoldQuantity>
-          {formatMessage(programMessages.text.enrolledPerpetualCount, { count: soldQuantity })}
+          {loading || error ? (
+            <Spin indicator={<LoadingOutlined />} />
+          ) : (
+            formatMessage(programMessages.text.enrolledPerpetualCount, { count: programPackageEnrollment })
+          )}
         </StyledSoldQuantity>
       </Link>
     </StyledWrapper>
   )
+}
+
+const useProgramPackageEnrollment = (programPackageId: string) => {
+  const { loading, error, data } = useQuery<
+    hasura.GET_PROGRAM_PACKAGE_ENROLLMENT,
+    hasura.GET_PROGRAM_PACKAGE_ENROLLMENTVariables
+  >(
+    gql`
+      query GET_PROGRAM_PACKAGE_ENROLLMENT($programPackageId: uuid) {
+        program_package(where: { id: { _eq: $programPackageId } }) {
+          id
+          program_package_plans {
+            program_package_plan_enrollments_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        }
+      }
+    `,
+    { variables: { programPackageId } },
+  )
+  const programPackageEnrollment =
+    data?.program_package.map(v =>
+      sum(v.program_package_plans.map(w => w.program_package_plan_enrollments_aggregate.aggregate?.count || 0)),
+    )[0] || 0
+
+  return {
+    loading,
+    error,
+    programPackageEnrollment,
+  }
 }
 
 export default ProgramPackageAdminCard
