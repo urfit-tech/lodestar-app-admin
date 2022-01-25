@@ -4,6 +4,7 @@ import { Button, Input, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
@@ -347,8 +348,39 @@ const useProgramPreviewCollection = (
         periodAmount: plan?.period_amount || null,
         periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
         isPrivate: program.is_private,
+        enrollment: 0,
       }
     }) || []
+
+  const { data: enrollmentData } = useQuery<hasura.GET_PROGRAM_ENROLLMENT>(
+    gql`
+      query GET_PROGRAM_ENROLLMENT {
+        program {
+          id
+          program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
+            id
+            program_plan_enrollments_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        }
+      }
+    `,
+  )
+
+  if (enrollmentData) {
+    enrollmentData.program.forEach(v => {
+      programPreviews.forEach(programPreview => {
+        if (programPreview.id === v.id) {
+          programPreview.enrollment = sum(
+            v.program_plans.map(w => w.program_plan_enrollments_aggregate.aggregate?.count || 0),
+          )
+        }
+      })
+    })
+  }
 
   const loadMorePrograms =
     (data?.program.length || 0) < (data?.program_aggregate.aggregate?.count || 0)

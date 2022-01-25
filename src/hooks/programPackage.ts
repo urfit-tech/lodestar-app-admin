@@ -18,11 +18,30 @@ export const useProgramPackageCollection = () => {
     }
   `)
 
+  const { data: enrollmentData } = useQuery<hasura.GET_PROGRAM_PACKAGE_ENROLLMENT>(
+    gql`
+      query GET_PROGRAM_PACKAGE_ENROLLMENT {
+        program_package {
+          id
+          program_package_plans {
+            program_package_plan_enrollments_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        }
+      }
+    `,
+    { fetchPolicy: 'no-cache' },
+  )
+
   const programPackages: {
     id: string
     title: string
     coverUrl?: string | null
     publishedAt: string
+    programPackageEnrollment: number
   }[] =
     loading || error || !data
       ? []
@@ -31,7 +50,20 @@ export const useProgramPackageCollection = () => {
           title: v.title,
           coverUrl: v?.cover_url || '',
           publishedAt: v.published_at,
+          programPackageEnrollment: 0,
         }))
+
+  if (enrollmentData) {
+    enrollmentData.program_package.forEach(v => {
+      programPackages.forEach(programPackage => {
+        if (programPackage.id === v.id) {
+          programPackage.programPackageEnrollment = sum(
+            v.program_package_plans.map(w => w.program_package_plan_enrollments_aggregate.aggregate?.count || 0),
+          )
+        }
+      })
+    })
+  }
 
   return {
     loading,

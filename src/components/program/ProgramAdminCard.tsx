@@ -1,13 +1,8 @@
-import { LoadingOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
-import { Card, Spin, Typography } from 'antd'
+import { Card, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
-import gql from 'graphql-tag'
-import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
 import { programMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
@@ -53,10 +48,10 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
   periodAmount,
   periodType,
   isPrivate,
+  enrollment,
   ...props
 }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, programEnrollment } = useProgramEnrollment(id)
 
   return (
     <AdminCard variant="program" cover={<ProgramCover src={coverUrl} />} {...props}>
@@ -79,47 +74,13 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
               </StyledPriceLabel>
             </div>
             <ExtraContentBlock className="d-flex justify-content-center text-align-center">
-              {loading || error ? (
-                <Spin indicator={<LoadingOutlined />} />
-              ) : (
-                formatMessage(programMessages.text.enrolledPerpetualCount, { count: programEnrollment })
-              )}
+              {formatMessage(programMessages.text.enrolledPerpetualCount, { count: enrollment })}
             </ExtraContentBlock>
           </>
         }
       />
     </AdminCard>
   )
-}
-
-const useProgramEnrollment = (programId: string) => {
-  const { loading, error, data } = useQuery<hasura.GET_PROGRAM_ENROLLMENT, hasura.GET_PROGRAM_ENROLLMENTVariables>(
-    gql`
-      query GET_PROGRAM_ENROLLMENT($programId: uuid) {
-        program(where: { id: { _eq: $programId } }) {
-          program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
-            id
-            program_plan_enrollments_aggregate {
-              aggregate {
-                count
-              }
-            }
-          }
-        }
-      }
-    `,
-    { variables: { programId } },
-  )
-  const programEnrollment =
-    data?.program.map(v =>
-      sum(v.program_plans.map(w => w.program_plan_enrollments_aggregate.aggregate?.count || 0)),
-    )[0] || 0
-
-  return {
-    loading,
-    programEnrollment,
-    error,
-  }
 }
 
 export default ProgramAdminCard

@@ -84,6 +84,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
                       id={programPackage.id}
                       coverUrl={programPackage.coverUrl}
                       title={programPackage.title}
+                      programPackageEnrollment={programPackage.programPackageEnrollment}
                     />
                   </div>
                 ))}
