@@ -371,14 +371,12 @@ const useProgramPreviewCollection = (
   )
 
   if (enrollmentData) {
-    enrollmentData.program.forEach(v => {
-      programPreviews.forEach(programPreview => {
-        if (programPreview.id === v.id) {
-          programPreview.enrollment = sum(
-            v.program_plans.map(w => w.program_plan_enrollments_aggregate.aggregate?.count || 0),
-          )
-        }
-      })
+    programPreviews.forEach(v => {
+      const enrollmentAmount =
+        enrollmentData.program
+          .filter(w => w.id === v.id)
+          .map(x => sum(x.program_plans.map(y => y.program_plan_enrollments_aggregate.aggregate?.count || 0)))[0] || 0
+      v.enrollment = enrollmentAmount
     })
   }
 

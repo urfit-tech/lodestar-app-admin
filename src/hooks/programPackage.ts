@@ -54,14 +54,14 @@ export const useProgramPackageCollection = () => {
         }))
 
   if (enrollmentData) {
-    enrollmentData.program_package.forEach(v => {
-      programPackages.forEach(programPackage => {
-        if (programPackage.id === v.id) {
-          programPackage.programPackageEnrollment = sum(
-            v.program_package_plans.map(w => w.program_package_plan_enrollments_aggregate.aggregate?.count || 0),
-          )
-        }
-      })
+    programPackages.forEach(v => {
+      const enrollmentAmount =
+        enrollmentData.program_package
+          .filter(w => w.id === v.id)
+          .map(x =>
+            sum(x.program_package_plans.map(y => y.program_package_plan_enrollments_aggregate.aggregate?.count || 0)),
+          )[0] || 0
+      v.programPackageEnrollment = enrollmentAmount
     })
   }
 
