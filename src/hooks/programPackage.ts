@@ -300,7 +300,7 @@ export const useDeliverProgramCollection = () => {
   return deliverPrograms
 }
 
-export const useGetProgramPackage = (id: string) => {
+export const useProgramPackage = (id: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_PROGRAM_PACKAGE, hasura.GET_PROGRAM_PACKAGEVariables>(
     gql`
       query GET_PROGRAM_PACKAGE($id: uuid!) {
