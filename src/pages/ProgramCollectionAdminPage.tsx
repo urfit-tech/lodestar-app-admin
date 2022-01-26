@@ -343,17 +343,42 @@ const useProgramPreviewCollection = (
           avatarUrl: programRole.member?.picture_url || null,
           name: programRole.member?.name || programRole.member?.username || '',
         })),
-        isSubscription: false, // TODO: remove this in the future
         listPrice: plan?.list_price ?? null,
         salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
         periodAmount: plan?.period_amount || null,
         periodType: (plan?.period_type as ProgramPlanPeriodType) || null,
-        enrollment: sum(
-          program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0),
-        ),
         isPrivate: program.is_private,
+        enrollment: 0,
       }
     }) || []
+
+  const { data: enrollmentData } = useQuery<hasura.GET_PROGRAM_ENROLLMENT>(
+    gql`
+      query GET_PROGRAM_ENROLLMENT {
+        program {
+          id
+          program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
+            id
+            program_plan_enrollments_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        }
+      }
+    `,
+  )
+
+  if (enrollmentData) {
+    programPreviews.forEach(v => {
+      const enrollmentAmount =
+        enrollmentData.program
+          .filter(w => w.id === v.id)
+          .map(x => sum(x.program_plans.map(y => y.program_plan_enrollments_aggregate.aggregate?.count || 0)))[0] || 0
+      v.enrollment = enrollmentAmount
+    })
+  }
 
   const loadMorePrograms =
     (data?.program.length || 0) < (data?.program_aggregate.aggregate?.count || 0)
@@ -462,11 +487,6 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
         sold_at
         period_amount
         period_type
-        program_plan_enrollments_aggregate {
-          aggregate {
-            count
-          }
-        }
       }
     }
   }
