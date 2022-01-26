@@ -43,8 +43,8 @@ const ProgramPackageAdminCard: React.FC<{
   id: string
   coverUrl?: string | null
   title: string
-  soldQuantity: number
-}> = ({ id, coverUrl, title, soldQuantity }) => {
+  programPackageEnrollment: number
+}> = ({ id, coverUrl, title, programPackageEnrollment }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -57,7 +57,7 @@ const ProgramPackageAdminCard: React.FC<{
         </StyledDescription>
 
         <StyledSoldQuantity>
-          {formatMessage(programMessages.text.enrolledPerpetualCount, { count: soldQuantity })}
+          {formatMessage(programMessages.text.enrolledPerpetualCount, { count: programPackageEnrollment })}
         </StyledSoldQuantity>
       </Link>
     </StyledWrapper>
