@@ -1,7 +1,7 @@
 import { Form, InputNumber } from 'antd'
 import { CollectionLayout } from 'lodestar-app-element/src/components/collections/Collection'
 import { defineMessages, useIntl } from 'react-intl'
-import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftSettingLabel } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 
 const labelMessages = defineMessages({
   columns: { id: 'common.ui.columns', defaultMessage: '欄數' },

@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react'
-import { Device } from '../../../types/general'
+import { Device } from '../../types/general'
 
 type CraftPageBuilderContextValue = {
   device: Device

@@ -7,7 +7,7 @@ import {
   CraftSettingLabel,
   CraftSlider,
   StyledCollapsePanel,
-} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+} from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import BoxModelInput from './BoxModelInput'
 import ColorPicker from './ColorPicker'

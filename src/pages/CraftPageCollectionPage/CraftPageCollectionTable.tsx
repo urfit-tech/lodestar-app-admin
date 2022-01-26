@@ -1,11 +1,13 @@
-import { SearchOutlined } from '@ant-design/icons'
-import { Input, Table } from 'antd'
+import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
+import { Dropdown, Input, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
+import CraftReplicateModal from '../../components/craft/CraftReplicateModal'
+import { craftPageMessages } from '../../helpers/translation'
+import CraftPageCollectionPageMessages from './translation'
 
 const StyledText = styled.div`
   color: var(--gray-darker);
@@ -32,6 +34,7 @@ type CraftPageColumnProps = {
 const CraftPageCollectionTable: React.VFC<{ pages: CraftPageColumnProps[] }> = ({ pages }) => {
   const { formatMessage } = useIntl()
   const [searchPageName, setSearchPageName] = useState<string>('')
+  const [dropdownVisible, setDropdownVisible] = useState(false)
 
   const columns: ColumnProps<CraftPageColumnProps>[] = [
     {
@@ -72,6 +75,33 @@ const CraftPageCollectionTable: React.VFC<{ pages: CraftPageColumnProps[] }> = (
       ),
       sorter: (a, b) => (b.updatedAt?.getTime() || 0) - (a.updatedAt?.getTime() || 0),
     },
+    {
+      key: 'dropdownMenu',
+      title: '',
+      width: '100px',
+      render: () => (
+        <Dropdown
+          placement="bottomRight"
+          overlay={
+            <Menu>
+              <Menu.Item>
+                <CraftReplicateModal
+                  renderTrigger={() => (
+                    <span>
+                      {formatMessage(CraftPageCollectionPageMessages.CraftPageCollectionTable.duplicateCraftPage)}
+                    </span>
+                  )}
+                />
+              </Menu.Item>
+              {/* add deletion menu item */}
+            </Menu>
+          }
+          trigger={['hover']}
+        >
+          <MoreOutlined style={{ fontSize: '20px' }} onClick={e => e.stopPropagation()} />
+        </Dropdown>
+      ),
+    },
   ]
 
   return (
@@ -80,9 +110,12 @@ const CraftPageCollectionTable: React.VFC<{ pages: CraftPageColumnProps[] }> = (
         rowKey="id"
         columns={columns}
         dataSource={pages.filter(page => !searchPageName || page.title?.includes(searchPageName))}
-        onRow={record => ({
-          onClick: () => {
-            window.open(`${process.env.PUBLIC_URL}/craft-page/${record.id}?tab=editor`, '_blank')
+        onRow={(record, index) => ({
+          onClick: e => {
+            // if ( !== 'dropdownMenu') {
+            console.log(index)
+            // window.open(`${process.env.PUBLIC_URL}/craft-page/${record.id}?tab=editor`, '_blank')
+            // }
           },
         })}
       />

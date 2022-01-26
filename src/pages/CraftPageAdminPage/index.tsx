@@ -8,17 +8,11 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import {
-  AdminBlock,
-  AdminHeader,
-  AdminHeaderTitle,
-  AdminPaneTitle,
-  AdminTabBarWrapper,
-} from '../../../components/admin'
-import { useResolver } from '../../../components/craft/CraftResolver'
-import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
-import { commonMessages, craftPageMessages } from '../../../helpers/translation'
-import { useAppPage, useMutateAppPage } from '../../../hooks/appPage'
+import { AdminBlock, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
+import { useResolver } from '../../components/craft/CraftResolver'
+import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { useAppPage, useMutateAppPage } from '../../hooks/appPage'
 import CraftPageBasicSettingBlock from './CraftPageBasicSettingBlock'
 import CraftPageBuilderBlock from './CraftPageBuilderBlock'
 import { CraftPageBuilderProvider } from './CraftPageBuilderContext'
