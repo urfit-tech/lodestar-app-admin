@@ -1,8 +1,6 @@
 import { useApolloClient, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { max, min } from 'lodash'
-import { sum } from 'ramda'
-import { notEmpty } from '../helpers'
 import hasura from '../hasura'
 
 import {
@@ -64,7 +62,12 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
 export const useMerchandise = (id: string) => {
   const apolloClient = useApolloClient()
   const [merchandiseProducts, setMerchandiseProducts] = useState<hasura.GET_MERCHANDISE_SPEC_PRODUCTS_product[]>([])
-  const { loading:loadingMerchandise, error:errorMerchandise, data:merchandiseData, refetch:refetchMerchandise } = useQuery<hasura.GET_MERCHANDISE, hasura.GET_MERCHANDISEVariables>(
+  const {
+    loading: loadingMerchandise,
+    error: errorMerchandise,
+    data: merchandiseData,
+    refetch: refetchMerchandise,
+  } = useQuery<hasura.GET_MERCHANDISE, hasura.GET_MERCHANDISEVariables>(
     gql`
       query GET_MERCHANDISE($id: uuid!) {
         merchandise_by_pk(id: $id) {
@@ -115,7 +118,7 @@ export const useMerchandise = (id: string) => {
     { variables: { id } },
   )
 
-  const merchandiseSpecIds:string[] = merchandiseData?.merchandise_by_pk?.merchandise_specs.map(spec=>spec.id) || []
+  const merchandiseSpecIds: string[] = merchandiseData?.merchandise_by_pk?.merchandise_specs.map(spec => spec.id) || []
 
   useEffect(() => {
     if (merchandiseSpecIds.length > 0) {
@@ -144,7 +147,6 @@ export const useMerchandise = (id: string) => {
         })
     }
   }, [merchandiseData])
-
 
   const loading = loadingMerchandise
   const error = errorMerchandise
@@ -197,10 +199,9 @@ export const useMerchandise = (id: string) => {
     loadingMerchandise: loading,
     errorMerchandise: error,
     merchandise,
-    refetchMerchandise
+    refetchMerchandise,
   }
 }
-
 
 export const useMemberShopCollection = (memberId?: string | null) => {
   const { loading, error, data, refetch } = useQuery<

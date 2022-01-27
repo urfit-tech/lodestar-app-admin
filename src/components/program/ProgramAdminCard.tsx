@@ -43,13 +43,12 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
   title,
   abstract,
   instructors,
-  isSubscription,
   listPrice,
   salePrice,
   periodAmount,
   periodType,
-  enrollment,
   isPrivate,
+  enrollment,
   ...props
 }) => {
   const { formatMessage } = useIntl()
@@ -74,10 +73,8 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
                 )}
               </StyledPriceLabel>
             </div>
-            <ExtraContentBlock>
-              {isSubscription
-                ? formatMessage(programMessages.text.enrolledSubscriptionCount, { count: enrollment })
-                : formatMessage(programMessages.text.enrolledPerpetualCount, { count: enrollment })}
+            <ExtraContentBlock className="d-flex justify-content-center text-align-center">
+              {formatMessage(programMessages.text.enrolledPerpetualCount, { count: enrollment })}
             </ExtraContentBlock>
           </>
         }

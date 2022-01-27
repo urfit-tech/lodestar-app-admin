@@ -7,6 +7,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, projectMessages } from '../../helpers/translation'
@@ -53,6 +54,7 @@ const ProjectIntroForm: React.FC<{
     UPDATE_PROJECT_INTRO,
   )
   const [loading, setLoading] = useState(false)
+  const coverId = uuid()
 
   if (!project) {
     return <Skeleton active />
@@ -60,14 +62,13 @@ const ProjectIntroForm: React.FC<{
 
   const handleUpdateCover = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateProjectCover({
       variables: {
         projectId: project.id,
-        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
+        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`,
         coverUrl:
           project.coverUrl === null
-            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`
             : project.coverUrl,
       },
     })
@@ -89,9 +90,7 @@ const ProjectIntroForm: React.FC<{
         introductionDesktop: values.introductionDesktop?.getCurrentContent().hasText()
           ? values.introductionDesktop.toRAW()
           : null,
-        coverUrl: values.coverUrl
-          ? values.coverUrl
-          : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/800?t=${Date.now()}`,
+        coverUrl: values.coverUrl || project.coverUrl,
         coverType: values.coverUrl ? 'video' : 'image',
       },
     })
@@ -120,7 +119,7 @@ const ProjectIntroForm: React.FC<{
     >
       <Form.Item label={<span>{formatMessage(projectMessages.label.projectCover)}</span>}>
         <ImageInput
-          path={`project_covers/${appId}/${project.id}`}
+          path={`project_covers/${appId}/${project.id}/${coverId}`}
           image={{
             width: '160px',
             ratio: 9 / 16,

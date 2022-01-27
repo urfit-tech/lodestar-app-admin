@@ -27,14 +27,14 @@ import ProgramPackagePublishBlock from '../components/programPackage/ProgramPack
 import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages, programMessages, programPackageMessages } from '../helpers/translation'
-import { useGetProgramPackage } from '../hooks/programPackage'
+import { useProgramPackage } from '../hooks/programPackage'
 
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programPackageId } = useParams<{ programPackageId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
-  const { programPackage, refetch } = useGetProgramPackage(programPackageId)
+  const { programPackage, refetch } = useProgramPackage(programPackageId)
   const [updatePosition] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables

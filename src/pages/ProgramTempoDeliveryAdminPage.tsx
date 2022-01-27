@@ -75,7 +75,7 @@ const StyledMemberEmail = styled.div`
 const ProgramTempoDeliveryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
 
-  const { loadingProgramPackage, programPackages } = useProgramPackageCollection()
+  const { loading: loadingProgramPackage, programPackages } = useProgramPackageCollection()
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null)
   const packageId = selectedPackageId || programPackages[0]?.id || null
 
@@ -135,7 +135,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                 >
                   {programPackages.map(programPackage => (
                     <StyledItem key={programPackage.id}>
-                      {programPackage?.published_at ? '' : ` (${formatMessage(commonMessages.status.unpublished)}) `}
+                      {programPackage?.publishedAt ? '' : ` (${formatMessage(commonMessages.status.unpublished)}) `}
                       {programPackage?.title}
                     </StyledItem>
                   ))}
@@ -144,7 +144,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
             >
               <StyledProgramPackageTitle className="d-flex align-items-center justify-content-center cursor-pointer">
                 <div className="mx-2">
-                  {programPackages.find(programPackage => programPackage.id === packageId)?.published_at
+                  {programPackages.find(programPackage => programPackage.id === packageId)?.publishedAt
                     ? ''
                     : ` (${formatMessage(commonMessages.status.unpublished)}) `}
                   {programPackages.find(programPackage => programPackage.id === packageId)?.title}

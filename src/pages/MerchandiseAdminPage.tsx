@@ -15,9 +15,9 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../components/admin'
+import MetaProductDeletionBlock from '../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import MerchandiseBasicForm from '../components/merchandise/MerchandiseBasicForm'
-import MerchandiseDeleteBlock from '../components/merchandise/MerchandiseDeleteBlock'
 import MerchandiseDescriptionForm from '../components/merchandise/MerchandiseDescriptionForm'
 import MerchandiseIntroductionForm from '../components/merchandise/MerchandiseIntroductionForm'
 import MerchandiseInventoryCard from '../components/merchandise/MerchandiseInventoryCard'
@@ -134,14 +134,11 @@ const MerchandiseAdminPage: React.FC = () => {
                   onRefetch={refetchMerchandise}
                 />
               </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(merchandiseMessages.label.delete)}</AdminBlockTitle>
-                <MerchandiseDeleteBlock
-                  merchandiseId={merchandiseId}
-                  memberShopId={merchandise.memberShopId}
-                  onRefetch={refetchMerchandise}
-                />
-              </AdminBlock>
+              <MetaProductDeletionBlock
+                metaProductType="Merchandise"
+                targetId={merchandiseId}
+                options={{ memberShopId: merchandise.memberShopId || '' }}
+              />
             </div>
           </Tabs.TabPane>
 
