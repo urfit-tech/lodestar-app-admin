@@ -1936,6 +1936,36 @@ export interface ARCHIVE_POSTVariables {
 
 
 // ====================================================
+// GraphQL mutation operation: ARCHIVE_MERCHANDISE
+// ====================================================
+
+
+export interface ARCHIVE_MERCHANDISE_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_MERCHANDISE {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: ARCHIVE_MERCHANDISE_update_merchandise | null;
+}
+
+export interface ARCHIVE_MERCHANDISEVariables {
+  merchandiseId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -3779,36 +3809,6 @@ export interface UPDATE_MERCHANDISE_BASICVariables {
   tags: tag_insert_input[];
   merchandiseTags: merchandise_tag_insert_input[];
   isLimited: boolean;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
-// GraphQL mutation operation: DELETE_MERCHANDISE
-// ====================================================
-
-
-export interface DELETE_MERCHANDISE_update_merchandise {
-  __typename: "merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_MERCHANDISE {
-  /**
-   * update data of the table: "merchandise"
-   */
-  update_merchandise: DELETE_MERCHANDISE_update_merchandise | null;
-}
-
-export interface DELETE_MERCHANDISEVariables {
-  merchandiseId: any;
 }
 
 /* tslint:disable */

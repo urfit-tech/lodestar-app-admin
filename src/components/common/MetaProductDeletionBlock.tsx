@@ -163,7 +163,7 @@ const useArchiveMetaProduct = () => {
     }
   `)
 
-  const [archiveMerchandise] = useMutation<hasura.DELETE_MERCHANDISE, hasura.DELETE_MERCHANDISEVariables>(gql`
+  const [archiveMerchandise] = useMutation<hasura.ARCHIVE_MERCHANDISE, hasura.ARCHIVE_MERCHANDISEVariables>(gql`
     mutation ARCHIVE_MERCHANDISE($merchandiseId: uuid!) {
       update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { is_deleted: true }) {
         affected_rows
