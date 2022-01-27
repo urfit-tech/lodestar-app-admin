@@ -541,11 +541,11 @@ export interface ARCHIVE_ACTIVITY_TICKETVariables {
 
 
 // ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
+// GraphQL mutation operation: INSERT_CATEGORY
 // ====================================================
 
 
-export interface INSERT_PROGRAM_CATEGORY_insert_category {
+export interface INSERT_CATEGORY_insert_category {
   __typename: "category_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -553,14 +553,14 @@ export interface INSERT_PROGRAM_CATEGORY_insert_category {
   affected_rows: number;
 }
 
-export interface INSERT_PROGRAM_CATEGORY {
+export interface INSERT_CATEGORY {
   /**
    * insert data into the table: "category"
    */
-  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
+  insert_category: INSERT_CATEGORY_insert_category | null;
 }
 
-export interface INSERT_PROGRAM_CATEGORYVariables {
+export interface INSERT_CATEGORYVariables {
   appId: string;
   name?: string | null;
   classType?: string | null;
@@ -574,11 +574,11 @@ export interface INSERT_PROGRAM_CATEGORYVariables {
 
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_CATEGORY
+// GraphQL mutation operation: UPDATE_CATEGORY_NAME
 // ====================================================
 
 
-export interface UPDATE_CATEGORY_update_category {
+export interface UPDATE_CATEGORY_NAME_update_category {
   __typename: "category_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -586,17 +586,16 @@ export interface UPDATE_CATEGORY_update_category {
   affected_rows: number;
 }
 
-export interface UPDATE_CATEGORY {
+export interface UPDATE_CATEGORY_NAME {
   /**
    * update data of the table: "category"
    */
-  update_category: UPDATE_CATEGORY_update_category | null;
+  update_category: UPDATE_CATEGORY_NAME_update_category | null;
 }
 
-export interface UPDATE_CATEGORYVariables {
+export interface UPDATE_CATEGORY_NAMEVariables {
   categoryId: string;
   name?: string | null;
-  position?: number | null;
 }
 
 /* tslint:disable */
@@ -636,11 +635,11 @@ export interface UPDATE_CATEGORY_POSITIONVariables {
 
 
 // ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
+// GraphQL mutation operation: DELETE_CATEGORY
 // ====================================================
 
 
-export interface DELETE_PROGRAM_CATEGORY_delete_category {
+export interface DELETE_CATEGORY_delete_category {
   __typename: "category_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -648,14 +647,14 @@ export interface DELETE_PROGRAM_CATEGORY_delete_category {
   affected_rows: number;
 }
 
-export interface DELETE_PROGRAM_CATEGORY {
+export interface DELETE_CATEGORY {
   /**
    * delete data from the table: "category"
    */
-  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
+  delete_category: DELETE_CATEGORY_delete_category | null;
 }
 
-export interface DELETE_PROGRAM_CATEGORYVariables {
+export interface DELETE_CATEGORYVariables {
   categoryId: string;
 }
 
