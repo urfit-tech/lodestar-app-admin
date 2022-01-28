@@ -1,17 +1,16 @@
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Typography } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { ReactSortable } from 'react-sortablejs'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
 import { ClassType } from '../../types/general'
-import DraggableItem from '../common/DraggableItem'
+import DraggableItemCollectionBlock from '../common/DraggableItemCollectionBlock'
 import AdminCard from './AdminCard'
 
 const CategoryAdminCard: React.FC<{
@@ -21,35 +20,33 @@ const CategoryAdminCard: React.FC<{
   const app = useApp()
   const { loading: loadingCategory, categories, refetch } = useCategory(classType)
 
-  const [insertCategory] = useMutation<hasura.INSERT_PROGRAM_CATEGORY, hasura.INSERT_PROGRAM_CATEGORYVariables>(
-    INSERT_PROGRAM_CATEGORY,
+  const [insertCategory] = useMutation<hasura.INSERT_CATEGORY, hasura.INSERT_CATEGORYVariables>(INSERT_CATEGORY)
+  const [updateCategoryName] = useMutation<hasura.UPDATE_CATEGORY_NAME, hasura.UPDATE_CATEGORY_NAMEVariables>(
+    UPDATE_CATEGORY_NAME,
   )
-  const [updateCategory] = useMutation<hasura.UPDATE_CATEGORY, hasura.UPDATE_CATEGORYVariables>(UPDATE_CATEGORY)
   const [updateCategoryPosition] = useMutation<
     hasura.UPDATE_CATEGORY_POSITION,
     hasura.UPDATE_CATEGORY_POSITIONVariables
   >(UPDATE_CATEGORY_POSITION)
-  const [deleteCategory] = useMutation<hasura.DELETE_PROGRAM_CATEGORY, hasura.DELETE_PROGRAM_CATEGORYVariables>(
-    DELETE_PROGRAM_CATEGORY,
-  )
+  const [deleteCategory] = useMutation<hasura.DELETE_CATEGORY, hasura.DELETE_CATEGORYVariables>(DELETE_CATEGORY)
 
   const [loading, setLoading] = useState(false)
 
   return (
     <AdminCard loading={loadingCategory} className={loading ? 'mask' : ''}>
-      <Typography.Text>{formatMessage(commonMessages.label.categoryItem)}</Typography.Text>
-      <ReactSortable
-        className="mt-3"
-        handle=".draggable-category"
-        list={categories}
-        setList={newCategories => {
+      <Typography.Text className="d-block mb-3">{formatMessage(commonMessages.label.categoryItem)}</Typography.Text>
+      <DraggableItemCollectionBlock
+        items={categories.map(v => ({ id: v.id, description: v.name }))}
+        isEditable
+        isDeletable
+        onSort={newCategories => {
           setLoading(true)
           updateCategoryPosition({
             variables: {
               data: newCategories.map((category, index) => ({
-                app_id: app.id,
                 id: category.id,
-                name: category.name,
+                app_id: app.id,
+                name: category.description,
                 class: classType,
                 position: index,
               })),
@@ -59,46 +56,22 @@ const CategoryAdminCard: React.FC<{
             .catch(handleError)
             .finally(() => setLoading(false))
         }}
-      >
-        {categories.map(category => (
-          <DraggableItem
-            key={category.id}
-            className="mb-2"
-            dataId={category.id}
-            handlerClassName="draggable-category"
-            actions={[
-              <DeleteOutlined
-                key="delete"
-                onClick={() => {
-                  window.confirm(formatMessage(commonMessages.text.deleteCategoryNotation)) &&
-                    deleteCategory({ variables: { categoryId: category.id } })
-                      .then(() => refetch())
-                      .catch(handleError)
-                }}
-              />,
-            ]}
-          >
-            <Typography.Text
-              editable={{
-                onChange: name => {
-                  updateCategory({
-                    variables: {
-                      categoryId: category.id,
-                      name,
-                      position: category.position,
-                    },
-                  })
-                    .then(() => refetch())
-                    .catch(handleError)
-                },
-              }}
-            >
-              {category.name}
-            </Typography.Text>
-          </DraggableItem>
-        ))}
-      </ReactSortable>
-
+        onEdit={item => {
+          updateCategoryName({
+            variables: {
+              categoryId: item.id,
+              name: item.description,
+            },
+          })
+            .then(() => refetch())
+            .catch(handleError)
+        }}
+        onDelete={id => {
+          deleteCategory({ variables: { categoryId: id } })
+            .then(() => refetch())
+            .catch(handleError)
+        }}
+      />
       <Button
         icon={<PlusOutlined />}
         type="link"
@@ -119,16 +92,16 @@ const CategoryAdminCard: React.FC<{
   )
 }
 
-const INSERT_PROGRAM_CATEGORY = gql`
-  mutation INSERT_PROGRAM_CATEGORY($appId: String!, $name: String, $classType: String, $position: Int) {
+const INSERT_CATEGORY = gql`
+  mutation INSERT_CATEGORY($appId: String!, $name: String, $classType: String, $position: Int) {
     insert_category(objects: { app_id: $appId, name: $name, class: $classType, position: $position }) {
       affected_rows
     }
   }
 `
-const UPDATE_CATEGORY = gql`
-  mutation UPDATE_CATEGORY($categoryId: String!, $name: String, $position: Int) {
-    update_category(_set: { name: $name, position: $position }, where: { id: { _eq: $categoryId } }) {
+const UPDATE_CATEGORY_NAME = gql`
+  mutation UPDATE_CATEGORY_NAME($categoryId: String!, $name: String) {
+    update_category(_set: { name: $name }, where: { id: { _eq: $categoryId } }) {
       affected_rows
     }
   }
@@ -140,8 +113,8 @@ const UPDATE_CATEGORY_POSITION = gql`
     }
   }
 `
-const DELETE_PROGRAM_CATEGORY = gql`
-  mutation DELETE_PROGRAM_CATEGORY($categoryId: String!) {
+const DELETE_CATEGORY = gql`
+  mutation DELETE_CATEGORY($categoryId: String!) {
     delete_category(where: { id: { _eq: $categoryId } }) {
       affected_rows
     }

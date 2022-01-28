@@ -1,6 +1,7 @@
+import { DeleteOutlined } from '@ant-design/icons'
 import { Select } from 'antd'
 import { move } from 'ramda'
-import React from 'react'
+import React, { useRef } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
@@ -56,7 +57,14 @@ const StyledSelectOptionWrapper = styled.div`
     }
   }
 `
-
+const StyledDeleteBlock = styled.div`
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-left: solid 1px var(--gray-light);
+`
 export type ItemProps = {
   id: string
   description: string | null
@@ -65,11 +73,29 @@ export type ItemProps = {
 const DraggableItemCollectionBlock: React.FC<{
   items: ItemProps[]
   onSort: (newItems: ItemProps[]) => void
-}> = ({ items, onSort }) => {
+  onEdit?: (item: ItemProps) => void
+  onDelete?: (id: string) => void
+  isDeletable?: boolean
+  isEditable?: boolean
+}> = ({ items, onSort, onEdit, onDelete, isDeletable, isEditable }) => {
   const { formatMessage } = useIntl()
+  const isSortingRef = useRef(false)
+
+  const updateOrder = (updatedList: ItemProps[]) => {
+    if (!isSortingRef.current) return
+    isSortingRef.current = false
+    onSort(updatedList)
+  }
+
   return (
     <StyledReactSortableWrapper>
-      <ReactSortable handle=".draggable-item" list={items} setList={onSort} ghostClass="hover-background">
+      <ReactSortable
+        handle=".draggable-item"
+        ghostClass="hover-background"
+        list={items}
+        onUpdate={() => (isSortingRef.current = true)}
+        setList={updatedList => updateOrder(updatedList)}
+      >
         {items.map((v, i) => (
           <StyledDraggableItem
             handlerClassName="draggable-item"
@@ -99,9 +125,29 @@ const DraggableItemCollectionBlock: React.FC<{
                   </Select.Option>
                 ))}
               </StyledSelect>,
+              isDeletable && (
+                <StyledDeleteBlock>
+                  <DeleteOutlined
+                    key="delete"
+                    onClick={() => {
+                      window.confirm(formatMessage(commonMessages.text.deleteCategoryNotation)) && onDelete?.(v.id)
+                    }}
+                  />
+                </StyledDeleteBlock>
+              ),
             ]}
           >
-            <BraftContent>{v.description}</BraftContent>
+            <BraftContent
+              isEditable={isEditable}
+              onEdit={content => {
+                onEdit?.({
+                  id: v.id,
+                  description: content,
+                })
+              }}
+            >
+              {v.description}
+            </BraftContent>
           </StyledDraggableItem>
         ))}
       </ReactSortable>

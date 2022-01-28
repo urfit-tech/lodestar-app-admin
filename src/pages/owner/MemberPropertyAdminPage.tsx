@@ -1,14 +1,13 @@
-import { DeleteOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons'
+import { PlusOutlined, UserOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Typography } from 'antd'
+import { Button } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { ReactSortable } from 'react-sortablejs'
 import { AdminPageTitle } from '../../components/admin'
 import AdminCard from '../../components/admin/AdminCard'
-import DraggableItem from '../../components/common/DraggableItem'
+import DraggableItemCollectionBlock from '../../components/common/DraggableItemCollectionBlock'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -36,12 +35,12 @@ const MemberPropertyAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <AdminCard loading={loadingProperties} className={loading ? 'mask' : ''}>
-        <div className="mb-4">{formatMessage(commonMessages.label.propertyItem)}</div>
-
-        <ReactSortable
-          handle=".draggable"
-          list={properties}
-          setList={newProperties => {
+        <div className="mb-3">{formatMessage(commonMessages.label.propertyItem)}</div>
+        <DraggableItemCollectionBlock
+          items={properties.map(v => ({ id: v.id, description: v.name }))}
+          isEditable
+          isDeletable
+          onSort={newProperties => {
             setLoading(true)
             updatePropertyPosition({
               variables: {
@@ -49,7 +48,7 @@ const MemberPropertyAdminPage: React.FC = () => {
                   id: property.id,
                   app_id: app.id,
                   type: 'member',
-                  name: property.name,
+                  name: property.description,
                   position: index,
                 })),
               },
@@ -58,40 +57,17 @@ const MemberPropertyAdminPage: React.FC = () => {
               .catch(handleError)
               .finally(() => setLoading(false))
           }}
-        >
-          {properties.map(property => (
-            <DraggableItem
-              key={property.id}
-              className="mb-2"
-              dataId={property.id}
-              handlerClassName="draggable"
-              actions={[
-                <DeleteOutlined
-                  key="delete"
-                  onClick={() => {
-                    window.confirm(formatMessage(commonMessages.text.deletePropertyNotation)) &&
-                      deleteProperty({ variables: { propertyId: property.id } })
-                        .then(() => refetchProperties())
-                        .catch(handleError)
-                  }}
-                />,
-              ]}
-            >
-              <Typography.Text
-                editable={{
-                  onChange: name => {
-                    updateProperty({ variables: { propertyId: property.id, name } })
-                      .then(() => refetchProperties())
-                      .catch(handleError)
-                  },
-                }}
-              >
-                {property.name}
-              </Typography.Text>
-            </DraggableItem>
-          ))}
-        </ReactSortable>
-
+          onEdit={item => {
+            updateProperty({ variables: { propertyId: item.id, name: item.description || '' } })
+              .then(() => refetchProperties())
+              .catch(handleError)
+          }}
+          onDelete={id => {
+            deleteProperty({ variables: { propertyId: id } })
+              .then(() => refetchProperties())
+              .catch(handleError)
+          }}
+        />
         <Button
           icon={<PlusOutlined />}
           type="link"

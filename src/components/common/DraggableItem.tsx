@@ -28,7 +28,7 @@ const DraggableItem: React.FC<
         <DragOutlined onClick={() => {}} className={handlerClassName + ' mr-3'} />
         <StyledChildren>{children}</StyledChildren>
       </div>
-      <div>{actions}</div>
+      <div className="d-flex align-items-center">{actions}</div>
     </StyledDraggableItem>
   )
 }
