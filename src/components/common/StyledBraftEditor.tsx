@@ -1,5 +1,5 @@
 import BraftEditor from 'braft-editor'
-import React from 'react'
+import React, { useRef } from 'react'
 import styled, { css } from 'styled-components'
 import QuotationLeft from '../../images/default/quotation-left.png'
 import QuotationRight from '../../images/default/quotation-right.png'
@@ -171,14 +171,31 @@ const StyledBraftContent = styled.div`
   ${OutputMixin}
 `
 
-export const BraftContent: React.FC = ({ children }) => {
+export const BraftContent: React.FC<{ isEditable?: boolean; onEdit?: (content: string | null) => void }> = ({
+  isEditable,
+  onEdit,
+  children,
+}) => {
+  const ref = useRef<HTMLDivElement | null>(null)
   return (
-    <StyledBraftContent
-      className="braft-output-content"
-      dangerouslySetInnerHTML={{
-        __html: BraftEditor.createEditorState(children).toHTML(),
-      }}
-    />
+    <div className="d-flex align-items-center">
+      <StyledBraftContent
+        ref={ref}
+        className="braft-output-content"
+        contentEditable={isEditable}
+        spellCheck={false}
+        onBlur={e => onEdit?.(e.currentTarget.textContent)}
+        onKeyPress={e => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            ref.current?.blur()
+          }
+        }}
+        dangerouslySetInnerHTML={{
+          __html: BraftEditor.createEditorState(children).toHTML(),
+        }}
+      />
+    </div>
   )
 }
 
