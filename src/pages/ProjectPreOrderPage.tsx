@@ -8,9 +8,10 @@ import { AdminPageTitle } from '../components/admin'
 import ProductCreationModal from '../components/common/ProductCreationModal'
 import AdminLayout from '../components/layout/AdminLayout'
 import ProjectCollectionTabs from '../components/project/ProjectCollectionTabs'
-import { commonMessages, projectMessages } from '../helpers/translation'
+import { commonMessages } from '../helpers/translation'
 import { useProject } from '../hooks/project'
 import { ReactComponent as ProjectIcon } from '../images/icon/project.svg'
+import pageMessages from './translation'
 
 const ProjectPreOrderPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
@@ -31,9 +32,9 @@ const ProjectPreOrderPage: React.FC<{}> = () => {
             <ProductCreationModal
               allowedPermission={'PROJECT_PRE_ORDER_ADMIN'}
               withCreatorSelector={currentUserRole === 'app-owner'}
-              creatorAppellation={formatMessage(projectMessages.label.sponsor)}
-              customTitle={formatMessage(projectMessages.label.projectTitle)}
-              customTitleDefault={formatMessage(projectMessages.label.unnamedProject)}
+              creatorAppellation={formatMessage(pageMessages.ProjectPreOrderPage.sponsor)}
+              customTitle={formatMessage(pageMessages.ProjectPreOrderPage.projectTitle)}
+              customTitleDefault={formatMessage(pageMessages.ProjectPreOrderPage.unnamedProject)}
               onCreate={({ title, creatorId }) =>
                 insertProject({
                   variables: {

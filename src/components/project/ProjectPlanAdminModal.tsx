@@ -13,15 +13,17 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
-import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 import { ProjectPlanProps } from '../../types/project'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ImageUploader from '../common/ImageUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import CurrencyInput from '../form/CurrencyInput'
+import CurrencySelector from '../form/CurrencySelector'
 import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
+import projectMessages from './translation'
 
 const StyledNotation = styled.div`
   line-height: 1.5;
@@ -47,24 +49,31 @@ type FieldProps = {
   isParticipantsVisible: boolean
   period: { type: PeriodType; amount: number }
   autoRenewed: boolean
+  currencyId: string
   listPrice: number
   sale: SaleProps
   discountDownPrice?: number
   description: EditorState
 }
 
+type ProjectPlanType = 'perpetual' | 'period' | 'subscription'
 const ProjectPlanAdminModal: React.FC<
-  AdminModalProps & {
+  Omit<AdminModalProps, 'renderTrigger'> & {
     projectId: string
     projectPlan?: ProjectPlanProps
     onRefetch?: () => void
     onRefetchProjectPlanSorts?: () => void
+    renderTrigger?: React.FC<{
+      onOpen?: (projectPlanType: ProjectPlanType) => void
+      onClose?: () => void
+    }>
     isCreated?: boolean
   }
-> = ({ projectId, projectPlan, onRefetch, onRefetchProjectPlanSorts, isCreated, ...modalProps }) => {
+> = ({ projectId, projectPlan, onRefetch, onRefetchProjectPlanSorts, isCreated, renderTrigger, ...modalProps }) => {
+  const [projectPlanType, setProjectPlanType] = useState<ProjectPlanType>()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { authToken } = useAuth()
   const uploadCanceler = useRef<Canceler>()
   const [upsertProjectPlan] = useMutation<hasura.UPSERT_PROJECT_PLAN, hasura.UPSERT_PROJECT_PLANVariables>(
@@ -77,11 +86,12 @@ const ProjectPlanAdminModal: React.FC<
   >(UPDATE_PROJECT_PLAN_COVER_URL)
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!projectPlan?.discountDownPrice)
-  const [withPeriod, setWithPeriod] = useState(!!(projectPlan?.periodAmount && projectPlan?.periodType))
-  const [withAutoRenewed, setWithAutoRenewed] = useState(!!projectPlan?.autoRenewed)
-
   const [loading, setLoading] = useState(false)
   const [coverImage, setCoverImage] = useState<File | null>(null)
+
+  const currencyId = projectPlan?.currencyId || ''
+  const withPeriod = projectPlanType === 'period' || projectPlanType === 'subscription'
+  const withAutoRenewed = projectPlanType === 'subscription'
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -102,6 +112,7 @@ const ProjectPlanAdminModal: React.FC<
                 period_type: withPeriod ? values.period.type : null,
                 auto_renewed: withPeriod ? withAutoRenewed : false,
                 is_subscription: withPeriod ? withAutoRenewed : false,
+                currency_id: values.currencyId,
                 list_price: values.listPrice,
                 sale_price: values.sale ? values.sale.price : null,
                 sold_at: values.sale?.soldAt || null,
@@ -165,6 +176,18 @@ const ProjectPlanAdminModal: React.FC<
           </Button>
         </>
       )}
+      // TODO: too nested to understand
+      renderTrigger={({ setVisible }) => {
+        return (
+          renderTrigger?.({
+            onOpen: projectPlanType => {
+              setProjectPlanType(projectPlanType)
+              setVisible(true)
+            },
+            onClose: () => setVisible(false),
+          }) || null
+        )
+      }}
       {...modalProps}
     >
       <Form
@@ -176,6 +199,7 @@ const ProjectPlanAdminModal: React.FC<
           title: projectPlan?.title,
           isPublished: !!projectPlan?.publishedAt,
           isParticipantsVisible: !!projectPlan?.isParticipantsVisible,
+          currencyId: projectPlan?.currencyId,
           listPrice: projectPlan?.listPrice,
           sale: projectPlan?.soldAt
             ? {
@@ -203,7 +227,7 @@ const ProjectPlanAdminModal: React.FC<
           <Input />
         </Form.Item>
 
-        <Form.Item label={<span>{formatMessage(projectMessages.label.projectCover)}</span>}>
+        <Form.Item label={<span>{formatMessage(projectMessages['*'].projectCover)}</span>}>
           <ImageUploader
             file={coverImage}
             initialCoverUrl={projectPlan ? projectPlan?.coverUrl : null}
@@ -233,23 +257,27 @@ const ProjectPlanAdminModal: React.FC<
           </Radio.Group>
         </Form.Item>
 
-        <div className="mb-4">
-          <Checkbox defaultChecked={withPeriod} onChange={e => setWithPeriod(e.target.checked)}>
-            {formatMessage(commonMessages.label.period)}
-          </Checkbox>
-        </div>
-
         {withPeriod && (
-          <Form.Item name="period">
+          <Form.Item name="period" label={formatMessage(commonMessages.label.period)}>
             <PeriodSelector />
           </Form.Item>
         )}
-        {withPeriod && (
-          <div className="mb-4">
-            <Checkbox checked={withAutoRenewed} onChange={e => setWithAutoRenewed(e.target.checked)}>
-              {formatMessage(commonMessages.label.autoRenewed)}
-            </Checkbox>
-          </div>
+
+        {enabledModules?.currency && (
+          <Form.Item
+            label={formatMessage(commonMessages.label.currency)}
+            name="currencyId"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.listPrice),
+                }),
+              },
+            ]}
+          >
+            <CurrencySelector />
+          </Form.Item>
         )}
 
         <Form.Item
@@ -317,6 +345,7 @@ const UPSERT_PROJECT_PLAN = gql`
           cover_url
           title
           description
+          currency_id
           list_price
           sale_price
           sold_at

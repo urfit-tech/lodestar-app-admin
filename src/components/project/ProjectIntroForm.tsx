@@ -10,11 +10,12 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, projectMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { ProjectAdminProps } from '../../types/project'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
 import VideoInput from '../form/VideoInput'
+import projectMessages from './translation'
 
 const messages = defineMessages({
   introductionDefaultNotice: {
@@ -117,7 +118,7 @@ const ProjectIntroForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={<span>{formatMessage(projectMessages.label.projectCover)}</span>}>
+      <Form.Item label={<span>{formatMessage(projectMessages['*'].projectCover)}</span>}>
         <ImageInput
           path={`project_covers/${appId}/${project.id}/${coverId}`}
           image={{
@@ -134,11 +135,11 @@ const ProjectIntroForm: React.FC<{
         <VideoInput appId={appId} productId={project.id} productType="program" />
       </Form.Item>
 
-      <Form.Item label={formatMessage(projectMessages.label.projectAbstract)} name="abstract">
+      <Form.Item label={formatMessage(projectMessages['*'].projectAbstract)} name="abstract">
         <Input.TextArea rows={5} />
       </Form.Item>
 
-      <Form.Item label={formatMessage(projectMessages.label.projectContent)} wrapperCol={{ md: { span: 20 } }}>
+      <Form.Item label={formatMessage(projectMessages['*'].projectContent)} wrapperCol={{ md: { span: 20 } }}>
         <Tabs defaultActiveKey="default">
           <Tabs.TabPane key="default" tab={formatMessage(commonMessages.label.default)}>
             <StyledNotice>{formatMessage(messages.introductionDefaultNotice)}</StyledNotice>

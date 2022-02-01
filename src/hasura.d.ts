@@ -15992,6 +15992,7 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_plans {
   cover_url: string | null;
   title: string;
   description: string | null;
+  currency_id: string;
   list_price: any | null;
   sale_price: any | null;
   sold_at: any | null;

@@ -51,6 +51,7 @@ export type ProjectPlanProps = {
   publishedAt: Date | null
   autoRenewed: boolean
   projectPlanEnrollment: number
+  currencyId: string
 }
 
 export type ProjectPlanSortProps = {
