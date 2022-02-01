@@ -15,7 +15,7 @@ import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
-import { ProjectPlanProps } from '../../types/project'
+import { ProjectPlan, ProjectPlanProduct, ProjectPlanType } from '../../types/project'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ImageUploader from '../common/ImageUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -23,6 +23,7 @@ import CurrencyInput from '../form/CurrencyInput'
 import CurrencySelector from '../form/CurrencySelector'
 import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
+import ProjectPlanProductSelector from './ProjectPlanProductSelector'
 import projectMessages from './translation'
 
 const StyledNotation = styled.div`
@@ -54,13 +55,13 @@ type FieldProps = {
   sale: SaleProps
   discountDownPrice?: number
   description: EditorState
+  planProducts: ProjectPlanProduct[]
 }
 
-type ProjectPlanType = 'perpetual' | 'period' | 'subscription'
 const ProjectPlanAdminModal: React.FC<
   Omit<AdminModalProps, 'renderTrigger'> & {
     projectId: string
-    projectPlan?: ProjectPlanProps
+    projectPlan?: ProjectPlan
     onRefetch?: () => void
     onRefetchProjectPlanSorts?: () => void
     renderTrigger?: React.FC<{
@@ -89,7 +90,6 @@ const ProjectPlanAdminModal: React.FC<
   const [loading, setLoading] = useState(false)
   const [coverImage, setCoverImage] = useState<File | null>(null)
 
-  const currencyId = projectPlan?.currencyId || ''
   const withPeriod = projectPlanType === 'period' || projectPlanType === 'subscription'
   const withAutoRenewed = projectPlanType === 'subscription'
 
@@ -101,30 +101,35 @@ const ProjectPlanAdminModal: React.FC<
         const values = form.getFieldsValue()
         upsertProjectPlan({
           variables: {
-            data: [
-              {
-                id: projectPlan?.id,
-                project_id: projectId,
-                title: values.title,
-                published_at: values.isPublished ? new Date() : null,
-                is_participants_visible: values.isParticipantsVisible,
-                period_amount: withPeriod ? values.period.amount : null,
-                period_type: withPeriod ? values.period.type : null,
-                auto_renewed: withPeriod ? withAutoRenewed : false,
-                is_subscription: withPeriod ? withAutoRenewed : false,
-                currency_id: values.currencyId,
-                list_price: values.listPrice,
-                sale_price: values.sale ? values.sale.price : null,
-                sold_at: values.sale?.soldAt || null,
-                discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
-                description: values.description.toRAW(),
-                cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
+            projectPlanId: projectPlan?.id,
+            data: {
+              id: projectPlan?.id,
+              project_id: projectId,
+              title: values.title,
+              published_at: values.isPublished ? new Date() : null,
+              is_participants_visible: values.isParticipantsVisible,
+              period_amount: withPeriod ? values.period.amount : null,
+              period_type: withPeriod ? values.period.type : null,
+              auto_renewed: withPeriod ? withAutoRenewed : false,
+              is_subscription: withPeriod ? withAutoRenewed : false,
+              currency_id: values.currencyId,
+              list_price: values.listPrice,
+              sale_price: values.sale ? values.sale.price : null,
+              sold_at: values.sale?.soldAt || null,
+              discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
+              description: values.description.toRAW(),
+              cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
+              project_plan_products: {
+                data: values.planProducts.map(planProduct => ({
+                  product_id: planProduct.id,
+                  options: planProduct.options,
+                })),
               },
-            ],
+            },
           },
         })
           .then(async ({ data }) => {
-            const id = data?.insert_project_plan?.returning.map(v => v.id)[0]
+            const id = data?.insert_project_plan_one?.id
             if (coverImage) {
               const coverId = uuid()
               try {
@@ -210,6 +215,7 @@ const ProjectPlanAdminModal: React.FC<
           period: { amount: projectPlan?.periodAmount || 1, type: projectPlan?.periodType || 'M' },
           discountDownPrice: projectPlan?.discountDownPrice,
           description: BraftEditor.createEditorState(projectPlan ? projectPlan.description : null),
+          planProducts: projectPlan?.products || [],
         }}
       >
         <Form.Item
@@ -317,7 +323,9 @@ const ProjectPlanAdminModal: React.FC<
             <CurrencyInput noLabel />
           </Form.Item>
         )}
-
+        <Form.Item name="planProducts" label={formatMessage(projectMessages.ProjectPlanAdminModal.deliverables)}>
+          <ProjectPlanProductSelector />
+        </Form.Item>
         <Form.Item label={formatMessage(messages.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
@@ -335,9 +343,12 @@ const UPDATE_PROJECT_PLAN_COVER_URL = gql`
 `
 
 const UPSERT_PROJECT_PLAN = gql`
-  mutation UPSERT_PROJECT_PLAN($data: [project_plan_insert_input!]!) {
-    insert_project_plan(
-      objects: $data
+  mutation UPSERT_PROJECT_PLAN($projectPlanId: uuid!, $data: project_plan_insert_input!) {
+    delete_project_plan_product(where: { project_plan_id: { _eq: $projectPlanId } }) {
+      affected_rows
+    }
+    insert_project_plan_one(
+      object: $data
       on_conflict: {
         constraint: project_plan_pkey
         update_columns: [
@@ -359,9 +370,7 @@ const UPSERT_PROJECT_PLAN = gql`
         ]
       }
     ) {
-      returning {
-        id
-      }
+      id
     }
   }
 `

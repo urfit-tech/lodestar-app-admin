@@ -20,6 +20,10 @@ const projectMessages = {
     noProject: { id: 'project.*.noProject', defaultMessage: '尚未有任何專案' },
     soldOutProjectCount: { id: 'project.*.soldOutProjectCount', defaultMessage: '已售 {count}' },
   }),
+  ProjectPlanAdminModal: defineMessages({
+    deliverables: { id: 'project.ProjectPlanAdminModal.deliverables', defaultMessage: '交付項目' },
+    addDeliverables: { id: 'project.ProjectPlanAdminModal.addDeliverables', defaultMessage: '新增項目' },
+  }),
 }
 
 export default projectMessages

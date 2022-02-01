@@ -6554,28 +6554,33 @@ export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
 // ====================================================
 
 
-export interface UPSERT_PROJECT_PLAN_insert_project_plan_returning {
+export interface UPSERT_PROJECT_PLAN_delete_project_plan_product {
+  __typename: "project_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROJECT_PLAN_insert_project_plan_one {
   __typename: "project_plan";
   id: any;
 }
 
-export interface UPSERT_PROJECT_PLAN_insert_project_plan {
-  __typename: "project_plan_mutation_response";
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: UPSERT_PROJECT_PLAN_insert_project_plan_returning[];
-}
-
 export interface UPSERT_PROJECT_PLAN {
   /**
-   * insert data into the table: "project_plan"
+   * delete data from the table: "project_plan_product"
    */
-  insert_project_plan: UPSERT_PROJECT_PLAN_insert_project_plan | null;
+  delete_project_plan_product: UPSERT_PROJECT_PLAN_delete_project_plan_product | null;
+  /**
+   * insert a single row into the table: "project_plan"
+   */
+  insert_project_plan_one: UPSERT_PROJECT_PLAN_insert_project_plan_one | null;
 }
 
 export interface UPSERT_PROJECT_PLANVariables {
-  data: project_plan_insert_input[];
+  projectPlanId: any;
+  data: project_plan_insert_input;
 }
 
 /* tslint:disable */
@@ -15975,6 +15980,12 @@ export interface GET_PROJECT_ADMIN_project_by_pk_creator {
   picture_url: string | null;
 }
 
+export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_products {
+  __typename: "project_plan_product";
+  product_id: string;
+  options: any;
+}
+
 export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate_aggregate {
   __typename: "project_plan_enrollment_aggregate_fields";
   count: number | null;
@@ -16009,6 +16020,10 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_plans {
   is_limited: boolean;
   published_at: any | null;
   auto_renewed: boolean;
+  /**
+   * An array relationship
+   */
+  project_plan_products: GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_products[];
   /**
    * An aggregated array relationship
    */

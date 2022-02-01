@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ProjectPlanPeriodType, ProjectPlanProps } from '../../types/project'
+import { ProjectPlan, ProjectPlanPeriodType } from '../../types/project'
 import AdminCard from '../admin/AdminCard'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
@@ -44,7 +44,7 @@ const StyledOnSale = styled.div<{ status?: string }>`
 
 const ProjectPlanCard: React.FC<
   {
-    projectPlan: ProjectPlanProps
+    projectPlan: ProjectPlan
   } & CardProps
 > = ({ projectPlan, ...props }) => {
   const { formatMessage } = useIntl()

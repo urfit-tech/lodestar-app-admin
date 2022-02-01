@@ -14,7 +14,7 @@ export type ProjectAdminProps = ProjectPreviewProps & {
   contents: string | null
   isParticipantsVisible: boolean
   isCountdownTimerVisible: boolean
-  projectPlan: ProjectPlanProps[]
+  projectPlan: ProjectPlan[]
 }
 
 export type ProjectPreviewProps = {
@@ -31,7 +31,9 @@ export type ProjectPreviewProps = {
   totalCount?: number
 }
 
-export type ProjectPlanProps = {
+export type ProjectPlanType = 'perpetual' | 'period' | 'subscription'
+
+export type ProjectPlan = {
   id: string
   projectId: string
   coverUrl: string | null
@@ -52,6 +54,11 @@ export type ProjectPlanProps = {
   autoRenewed: boolean
   projectPlanEnrollment: number
   currencyId: string
+  products: ProjectPlanProduct[]
+}
+export type ProjectPlanProduct = {
+  id: string
+  options: { [key: string]: any }
 }
 
 export type ProjectPlanSortProps = {
