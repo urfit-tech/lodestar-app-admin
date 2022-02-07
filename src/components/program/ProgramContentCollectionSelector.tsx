@@ -5,7 +5,7 @@ import { ProgramContentCollectionProps } from 'lodestar-app-element/src/componen
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftSettingLabel } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 
 type ProgramContentSourceOptions = ProgramContentCollectionProps['source']
 const ProgramContentCollectionSelector: React.FC<{

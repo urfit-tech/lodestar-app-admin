@@ -2,17 +2,17 @@ import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { AdminPageBlock, AdminPageTitle } from '../../../components/admin'
-import AdminLayout from '../../../components/layout/AdminLayout'
-import { commonMessages } from '../../../helpers/translation'
-import { useAppPageCollection } from '../../../hooks/appPage'
-import { PageIcon } from '../../../images/icon'
+import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
+import { commonMessages } from '../../helpers/translation'
+import { useAppPageCollection } from '../../hooks/appPage'
+import { PageIcon } from '../../images/icon'
 import CraftPageCollectionTable from './CraftPageCollectionTable'
 import CraftPageCreationModal from './CraftPageCreationModal'
 
 const CraftPageCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { appPages } = useAppPageCollection()
+  const { loadingAppPages, appPages, refetchAppPages } = useAppPageCollection()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   const tabContents = [
@@ -26,7 +26,8 @@ const CraftPageCollectionPage: React.VFC = () => {
           title: appPage.title,
           path: appPage.path,
           updatedAt: appPage.updatedAt,
-          editor: appPage.editorName,
+          editorName: appPage.editorName,
+          craftData: appPage.craftData,
         })),
     },
     {
@@ -39,7 +40,8 @@ const CraftPageCollectionPage: React.VFC = () => {
           title: appPage.title,
           path: appPage.path,
           updatedAt: appPage.updatedAt,
-          editor: appPage.editorName,
+          editorName: appPage.editorName,
+          craftData: appPage.craftData,
         })),
     },
   ]
@@ -58,6 +60,7 @@ const CraftPageCollectionPage: React.VFC = () => {
           visible={isModalVisible}
           icon={<FileAddOutlined />}
           setModalVisible={setIsModalVisible}
+          onRefetch={refetchAppPages}
         />
       </div>
 
@@ -65,7 +68,11 @@ const CraftPageCollectionPage: React.VFC = () => {
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.pages.length})`}>
             <AdminPageBlock>
-              <CraftPageCollectionTable pages={tabContent.pages} />
+              <CraftPageCollectionTable
+                pages={tabContent.pages}
+                loading={loadingAppPages}
+                onRefetch={refetchAppPages}
+              />
             </AdminPageBlock>
           </Tabs.TabPane>
         ))}

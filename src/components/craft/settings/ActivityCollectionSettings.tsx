@@ -3,7 +3,7 @@ import { useForm } from 'antd/lib/form/Form'
 import { ActivityCollectionProps } from 'lodestar-app-element/src/components/collections/ActivityCollection'
 import { useIntl } from 'react-intl'
 import { craftPageMessages } from '../../../helpers/translation'
-import { CraftElementSettings, CraftSettingLabel } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftElementSettings, CraftSettingLabel } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import ActivityCollectionSelector from '../../activity/ActivityCollectionSelector'
 import LayoutInput from '../../common/LayoutInput'
 

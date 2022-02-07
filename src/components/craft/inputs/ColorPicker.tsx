@@ -4,7 +4,7 @@ import { SketchPicker } from 'react-color'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { craftPageMessages } from '../../../helpers/translation'
-import { CraftSettingLabel, StyledUnderLineInput } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftSettingLabel, StyledUnderLineInput } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 
 const StyleCircleColorInput = styled.div<{ background: string }>`
   background-color: ${props => props.background};

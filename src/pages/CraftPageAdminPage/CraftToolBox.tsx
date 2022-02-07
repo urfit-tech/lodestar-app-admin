@@ -5,8 +5,8 @@ import gql from 'graphql-tag'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import React, { useCallback, useMemo, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import CraftTool from '../../../components/craft/CraftTool'
-import * as hasura from '../../../hasura'
+import CraftTool from '../../components/craft/CraftTool'
+import * as hasura from '../../hasura'
 
 const messages = defineMessages({
   selector: { id: 'craft.toolbox.selector', defaultMessage: '選擇元件類型' },

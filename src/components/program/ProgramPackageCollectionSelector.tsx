@@ -5,7 +5,7 @@ import { ProgramPackageCollectionProps } from 'lodestar-app-element/src/componen
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftSettingLabel } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import ProgramPackageCategorySelect from './ProgramPackageCategorySelect'
 
 type ProgramPackageSourceOptions = ProgramPackageCollectionProps['source']

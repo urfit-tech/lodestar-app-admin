@@ -9,7 +9,7 @@ import {
   CraftElementSettings,
   CraftSettingLabel,
   StyledCollapsePanel,
-} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+} from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import ButtonActionSelector from '../../common/ButtonActionSelector'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
