@@ -1,6 +1,6 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, DatePicker, Form, Result, Slider, Statistic, Steps } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, Result, Slider, Statistic, Steps } from 'antd'
 import { ResultProps } from 'antd/lib/result'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
@@ -20,6 +20,8 @@ type Filter = {
   assignedAtRange: [Date, Date] | null
   managerId?: string
   starRange: [number, number]
+  starIsNull: boolean
+  marketingActivity: string
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -35,6 +37,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     starRange: [-999, 999],
     createdAtRange: null,
     assignedAtRange: null,
+    starIsNull: false,
+    marketingActivity: '',
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -92,6 +96,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
 }
 
 const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => void }> = ({ filter, onNext }) => {
+  const [starIsNull, setStarIsNull] = useState(false)
+
   return (
     <Form<Filter>
       layout="horizontal"
@@ -108,8 +114,14 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
       <Form.Item label="領域" name="categoryIds">
         <CategoryInput class="member" />
       </Form.Item>
+      <Form.Item label="沒有星等的人" name="starIsNull">
+        <Checkbox onChange={e => setStarIsNull(e.target.checked)} />
+      </Form.Item>
       <Form.Item label="星等" name="starRange">
-        <Slider range min={-999} max={999} />
+        <Slider range min={-999} max={999} disabled={starIsNull} />
+      </Form.Item>
+      <Form.Item label="行銷活動" name="marketingActivity">
+        <Input />
       </Form.Item>
       <Form.Item label="名單建立日期" name="createdAtRange">
         <DatePicker.RangePicker allowClear />
@@ -147,45 +159,36 @@ const ConfirmSection: React.FC<{
       fetchPolicy: 'no-cache',
       variables: {
         condition: {
-          _and: [
-            {
-              manager_id: {
-                _is_null: !filter.managerId,
-                _eq: filter.managerId || undefined,
-              },
-              member_categories:
-                filter.categoryIds.length > 0
-                  ? {
-                      category: {
-                        name: {
-                          _in: filter.categoryIds,
-                        },
-                      },
-                    }
-                  : undefined,
-              created_at: filter.createdAtRange
-                ? {
-                    _gte: moment(filter.createdAtRange[0]).startOf('day'),
-                    _lte: moment(filter.createdAtRange[1]).endOf('day'),
-                  }
-                : undefined,
-            },
-            {
-              _or: [
-                {
-                  star: {
-                    _gte: filter.starRange[0],
-                    _lte: filter.starRange[1],
+          manager_id: {
+            _is_null: !filter.managerId,
+            _eq: filter.managerId || undefined,
+          },
+          member_categories:
+            filter.categoryIds.length > 0
+              ? {
+                  category: {
+                    name: {
+                      _in: filter.categoryIds,
+                    },
                   },
-                },
-                {
-                  star: {
-                    _is_null: true,
-                  },
-                },
-              ],
-            },
-          ],
+                }
+              : undefined,
+          created_at: filter.createdAtRange
+            ? {
+                _gte: moment(filter.createdAtRange[0]).startOf('day'),
+                _lte: moment(filter.createdAtRange[1]).endOf('day'),
+              }
+            : undefined,
+          star: filter.starIsNull
+            ? {
+                _gte: filter.starRange[0],
+                _lte: filter.starRange[1],
+              }
+            : { _is_null: true },
+          member_properties:
+            filter.marketingActivity !== ''
+              ? { property: { name: { _eq: '行銷活動' } }, value: { _like: `%${filter.marketingActivity}%` } }
+              : undefined,
         },
       },
     },
