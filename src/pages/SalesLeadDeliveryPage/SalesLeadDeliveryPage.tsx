@@ -9,10 +9,10 @@ import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
-import CategoryInput from '../components/common/CategoryInput'
-import SalesMemberInput from '../components/common/SalesMemberInput'
-import hasura from '../hasura'
-import { salesMessages } from '../helpers/translation'
+import CategoryInput from '../../components/common/CategoryInput'
+import SalesMemberInput from '../../components/common/SalesMemberInput'
+import hasura from '../../hasura'
+import { salesLeadDeliveryPageMessages } from './translation'
 
 type Filter = {
   categoryIds: string[]
@@ -20,7 +20,7 @@ type Filter = {
   assignedAtRange: [Date, Date] | null
   managerId?: string
   starRange: [number, number]
-  starIsNull: boolean
+  starRangeIsNull: boolean
   marketingActivity: string
 }
 type AssignResult = {
@@ -37,7 +37,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     starRange: [-999, 999],
     createdAtRange: null,
     assignedAtRange: null,
-    starIsNull: false,
+    starRangeIsNull: false,
     marketingActivity: '',
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
@@ -49,13 +49,16 @@ const SalesLeadDeliveryPage: React.VFC = () => {
       <div className="mb-5 d-flex justify-content-between align-items-center">
         <AdminPageTitle className="d-flex align-items-center mb-0">
           <Icon className="mr-3" component={() => <SwapOutlined />} />
-          <span>{formatMessage(salesMessages.label.salesLeadDelivery)}</span>
+          <span>{formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.salesLeadDelivery)}</span>
         </AdminPageTitle>
       </div>
       <Steps className="mb-5" current={currentStep} type="navigation" onChange={setCurrentStep}>
-        <Steps.Step title="篩選名單" />
-        <Steps.Step title="確認派發" />
-        <Steps.Step title="派發結果" disabled={!assignedResult} />
+        <Steps.Step title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.filterSalesLead)} />
+        <Steps.Step title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveryConfirm)} />
+        <Steps.Step
+          title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveryResult)}
+          disabled={!assignedResult}
+        />
       </Steps>
       {currentStep === 0 && (
         <FilterSection
@@ -96,7 +99,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
 }
 
 const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => void }> = ({ filter, onNext }) => {
-  const [starIsNull, setStarIsNull] = useState(false)
+  const { formatMessage } = useIntl()
+  const [starRangeIsNull, setStarRangeIsNull] = useState(false)
 
   return (
     <Form<Filter>
@@ -108,30 +112,45 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
         onNext?.(values)
       }}
     >
-      <Form.Item label="原承辦人" name="managerId">
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.originalManager)}
+        name="managerId"
+      >
         <SalesMemberInput />
       </Form.Item>
-      <Form.Item label="領域" name="categoryIds">
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.field)} name="categoryIds">
         <CategoryInput class="member" />
       </Form.Item>
-      <Form.Item label="沒有星等的人" name="starIsNull">
-        <Checkbox onChange={e => setStarIsNull(e.target.checked)} />
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRangeIsNull)}
+        name="starRangeIsNull"
+      >
+        <Checkbox onChange={e => setStarRangeIsNull(e.target.checked)} />
       </Form.Item>
-      <Form.Item label="星等" name="starRange">
-        <Slider range min={-999} max={999} disabled={starIsNull} />
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRange)} name="starRange">
+        <Slider range min={-999} max={999} disabled={starRangeIsNull} />
       </Form.Item>
-      <Form.Item label="行銷活動" name="marketingActivity">
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.marketingActivity)}
+        name="marketingActivity"
+      >
         <Input />
       </Form.Item>
-      <Form.Item label="名單建立日期" name="createdAtRange">
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
+        name="createdAtRange"
+      >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
-      <Form.Item label="名單派發日期" name="assignedAtRange">
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.assignedAtRange)}
+        name="assignedAtRange"
+      >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 6 }}>
         <Button type="primary" htmlType="submit">
-          下一步
+          {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.nextStep)}
         </Button>
       </Form.Item>
     </Form>
@@ -179,7 +198,7 @@ const ConfirmSection: React.FC<{
                 _lte: moment(filter.createdAtRange[1]).endOf('day'),
               }
             : undefined,
-          star: filter.starIsNull
+          star: filter.starRangeIsNull
             ? {
                 _gte: filter.starRange[0],
                 _lte: filter.starRange[1],
