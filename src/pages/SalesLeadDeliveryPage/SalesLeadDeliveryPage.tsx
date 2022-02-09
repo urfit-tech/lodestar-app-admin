@@ -124,6 +124,7 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRangeIsNull)}
         name="starRangeIsNull"
+        valuePropName="checked"
       >
         <Checkbox onChange={e => setStarRangeIsNull(e.target.checked)} />
       </Form.Item>
@@ -200,10 +201,12 @@ const ConfirmSection: React.FC<{
             : undefined,
           star: filter.starRangeIsNull
             ? {
+                _is_null: true,
+              }
+            : {
                 _gte: filter.starRange[0],
                 _lte: filter.starRange[1],
-              }
-            : { _is_null: true },
+              },
           member_properties:
             filter.marketingActivity !== ''
               ? { property: { name: { _eq: '行銷活動' } }, value: { _like: `%${filter.marketingActivity}%` } }
