@@ -14,5 +14,16 @@ export const salesLeadDeliveryPageMessages = {
     createdAtRange: { id: 'page.salesLeadDeliveryPage.createdAtRange', defaultMessage: '名單建立日期' },
     assignedAtRange: { id: 'page.salesLeadDeliveryPage.assignedAtRange', defaultMessage: '名單派發日期' },
     nextStep: { id: 'page.salesLeadDeliveryPage.nextStep', defaultMessage: '下一步' },
+    expectedDeliveryAmount: {
+      id: 'page.salesLeadDeliveryPage.expectedDeliveryAmount',
+      defaultMessage: '預計派發名單數',
+    },
+    deliverSalesLead: { id: 'page.salesLeadDeliveryPage.deliverSalesLead', defaultMessage: '派發名單' },
+    deliverSuccessfully: { id: 'page.salesLeadDeliveryPage.deliverSuccessfully', defaultMessage: '派發名單成功' },
+    deliverFailed: { id: 'page.salesLeadDeliveryPage.deliverFailed', defaultMessage: '名單派發失敗' },
+    delivering: { id: 'page.salesLeadDeliveryPage.delivering', defaultMessage: '派發名單中' },
+    deliveredCount: { id: 'page.salesLeadDeliveryPage.deliveredCount', defaultMessage: '已派發 {count} 筆名單' },
+    deliveringMessage: { id: 'page.salesLeadDeliveryPage.deliveringMessage', defaultMessage: '正在派發名單中，請稍等' },
+    deliverAgain: { id: 'page.salesLeadDeliveryPage.deliverAgain', defaultMessage: '再次派發' },
   }),
 }

@@ -162,6 +162,7 @@ const ConfirmSection: React.FC<{
   filter: Filter
   onNext?: (values: { memberIds: string[]; managerId: string | null }) => void
 }> = ({ filter, onNext }) => {
+  const { formatMessage } = useIntl()
   const [managerId, setManagerId] = useState<string>()
   const [numDeliver, setNumDeliver] = useState(1)
   const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
@@ -251,13 +252,14 @@ const ConfirmSection: React.FC<{
   }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member])
 
   const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
+
   return (
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
         <Statistic
           loading={isLoading}
           className="mb-3"
-          title="預計派發名單數"
+          title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
           value={`${numDeliver} / ${filteredMemberIds.length}`}
         />
         <div className="mb-2">
@@ -269,7 +271,7 @@ const ConfirmSection: React.FC<{
           block
           onClick={() => onNext?.({ memberIds: filteredMemberIds.slice(0, numDeliver), managerId: managerId || null })}
         >
-          派發名單
+          {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
       </div>
     </div>
@@ -277,18 +279,31 @@ const ConfirmSection: React.FC<{
 }
 
 const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = ({ result, onBack }) => {
+  const { formatMessage } = useIntl()
   return (
     <Result
       status={result.status}
-      title={result.status === 'success' ? '成功派發名單' : result.status === 'error' ? '派發名單失敗' : '派發名單中'}
+      title={
+        result.status === 'success'
+          ? formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSuccessfully)
+          : result.status === 'error'
+          ? formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverFailed)
+          : formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.delivering)
+      }
       subTitle={
         result.status === 'success'
-          ? `已派發 ${result.data} 筆名單`
+          ? formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveredCount, {
+              count: result.data,
+            })
           : result.status === 'error'
           ? result.error?.message
-          : '正在派發名單中，請稍等'
+          : formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveringMessage)
       }
-      extra={[<Button onClick={() => onBack?.()}>再次派發</Button>]}
+      extra={[
+        <Button onClick={() => onBack?.()}>
+          {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverAgain)}
+        </Button>,
+      ]}
     />
   )
 }
