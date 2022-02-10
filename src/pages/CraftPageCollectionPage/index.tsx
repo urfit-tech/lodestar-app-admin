@@ -1,5 +1,6 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Tabs } from 'antd'
+import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
