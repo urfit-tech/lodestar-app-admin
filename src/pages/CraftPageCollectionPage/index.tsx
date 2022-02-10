@@ -81,4 +81,12 @@ const CraftPageCollectionPage: React.VFC = () => {
   )
 }
 
+export const CHECK_APP_PAGE_PATH = gql`
+  query CHECK_APP_PAGE_PATH($path: String) {
+    app_page(where: { path: { _eq: $path } }) {
+      id
+    }
+  }
+`
+
 export default CraftPageCollectionPage

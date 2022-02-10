@@ -2,12 +2,12 @@ import { QuestionCircleFilled } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Form, Input, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import { CHECK_APP_PAGE_PATH } from '.'
 import { StyledTips } from '../../components/admin'
 import AdminModal, { AdminModalProps } from '../../components/admin/AdminModal'
 import hasura from '../../hasura'
@@ -160,13 +160,7 @@ const CraftPageReplicateModal: React.FC<
                 validator: async (_, value, callback) => {
                   await client
                     .query<hasura.CHECK_APP_PAGE_PATH, hasura.CHECK_APP_PAGE_PATHVariables>({
-                      query: gql`
-                        query CHECK_APP_PAGE_PATH($path: String) {
-                          app_page(where: { path: { _eq: $path } }) {
-                            id
-                          }
-                        }
-                      `,
+                      query: CHECK_APP_PAGE_PATH,
                       variables: { path: value },
                     })
                     .then(res => {
