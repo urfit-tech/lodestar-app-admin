@@ -146,7 +146,7 @@ const ProductToolbox: React.FC = () => {
       <CraftTool
         as={CraftElement.CraftProgramCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
-        variant="card"
+        variant="primary"
         source={{ from: 'publishedAt', limit: 4 }}
       />
       {/* <CraftTool
