@@ -1,9 +1,12 @@
 import { DownloadOutlined } from '@ant-design/icons'
+import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Tabs, Typography } from 'antd'
 import BraftEditor, { EditorState } from 'braft-editor'
+import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { useCouponCodeCollection } from '../../hooks/checkout'
@@ -28,23 +31,50 @@ const CouponPlanDescriptionTabs: React.FC<{
   productIds: string[]
 }> = ({ couponPlanId, title, description, constraint, type, amount, scope, productIds }) => {
   const { formatMessage } = useIntl()
+  const client = useApolloClient()
   const { loadingCouponCodes, errorCouponCodes, couponCodes } = useCouponCodeCollection(couponPlanId)
   const [activeKey, setActiveKey] = useState('')
   const withDescription = !(BraftEditor.createEditorState(description || '') as EditorState).isEmpty()
 
-  const exportCodes = () => {
+  const exportCodes = async () => {
+    const couponCodesExport = await client.query<hasura.GET_COUPON_CODE_EXPORT, hasura.GET_COUPON_CODE_EXPORTVariables>(
+      {
+        query: gql`
+          query GET_COUPON_CODE_EXPORT($couponPlanId: uuid!) {
+            coupon_code(where: { coupon_plan: { id: { _eq: $couponPlanId } } }) {
+              id
+              code
+              remaining
+              coupons {
+                id
+                member {
+                  id
+                  email
+                }
+                status {
+                  used
+                  outdated
+                }
+              }
+            }
+          }
+        `,
+        variables: { couponPlanId },
+      },
+    )
+
     const data: string[][] = [
       [formatMessage(promotionMessages.label.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
     ]
 
-    couponCodes.forEach(couponPlanCode => {
-      couponPlanCode.coupons.forEach(coupon => {
-        data.push([couponPlanCode.code, coupon.status?.used ? 'v' : '', coupon.member.email])
+    couponCodesExport.data.coupon_code.forEach(v => {
+      v.coupons.forEach(w => {
+        data.push([v.code, w.status?.used ? 'v' : '', w.member.email])
       })
 
-      if (couponPlanCode.remaining) {
-        for (let i = 0; i < couponPlanCode.remaining; i++) {
-          data.push([couponPlanCode.code, '', ''])
+      if (v.remaining) {
+        for (let i = 0; i < v.remaining; i++) {
+          data.push([v.code, '', ''])
         }
       }
     })
