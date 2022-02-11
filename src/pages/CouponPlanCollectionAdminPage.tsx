@@ -96,7 +96,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                         />
                       )}
                       renderCount={
-                        <>1</>
+                        <></>
                         // <StyledCount>
                         //   {formatMessage(promotionMessages.text.sentUsedCount, {
                         //     total: couponPlan.count,
