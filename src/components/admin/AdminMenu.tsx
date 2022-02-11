@@ -15,18 +15,20 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
-import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
-import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
-import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
-import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
-import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
-import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
-import { ReactComponent as PointIcon } from '../../images/icon/point.svg'
-import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
-import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
-import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
-import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
+import {
+  BookIcon,
+  CalendarAltIcon,
+  DiscountIcon,
+  MicrophoneIcon,
+  MoneyCircleIcon,
+  PageIcon,
+  PhoneIcon,
+  PointIcon,
+  ProjectIcon,
+  ShopIcon,
+  UserIcon,
+  UsersIcon,
+} from '../../images/icon'
 import { routesMap } from '../common/AdminRouter'
 import adminMessages from './translation'
 
