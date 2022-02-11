@@ -6,15 +6,15 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { AdminPageTitle } from '../../components/admin'
-import CouponPlanAdminCard from '../../components/checkout/CouponPlanAdminCard'
-import CouponPlanAdminModal from '../../components/checkout/CouponPlanAdminModal'
-import CouponPlanDescriptionTabs from '../../components/checkout/CouponPlanDescriptionTabs'
-import AdminLayout from '../../components/layout/AdminLayout'
-import hasura from '../../hasura'
-import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
-import { CouponPlanProps } from '../../types/checkout'
+import { AdminPageTitle } from '../components/admin'
+import CouponPlanAdminCard from '../components/checkout/CouponPlanAdminCard'
+import CouponPlanAdminModal from '../components/checkout/CouponPlanAdminModal'
+import CouponPlanDescriptionTabs from '../components/checkout/CouponPlanDescriptionTabs'
+import AdminLayout from '../components/layout/AdminLayout'
+import hasura from '../hasura'
+import { DiscountIcon } from '../images/icon'
+import { CouponPlanProps } from '../types/checkout'
+import pageMessages from './translation'
 
 const StyledCount = styled.span`
   color: var(--gray-dark);
@@ -31,7 +31,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
   const tabContents = [
     {
       key: 'available',
-      tab: formatMessage(promotionMessages.status.available),
+      tab: formatMessage(pageMessages.CouponPlanCollectionAdminPage.available),
       couponPlans: couponPlans.filter(
         couponPlan =>
           (!couponPlan.startedAt || couponPlan.startedAt.getTime() <= Date.now()) &&
@@ -40,14 +40,14 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
     },
     {
       key: 'notYet',
-      tab: formatMessage(promotionMessages.status.notYet),
+      tab: formatMessage(pageMessages.CouponPlanCollectionAdminPage.notYet),
       couponPlans: couponPlans.filter(
         couponPlan => couponPlan.startedAt && couponPlan.startedAt.getTime() > Date.now(),
       ),
     },
     {
       key: 'unavailable',
-      tab: formatMessage(promotionMessages.status.unavailable),
+      tab: formatMessage(pageMessages.CouponPlanCollectionAdminPage.unavailable),
       couponPlans: couponPlans.filter(couponPlan => couponPlan.endedAt && couponPlan.endedAt.getTime() < Date.now()),
     },
   ]
@@ -56,17 +56,17 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.coupons)}</span>
+        <span>{formatMessage(pageMessages.CouponPlanCollectionAdminPage.coupons)}</span>
       </AdminPageTitle>
 
       <CouponPlanAdminModal
         renderTrigger={({ setVisible }) => (
           <Button type="primary" onClick={() => setVisible(true)} className="mb-5" icon={<FileAddOutlined />}>
-            {formatMessage(promotionMessages.ui.createCouponPlan)}
+            {formatMessage(pageMessages.CouponPlanCollectionAdminPage.createCouponPlan)}
           </Button>
         )}
         icon={<FileAddOutlined />}
-        title={formatMessage(promotionMessages.ui.createCouponPlan)}
+        title={formatMessage(pageMessages.CouponPlanCollectionAdminPage.createCouponPlan)}
         onRefetch={refetchCouponPlans}
       />
 
@@ -96,7 +96,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                         />
                       )}
                       renderCount={
-                        <></>
+                        <>1</>
                         // <StyledCount>
                         //   {formatMessage(promotionMessages.text.sentUsedCount, {
                         //     total: couponPlan.count,
@@ -116,11 +116,11 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                                 <CouponPlanAdminModal
                                   renderTrigger={({ setVisible }) => (
                                     <span onClick={() => setVisible(true)}>
-                                      {formatMessage(commonMessages.ui.edit)}
+                                      {formatMessage(pageMessages['*'].edit)}
                                     </span>
                                   )}
                                   icon={<EditOutlined />}
-                                  title={formatMessage(promotionMessages.ui.editCouponPlan)}
+                                  title={formatMessage(pageMessages.CouponPlanCollectionAdminPage.editCouponPlan)}
                                   couponPlan={couponPlan}
                                   onRefetch={refetchCouponPlans}
                                 />
