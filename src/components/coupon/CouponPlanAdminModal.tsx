@@ -13,9 +13,9 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
 import ScopeSelector, { ScopeProps } from '../form/ScopeSelector'
 import CouponPlanDiscountSelector, { CouponPlanDiscountProps } from './CouponPlanDiscountSelector'
-import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 
 type FieldProps = {
   title: string

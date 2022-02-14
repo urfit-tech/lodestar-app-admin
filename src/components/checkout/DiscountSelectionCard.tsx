@@ -6,7 +6,7 @@ import { checkoutMessages } from '../../helpers/translation'
 import { useEnrolledMembershipCardIds } from '../../hooks/card'
 import { CheckProps } from '../../types/checkout'
 import { AuthModalContext } from '../auth/AuthModal'
-import CouponSelectionModal from './CouponSelectionModal'
+import CouponSelectionModal from '../coupon/CouponSelectionModal'
 import MembershipCardSelectionModal from './MembershipCardSelectionModal'
 
 const StyledRadio = styled(Radio)`
