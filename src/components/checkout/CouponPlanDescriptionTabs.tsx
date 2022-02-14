@@ -1,6 +1,6 @@
 import { DownloadOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
-import { Button, Tabs, Typography } from 'antd'
+import { Button, message, Tabs, Typography } from 'antd'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
@@ -35,10 +35,16 @@ const CouponPlanDescriptionTabs: React.FC<{
   const { loadingCouponCodes, errorCouponCodes, couponCodes } = useCouponCodeCollection(couponPlanId)
   const [activeKey, setActiveKey] = useState('')
   const withDescription = !(BraftEditor.createEditorState(description || '') as EditorState).isEmpty()
+  const [exporting, setExporting] = useState(false)
 
   const exportCodes = async () => {
-    const couponCodesExport = await client.query<hasura.GET_COUPON_CODE_EXPORT, hasura.GET_COUPON_CODE_EXPORTVariables>(
-      {
+    setExporting(true)
+
+    try {
+      const { data: couponCodesExport } = await client.query<
+        hasura.GET_COUPON_CODE_EXPORT,
+        hasura.GET_COUPON_CODE_EXPORTVariables
+      >({
         query: gql`
           query GET_COUPON_CODE_EXPORT($couponPlanId: uuid!) {
             coupon_code(where: { coupon_plan: { id: { _eq: $couponPlanId } } }) {
@@ -60,31 +66,42 @@ const CouponPlanDescriptionTabs: React.FC<{
           }
         `,
         variables: { couponPlanId },
-      },
-    )
-
-    const data: string[][] = [
-      [formatMessage(promotionMessages.label.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
-    ]
-
-    couponCodesExport.data.coupon_code.forEach(v => {
-      v.coupons.forEach(w => {
-        data.push([v.code, w.status?.used ? 'v' : '', w.member.email])
       })
 
-      if (v.remaining) {
-        for (let i = 0; i < v.remaining; i++) {
-          data.push([v.code, '', ''])
-        }
-      }
-    })
+      const data: string[][] = [
+        [formatMessage(promotionMessages.label.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
+      ]
 
-    downloadCSV(`${title}.csv`, toCSV(data))
+      couponCodesExport.coupon_code.forEach(v => {
+        v.coupons.forEach(w => {
+          data.push([v.code, w.status?.used ? 'v' : '', w.member.email])
+        })
+
+        if (v.remaining) {
+          for (let i = 0; i < v.remaining; i++) {
+            data.push([v.code, '', ''])
+          }
+        }
+      })
+
+      setExporting(false)
+      message.success('匯出成功')
+      return downloadCSV(`${title}.csv`, toCSV(data))
+    } catch (error) {
+      setExporting(false)
+      return message.error('匯出失敗')
+    }
   }
   return (
     <Tabs activeKey={activeKey || 'coupon-codes'} onChange={key => setActiveKey(key)}>
       <Tabs.TabPane key="coupon-codes" tab={formatMessage(promotionMessages.label.couponCode)} className="pt-4">
-        <Button type="primary" icon={<DownloadOutlined />} className="mb-4" onClick={() => exportCodes()}>
+        <Button
+          loading={exporting}
+          type="primary"
+          icon={<DownloadOutlined />}
+          className="mb-4"
+          onClick={() => exportCodes()}
+        >
           {formatMessage(promotionMessages.ui.exportCodes)}
         </Button>
 
