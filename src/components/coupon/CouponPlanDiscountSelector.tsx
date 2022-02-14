@@ -2,8 +2,8 @@ import { Input, InputNumber, Select } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { promotionMessages } from '../../helpers/translation'
 import { CouponPlanType } from '../../types/checkout'
+import couponMessages from './translation'
 
 const StyledGroup = styled(Input.Group)`
   .ant-select-selection--single .ant-select-selection__rendered {
@@ -27,14 +27,25 @@ const CouponPlanDiscountSelector: React.FC<{
       {value ? (
         <StyledGroup compact>
           <Select<CouponPlanType> value={value.type} onChange={type => onChange && onChange({ ...value, type })}>
-            <Select.Option value="cash">{formatMessage(promotionMessages.label.priceType)}</Select.Option>
-            <Select.Option value="percent">{formatMessage(promotionMessages.label.ratioType)}</Select.Option>
+            <Select.Option value="cash">
+              {formatMessage(couponMessages.CouponPlanDiscountSelector.priceType)}
+            </Select.Option>
+            <Select.Option value="percent">
+              {formatMessage(couponMessages.CouponPlanDiscountSelector.ratioType)}
+            </Select.Option>
           </Select>
           <InputNumber
             style={{ width: '40%' }}
-            formatter={v => `${v} ${value.type === 'cash' ? formatMessage(promotionMessages.label.dollar) : '%'}`}
+            formatter={v =>
+              `${v} ${value.type === 'cash' ? formatMessage(couponMessages.CouponPlanDiscountSelector.dollar) : '%'}`
+            }
             parser={v =>
-              (v && parseFloat(v.replace(` ${formatMessage(promotionMessages.label.dollar)}`, '').replace(' %', ''))) ||
+              (v &&
+                parseFloat(
+                  v
+                    .replace(` ${formatMessage(couponMessages.CouponPlanDiscountSelector.dollar)}`, '')
+                    .replace(' %', ''),
+                )) ||
               0
             }
             value={value.amount}

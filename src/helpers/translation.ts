@@ -6,7 +6,6 @@ export const commonMessages = {
     image: { id: 'common.ui.image', defaultMessage: '圖片' },
     other: { id: 'common.ui.other', defaultMessage: '其他' },
     comma: { id: 'common.ui.comma', defaultMessage: '、' },
-    or: { id: 'common.ui.or', defaultMessage: '或' },
     check: { id: 'common.ui.check', defaultMessage: '查看' },
     print: { id: 'common.ui.print', defaultMessage: '列印' },
     create: { id: 'common.ui.create', defaultMessage: '建立' },
@@ -423,7 +422,6 @@ export const commonMessages = {
     allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
-    allScope: { id: 'common.product.allScope', defaultMessage: '全站折抵' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
   }),
   unit: defineMessages({
@@ -454,7 +452,6 @@ export const errorMessages = {
     account: { id: 'error.form.account', defaultMessage: '請輸入使用者名稱' },
     emailFormat: { id: 'error.form.emailFormat', defaultMessage: 'Email 格式錯誤' },
     phoneFormat: { id: 'error.form.phoneFormat', defaultMessage: '手機格式錯誤' },
-    couponCodes: { id: 'error.form.codes', defaultMessage: '至少一組折扣碼' },
     issueContent: { id: 'error.form.issueContent', defaultMessage: '請輸入回覆內容' },
     selectInstructor: { id: 'error.form.selectInstructor', defaultMessage: '請輸入帳號 或 Email' },
     date: { id: 'error.form.date', defaultMessage: '請選擇日期' },
@@ -624,36 +621,20 @@ export const promotionMessages = {
     exportCodes: { id: 'promotion.ui.exportCodes', defaultMessage: '匯出代碼' },
   }),
   label: defineMessages({
-    constraintAmount: { id: 'promotion.label.constraintAmount', defaultMessage: '消費滿 {amount} 折抵' },
-    withoutConstraintAmount: { id: 'promotion.label.withoutConstraintAmount', defaultMessage: '直接折抵' },
     fromNow: { id: 'promotion.label.fromNow', defaultMessage: '即日起' },
     forever: { id: 'promotion.label.forever', defaultMessage: '無使用期限' },
     unlimited: { id: 'promotion.label.unlimited', defaultMessage: '無限期' },
-    price: { id: 'promotion.label.price', defaultMessage: '金額 {amount} 元' },
-    ratio: { id: 'promotion.label.ratio', defaultMessage: '比例 {amount}%' },
-    constraint: { id: 'promotion.label.constraint', defaultMessage: '消費需達' },
-    discountHelp: { id: 'promotion.label.discountHelp', defaultMessage: '折抵方式為比例時，額度範圍為 0 - 100%' },
     availableDateRange: { id: 'promotion.label.availableDateRange', defaultMessage: '有效期限' },
     unit: { id: 'promotion.label.unit', defaultMessage: '張' },
     create: { id: 'promotion.label.create', defaultMessage: '新增' },
-    scope: { id: 'promotion.label.scope', defaultMessage: '折抵模式' },
-    allProductScope: { id: 'promotion.label.allProductScope', defaultMessage: '全站折抵' },
-    specificProductScope: { id: 'promotion.label.specificProductScope', defaultMessage: '指定項目折抵' },
-    otherSpecificProduct: { id: 'promotion.label.otherSpecificProduct', defaultMessage: '其他特定項目' },
-    rules: { id: 'promotion.label.rules', defaultMessage: '使用規則' },
-    discountTarget: { id: 'promotion.label.discountTarget', defaultMessage: '折抵項目' },
     coupon: { id: 'promotion.label.coupon', defaultMessage: '折價券' },
-    couponPlanTitle: { id: 'promotion.label.couponPlanTitle', defaultMessage: '折價方案名稱' },
     couponCode: { id: 'promotion.label.couponCode', defaultMessage: '折扣代碼' },
     voucher: { id: 'promotion.label.voucher', defaultMessage: '兌換券' },
     voucherCode: { id: 'promotion.label.voucherCode', defaultMessage: '兌換代碼' },
     couponCodes: { id: 'promotion.label.couponCodes', defaultMessage: '折扣碼' },
     voucherCodes: { id: 'promotion.label.voucherCodes', defaultMessage: '兌換碼' },
     amount: { id: 'promotion.label.amount', defaultMessage: '數量' },
-    discount: { id: 'promotion.label.discount', defaultMessage: '折抵額度' },
     description: { id: 'promotion.label.description', defaultMessage: '使用限制與描述' },
-    priceType: { id: 'promotion.label.priceType', defaultMessage: '折扣金額' },
-    ratioType: { id: 'promotion.label.ratioType', defaultMessage: '折扣比例' },
     dollar: { id: 'promotion.label.dollar', defaultMessage: '元' },
     voucherPlanTitle: { id: 'promotion.label.voucherPlanTitle', defaultMessage: '兌換方案名稱' },
   }),
@@ -669,8 +650,6 @@ export const promotionMessages = {
       id: 'promotion.text.sentUsedCount',
       defaultMessage: '總量{total} / 發送{exchanged}',
     },
-    constraints: { id: 'promotion.text.constraints', defaultMessage: '消費滿 {total} 折抵 {discount}' },
-    directly: { id: 'promotion.text.directly', defaultMessage: '直接折抵 {discount}' },
   }),
   status: defineMessages({
     notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
@@ -683,16 +662,11 @@ export const promotionMessages = {
 export const checkoutMessages = {
   title: defineMessages({
     chooseMemberCard: { id: 'checkout.modal.title.memberCard.choose', defaultMessage: '選擇會員卡' },
-    chooseCoupon: { id: 'checkout.modal.title', defaultMessage: '選擇折價券' },
   }),
   content: defineMessages({
-    discountDirectly: { id: 'checkout.discount.directly', defaultMessage: '直接折抵' },
     useMemberCard: { id: 'checkout.form.radio.memberCard.use', defaultMessage: '使用會員卡' },
   }),
   form: {
-    placeholder: defineMessages({
-      enter: { id: 'checkout.coupon.form.placeholder.enter', defaultMessage: '輸入折扣碼' },
-    }),
     radio: defineMessages({
       noDiscount: { id: 'checkout.form.radio.coupon.noDiscount', defaultMessage: '無折扣' },
       useCoupon: { id: 'checkout.form.radio.coupon.use', defaultMessage: '使用折價券' },
@@ -700,10 +674,6 @@ export const checkoutMessages = {
       chooseCoupon: { id: 'checkout.form.radio.coupon.choose', defaultMessage: '選擇折價券' },
     }),
   },
-  coupon: defineMessages({
-    fromNow: { id: 'checkout.coupon.fromNow', defaultMessage: '即日起' },
-    noPeriod: { id: 'common.period.no', defaultMessage: '無使用期限' },
-  }),
 }
 
 export const programMessages = {

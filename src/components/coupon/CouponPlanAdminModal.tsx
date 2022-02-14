@@ -10,12 +10,12 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
 import ScopeSelector, { ScopeProps } from '../form/ScopeSelector'
 import CouponPlanDiscountSelector, { CouponPlanDiscountProps } from './CouponPlanDiscountSelector'
+import couponMessages from './translation'
 
 type FieldProps = {
   title: string
@@ -72,7 +72,7 @@ const CouponPlanAdminModal: React.FC<
             },
           })
             .then(() => {
-              message.success(formatMessage(commonMessages.event.successfullySaved))
+              message.success(formatMessage(couponMessages.CouponPlanAdminModal.successfullySaved))
               setVisible(false)
               onRefetch?.()
             })
@@ -117,13 +117,13 @@ const CouponPlanAdminModal: React.FC<
             },
           })
             .then(() => {
-              message.success(formatMessage(commonMessages.event.successfullyCreated))
+              message.success(formatMessage(couponMessages.CouponPlanAdminModal.successfullyCreated))
               setVisible(false)
               onRefetch?.()
             })
             .catch(error => {
               if (/^GraphQL error: Uniqueness violation/.test(error.message)) {
-                message.error(formatMessage(errorMessages.event.duplicateVoucherCode))
+                message.error(formatMessage(couponMessages.CouponPlanAdminModal.duplicateVoucherCode))
               } else {
                 handleError(error)
               }
@@ -141,10 +141,10 @@ const CouponPlanAdminModal: React.FC<
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(couponMessages.CouponPlanAdminModal.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
-            {formatMessage(commonMessages.ui.confirm)}
+            {formatMessage(couponMessages.CouponPlanAdminModal.confirm)}
           </Button>
         </>
       )}
@@ -172,13 +172,13 @@ const CouponPlanAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(promotionMessages.label.couponPlanTitle)}
+          label={formatMessage(couponMessages.CouponPlanAdminModal.couponPlanTitle)}
           name="title"
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(promotionMessages.label.couponPlanTitle),
+              message: formatMessage(couponMessages.CouponPlanAdminModal.isRequired, {
+                field: formatMessage(couponMessages.CouponPlanAdminModal.couponPlanTitle),
               }),
             },
           ]}
@@ -187,25 +187,25 @@ const CouponPlanAdminModal: React.FC<
         </Form.Item>
 
         {enabledModules.coupon_scope && (
-          <Form.Item label={formatMessage(promotionMessages.label.scope)} name="scope">
+          <Form.Item label={formatMessage(couponMessages.CouponPlanAdminModal.scope)} name="scope">
             <ScopeSelector
-              allText={formatMessage(promotionMessages.label.allProductScope)}
-              specificTypeText={formatMessage(promotionMessages.label.specificProductScope)}
-              otherProductText={formatMessage(promotionMessages.label.otherSpecificProduct)}
+              allText={formatMessage(couponMessages.CouponPlanAdminModal.allProductScope)}
+              specificTypeText={formatMessage(couponMessages.CouponPlanAdminModal.specificProductScope)}
+              otherProductText={formatMessage(couponMessages.CouponPlanAdminModal.otherSpecificProduct)}
             />
           </Form.Item>
         )}
 
         <Form.Item
-          label={formatMessage(promotionMessages.label.constraint)}
+          label={formatMessage(couponMessages.CouponPlanAdminModal.constraint)}
           name="constraint"
           rules={[{ required: true }]}
         >
           <InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />
         </Form.Item>
         <Form.Item
-          label={formatMessage(promotionMessages.label.discount)}
-          help={formatMessage(promotionMessages.label.discountHelp)}
+          label={formatMessage(couponMessages['*'].discount)}
+          help={formatMessage(couponMessages.CouponPlanAdminModal.discountHelp)}
           name="discount"
         >
           <CouponPlanDiscountSelector />
@@ -213,33 +213,35 @@ const CouponPlanAdminModal: React.FC<
 
         {!couponPlan && (
           <Form.Item
-            label={formatMessage(promotionMessages.label.couponCodes)}
+            label={formatMessage(couponMessages['*'].couponCodes)}
             name="codes"
-            rules={[{ required: true, message: formatMessage(errorMessages.form.couponCodes) }]}
+            rules={[
+              { required: true, message: formatMessage(couponMessages.CouponPlanAdminModal.atLastOneCouponCode) },
+            ]}
           >
             <PlanCodeSelector planType="coupon" />
           </Form.Item>
         )}
-        <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
+        <Form.Item label={formatMessage(couponMessages.CouponPlanAdminModal.availableDateRange)}>
           <Input.Group compact>
             <Form.Item name="startedAt">
               <DatePicker
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                placeholder={formatMessage(commonMessages.label.startedAt)}
+                placeholder={formatMessage(couponMessages.CouponPlanAdminModal.startedAt)}
               />
             </Form.Item>
             <Form.Item name="endedAt">
               <DatePicker
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
-                placeholder={formatMessage(commonMessages.label.endedAt)}
+                placeholder={formatMessage(couponMessages.CouponPlanAdminModal.endedAt)}
               />
             </Form.Item>
           </Input.Group>
         </Form.Item>
-        <Form.Item label={formatMessage(promotionMessages.label.description)} name="description">
-          <Input.TextArea placeholder={formatMessage(commonMessages.label.optional)} rows={4} />
+        <Form.Item label={formatMessage(couponMessages.CouponPlanAdminModal.description)} name="description">
+          <Input.TextArea placeholder={formatMessage(couponMessages.CouponPlanAdminModal.optional)} rows={4} />
         </Form.Item>
       </Form>
     </AdminModal>
