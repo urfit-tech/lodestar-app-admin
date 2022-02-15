@@ -31,7 +31,6 @@ const craftMessages = {
   ProjectCollectionSettings: defineMessages({
     projectSectionId: { id: 'craft.ProjectCollectionSettings.projectSectionId', defaultMessage: '專案區塊 ID' },
   }),
-  }),
 }
 
 export default craftMessages
