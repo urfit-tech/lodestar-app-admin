@@ -7,29 +7,30 @@ const craftMessages = {
     secondary: { id: 'craft.*.secondary', defaultMessage: '樣式二' },
     variant: { id: 'craft.*.variant', defaultMessage: '樣式' },
   }),
-  ProgramCollectionSetting: defineMessages({
-    programSectionId: { id: 'craft.ProgramCollectionSetting.programSectionId', defaultMessage: '課程區塊 ID' },
+  ProgramCollectionSettings: defineMessages({
+    programSectionId: { id: 'craft.ProgramCollectionSettings.programSectionId', defaultMessage: '課程區塊 ID' },
   }),
-  ActivityCollectionSetting: defineMessages({
-    activitySectionId: { id: 'craft.ActivityCollectionSetting.activitySectionId', defaultMessage: '活動區塊 ID' },
+  ActivityCollectionSettings: defineMessages({
+    activitySectionId: { id: 'craft.ActivityCollectionSettings.activitySectionId', defaultMessage: '活動區塊 ID' },
   }),
-  MemberCollectionSetting: defineMessages({
-    memberSectionId: { id: 'craft.MemberCollectionSetting.memberSectionId', defaultMessage: '會員區塊 ID' },
+  MemberCollectionSettings: defineMessages({
+    memberSectionId: { id: 'craft.MemberCollectionSettings.memberSectionId', defaultMessage: '會員區塊 ID' },
   }),
-  ProgramContentCollectionSetting: defineMessages({
+  ProgramContentCollectionSettings: defineMessages({
     programContentSectionId: {
-      id: 'craft.ProgramContentCollectionSetting.programContentSectionId',
+      id: 'craft.ProgramContentCollectionSettings.programContentSectionId',
       defaultMessage: '課程內容區塊 ID',
     },
   }),
-  ProgramPackageCollectionSetting: defineMessages({
+  ProgramPackageCollectionSettings: defineMessages({
     programPackageSectionId: {
-      id: 'craft.ProgramPackageCollectionSetting.programPackageSectionId',
+      id: 'craft.ProgramPackageCollectionSettings.programPackageSectionId',
       defaultMessage: '課程組合區塊 ID',
     },
   }),
-  ProjectCollectionSetting: defineMessages({
-    projectSectionId: { id: 'craft.ProjectCollectionSetting.projectSectionId', defaultMessage: '專案區塊 ID' },
+  ProjectCollectionSettings: defineMessages({
+    projectSectionId: { id: 'craft.ProjectCollectionSettings.projectSectionId', defaultMessage: '專案區塊 ID' },
+  }),
   }),
 }
 

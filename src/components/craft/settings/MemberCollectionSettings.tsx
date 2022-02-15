@@ -23,7 +23,7 @@ const MemberCollectionSettings: CraftElementSettings<MemberCollectionProps> = ({
     >
       <Form.Item
         label={
-          <CraftSettingLabel>{formatMessage(craftMessages.MemberCollectionSetting.memberSectionId)}</CraftSettingLabel>
+          <CraftSettingLabel>{formatMessage(craftMessages.MemberCollectionSettings.memberSectionId)}</CraftSettingLabel>
         }
       >
         <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />

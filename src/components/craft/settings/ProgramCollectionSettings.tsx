@@ -25,7 +25,7 @@ const ProgramCollectionSettings: CraftElementSettings<ProgramCollectionProps> = 
       <Form.Item
         label={
           <CraftSettingLabel>
-            {formatMessage(craftMessages.ProgramCollectionSetting.programSectionId)}
+            {formatMessage(craftMessages.ProgramCollectionSettings.programSectionId)}
           </CraftSettingLabel>
         }
       >
