@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Spin, Tag, TreeSelect } from 'antd'
+import { DataNode } from 'antd/lib/tree'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -27,14 +28,15 @@ const productTypeLabel = (productType: string) => {
 }
 
 const messages = defineMessages({
-  selectProducts: { id: 'promotion.label.selectProducts', defaultMessage: '選擇兌換項目' },
+  selectProducts: { id: 'promotion.label.selectProducts', defaultMessage: '選擇項目' },
 })
 
 const ProductSelector: React.FC<{
   allowTypes: ProductType[]
+  multiple?: boolean
   value?: string[]
   onChange?: (value: string[]) => void
-}> = ({ allowTypes, value, onChange }) => {
+}> = ({ allowTypes, multiple, value, onChange }) => {
   const { formatMessage } = useIntl()
   const { loading, error, productSelections } = useProductSelections()
 
@@ -46,12 +48,13 @@ const ProductSelector: React.FC<{
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  const treeData = productSelections
+  const treeData: DataNode[] = productSelections
     .filter(productSelection => allowTypes.includes(productSelection.productType) && productSelection.products.length)
     .map(productSelection => ({
       key: productSelection.productType,
       title: formatMessage(productTypeLabel(productSelection.productType)),
       value: productSelection.productType,
+      selectable: !!multiple,
       children: productSelection.products.map(product => ({
         key: product.id,
         title: (
@@ -73,7 +76,8 @@ const ProductSelector: React.FC<{
   return (
     <TreeSelect
       value={value}
-      onChange={value =>
+      onChange={selectedValue => {
+        const value = multiple ? selectedValue : [selectedValue]
         onChange?.(
           value
             .map(
@@ -84,9 +88,9 @@ const ProductSelector: React.FC<{
             )
             .flat(),
         )
-      }
+      }}
       treeData={treeData}
-      treeCheckable
+      treeCheckable={multiple}
       showCheckedStrategy="SHOW_PARENT"
       placeholder={formatMessage(messages.selectProducts)}
       treeNodeFilterProp="name"

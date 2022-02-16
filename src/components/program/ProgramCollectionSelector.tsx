@@ -4,10 +4,10 @@ import gql from 'graphql-tag'
 import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftSettingLabel } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import ProgramCategorySelect from './ProgramCategorySelect'
 import ProgramTagSelect from './ProgramTagSelect'
+import programMessages from './translation'
 
 type ProgramSourceOptions = ProgramCollectionProps['source']
 const ProgramCollectionSelector: React.FC<{
@@ -19,9 +19,13 @@ const ProgramCollectionSelector: React.FC<{
   const programOptions = data?.program.map(p => ({ id: p.id, title: p.title })) || []
   return (
     <div>
-      <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.ruleOfSort)}</CraftSettingLabel>}>
+      <Form.Item
+        label={
+          <CraftSettingLabel>{formatMessage(programMessages.ProgramCollectionSelector.ruleOfSort)}</CraftSettingLabel>
+        }
+      >
         <Select<typeof value.from>
-          placeholder={formatMessage(craftPageMessages.label.choiceData)}
+          placeholder={formatMessage(programMessages.ProgramCollectionSelector.choiceData)}
           value={value?.from}
           onChange={from => {
             switch (from) {
@@ -29,6 +33,9 @@ const ProgramCollectionSelector: React.FC<{
                 onChange?.({ from, limit: 4 })
                 break
               case 'currentPrice':
+                onChange?.({ from, limit: 4 })
+                break
+              case 'recentWatched':
                 onChange?.({ from, limit: 4 })
                 break
               case 'custom':
@@ -43,26 +50,41 @@ const ProgramCollectionSelector: React.FC<{
           }
         >
           <Select.Option key="publishedAt" value="publishedAt">
-            {formatMessage(craftPageMessages.label.publishedAt)}
+            {formatMessage(programMessages.ProgramCollectionSelector.publishedAt)}
           </Select.Option>
           <Select.Option key="currentPrice" value="currentPrice">
-            {formatMessage(craftPageMessages.label.currentPrice)}
+            {formatMessage(programMessages.ProgramCollectionSelector.currentPrice)}
+          </Select.Option>
+          <Select.Option key="recentWatched" value="recentWatched">
+            {formatMessage(programMessages.ProgramCollectionSelector.recentWatched)}
           </Select.Option>
           <Select.Option key="custom" value="custom">
-            {formatMessage(craftPageMessages.label.custom)}
+            {formatMessage(programMessages.ProgramCollectionSelector.custom)}
           </Select.Option>
         </Select>
       </Form.Item>
-      {(value?.from === 'publishedAt' || value?.from === 'currentPrice') && (
+      {(value?.from === 'recentWatched' || value?.from === 'publishedAt' || value?.from === 'currentPrice') && (
         <>
-          <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</CraftSettingLabel>}>
+          <Form.Item
+            label={
+              <CraftSettingLabel>{formatMessage(programMessages.ProgramCollectionSelector.sort)}</CraftSettingLabel>
+            }
+          >
             <Select value={value.asc ? 'asc' : 'desc'} onChange={v => onChange?.({ ...value, asc: v === 'asc' })}>
-              <Select.Option value="asc">{formatMessage(craftPageMessages.label.sortAsc)}</Select.Option>
-              <Select.Option value="desc">{formatMessage(craftPageMessages.label.sortDesc)}</Select.Option>
+              <Select.Option value="asc">
+                {formatMessage(programMessages.ProgramCollectionSelector.sortAsc)}
+              </Select.Option>
+              <Select.Option value="desc">
+                {formatMessage(programMessages.ProgramCollectionSelector.sortDesc)}
+              </Select.Option>
             </Select>
           </Form.Item>
           <Form.Item
-            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.displayAmount)}</CraftSettingLabel>}
+            label={
+              <CraftSettingLabel>
+                {formatMessage(programMessages.ProgramCollectionSelector.displayAmount)}
+              </CraftSettingLabel>
+            }
           >
             <InputNumber
               value={value.limit}
@@ -70,7 +92,11 @@ const ProgramCollectionSelector: React.FC<{
             />
           </Form.Item>
           <Form.Item
-            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.defaultCategoryId)}</CraftSettingLabel>}
+            label={
+              <CraftSettingLabel>
+                {formatMessage(programMessages.ProgramCollectionSelector.defaultCategoryId)}
+              </CraftSettingLabel>
+            }
           >
             <ProgramCategorySelect
               value={value.defaultCategoryIds}
@@ -78,7 +104,11 @@ const ProgramCollectionSelector: React.FC<{
             />
           </Form.Item>
           <Form.Item
-            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.defaultTagName)}</CraftSettingLabel>}
+            label={
+              <CraftSettingLabel>
+                {formatMessage(programMessages.ProgramCollectionSelector.defaultTagName)}
+              </CraftSettingLabel>
+            }
           >
             <ProgramTagSelect
               value={value.defaultTagNames}
@@ -88,13 +118,19 @@ const ProgramCollectionSelector: React.FC<{
         </>
       )}
       {value?.from === 'custom' && (
-        <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.dataDisplay)}</CraftSettingLabel>}>
+        <Form.Item
+          label={
+            <CraftSettingLabel>
+              {formatMessage(programMessages.ProgramCollectionSelector.dataDisplay)}
+            </CraftSettingLabel>
+          }
+        >
           {(value.idList || []).map((programId, idx) => (
             <div key={programId} className="my-2">
               <Select
                 showSearch
                 allowClear
-                placeholder={formatMessage(craftPageMessages.label.choiceData)}
+                placeholder={formatMessage(programMessages.ProgramCollectionSelector.choiceData)}
                 value={programId}
                 options={programOptions.map(({ id, title }) => ({ key: id, value: id, label: title }))}
                 onChange={selectedProgramId =>
@@ -121,7 +157,7 @@ const ProgramCollectionSelector: React.FC<{
             </div>
           ))}
           <Button type="link" onClick={() => onChange?.({ ...value, idList: [...(value.idList || []), ''] })}>
-            {formatMessage(craftPageMessages.label.addItem)}
+            {formatMessage(programMessages.ProgramCollectionSelector.addItem)}
           </Button>
         </Form.Item>
       )}

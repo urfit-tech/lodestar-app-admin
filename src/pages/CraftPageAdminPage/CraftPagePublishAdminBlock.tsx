@@ -6,10 +6,10 @@ import AdminPublishBlock, {
   ChecklistItemProps,
   PublishEvent,
   PublishStatus,
-} from '../../../components/admin/AdminPublishBlock'
-import { commonMessages, craftPageMessages } from '../../../helpers/translation'
-import { useMutateAppPage } from '../../../hooks/appPage'
-import { CraftPageAdminProps } from '../../../types/craft'
+} from '../../components/admin/AdminPublishBlock'
+import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { useMutateAppPage } from '../../hooks/appPage'
+import { CraftPageAdminProps } from '../../types/craft'
 
 const CraftPagePublishAdminBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps | null

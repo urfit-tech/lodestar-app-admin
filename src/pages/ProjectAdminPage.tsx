@@ -21,8 +21,9 @@ import ProjectIntroForm from '../components/project/ProjectIntroForm'
 import ProjectPlanAdminBlock from '../components/project/ProjectPlanAdminBlock'
 import ProjectPublishAdminBlock from '../components/project/ProjectPublishAdminBlock'
 import hasura from '../hasura'
-import { commonMessages, projectMessages } from '../helpers/translation'
+import { commonMessages } from '../helpers/translation'
 import { ProjectAdminProps, ProjectDataType } from '../types/project'
+import pageMessages from './translation'
 
 const ProjectAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
@@ -67,15 +68,15 @@ const ProjectAdminPage: React.FC<{}> = () => {
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane key="settings" tab={formatMessage(projectMessages.label.settings)}>
+            <Tabs.TabPane key="settings" tab={formatMessage(pageMessages.ProjectAdminPage.settings)}>
               <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(projectMessages.label.settings)}</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(pageMessages.ProjectAdminPage.settings)}</AdminPaneTitle>
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
                   <ProjectBasicForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
                 </AdminBlock>
                 <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(projectMessages.label.projectIntroduction)}</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(pageMessages.ProjectAdminPage.projectIntroduction)}</AdminBlockTitle>
                   <ProjectIntroForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
                 </AdminBlock>
               </div>
@@ -140,6 +141,7 @@ const useProjectAdmin = (projectId: string) => {
             cover_url
             title
             description
+            currency_id
             list_price
             sale_price
             sold_at
@@ -153,6 +155,10 @@ const useProjectAdmin = (projectId: string) => {
             is_limited
             published_at
             auto_renewed
+            project_plan_products {
+              product_id
+              options
+            }
             project_plan_enrollments_aggregate {
               aggregate {
                 count
@@ -203,6 +209,7 @@ const useProjectAdmin = (projectId: string) => {
             coverUrl: v.cover_url,
             title: v.title,
             description: v.description,
+            currencyId: v.currency_id,
             listPrice: v.list_price,
             salePrice: v.sale_price,
             soldAt: v.sold_at && new Date(v.sold_at),
@@ -217,6 +224,7 @@ const useProjectAdmin = (projectId: string) => {
             publishedAt: v.published_at && new Date(v.published_at),
             autoRenewed: v.auto_renewed,
             projectPlanEnrollment: v.project_plan_enrollments_aggregate.aggregate?.count || 0,
+            products: v.project_plan_products.map(u => ({ id: u.product_id, options: u.options })),
           })),
           categories: data.project_by_pk.project_categories.map(v => ({ id: v.category.id, name: v.category.name })),
         }

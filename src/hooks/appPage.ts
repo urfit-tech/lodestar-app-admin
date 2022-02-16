@@ -71,7 +71,7 @@ export const useAppPageCollection = () => {
   >(
     gql`
       query GET_APP_PAGE_COLLECTION($appId: String!) {
-        app_page(where: { app_id: { _eq: $appId }, is_deleted: { _eq: false } }) {
+        app_page(where: { app_id: { _eq: $appId }, is_deleted: { _eq: false } }, order_by: { created_at: desc }) {
           id
           path
           title

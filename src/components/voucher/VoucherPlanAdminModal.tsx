@@ -117,6 +117,7 @@ const VoucherPlanAdminModal: React.FC<
           rules={[{ required: true, message: formatMessage(errorMessages.form.exchangeItems) }]}
         >
           <ProductSelector
+            multiple
             allowTypes={['ProgramPlan', 'ProgramPackagePlan', 'ActivityTicket', 'PodcastProgram', 'Card']}
           />
         </Form.Item>

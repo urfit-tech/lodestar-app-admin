@@ -1,4 +1,4 @@
-import { EditOutlined, FileAddOutlined } from '@ant-design/icons'
+import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Skeleton } from 'antd'
 import gql from 'graphql-tag'
@@ -7,12 +7,13 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, projectMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { ProjectAdminProps, ProjectPlanSortProps } from '../../types/project'
 import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 import ItemsSortingModal from '../common/ItemsSortingModal'
 import ProjectPlanAdminModal from './ProjectPlanAdminModal'
 import ProjectPlanCard from './ProjectPlanCard'
+import projectMessages from './translation'
 
 const StyledButton = styled(Button)`
   && {
@@ -44,18 +45,24 @@ const ProjectPlanAdminBlock: React.FC<{
       <div className="d-flex justify-content-between">
         <ProjectPlanAdminModal
           projectId={project.id}
-          renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)} className="mb-5">
-              {formatMessage(commonMessages.ui.createPlan)}
-            </Button>
+          renderTrigger={({ onOpen }) => (
+            <div className="d-flex mb-4">
+              <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('perpetual')}>
+                {formatMessage(commonMessages.ui.perpetualPlan)}
+              </Button>
+              <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('period')}>
+                {formatMessage(commonMessages.ui.periodPlan)}
+              </Button>
+              <Button icon={<PlusOutlined />} type="primary" className="mr-2" onClick={() => onOpen?.('subscription')}>
+                {formatMessage(commonMessages.ui.subscriptionPlan)}
+              </Button>
+            </div>
           )}
           onRefetch={onRefetch}
-          onRefetchProjectPlanSorts={refetchProjectPlanSorts}
-          isCreated
         />
         <ItemsSortingModal
           items={projectPlanSorts}
-          triggerText={formatMessage(projectMessages.ui.sortProjectPlan)}
+          triggerText={formatMessage(projectMessages['*'].sortProjectPlan)}
           onSubmit={values =>
             updatePositions({
               variables: {
@@ -85,10 +92,18 @@ const ProjectPlanAdminBlock: React.FC<{
                   <ProjectPlanAdminModal
                     projectId={project.id}
                     projectPlan={projectPlan}
-                    renderTrigger={({ setVisible }) => (
-                      <StyledButton block icon={<EditOutlined />} onClick={() => setVisible(true)}>
-                        {formatMessage(projectMessages.ui.editProject)}
-                      </StyledButton>
+                    renderTrigger={({ onOpen }) => (
+                      <EditOutlined
+                        onClick={() =>
+                          onOpen?.(
+                            projectPlan.periodAmount && projectPlan.periodType
+                              ? projectPlan.autoRenewed
+                                ? 'subscription'
+                                : 'period'
+                              : 'perpetual',
+                          )
+                        }
+                      />
                     )}
                     onRefetch={onRefetch}
                   />

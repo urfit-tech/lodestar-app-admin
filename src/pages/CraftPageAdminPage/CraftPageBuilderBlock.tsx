@@ -1,10 +1,11 @@
 import { Element, Frame } from '@craftjs/core'
+import { Button } from 'antd'
 import { CraftSection } from 'lodestar-app-element/src/components/common/CraftElement'
 import React, { useContext, useEffect, useState } from 'react'
 import ReactStyledFrame from 'react-styled-frame'
 import styled from 'styled-components'
-import { CraftPageAdminProps } from '../../../types/craft'
-import { Device } from '../../../types/general'
+import { CraftPageAdminProps } from '../../types/craft'
+import { Device } from '../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
 import CraftPageBuilderLayer from './CraftPageBuilderLayer'
 import CraftSettingsPanel from './CraftSettingsPanel'
@@ -16,6 +17,7 @@ const StyledContent = styled.div`
 `
 const StyledPreviewBlock = styled.div`
   flex: 1;
+  overflow: auto;
 `
 const StyledSettingBlock = styled.div`
   display: flex;
@@ -24,6 +26,7 @@ const StyledSettingBlock = styled.div`
   height: 100%;
   border-right: 1px solid var(--gray);
 `
+
 const StyledFrame = styled(ReactStyledFrame)<{ device?: Device }>`
   width: ${props => (props.device === 'mobile' ? '420px' : props.device === 'tablet' ? '720px' : '100%')};
   height: 100%;
@@ -44,17 +47,31 @@ const StyledFrame = styled(ReactStyledFrame)<{ device?: Device }>`
   }
 `
 
+const SettingBlockToggleButton = styled(Button)<{ active?: boolean }>`
+  position: absolute;
+  top: 50%;
+  left: ${props => (props.active ? '320px' : '0px')};
+  border: 1px solid var(--gray);
+  border-left: none;
+`
+
 const CraftPageBuilderBlock: React.VFC<{
   pageAdmin: CraftPageAdminProps
   onAppPageUpdate?: () => void
 }> = ({ pageAdmin, onAppPageUpdate }) => {
+  const [active, setActive] = useState(true)
   return (
     <StyledContent>
-      <StyledSettingBlock>
-        <CraftToolbox />
-        <CraftSettingsPanel />
-        <CraftPageBuilderLayer />
-      </StyledSettingBlock>
+      <CraftSettingsPanel />
+      <SettingBlockToggleButton active={active} onClick={() => setActive(!active)}>
+        {active ? '<' : '>'}
+      </SettingBlockToggleButton>
+      {active && (
+        <StyledSettingBlock>
+          <CraftToolbox />
+          <CraftPageBuilderLayer />
+        </StyledSettingBlock>
+      )}
       <StyledPreviewBlock>
         <PreviewFrame data={pageAdmin?.craftData} />
       </StyledPreviewBlock>

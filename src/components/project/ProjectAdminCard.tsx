@@ -3,9 +3,9 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { projectMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ProjectPreviewProps } from '../../types/project'
+import projectMessages from './translation'
 
 const StyledWrapper = styled.div`
   overflow: hidden;
@@ -67,7 +67,7 @@ const ProjectAdminCard: React.FC<ProjectPreviewProps & CardProps> = ({ id, previ
 
       <StyledAction className="d-flex justify-content-between">
         <div className="text-left">
-          {formatMessage(projectMessages.text.soldOutProjectCount, { count: totalCount })}
+          {formatMessage(projectMessages['*'].soldOutProjectCount, { count: totalCount })}
         </div>
         <div className="text-right"></div>
       </StyledAction>

@@ -9,7 +9,7 @@ import {
   CraftElementSettings,
   CraftSettingLabel,
   StyledUnderLineInput,
-} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+} from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'

@@ -8,7 +8,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { useAllBriefProductCollection } from '../../hooks/data'
-import { CraftSettingLabel, StyledUnderLineInput } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftSettingLabel, StyledUnderLineInput } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 
 type ButtonActionOptions = ButtonProps['source']
 

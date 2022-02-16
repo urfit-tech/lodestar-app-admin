@@ -10,7 +10,7 @@ import {
   CraftElementSettings,
   CraftSlider,
   StyledCollapsePanel,
-} from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+} from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle, StyledInputNumber } from '../../admin'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 

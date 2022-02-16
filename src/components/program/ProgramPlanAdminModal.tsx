@@ -87,8 +87,8 @@ const ProgramPlanAdminModal: React.FC<
   const [upsertProgramPlan] = useMutation<hasura.UPSERT_PROGRAM_PLAN, hasura.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )
-  const [currencyId, setCurrencyId] = useState(programPlan?.currencyId || '')
   const [loading, setLoading] = useState(false)
+  const currencyId = programPlan?.currencyId || ''
 
   useEffect(() => {
     if (programPlan) {

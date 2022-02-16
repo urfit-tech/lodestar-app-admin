@@ -6,9 +6,9 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { commonMessages } from '../../../helpers/translation'
-import { useMutateAppPage } from '../../../hooks/appPage'
-import { Device } from '../../../types/general'
+import { commonMessages } from '../../helpers/translation'
+import { useMutateAppPage } from '../../hooks/appPage'
+import { Device } from '../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
 
 const messages = defineMessages({

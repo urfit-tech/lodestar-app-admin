@@ -1,8 +1,8 @@
 import { useEditor } from '@craftjs/core'
 import { mergeDeepRight } from 'ramda'
 import { useContext } from 'react'
-import CraftPageBuilderContext from '../../../pages/craft/CraftPageAdminPage/CraftPageBuilderContext'
-import { CraftElementSettings } from '../../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import CraftPageBuilderContext from '../../../pages/CraftPageAdminPage/CraftPageBuilderContext'
+import { CraftElementSettings } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 
 export const withResponsive = (Settings: CraftElementSettings) => {
   const ResponsiveSettings: React.FC = () => {

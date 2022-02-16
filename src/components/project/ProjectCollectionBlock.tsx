@@ -6,11 +6,12 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, projectMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { ProjectDataType, ProjectPreviewProps, ProjectSortProps } from '../../types/project'
 import { EmptyBlock } from '../admin'
 import ItemsSortingModal from '../common/ItemsSortingModal'
 import ProjectAdminCard from './ProjectAdminCard'
+import projectMessages from './translation'
 
 const ProjectCollectionBlock: React.FC<{
   appId: string
@@ -42,7 +43,7 @@ const ProjectCollectionBlock: React.FC<{
   }
 
   if (projectPreview.length === 0) {
-    return <EmptyBlock>{formatMessage(projectMessages.text.noProject)}</EmptyBlock>
+    return <EmptyBlock>{formatMessage(projectMessages['*'].noProject)}</EmptyBlock>
   }
 
   return (
@@ -51,7 +52,7 @@ const ProjectCollectionBlock: React.FC<{
         <div className="text-right">
           <ItemsSortingModal
             items={projectSorts}
-            triggerText={formatMessage(projectMessages.ui.sortProject)}
+            triggerText={formatMessage(projectMessages['*'].sortProject)}
             onSubmit={values =>
               updatePositions({
                 variables: {

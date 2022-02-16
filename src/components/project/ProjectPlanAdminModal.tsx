@@ -13,15 +13,18 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
-import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
-import { ProjectPlanProps } from '../../types/project'
+import { ProjectPlan, ProjectPlanProduct, ProjectPlanType } from '../../types/project'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ImageUploader from '../common/ImageUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import CurrencyInput from '../form/CurrencyInput'
+import CurrencySelector from '../form/CurrencySelector'
 import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
+import ProjectPlanProductSelector from './ProjectPlanProductSelector'
+import projectMessages from './translation'
 
 const StyledNotation = styled.div`
   line-height: 1.5;
@@ -47,29 +50,40 @@ type FieldProps = {
   isParticipantsVisible: boolean
   period: { type: PeriodType; amount: number }
   autoRenewed: boolean
+  currencyId: string
   listPrice: number
   sale: SaleProps
   discountDownPrice?: number
   description: EditorState
+  planProducts: ProjectPlanProduct[]
 }
 
 const ProjectPlanAdminModal: React.FC<
-  AdminModalProps & {
+  Omit<AdminModalProps, 'renderTrigger'> & {
     projectId: string
-    projectPlan?: ProjectPlanProps
+    projectPlan?: ProjectPlan
     onRefetch?: () => void
     onRefetchProjectPlanSorts?: () => void
+    renderTrigger?: React.FC<{
+      onOpen?: (projectPlanType: ProjectPlanType) => void
+      onClose?: () => void
+    }>
     isCreated?: boolean
   }
-> = ({ projectId, projectPlan, onRefetch, onRefetchProjectPlanSorts, isCreated, ...modalProps }) => {
+> = ({ projectId, projectPlan, onRefetch, onRefetchProjectPlanSorts, isCreated, renderTrigger, ...modalProps }) => {
+  const [projectPlanType, setProjectPlanType] = useState<ProjectPlanType>()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { authToken } = useAuth()
   const uploadCanceler = useRef<Canceler>()
   const [upsertProjectPlan] = useMutation<hasura.UPSERT_PROJECT_PLAN, hasura.UPSERT_PROJECT_PLANVariables>(
     UPSERT_PROJECT_PLAN,
   )
+  const [upsertProjectPlanProducts] = useMutation<
+    hasura.UPSERT_PROJECT_PLAN_PRODUCT,
+    hasura.UPSERT_PROJECT_PLAN_PRODUCTVariables
+  >(UPSERT_PROJECT_PLAN_PRODUCT)
 
   const [updateProjectPlanCoverUrl] = useMutation<
     hasura.UPDATE_PROJECT_PLAN_COVER_URL,
@@ -77,11 +91,11 @@ const ProjectPlanAdminModal: React.FC<
   >(UPDATE_PROJECT_PLAN_COVER_URL)
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!projectPlan?.discountDownPrice)
-  const [withPeriod, setWithPeriod] = useState(!!(projectPlan?.periodAmount && projectPlan?.periodType))
-  const [withAutoRenewed, setWithAutoRenewed] = useState(!!projectPlan?.autoRenewed)
-
   const [loading, setLoading] = useState(false)
   const [coverImage, setCoverImage] = useState<File | null>(null)
+
+  const withPeriod = projectPlanType === 'period' || projectPlanType === 'subscription'
+  const withAutoRenewed = projectPlanType === 'subscription'
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -91,45 +105,63 @@ const ProjectPlanAdminModal: React.FC<
         const values = form.getFieldsValue()
         upsertProjectPlan({
           variables: {
-            data: [
-              {
-                id: projectPlan?.id,
-                project_id: projectId,
-                title: values.title,
-                published_at: values.isPublished ? new Date() : null,
-                is_participants_visible: values.isParticipantsVisible,
-                period_amount: withPeriod ? values.period.amount : null,
-                period_type: withPeriod ? values.period.type : null,
-                auto_renewed: withPeriod ? withAutoRenewed : false,
-                is_subscription: withPeriod ? withAutoRenewed : false,
-                list_price: values.listPrice,
-                sale_price: values.sale ? values.sale.price : null,
-                sold_at: values.sale?.soldAt || null,
-                discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
-                description: values.description.toRAW(),
-                cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
-              },
-            ],
+            data: {
+              id: projectPlan?.id,
+              project_id: projectId,
+              title: values.title,
+              published_at: values.isPublished ? new Date() : null,
+              is_participants_visible: values.isParticipantsVisible,
+              period_amount: withPeriod ? values.period.amount : null,
+              period_type: withPeriod ? values.period.type : null,
+              auto_renewed: withPeriod ? withAutoRenewed : false,
+              is_subscription: withPeriod ? withAutoRenewed : false,
+              currency_id: values.currencyId,
+              list_price: values.listPrice,
+              sale_price: values.sale ? values.sale.price : null,
+              sold_at: values.sale?.soldAt || null,
+              discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
+              description: values.description.toRAW(),
+              cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
+            },
           },
         })
           .then(async ({ data }) => {
-            const id = data?.insert_project_plan?.returning.map(v => v.id)[0]
-            if (coverImage) {
-              const coverId = uuid()
+            const projectPlanId = data?.insert_project_plan_one?.id
+            if (projectPlanId) {
               try {
-                await uploadFile(`project_covers/${appId}/${projectId}/${id}/${coverId}`, coverImage, authToken, {
-                  cancelToken: new axios.CancelToken(canceler => {
-                    uploadCanceler.current = canceler
-                  }),
+                await upsertProjectPlanProducts({
+                  variables: {
+                    projectPlanId: projectPlan?.id,
+                    data: values.planProducts.map(planProduct => ({
+                      product_id: planProduct.id,
+                      options: planProduct.options,
+                    })),
+                  },
                 })
               } catch (error) {
                 process.env.NODE_ENV === 'development' && console.log(error)
-                return error
               }
-              updateProjectPlanCoverUrl({
+            }
+            if (coverImage) {
+              const coverId = uuid()
+              try {
+                await uploadFile(
+                  `project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
+                  coverImage,
+                  authToken,
+                  {
+                    cancelToken: new axios.CancelToken(canceler => {
+                      uploadCanceler.current = canceler
+                    }),
+                  },
+                )
+              } catch (error) {
+                process.env.NODE_ENV === 'development' && console.log(error)
+              }
+              await updateProjectPlanCoverUrl({
                 variables: {
-                  id: id,
-                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${id}/${coverId}`,
+                  id: projectPlanId,
+                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
                 },
               })
             }
@@ -165,6 +197,18 @@ const ProjectPlanAdminModal: React.FC<
           </Button>
         </>
       )}
+      // TODO: too nested to understand
+      renderTrigger={({ setVisible }) => {
+        return (
+          renderTrigger?.({
+            onOpen: projectPlanType => {
+              setProjectPlanType(projectPlanType)
+              setVisible(true)
+            },
+            onClose: () => setVisible(false),
+          }) || null
+        )
+      }}
       {...modalProps}
     >
       <Form
@@ -176,6 +220,7 @@ const ProjectPlanAdminModal: React.FC<
           title: projectPlan?.title,
           isPublished: !!projectPlan?.publishedAt,
           isParticipantsVisible: !!projectPlan?.isParticipantsVisible,
+          currencyId: projectPlan?.currencyId,
           listPrice: projectPlan?.listPrice,
           sale: projectPlan?.soldAt
             ? {
@@ -186,6 +231,7 @@ const ProjectPlanAdminModal: React.FC<
           period: { amount: projectPlan?.periodAmount || 1, type: projectPlan?.periodType || 'M' },
           discountDownPrice: projectPlan?.discountDownPrice,
           description: BraftEditor.createEditorState(projectPlan ? projectPlan.description : null),
+          planProducts: projectPlan?.products || [],
         }}
       >
         <Form.Item
@@ -203,7 +249,7 @@ const ProjectPlanAdminModal: React.FC<
           <Input />
         </Form.Item>
 
-        <Form.Item label={<span>{formatMessage(projectMessages.label.projectCover)}</span>}>
+        <Form.Item label={<span>{formatMessage(projectMessages['*'].projectCover)}</span>}>
           <ImageUploader
             file={coverImage}
             initialCoverUrl={projectPlan ? projectPlan?.coverUrl : null}
@@ -233,23 +279,27 @@ const ProjectPlanAdminModal: React.FC<
           </Radio.Group>
         </Form.Item>
 
-        <div className="mb-4">
-          <Checkbox defaultChecked={withPeriod} onChange={e => setWithPeriod(e.target.checked)}>
-            {formatMessage(commonMessages.label.period)}
-          </Checkbox>
-        </div>
-
         {withPeriod && (
-          <Form.Item name="period">
+          <Form.Item name="period" label={formatMessage(commonMessages.label.period)}>
             <PeriodSelector />
           </Form.Item>
         )}
-        {withPeriod && (
-          <div className="mb-4">
-            <Checkbox checked={withAutoRenewed} onChange={e => setWithAutoRenewed(e.target.checked)}>
-              {formatMessage(commonMessages.label.autoRenewed)}
-            </Checkbox>
-          </div>
+
+        {enabledModules?.currency && (
+          <Form.Item
+            label={formatMessage(commonMessages.label.currency)}
+            name="currencyId"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.listPrice),
+                }),
+              },
+            ]}
+          >
+            <CurrencySelector />
+          </Form.Item>
         )}
 
         <Form.Item
@@ -289,7 +339,9 @@ const ProjectPlanAdminModal: React.FC<
             <CurrencyInput noLabel />
           </Form.Item>
         )}
-
+        <Form.Item name="planProducts" label={formatMessage(projectMessages.ProjectPlanAdminModal.deliverables)}>
+          <ProjectPlanProductSelector />
+        </Form.Item>
         <Form.Item label={formatMessage(messages.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
@@ -307,9 +359,9 @@ const UPDATE_PROJECT_PLAN_COVER_URL = gql`
 `
 
 const UPSERT_PROJECT_PLAN = gql`
-  mutation UPSERT_PROJECT_PLAN($data: [project_plan_insert_input!]!) {
-    insert_project_plan(
-      objects: $data
+  mutation UPSERT_PROJECT_PLAN($data: project_plan_insert_input!) {
+    insert_project_plan_one(
+      object: $data
       on_conflict: {
         constraint: project_plan_pkey
         update_columns: [
@@ -317,6 +369,7 @@ const UPSERT_PROJECT_PLAN = gql`
           cover_url
           title
           description
+          currency_id
           list_price
           sale_price
           sold_at
@@ -330,10 +383,23 @@ const UPSERT_PROJECT_PLAN = gql`
         ]
       }
     ) {
-      returning {
-        id
-      }
+      id
     }
   }
 `
+
+const UPSERT_PROJECT_PLAN_PRODUCT = gql`
+  mutation UPSERT_PROJECT_PLAN_PRODUCT($projectPlanId: uuid, $data: [project_plan_product_insert_input!]!) {
+    delete_project_plan_product(where: { project_plan_id: { _eq: $projectPlanId } }) {
+      affected_rows
+    }
+    insert_project_plan_product(
+      objects: $data
+      on_conflict: { constraint: project_plan_product_project_plan_id_product_id_key, update_columns: [options] }
+    ) {
+      affected_rows
+    }
+  }
+`
+
 export default ProjectPlanAdminModal

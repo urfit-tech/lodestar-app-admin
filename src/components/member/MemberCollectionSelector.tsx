@@ -6,7 +6,7 @@ import { MemberCollectionProps } from 'lodestar-app-element/src/components/colle
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { craftPageMessages } from '../../helpers/translation'
-import { CraftSettingLabel } from '../../pages/craft/CraftPageAdminPage/CraftSettingsPanel'
+import { CraftSettingLabel } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 
 const messages = defineMessages({
   appOwner: { id: 'craft.settings.appOwner', defaultMessage: '管理員' },

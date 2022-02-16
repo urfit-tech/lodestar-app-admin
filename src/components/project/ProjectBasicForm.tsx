@@ -8,10 +8,11 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ProjectAdminProps } from '../../types/project'
 import { BREAK_POINT } from '../common/Responsive'
 import CategorySelector from '../form/CategorySelector'
+import projectMessages from './translation'
 
 type FieldProps = {
   title: string
@@ -121,14 +122,14 @@ const ProjectBasicForm: React.FC<{
         values.targetUnit === 'participants' && form.setFieldsValue({ isParticipantsVisible: true })
       }}
     >
-      <Form.Item label={formatMessage(projectMessages.label.projectTitle)} name="title">
+      <Form.Item label={formatMessage(projectMessages['*'].projectTitle)} name="title">
         <Input />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="project" />
       </Form.Item>
       {project.projectType === 'funding' && (
-        <Form.Item label={formatMessage(projectMessages.label.fundingTerm)}>
+        <Form.Item label={formatMessage(projectMessages['*'].fundingTerm)}>
           <Input.Group compact>
             <Form.Item name="targetUnit" noStyle>
               <Select style={{ width: '90px' }}>
@@ -146,7 +147,7 @@ const ProjectBasicForm: React.FC<{
                 {
                   required: true,
                   message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(projectMessages.label.fundingTerm),
+                    field: formatMessage(projectMessages['*'].fundingTerm),
                   }),
                 },
               ]}
@@ -167,14 +168,14 @@ const ProjectBasicForm: React.FC<{
         </Form.Item>
       )}
       {project.projectType === 'pre-order' && (
-        <Form.Item label={formatMessage(projectMessages.label.expireAt)}>
+        <Form.Item label={formatMessage(projectMessages['*'].expireAt)}>
           <StyledFormItem
             name="expiredAt"
             rules={[
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(projectMessages.label.expireAt),
+                  field: formatMessage(projectMessages['*'].expireAt),
                 }),
               },
             ]}
@@ -190,13 +191,13 @@ const ProjectBasicForm: React.FC<{
           </StyledFormItem>
         </Form.Item>
       )}
-      <Form.Item label={formatMessage(projectMessages.label.participantsAmount)} name="isParticipantsVisible">
+      <Form.Item label={formatMessage(projectMessages['*'].participantsAmount)} name="isParticipantsVisible">
         <Radio.Group disabled={form.getFieldValue('targetUnit') === 'participants'}>
           <Radio value={true}>{formatMessage(commonMessages.status.visible)}</Radio>
           <Radio value={false}>{formatMessage(commonMessages.status.invisible)}</Radio>
         </Radio.Group>
       </Form.Item>
-      <Form.Item label={formatMessage(projectMessages.label.projectCountdownTimer)} name="isCountdownTimerVisible">
+      <Form.Item label={formatMessage(projectMessages['*'].projectCountdownTimer)} name="isCountdownTimerVisible">
         <Radio.Group>
           <Radio value={true}>{formatMessage(commonMessages.status.visible)}</Radio>
           <Radio value={false}>{formatMessage(commonMessages.status.invisible)}</Radio>

@@ -933,31 +933,7 @@ export const programPackageMessages = {
     unpublished: { id: 'programPackage.status.unpublished', defaultMessage: '未發佈' },
   }),
 }
-export const projectMessages = {
-  label: defineMessages({
-    projectTitle: { id: 'project.label.projectTitle', defaultMessage: '專案名稱' },
-    sponsor: { id: 'project.label.sponsor', defaultMessage: '發起者' },
-    settings: { id: 'project.label.settings', defaultMessage: '專案設定' },
-    projectIntroduction: { id: 'project.label.projectIntroduction', defaultMessage: '專案介紹' },
-    fundingTerm: { id: 'project.label.fundingTerm', defaultMessage: '募資條件' },
-    participantsAmount: { id: 'project.label.participantsAmount', defaultMessage: '參與人數' },
-    projectCountdownTimer: { id: 'project.label.projectCountdownTimer', defaultMessage: '專案倒數' },
-    unnamedProject: { id: 'project.label.unnamedProject', defaultMessage: '未命名專案' },
-    projectCover: { id: 'project.label.projectCover', defaultMessage: '專案封面' },
-    projectAbstract: { id: 'project.label.projectAbstract', defaultMessage: '專案摘要' },
-    projectContent: { id: 'project.label.projectContent', defaultMessage: '專案內容' },
-    expireAt: { id: 'project.label.expireAt', defaultMessage: '截止日' },
-  }),
-  ui: defineMessages({
-    sortProject: { id: 'project.ui.sortProject', defaultMessage: '專案排序' },
-    sortProjectPlan: { id: 'project.ui.sortProjectPlan', defaultMessage: '方案排序' },
-    editProject: { id: 'project.ui.editProject', defaultMessage: '編輯方案' },
-  }),
-  text: defineMessages({
-    noProject: { id: 'project.text.noProject', defaultMessage: '尚未有任何專案' },
-    soldOutProjectCount: { id: 'project.text.soldOutProjectCount', defaultMessage: '已售 {count}' },
-  }),
-}
+
 export const podcastMessages = {
   ui: defineMessages({
     subscribe: { id: 'podcast.ui.subscribe', defaultMessage: '訂閱頻道' },
