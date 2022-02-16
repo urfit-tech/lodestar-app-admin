@@ -119,33 +119,50 @@ const ProjectPlanAdminModal: React.FC<
               discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
               description: values.description.toRAW(),
               cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
-              project_plan_products: {
-                data: values.planProducts.map(planProduct => ({
-                  product_id: planProduct.id,
-                  options: planProduct.options,
-                })),
-              },
             },
           },
         })
           .then(async ({ data }) => {
-            const id = data?.insert_project_plan_one?.id
-            if (coverImage) {
-              const coverId = uuid()
+            const projectPlanId = data?.insert_project_plan_one?.id
+            if (projectPlanId) {
               try {
-                await uploadFile(`project_covers/${appId}/${projectId}/${id}/${coverId}`, coverImage, authToken, {
-                  cancelToken: new axios.CancelToken(canceler => {
-                    uploadCanceler.current = canceler
-                  }),
+                await upsertProjectPlan({
+                  variables: {
+                    projectPlanId: projectPlan?.id,
+                    data: {
+                      project_plan_products: {
+                        data: values.planProducts.map(planProduct => ({
+                          product_id: planProduct.id,
+                          options: planProduct.options,
+                        })),
+                      },
+                    },
+                  },
                 })
               } catch (error) {
                 process.env.NODE_ENV === 'development' && console.log(error)
-                return error
               }
-              updateProjectPlanCoverUrl({
+            }
+            if (coverImage) {
+              const coverId = uuid()
+              try {
+                await uploadFile(
+                  `project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
+                  coverImage,
+                  authToken,
+                  {
+                    cancelToken: new axios.CancelToken(canceler => {
+                      uploadCanceler.current = canceler
+                    }),
+                  },
+                )
+              } catch (error) {
+                process.env.NODE_ENV === 'development' && console.log(error)
+              }
+              await updateProjectPlanCoverUrl({
                 variables: {
-                  id: id,
-                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${id}/${coverId}`,
+                  id: projectPlanId,
+                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
                 },
               })
             }

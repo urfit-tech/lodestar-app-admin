@@ -17283,6 +17283,7 @@ export enum member_card_update_column {
   card_secret = "card_secret",
   id = "id",
   member_id = "member_id",
+  priority = "priority",
 }
 
 /**
@@ -18037,6 +18038,7 @@ export enum payment_log_update_column {
   created_at = "created_at",
   custom_no = "custom_no",
   gateway = "gateway",
+  invoice_issued_at = "invoice_issued_at",
   method = "method",
   no = "no",
   options = "options",
@@ -24508,9 +24510,17 @@ export interface member_bool_exp {
  * order by aggregate values of table "member_card"
  */
 export interface member_card_aggregate_order_by {
+  avg?: member_card_avg_order_by | null;
   count?: order_by | null;
   max?: member_card_max_order_by | null;
   min?: member_card_min_order_by | null;
+  stddev?: member_card_stddev_order_by | null;
+  stddev_pop?: member_card_stddev_pop_order_by | null;
+  stddev_samp?: member_card_stddev_samp_order_by | null;
+  sum?: member_card_sum_order_by | null;
+  var_pop?: member_card_var_pop_order_by | null;
+  var_samp?: member_card_var_samp_order_by | null;
+  variance?: member_card_variance_order_by | null;
 }
 
 /**
@@ -24519,6 +24529,13 @@ export interface member_card_aggregate_order_by {
 export interface member_card_arr_rel_insert_input {
   data: member_card_insert_input[];
   on_conflict?: member_card_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "member_card"
+ */
+export interface member_card_avg_order_by {
+  priority?: order_by | null;
 }
 
 /**
@@ -24535,6 +24552,7 @@ export interface member_card_bool_exp {
   id?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  priority?: Int_comparison_exp | null;
 }
 
 /**
@@ -24548,6 +24566,7 @@ export interface member_card_insert_input {
   id?: string | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  priority?: number | null;
 }
 
 /**
@@ -24557,6 +24576,7 @@ export interface member_card_max_order_by {
   card_identifier?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  priority?: order_by | null;
 }
 
 /**
@@ -24566,6 +24586,7 @@ export interface member_card_min_order_by {
   card_identifier?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  priority?: order_by | null;
 }
 
 /**
@@ -24575,6 +24596,55 @@ export interface member_card_on_conflict {
   constraint: member_card_constraint;
   update_columns: member_card_update_column[];
   where?: member_card_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "member_card"
+ */
+export interface member_card_stddev_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "member_card"
+ */
+export interface member_card_stddev_pop_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "member_card"
+ */
+export interface member_card_stddev_samp_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "member_card"
+ */
+export interface member_card_sum_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "member_card"
+ */
+export interface member_card_var_pop_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "member_card"
+ */
+export interface member_card_var_samp_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "member_card"
+ */
+export interface member_card_variance_order_by {
+  priority?: order_by | null;
 }
 
 /**
@@ -28486,6 +28556,7 @@ export interface payment_log_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
+  invoice_issued_at?: timestamptz_comparison_exp | null;
   method?: String_comparison_exp | null;
   no?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
@@ -28529,6 +28600,7 @@ export interface payment_log_insert_input {
   created_at?: any | null;
   custom_no?: string | null;
   gateway?: string | null;
+  invoice_issued_at?: any | null;
   method?: string | null;
   no?: string | null;
   options?: any | null;
@@ -28548,6 +28620,7 @@ export interface payment_log_max_order_by {
   created_at?: order_by | null;
   custom_no?: order_by | null;
   gateway?: order_by | null;
+  invoice_issued_at?: order_by | null;
   method?: order_by | null;
   no?: order_by | null;
   order_id?: order_by | null;
@@ -28565,6 +28638,7 @@ export interface payment_log_min_order_by {
   created_at?: order_by | null;
   custom_no?: order_by | null;
   gateway?: order_by | null;
+  invoice_issued_at?: order_by | null;
   method?: order_by | null;
   no?: order_by | null;
   order_id?: order_by | null;
