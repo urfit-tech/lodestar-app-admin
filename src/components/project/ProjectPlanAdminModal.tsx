@@ -80,6 +80,10 @@ const ProjectPlanAdminModal: React.FC<
   const [upsertProjectPlan] = useMutation<hasura.UPSERT_PROJECT_PLAN, hasura.UPSERT_PROJECT_PLANVariables>(
     UPSERT_PROJECT_PLAN,
   )
+  const [upsertProjectPlanProducts] = useMutation<
+    hasura.UPSERT_PROJECT_PLAN_PRODUCT,
+    hasura.UPSERT_PROJECT_PLAN_PRODUCTVariables
+  >(UPSERT_PROJECT_PLAN_PRODUCT)
 
   const [updateProjectPlanCoverUrl] = useMutation<
     hasura.UPDATE_PROJECT_PLAN_COVER_URL,
@@ -101,9 +105,7 @@ const ProjectPlanAdminModal: React.FC<
         const values = form.getFieldsValue()
         upsertProjectPlan({
           variables: {
-            projectPlanId: projectPlan?.id,
             data: {
-              id: projectPlan?.id,
               project_id: projectId,
               title: values.title,
               published_at: values.isPublished ? new Date() : null,
@@ -126,17 +128,13 @@ const ProjectPlanAdminModal: React.FC<
             const projectPlanId = data?.insert_project_plan_one?.id
             if (projectPlanId) {
               try {
-                await upsertProjectPlan({
+                await upsertProjectPlanProducts({
                   variables: {
                     projectPlanId: projectPlan?.id,
-                    data: {
-                      project_plan_products: {
-                        data: values.planProducts.map(planProduct => ({
-                          product_id: planProduct.id,
-                          options: planProduct.options,
-                        })),
-                      },
-                    },
+                    data: values.planProducts.map(planProduct => ({
+                      product_id: planProduct.id,
+                      options: planProduct.options,
+                    })),
                   },
                 })
               } catch (error) {
@@ -360,10 +358,7 @@ const UPDATE_PROJECT_PLAN_COVER_URL = gql`
 `
 
 const UPSERT_PROJECT_PLAN = gql`
-  mutation UPSERT_PROJECT_PLAN($projectPlanId: uuid!, $data: project_plan_insert_input!) {
-    delete_project_plan_product(where: { project_plan_id: { _eq: $projectPlanId } }) {
-      affected_rows
-    }
+  mutation UPSERT_PROJECT_PLAN($data: project_plan_insert_input!) {
     insert_project_plan_one(
       object: $data
       on_conflict: {
@@ -391,4 +386,19 @@ const UPSERT_PROJECT_PLAN = gql`
     }
   }
 `
+
+const UPSERT_PROJECT_PLAN_PRODUCT = gql`
+  mutation UPSERT_PROJECT_PLAN_PRODUCT($projectPlanId: uuid, $data: [project_plan_product_insert_input!]!) {
+    delete_project_plan_product(where: { project_plan_id: { _eq: $projectPlanId } }) {
+      affected_rows
+    }
+    insert_project_plan_product(
+      objects: $data
+      on_conflict: { constraint: project_plan_product_project_plan_id_product_id_key, update_columns: [options] }
+    ) {
+      affected_rows
+    }
+  }
+`
+
 export default ProjectPlanAdminModal

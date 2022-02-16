@@ -6554,14 +6554,6 @@ export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
 // ====================================================
 
 
-export interface UPSERT_PROJECT_PLAN_delete_project_plan_product {
-  __typename: "project_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPSERT_PROJECT_PLAN_insert_project_plan_one {
   __typename: "project_plan";
   id: any;
@@ -6569,18 +6561,56 @@ export interface UPSERT_PROJECT_PLAN_insert_project_plan_one {
 
 export interface UPSERT_PROJECT_PLAN {
   /**
-   * delete data from the table: "project_plan_product"
-   */
-  delete_project_plan_product: UPSERT_PROJECT_PLAN_delete_project_plan_product | null;
-  /**
    * insert a single row into the table: "project_plan"
    */
   insert_project_plan_one: UPSERT_PROJECT_PLAN_insert_project_plan_one | null;
 }
 
 export interface UPSERT_PROJECT_PLANVariables {
-  projectPlanId: any;
   data: project_plan_insert_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROJECT_PLAN_PRODUCT
+// ====================================================
+
+
+export interface UPSERT_PROJECT_PLAN_PRODUCT_delete_project_plan_product {
+  __typename: "project_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROJECT_PLAN_PRODUCT_insert_project_plan_product {
+  __typename: "project_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROJECT_PLAN_PRODUCT {
+  /**
+   * delete data from the table: "project_plan_product"
+   */
+  delete_project_plan_product: UPSERT_PROJECT_PLAN_PRODUCT_delete_project_plan_product | null;
+  /**
+   * insert data into the table: "project_plan_product"
+   */
+  insert_project_plan_product: UPSERT_PROJECT_PLAN_PRODUCT_insert_project_plan_product | null;
+}
+
+export interface UPSERT_PROJECT_PLAN_PRODUCTVariables {
+  projectPlanId?: any | null;
+  data: project_plan_product_insert_input[];
 }
 
 /* tslint:disable */
