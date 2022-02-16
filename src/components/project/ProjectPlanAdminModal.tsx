@@ -106,6 +106,7 @@ const ProjectPlanAdminModal: React.FC<
         upsertProjectPlan({
           variables: {
             data: {
+              id: projectPlan?.id,
               project_id: projectId,
               title: values.title,
               published_at: values.isPublished ? new Date() : null,
