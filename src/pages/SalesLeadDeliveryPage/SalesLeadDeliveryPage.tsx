@@ -1,6 +1,6 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, DatePicker, Form, Result, Slider, Statistic, Steps } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, Result, Slider, Statistic, Steps } from 'antd'
 import { ResultProps } from 'antd/lib/result'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
@@ -9,10 +9,10 @@ import { notEmpty } from 'lodestar-app-admin/src/helpers'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
-import CategoryInput from '../components/common/CategoryInput'
-import SalesMemberInput from '../components/common/SalesMemberInput'
-import hasura from '../hasura'
-import { salesMessages } from '../helpers/translation'
+import CategoryInput from '../../components/common/CategoryInput'
+import SalesMemberInput from '../../components/common/SalesMemberInput'
+import hasura from '../../hasura'
+import { salesLeadDeliveryPageMessages } from './translation'
 
 type Filter = {
   categoryIds: string[]
@@ -20,6 +20,8 @@ type Filter = {
   assignedAtRange: [Date, Date] | null
   managerId?: string
   starRange: [number, number]
+  starRangeIsNull: boolean
+  marketingActivity: string
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -35,6 +37,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     starRange: [-999, 999],
     createdAtRange: null,
     assignedAtRange: null,
+    starRangeIsNull: false,
+    marketingActivity: '',
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -45,13 +49,16 @@ const SalesLeadDeliveryPage: React.VFC = () => {
       <div className="mb-5 d-flex justify-content-between align-items-center">
         <AdminPageTitle className="d-flex align-items-center mb-0">
           <Icon className="mr-3" component={() => <SwapOutlined />} />
-          <span>{formatMessage(salesMessages.label.salesLeadDelivery)}</span>
+          <span>{formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.salesLeadDelivery)}</span>
         </AdminPageTitle>
       </div>
       <Steps className="mb-5" current={currentStep} type="navigation" onChange={setCurrentStep}>
-        <Steps.Step title="篩選名單" />
-        <Steps.Step title="確認派發" />
-        <Steps.Step title="派發結果" disabled={!assignedResult} />
+        <Steps.Step title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.filterSalesLead)} />
+        <Steps.Step title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveryConfirm)} />
+        <Steps.Step
+          title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveryResult)}
+          disabled={!assignedResult}
+        />
       </Steps>
       {currentStep === 0 && (
         <FilterSection
@@ -92,6 +99,9 @@ const SalesLeadDeliveryPage: React.VFC = () => {
 }
 
 const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => void }> = ({ filter, onNext }) => {
+  const { formatMessage } = useIntl()
+  const [starRangeIsNull, setStarRangeIsNull] = useState(false)
+
   return (
     <Form<Filter>
       layout="horizontal"
@@ -102,24 +112,46 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
         onNext?.(values)
       }}
     >
-      <Form.Item label="原承辦人" name="managerId">
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.originalManager)}
+        name="managerId"
+      >
         <SalesMemberInput />
       </Form.Item>
-      <Form.Item label="領域" name="categoryIds">
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.field)} name="categoryIds">
         <CategoryInput class="member" />
       </Form.Item>
-      <Form.Item label="星等" name="starRange">
-        <Slider range min={-999} max={999} />
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRangeIsNull)}
+        name="starRangeIsNull"
+        valuePropName="checked"
+      >
+        <Checkbox onChange={e => setStarRangeIsNull(e.target.checked)} />
       </Form.Item>
-      <Form.Item label="名單建立日期" name="createdAtRange">
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRange)} name="starRange">
+        <Slider range min={-999} max={999} disabled={starRangeIsNull} />
+      </Form.Item>
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.marketingActivity)}
+        name="marketingActivity"
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
+        name="createdAtRange"
+      >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
-      <Form.Item label="名單派發日期" name="assignedAtRange">
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.assignedAtRange)}
+        name="assignedAtRange"
+      >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 6 }}>
         <Button type="primary" htmlType="submit">
-          下一步
+          {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.nextStep)}
         </Button>
       </Form.Item>
     </Form>
@@ -130,6 +162,7 @@ const ConfirmSection: React.FC<{
   filter: Filter
   onNext?: (values: { memberIds: string[]; managerId: string | null }) => void
 }> = ({ filter, onNext }) => {
+  const { formatMessage } = useIntl()
   const [managerId, setManagerId] = useState<string>()
   const [numDeliver, setNumDeliver] = useState(1)
   const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
@@ -147,45 +180,38 @@ const ConfirmSection: React.FC<{
       fetchPolicy: 'no-cache',
       variables: {
         condition: {
-          _and: [
-            {
-              manager_id: {
-                _is_null: !filter.managerId,
-                _eq: filter.managerId || undefined,
+          manager_id: {
+            _is_null: !filter.managerId,
+            _eq: filter.managerId || undefined,
+          },
+          member_categories:
+            filter.categoryIds.length > 0
+              ? {
+                  category: {
+                    name: {
+                      _in: filter.categoryIds,
+                    },
+                  },
+                }
+              : undefined,
+          created_at: filter.createdAtRange
+            ? {
+                _gte: moment(filter.createdAtRange[0]).startOf('day'),
+                _lte: moment(filter.createdAtRange[1]).endOf('day'),
+              }
+            : undefined,
+          star: filter.starRangeIsNull
+            ? {
+                _is_null: true,
+              }
+            : {
+                _gte: filter.starRange[0],
+                _lte: filter.starRange[1],
               },
-              member_categories:
-                filter.categoryIds.length > 0
-                  ? {
-                      category: {
-                        name: {
-                          _in: filter.categoryIds,
-                        },
-                      },
-                    }
-                  : undefined,
-              created_at: filter.createdAtRange
-                ? {
-                    _gte: moment(filter.createdAtRange[0]).startOf('day'),
-                    _lte: moment(filter.createdAtRange[1]).endOf('day'),
-                  }
-                : undefined,
-            },
-            {
-              _or: [
-                {
-                  star: {
-                    _gte: filter.starRange[0],
-                    _lte: filter.starRange[1],
-                  },
-                },
-                {
-                  star: {
-                    _is_null: true,
-                  },
-                },
-              ],
-            },
-          ],
+          member_properties:
+            filter.marketingActivity !== ''
+              ? { property: { name: { _eq: '行銷活動' } }, value: { _like: `%${filter.marketingActivity}%` } }
+              : undefined,
         },
       },
     },
@@ -226,13 +252,14 @@ const ConfirmSection: React.FC<{
   }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member])
 
   const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
+
   return (
     <div className="row">
       <div className="offset-md-3 col-12 col-md-6 text-center">
         <Statistic
           loading={isLoading}
           className="mb-3"
-          title="預計派發名單數"
+          title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
           value={`${numDeliver} / ${filteredMemberIds.length}`}
         />
         <div className="mb-2">
@@ -244,7 +271,7 @@ const ConfirmSection: React.FC<{
           block
           onClick={() => onNext?.({ memberIds: filteredMemberIds.slice(0, numDeliver), managerId: managerId || null })}
         >
-          派發名單
+          {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
       </div>
     </div>
@@ -252,18 +279,31 @@ const ConfirmSection: React.FC<{
 }
 
 const ResultSection: React.FC<{ result: AssignResult; onBack?: () => void }> = ({ result, onBack }) => {
+  const { formatMessage } = useIntl()
   return (
     <Result
       status={result.status}
-      title={result.status === 'success' ? '成功派發名單' : result.status === 'error' ? '派發名單失敗' : '派發名單中'}
+      title={
+        result.status === 'success'
+          ? formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSuccessfully)
+          : result.status === 'error'
+          ? formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverFailed)
+          : formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.delivering)
+      }
       subTitle={
         result.status === 'success'
-          ? `已派發 ${result.data} 筆名單`
+          ? formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveredCount, {
+              count: result.data,
+            })
           : result.status === 'error'
           ? result.error?.message
-          : '正在派發名單中，請稍等'
+          : formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliveringMessage)
       }
-      extra={[<Button onClick={() => onBack?.()}>再次派發</Button>]}
+      extra={[
+        <Button onClick={() => onBack?.()}>
+          {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverAgain)}
+        </Button>,
+      ]}
     />
   )
 }

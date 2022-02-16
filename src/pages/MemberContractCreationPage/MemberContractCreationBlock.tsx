@@ -119,6 +119,7 @@ const MemberContractCreationBlock: React.FC<{
               price: v.price ?? 225,
               started_at: fieldValue.withProductStartedAt ? startedAt.toISOString() : null,
               ended_at: endedAt?.toISOString(),
+              delivered_at: new Date(),
             }))
           })
           .filter(notEmpty),
@@ -234,6 +235,7 @@ const MemberContractCreationBlock: React.FC<{
               price: 0,
               started_at: startedAt.toISOString(),
               ended_at: endedAt?.toISOString(),
+              delivered_at: new Date(),
             },
             ...contractProducts.map(v => ({
               product_id: `ProjectPlan_${v.id}`,
@@ -241,6 +243,7 @@ const MemberContractCreationBlock: React.FC<{
               price: v.price * v.amount,
               started_at: startedAt.toISOString(),
               ended_at: endedAt?.toISOString(),
+              delivered_at: new Date(),
               options:
                 v.amount > 1
                   ? {
@@ -255,6 +258,7 @@ const MemberContractCreationBlock: React.FC<{
               price: 0,
               started_at: startedAt.toISOString(),
               ended_at: endedAt?.toISOString(),
+              delivered_at: new Date(),
             },
           ],
           orderDiscounts: [
