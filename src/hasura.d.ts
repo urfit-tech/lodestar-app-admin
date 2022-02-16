@@ -743,16 +743,6 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator 
   abstract: string | null;
 }
 
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate | null;
-}
-
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   __typename: "appointment_plan";
   id: any;
@@ -768,10 +758,6 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   duration: any;
   price: any;
   published_at: any | null;
-  /**
-   * An aggregated array relationship
-   */
-  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
@@ -6554,14 +6540,6 @@ export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
 // ====================================================
 
 
-export interface UPSERT_PROJECT_PLAN_delete_project_plan_product {
-  __typename: "project_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPSERT_PROJECT_PLAN_insert_project_plan_one {
   __typename: "project_plan";
   id: any;
@@ -6569,18 +6547,56 @@ export interface UPSERT_PROJECT_PLAN_insert_project_plan_one {
 
 export interface UPSERT_PROJECT_PLAN {
   /**
-   * delete data from the table: "project_plan_product"
-   */
-  delete_project_plan_product: UPSERT_PROJECT_PLAN_delete_project_plan_product | null;
-  /**
    * insert a single row into the table: "project_plan"
    */
   insert_project_plan_one: UPSERT_PROJECT_PLAN_insert_project_plan_one | null;
 }
 
 export interface UPSERT_PROJECT_PLANVariables {
-  projectPlanId: any;
   data: project_plan_insert_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROJECT_PLAN_PRODUCT
+// ====================================================
+
+
+export interface UPSERT_PROJECT_PLAN_PRODUCT_delete_project_plan_product {
+  __typename: "project_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROJECT_PLAN_PRODUCT_insert_project_plan_product {
+  __typename: "project_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROJECT_PLAN_PRODUCT {
+  /**
+   * delete data from the table: "project_plan_product"
+   */
+  delete_project_plan_product: UPSERT_PROJECT_PLAN_PRODUCT_delete_project_plan_product | null;
+  /**
+   * insert data into the table: "project_plan_product"
+   */
+  insert_project_plan_product: UPSERT_PROJECT_PLAN_PRODUCT_insert_project_plan_product | null;
+}
+
+export interface UPSERT_PROJECT_PLAN_PRODUCTVariables {
+  projectPlanId?: any | null;
+  data: project_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -17283,6 +17299,7 @@ export enum member_card_update_column {
   card_secret = "card_secret",
   id = "id",
   member_id = "member_id",
+  priority = "priority",
 }
 
 /**
@@ -18037,6 +18054,7 @@ export enum payment_log_update_column {
   created_at = "created_at",
   custom_no = "custom_no",
   gateway = "gateway",
+  invoice_issued_at = "invoice_issued_at",
   method = "method",
   no = "no",
   options = "options",
@@ -24508,9 +24526,17 @@ export interface member_bool_exp {
  * order by aggregate values of table "member_card"
  */
 export interface member_card_aggregate_order_by {
+  avg?: member_card_avg_order_by | null;
   count?: order_by | null;
   max?: member_card_max_order_by | null;
   min?: member_card_min_order_by | null;
+  stddev?: member_card_stddev_order_by | null;
+  stddev_pop?: member_card_stddev_pop_order_by | null;
+  stddev_samp?: member_card_stddev_samp_order_by | null;
+  sum?: member_card_sum_order_by | null;
+  var_pop?: member_card_var_pop_order_by | null;
+  var_samp?: member_card_var_samp_order_by | null;
+  variance?: member_card_variance_order_by | null;
 }
 
 /**
@@ -24519,6 +24545,13 @@ export interface member_card_aggregate_order_by {
 export interface member_card_arr_rel_insert_input {
   data: member_card_insert_input[];
   on_conflict?: member_card_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "member_card"
+ */
+export interface member_card_avg_order_by {
+  priority?: order_by | null;
 }
 
 /**
@@ -24535,6 +24568,7 @@ export interface member_card_bool_exp {
   id?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  priority?: Int_comparison_exp | null;
 }
 
 /**
@@ -24548,6 +24582,7 @@ export interface member_card_insert_input {
   id?: string | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  priority?: number | null;
 }
 
 /**
@@ -24557,6 +24592,7 @@ export interface member_card_max_order_by {
   card_identifier?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  priority?: order_by | null;
 }
 
 /**
@@ -24566,6 +24602,7 @@ export interface member_card_min_order_by {
   card_identifier?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  priority?: order_by | null;
 }
 
 /**
@@ -24575,6 +24612,55 @@ export interface member_card_on_conflict {
   constraint: member_card_constraint;
   update_columns: member_card_update_column[];
   where?: member_card_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "member_card"
+ */
+export interface member_card_stddev_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "member_card"
+ */
+export interface member_card_stddev_pop_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "member_card"
+ */
+export interface member_card_stddev_samp_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "member_card"
+ */
+export interface member_card_sum_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "member_card"
+ */
+export interface member_card_var_pop_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "member_card"
+ */
+export interface member_card_var_samp_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "member_card"
+ */
+export interface member_card_variance_order_by {
+  priority?: order_by | null;
 }
 
 /**
@@ -28486,6 +28572,7 @@ export interface payment_log_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
+  invoice_issued_at?: timestamptz_comparison_exp | null;
   method?: String_comparison_exp | null;
   no?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
@@ -28529,6 +28616,7 @@ export interface payment_log_insert_input {
   created_at?: any | null;
   custom_no?: string | null;
   gateway?: string | null;
+  invoice_issued_at?: any | null;
   method?: string | null;
   no?: string | null;
   options?: any | null;
@@ -28548,6 +28636,7 @@ export interface payment_log_max_order_by {
   created_at?: order_by | null;
   custom_no?: order_by | null;
   gateway?: order_by | null;
+  invoice_issued_at?: order_by | null;
   method?: order_by | null;
   no?: order_by | null;
   order_id?: order_by | null;
@@ -28565,6 +28654,7 @@ export interface payment_log_min_order_by {
   created_at?: order_by | null;
   custom_no?: order_by | null;
   gateway?: order_by | null;
+  invoice_issued_at?: order_by | null;
   method?: order_by | null;
   no?: order_by | null;
   order_id?: order_by | null;
