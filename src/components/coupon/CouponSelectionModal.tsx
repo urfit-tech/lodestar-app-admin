@@ -5,11 +5,11 @@ import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import { checkoutMessages, codeMessages, commonMessages } from '../../helpers/translation'
 import { useCouponCollection } from '../../hooks/data'
 import { CouponProps, OrderDiscountProps, OrderProductProps } from '../../types/checkout'
 import { ProductType } from '../../types/general'
 import CouponCard from './CouponCard'
+import couponMessages from './translation'
 
 const CouponSelectionModal: React.FC<{
   memberId: string
@@ -47,9 +47,9 @@ const CouponSelectionModal: React.FC<{
         if (data.code === 'SUCCESS') {
           refetchCoupons()
           setCode('')
-          message.success(formatMessage(codeMessages[data.code as keyof typeof codeMessages]))
+          message.success(formatMessage(couponMessages.CouponSelectionModal.addSuccessfully))
         } else {
-          message.error(formatMessage(codeMessages[data.code as keyof typeof codeMessages]))
+          message.error(formatMessage(couponMessages.CouponSelectionModal.addFailed))
         }
       })
       .catch(handleError)
@@ -61,7 +61,7 @@ const CouponSelectionModal: React.FC<{
       {render && render({ setVisible, selectedCoupon })}
 
       <Modal
-        title={formatMessage(checkoutMessages.title.chooseCoupon)}
+        title={formatMessage(couponMessages.CouponSelectionModal.chooseCoupon)}
         footer={null}
         onCancel={() => setVisible(false)}
         visible={visible}
@@ -112,13 +112,13 @@ const CouponSelectionModal: React.FC<{
             })
         )}
 
-        <Divider>{formatMessage(commonMessages.ui.or)}</Divider>
+        <Divider>{formatMessage(couponMessages.CouponSelectionModal.or)}</Divider>
 
         <div className="d-flex">
           <div className="flex-grow-1">
             <Input
               style={{ borderRadius: '4px 0px 0px 4px' }}
-              placeholder={formatMessage(checkoutMessages.form.placeholder.enter)}
+              placeholder={formatMessage(couponMessages.CouponSelectionModal.enter)}
               value={code}
               onChange={e => setCode(e.target.value)}
             />
@@ -130,7 +130,7 @@ const CouponSelectionModal: React.FC<{
             loading={inserting}
             onClick={handleCouponInsert}
           >
-            {formatMessage(commonMessages.ui.add)}
+            {formatMessage(couponMessages.CouponSelectionModal.add)}
           </Button>
         </div>
       </Modal>

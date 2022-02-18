@@ -6,9 +6,9 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter } from '../../helpers'
-import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminCard from '../admin/AdminCard'
+import couponMessages from './translation'
 
 const StyledAdminCard = styled(AdminCard)`
   position: relative;
@@ -143,26 +143,30 @@ const CouponPlanAdminCard: React.FC<{
     >
       <StyledText active={isAvailable}>
         {couponPlan.constraint
-          ? formatMessage(promotionMessages.label.constraintAmount, {
+          ? formatMessage(couponMessages.CouponPlanAdminCard.constraintAmount, {
               amount: currencyFormatter(couponPlan.constraint),
             })
-          : formatMessage(promotionMessages.label.withoutConstraintAmount)}
+          : formatMessage(couponMessages.CouponPlanAdminCard.withoutConstraintAmount)}
         {couponPlan.type === 'cash'
-          ? formatMessage(promotionMessages.label.price, {
+          ? formatMessage(couponMessages['*'].price, {
               amount: currencyFormatter(couponPlan.amount),
             })
           : couponPlan.type === 'percent'
-          ? formatMessage(promotionMessages.label.ratio, { amount: couponPlan.amount })
+          ? formatMessage(couponMessages['*'].ratio, { amount: couponPlan.amount })
           : null}
       </StyledText>
 
       <StyledPeriod className="mt-2">
         <span>
-          {couponPlan.startedAt ? dateFormatter(couponPlan.startedAt) : formatMessage(promotionMessages.label.fromNow)}
+          {couponPlan.startedAt
+            ? dateFormatter(couponPlan.startedAt)
+            : formatMessage(couponMessages.CouponPlanAdminCard.fromNow)}
         </span>
         <span className="m-1">-</span>
         <span>
-          {couponPlan.endedAt ? dateFormatter(couponPlan.endedAt) : formatMessage(promotionMessages.label.forever)}
+          {couponPlan.endedAt
+            ? dateFormatter(couponPlan.endedAt)
+            : formatMessage(couponMessages.CouponPlanAdminCard.forever)}
         </span>
       </StyledPeriod>
 
@@ -170,7 +174,7 @@ const CouponPlanAdminCard: React.FC<{
 
       <div className="d-flex align-items-center justify-content-between">
         <StyledButton type="link" onClick={() => setIsModalVisible(true)}>
-          {formatMessage(commonMessages.ui.detail)}
+          {formatMessage(couponMessages.CouponPlanAdminCard.detail)}
         </StyledButton>
         <div className="flex-grow-1">{renderCount}</div>
         {renderEditDropdown}

@@ -396,9 +396,9 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_coupon_plans: {
+  coupon_plans: {
     path: '/coupon-plans',
-    pageName: 'owner/CouponPlanCollectionAdminPage',
+    pageName: 'CouponPlanCollectionAdminPage',
     authenticated: true,
   },
   owner_voucher_plans: {

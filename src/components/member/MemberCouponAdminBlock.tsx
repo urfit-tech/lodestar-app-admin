@@ -3,8 +3,8 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { promotionMessages } from '../../helpers/translation'
 import { CouponPlanProps } from '../../types/checkout'
-import CouponPlanAdminCard from '../checkout/CouponPlanAdminCard'
-import CouponPlanDescriptionScopeBlock from '../checkout/CouponPlanDescriptionScopeBlock'
+import CouponPlanAdminCard from '../coupon/CouponPlanAdminCard'
+import CouponPlanDescriptionScopeBlock from '../coupon/CouponPlanDescriptionScopeBlock'
 
 const MemberCouponAdminBlock: React.FC<{
   coupons: {
