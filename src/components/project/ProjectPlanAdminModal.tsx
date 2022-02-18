@@ -127,7 +127,7 @@ const ProjectPlanAdminModal: React.FC<
         })
           .then(async ({ data }) => {
             const projectPlanId = data?.insert_project_plan_one?.id
-            if (projectPlanId) {
+            if (projectPlanId && values.planProducts) {
               try {
                 await upsertProjectPlanProducts({
                   variables: {
@@ -339,9 +339,13 @@ const ProjectPlanAdminModal: React.FC<
             <CurrencyInput noLabel />
           </Form.Item>
         )}
-        <Form.Item name="planProducts" label={formatMessage(projectMessages.ProjectPlanAdminModal.deliverables)}>
-          <ProjectPlanProductSelector />
-        </Form.Item>
+
+        {!!enabledModules.project_auto_delivery && (
+          <Form.Item name="planProducts" label={formatMessage(projectMessages.ProjectPlanAdminModal.deliverables)}>
+            <ProjectPlanProductSelector />
+          </Form.Item>
+        )}
+
         <Form.Item label={formatMessage(messages.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
