@@ -31,6 +31,13 @@ const craftMessages = {
   ProjectCollectionSettings: defineMessages({
     projectSectionId: { id: 'craft.ProjectCollectionSettings.projectSectionId', defaultMessage: '專案區塊 ID' },
   }),
+  ImageSettings: defineMessages({
+    ratio: { id: 'craft.ImageSettings.ratio', defaultMessage: '比例' },
+  }),
+  SizeStyleInput: defineMessages({
+    width: { id: 'craft.SizeStyleInput.width', defaultMessage: '寬度' },
+    height: { id: 'craft.SizeStyleInput.height', defaultMessage: '高度' },
+  }),
 }
 
 export default craftMessages
