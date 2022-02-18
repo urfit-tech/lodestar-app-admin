@@ -15,20 +15,22 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
-import { commonMessages, errorMessages } from '../../helpers/translation'
-import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
-import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
-import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
-import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
-import { ReactComponent as PageIcon } from '../../images/icon/page.svg'
-import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
-import { ReactComponent as PointIcon } from '../../images/icon/point.svg'
-import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
-import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
-import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
-import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
+import {
+  BookIcon,
+  CalendarAltIcon,
+  DiscountIcon,
+  MicrophoneIcon,
+  MoneyCircleIcon,
+  PageIcon,
+  PhoneIcon,
+  PointIcon,
+  ProjectIcon,
+  ShopIcon,
+  UserIcon,
+  UsersIcon,
+} from '../../images/icon'
 import { routesMap } from '../common/AdminRouter'
+import adminMessages from './translation'
 
 export const StyledMenu = styled(Menu)`
   && {
@@ -59,19 +61,19 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: !!enabledModules.learning_statistics_advanced,
       icon: () => <RadarChartOutlined className="m-0" />,
       key: 'owner_learning_overview',
-      name: formatMessage(commonMessages.menu.learningOverviewAdmin),
+      name: formatMessage(adminMessages.AdminMenu.learningOverviewAdmin),
     },
     {
       permissionIsAllowed: permissions.BACKSTAGE_ENTER,
       icon: () => <MoneyCircleIcon />,
       key: 'owner_sales',
-      name: formatMessage(commonMessages.menu.salesAdmin),
+      name: formatMessage(adminMessages.AdminMenu.salesAdmin),
     },
     {
       permissionIsAllowed: currentUserRole === 'app-owner',
       key: 'media_library',
       icon: () => <DatabaseOutlined className="m-0" />,
-      name: formatMessage(commonMessages.menu.mediaLibrary),
+      name: formatMessage(adminMessages.AdminMenu.mediaLibrary),
     },
     {
       permissionIsAllowed:
@@ -84,52 +86,52 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN,
       icon: () => <BookIcon />,
       key: 'owner_program_admin',
-      name: formatMessage(commonMessages.menu.programAdmin),
+      name: formatMessage(adminMessages.AdminMenu.programAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.PROGRAM_ADMIN,
           key: 'program_collection',
-          name: formatMessage(commonMessages.menu.programs),
+          name: formatMessage(adminMessages.AdminMenu.programs),
         },
         {
           permissionIsAllowed: permissions.PROGRAM_ISSUE_ADMIN,
           key: 'program_issue_collection',
-          name: formatMessage(commonMessages.menu.programIssues),
+          name: formatMessage(adminMessages.AdminMenu.programIssues),
         },
         {
           permissionIsAllowed: !!enabledModules.practice && permissions.PRACTICE_ADMIN,
           key: 'practice_collection',
-          name: formatMessage(commonMessages.menu.practice),
+          name: formatMessage(adminMessages.AdminMenu.practice),
         },
         {
           permissionIsAllowed: !!enabledModules.exercise,
           key: 'exercise_result',
-          name: formatMessage(commonMessages.menu.exerciseResult),
+          name: formatMessage(adminMessages.AdminMenu.exerciseResult),
         },
         {
           permissionIsAllowed: !!enabledModules.program_package && permissions.PROGRAM_PACKAGE_ADMIN,
           key: 'program_package_collection',
-          name: formatMessage(commonMessages.menu.programPackage),
+          name: formatMessage(adminMessages.AdminMenu.programPackage),
         },
         {
           permissionIsAllowed: !!enabledModules.learning_statistics && permissions.PROGRAM_PROGRESS_READ,
           key: 'program_progress',
-          name: formatMessage(commonMessages.menu.programProgress),
+          name: formatMessage(adminMessages.AdminMenu.programProgress),
         },
         {
           permissionIsAllowed: !!enabledModules.tempo_delivery && permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN,
           key: 'program_tempo_delivery',
-          name: formatMessage(commonMessages.menu.tempoDelivery),
+          name: formatMessage(adminMessages.AdminMenu.tempoDelivery),
         },
         {
           permissionIsAllowed: permissions.PROGRAM_CATEGORY_ADMIN,
           key: 'program_category',
-          name: formatMessage(commonMessages.menu.programCategory),
+          name: formatMessage(adminMessages.AdminMenu.programCategory),
         },
         {
           permissionIsAllowed: !!enabledModules.program_package && permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN,
           key: 'program_package_category',
-          name: formatMessage(commonMessages.menu.programPackageCategory),
+          name: formatMessage(adminMessages.AdminMenu.programPackageCategory),
         },
       ],
     },
@@ -137,22 +139,22 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: !!enabledModules.project && currentUserRole === 'app-owner',
       key: 'owner_project_admin',
       icon: () => <ProjectIcon />,
-      name: formatMessage(commonMessages.menu.projectAdmin),
+      name: formatMessage(adminMessages.AdminMenu.projectAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: true,
           key: 'project_funding_collection',
-          name: formatMessage(commonMessages.menu.projectFunding),
+          name: formatMessage(adminMessages.AdminMenu.projectFunding),
         },
         {
           permissionIsAllowed: true,
           key: 'project_pre_order_collection',
-          name: formatMessage(commonMessages.menu.projectPreOrder),
+          name: formatMessage(adminMessages.AdminMenu.projectPreOrder),
         },
         {
           permissionIsAllowed: false,
           key: 'project_on_sale_collection',
-          name: formatMessage(commonMessages.menu.projectOnSale),
+          name: formatMessage(adminMessages.AdminMenu.projectOnSale),
         },
       ],
     },
@@ -161,32 +163,32 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         !!enabledModules.podcast && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator'),
       key: 'owner_podcast_admin',
       icon: () => <MicrophoneIcon />,
-      name: formatMessage(commonMessages.menu.podcastAdmin),
+      name: formatMessage(adminMessages.AdminMenu.podcastAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: true,
           key: 'podcast_program_collection',
-          name: formatMessage(commonMessages.menu.podcastPrograms),
+          name: formatMessage(adminMessages.AdminMenu.podcastPrograms),
         },
         {
           permissionIsAllowed: true,
           key: 'podcast_plan',
-          name: formatMessage(commonMessages.menu.podcastPlans),
+          name: formatMessage(adminMessages.AdminMenu.podcastPlans),
         },
         {
           permissionIsAllowed: true,
           key: 'podcast_program_category',
-          name: formatMessage(commonMessages.menu.podcastCategory),
+          name: formatMessage(adminMessages.AdminMenu.podcastCategory),
         },
         {
           permissionIsAllowed: currentUserRole === 'app-owner',
           key: 'podcast_album_collection',
-          name: formatMessage(commonMessages.menu.podcastAlbum),
+          name: formatMessage(adminMessages.AdminMenu.podcastAlbum),
         },
         {
           permissionIsAllowed: currentUserRole === 'app-owner',
           key: 'podcast_album_category',
-          name: formatMessage(commonMessages.menu.podcastAlbumCategory),
+          name: formatMessage(adminMessages.AdminMenu.podcastAlbumCategory),
         },
       ],
     },
@@ -195,17 +197,17 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         !!enabledModules.appointment && (permissions.APPOINTMENT_PLAN_ADMIN || permissions.APPOINTMENT_PERIOD_ADMIN),
       key: 'owner_appointment_admin',
       icon: () => <CalendarAltIcon />,
-      name: formatMessage(commonMessages.menu.appointmentAdmin),
+      name: formatMessage(adminMessages.AdminMenu.appointmentAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.APPOINTMENT_PLAN_ADMIN,
           key: 'appointment_plan_collection',
-          name: formatMessage(commonMessages.menu.appointmentPlans),
+          name: formatMessage(adminMessages.AdminMenu.appointmentPlans),
         },
         {
           permissionIsAllowed: permissions.APPOINTMENT_PERIOD_ADMIN,
           key: 'appointment_period_collection',
-          name: formatMessage(commonMessages.menu.appointments),
+          name: formatMessage(adminMessages.AdminMenu.appointments),
         },
       ],
     },
@@ -213,17 +215,17 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: !!enabledModules.creator_display && currentUserRole === 'app-owner',
       key: 'owner_creator_display_admin',
       icon: () => <UsersIcon />,
-      name: formatMessage(commonMessages.menu.creatorDisplayAdmin),
+      name: formatMessage(adminMessages.AdminMenu.creatorDisplayAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: true,
           key: 'owner_creator_collection',
-          name: formatMessage(commonMessages.menu.creatorDisplayManagement),
+          name: formatMessage(adminMessages.AdminMenu.creatorDisplayManagement),
         },
         {
           permissionIsAllowed: true,
           key: 'owner_creator_category',
-          name: formatMessage(commonMessages.menu.creatorDisplayCategory),
+          name: formatMessage(adminMessages.AdminMenu.creatorDisplayCategory),
         },
       ],
     },
@@ -232,17 +234,17 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         !!enabledModules.activity && (permissions.ACTIVITY_ADMIN || permissions.ACTIVITY_CATEGORY_ADMIN),
       key: 'owner_activity_admin',
       icon: () => <CalendarAltIcon />,
-      name: formatMessage(commonMessages.menu.activityAdmin),
+      name: formatMessage(adminMessages.AdminMenu.activityAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.ACTIVITY_ADMIN,
           key: 'activity_collection',
-          name: formatMessage(commonMessages.menu.activities),
+          name: formatMessage(adminMessages.AdminMenu.activities),
         },
         {
           permissionIsAllowed: permissions.ACTIVITY_CATEGORY_ADMIN,
           key: 'activity_category',
-          name: formatMessage(commonMessages.menu.activityCategory),
+          name: formatMessage(adminMessages.AdminMenu.activityCategory),
         },
       ],
     },
@@ -255,18 +257,18 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           permissions.POST_CATEGORY_ADMIN),
       key: 'owner_blog_admin',
       icon: () => <ShoppingFilled className="mr-0" />,
-      name: formatMessage(commonMessages.menu.blogAdmin),
+      name: formatMessage(adminMessages.AdminMenu.blogAdmin),
       subMenuItems: [
         {
           permissionIsAllowed:
             currentUserRole === 'app-owner' || currentUserRole === 'content-creator' || permissions.POST_ADMIN,
           key: 'blog_collection',
-          name: formatMessage(commonMessages.menu.blogPosts),
+          name: formatMessage(adminMessages.AdminMenu.blogPosts),
         },
         {
           permissionIsAllowed: currentUserRole === 'app-owner' || permissions.POST_CATEGORY_ADMIN,
           key: 'blog_category',
-          name: formatMessage(commonMessages.menu.blogCategory),
+          name: formatMessage(adminMessages.AdminMenu.blogCategory),
         },
       ],
     },
@@ -275,22 +277,22 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         !!enabledModules.merchandise && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator'),
       key: 'owner_merchandise_admin',
       icon: () => <ShopIcon />,
-      name: formatMessage(commonMessages.menu.eCommerce),
+      name: formatMessage(adminMessages.AdminMenu.eCommerce),
       subMenuItems: [
         {
           permissionIsAllowed: true,
           key: 'merchandise_shop_collection',
-          name: formatMessage(commonMessages.menu.merchandiseShop),
+          name: formatMessage(adminMessages.AdminMenu.merchandiseShop),
         },
         {
           permissionIsAllowed: true,
           key: 'merchandise_inventory',
-          name: formatMessage(commonMessages.menu.merchandiseInventory),
+          name: formatMessage(adminMessages.AdminMenu.merchandiseInventory),
         },
         {
           permissionIsAllowed: true,
           key: 'merchandise_category',
-          name: formatMessage(commonMessages.menu.merchandiseCategory),
+          name: formatMessage(adminMessages.AdminMenu.merchandiseCategory),
         },
       ],
     },
@@ -300,23 +302,23 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         (currentUserRole === 'app-owner' || currentUserRole === 'content-creator'),
       key: 'shipping',
       icon: () => <GoldenFilled className="mr-0" />,
-      name: formatMessage(commonMessages.menu.shipping),
+      name: formatMessage(adminMessages.AdminMenu.shipping),
     },
     {
       permissionIsAllowed: permissions.COUPON_PLAN_ADMIN || permissions.VOUCHER_PLAN_ADMIN,
       key: 'owner_promotion_admin',
       icon: () => <DiscountIcon />,
-      name: formatMessage(commonMessages.menu.promotionAdmin),
+      name: formatMessage(adminMessages.AdminMenu.promotionAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.COUPON_PLAN_ADMIN,
-          key: 'owner_coupon_plans',
-          name: formatMessage(commonMessages.menu.coupons),
+          key: 'coupon_plans',
+          name: formatMessage(adminMessages.AdminMenu.coupons),
         },
         {
           permissionIsAllowed: !!enabledModules.voucher && permissions.VOUCHER_PLAN_ADMIN,
           key: 'owner_voucher_plans',
-          name: formatMessage(commonMessages.menu.vouchers),
+          name: formatMessage(adminMessages.AdminMenu.vouchers),
         },
       ],
     },
@@ -324,12 +326,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: !!enabledModules.coin && permissions.COIN_ADMIN,
       key: 'owner_credit_admin',
       icon: () => <PointIcon />,
-      name: formatMessage(commonMessages.menu.creditAdmin),
+      name: formatMessage(adminMessages.AdminMenu.creditAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: true,
           key: 'owner_coin_history',
-          name: formatMessage(commonMessages.menu.coinHistory),
+          name: formatMessage(adminMessages.AdminMenu.coinHistory),
         },
       ],
     },
@@ -337,27 +339,27 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: permissions.MEMBER_ADMIN || permissions.MEMBER_PROPERTY_ADMIN,
       key: 'owner_member_admin',
       icon: () => <UsersIcon />,
-      name: formatMessage(commonMessages.menu.memberAdmin),
+      name: formatMessage(adminMessages.AdminMenu.memberAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.MEMBER_ADMIN,
           key: 'owner_members',
-          name: formatMessage(commonMessages.menu.members),
+          name: formatMessage(adminMessages.AdminMenu.members),
         },
         {
           permissionIsAllowed: !!enabledModules.permission_group && currentUserRole === 'app-owner',
           key: 'owner_permission_group',
-          name: formatMessage(commonMessages.menu.permissionGroup),
+          name: formatMessage(adminMessages.AdminMenu.permissionGroup),
         },
         {
           permissionIsAllowed: permissions.MEMBER_CATEGORY_ADMIN,
           key: 'owner_member_category',
-          name: formatMessage(commonMessages.menu.memberCategory),
+          name: formatMessage(adminMessages.AdminMenu.memberCategory),
         },
         {
           permissionIsAllowed: !!enabledModules.member_property && permissions.MEMBER_PROPERTY_ADMIN,
           key: 'owner_member_properties',
-          name: formatMessage(commonMessages.menu.memberProperties),
+          name: formatMessage(adminMessages.AdminMenu.memberProperties),
         },
       ],
     },
@@ -365,28 +367,28 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: !!enabledModules.member_note && currentUserRole === 'app-owner',
       key: 'note_collection',
       icon: () => <UsersIcon />,
-      name: formatMessage(commonMessages.menu.noteAdmin),
+      name: formatMessage(adminMessages.AdminMenu.noteAdmin),
     },
     {
       permissionIsAllowed: !!enabledModules.sales,
       key: 'sales_management',
       icon: () => <PhoneIcon />,
-      name: formatMessage(commonMessages.menu.salesManagement),
+      name: formatMessage(adminMessages.AdminMenu.salesManagement),
       subMenuItems: [
         {
           permissionIsAllowed: !!enabledModules.sales,
           key: 'sales_performance',
-          name: formatMessage(commonMessages.menu.salesPerformance),
+          name: formatMessage(adminMessages.AdminMenu.salesPerformance),
         },
         {
           permissionIsAllowed: !!enabledModules.sales,
           key: 'sales_lead',
-          name: formatMessage(commonMessages.menu.salesLead),
+          name: formatMessage(adminMessages.AdminMenu.salesLead),
         },
         {
           permissionIsAllowed: currentUserRole === 'app-owner',
           key: 'sales_lead_delivery',
-          name: formatMessage(commonMessages.menu.salesLeadDelivery),
+          name: formatMessage(adminMessages.AdminMenu.salesLeadDelivery),
         },
       ],
     },
@@ -394,17 +396,17 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: !!enabledModules.member_task && (permissions.TASK_ADMIN || permissions.TASK_CATEGORY_ADMIN),
       key: 'owner_task_admin',
       icon: () => <UsersIcon />,
-      name: formatMessage(commonMessages.menu.taskAdmin),
+      name: formatMessage(adminMessages.AdminMenu.taskAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.TASK_ADMIN,
           key: 'task_collection',
-          name: formatMessage(commonMessages.menu.tasks),
+          name: formatMessage(adminMessages.AdminMenu.tasks),
         },
         {
           permissionIsAllowed: permissions.TASK_CATEGORY_ADMIN,
           key: 'task_category_collection',
-          name: formatMessage(commonMessages.menu.taskCategory),
+          name: formatMessage(adminMessages.AdminMenu.taskCategory),
         },
       ],
     },
@@ -413,17 +415,17 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         !!enabledModules.craft_page && (permissions.CRAFT_PAGE_ADMIN || permissions.CRAFT_MENU_ADMIN),
       key: 'craft_page_admin',
       icon: () => <PageIcon />,
-      name: formatMessage(commonMessages.menu.pageAdmin),
+      name: formatMessage(adminMessages.AdminMenu.pageAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.CRAFT_PAGE_ADMIN,
           key: 'craft_page_collection',
-          name: formatMessage(commonMessages.menu.pageSetup),
+          name: formatMessage(adminMessages.AdminMenu.pageSetup),
         },
         // {
         //   permissionIsAllowed: permissions.CRAFT_MENU_ADMIN,
         //   key: 'craft_menu',
-        //   name: formatMessage(commonMessages.menu.menuSetup),
+        //   name: formatMessage(adminMessages.AdminMenu.menuSetup),
         // },
       ],
     },
@@ -433,31 +435,31 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       icon: () => <UserIcon />,
       name:
         currentUserRole === 'app-owner'
-          ? formatMessage(commonMessages.menu.ownerSettings)
+          ? formatMessage(adminMessages.AdminMenu.ownerSettings)
           : currentUserRole === 'content-creator'
-          ? formatMessage(commonMessages.menu.creatorSettings)
-          : formatMessage(commonMessages.menu.memberSettings),
+          ? formatMessage(adminMessages.AdminMenu.creatorSettings)
+          : formatMessage(adminMessages.AdminMenu.memberSettings),
     },
     {
       permissionIsAllowed: permissions.APP_SETTING_ADMIN,
       key: 'app_admin',
       icon: () => <GlobalOutlined className="mr-0" />,
-      name: formatMessage(commonMessages.menu.appAdmin),
+      name: formatMessage(adminMessages.AdminMenu.appAdmin),
       subMenuItems: [
         {
           permissionIsAllowed: permissions.APP_SETTING_ADMIN,
           key: 'app_basic',
-          name: formatMessage(commonMessages.menu.appBasicAdmin),
+          name: formatMessage(adminMessages.AdminMenu.appBasicAdmin),
         },
         {
           permissionIsAllowed: permissions.APP_SETTING_ADMIN,
           key: 'app_setting',
-          name: formatMessage(commonMessages.menu.appSettingAdmin),
+          name: formatMessage(adminMessages.AdminMenu.appSettingAdmin),
         },
         {
           permissionIsAllowed: permissions.APP_SETTING_ADMIN,
           key: 'app_secret',
-          name: formatMessage(commonMessages.menu.appSecretAdmin),
+          name: formatMessage(adminMessages.AdminMenu.appSecretAdmin),
         },
       ],
     },
@@ -467,7 +469,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     if (typeof key === 'string' && key.startsWith('_blank')) {
     } else {
       const route = routesMap[key]
-      route ? history.push(route.path) : alert(formatMessage(errorMessages.route.notFound))
+      route ? history.push(route.path) : alert(formatMessage(adminMessages.AdminMenu.notFound))
     }
   }
 
