@@ -339,13 +339,11 @@ const ProjectPlanAdminModal: React.FC<
             <CurrencyInput noLabel />
           </Form.Item>
         )}
-
-        {!!enabledModules.project_auto_delivery && (
+        {enabledModules.project_auto_delivery && (
           <Form.Item name="planProducts" label={formatMessage(projectMessages.ProjectPlanAdminModal.deliverables)}>
             <ProjectPlanProductSelector />
           </Form.Item>
         )}
-
         <Form.Item label={formatMessage(messages.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
