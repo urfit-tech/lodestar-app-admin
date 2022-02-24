@@ -7086,6 +7086,37 @@ export interface GET_COUPON_CODE_BY_COUPONVariables {
 
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCT_DELIVERED_AT
+// ====================================================
+
+
+export interface UPDATE_ORDER_PRODUCT_DELIVERED_AT_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_DELIVERED_AT {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_ORDER_PRODUCT_DELIVERED_AT_update_order_product | null;
+}
+
+export interface UPDATE_ORDER_PRODUCT_DELIVERED_ATVariables {
+  orderProductId?: any | null;
+  deliveredAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
 
@@ -11593,6 +11624,7 @@ export interface GET_ORDERS_order_log_order_products {
   price: any;
   started_at: any | null;
   ended_at: any | null;
+  delivered_at: any | null;
   /**
    * An object relationship
    */

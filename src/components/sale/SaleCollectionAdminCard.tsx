@@ -1,6 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { useApolloClient } from '@apollo/react-hooks'
-import { Button, Divider, Input, Table, Tooltip, Typography } from 'antd'
+import { useApolloClient, useMutation } from '@apollo/react-hooks'
+import { Button, Divider, Input, message, Switch, Table, Tooltip, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import ApolloClient from 'apollo-client'
 import gql from 'graphql-tag'
@@ -8,19 +8,50 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import hasura from '../../hasura'
-import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin } from '../../helpers'
+import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLog } from '../../hooks/order'
 import { OrderLogProps } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
+import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
 import ModifyOrderStatusModal from './ModifyOrderStatusModal'
 import OrderStatusTag from './OrderStatusTag'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
+
+const messages = defineMessages({
+  openEquity: { id: 'sale.SaleCollectionAdminCard.openEquity', defaultMessage: '開通權益' },
+  removeEquity: { id: 'sale.SaleCollectionAdminCard.removeEquity', defaultMessage: '移除權益' },
+  remove: { id: 'sale.SaleCollectionAdminCard.remove', defaultMessage: '移除' },
+  open: { id: 'sale.SaleCollectionAdminCard.open', defaultMessage: '開通' },
+  cancel: { id: 'sale.SaleCollectionAdminCard.cancel', defaultMessage: '取消' },
+  updateEquitySuccessfully: {
+    id: 'sale.SaleCollectionAdminCard.updateEquitySuccessfully',
+    defaultMessage: '權益異動成功',
+  },
+  equity: { id: 'sale.SaleCollectionAdminCard.equity', defaultMessage: '權益' },
+
+  removeEquityWarning: {
+    id: 'sale.SaleCollectionAdminCard.removeEquityWarning',
+    defaultMessage: '此操作將移除 {productName} 的使用權益，確定要移除嗎？',
+  },
+  removeEquityReWarning: {
+    id: 'sale.SaleCollectionAdminCard.removeEquityReWarning',
+    defaultMessage: '將移除 {productName} 的使用權益，確定要移除嗎',
+  },
+  openEquityWarning: {
+    id: 'sale.SaleCollectionAdminCard.openEquityWarning',
+    defaultMessage: '此操作將開通 {productName} 的使用權益，確定要開通嗎？',
+  },
+})
+
+const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
+  color: ${props => !props.isDelivered && '#CDCDCD'};
+`
 
 const StyledContainer = styled.div`
   overflow: auto;
@@ -72,6 +103,11 @@ const SaleCollectionAdminCard: React.VFC<{
     memberNameAndEmail,
     memberId,
   })
+
+  const [updateOrderProductDeliver] = useMutation<
+    hasura.UPDATE_ORDER_PRODUCT_DELIVERED_AT,
+    hasura.UPDATE_ORDER_PRODUCT_DELIVERED_ATVariables
+  >(UPDATE_ORDER_PRODUCT_DELIVERED_AT)
 
   const getColumnSearchProps = ({
     onReset,
@@ -210,12 +246,12 @@ const SaleCollectionAdminCard: React.VFC<{
   }: OrderLogProps) => (
     <div>
       {orderProducts.map(v => (
-        <>
-          <div className="row" key={v.id}>
+        <StyledRowWrapper key={v.id} isDelivered={!!v.deliveredAt}>
+          <div className="row">
             <div className="col-2">
               <ProductTypeLabel productType={v.product.type} />
             </div>
-            <div className="col-8">
+            <div className="col-7">
               <span>{v.name}</span>
 
               {v.endedAt && v.product.type !== 'AppointmentPlan' && (
@@ -235,10 +271,58 @@ const SaleCollectionAdminCard: React.VFC<{
               )}
               {v.quantity && <span>{` X ${v.quantity} `}</span>}
             </div>
-            <div className="col-2 text-right">{currencyFormatter(v.price)}</div>
+            <div className="col-3 d-flex justify-content-between">
+              <div>
+                <AdminModal
+                  title={v.deliveredAt ? formatMessage(messages.removeEquity) : formatMessage(messages.openEquity)}
+                  renderTrigger={({ setVisible }) => (
+                    <div className="d-flex align-items-center">
+                      <span className="mr-2">{formatMessage(messages.equity)}</span>
+                      <Switch checked={!!v.deliveredAt} onChange={() => setVisible(true)} />
+                    </div>
+                  )}
+                  footer={null}
+                  renderFooter={({ setVisible }) => (
+                    <div className="mt-2">
+                      <Button className="mr-2" onClick={() => setVisible(false)}>
+                        {formatMessage(commonMessages.ui.cancel)}
+                      </Button>
+                      <Button
+                        type="primary"
+                        danger={!!v.deliveredAt}
+                        loading={loadingOrderLogs}
+                        onClick={async () =>
+                          (v.deliveredAt
+                            ? window.confirm(formatMessage(messages.removeEquityReWarning, { productName: v.name }))
+                            : true) &&
+                          (await updateOrderProductDeliver({
+                            variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
+                          })
+                            .then(() => {
+                              setVisible(false)
+                              refetchOrderLogs?.()
+                              message.success(formatMessage(messages.updateEquitySuccessfully))
+                            })
+                            .catch(handleError))
+                        }
+                      >
+                        {v.deliveredAt ? formatMessage(messages.remove) : formatMessage(messages.open)}
+                      </Button>
+                    </div>
+                  )}
+                >
+                  <div>
+                    {v.deliveredAt
+                      ? formatMessage(messages.removeEquityWarning, { productName: v.name })
+                      : formatMessage(messages.openEquityWarning, { productName: v.name })}
+                  </div>
+                </AdminModal>
+              </div>
+              <div>{currencyFormatter(v.price)}</div>
+            </div>
           </div>
           <Divider />
-        </>
+        </StyledRowWrapper>
       ))}
 
       <div className="row">
@@ -420,4 +504,12 @@ const GET_COUPON_CODE_BY_COUPON = gql`
     }
   }
 `
+const UPDATE_ORDER_PRODUCT_DELIVERED_AT = gql`
+  mutation UPDATE_ORDER_PRODUCT_DELIVERED_AT($orderProductId: uuid, $deliveredAt: timestamp) {
+    update_order_product(_set: { delivered_at: $deliveredAt }, where: { id: { _eq: $orderProductId } }) {
+      affected_rows
+    }
+  }
+`
+
 export default SaleCollectionAdminCard
