@@ -39,10 +39,6 @@ const messages = defineMessages({
     id: 'sale.SaleCollectionAdminCard.removeEquityWarning',
     defaultMessage: '此操作將移除 {productName} 的使用權益，確定要移除嗎？',
   },
-  removeEquityReWarning: {
-    id: 'sale.SaleCollectionAdminCard.removeEquityReWarning',
-    defaultMessage: '將移除 {productName} 的使用權益，確定要移除嗎',
-  },
   openEquityWarning: {
     id: 'sale.SaleCollectionAdminCard.openEquityWarning',
     defaultMessage: '此操作將開通 {productName} 的使用權益，確定要開通嗎？',
@@ -283,7 +279,7 @@ const SaleCollectionAdminCard: React.VFC<{
                   )}
                   footer={null}
                   renderFooter={({ setVisible }) => (
-                    <div className="mt-2">
+                    <div className="mt-4">
                       <Button className="mr-2" onClick={() => setVisible(false)}>
                         {formatMessage(commonMessages.ui.cancel)}
                       </Button>
@@ -292,10 +288,7 @@ const SaleCollectionAdminCard: React.VFC<{
                         danger={!!v.deliveredAt}
                         loading={loadingOrderLogs}
                         onClick={async () =>
-                          (v.deliveredAt
-                            ? window.confirm(formatMessage(messages.removeEquityReWarning, { productName: v.name }))
-                            : true) &&
-                          (await updateOrderProductDeliver({
+                          await updateOrderProductDeliver({
                             variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
                           })
                             .then(() => {
@@ -303,7 +296,7 @@ const SaleCollectionAdminCard: React.VFC<{
                               refetchOrderLogs?.()
                               message.success(formatMessage(messages.updateEquitySuccessfully))
                             })
-                            .catch(handleError))
+                            .catch(handleError)
                         }
                       >
                         {v.deliveredAt ? formatMessage(messages.remove) : formatMessage(messages.open)}
