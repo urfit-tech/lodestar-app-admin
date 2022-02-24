@@ -269,47 +269,49 @@ const SaleCollectionAdminCard: React.VFC<{
             </div>
             <div className="col-3 d-flex justify-content-between">
               <div>
-                <AdminModal
-                  title={v.deliveredAt ? formatMessage(messages.removeEquity) : formatMessage(messages.openEquity)}
-                  renderTrigger={({ setVisible }) => (
-                    <div className="d-flex align-items-center">
-                      <span className="mr-2">{formatMessage(messages.equity)}</span>
-                      <Switch checked={!!v.deliveredAt} onChange={() => setVisible(true)} />
-                    </div>
-                  )}
-                  footer={null}
-                  renderFooter={({ setVisible }) => (
-                    <div className="mt-4">
-                      <Button className="mr-2" onClick={() => setVisible(false)}>
-                        {formatMessage(commonMessages.ui.cancel)}
-                      </Button>
-                      <Button
-                        type="primary"
-                        danger={!!v.deliveredAt}
-                        loading={loadingOrderLogs}
-                        onClick={async () =>
-                          await updateOrderProductDeliver({
-                            variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
-                          })
-                            .then(() => {
-                              setVisible(false)
-                              refetchOrderLogs?.()
-                              message.success(formatMessage(messages.updateEquitySuccessfully))
+                {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
+                  <AdminModal
+                    title={v.deliveredAt ? formatMessage(messages.removeEquity) : formatMessage(messages.openEquity)}
+                    renderTrigger={({ setVisible }) => (
+                      <div className="d-flex align-items-center">
+                        <span className="mr-2">{formatMessage(messages.equity)}</span>
+                        <Switch checked={!!v.deliveredAt} onChange={() => setVisible(true)} />
+                      </div>
+                    )}
+                    footer={null}
+                    renderFooter={({ setVisible }) => (
+                      <div className="mt-4">
+                        <Button className="mr-2" onClick={() => setVisible(false)}>
+                          {formatMessage(commonMessages.ui.cancel)}
+                        </Button>
+                        <Button
+                          type="primary"
+                          danger={!!v.deliveredAt}
+                          loading={loadingOrderLogs}
+                          onClick={async () =>
+                            await updateOrderProductDeliver({
+                              variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
                             })
-                            .catch(handleError)
-                        }
-                      >
-                        {v.deliveredAt ? formatMessage(messages.remove) : formatMessage(messages.open)}
-                      </Button>
+                              .then(() => {
+                                setVisible(false)
+                                refetchOrderLogs?.()
+                                message.success(formatMessage(messages.updateEquitySuccessfully))
+                              })
+                              .catch(handleError)
+                          }
+                        >
+                          {v.deliveredAt ? formatMessage(messages.remove) : formatMessage(messages.open)}
+                        </Button>
+                      </div>
+                    )}
+                  >
+                    <div>
+                      {v.deliveredAt
+                        ? formatMessage(messages.removeEquityWarning, { productName: v.name })
+                        : formatMessage(messages.openEquityWarning, { productName: v.name })}
                     </div>
-                  )}
-                >
-                  <div>
-                    {v.deliveredAt
-                      ? formatMessage(messages.removeEquityWarning, { productName: v.name })
-                      : formatMessage(messages.openEquityWarning, { productName: v.name })}
-                  </div>
-                </AdminModal>
+                  </AdminModal>
+                )}
               </div>
               <div>{currencyFormatter(v.price)}</div>
             </div>
