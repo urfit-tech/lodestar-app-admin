@@ -11,13 +11,21 @@ type ProgramSelectorProps = {
   memberId?: string
 }
 
-export const OwnedProgramSelector: React.FC<SelectProps<string>> = selectProps => {
+export const OwnedProgramSelector: React.FC<{ noAll?: boolean } & SelectProps<string | string[]>> = ({
+  noAll,
+  ...selectProps
+}) => {
   const { formatMessage } = useIntl()
   const { loadingPrograms, programs } = usePrograms({ isPublished: true })
 
   return (
-    <Select loading={loadingPrograms} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
-      <Select.Option value="all">{formatMessage(programMessages.label.wholeProgram)}</Select.Option>
+    <Select
+      loading={loadingPrograms}
+      style={{ width: '100%' }}
+      defaultValue={noAll ? undefined : 'all'}
+      {...selectProps}
+    >
+      {!noAll && <Select.Option value="all">{formatMessage(programMessages.label.wholeProgram)}</Select.Option>}
       {programs.map(program => (
         <Select.Option key={program.id} value={program.id}>
           {program.title}

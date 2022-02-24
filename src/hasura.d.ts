@@ -1612,194 +1612,6 @@ export interface DELETE_COIN_LOGVariables {
 
 
 // ====================================================
-// GraphQL query operation: GET_COUPON_PLAN_PRODUCTS
-// ====================================================
-
-
-export interface GET_COUPON_PLAN_PRODUCTS_coupon_plan_product {
-  __typename: "coupon_plan_product";
-  id: any;
-  product_id: string;
-}
-
-export interface GET_COUPON_PLAN_PRODUCTS {
-  /**
-   * fetch data from the table: "coupon_plan_product"
-   */
-  coupon_plan_product: GET_COUPON_PLAN_PRODUCTS_coupon_plan_product[];
-}
-
-export interface GET_COUPON_PLAN_PRODUCTSVariables {
-  couponPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
-// GraphQL mutation operation: INSERT_COUPON_PLAN
-// ====================================================
-
-
-export interface INSERT_COUPON_PLAN_insert_coupon_plan {
-  __typename: "coupon_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_COUPON_PLAN {
-  /**
-   * insert data into the table: "coupon_plan"
-   */
-  insert_coupon_plan: INSERT_COUPON_PLAN_insert_coupon_plan | null;
-}
-
-export interface INSERT_COUPON_PLANVariables {
-  couponCodes: coupon_code_insert_input[];
-  constraint?: any | null;
-  description?: string | null;
-  endedAt?: any | null;
-  scope?: any | null;
-  startedAt?: any | null;
-  title?: string | null;
-  type?: number | null;
-  amount?: any | null;
-  couponPlanProduct: coupon_plan_product_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_COUPON_PLAN
-// ====================================================
-
-
-export interface UPDATE_COUPON_PLAN_update_coupon_plan {
-  __typename: "coupon_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_COUPON_PLAN_delete_coupon_plan_product {
-  __typename: "coupon_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_COUPON_PLAN_insert_coupon_plan_product {
-  __typename: "coupon_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_COUPON_PLAN {
-  /**
-   * update data of the table: "coupon_plan"
-   */
-  update_coupon_plan: UPDATE_COUPON_PLAN_update_coupon_plan | null;
-  /**
-   * delete data from the table: "coupon_plan_product"
-   */
-  delete_coupon_plan_product: UPDATE_COUPON_PLAN_delete_coupon_plan_product | null;
-  /**
-   * insert data into the table: "coupon_plan_product"
-   */
-  insert_coupon_plan_product: UPDATE_COUPON_PLAN_insert_coupon_plan_product | null;
-}
-
-export interface UPDATE_COUPON_PLANVariables {
-  couponPlanId: any;
-  constraint?: any | null;
-  description?: string | null;
-  endedAt?: any | null;
-  startedAt?: any | null;
-  scope?: any | null;
-  title?: string | null;
-  type?: number | null;
-  amount?: any | null;
-  couponPlanProduct: coupon_plan_product_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
-// GraphQL query operation: GET_COUPON_CODE_EXPORT
-// ====================================================
-
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_member {
-  __typename: "member";
-  id: string;
-  email: string;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_status {
-  __typename: "coupon_status";
-  used: boolean | null;
-  outdated: boolean | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons {
-  __typename: "coupon";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_COUPON_CODE_EXPORT_coupon_code_coupons_member;
-  /**
-   * An object relationship
-   */
-  status: GET_COUPON_CODE_EXPORT_coupon_code_coupons_status | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code {
-  __typename: "coupon_code";
-  id: any;
-  code: string;
-  remaining: number;
-  /**
-   * An array relationship
-   */
-  coupons: GET_COUPON_CODE_EXPORT_coupon_code_coupons[];
-}
-
-export interface GET_COUPON_CODE_EXPORT {
-  /**
-   * fetch data from the table: "coupon_code"
-   */
-  coupon_code: GET_COUPON_CODE_EXPORT_coupon_code[];
-}
-
-export interface GET_COUPON_CODE_EXPORTVariables {
-  couponPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
 // GraphQL query operation: GET_CATEGORY_LIST
 // ====================================================
 
@@ -2062,6 +1874,194 @@ export interface GET_SALES_MEMBERS {
 
 export interface GET_SALES_MEMBERSVariables {
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL query operation: GET_COUPON_PLAN_PRODUCTS
+// ====================================================
+
+
+export interface GET_COUPON_PLAN_PRODUCTS_coupon_plan_product {
+  __typename: "coupon_plan_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_COUPON_PLAN_PRODUCTS {
+  /**
+   * fetch data from the table: "coupon_plan_product"
+   */
+  coupon_plan_product: GET_COUPON_PLAN_PRODUCTS_coupon_plan_product[];
+}
+
+export interface GET_COUPON_PLAN_PRODUCTSVariables {
+  couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: INSERT_COUPON_PLAN
+// ====================================================
+
+
+export interface INSERT_COUPON_PLAN_insert_coupon_plan {
+  __typename: "coupon_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_COUPON_PLAN {
+  /**
+   * insert data into the table: "coupon_plan"
+   */
+  insert_coupon_plan: INSERT_COUPON_PLAN_insert_coupon_plan | null;
+}
+
+export interface INSERT_COUPON_PLANVariables {
+  couponCodes: coupon_code_insert_input[];
+  constraint?: any | null;
+  description?: string | null;
+  endedAt?: any | null;
+  scope?: any | null;
+  startedAt?: any | null;
+  title?: string | null;
+  type?: number | null;
+  amount?: any | null;
+  couponPlanProduct: coupon_plan_product_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_COUPON_PLAN
+// ====================================================
+
+
+export interface UPDATE_COUPON_PLAN_update_coupon_plan {
+  __typename: "coupon_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COUPON_PLAN_delete_coupon_plan_product {
+  __typename: "coupon_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COUPON_PLAN_insert_coupon_plan_product {
+  __typename: "coupon_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COUPON_PLAN {
+  /**
+   * update data of the table: "coupon_plan"
+   */
+  update_coupon_plan: UPDATE_COUPON_PLAN_update_coupon_plan | null;
+  /**
+   * delete data from the table: "coupon_plan_product"
+   */
+  delete_coupon_plan_product: UPDATE_COUPON_PLAN_delete_coupon_plan_product | null;
+  /**
+   * insert data into the table: "coupon_plan_product"
+   */
+  insert_coupon_plan_product: UPDATE_COUPON_PLAN_insert_coupon_plan_product | null;
+}
+
+export interface UPDATE_COUPON_PLANVariables {
+  couponPlanId: any;
+  constraint?: any | null;
+  description?: string | null;
+  endedAt?: any | null;
+  startedAt?: any | null;
+  scope?: any | null;
+  title?: string | null;
+  type?: number | null;
+  amount?: any | null;
+  couponPlanProduct: coupon_plan_product_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL query operation: GET_COUPON_CODE_EXPORT
+// ====================================================
+
+
+export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_member {
+  __typename: "member";
+  id: string;
+  email: string;
+}
+
+export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_status {
+  __typename: "coupon_status";
+  used: boolean | null;
+  outdated: boolean | null;
+}
+
+export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons {
+  __typename: "coupon";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_COUPON_CODE_EXPORT_coupon_code_coupons_member;
+  /**
+   * An object relationship
+   */
+  status: GET_COUPON_CODE_EXPORT_coupon_code_coupons_status | null;
+}
+
+export interface GET_COUPON_CODE_EXPORT_coupon_code {
+  __typename: "coupon_code";
+  id: any;
+  code: string;
+  remaining: number;
+  /**
+   * An array relationship
+   */
+  coupons: GET_COUPON_CODE_EXPORT_coupon_code_coupons[];
+}
+
+export interface GET_COUPON_CODE_EXPORT {
+  /**
+   * fetch data from the table: "coupon_code"
+   */
+  coupon_code: GET_COUPON_CODE_EXPORT_coupon_code[];
+}
+
+export interface GET_COUPON_CODE_EXPORTVariables {
+  couponPlanId: any;
 }
 
 /* tslint:disable */
@@ -3248,6 +3248,30 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   phones: member_phone_insert_input[];
   memberCategories: member_category_insert_input[];
   memberSpecialities: member_speciality_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_PROPERTIES
+// ====================================================
+
+
+export interface GET_MEMBER_PROPERTIES_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_PROPERTIES {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_MEMBER_PROPERTIES_property[];
 }
 
 /* tslint:disable */
@@ -7053,6 +7077,37 @@ export interface GET_COUPON_CODE_BY_COUPON {
 
 export interface GET_COUPON_CODE_BY_COUPONVariables {
   id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCT_DELIVERED_AT
+// ====================================================
+
+
+export interface UPDATE_ORDER_PRODUCT_DELIVERED_AT_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_DELIVERED_AT {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_ORDER_PRODUCT_DELIVERED_AT_update_order_product | null;
+}
+
+export interface UPDATE_ORDER_PRODUCT_DELIVERED_ATVariables {
+  orderProductId?: any | null;
+  deliveredAt?: any | null;
 }
 
 /* tslint:disable */
@@ -11569,6 +11624,7 @@ export interface GET_ORDERS_order_log_order_products {
   price: any;
   started_at: any | null;
   ended_at: any | null;
+  delivered_at: any | null;
   /**
    * An object relationship
    */
@@ -14047,6 +14103,44 @@ export interface GET_MEMBER_CONTRACTVariables {
 
 
 // ====================================================
+// GraphQL query operation: GET_SIMPLE_COUPON_PLAN_COLLECTION
+// ====================================================
+
+
+export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan {
+  __typename: "coupon_plan";
+  id: any;
+  title: string;
+  amount: any;
+  scope: any | null;
+  /**
+   * 1 - cash / 2 - percent
+   */
+  type: number;
+  constraint: any | null;
+  started_at: any | null;
+  ended_at: any | null;
+  description: string | null;
+}
+
+export interface GET_SIMPLE_COUPON_PLAN_COLLECTION {
+  /**
+   * fetch data from the table: "coupon_plan"
+   */
+  coupon_plan: GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan[];
+}
+
+export interface GET_SIMPLE_COUPON_PLAN_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
 // GraphQL query operation: GET_APP_PAGE_TEMPLATES
 // ====================================================
 
@@ -14291,44 +14385,6 @@ export interface INSERT_MERCHANDISEVariables {
   isPhysical?: boolean | null;
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-
-// ====================================================
-// GraphQL query operation: GET_SIMPLE_COUPON_PLAN_COLLECTION
-// ====================================================
-
-
-export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan {
-  __typename: "coupon_plan";
-  id: any;
-  title: string;
-  amount: any;
-  scope: any | null;
-  /**
-   * 1 - cash / 2 - percent
-   */
-  type: number;
-  constraint: any | null;
-  started_at: any | null;
-  ended_at: any | null;
-  description: string | null;
-}
-
-export interface GET_SIMPLE_COUPON_PLAN_COLLECTION {
-  /**
-   * fetch data from the table: "coupon_plan"
-   */
-  coupon_plan: GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan[];
-}
-
-export interface GET_SIMPLE_COUPON_PLAN_COLLECTIONVariables {
-  appId: string;
 }
 
 /* tslint:disable */
@@ -16003,6 +16059,143 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+
+// ====================================================
+// GraphQL query operation: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS
+// ====================================================
+
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_member_member_properties {
+  __typename: "member_property";
+  property_id: any;
+  value: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_member_member_properties[];
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_categories {
+  __typename: "program_category";
+  /**
+   * An object relationship
+   */
+  category: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_categories_category;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_practices {
+  __typename: "practice";
+  member_id: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_exercises {
+  __typename: "exercise";
+  id: any;
+  member_id: string;
+  answer: any | null;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_progress {
+  __typename: "program_content_progress";
+  member_id: string;
+  progress: any;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_body {
+  __typename: "program_content_body";
+  type: string | null;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents {
+  __typename: "program_content";
+  title: string;
+  /**
+   * sec
+   */
+  duration: any | null;
+  /**
+   * An array relationship
+   */
+  practices: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_practices[];
+  /**
+   * An array relationship
+   */
+  exercises: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_exercises[];
+  /**
+   * An array relationship
+   */
+  program_content_progress: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_progress[];
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_body;
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections {
+  __typename: "program_content_section";
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_contents: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents[];
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program {
+  __typename: "program";
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_categories: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_categories[];
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections[];
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_property[];
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_member[];
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program[];
+}
+
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESSVariables {
+  memberCondition?: member_bool_exp | null;
+  programCondition?: program_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -17930,6 +18123,7 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  invoice_issued_at = "invoice_issued_at",
   is_deleted = "is_deleted",
   last_paid_at = "last_paid_at",
   member_id = "member_id",
@@ -24954,8 +25148,11 @@ export interface member_export_bool_exp {
   id?: String_comparison_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
   manager_id?: String_comparison_exp | null;
+  manager_name?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
+  permission_groups?: String_comparison_exp | null;
   phones?: String_comparison_exp | null;
+  properties?: jsonb_comparison_exp | null;
   role?: String_comparison_exp | null;
   tags?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
@@ -27657,6 +27854,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  invoice_issued_at?: timestamptz_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -27759,6 +27957,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  invoice_issued_at?: any | null;
   is_deleted?: boolean | null;
   last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
@@ -27796,6 +27995,7 @@ export interface order_log_max_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  invoice_issued_at?: order_by | null;
   last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
@@ -27821,6 +28021,7 @@ export interface order_log_min_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  invoice_issued_at?: order_by | null;
   last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
@@ -27865,6 +28066,7 @@ export interface order_log_order_by {
   expired_at?: order_by | null;
   id?: order_by | null;
   invoice?: order_by | null;
+  invoice_issued_at?: order_by | null;
   is_deleted?: order_by | null;
   last_paid_at?: order_by | null;
   member?: member_order_by | null;

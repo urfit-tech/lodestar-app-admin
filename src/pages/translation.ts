@@ -26,6 +26,25 @@ const pageMessages = {
     notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
   }),
+  ProgramProgressCollectionAdminPage: defineMessages({
+    all: { id: 'page.ProgramProgressCollectionAdminPage.all', defaultMessage: '全部' },
+    selectedCategory: { id: 'page.ProgramProgressCollectionAdminPage.selectedCategory', defaultMessage: '指定分類' },
+    chooseProgramCategory: {
+      id: 'page.ProgramProgressCollectionAdminPage.chooseProgramCategory',
+      defaultMessage: '選擇課程分類',
+    },
+    program: { id: 'page.ProgramProgressCollectionAdminPage.program', defaultMessage: '課程' },
+    chooseProgram: { id: 'page.ProgramProgressCollectionAdminPage.chooseProgram', defaultMessage: '選擇課程' },
+    allPrograms: { id: 'page.ProgramProgressCollectionAdminPage.allPrograms', defaultMessage: '全部課程' },
+    selectedProgram: { id: 'page.ProgramProgressCollectionAdminPage.selectedProgram', defaultMessage: '指定課程' },
+    member: { id: 'page.ProgramProgressCollectionAdminPage.member', defaultMessage: '會員' },
+    chooseMember: { id: 'page.ProgramProgressCollectionAdminPage.chooseMember', defaultMessage: '選擇會員' },
+    allMembers: { id: 'page.ProgramProgressCollectionAdminPage.allMembers', defaultMessage: '全部會員' },
+    selectedMember: { id: 'page.ProgramProgressCollectionAdminPage.selectedMember', defaultMessage: '指定會員' },
+    property: { id: 'page.ProgramProgressCollectionAdminPage.property', defaultMessage: '自訂欄位' },
+    chooseProperty: { id: 'page.ProgramProgressCollectionAdminPage.chooseProperty', defaultMessage: '選擇欄位' },
+    containKeyword: { id: 'page.ProgramProgressCollectionAdminPage.containKeyword', defaultMessage: '關鍵字包含' },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },

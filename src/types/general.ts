@@ -68,6 +68,7 @@ type OrderProductProps = {
   price: number
   startedAt: Date | null
   endedAt: Date | null
+  deliveredAt: Date | null
   product: {
     id: string
     type: string

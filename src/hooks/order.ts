@@ -165,6 +165,7 @@ export const useOrderLog = (filters?: {
         price: w.price,
         startedAt: w.started_at && new Date(w.started_at),
         endedAt: w.ended_at && new Date(w.ended_at),
+        deliveredAt: w.delivered_at && new Date(w.delivered_at),
         product: w.product,
         quantity: w.options?.quantity,
         options: w.options,
@@ -238,6 +239,7 @@ const GET_ORDERS = gql`
         price
         started_at
         ended_at
+        delivered_at
         product {
           id
           type
