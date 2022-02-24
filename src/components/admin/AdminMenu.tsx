@@ -1,10 +1,4 @@
-import Icon, {
-  DatabaseOutlined,
-  GlobalOutlined,
-  GoldenFilled,
-  RadarChartOutlined,
-  ShoppingFilled,
-} from '@ant-design/icons'
+import Icon, { DatabaseOutlined, GlobalOutlined, GoldenFilled, ShoppingFilled } from '@ant-design/icons'
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -57,12 +51,6 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: string
     }[]
   }[] = [
-    {
-      permissionIsAllowed: !!enabledModules.learning_statistics_advanced,
-      icon: () => <RadarChartOutlined className="m-0" />,
-      key: 'owner_learning_overview',
-      name: formatMessage(adminMessages.AdminMenu.learningOverviewAdmin),
-    },
     {
       permissionIsAllowed: permissions.BACKSTAGE_ENTER,
       icon: () => <MoneyCircleIcon />,
@@ -117,6 +105,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           permissionIsAllowed: !!enabledModules.learning_statistics && permissions.PROGRAM_PROGRESS_READ,
           key: 'program_progress',
           name: formatMessage(adminMessages.AdminMenu.programProgress),
+        },
+        {
+          permissionIsAllowed: !!enabledModules.learning_statistics_advanced,
+          key: 'owner_learning_overview',
+          name: formatMessage(adminMessages.AdminMenu.learningOverviewAdmin),
         },
         {
           permissionIsAllowed: !!enabledModules.tempo_delivery && permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN,

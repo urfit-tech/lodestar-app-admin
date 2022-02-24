@@ -72,14 +72,9 @@ const MemberSelector: React.FC<{
 
 let timeout: NodeJS.Timeout | null
 
-export const AllMemberSelector: React.FC<
-  {
-    value?: string
-    onChange?: (value: string | null) => void
-  } & SelectProps<string>
-> = ({ value, onChange, ...props }) => {
+export const AllMemberSelector: React.FC<SelectProps<string | string[]>> = ({ value, onChange, ...props }) => {
   const [search, setSearch] = useState(value || '')
-  const { members } = useAllMemberCollection(search)
+  const { members } = useAllMemberCollection(Array.isArray(search) ? search[0] : search)
 
   const handleSearch = (value: string) => {
     if (timeout) {
@@ -93,7 +88,7 @@ export const AllMemberSelector: React.FC<
   }
 
   return (
-    <Select<string>
+    <Select<string | string[]>
       showSearch
       value={value}
       defaultActiveFirstOption={false}
@@ -137,6 +132,7 @@ const useAllMemberCollection = (search: string) => {
               { email: { _ilike: $search } }
             ]
           }
+          limit: 100
         ) {
           id
           picture_url
