@@ -3,7 +3,7 @@ import { Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
 import { useState } from 'react'
-import hasura from '../../../hasura'
+import hasura from '../../hasura'
 
 const ReferralMemberSelector: React.VFC<SelectProps<string>> = ({ ...selectProps }) => {
   const [referralMemberFilter, setReferralMemberFilter] = useState('')

@@ -4,12 +4,12 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Redirect } from 'react-router-dom'
-import { AdminPageTitle } from '../../components/admin'
-import CategoryAdminCard from '../../components/admin/CategoryAdminCard'
-import AdminLayout from '../../components/layout/AdminLayout'
-import { commonMessages } from '../../helpers/translation'
-import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
-import LoadingPage from '../LoadingPage'
+import { AdminPageTitle } from '../components/admin'
+import CategoryAdminCard from '../components/admin/CategoryAdminCard'
+import AdminLayout from '../components/layout/AdminLayout'
+import { commonMessages } from '../helpers/translation'
+import { ReactComponent as CalendarAltIcon } from '../images/icon/calendar-alt.svg'
+import LoadingPage from './LoadingPage'
 
 const CreatorCategoryAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()

@@ -4,7 +4,7 @@ import { UploadProps } from 'antd/lib/upload/Upload'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
-import { handleError, uploadFile } from '../../../helpers'
+import { handleError, uploadFile } from '../../helpers'
 
 const CertificationUploader: React.VFC<
   UploadProps & {

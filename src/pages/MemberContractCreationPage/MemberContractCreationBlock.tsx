@@ -10,8 +10,8 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { ContractInfo, ContractItem, FieldProps } from '.'
-import hasura from '../../../hasura'
-import { useCurrency } from '../../../hooks/currency'
+import hasura from '../../hasura'
+import { useCurrency } from '../../hooks/currency'
 
 const StyledOrder = styled.div`
   border: 1px solid var(--gray-darker);

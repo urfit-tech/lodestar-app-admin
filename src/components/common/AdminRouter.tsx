@@ -386,13 +386,13 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   // app owner admin
   owner_learning_overview: {
     path: '/learning-overview',
-    pageName: 'owner/LearningOverviewPage',
+    pageName: 'LearningOverviewPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
   owner_sales: {
     path: '/sales',
-    pageName: 'owner/SalesAdminPage',
+    pageName: 'SalesAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
@@ -403,54 +403,54 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
   owner_voucher_plans: {
     path: '/voucher-plans',
-    pageName: 'owner/VoucherPlanCollectionAdminPage',
+    pageName: 'VoucherPlanCollectionAdminPage',
     authenticated: true,
   },
   owner_members: {
     path: '/members',
-    pageName: 'owner/MemberCollectionAdminPage',
+    pageName: 'MemberCollectionAdminPage',
     authenticated: true,
   },
   owner_permission_group: {
     path: '/permission-group',
-    pageName: 'owner/PermissionGroupAdminPage',
+    pageName: 'PermissionGroupAdminPage',
     authenticated: true,
   },
   member_contract_creation: {
     path: '/members/:memberId/new-contract',
-    pageName: 'owner/MemberContractCreationPage',
+    pageName: 'MemberContractCreationPage',
     authenticated: true,
   },
   owner_member_properties: {
     path: '/member-properties',
-    pageName: 'owner/MemberPropertyAdminPage',
+    pageName: 'MemberPropertyAdminPage',
     authenticated: true,
   },
   owner_member_category: {
     path: '/member-category',
-    pageName: 'owner/MemberCategoryPage',
+    pageName: 'MemberCategoryPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
   owner_coin_history: {
     path: '/coins',
-    pageName: 'owner/CoinHistoryAdminPage',
+    pageName: 'CoinHistoryAdminPage',
     authenticated: true,
   },
   owner_point_history: {
     path: '/points',
-    pageName: 'owner/PointHistoryAdminPage',
+    pageName: 'PointHistoryAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
   owner_creator_collection: {
     path: '/creators',
-    pageName: 'owner/CreatorCollectionAdminPage',
+    pageName: 'CreatorCollectionAdminPage',
     authenticated: true,
   },
   owner_creator_category: {
     path: '/creator-category',
-    pageName: 'owner/CreatorCategoryAdminPage',
+    pageName: 'CreatorCategoryAdminPage',
     authenticated: true,
   },
 
