@@ -190,7 +190,7 @@ const MemberAdminLayout: React.FC<{
       </AdminHeader>
 
       <Layout>
-        <StyledSider width="320">
+        <StyledSider width="320" breakpoint="lg" collapsedWidth="0">
           <div className="text-center">
             <StyledAvatarWrapper>
               <CustomRatioImage
