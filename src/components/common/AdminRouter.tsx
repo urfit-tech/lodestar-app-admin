@@ -365,6 +365,11 @@ export const routesProps = {
     pageName: 'MemberAdminPage',
     authenticated: true,
   },
+  member_history_admin: {
+    path: '/members/:memberId/history',
+    pageName: 'MemberAdminPage',
+    authenticated: true,
+  },
   member_permission_admin: {
     path: '/members/:memberId/permission',
     pageName: 'MemberAdminPage',

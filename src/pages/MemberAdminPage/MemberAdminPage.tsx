@@ -19,6 +19,7 @@ import MemberVoucherAdminBlock from '../../components/voucher/MemberVoucherAdmin
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import { useMemberAdmin } from '../../hooks/member'
 import MemberAdminLayout from './MemberAdminLayout'
+import MemberHistoryAdminBlock from './MemberHistoryAdminBlock'
 
 const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -99,6 +100,18 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
+        enabledModules.contract && (
+          <Tabs.TabPane key="contract" tab={formatMessage(memberMessages.label.contract)}>
+            <div className="p-5">
+              <MemberContractAdminBlock memberId={memberId} />
+            </div>
+          </Tabs.TabPane>
+        ),
+        <Tabs.TabPane key="history" tab={formatMessage(memberMessages.label.history)}>
+          <div className="p-5">
+            <MemberHistoryAdminBlock memberId={memberId} />
+          </div>
+        </Tabs.TabPane>,
         currentUserRole === 'app-owner' && (
           <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
             <div className="p-5">
