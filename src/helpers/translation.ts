@@ -1636,6 +1636,10 @@ export const permissionMessages = defineMessages({
     id: 'permission.CONTRACT_RECOGNIZE_PERFORMANCE_EDIT',
     defaultMessage: '編輯績效金額',
   },
+
+  // craft
+  CRAFT_PAGE_ADMIN: { id: 'permission.CRAFT_PAGE_ADMIN', defaultMessage: '所有頁面模組功能' },
+  CRAFT_MENU_ADMIN: { id: 'permission.CRAFT_MENU_ADMIN', defaultMessage: '頁面模組選單' },
 })
 
 export const salesMessages = defineMessages({
