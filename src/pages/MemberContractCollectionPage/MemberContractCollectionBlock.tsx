@@ -460,6 +460,11 @@ export const MemberContractCollectionBlock: React.FC<{
       key: 'lastFilledAt',
       render: (text, record, index) => moment(record.lastFilledAt).format('YYYY-MM-DD HH:MM'),
     },
+    {
+      title: '來源網址',
+      dataIndex: 'sourceUrl',
+      key: 'sourceUrl',
+    },
   ]
 
   return (
