@@ -5,14 +5,11 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { BREAK_POINT } from '../components/common/Responsive'
-import MemberAdminLayout from '../components/layout/MemberAdminLayout'
-import hasura from '../hasura'
-import { rgba } from '../helpers'
-import { useMemberAdmin } from '../hooks/member'
-import { ReactComponent as GiftIcon } from '../images/icon/gift.svg'
+import hasura from '../../hasura'
+import { rgba } from '../../helpers'
+import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
+import { BREAK_POINT } from '../common/Responsive'
 
 const messages = defineMessages({
   available: { id: 'voucher.status.available', defaultMessage: '可使用' },
@@ -33,24 +30,7 @@ type VoucherProps = {
   available: boolean
 }
 
-const MemberVoucherAdminPage: React.VFC = () => {
-  const { memberId } = useParams<{ memberId: string }>()
-  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
-
-  if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
-    return <Skeleton active />
-  }
-
-  return (
-    <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
-      <div className="p-5">
-        <VoucherCollectionBlock memberId={memberId} />
-      </div>
-    </MemberAdminLayout>
-  )
-}
-
-const VoucherCollectionBlock: React.VFC<{
+const MemberVoucherAdminBlock: React.VFC<{
   memberId: string
 }> = ({ memberId }) => {
   const { loading, error, data } = useQuery<
@@ -248,4 +228,4 @@ const Voucher: React.VFC<VoucherProps> = ({ title, startedAt, endedAt, productQu
   )
 }
 
-export default MemberVoucherAdminPage
+export default MemberVoucherAdminBlock

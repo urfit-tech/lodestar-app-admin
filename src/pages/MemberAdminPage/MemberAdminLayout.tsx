@@ -10,23 +10,22 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import styled, { css } from 'styled-components'
-import { useCustomRenderer } from '../../../contexts/CustomRendererContext'
-import hasura from '../../../hasura'
-import { currencyFormatter, handleError } from '../../../helpers'
-import { commonMessages, memberMessages, promotionMessages } from '../../../helpers/translation'
-import { useMutateMember } from '../../../hooks/member'
-import DefaultAvatar from '../../../images/default/avatar.svg'
-import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
-import { ReactComponent as PhoneIcon } from '../../../images/icon/phone.svg'
-import { AppProps } from '../../../types/app'
-import { CouponPlanProps } from '../../../types/checkout'
-import { MemberAdminProps, UserRole } from '../../../types/member'
-import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../../admin'
-import { routesProps } from '../../common/AdminRouter'
-import { CustomRatioImage } from '../../common/Image'
-import SingleUploader from '../../form/SingleUploader'
-import { StyledLayoutContent } from '../DefaultLayout'
-import { MemberRejectionBlock } from './MemberRejectionBlock'
+import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../../components/admin'
+import { routesProps } from '../../components/common/AdminRouter'
+import { CustomRatioImage } from '../../components/common/Image'
+import SingleUploader from '../../components/form/SingleUploader'
+import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import { useCustomRenderer } from '../../contexts/CustomRendererContext'
+import hasura from '../../hasura'
+import { currencyFormatter, handleError } from '../../helpers'
+import { commonMessages, memberMessages } from '../../helpers/translation'
+import { useMutateMember } from '../../hooks/member'
+import DefaultAvatar from '../../images/default/avatar.svg'
+import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
+import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
+import { AppProps } from '../../types/app'
+import { CouponPlanProps } from '../../types/checkout'
+import { MemberAdminProps, UserRole } from '../../types/member'
 
 export type renderMemberAdminLayoutProps = {
   activeKey?: string
@@ -54,15 +53,6 @@ const StyledDescription = styled.div`
 const StyledDescriptionLabel = styled.span`
   color: var(--gray-dark);
   font-size: 14px;
-`
-export const StyledEmptyBlock = styled.div`
-  display: grid;
-  place-items: center;
-  min-height: 560px;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  color: var(--gray-dark);
 `
 const StyledAvatarWrapper = styled.div`
   position: relative;
@@ -133,11 +123,12 @@ const MemberAdminLayout: React.FC<{
     }[]
     noAgreedContract?: boolean
   }
+  tabPanes: (React.ReactElement | boolean | undefined)[]
   onRefetch: () => void
-}> = ({ member, onRefetch, children }) => {
+}> = ({ member, tabPanes, onRefetch, children }) => {
   const history = useHistory()
   const location = useLocation()
-  const match = useRouteMatch(routesProps.owner_member.path)
+  const match = useRouteMatch(routesProps.member_admin.path)
   const { currentMemberId, currentUserRole, permissions } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
@@ -164,50 +155,6 @@ const MemberAdminLayout: React.FC<{
   const { updateMemberAvatar } = useMutateMember()
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
-
-  const defaultTabPanes: renderMemberAdminLayoutProps['defaultTabPanes'] = [
-    <Tabs.TabPane key="profile" tab={formatMessage(memberMessages.label.profile)}>
-      {activeKey === 'profile' && children}
-    </Tabs.TabPane>,
-    enabledModules.member_note && (
-      <Tabs.TabPane key="note" tab={formatMessage(memberMessages.label.note)}>
-        {activeKey === 'note' && children}
-      </Tabs.TabPane>
-    ),
-    enabledModules.member_task && permissions.TASK_ADMIN && (
-      <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
-        {activeKey === 'task' && children}
-      </Tabs.TabPane>
-    ),
-    <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
-      {activeKey === 'coupon' && children}
-    </Tabs.TabPane>,
-    currentUserRole === 'app-owner' && enabledModules.voucher && (
-      <Tabs.TabPane key="voucher" tab={formatMessage(promotionMessages.label.voucher)}>
-        {activeKey === 'voucher' && children}
-      </Tabs.TabPane>
-    ),
-    currentUserRole === 'app-owner' && enabledModules.coin && (
-      <Tabs.TabPane key="coin" tab={formatMessage(commonMessages.menu.coinHistory)}>
-        {activeKey === 'coin' && children}
-      </Tabs.TabPane>
-    ),
-    enabledModules.contract && (
-      <Tabs.TabPane key="contract" tab={formatMessage(memberMessages.label.contract)}>
-        {activeKey === 'contract' && children}
-      </Tabs.TabPane>
-    ),
-    permissions.SALES_RECORDS_ADMIN && (
-      <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
-        {activeKey === 'order' && children}
-      </Tabs.TabPane>
-    ),
-    currentUserRole === 'app-owner' && (
-      <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
-        {activeKey === 'permission' && children}
-      </Tabs.TabPane>
-    ),
-  ]
 
   const handleUpdateAvatar = () => {
     setLoading(true)
@@ -315,26 +262,7 @@ const MemberAdminLayout: React.FC<{
             </StyledDescriptionLabel>
             <span>{member?.createdAt && moment(member.createdAt).format('YYYY-MM-DD')}</span>
           </StyledDescription>
-
           <Divider className="my-4" />
-
-          {enabledModules.member_rejection && member.noAgreedContract && (
-            <MemberRejectionBlock
-              lastRejectedMemberNote={member.lastRejectedNote}
-              insertMemberNoteRejectedAt={description => {
-                insertMemberNoteRejectedAt({
-                  variables: {
-                    memberId: member.id,
-                    authorId: currentMemberId || '',
-                    description,
-                    rejectedAt: new Date(),
-                  },
-                })
-                  .then(() => onRefetch())
-                  .catch(handleError)
-              }}
-            />
-          )}
         </StyledSider>
 
         <StyledLayoutContent variant="gray">
@@ -353,10 +281,10 @@ const MemberAdminLayout: React.FC<{
               enabledModules,
               permissions,
               currentUserRole,
-              defaultTabPanes,
+              defaultTabPanes: tabPanes,
               children,
               activeKey,
-            }) || defaultTabPanes}
+            }) || tabPanes}
           </Tabs>
         </StyledLayoutContent>
       </Layout>

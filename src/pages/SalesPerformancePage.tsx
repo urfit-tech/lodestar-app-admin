@@ -11,11 +11,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { AdminPageTitle } from '../../components/admin'
-import AdminLayout from '../../components/layout/AdminLayout'
-import hasura from '../../hasura'
-import { notEmpty } from '../../helpers'
-import { salesMessages } from '../../helpers/translation'
+import { AdminPageTitle } from '../components/admin'
+import AdminLayout from '../components/layout/AdminLayout'
+import hasura from '../hasura'
+import { notEmpty } from '../helpers'
+import { salesMessages } from '../helpers/translation'
 
 type MemberContract = {
   id: string

@@ -4,8 +4,8 @@ import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages, errorMessages } from '../../../helpers/translation'
-import AdminModal from '../../admin/AdminModal'
+import AdminModal from '../../components/admin/AdminModal'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 
 const StyledTime = styled.div`
   font-family: NotoSansCJKtc;

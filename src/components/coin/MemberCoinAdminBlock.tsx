@@ -96,7 +96,7 @@ const StyledSearchOutlined = styled(SearchOutlined)`
   }
 `
 
-const CoinLogTabs: React.VFC<{
+const MemberCoinAdminBlock: React.VFC<{
   memberId?: string
   withSendingModal?: boolean
 }> = ({ memberId, withSendingModal = true }) => {
@@ -804,4 +804,4 @@ const useDeleteCoinLog = () => {
   return deleteCoinLog
 }
 
-export default CoinLogTabs
+export default MemberCoinAdminBlock
