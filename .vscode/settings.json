@@ -18,7 +18,8 @@
     "timestamptz",
     "typegen",
     "wavesurfer",
-    "chailease"
+    "chailease",
+    "logined"
   ],
   "typescript.tsdk": "node_modules/typescript/lib"
 }
