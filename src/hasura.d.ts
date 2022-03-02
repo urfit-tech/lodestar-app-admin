@@ -14148,6 +14148,11 @@ export interface GET_MEMBER_CONTRACTVariables {
 // ====================================================
 
 
+export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products {
+  __typename: "coupon_plan_product";
+  product_id: string;
+}
+
 export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan {
   __typename: "coupon_plan";
   id: any;
@@ -14162,6 +14167,10 @@ export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan {
   started_at: any | null;
   ended_at: any | null;
   description: string | null;
+  /**
+   * An array relationship
+   */
+  coupon_plan_products: GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products[];
 }
 
 export interface GET_SIMPLE_COUPON_PLAN_COLLECTION {
