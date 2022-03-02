@@ -160,6 +160,7 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_co
   last_ad_material: string | null;
   first_fill_in_date: string | null;
   last_fill_in_date: string | null;
+  source_url: string | null;
 }
 
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_aggregate_aggregate {
@@ -2533,6 +2534,7 @@ export enum app_admin_update_column {
  */
 export enum app_constraint {
   App_pkey = "App_pkey",
+  app_symbol_key = "app_symbol_key",
 }
 
 /**
@@ -3266,6 +3268,7 @@ export enum member_card_update_column {
   card_secret = "card_secret",
   id = "id",
   member_id = "member_id",
+  priority = "priority",
 }
 
 /**
@@ -3868,6 +3871,7 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  invoice_issued_at = "invoice_issued_at",
   is_deleted = "is_deleted",
   last_paid_at = "last_paid_at",
   member_id = "member_id",
@@ -3886,7 +3890,7 @@ export enum order_log_update_column {
  * unique or primary key constraints on table "order_product"
  */
 export enum order_product_constraint {
-  order_product_order_id_product_id_key = "order_product_order_id_product_id_key",
+  order_product_order_id_name_product_id_key = "order_product_order_id_name_product_id_key",
   order_product_pkey = "order_product_pkey",
 }
 
@@ -4020,6 +4024,7 @@ export enum payment_log_update_column {
   created_at = "created_at",
   custom_no = "custom_no",
   gateway = "gateway",
+  invoice_issued_at = "invoice_issued_at",
   method = "method",
   no = "no",
   options = "options",
@@ -4943,12 +4948,31 @@ export enum project_plan_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "project_plan_product"
+ */
+export enum project_plan_product_constraint {
+  project_plan_product_pkey = "project_plan_product_pkey",
+  project_plan_product_project_plan_id_product_id_key = "project_plan_product_project_plan_id_product_id_key",
+}
+
+/**
+ * update columns of table "project_plan_product"
+ */
+export enum project_plan_product_update_column {
+  id = "id",
+  options = "options",
+  product_id = "product_id",
+  project_plan_id = "project_plan_id",
+}
+
+/**
  * update columns of table "project_plan"
  */
 export enum project_plan_update_column {
   auto_renewed = "auto_renewed",
   cover_url = "cover_url",
   created_at = "created_at",
+  currency_id = "currency_id",
   deliverables = "deliverables",
   description = "description",
   discount_down_price = "discount_down_price",
@@ -9787,9 +9811,17 @@ export interface member_bool_exp {
  * order by aggregate values of table "member_card"
  */
 export interface member_card_aggregate_order_by {
+  avg?: member_card_avg_order_by | null;
   count?: order_by | null;
   max?: member_card_max_order_by | null;
   min?: member_card_min_order_by | null;
+  stddev?: member_card_stddev_order_by | null;
+  stddev_pop?: member_card_stddev_pop_order_by | null;
+  stddev_samp?: member_card_stddev_samp_order_by | null;
+  sum?: member_card_sum_order_by | null;
+  var_pop?: member_card_var_pop_order_by | null;
+  var_samp?: member_card_var_samp_order_by | null;
+  variance?: member_card_variance_order_by | null;
 }
 
 /**
@@ -9798,6 +9830,13 @@ export interface member_card_aggregate_order_by {
 export interface member_card_arr_rel_insert_input {
   data: member_card_insert_input[];
   on_conflict?: member_card_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "member_card"
+ */
+export interface member_card_avg_order_by {
+  priority?: order_by | null;
 }
 
 /**
@@ -9814,6 +9853,7 @@ export interface member_card_bool_exp {
   id?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  priority?: Int_comparison_exp | null;
 }
 
 /**
@@ -9827,6 +9867,7 @@ export interface member_card_insert_input {
   id?: string | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  priority?: number | null;
 }
 
 /**
@@ -9836,6 +9877,7 @@ export interface member_card_max_order_by {
   card_identifier?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  priority?: order_by | null;
 }
 
 /**
@@ -9845,6 +9887,7 @@ export interface member_card_min_order_by {
   card_identifier?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  priority?: order_by | null;
 }
 
 /**
@@ -9854,6 +9897,55 @@ export interface member_card_on_conflict {
   constraint: member_card_constraint;
   update_columns: member_card_update_column[];
   where?: member_card_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "member_card"
+ */
+export interface member_card_stddev_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "member_card"
+ */
+export interface member_card_stddev_pop_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "member_card"
+ */
+export interface member_card_stddev_samp_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "member_card"
+ */
+export interface member_card_sum_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "member_card"
+ */
+export interface member_card_var_pop_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "member_card"
+ */
+export interface member_card_var_samp_order_by {
+  priority?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "member_card"
+ */
+export interface member_card_variance_order_by {
+  priority?: order_by | null;
 }
 
 /**
@@ -12659,6 +12751,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  invoice_issued_at?: timestamptz_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -12698,6 +12791,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  invoice_issued_at?: any | null;
   is_deleted?: boolean | null;
   last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
@@ -12735,6 +12829,7 @@ export interface order_log_max_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  invoice_issued_at?: order_by | null;
   last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
@@ -12760,6 +12855,7 @@ export interface order_log_min_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  invoice_issued_at?: order_by | null;
   last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
@@ -13249,8 +13345,9 @@ export interface payment_log_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
+  invoice_issued_at?: timestamptz_comparison_exp | null;
   method?: String_comparison_exp | null;
-  no?: numeric_comparison_exp | null;
+  no?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
@@ -13269,8 +13366,9 @@ export interface payment_log_insert_input {
   created_at?: any | null;
   custom_no?: string | null;
   gateway?: string | null;
+  invoice_issued_at?: any | null;
   method?: string | null;
-  no?: any | null;
+  no?: string | null;
   options?: any | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
@@ -17152,6 +17250,7 @@ export interface project_plan_bool_exp {
   auto_renewed?: Boolean_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  currency_id?: String_comparison_exp | null;
   deliverables?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   discount_down_price?: numeric_comparison_exp | null;
@@ -17169,6 +17268,7 @@ export interface project_plan_bool_exp {
   project_id?: uuid_comparison_exp | null;
   project_plan_enrollments?: project_plan_enrollment_bool_exp | null;
   project_plan_inventory_status?: project_plan_inventory_status_bool_exp | null;
+  project_plan_products?: project_plan_product_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
@@ -17197,6 +17297,7 @@ export interface project_plan_insert_input {
   auto_renewed?: boolean | null;
   cover_url?: string | null;
   created_at?: any | null;
+  currency_id?: string | null;
   deliverables?: string | null;
   description?: string | null;
   discount_down_price?: any | null;
@@ -17212,6 +17313,7 @@ export interface project_plan_insert_input {
   position?: number | null;
   project?: project_obj_rel_insert_input | null;
   project_id?: any | null;
+  project_plan_products?: project_plan_product_arr_rel_insert_input | null;
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
@@ -17234,12 +17336,64 @@ export interface project_plan_inventory_status_bool_exp {
 }
 
 /**
+ * input type for inserting object relation for remote table "project_plan"
+ */
+export interface project_plan_obj_rel_insert_input {
+  data: project_plan_insert_input;
+  on_conflict?: project_plan_on_conflict | null;
+}
+
+/**
  * on conflict condition type for table "project_plan"
  */
 export interface project_plan_on_conflict {
   constraint: project_plan_constraint;
   update_columns: project_plan_update_column[];
   where?: project_plan_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "project_plan_product"
+ */
+export interface project_plan_product_arr_rel_insert_input {
+  data: project_plan_product_insert_input[];
+  on_conflict?: project_plan_product_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_plan_product". All fields are combined with a logical 'AND'.
+ */
+export interface project_plan_product_bool_exp {
+  _and?: (project_plan_product_bool_exp | null)[] | null;
+  _not?: project_plan_product_bool_exp | null;
+  _or?: (project_plan_product_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+  project_plan?: project_plan_bool_exp | null;
+  project_plan_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project_plan_product"
+ */
+export interface project_plan_product_insert_input {
+  id?: any | null;
+  options?: any | null;
+  product?: product_obj_rel_insert_input | null;
+  product_id?: string | null;
+  project_plan?: project_plan_obj_rel_insert_input | null;
+  project_plan_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "project_plan_product"
+ */
+export interface project_plan_product_on_conflict {
+  constraint: project_plan_product_constraint;
+  update_columns: project_plan_product_update_column[];
+  where?: project_plan_product_bool_exp | null;
 }
 
 /**
@@ -18740,6 +18894,7 @@ export interface xuemi_member_private_teach_contract_bool_exp {
   referral_name?: String_comparison_exp | null;
   refund_applied_at?: String_comparison_exp | null;
   revoked_at?: timestamptz_comparison_exp | null;
+  source_url?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   status?: String_comparison_exp | null;
   student_certification?: String_comparison_exp | null;
@@ -18776,6 +18931,7 @@ export interface xuemi_member_private_teach_contract_order_by {
   referral_name?: order_by | null;
   refund_applied_at?: order_by | null;
   revoked_at?: order_by | null;
+  source_url?: order_by | null;
   started_at?: order_by | null;
   status?: order_by | null;
   student_certification?: order_by | null;

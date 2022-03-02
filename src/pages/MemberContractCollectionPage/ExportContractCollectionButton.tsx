@@ -144,6 +144,7 @@ const ExportContractCollectionButton: React.FC<{
             lastAdMaterial: v.last_ad_material,
             firstFilledAt: v.first_fill_in_date,
             lastFilledAt: v.last_fill_in_date,
+            sourceUrl: v.source_url,
           }
         }) || []
 
@@ -239,6 +240,8 @@ const ExportContractCollectionButton: React.FC<{
                 return contract.firstFilledAt || ''
               case 'lastFilledAt':
                 return contract.lastFilledAt || ''
+              case 'sourceUrl':
+                return contract.sourceUrl || ''
               default:
                 return ''
             }

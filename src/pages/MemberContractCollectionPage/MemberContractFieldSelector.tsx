@@ -90,6 +90,7 @@ const MemberContractFieldSelector: React.FC<{
         { title: '會員建立日期', key: 'memberCreatedAt' },
         { title: '首次填單日期', key: 'firstFilledAt' },
         { title: '最後填單日期', key: 'lastFilledAt' },
+        { title: '來源網址', key: 'sourceUrl' },
       ],
     },
   ]

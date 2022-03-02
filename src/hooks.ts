@@ -47,6 +47,7 @@ export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
       last_ad_material
       first_fill_in_date
       last_fill_in_date
+      source_url
     }
     xuemi_member_private_teach_contract_aggregate(where: $condition) {
       aggregate {
@@ -156,7 +157,7 @@ export const useMemberContractCollection = ({
         attachments: v.attachments,
         invoice: v.values?.invoice || null,
         projectPlanName:
-          v.values?.projectPlanName || v.values?.orderProducts.map((v: { name: string }) => v.name).join('、') || null,
+          v.values?.projectPlanName || v.values?.orderProducts?.map((v: { name: string }) => v.name).join('、') || null,
         price: v.values?.price || null,
         coinAmount:
           v.values?.coinAmount ||
@@ -193,6 +194,7 @@ export const useMemberContractCollection = ({
         lastAdMaterial: v.last_ad_material,
         firstFilledAt: v.first_fill_in_date,
         lastFilledAt: v.last_fill_in_date,
+        sourceUrl: v.source_url,
         rebateGift: rebateGift,
       }
     }) || []
