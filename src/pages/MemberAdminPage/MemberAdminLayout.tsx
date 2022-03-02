@@ -36,8 +36,9 @@ export type renderMemberAdminLayoutProps = {
   children?: React.ReactNode
 }
 
-const StyledSider = styled(Layout.Sider)`
+const StyledSiderContent = styled.div`
   padding: 2.5rem 2rem;
+  text-align: center;
 `
 const StyledName = styled.div`
   color: var(--gray-darker);
@@ -190,8 +191,8 @@ const MemberAdminLayout: React.FC<{
       </AdminHeader>
 
       <Layout>
-        <StyledSider width="320" breakpoint="lg" collapsedWidth="0">
-          <div className="text-center">
+        <Layout.Sider width="320" breakpoint="lg" collapsedWidth="0">
+          <StyledSiderContent>
             <StyledAvatarWrapper>
               <CustomRatioImage
                 ratio={1}
@@ -219,51 +220,53 @@ const MemberAdminLayout: React.FC<{
               </StyledImageHoverMask>
             </StyledAvatarWrapper>
             <StyledName className="mt-3 mb-4">{member?.name || member?.username}</StyledName>
-          </div>
-          <StyledDescription>
-            <Icon className="mr-2" component={() => <EmailIcon />} />
-            <span>{member?.email}</span>
-          </StyledDescription>
-          {permissions['MEMBER_PHONE_ADMIN'] &&
-            member?.phones.map(phone => (
-              <StyledDescription key={phone}>
-                <Icon className="mr-2" component={() => <PhoneIcon />} />
-                <span>{phone}</span>
-              </StyledDescription>
-            ))}
+          </StyledSiderContent>
+          <StyledSiderContent className="pt-0">
+            <StyledDescription>
+              <Icon className="mr-2" component={() => <EmailIcon />} />
+              <span>{member?.email}</span>
+            </StyledDescription>
+            {permissions['MEMBER_PHONE_ADMIN'] &&
+              member?.phones.map(phone => (
+                <StyledDescription key={phone}>
+                  <Icon className="mr-2" component={() => <PhoneIcon />} />
+                  <span>{phone}</span>
+                </StyledDescription>
+              ))}
 
-          <Divider className="my-4" />
+            <Divider className="my-4" />
 
-          <StyledDescription>
-            <StyledDescriptionLabel className="mr-3">
-              {formatMessage(commonMessages.label.consumption)}
-            </StyledDescriptionLabel>
-            <span>{currencyFormatter(member?.consumption || 0)}</span>
-          </StyledDescription>
-          {enabledModules.coin && (
             <StyledDescription>
               <StyledDescriptionLabel className="mr-3">
-                {formatMessage(commonMessages.label.ownedCoins)}
+                {formatMessage(commonMessages.label.consumption)}
               </StyledDescriptionLabel>
-              <span>
-                {member?.coins || 0} {settings['coin.unit']}
-              </span>
+              <span>{currencyFormatter(member?.consumption || 0)}</span>
             </StyledDescription>
-          )}
-          <StyledDescription>
-            <StyledDescriptionLabel className="mr-3">
-              {formatMessage(commonMessages.label.lastLogin)}
-            </StyledDescriptionLabel>
-            <span>{member?.loginedAt && moment(member.loginedAt).format('YYYY-MM-DD')}</span>
-          </StyledDescription>
-          <StyledDescription>
-            <StyledDescriptionLabel className="mr-3">
-              {formatMessage(commonMessages.label.createdDate)}
-            </StyledDescriptionLabel>
-            <span>{member?.createdAt && moment(member.createdAt).format('YYYY-MM-DD')}</span>
-          </StyledDescription>
+            {enabledModules.coin && (
+              <StyledDescription>
+                <StyledDescriptionLabel className="mr-3">
+                  {formatMessage(commonMessages.label.ownedCoins)}
+                </StyledDescriptionLabel>
+                <span>
+                  {member?.coins || 0} {settings['coin.unit']}
+                </span>
+              </StyledDescription>
+            )}
+            <StyledDescription>
+              <StyledDescriptionLabel className="mr-3">
+                {formatMessage(commonMessages.label.lastLogin)}
+              </StyledDescriptionLabel>
+              <span>{member?.loginedAt && moment(member.loginedAt).format('YYYY-MM-DD')}</span>
+            </StyledDescription>
+            <StyledDescription>
+              <StyledDescriptionLabel className="mr-3">
+                {formatMessage(commonMessages.label.createdDate)}
+              </StyledDescriptionLabel>
+              <span>{member?.createdAt && moment(member.createdAt).format('YYYY-MM-DD')}</span>
+            </StyledDescription>
+          </StyledSiderContent>
           <Divider className="my-4" />
-        </StyledSider>
+        </Layout.Sider>
 
         <StyledLayoutContent variant="gray">
           <Tabs

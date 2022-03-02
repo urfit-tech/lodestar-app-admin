@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Breadcrumb, DatePicker, Timeline } from 'antd'
+import { Breadcrumb, DatePicker, Slider, Timeline } from 'antd'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import { RangeValue } from 'rc-picker/lib/interface'
@@ -38,39 +38,55 @@ const MemberHistoryAdminBlock: React.VFC<{ memberId: string }> = ({ memberId }) 
             {logs.map(v => (
               <Timeline.Item key={v.id}>
                 <span className="mr-2">{moment(v.created_at).format('MM-DD HH:mm')}</span>
-                <Breadcrumb>
-                  <Breadcrumb.Item>
-                    <a
-                      href={`/programs/${v.program_content.program_content_section.program.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {v.program_content.program_content_section.program.title}
-                    </a>
-                  </Breadcrumb.Item>
-                  <Breadcrumb.Item>
-                    <a
-                      href={`/programs/${v.program_content.program_content_section.program.id}/contents`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {v.program_content.program_content_section.title}
-                    </a>
-                  </Breadcrumb.Item>
-                  <Breadcrumb.Item>
-                    <a
-                      href={`/programs/${v.program_content.program_content_section.program.id}/contents/${v.program_content.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {v.program_content.title}
-                    </a>
-                  </Breadcrumb.Item>
-                </Breadcrumb>
-                <small>
-                  {new Date(v.started_at * 1000).toISOString().substr(11, 8)} ~{' '}
-                  {new Date(v.ended_at * 1000).toISOString().substr(11, 8)}
-                </small>
+                <div className="row">
+                  <div className="col-12 col-lg-6">
+                    <Breadcrumb>
+                      <Breadcrumb.Item>
+                        <a
+                          href={`/programs/${v.program_content.program_content_section.program.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {v.program_content.program_content_section.program.title}
+                        </a>
+                      </Breadcrumb.Item>
+                      <Breadcrumb.Item>
+                        <a
+                          href={`/programs/${v.program_content.program_content_section.program.id}/contents`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {v.program_content.program_content_section.title}
+                        </a>
+                      </Breadcrumb.Item>
+                      <Breadcrumb.Item>
+                        <a
+                          href={`/programs/${v.program_content.program_content_section.program.id}/contents/${v.program_content.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {v.program_content.title}
+                        </a>
+                      </Breadcrumb.Item>
+                    </Breadcrumb>
+                    <div>{Math.round(((v.ended_at - v.started_at) / v.program_content.duration) * 100)}% watched</div>
+                  </div>
+                  <div className="col-12 col-lg-6">
+                    <Slider
+                      range
+                      max={v.program_content.duration}
+                      defaultValue={[v.started_at, v.ended_at]}
+                      disabled
+                      tipFormatter={v => v && new Date(v * 1000).toISOString().substr(11, 8)}
+                      marks={{
+                        0: '00:00:00',
+                        [v.program_content.duration]: new Date(v.program_content.duration * 1000)
+                          .toISOString()
+                          .substr(11, 8),
+                      }}
+                    />
+                  </div>
+                </div>
               </Timeline.Item>
             ))}
           </Timeline>
@@ -91,6 +107,7 @@ const GET_HISTORY = gql`
       program_content {
         id
         title
+        duration
         program_content_section {
           title
           program {

@@ -14487,6 +14487,10 @@ export interface GET_HISTORY_program_content_log_program_content {
   id: any;
   title: string;
   /**
+   * sec
+   */
+  duration: any | null;
+  /**
    * An object relationship
    */
   program_content_section: GET_HISTORY_program_content_log_program_content_program_content_section;
