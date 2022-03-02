@@ -5,57 +5,8 @@ import hasura from './hasura'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 
 export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
-  fragment private_teach_contract_aggregate on query_root {
-    private_teach_pending_contract: xuemi_member_private_teach_contract_aggregate(
-      where: { _and: [{ status: { _eq: "pending" } }, $dateRangeCondition] }
-    ) {
-      aggregate {
-        sum {
-          price
-        }
-      }
-    }
-    private_teach_loan_canceled_contract: xuemi_member_private_teach_contract_aggregate(
-      where: { _and: [{ status: { _eq: "loan-canceled" } }, $dateRangeCondition] }
-    ) {
-      aggregate {
-        sum {
-          price
-        }
-      }
-    }
-    private_teach_approved_contract: xuemi_member_private_teach_contract_aggregate(
-      where: { _and: [{ status: { _eq: "approved" } }, $dateRangeCondition] }
-    ) {
-      aggregate {
-        sum {
-          price
-        }
-      }
-    }
-    private_teach_refund_applied_contract: xuemi_member_private_teach_contract_aggregate(
-      where: { _and: [{ status: { _eq: "refund-applied" } }, $dateRangeCondition] }
-    ) {
-      aggregate {
-        sum {
-          price
-        }
-      }
-    }
-    private_teach_revoked_contract: xuemi_member_private_teach_contract_aggregate(
-      where: { _and: [{ status: { _eq: "revoked" } }, $dateRangeCondition] }
-    ) {
-      aggregate {
-        sum {
-          price
-        }
-      }
-    }
-  }
   query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
-    $withAmount: Boolean!
     $condition: xuemi_member_private_teach_contract_bool_exp
-    $dateRangeCondition: xuemi_member_private_teach_contract_bool_exp
     $limit: Int
     $orderBy: [xuemi_member_private_teach_contract_order_by!]
   ) {
@@ -102,7 +53,6 @@ export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
         count
       }
     }
-    ...private_teach_contract_aggregate @include(if: $withAmount)
   }
 `
 export const useMemberContractCollection = ({
@@ -130,16 +80,13 @@ export const useMemberContractCollection = ({
     startedAt: SortOrder
   }
 }) => {
-  const dateRangeCondition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['dateRangeCondition'] = {
+  const condition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
+    agreed_at: { _is_null: false },
+    revoked_at: { _is_null: !isRevoked },
     [dateRangeType]: {
       _gt: startedAt,
       _lt: endedAt,
     },
-  }
-  const condition: hasura.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
-    agreed_at: { _is_null: false },
-    revoked_at: { _is_null: !isRevoked },
-    ...dateRangeCondition,
     author_name: authorName ? { _ilike: `%${authorName}%` } : undefined,
     author_id: authorId ? { _eq: authorId } : undefined,
     status: status.length ? { _in: status } : undefined,
@@ -168,10 +115,7 @@ export const useMemberContractCollection = ({
     {
       variables: {
         condition,
-        dateRangeCondition,
-        withAmount: true,
         orderBy,
-        // limit: 10,
       },
     },
   )
@@ -330,6 +274,87 @@ export const useMemberContractCollection = ({
   //       }
   //     : undefined
 
+  return {
+    loadingMemberContracts: loading,
+    errorMemberContracts: error,
+    memberContracts,
+    refetchMemberContracts: refetch,
+    // loadMoreMemberContracts,
+  }
+}
+export const useMemberContractPriceAmount = ({
+  dateRangeType,
+  startedAt,
+  endedAt,
+}: {
+  dateRangeType: DateRangeType
+  startedAt: Date | null
+  endedAt: Date | null
+}) => {
+  const GET_MEMBER_CONTRACT_PRICE_AMOUNT = gql`
+    query GET_MEMBER_CONTRACT_PRICE_AMOUNT($dateRangeCondition: xuemi_member_private_teach_contract_bool_exp) {
+      private_teach_pending_contract: xuemi_member_private_teach_contract_aggregate(
+        where: { _and: [{ status: { _eq: "pending" } }, $dateRangeCondition] }
+      ) {
+        aggregate {
+          sum {
+            price
+          }
+        }
+      }
+      private_teach_loan_canceled_contract: xuemi_member_private_teach_contract_aggregate(
+        where: { _and: [{ status: { _eq: "loan-canceled" } }, $dateRangeCondition] }
+      ) {
+        aggregate {
+          sum {
+            price
+          }
+        }
+      }
+      private_teach_approved_contract: xuemi_member_private_teach_contract_aggregate(
+        where: { _and: [{ status: { _eq: "approved" } }, $dateRangeCondition] }
+      ) {
+        aggregate {
+          sum {
+            price
+          }
+        }
+      }
+      private_teach_refund_applied_contract: xuemi_member_private_teach_contract_aggregate(
+        where: { _and: [{ status: { _eq: "refund-applied" } }, $dateRangeCondition] }
+      ) {
+        aggregate {
+          sum {
+            price
+          }
+        }
+      }
+      private_teach_revoked_contract: xuemi_member_private_teach_contract_aggregate(
+        where: { _and: [{ status: { _eq: "revoked" } }, $dateRangeCondition] }
+      ) {
+        aggregate {
+          sum {
+            price
+          }
+        }
+      }
+    }
+  `
+  const dateRangeCondition: hasura.GET_MEMBER_CONTRACT_PRICE_AMOUNTVariables['dateRangeCondition'] = {
+    [dateRangeType]: {
+      _gt: startedAt,
+      _lt: endedAt,
+    },
+  }
+  const { loading, data, error, refetch } = useQuery<
+    hasura.GET_MEMBER_CONTRACT_PRICE_AMOUNT,
+    hasura.GET_MEMBER_CONTRACT_PRICE_AMOUNTVariables
+  >(GET_MEMBER_CONTRACT_PRICE_AMOUNT, {
+    variables: {
+      dateRangeCondition,
+    },
+  })
+
   const memberContractPriceAmount: Record<StatusType, number> = {
     pending: data?.private_teach_pending_contract.aggregate?.sum?.price || 0,
     approved: data?.private_teach_approved_contract.aggregate?.sum?.price || 0,
@@ -338,14 +363,7 @@ export const useMemberContractCollection = ({
     'loan-canceled': data?.private_teach_loan_canceled_contract.aggregate?.sum?.price || 0,
   }
 
-  return {
-    loadingMemberContracts: loading,
-    errorMemberContracts: error,
-    memberContracts,
-    memberContractPriceAmount,
-    refetchMemberContracts: refetch,
-    // loadMoreMemberContracts,
-  }
+  return { loading, memberContractPriceAmount, error, refetch }
 }
 
 export const useMutateMemberContract = () => {

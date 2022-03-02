@@ -70,7 +70,6 @@ const ExportContractCollectionButton: React.FC<{
         variables: {
           condition,
           orderBy,
-          withAmount: false,
         },
       })
 
