@@ -124,9 +124,9 @@
     tslib "^1.10.0"
 
 "@antv/algorithm@^0.1.5":
-  version "0.1.22"
-  resolved "https://registry.yarnpkg.com/@antv/algorithm/-/algorithm-0.1.22.tgz#bce7cd20595a5f9b2d81597d7aa7db7755641e59"
-  integrity sha512-Kx91d8gw2bNCdP6FFfWVTOOt14pwMc1/zEfAhsWp8KKx3dIfmT3q+bcAHf152jLjEUK6xGLkqSkGqGjzbEL6zQ==
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/@antv/algorithm/-/algorithm-0.1.23.tgz#0287b52c0b5c2aefb6c556f2191b2bc0d614410c"
+  integrity sha512-ncAfXwpO9angkGlZ/4LYsFk+T2hvQI6A+mEEGMslj8wF7ddPdtZ+DK3KFbhfJvQ4iz9Z44sJfdJ/fybwt0g0kA==
   dependencies:
     "@antv/util" "^2.0.13"
     tslib "^2.0.0"
@@ -301,9 +301,9 @@
     tslib "^2.0.0"
 
 "@antv/g2plot@^2.2.11":
-  version "2.4.8"
-  resolved "https://registry.yarnpkg.com/@antv/g2plot/-/g2plot-2.4.8.tgz#9b3432468d1a5719c584e35ea8e9a5fbd302091e"
-  integrity sha512-Ox9ZAYKfaZR5q69PQSWPsQKp4fNHJIS6BxMeKLp+OHmwXwVWFYA6YvsxivnKKdom/2QBJGzcA9EwdNUjs1gkQA==
+  version "2.4.9"
+  resolved "https://registry.yarnpkg.com/@antv/g2plot/-/g2plot-2.4.9.tgz#6bac913cdbf10cfd1f16807d68e13359eddc1fab"
+  integrity sha512-Q0DYDfmJZjHXPQLiMo+59spJvIAsFyTMfoxsS4FzCc8yd7OhjoPsKfJYu/1BhG9Uls80bdwUKy3fCEzb0zpjhA==
   dependencies:
     "@antv/event-emitter" "^0.1.2"
     "@antv/g2" "^4.1.26"
@@ -11589,9 +11589,9 @@ lodash.xorby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-lodestar-app-admin@urfit-tech/lodestar-app-admin.git#release:
+lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/bb8eafd908ed3d9db0d13b06c7aaa8b06fedf1f4"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/bde7666c4883dacd23be76e2c88fd1e3aae9558e"
   dependencies:
     "@ant-design/charts" "1.2.14"
     "@ant-design/compatible" "^1.0.8"
@@ -11655,7 +11655,7 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#release:
     less-loader "^7.1.0"
     lint-staged "^10.5.4"
     lodash "^4.17.21"
-    lodestar-app-element urfit-tech/lodestar-app-element#master
+    lodestar-app-element urfit-tech/lodestar-app-element#v1.5.4
     md5 "^2.3.0"
     moment "^2.29.1"
     moment-range "^4.0.2"
@@ -11697,7 +11697,7 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#release:
     uuid "8.3.2"
     wavesurfer.js "^4.1.1"
 
-lodestar-app-element@urfit-tech/lodestar-app-element#master:
+lodestar-app-element@urfit-tech/lodestar-app-element#v1.5.4:
   version "0.1.0"
   resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/18c7ca06b5016deabefa8698cd4f1b4b4a7f335b"
   dependencies:
@@ -11847,9 +11847,9 @@ lru-cache@^6.0.0:
     yallist "^4.0.0"
 
 magic-string@^0.25.0, magic-string@^0.25.7:
-  version "0.25.8"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.8.tgz#9ee85aabefa5135cf8d80e96adc83b595ae2c5e0"
-  integrity sha512-n9NlSgfkB2rPYjSd/EZDoQcsXzwYAv4CIB/vi3ZSvZ2Tjax5W5Ie1NMy4HG3PVdcL4bBMMR20Ng4UcISMzqRLw==
+  version "0.25.9"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.9.tgz#de7f9faf91ef8a1c91d02c2e5314c8277dbcdd1c"
+  integrity sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==
   dependencies:
     sourcemap-codec "^1.4.8"
 
