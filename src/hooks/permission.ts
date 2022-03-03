@@ -75,24 +75,74 @@ export const usePermissionGroupCollection = () => {
 
 export const usePermissionGroupsDropdownMenu = (
   appId: string,
-  filter?: { name?: string; email?: string; role?: string },
+  filter?: {
+    name?: string
+    email?: string
+    role?: string
+    phone?: string
+    category?: string
+    managerName?: string
+    managerId?: string
+    tag?: string
+    properties?: {
+      id: string
+      value?: string
+    }[]
+  },
 ) => {
+  const condition: hasura.GET_PERMISSION_GROUPS_DROPDOWN_MENUVariables['condition'] = {
+    member: {
+      app_id: { _eq: appId },
+      role: filter?.role ? { _eq: filter.role } : undefined,
+      name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+      email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+      manager: filter?.managerName
+        ? {
+            name: { _ilike: `%${filter.managerName}%` },
+          }
+        : undefined,
+      manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
+      member_phones: filter?.phone
+        ? {
+            phone: { _ilike: `%${filter.phone}%` },
+          }
+        : undefined,
+      member_categories: filter?.category
+        ? {
+            category: {
+              name: {
+                _ilike: `%${filter.category}%`,
+              },
+            },
+          }
+        : undefined,
+      member_tags: filter?.tag
+        ? {
+            tag_name: {
+              _ilike: filter.tag,
+            },
+          }
+        : undefined,
+      member_properties: filter?.properties?.length
+        ? {
+            _and: filter.properties
+              .filter(property => property.value)
+              .map(property => ({
+                property_id: { _eq: property.id },
+                value: { _ilike: `%${property.value}%` },
+              })),
+          }
+        : undefined,
+    },
+  }
+
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_PERMISSION_GROUPS_DROPDOWN_MENU,
     hasura.GET_PERMISSION_GROUPS_DROPDOWN_MENUVariables
   >(
     gql`
-      query GET_PERMISSION_GROUPS_DROPDOWN_MENU($appId: String!, $name: String, $email: String, $role: String) {
-        member_permission_group(
-          where: {
-            member: {
-              app_id: { _eq: $appId }
-              name: { _like: $name }
-              email: { _like: $email }
-              role: { _like: $role }
-            }
-          }
-        ) {
+      query GET_PERMISSION_GROUPS_DROPDOWN_MENU($condition: member_permission_group_bool_exp) {
+        member_permission_group(where: $condition) {
           member {
             id
           }
@@ -104,10 +154,7 @@ export const usePermissionGroupsDropdownMenu = (
     `,
     {
       variables: {
-        appId,
-        name: filter?.name && `%${filter.name}%`,
-        email: filter?.email && `%${filter.email}%`,
-        role: filter?.role && `%${filter.role}%`,
+        condition,
       },
     },
   )

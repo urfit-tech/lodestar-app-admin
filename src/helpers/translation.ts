@@ -1165,6 +1165,7 @@ export const memberMessages = {
     contract: { id: 'member.label.contract', defaultMessage: '合約紀錄' },
     permission: { id: 'member.label.permission', defaultMessage: '權限設定' },
     order: { id: 'member.label.order', defaultMessage: '訂單紀錄' },
+    history: { id: 'member.label.history', defaultMessage: '歷程紀錄' },
     callType: { id: 'member.label.callType', defaultMessage: '通話類型' },
     description: { id: 'member.label.description', defaultMessage: '內容' },
     noteForAdmin: { id: 'member.label.noteForAdmin', defaultMessage: '備註（僅有管理者看得到）' },
@@ -1636,6 +1637,10 @@ export const permissionMessages = defineMessages({
     id: 'permission.CONTRACT_RECOGNIZE_PERFORMANCE_EDIT',
     defaultMessage: '編輯績效金額',
   },
+
+  // craft
+  CRAFT_PAGE_ADMIN: { id: 'permission.CRAFT_PAGE_ADMIN', defaultMessage: '所有頁面模組功能' },
+  CRAFT_MENU_ADMIN: { id: 'permission.CRAFT_MENU_ADMIN', defaultMessage: '頁面模組選單' },
 })
 
 export const salesMessages = defineMessages({

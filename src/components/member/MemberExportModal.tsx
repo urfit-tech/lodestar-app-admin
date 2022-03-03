@@ -1,6 +1,8 @@
 import { ExportOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
-import { Button, Checkbox, Col, Form, Row, Select } from 'antd'
+import { Button } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
+import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { repeat } from 'ramda'
@@ -9,8 +11,7 @@ import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { UserRole } from '../../types/member'
-import AdminModal from '../admin/AdminModal'
+import { MemberInfoProps, UserRole } from '../../types/member'
 
 type ExportMemberProps = {
   id: string
@@ -22,56 +23,104 @@ type ExportMemberProps = {
   phones: string[]
   categories: string[]
   consumption: number
+  managerName: string
+  tags: string[]
+  properties: {
+    [id: string]: string
+  }
+  permissionGroupNames: string[]
 }
 const MemberExportModal: React.FC<{
   appId: string
+  columns: ColumnProps<MemberInfoProps>[]
+  visibleFields?: string[]
   filter?: {
+    role?: UserRole
     name?: string
     email?: string
-    phone?: string | undefined
-    category?: string | undefined
-    tag?: string | undefined
+    phone?: string
+    category?: string
+    managerName?: string
     managerId?: string
+    tag?: string
+    permissionGroup?: string
+    properties?: {
+      [propertyId: string]: string | undefined
+    }
   }
-}> = ({ appId, filter }) => {
+  sortOrder?: {
+    createdAt?: SortOrder
+    loginedAt?: SortOrder
+    consumption?: SortOrder
+  }
+}> = ({ appId, filter, visibleFields = [], columns, sortOrder = {} }) => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
-  const [selectedRole, setSelectedRole] = useState('all-members')
-  const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
   const [loadingMembers, setLoadingMembers] = useState(false)
-
-  const options = [
-    { label: formatMessage(commonMessages.label.memberName), value: 'name' },
-    { label: formatMessage(commonMessages.label.memberIdentity), value: 'memberIdentity' },
-    { label: 'Email', value: 'email' },
-    { label: formatMessage(commonMessages.label.phone), value: 'phone' },
-    { label: formatMessage(commonMessages.label.memberCategory), value: 'category' },
-    { label: formatMessage(commonMessages.label.orderLogCreatedDate), value: 'orderLogCreatedDate' },
-    { label: formatMessage(commonMessages.label.lastLogin), value: 'lastLogin' },
-    { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },
-  ]
 
   const exportMemberList = async () => {
     try {
       setLoadingMembers(true)
 
-      const { data } = await client.query<hasura.GET_MEMBER_COLLECTION, hasura.GET_MEMBER_COLLECTIONVariables>({
-        query: GET_MEMBER_COLLECTION,
+      const visibleColumns = columns.filter(column => visibleFields.includes(column.key as string))
+
+      const condition: hasura.GET_MEMBER_EXPORT_COLLECTIONVariables['condition'] = {
+        role: filter?.role ? { _eq: filter?.role } : undefined,
+        name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+        email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+        phones: filter?.phone ? { _ilike: `%${filter.phone}%` } : undefined,
+        categories: filter?.category ? { _ilike: `%${filter.category}%` } : undefined,
+        tags: filter?.tag ? { _ilike: `%${filter.tag}%` } : undefined,
+        manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
+        manager_name: filter?.managerName ? { _eq: filter.managerName } : undefined,
+        properties:
+          filter?.properties && Object.keys(filter.properties).length
+            ? { _has_keys_all: Object.keys(filter.properties) }
+            : undefined,
+        permission_groups: filter?.permissionGroup
+          ? {
+              _like: `%${filter.permissionGroup}%`,
+            }
+          : undefined,
+      }
+
+      const orderBy: hasura.GET_MEMBER_EXPORT_COLLECTIONVariables['orderBy'] =
+        sortOrder.consumption || sortOrder.createdAt || sortOrder.loginedAt
+          ? [
+              {
+                created_at:
+                  sortOrder.createdAt && ((sortOrder.createdAt === 'descend' ? 'desc' : 'asc') as hasura.order_by),
+              },
+              {
+                logined_at:
+                  sortOrder.loginedAt && ((sortOrder.loginedAt === 'descend' ? 'desc' : 'asc') as hasura.order_by),
+              },
+              {
+                consumption:
+                  sortOrder.consumption && ((sortOrder.consumption === 'descend' ? 'desc' : 'asc') as hasura.order_by),
+              },
+            ]
+          : [
+              {
+                created_at: 'desc_nulls_last' as hasura.order_by,
+              },
+            ]
+
+      const { data } = await client.query<
+        hasura.GET_MEMBER_EXPORT_COLLECTION,
+        hasura.GET_MEMBER_EXPORT_COLLECTIONVariables
+      >({
+        query: GET_MEMBER_EXPORT_COLLECTION,
         variables: {
-          condition: {
-            role: selectedRole === 'all-members' ? undefined : { _eq: selectedRole },
-            name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
-            email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
-            phones: filter?.phone ? { _ilike: `%${filter.phone}%` } : undefined,
-            categories: filter?.category ? { _ilike: `%${filter.category}%` } : undefined,
-            tags: filter?.tag ? { _ilike: `%${filter.tag}%` } : undefined,
-            manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
-          },
+          condition,
+          orderBy,
         },
       })
 
       let maxPhoneAmounts = 1
-      const members: ExportMemberProps[] =
+      let members: ExportMemberProps[]
+
+      members =
         data?.member_export.map(v => {
           const phones = v.phones?.split(',') || []
           if (phones.length > maxPhoneAmounts) {
@@ -85,47 +134,74 @@ const MemberExportModal: React.FC<{
             createdAt: v.created_at ? new Date(v.created_at) : null,
             loginedAt: v.logined_at ? new Date(v.logined_at) : null,
             phones,
-            consumption: v.consumption || 0,
             categories: v.categories?.split(',') || [],
+            managerName: v.manager_name || '',
+            consumption: v.consumption || 0,
+            tags: v.tags?.split(',') || [],
+            properties: v.properties,
+            permissionGroupNames: v.permission_groups?.split(',') || [],
           }
         }) || []
 
-      const csvData: string[][] = [
-        options
-          .filter(option => selectedExportFields.some(field => field === option.value))
-          .map(option => {
-            if (option.value === 'phone') {
-              return repeat(option.label, maxPhoneAmounts)
-            }
-            return option.label
-          })
-          .flat(), // columns
-      ]
-      members.forEach(member => {
-        const row: string[] = []
-        selectedExportFields.some(field => field === 'name') && row.push(member.name)
-        selectedExportFields.some(field => field === 'memberIdentity') &&
-          row.push(
-            member.role === 'general-member'
-              ? formatMessage(commonMessages.label.generalMember)
-              : member.role === 'content-creator'
-              ? formatMessage(commonMessages.label.contentCreator)
-              : member.role === 'app-owner'
-              ? formatMessage(commonMessages.label.appOwner)
-              : formatMessage(commonMessages.label.anonymousUser),
+      if (filter?.properties && Object.keys(filter.properties).length) {
+        const propertyFilter = Object.entries(filter.properties)
+        members = members.filter(member => {
+          return propertyFilter.every(
+            ([propertyId, value]) => member.properties[propertyId]?.includes(value || '') || false,
           )
-        selectedExportFields.some(field => field === 'email') && row.push(member.email)
-        selectedExportFields.some(field => field === 'phone') &&
-          row.push(...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length))
-        selectedExportFields.some(field => field === 'category') && row.push(member.categories.join(','))
-        selectedExportFields.some(field => field === 'orderLogCreatedDate') &&
-          row.push(member.createdAt ? moment(member.createdAt).format('YYYY-MM-DD HH:mm') : '')
-        selectedExportFields.some(field => field === 'lastLogin') &&
-          row.push(member.loginedAt ? moment(member.loginedAt).format('YYYY-MM-DD HH:mm') : '')
-        selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
-        csvData.push(row)
-      })
-      downloadCSV(`members-${appId}.csv`, toCSV(csvData))
+        })
+      }
+
+      const csvColumns = [
+        formatMessage(commonMessages.label.memberName),
+        formatMessage(commonMessages.label.memberIdentity),
+        ...visibleColumns
+          ?.map(column => {
+            if (column.key === 'phone') {
+              return repeat(column.title?.toString() || '', maxPhoneAmounts)
+            }
+            return column.title?.toString() || ''
+          })
+          ?.flat(),
+      ]
+
+      const csvRows: string[][] = members.map(member => [
+        member.name,
+        member.role === 'general-member'
+          ? formatMessage(commonMessages.label.generalMember)
+          : member.role === 'content-creator'
+          ? formatMessage(commonMessages.label.contentCreator)
+          : member.role === 'app-owner'
+          ? formatMessage(commonMessages.label.appOwner)
+          : formatMessage(commonMessages.label.anonymousUser),
+        ...visibleColumns.flatMap(column => {
+          switch (column.key) {
+            case 'email':
+              return member.email
+            case 'phone':
+              return [...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length)]
+            case 'categories':
+              return member.categories.join(',')
+            case 'createdAt':
+              return member.createdAt ? moment(member.createdAt).format('YYYY-MM-DD') : ''
+            case 'loginedAt':
+              return member.loginedAt ? moment(member.loginedAt).format('YYYY-MM-DD') : ''
+            case 'consumption':
+              return member.consumption.toString()
+            case 'tags':
+              return member.tags.join(',')
+            case 'managerName':
+              return member.managerName
+            default:
+              if (column.key && Object.keys(member.properties).includes(column.key.toString())) {
+                return member.properties[column.key.toString()]
+              }
+              return ''
+          }
+        }),
+      ])
+
+      downloadCSV(`members-${appId}.csv`, toCSV([csvColumns, ...csvRows]))
     } catch (error) {
       handleError(error)
     }
@@ -134,51 +210,16 @@ const MemberExportModal: React.FC<{
   }
 
   return (
-    <AdminModal
-      renderTrigger={({ setVisible }) => (
-        <Button icon={<ExportOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(commonMessages.ui.export)}
-        </Button>
-      )}
-      confirmLoading={loadingMembers}
-      title={formatMessage(commonMessages.ui.downloadMemberList)}
-      cancelText={formatMessage(commonMessages.ui.cancel)}
-      okText={formatMessage(commonMessages.ui.export)}
-      onOk={() => exportMemberList()}
-    >
-      <Form layout="vertical" colon={false} hideRequiredMark>
-        <Form.Item label={formatMessage(commonMessages.label.roleType)}>
-          <Select<string> value={selectedRole} onChange={v => setSelectedRole(v)}>
-            <Select.Option value="all-members">{formatMessage(commonMessages.label.allMembers)}</Select.Option>
-            <Select.Option value="app-owner">{formatMessage(commonMessages.label.appOwner)}</Select.Option>
-            <Select.Option value="content-creator">{formatMessage(commonMessages.label.contentCreator)}</Select.Option>
-            <Select.Option value="general-member">{formatMessage(commonMessages.label.generalMember)}</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
-          <Checkbox.Group
-            value={selectedExportFields}
-            onChange={checkedValues => setSelectedExportFields(checkedValues.map(v => v.toString()))}
-          >
-            <Row>
-              {options.map(v => (
-                <Col span={8} key={v.value}>
-                  <Checkbox value={v.value}>{v.label}</Checkbox>
-                </Col>
-              ))}
-            </Row>
-          </Checkbox.Group>
-        </Form.Item>
-      </Form>
-    </AdminModal>
+    <Button icon={<ExportOutlined />} loading={loadingMembers} onClick={() => exportMemberList()}>
+      {formatMessage(commonMessages.ui.export)}
+    </Button>
   )
 }
 
-const GET_MEMBER_COLLECTION = gql`
-  query GET_MEMBER_COLLECTION($condition: member_export_bool_exp!) {
-    member_export(where: $condition) {
+const GET_MEMBER_EXPORT_COLLECTION = gql`
+  query GET_MEMBER_EXPORT_COLLECTION($condition: member_export_bool_exp!, $orderBy: [member_export_order_by!]) {
+    member_export(where: $condition, order_by: $orderBy) {
       id
-      app_id
       name
       username
       email
@@ -187,7 +228,11 @@ const GET_MEMBER_COLLECTION = gql`
       role
       phones
       categories
+      tags
       consumption
+      manager_name
+      properties
+      permission_groups
     }
   }
 `

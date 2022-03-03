@@ -57,7 +57,7 @@ const MemberShopAdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) =>
   const handleClick: MenuClickEventHandler = ({ key }) => {
     if (typeof key === 'string' && key.startsWith('_blank')) {
     } else {
-      const route = routesProps[key]
+      const route = routesProps[key as keyof typeof routesProps]
       route ? history.push(route.path.replace(':shopId', shopId)) : alert(formatMessage(errorMessages.route.notFound))
     }
   }
@@ -117,11 +117,11 @@ const MemberShopLayout: React.FC<{
 
           <MemberShopAdminMenu
             mode="inline"
-            defaultOpenKeys={['owner_merchandise', 'owner_member_shop_setting']}
+            defaultOpenKeys={['merchandise', 'member_shop_setting']}
             defaultSelectedKeys={defaultSelectedKeys}
           >
             <Menu.SubMenu
-              key="owner_merchandise"
+              key="merchandise"
               title={
                 <span>
                   <Icon component={() => <ShopIcon />} />
@@ -133,7 +133,7 @@ const MemberShopLayout: React.FC<{
             </Menu.SubMenu>
 
             <Menu.SubMenu
-              key="owner_member_shop_setting"
+              key="member_shop_setting"
               title={
                 <span>
                   <Icon component={() => <ShopIcon />} />

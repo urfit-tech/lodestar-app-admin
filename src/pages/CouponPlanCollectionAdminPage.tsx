@@ -163,6 +163,9 @@ const useSimpleCouponPlanCollection = () => {
           started_at
           ended_at
           description
+          coupon_plan_products {
+            product_id
+          }
         }
       }
     `,
@@ -183,6 +186,7 @@ const useSimpleCouponPlanCollection = () => {
             constraint: couponPlan.constraint,
             startedAt: couponPlan.started_at ? new Date(couponPlan.started_at) : null,
             endedAt: couponPlan.ended_at ? new Date(couponPlan.ended_at) : null,
+            productIds: couponPlan.coupon_plan_products.map(couponPlanProduct => couponPlanProduct.product_id),
           }
         })
 

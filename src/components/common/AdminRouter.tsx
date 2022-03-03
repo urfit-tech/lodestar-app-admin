@@ -13,7 +13,7 @@ export type RouteProps = {
   authenticated: boolean
   allowedUserRole?: UserRole
 }
-export const routesProps: { [routeKey: string]: RouteProps } = {
+export const routesProps = {
   // all users
   home: {
     path: '/',
@@ -288,18 +288,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
 
   // sales
   sales_performance: {
-    path: '/sales-performance',
-    pageName: 'SalesPage/SalesPerformancePage',
+    path: '/sales/performance',
+    pageName: 'SalesPerformancePage',
     authenticated: true,
   },
   sales_lead: {
-    path: '/sales-lead',
-    pageName: 'SalesPage/SalesLeadPage',
+    path: '/sales/lead',
+    pageName: 'SalesLeadPage',
     authenticated: true,
   },
   sales_lead_delivery: {
-    path: '/sales-lead-delivery',
-    pageName: 'SalesPage/SalesLeadDeliveryPage',
+    path: '/sales/lead-delivery',
+    pageName: 'SalesLeadDeliveryPage',
     authenticated: true,
   },
 
@@ -315,54 +315,59 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   // member
-  owner_member: {
+  member_admin: {
     path: '/members/:memberId',
-    pageName: 'MemberProfileAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_profile: {
+  member_profile_admin: {
     path: '/members/:memberId/profile',
-    pageName: 'MemberProfileAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_note: {
+  member_note_admin: {
     path: '/members/:memberId/note',
-    pageName: 'MemberNoteAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_task: {
+  member_task_admin: {
     path: '/members/:memberId/task',
-    pageName: 'MemberTaskAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_coupon: {
+  member_coupon_admin: {
     path: '/members/:memberId/coupon',
-    pageName: 'MemberCouponAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_voucher: {
+  member_voucher_admin: {
     path: '/members/:memberId/voucher',
-    pageName: 'MemberVoucherAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_coin: {
+  member_coin_admin: {
     path: '/members/:memberId/coin',
-    pageName: 'MemberCoinAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_contract: {
+  member_contract_admin: {
     path: '/members/:memberId/contract',
-    pageName: 'MemberContractAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_order: {
+  member_order_admin: {
     path: '/members/:memberId/order',
-    pageName: 'MemberOrderAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
-  owner_member_permission: {
+  member_history_admin: {
+    path: '/members/:memberId/history',
+    pageName: 'MemberAdminPage',
+    authenticated: true,
+  },
+  member_permission_admin: {
     path: '/members/:memberId/permission',
-    pageName: 'MemberPermissionAdminPage',
+    pageName: 'MemberAdminPage',
     authenticated: true,
   },
   // craft page
@@ -379,15 +384,15 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     allowedUserRole: 'app-owner',
   },
   // app owner admin
-  owner_learning_overview: {
+  learning_overview: {
     path: '/learning-overview',
-    pageName: 'owner/LearningOverviewPage',
+    pageName: 'LearningOverviewPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_sales: {
+  sales: {
     path: '/sales',
-    pageName: 'owner/SalesAdminPage',
+    pageName: 'SalesAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
@@ -396,56 +401,56 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'CouponPlanCollectionAdminPage',
     authenticated: true,
   },
-  owner_voucher_plans: {
+  voucher_plans: {
     path: '/voucher-plans',
-    pageName: 'owner/VoucherPlanCollectionAdminPage',
+    pageName: 'VoucherPlanCollectionAdminPage',
     authenticated: true,
   },
-  owner_members: {
+  members: {
     path: '/members',
-    pageName: 'owner/MemberCollectionAdminPage',
+    pageName: 'MemberCollectionAdminPage',
     authenticated: true,
   },
-  owner_permission_group: {
+  permission_group: {
     path: '/permission-group',
-    pageName: 'owner/PermissionGroupAdminPage',
+    pageName: 'PermissionGroupAdminPage',
     authenticated: true,
   },
   member_contract_creation: {
     path: '/members/:memberId/new-contract',
-    pageName: 'owner/MemberContractCreationPage',
+    pageName: 'MemberContractCreationPage',
     authenticated: true,
   },
-  owner_member_properties: {
+  member_properties: {
     path: '/member-properties',
-    pageName: 'owner/MemberPropertyAdminPage',
+    pageName: 'MemberPropertyAdminPage',
     authenticated: true,
   },
-  owner_member_category: {
+  member_category: {
     path: '/member-category',
-    pageName: 'owner/MemberCategoryPage',
+    pageName: 'MemberCategoryPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_coin_history: {
+  coin_history: {
     path: '/coins',
-    pageName: 'owner/CoinHistoryAdminPage',
+    pageName: 'CoinHistoryAdminPage',
     authenticated: true,
   },
-  owner_point_history: {
+  point_history: {
     path: '/points',
-    pageName: 'owner/PointHistoryAdminPage',
+    pageName: 'PointHistoryAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_creator_collection: {
+  creator_collection: {
     path: '/creators',
-    pageName: 'owner/CreatorCollectionAdminPage',
+    pageName: 'CreatorCollectionAdminPage',
     authenticated: true,
   },
-  owner_creator_category: {
+  creator_category: {
     path: '/creator-category',
-    pageName: 'owner/CreatorCategoryAdminPage',
+    pageName: 'CreatorCategoryAdminPage',
     authenticated: true,
   },
 
