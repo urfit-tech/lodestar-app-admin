@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
 import { memberContractMessages } from '../../helpers/translation'
-import { useMemberContractCollection } from '../../hooks'
+import { useMemberContractCollection, useMemberContractPriceAmount } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
 import ExportContractCollectionButton from './ExportContractCollectionButton'
 import MemberContractFieldSelector from './MemberContractFieldSelector'
@@ -89,7 +89,6 @@ export const MemberContractCollectionBlock: React.FC<{
     loadingMemberContracts,
     errorMemberContracts,
     memberContracts,
-    memberContractPriceAmount,
     // loadMoreMemberContracts,
     refetchMemberContracts,
   } = useMemberContractCollection({
@@ -97,6 +96,12 @@ export const MemberContractCollectionBlock: React.FC<{
     sortOrder,
     isRevoked: variant === 'revoked',
   })
+  const { memberContractPriceAmount } = useMemberContractPriceAmount({
+    dateRangeType: filter.dateRangeType,
+    startedAt: filter.startedAt,
+    endedAt: filter.endedAt,
+  })
+
   const [isLoading, setIsLoading] = useState(false)
   const [activeMemberContractId, setActiveMemberContractId] = useState<string | null>(null)
   const [visibleFields, setVisibleFields] = useState<string[]>([
@@ -459,6 +464,11 @@ export const MemberContractCollectionBlock: React.FC<{
       dataIndex: 'lastFilledAt',
       key: 'lastFilledAt',
       render: (text, record, index) => moment(record.lastFilledAt).format('YYYY-MM-DD HH:MM'),
+    },
+    {
+      title: '來源網址',
+      dataIndex: 'sourceUrl',
+      key: 'sourceUrl',
     },
   ]
 
