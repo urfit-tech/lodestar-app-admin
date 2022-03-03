@@ -100,13 +100,6 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
-        enabledModules.contract && (
-          <Tabs.TabPane key="contract" tab={formatMessage(memberMessages.label.contract)}>
-            <div className="p-5">
-              <MemberContractAdminBlock memberId={memberId} />
-            </div>
-          </Tabs.TabPane>
-        ),
         <Tabs.TabPane key="history" tab={formatMessage(memberMessages.label.history)}>
           <div className="p-5">
             <MemberHistoryAdminBlock memberId={memberId} />
