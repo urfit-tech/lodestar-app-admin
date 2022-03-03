@@ -1165,6 +1165,7 @@ export const memberMessages = {
     contract: { id: 'member.label.contract', defaultMessage: '合約紀錄' },
     permission: { id: 'member.label.permission', defaultMessage: '權限設定' },
     order: { id: 'member.label.order', defaultMessage: '訂單紀錄' },
+    history: { id: 'member.label.history', defaultMessage: '歷程紀錄' },
     callType: { id: 'member.label.callType', defaultMessage: '通話類型' },
     description: { id: 'member.label.description', defaultMessage: '內容' },
     noteForAdmin: { id: 'member.label.noteForAdmin', defaultMessage: '備註（僅有管理者看得到）' },

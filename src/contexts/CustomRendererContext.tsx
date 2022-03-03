@@ -1,6 +1,6 @@
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import React, { useContext } from 'react'
-import { renderMemberAdminLayoutProps } from '../components/layout/MemberAdminLayout'
+import { renderMemberAdminLayoutProps } from '../pages/MemberAdminPage/MemberAdminLayout'
 import { UserRole } from '../types/member'
 
 export type CustomRendererProps = {

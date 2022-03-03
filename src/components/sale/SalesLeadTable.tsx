@@ -25,7 +25,7 @@ import { ReactComponent as UserOutlinedIcon } from '../../images/icon/user-o.svg
 import { LeadProps, SalesProps } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
-import MemberTaskAdminModal from '../member/MemberTaskAdminModal'
+import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import JitsiDemoModal from './JitsiDemoModal'
 import MemberPropertyModal from './MemberPropertyModal'
 
