@@ -11591,7 +11591,7 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-admin@urfit-tech/lodestar-app-admin.git#release:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/4fd900363a0b4bcb0af1c24e40787d48410d372c"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/bb8eafd908ed3d9db0d13b06c7aaa8b06fedf1f4"
   dependencies:
     "@ant-design/charts" "1.2.14"
     "@ant-design/compatible" "^1.0.8"
