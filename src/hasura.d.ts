@@ -2927,14 +2927,13 @@ export interface SEARCH_MEMBERSVariables {
 
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_COLLECTION
+// GraphQL query operation: GET_MEMBER_EXPORT_COLLECTION
 // ====================================================
 
 
-export interface GET_MEMBER_COLLECTION_member_export {
+export interface GET_MEMBER_EXPORT_COLLECTION_member_export {
   __typename: "member_export";
   id: string | null;
-  app_id: string | null;
   name: string | null;
   username: string | null;
   email: string | null;
@@ -2943,18 +2942,23 @@ export interface GET_MEMBER_COLLECTION_member_export {
   role: string | null;
   phones: string | null;
   categories: string | null;
+  tags: string | null;
   consumption: any | null;
+  manager_name: string | null;
+  properties: any | null;
+  permission_groups: string | null;
 }
 
-export interface GET_MEMBER_COLLECTION {
+export interface GET_MEMBER_EXPORT_COLLECTION {
   /**
    * fetch data from the table: "member_export"
    */
-  member_export: GET_MEMBER_COLLECTION_member_export[];
+  member_export: GET_MEMBER_EXPORT_COLLECTION_member_export[];
 }
 
-export interface GET_MEMBER_COLLECTIONVariables {
+export interface GET_MEMBER_EXPORT_COLLECTIONVariables {
   condition: member_export_bool_exp;
+  orderBy?: member_export_order_by[] | null;
 }
 
 /* tslint:disable */
@@ -11854,10 +11858,7 @@ export interface GET_PERMISSION_GROUPS_DROPDOWN_MENU {
 }
 
 export interface GET_PERMISSION_GROUPS_DROPDOWN_MENUVariables {
-  appId: string;
-  name?: string | null;
-  email?: string | null;
-  role?: string | null;
+  condition?: member_permission_group_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -25231,6 +25232,28 @@ export interface member_export_bool_exp {
   role?: String_comparison_exp | null;
   tags?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "member_export"
+ */
+export interface member_export_order_by {
+  app_id?: order_by | null;
+  categories?: order_by | null;
+  consumption?: order_by | null;
+  created_at?: order_by | null;
+  email?: order_by | null;
+  id?: order_by | null;
+  logined_at?: order_by | null;
+  manager_id?: order_by | null;
+  manager_name?: order_by | null;
+  name?: order_by | null;
+  permission_groups?: order_by | null;
+  phones?: order_by | null;
+  properties?: order_by | null;
+  role?: order_by | null;
+  tags?: order_by | null;
+  username?: order_by | null;
 }
 
 /**

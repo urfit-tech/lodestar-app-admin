@@ -1,6 +1,7 @@
 import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Dropdown, Input, Menu, Popover, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { SorterResult, SortOrder } from 'antd/lib/table/interface'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -117,23 +118,38 @@ const MemberCollectionAdminPage: React.FC = () => {
     category?: string
     managerName?: string
     tag?: string
-    permissionGroup?: string | null
+    permissionGroup?: string
+    properties?: {
+      [propertyId: string]: string | undefined
+    }
   }>({})
-  const [propertyFilter, setPropertyFilter] = useState<{
-    [propertyId: string]: string | undefined
-  }>({})
+  const [sortOrder, setSortOrder] = useState<{
+    createdAt: SortOrder
+    loginedAt: SortOrder
+    consumption: SortOrder
+  }>({
+    createdAt: null,
+    loginedAt: null,
+    consumption: null,
+  })
+
   const { loadingMembers, members, loadMoreMembers, refetchMembers } = useMemberCollection({
     ...fieldFilter,
-    properties: Object.keys(propertyFilter).map(propertyId => ({
+    properties: Object.entries(fieldFilter.properties || {}).map(([propertyId, value]) => ({
       id: propertyId,
-      value: propertyFilter[propertyId],
+      value,
     })),
   })
   const [loading, setLoading] = useState(false)
-  const [selectedPermissionGroup, setSelectedPermissionGroup] = useState<string | undefined>(undefined)
 
   // role selector
-  const { menu } = useMemberRoleCount(appId, fieldFilter)
+  const { menu } = useMemberRoleCount(appId, {
+    ...fieldFilter,
+    properties: Object.entries(fieldFilter.properties || {}).map(([propertyId, value]) => ({
+      id: propertyId,
+      value,
+    })),
+  })
   const dropdownMenu = menu.map(menuItem => ({
     ...menuItem,
     text: formatMessage(menuItem.intlKey),
@@ -175,14 +191,19 @@ const MemberCollectionAdminPage: React.FC = () => {
   )
 
   // permission group dropdown selector
-  const { permissionGroupDropdownMenu } = usePermissionGroupsDropdownMenu(appId, fieldFilter)
+  const { permissionGroupDropdownMenu } = usePermissionGroupsDropdownMenu(appId, {
+    ...fieldFilter,
+    properties: Object.entries(fieldFilter.properties || {}).map(([propertyId, value]) => ({
+      id: propertyId,
+      value,
+    })),
+  })
   const permissionGroupsDropDownSelector = (
     <Select
       allowClear
       placeholder={formatMessage(commonMessages.label.permissionGroupsSelectorPlaceholder)}
-      value={selectedPermissionGroup}
+      value={fieldFilter.permissionGroup}
       onChange={value => {
-        setSelectedPermissionGroup(value)
         setFieldFilter(filter => ({
           ...filter,
           permissionGroup: value,
@@ -201,15 +222,12 @@ const MemberCollectionAdminPage: React.FC = () => {
   const searchInputRef = useRef<Input | null>(null)
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
-      setPropertyFilter({
-        ...propertyFilter,
-        [columnId]: value ?? undefined,
-      })
+      setFieldFilter(filter => ({ ...filter, properties: { ...filter.properties, [columnId]: value ?? undefined } }))
     } else {
-      setFieldFilter({
-        ...fieldFilter,
+      setFieldFilter(filter => ({
+        ...filter,
         [columnId]: value ?? undefined,
-      })
+      }))
     }
   }
   const getColumnSearchProps: (field: keyof typeof fieldFilter, isProperty?: boolean) => ColumnProps<MemberInfoProps> =
@@ -297,14 +315,14 @@ const MemberCollectionAdminPage: React.FC = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD') : ''),
-      sorter: (a, b) => (b.createdAt ? b.createdAt.getTime() : 0) - (a.createdAt ? a.createdAt.getTime() : 0),
+      sorter: (a, b) => (a.createdAt ? a.createdAt.getTime() : 0) - (b.createdAt ? b.createdAt.getTime() : 0),
     },
     {
       title: formatMessage(commonMessages.label.lastLogin),
       dataIndex: 'loginedAt',
       key: 'loginedAt',
       render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).format('YYYY-MM-DD HH:mm:ss') : ''),
-      sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
+      sorter: (a, b) => (a.loginedAt ? a.loginedAt.getTime() : 0) - (b.loginedAt ? b.loginedAt.getTime() : 0),
     },
     {
       title: formatMessage(commonMessages.label.consumption),
@@ -312,7 +330,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       key: 'consumption',
       align: 'right',
       render: currencyFormatter,
-      sorter: (a, b) => b.consumption - a.consumption,
+      sorter: (a, b) => a.consumption - b.consumption,
     },
     {
       title: formatMessage(commonMessages.label.category),
@@ -405,13 +423,19 @@ const MemberCollectionAdminPage: React.FC = () => {
           <div className="mr-2">
             <MemberImportModal onRefetch={refetchMembers} />
           </div>
-          <MemberExportModal appId={appId} filter={fieldFilter} />
+          <MemberExportModal
+            appId={appId}
+            visibleFields={visibleColumnIds}
+            columns={columns}
+            filter={fieldFilter}
+            sortOrder={sortOrder}
+          />
         </div>
       </div>
 
       <AdminCard className="mb-5">
         <TableWrapper>
-          <Table
+          <Table<MemberInfoProps>
             columns={columns.filter(column => column.key === 'name' || visibleColumnIds.includes(column.key as string))}
             rowKey="id"
             loading={loadingMembers}
@@ -421,6 +445,15 @@ const MemberCollectionAdminPage: React.FC = () => {
             onRow={record => ({
               onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.id}`, '_blank'),
             })}
+            onChange={(pagination, filters, sorter) => {
+              const newSorter = sorter as SorterResult<MemberInfoProps>
+              setSortOrder({
+                createdAt: null,
+                loginedAt: null,
+                consumption: null,
+                [newSorter.field as 'createdAt' | 'loginedAt' | 'consumption']: newSorter.order || null,
+              })
+            }}
           />
         </TableWrapper>
 

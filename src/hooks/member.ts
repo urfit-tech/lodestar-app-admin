@@ -638,42 +638,79 @@ export const usePublicMember = (memberId: string) => {
 
 export const useMemberRoleCount = (
   appId: string,
-  filter?: { name?: string; email?: string; permissionGroup?: string | null },
+  filter?: {
+    name?: string
+    email?: string
+    phone?: string
+    category?: string
+    managerName?: string
+    managerId?: string
+    tag?: string
+    properties?: {
+      id: string
+      value?: string
+    }[]
+    permissionGroup?: string
+  },
 ) => {
   const conditionAll: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionAll'] = {
     app_id: { _eq: appId },
-    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
-    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
+    name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+    email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+    manager: filter?.managerName
+      ? {
+          name: { _ilike: `%${filter.managerName}%` },
+        }
+      : undefined,
+    manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
+    member_phones: filter?.phone
+      ? {
+          phone: { _ilike: `%${filter.phone}%` },
+        }
+      : undefined,
+    member_categories: filter?.category
+      ? {
+          category: {
+            name: {
+              _ilike: `%${filter.category}%`,
+            },
+          },
+        }
+      : undefined,
+    member_tags: filter?.tag
+      ? {
+          tag_name: {
+            _ilike: filter.tag,
+          },
+        }
+      : undefined,
+    member_properties: filter?.properties?.length
+      ? {
+          _and: filter.properties
+            .filter(property => property.value)
+            .map(property => ({
+              property_id: { _eq: property.id },
+              value: { _ilike: `%${property.value}%` },
+            })),
+        }
+      : undefined,
     member_permission_groups: filter?.permissionGroup
-      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
+      ? {
+          permission_group: { name: { _like: `${filter.permissionGroup}` } },
+        }
       : undefined,
   }
   const conditionAppOwner: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionAppOwner'] = {
-    app_id: { _eq: appId },
     role: { _eq: 'app-owner' },
-    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
-    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
-    member_permission_groups: filter?.permissionGroup
-      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
-      : undefined,
+    ...conditionAll,
   }
   const conditionContentCreator: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionContentCreator'] = {
-    app_id: { _eq: appId },
     role: { _eq: 'content-creator' },
-    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
-    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
-    member_permission_groups: filter?.permissionGroup
-      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
-      : undefined,
+    ...conditionAll,
   }
   const conditionGeneralMember: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionGeneralMember'] = {
-    app_id: { _eq: appId },
     role: { _eq: 'general-member' },
-    name: filter?.name ? { _ilike: `${filter?.name}` } : undefined,
-    email: filter?.email ? { _ilike: `${filter?.email}` } : undefined,
-    member_permission_groups: filter?.permissionGroup
-      ? { permission_group: { name: { _eq: filter?.permissionGroup } } }
-      : undefined,
+    ...conditionAll,
   }
 
   const { loading, error, data, refetch } = useQuery<
@@ -902,9 +939,9 @@ export const useMemberCollection = (filter?: {
           email: v.email,
           role: v.role as UserRole,
           createdAt: v.created_at ? new Date(v.created_at) : null,
-          loginedAt: v.logined_at,
+          loginedAt: v.logined_at ? new Date(v.logined_at) : null,
           manager: v.manager,
-          assignedAt: v.assigned_at,
+          assignedAt: v.assigned_at ? new Date(v.assigned_at) : null,
           phones: v.member_phones.map(v => v.phone),
           consumption: sum(
             v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
