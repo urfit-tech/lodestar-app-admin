@@ -6,6 +6,9 @@ const craftMessages = {
     primary: { id: 'craft.*.primary', defaultMessage: '樣式一' },
     secondary: { id: 'craft.*.secondary', defaultMessage: '樣式二' },
     variant: { id: 'craft.*.variant', defaultMessage: '樣式' },
+    spaceStyle: { id: 'craft.*.spaceStyle', defaultMessage: '間距樣式' },
+    positionStyle: { id: 'craft.*.positionStyle', defaultMessage: '位置樣式' },
+    borderStyle: { id: 'craft.*.borderStyle', defaultMessage: '框線樣式' },
   }),
   ProgramCollectionSettings: defineMessages({
     programSectionId: { id: 'craft.ProgramCollectionSettings.programSectionId', defaultMessage: '課程區塊 ID' },
@@ -37,6 +40,10 @@ const craftMessages = {
   SizeStyleInput: defineMessages({
     width: { id: 'craft.SizeStyleInput.width', defaultMessage: '寬度' },
     height: { id: 'craft.SizeStyleInput.height', defaultMessage: '高度' },
+  }),
+  LayoutSettings: defineMessages({
+    ratio: { id: 'craft.LayoutSettings.ratio', defaultMessage: '比例' },
+    gap: { id: 'craft.LayoutSettings.gap', defaultMessage: '間距' },
   }),
 }
 
