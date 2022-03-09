@@ -25,6 +25,10 @@ const messages = defineMessages({
   center: { id: 'craft.settings.section.center', defaultMessage: '置中' },
   top: { id: 'craft.settings.section.top', defaultMessage: '置頂' },
   bottom: { id: 'craft.settings.section.bottom', defaultMessage: '置底' },
+  normal: { id: 'craft.SectionSettings.normal', defaultMessage: '正常' },
+  hide: { id: 'craft.SectionSettings.hide', defaultMessage: '隱藏' },
+  appearAfterLogin: { id: 'craft.SectionSettings.appearAfterLogin', defaultMessage: '登入後顯示' },
+  disappearAfterLogin: { id: 'craft.SectionSettings.disappearAfterLogin', defaultMessage: '登入後隱藏' },
 })
 
 const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsChange }) => {
@@ -71,6 +75,18 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
   }
   return (
     <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
+      <Form.Item>
+        <Radio.Group
+          buttonStyle="solid"
+          value={props.display ? props.display : 'normal'}
+          onChange={e => onPropsChange?.({ ...props, display: e.target.value })}
+        >
+          <Radio.Button value="normal">{formatMessage(messages.normal)}</Radio.Button>
+          <Radio.Button value="hide">{formatMessage(messages.hide)}</Radio.Button>
+          <Radio.Button value="appearAfterLogin">{formatMessage(messages.appearAfterLogin)}</Radio.Button>
+          <Radio.Button value="disappearAfterLogin">{formatMessage(messages.disappearAfterLogin)}</Radio.Button>
+        </Radio.Group>
+      </Form.Item>
       <Form.Item>
         <Radio.Group
           buttonStyle="solid"
