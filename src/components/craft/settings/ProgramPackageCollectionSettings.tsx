@@ -2,10 +2,10 @@ import { Form, Input, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ProgramPackageCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramPackageCollection'
 import { useIntl } from 'react-intl'
-import { craftPageMessages } from '../../../helpers/translation'
 import { CraftElementSettings, CraftSettingLabel } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramPackageCollectionSelector from '../../program/ProgramPackageCollectionSelector'
+import craftMessages from '../translation'
 
 const ProgramPackageCollectionSettings: CraftElementSettings<ProgramPackageCollectionProps> = ({
   props,
@@ -25,7 +25,11 @@ const ProgramPackageCollectionSettings: CraftElementSettings<ProgramPackageColle
       }}
     >
       <Form.Item
-        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.programPackageSectionId)}</CraftSettingLabel>}
+        label={
+          <CraftSettingLabel>
+            {formatMessage(craftMessages.ProgramPackageCollectionSettings.programPackageSectionId)}
+          </CraftSettingLabel>
+        }
       >
         <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
       </Form.Item>
@@ -39,7 +43,7 @@ const ProgramPackageCollectionSettings: CraftElementSettings<ProgramPackageColle
       </Form.Item>
       <Form.Item
         valuePropName="checked"
-        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.categorySelectorEnabled)}</CraftSettingLabel>}
+        label={<CraftSettingLabel>{formatMessage(craftMessages['*'].categorySelectorEnabled)}</CraftSettingLabel>}
       >
         <Switch checked={props.withSelector} onChange={withSelector => onPropsChange?.({ ...props, withSelector })} />
       </Form.Item>
