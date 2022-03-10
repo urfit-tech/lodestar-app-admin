@@ -1,10 +1,8 @@
 import { Collapse, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { TitleProps } from 'lodestar-app-element/src/components/common/Title'
-import React from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import {
   CraftElementSettings,
   CraftSettingLabel,
@@ -14,6 +12,7 @@ import { AdminHeaderTitle } from '../../admin'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import TypographyStyleInput from '../inputs/TypographyStyleInput'
+import craftMessages from '../translation'
 
 type FieldValues = {
   content: string
@@ -39,10 +38,10 @@ const TitleSettings: CraftElementSettings<TitleProps> = ({ props, onPropsChange 
       >
         <StyledCollapsePanel
           key="titleContent"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleContent)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages.TitleSettings.titleContent)}</AdminHeaderTitle>}
         >
           <div className="mb-2">
-            <CraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</CraftSettingLabel>
+            <CraftSettingLabel>{formatMessage(craftMessages['*'].title)}</CraftSettingLabel>
             <Form.Item>
               <Input value={props.title} onChange={e => onPropsChange?.({ ...props, title: e.target.value })} />
             </Form.Item>
@@ -50,7 +49,7 @@ const TitleSettings: CraftElementSettings<TitleProps> = ({ props, onPropsChange 
         </StyledCollapsePanel>
         <StyledCollapsePanel
           key="titleStyle"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleStyle)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].titleStyle)}</AdminHeaderTitle>}
         >
           <Form.Item>
             <SpaceStyleInput

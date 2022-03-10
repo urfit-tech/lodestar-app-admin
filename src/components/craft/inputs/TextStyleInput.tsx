@@ -2,13 +2,13 @@ import { Collapse, InputNumber, Radio, Space } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import {
   CraftSettingLabel,
   CraftSlider,
   StyledCollapsePanel,
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
+import craftMessages from '../translation'
 import BoxModelInput from './BoxModelInput'
 import ColorPicker from './ColorPicker'
 
@@ -31,7 +31,7 @@ const TextStyleInput: React.VFC<{
       {typeof value !== 'undefined' && (
         <StyledCollapsePanel key="contentStyle" header={<AdminHeaderTitle>{title}</AdminHeaderTitle>}>
           <>
-            <CraftSettingLabel>{formatMessage(craftPageMessages.label.fontSize)}</CraftSettingLabel>
+            <CraftSettingLabel>{formatMessage(craftMessages['*'].fontSize)}</CraftSettingLabel>
             <div className="col-12 mb-2 p-0 d-flex justify-content-center align-items-center ">
               <div className="col-8 p-0">
                 <CraftSlider
@@ -54,7 +54,7 @@ const TextStyleInput: React.VFC<{
 
           {type === 'paragraph' && (
             <>
-              <CraftSettingLabel>{formatMessage(craftPageMessages.label.lineHeight)}</CraftSettingLabel>
+              <CraftSettingLabel>{formatMessage(craftMessages['*'].lineHeight)}</CraftSettingLabel>
               <div className="col-12 mb-2 p-0 d-flex justify-content-center align-items-center ">
                 <div className="col-8 p-0">
                   <CraftSlider
@@ -73,14 +73,14 @@ const TextStyleInput: React.VFC<{
           )}
 
           <BoxModelInput
-            title={formatMessage(craftPageMessages.label.margin)}
+            title={formatMessage(craftMessages.TextStyledInput.margin)}
             value={value.margin?.toString()}
             onChange={v => onChange?.({ ...value, margin: v })}
           />
 
           <div className="d-flex mb-3">
             <div>
-              <CraftSettingLabel>{formatMessage(craftPageMessages.label.textAlign)}</CraftSettingLabel>
+              <CraftSettingLabel>{formatMessage(craftMessages['*'].textAlign)}</CraftSettingLabel>
               <div>
                 <Radio.Group
                   className="mt-2"
@@ -88,15 +88,15 @@ const TextStyleInput: React.VFC<{
                   onChange={e => onChange?.({ ...value, textAlign: e.target.value })}
                 >
                   <Space direction="vertical">
-                    <Radio value="left">{formatMessage(craftPageMessages.label.left)}</Radio>
-                    <Radio value="center">{formatMessage(craftPageMessages.label.center)}</Radio>
-                    <Radio value="right">{formatMessage(craftPageMessages.label.right)}</Radio>
+                    <Radio value="left">{formatMessage(craftMessages['*'].left)}</Radio>
+                    <Radio value="center">{formatMessage(craftMessages['*'].center)}</Radio>
+                    <Radio value="right">{formatMessage(craftMessages['*'].right)}</Radio>
                   </Space>
                 </Radio.Group>
               </div>
             </div>
             <div className="ml-4">
-              <CraftSettingLabel>{formatMessage(craftPageMessages.label.fontWeight)}</CraftSettingLabel>
+              <CraftSettingLabel>{formatMessage(craftMessages['*'].fontWeight)}</CraftSettingLabel>
               <div>
                 <Radio.Group
                   className="mt-2"
@@ -104,9 +104,9 @@ const TextStyleInput: React.VFC<{
                   onChange={e => onChange?.({ ...value, fontWeight: e.target.value })}
                 >
                   <Space direction="vertical">
-                    <Radio value="lighter">{formatMessage(craftPageMessages.label.lighter)}</Radio>
-                    <Radio value="normal">{formatMessage(craftPageMessages.label.normal)}</Radio>
-                    <Radio value="bold">{formatMessage(craftPageMessages.label.bold)}</Radio>
+                    <Radio value="lighter">{formatMessage(craftMessages['*'].lighter)}</Radio>
+                    <Radio value="normal">{formatMessage(craftMessages['*'].normal)}</Radio>
+                    <Radio value="bold">{formatMessage(craftMessages['*'].bold)}</Radio>
                   </Space>
                 </Radio.Group>
               </div>

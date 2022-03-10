@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { SketchPicker } from 'react-color'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import { CraftSettingLabel, StyledUnderLineInput } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import craftMessages from '../translation'
 
 const StyleCircleColorInput = styled.div<{ background: string }>`
   background-color: ${props => props.background};
@@ -40,7 +40,7 @@ const ColorPicker: React.VFC<{
 
   return (
     <>
-      <CraftSettingLabel>{formatMessage(craftPageMessages.label.color)}</CraftSettingLabel>
+      <CraftSettingLabel>{formatMessage(craftMessages.ColorPicker.color)}</CraftSettingLabel>
       <StyledUnderLineInput
         className="mb-3"
         bordered={false}

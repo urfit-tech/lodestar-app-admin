@@ -2,10 +2,8 @@ import { useNode } from '@craftjs/core'
 import { Checkbox, Collapse, Form, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CarouselProps } from 'lodestar-app-element/src/components/common/Carousel'
-import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import {
   CraftElementSettings,
   CraftSlider,
@@ -13,6 +11,7 @@ import {
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle, StyledInputNumber } from '../../admin'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import craftMessages from '../translation'
 
 type FieldValues = {
   slidesToShow: number
@@ -22,26 +21,6 @@ type FieldValues = {
   backgroundStyle: CSSObject
 }
 
-const messages = defineMessages({
-  currentSlide: { id: 'craft.settings.carousel.currentSlide', defaultMessage: '目前輪播' },
-  autoplay: { id: 'craft.settings.carousel.autoplay', defaultMessage: '自動播放' },
-  autoplaySpeed: { id: 'craft.settings.carousel.autoplaySpeed', defaultMessage: '自動播放速度（毫秒）' },
-  infinite: { id: 'craft.settings.carousel.infinite', defaultMessage: '無限輪播' },
-  arrows: { id: 'craft.settings.carousel.arrows', defaultMessage: '顯示箭頭' },
-  dots: { id: 'craft.settings.carousel.dots', defaultMessage: '顯示圓點' },
-  slideToShow: { id: 'craft.settings.carousel.slideToShow', defaultMessage: '欄數' },
-  slideToScroll: { id: 'craft.settings.carousel.slideToScroll', defaultMessage: '捲動數量' },
-  arrowsVerticalPosition: { id: 'craft.settings.carousel.arrowsVerticalPosition', defaultMessage: '箭頭垂直位置' },
-  arrowsLeftPosition: { id: 'craft.settings.carousel.arrowsLeftPosition', defaultMessage: '左箭頭位置' },
-  arrowsLeftSize: { id: 'craft.settings.carousel.arrowsLeftSize', defaultMessage: '左箭頭大小' },
-  arrowsRightPosition: { id: 'craft.settings.carousel.arrowsRightPosition', defaultMessage: '右箭頭位置' },
-  arrowsRightSize: { id: 'craft.settings.carousel.arrowsRightSize', defaultMessage: '右箭頭大小' },
-  dotsPosition: { id: 'craft.settings.carousel.dotsPosition', defaultMessage: '圓點位置' },
-  dotsWidth: { id: 'craft.settings.carousel.dotsWidth', defaultMessage: '圓點寬度' },
-  dotsHeight: { id: 'craft.settings.carousel.dotsHeight', defaultMessage: '圓點高度' },
-  dotsMargin: { id: 'craft.settings.carousel.dotsMargin', defaultMessage: '圓點間距' },
-  dotsRadius: { id: 'craft.settings.carousel.dotsRadius', defaultMessage: '圓點弧度' },
-})
 const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
   const { formatMessage } = useIntl()
@@ -62,9 +41,9 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
       <Collapse ghost expandIconPosition="right" defaultActiveKey="setting">
         <StyledCollapsePanel
           key="setting"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.carouselSetting)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages.CarouselSettings.carouselSetting)}</AdminHeaderTitle>}
         >
-          <Form.Item label={formatMessage(messages.currentSlide)}>
+          <Form.Item label={formatMessage(craftMessages.CarouselSettings.currentSlide)}>
             <CraftSlider
               dots
               min={1}
@@ -79,11 +58,11 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
               checked={props.autoplay}
               onChange={e => onPropsChange?.({ ...props, autoplay: e.target.checked })}
             >
-              {formatMessage(messages.autoplay)}
+              {formatMessage(craftMessages.CarouselSettings.autoplay)}
             </Checkbox>
           </Form.Item>
           {props.autoplay && (
-            <Form.Item label={formatMessage(messages.autoplaySpeed)}>
+            <Form.Item label={formatMessage(craftMessages.CarouselSettings.autoplaySpeed)}>
               <StyledInputNumber
                 min={1}
                 value={props.autoplaySpeed}
@@ -96,17 +75,17 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
               checked={props.infinite}
               onChange={e => onPropsChange?.({ ...props, infinite: e.target.checked })}
             >
-              {formatMessage(messages.infinite)}
+              {formatMessage(craftMessages.CarouselSettings.infinite)}
             </Checkbox>
           </Form.Item>
-          <Form.Item label={formatMessage(messages.slideToShow)}>
+          <Form.Item label={formatMessage(craftMessages.CarouselSettings.slideToShow)}>
             <StyledInputNumber
               min={1}
               value={props.slidesToShow || 1}
               onChange={value => onPropsChange?.({ ...props, slidesToShow: Number(value) || 1 })}
             />
           </Form.Item>
-          <Form.Item label={formatMessage(messages.slideToScroll)}>
+          <Form.Item label={formatMessage(craftMessages.CarouselSettings.slideToScroll)}>
             <StyledInputNumber
               min={1}
               value={props.slidesToScroll || 1}
@@ -116,9 +95,9 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
         </StyledCollapsePanel>
         <StyledCollapsePanel
           key="style"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.carouselStyle)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages.CarouselSettings.carouselStyle)}</AdminHeaderTitle>}
         >
-          <Form.Item label={formatMessage(craftPageMessages.label.height)}>
+          <Form.Item label={formatMessage(craftMessages.CarouselSettings.height)}>
             <InputNumber
               min={100}
               value={Number(props.customStyle?.height?.toString().replace('px', ''))}
@@ -138,12 +117,12 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
               checked={props.arrows === undefined ? true : props.arrows}
               onChange={e => onPropsChange?.({ ...props, arrows: e.target.checked })}
             >
-              {formatMessage(messages.arrows)}
+              {formatMessage(craftMessages.CarouselSettings.arrows)}
             </Checkbox>
           </Form.Item>
           {(props.arrows === undefined || props.arrows) && (
             <>
-              <Form.Item label={formatMessage(messages.arrowsVerticalPosition)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.arrowsVerticalPosition)}>
                 <CraftSlider
                   min={0}
                   max={100}
@@ -161,7 +140,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                   }
                 />
               </Form.Item>
-              <Form.Item label={formatMessage(messages.arrowsLeftPosition)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.arrowsLeftPosition)}>
                 <CraftSlider
                   min={-100}
                   max={100}
@@ -180,7 +159,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                   }
                 />
               </Form.Item>
-              <Form.Item label={formatMessage(messages.arrowsLeftSize)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.arrowsLeftSize)}>
                 <CraftSlider
                   min={20}
                   max={100}
@@ -203,7 +182,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                 />
               </Form.Item>
 
-              <Form.Item label={formatMessage(messages.arrowsRightPosition)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.arrowsRightPosition)}>
                 <CraftSlider
                   min={-100}
                   max={100}
@@ -222,7 +201,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                   }
                 />
               </Form.Item>
-              <Form.Item label={formatMessage(messages.arrowsRightSize)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.arrowsRightSize)}>
                 <CraftSlider
                   min={20}
                   max={100}
@@ -251,12 +230,12 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
               checked={props.dots === undefined ? true : props.dots}
               onChange={e => onPropsChange?.({ ...props, dots: e.target.checked })}
             >
-              {formatMessage(messages.dots)}
+              {formatMessage(craftMessages.CarouselSettings.dots)}
             </Checkbox>
           </Form.Item>
           {(props.dots === undefined || props.dots) && (
             <>
-              <Form.Item label={formatMessage(messages.dotsPosition)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.dotsPosition)}>
                 <CraftSlider
                   min={-100}
                   max={100}
@@ -275,7 +254,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                   }
                 />
               </Form.Item>
-              <Form.Item label={formatMessage(messages.dotsWidth)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.dotsWidth)}>
                 <CraftSlider
                   min={10}
                   step={1}
@@ -295,7 +274,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                   }
                 />
               </Form.Item>
-              <Form.Item label={formatMessage(messages.dotsHeight)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.dotsHeight)}>
                 <CraftSlider
                   min={10}
                   step={1}
@@ -317,7 +296,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                   }
                 />
               </Form.Item>
-              <Form.Item label={formatMessage(messages.dotsRadius)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.dotsRadius)}>
                 <CraftSlider
                   min={0}
                   max={100}
@@ -341,7 +320,7 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
                   }
                 />
               </Form.Item>
-              <Form.Item label={formatMessage(messages.dotsMargin)}>
+              <Form.Item label={formatMessage(craftMessages.CarouselSettings.dotsMargin)}>
                 <CraftSlider
                   step={1}
                   value={Number(

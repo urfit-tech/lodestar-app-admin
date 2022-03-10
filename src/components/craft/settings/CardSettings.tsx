@@ -1,7 +1,6 @@
 import { Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CardProps } from 'lodestar-app-element/src/components/cards/Card'
-import React from 'react'
 import { CSSObject } from 'styled-components'
 import { CraftElementSettings } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import BackgroundInput from '../inputs/BackgroundStyleInput'
