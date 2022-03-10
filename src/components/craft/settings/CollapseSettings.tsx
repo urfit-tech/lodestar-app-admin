@@ -3,19 +3,15 @@ import { useForm } from 'antd/lib/form/Form'
 import { CollapseProps } from 'lodestar-app-element/src/components/collapses/Collapse'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useState } from 'react'
+import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import { CraftElementSettings, StyledCollapsePanel } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import TypographyStyleInput from '../inputs/TypographyStyleInput'
+import craftMessages from '../translation'
 
-const messages = defineMessages({
-  titleStyle: { id: 'craft.settings.collapse.titleStyle', defaultMessage: '標題樣式' },
-  paragraphStyle: { id: 'craft.settings.collapse.paragraphStyle', defaultMessage: '內文樣式' },
-})
 type FieldProps = {
   spaceStyle: CSSObject
   borderStyle: CSSObject
@@ -87,7 +83,7 @@ const CollapseSettings: CraftElementSettings<CollapseProps> = ({ props, onPropsC
       >
         <StyledCollapsePanel
           key="titleStyle"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.titleStyle)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].titleStyle)}</AdminHeaderTitle>}
         >
           <Form.Item>
             <TypographyStyleInput
@@ -120,7 +116,7 @@ const CollapseSettings: CraftElementSettings<CollapseProps> = ({ props, onPropsC
         </StyledCollapsePanel>
         <StyledCollapsePanel
           key="paragraphStyle"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.paragraphStyle)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].paragraphStyle)}</AdminHeaderTitle>}
         >
           <Form.Item>
             <TypographyStyleInput

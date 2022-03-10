@@ -2,9 +2,7 @@ import { Checkbox, Radio } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { SectionProps } from 'lodestar-app-element/src/components/common/Section'
-import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
-import { craftPageMessages } from '../../../helpers/translation'
+import { useIntl } from 'react-intl'
 import {
   CraftElementSettings,
   CraftSettingLabel,
@@ -13,19 +11,7 @@ import {
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
-
-const messages = defineMessages({
-  layout: { id: 'craft.settings.section.layout', defaultMessage: '排列方式' },
-  horizontal: { id: 'craft.settings.section.horizontal', defaultMessage: '水平排列' },
-  vertical: { id: 'craft.settings.section.vertical', defaultMessage: '垂直排列' },
-  horizontalAlign: { id: 'craft.settings.section.horizontalAlign', defaultMessage: '水平對齊' },
-  verticalAlign: { id: 'craft.settings.section.verticalAlign', defaultMessage: '垂直對齊' },
-  left: { id: 'craft.settings.section.left', defaultMessage: '置左' },
-  right: { id: 'craft.settings.section.right', defaultMessage: '置右' },
-  center: { id: 'craft.settings.section.center', defaultMessage: '置中' },
-  top: { id: 'craft.settings.section.top', defaultMessage: '置頂' },
-  bottom: { id: 'craft.settings.section.bottom', defaultMessage: '置底' },
-})
+import craftMessages from '../translation'
 
 const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsChange }) => {
   const [form] = useForm()
@@ -74,14 +60,30 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
       <Form.Item>
         <Radio.Group
           buttonStyle="solid"
+          value={props.display ? props.display : 'normal'}
+          onChange={e => onPropsChange?.({ ...props, display: e.target.value })}
+        >
+          <Radio.Button value="normal">{formatMessage(craftMessages.SectionSettings.normal)}</Radio.Button>
+          <Radio.Button value="hide">{formatMessage(craftMessages.SectionSettings.hide)}</Radio.Button>
+          <Radio.Button value="appearAfterLogin">
+            {formatMessage(craftMessages.SectionSettings.appearAfterLogin)}
+          </Radio.Button>
+          <Radio.Button value="disappearAfterLogin">
+            {formatMessage(craftMessages.SectionSettings.disappearAfterLogin)}
+          </Radio.Button>
+        </Radio.Group>
+      </Form.Item>
+      <Form.Item>
+        <Radio.Group
+          buttonStyle="solid"
           value={props.horizontal ? 'horizontal' : 'vertical'}
           onChange={e => onPropsChange?.({ ...props, horizontal: e.target.value === 'horizontal' })}
         >
-          <Radio.Button value="horizontal">{formatMessage(messages.horizontal)}</Radio.Button>
-          <Radio.Button value="vertical">{formatMessage(messages.vertical)}</Radio.Button>
+          <Radio.Button value="horizontal">{formatMessage(craftMessages.SectionSettings.horizontal)}</Radio.Button>
+          <Radio.Button value="vertical">{formatMessage(craftMessages.SectionSettings.vertical)}</Radio.Button>
         </Radio.Group>
       </Form.Item>
-      <Form.Item label={formatMessage(messages.horizontalAlign)}>
+      <Form.Item label={formatMessage(craftMessages.SectionSettings.horizontalAlign)}>
         <Radio.Group
           buttonStyle="solid"
           value={horizontalAlign}
@@ -112,12 +114,12 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
             })
           }
         >
-          <Radio.Button value="left">{formatMessage(messages.left)}</Radio.Button>
-          <Radio.Button value="center">{formatMessage(messages.center)}</Radio.Button>
-          <Radio.Button value="right">{formatMessage(messages.right)}</Radio.Button>
+          <Radio.Button value="left">{formatMessage(craftMessages.SectionSettings.left)}</Radio.Button>
+          <Radio.Button value="center">{formatMessage(craftMessages.SectionSettings.center)}</Radio.Button>
+          <Radio.Button value="right">{formatMessage(craftMessages.SectionSettings.right)}</Radio.Button>
         </Radio.Group>
       </Form.Item>
-      <Form.Item label={formatMessage(messages.verticalAlign)}>
+      <Form.Item label={formatMessage(craftMessages.SectionSettings.verticalAlign)}>
         <Radio.Group
           buttonStyle="solid"
           value={verticalAlign}
@@ -148,14 +150,14 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
             })
           }
         >
-          <Radio.Button value="top">{formatMessage(messages.top)}</Radio.Button>
-          <Radio.Button value="center">{formatMessage(messages.center)}</Radio.Button>
-          <Radio.Button value="bottom">{formatMessage(messages.bottom)}</Radio.Button>
+          <Radio.Button value="top">{formatMessage(craftMessages.SectionSettings.top)}</Radio.Button>
+          <Radio.Button value="center">{formatMessage(craftMessages.SectionSettings.center)}</Radio.Button>
+          <Radio.Button value="bottom">{formatMessage(craftMessages.SectionSettings.bottom)}</Radio.Button>
         </Radio.Group>
       </Form.Item>
       <Form.Item
         className="m-0"
-        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.link)}</CraftSettingLabel>}
+        label={<CraftSettingLabel>{formatMessage(craftMessages.SectionSettings.link)}</CraftSettingLabel>}
       >
         <StyledUnderLineInput
           className="mb-2"
@@ -166,7 +168,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
       </Form.Item>
       <Form.Item valuePropName="checked">
         <Checkbox checked={props.openTab} onChange={e => onPropsChange?.({ ...props, openTab: e.target.checked })}>
-          {formatMessage(craftPageMessages.label.openNewTab)}
+          {formatMessage(craftMessages.SectionSettings.openNewTab)}
         </Checkbox>
       </Form.Item>
       <Form.Item>

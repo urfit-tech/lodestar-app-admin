@@ -2,10 +2,10 @@ import { Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ProgramContentCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramContentCollection'
 import { useIntl } from 'react-intl'
-import { craftPageMessages } from '../../../helpers/translation'
 import { CraftElementSettings, CraftSettingLabel } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramContentCollectionSelector from '../../program/ProgramContentCollectionSelector'
+import craftMessages from '../translation'
 
 const ProgramContentCollectionSettings: CraftElementSettings<ProgramContentCollectionProps> = ({
   props,
@@ -25,7 +25,11 @@ const ProgramContentCollectionSettings: CraftElementSettings<ProgramContentColle
       }}
     >
       <Form.Item
-        label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.programContentSectionId)}</CraftSettingLabel>}
+        label={
+          <CraftSettingLabel>
+            {formatMessage(craftMessages.ProgramContentCollectionSettings.programContentSectionId)}
+          </CraftSettingLabel>
+        }
       >
         <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
       </Form.Item>

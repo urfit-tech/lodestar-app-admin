@@ -1,7 +1,8 @@
 import { Form, Radio } from 'antd'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import EmptyCover from '../../../images/default/empty-cover.png'
+import craftMessages from '../translation'
 import ColorPicker from './ColorPicker'
 import ImageInput from './ImageInput'
 
@@ -10,13 +11,6 @@ type BackgroundStyleInputProps = {
   value?: BackgroundStyle
   onChange?: (value: BackgroundStyle) => void
 }
-
-const messages = defineMessages({
-  background: { id: 'craft.inputs.background', defaultMessage: '背景' },
-  none: { id: 'craft.inputs.background.none', defaultMessage: '無' },
-  solid: { id: 'craft.inputs.background.solid', defaultMessage: '純色' },
-  image: { id: 'craft.inputs.background.image', defaultMessage: '圖片' },
-})
 
 const defaultColor = '#fff'
 const defaultImage = EmptyCover
@@ -50,9 +44,9 @@ const BackgroundStyleInput: React.VFC<BackgroundStyleInputProps> = ({ value, onC
     <div>
       <Form.Item>
         <Radio.Group buttonStyle="solid" value={backgroundType} onChange={e => handleTypeChange(e.target.value)}>
-          <Radio.Button value="none">{formatMessage(messages.none)}</Radio.Button>
-          <Radio.Button value="solid">{formatMessage(messages.solid)}</Radio.Button>
-          <Radio.Button value="image">{formatMessage(messages.image)}</Radio.Button>
+          <Radio.Button value="none">{formatMessage(craftMessages.BackgroundStyleInput.none)}</Radio.Button>
+          <Radio.Button value="solid">{formatMessage(craftMessages.BackgroundStyleInput.solid)}</Radio.Button>
+          <Radio.Button value="image">{formatMessage(craftMessages.BackgroundStyleInput.image)}</Radio.Button>
         </Radio.Group>
       </Form.Item>
 

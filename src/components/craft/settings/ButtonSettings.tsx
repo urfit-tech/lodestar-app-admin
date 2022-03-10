@@ -4,7 +4,6 @@ import { useForm } from 'antd/lib/form/Form'
 import { ButtonProps } from 'lodestar-app-element/src/components/buttons/Button'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import {
   CraftElementSettings,
   CraftSettingLabel,
@@ -16,6 +15,7 @@ import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
 import TypographyStyleInput from '../inputs/TypographyStyleInput'
+import craftMessages from '../translation'
 
 type FieldValues = {
   title: string
@@ -41,9 +41,9 @@ const ButtonSettings: CraftElementSettings<ButtonProps> = ({ props, onPropsChang
       <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
         <StyledCollapsePanel
           key="buttonSetting"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonSetting)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages.ButtonSettings.buttonSetting)}</AdminHeaderTitle>}
         >
-          <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.title)}</CraftSettingLabel>}>
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].title)}</CraftSettingLabel>}>
             <Input
               className="mt-2"
               value={props.title}
@@ -62,29 +62,29 @@ const ButtonSettings: CraftElementSettings<ButtonProps> = ({ props, onPropsChang
         </StyledCollapsePanel>
         <StyledCollapsePanel
           key="buttonStyle"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.buttonStyle)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages.ButtonSettings.buttonStyle)}</AdminHeaderTitle>}
         >
           <Form.Item
             className="ml-4"
             label={
-              <CraftSettingLabel className="mb-1">{formatMessage(craftPageMessages.label.size)}</CraftSettingLabel>
+              <CraftSettingLabel className="mb-1">{formatMessage(craftMessages.ButtonSettings.size)}</CraftSettingLabel>
             }
             style={{ display: 'inline-block' }}
           >
             <Radio.Group value={props.size} onChange={e => onPropsChange?.({ ...props, size: e.target.value })}>
               <Space direction="vertical">
-                <Radio value="lg">{formatMessage(craftPageMessages.label.large)}</Radio>
-                <Radio value="md">{formatMessage(craftPageMessages.label.middle)}</Radio>
-                <Radio value="sm">{formatMessage(craftPageMessages.label.small)}</Radio>
+                <Radio value="lg">{formatMessage(craftMessages.ButtonSettings.large)}</Radio>
+                <Radio value="md">{formatMessage(craftMessages.ButtonSettings.middle)}</Radio>
+                <Radio value="sm">{formatMessage(craftMessages.ButtonSettings.small)}</Radio>
               </Space>
             </Radio.Group>
           </Form.Item>
           <Form.Item
             valuePropName="checked"
-            label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.width)}</CraftSettingLabel>}
+            label={<CraftSettingLabel>{formatMessage(craftMessages['*'].width)}</CraftSettingLabel>}
           >
             <Checkbox checked={props.block} onChange={e => onPropsChange?.({ ...props, block: e.target.checked })}>
-              {formatMessage(craftPageMessages.label.buttonBlock)}
+              {formatMessage(craftMessages.ButtonSettings.buttonBlock)}
             </Checkbox>
           </Form.Item>
           <Form.Item>

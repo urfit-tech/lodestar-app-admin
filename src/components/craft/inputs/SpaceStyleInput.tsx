@@ -2,7 +2,7 @@ import { Form } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
+import craftMessages from '../translation'
 import BoxModelInput from './BoxModelInput'
 
 export type SpaceStyle = Pick<CSSObject, 'margin' | 'padding'>
@@ -23,7 +23,7 @@ const SpaceStyleInput: React.VFC<{
           {
             required: true,
             pattern: /^\d+;\d+;\d+;\d+$/,
-            message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+            message: formatMessage(craftMessages.TypographyStyleInput.boxModelInputWarning),
           },
         ]}
       >
@@ -35,7 +35,7 @@ const SpaceStyleInput: React.VFC<{
           {
             required: true,
             pattern: /^\d+;\d+;\d+;\d+$/,
-            message: formatMessage(craftPageMessages.text.boxModelInputWarning),
+            message: formatMessage(craftMessages.TypographyStyleInput.boxModelInputWarning),
           },
         ]}
       >

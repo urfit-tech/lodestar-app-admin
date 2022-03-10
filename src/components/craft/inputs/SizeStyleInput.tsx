@@ -18,7 +18,7 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, onChange }) => 
 
   return (
     <>
-      <Form.Item label={formatMessage(craftMessages.SizeStyleInput.width)}>
+      <Form.Item label={formatMessage(craftMessages['*'].width)}>
         <InputNumber
           value={extractNumber(value?.width?.toString())}
           min={0}

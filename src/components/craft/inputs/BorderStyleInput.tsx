@@ -2,8 +2,8 @@ import { Form, Radio, Space } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import { CraftSettingLabel, CraftSlider } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import craftMessages from '../translation'
 import ColorPicker from './ColorPicker'
 
 export type BorderStyle = Pick<CSSObject, 'borderColor' | 'borderWidth' | 'borderStyle' | 'borderRadius'>
@@ -35,7 +35,9 @@ const BorderStyleInput: React.VFC<{
       </Form.Item>
       {radioType === 'solid' && (
         <>
-          <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.radius)}</CraftSettingLabel>}>
+          <Form.Item
+            label={<CraftSettingLabel>{formatMessage(craftMessages.BorderStyleInput.radius)}</CraftSettingLabel>}
+          >
             <CraftSlider
               min={0}
               step={0.1}
@@ -43,7 +45,7 @@ const BorderStyleInput: React.VFC<{
               onChange={(borderRadius: number) => onChange?.({ ...value, borderRadius })}
             />
           </Form.Item>
-          <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.width)}</CraftSettingLabel>}>
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].width)}</CraftSettingLabel>}>
             <CraftSlider
               min={0}
               step={0.1}

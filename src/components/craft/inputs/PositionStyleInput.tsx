@@ -1,13 +1,11 @@
 import { Form, Radio, Space } from 'antd'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
+import craftMessages from '../translation'
 
 export type PositionStyle = Pick<CSSObject, 'position' | 'zIndex' | 'top' | 'right' | 'bottom' | 'left'>
-const messages = defineMessages({
-  none: { id: 'craft.inputs.border.none', defaultMessage: '無框線' },
-  solid: { id: 'craft.inputs.border.solid', defaultMessage: '實線' },
-})
+
 const PositionStyleInput: React.VFC<{
   value?: PositionStyle
   onChange?: (value: PositionStyle) => void
@@ -19,8 +17,8 @@ const PositionStyleInput: React.VFC<{
       <Form.Item>
         <Radio.Group onChange={e => setRadioType(e.target.value)}>
           <Space direction="vertical">
-            <Radio value="none">{formatMessage(messages.none)}</Radio>
-            <Radio value="solid">{formatMessage(messages.solid)}</Radio>
+            <Radio value="none">{formatMessage(craftMessages.PositionStyleInput.none)}</Radio>
+            <Radio value="solid">{formatMessage(craftMessages.PositionStyleInput.solid)}</Radio>
           </Space>
         </Radio.Group>
       </Form.Item>

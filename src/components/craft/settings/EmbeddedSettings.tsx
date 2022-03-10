@@ -3,10 +3,10 @@ import { useForm } from 'antd/lib/form/Form'
 import { EmbeddedProps } from 'lodestar-app-element/src/components/common/Embedded'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { craftPageMessages } from '../../../helpers/translation'
 import { CraftElementSettings, StyledCollapsePanel } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import craftMessages from '../translation'
 
 type FieldValues = {
   content: string
@@ -29,14 +29,14 @@ const EmbeddedSettings: CraftElementSettings<EmbeddedProps> = ({ props, onPropsC
       <Collapse ghost expandIconPosition="right" defaultActiveKey="setting">
         <StyledCollapsePanel
           key="setting"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.embedSetting)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages.EmbeddedSettings.embedSetting)}</AdminHeaderTitle>}
         >
           <Form.Item
-            label={formatMessage(craftPageMessages.label.embedSetting)}
+            label={formatMessage(craftMessages.EmbeddedSettings.embedSetting)}
             rules={[
               {
                 pattern: /(?:<iframe[^>]*)(?:(?:\/>)|(?:>.*?<\/iframe>))/g,
-                message: formatMessage(craftPageMessages.text.fillIframeFormatPlz),
+                message: formatMessage(craftMessages.EmbeddedSettings.fillIframeFormatPlz),
               },
             ]}
           >
@@ -51,7 +51,7 @@ const EmbeddedSettings: CraftElementSettings<EmbeddedProps> = ({ props, onPropsC
         </StyledCollapsePanel>
         <StyledCollapsePanel
           key="style"
-          header={<AdminHeaderTitle>{formatMessage(craftPageMessages.label.embedStyle)}</AdminHeaderTitle>}
+          header={<AdminHeaderTitle>{formatMessage(craftMessages.EmbeddedSettings.embedStyle)}</AdminHeaderTitle>}
         >
           <Form.Item>
             <SpaceStyleInput
