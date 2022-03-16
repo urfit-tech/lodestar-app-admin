@@ -828,7 +828,7 @@ export const useProductSku = (productId: string) => {
 }
 
 export const useAttachments = (options?: { contentType?: string; status?: string }) => {
-  const { currentMemberId, currentUserRole, authToken } = useAuth()
+  const { currentMemberId, currentUserRole, authToken, permissions } = useAuth()
   const contentTypeLike = options?.contentType?.replace('*', '%')
   const { data, loading, refetch } = useQuery<hasura.GET_ATTACHMENTS, hasura.GET_ATTACHMENTSVariables>(
     gql`
@@ -873,7 +873,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
     `,
     {
       variables: {
-        currentMemberId: currentUserRole === 'app-owner' ? undefined : currentMemberId,
+        currentMemberId: permissions.MEDIA_LIBRARY_ADMIN ? undefined : currentMemberId,
         contentTypeLike,
         status: options?.status,
       },
