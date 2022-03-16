@@ -52,6 +52,7 @@ const PermissionInput: React.FC<{
     appAdmin: true,
     project: !!enabledModules.project,
     contract: !!enabledModules.contract,
+    mediaLibrary: true,
   }
 
   return (

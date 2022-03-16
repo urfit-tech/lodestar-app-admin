@@ -58,7 +58,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(adminMessages.AdminMenu.salesAdmin),
     },
     {
-      permissionIsAllowed: currentUserRole === 'app-owner',
+      permissionIsAllowed: permissions.MEDIA_LIBRARY_ADMIN,
       key: 'media_library',
       icon: () => <DatabaseOutlined className="m-0" />,
       name: formatMessage(adminMessages.AdminMenu.mediaLibrary),

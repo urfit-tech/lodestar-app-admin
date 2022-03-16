@@ -1420,6 +1420,7 @@ export const permissionGroupsMessages = defineMessages({
   appAdmin: { id: 'permission.label.appAdmin', defaultMessage: '網站管理' },
   project: { id: 'permission.label.project', defaultMessage: '專案管理' },
   contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
+  mediaLibrary: { id: 'permission.label.mediaLibrary', defaultMessage: '媒體庫' },
 })
 
 export const permissionGroupsAdminMessages = {
@@ -1596,6 +1597,9 @@ export const permissionMessages = defineMessages({
   // craft
   CRAFT_PAGE_ADMIN: { id: 'permission.CRAFT_PAGE_ADMIN', defaultMessage: '所有頁面模組功能' },
   CRAFT_MENU_ADMIN: { id: 'permission.CRAFT_MENU_ADMIN', defaultMessage: '頁面模組選單' },
+
+  // media_library
+  MEDIA_LIBRARY_ADMIN: { id: 'permission.MEDIA_LIBRARY_ADMIN', defaultMessage: '所有媒體庫功能' },
 })
 
 export const salesMessages = defineMessages({
