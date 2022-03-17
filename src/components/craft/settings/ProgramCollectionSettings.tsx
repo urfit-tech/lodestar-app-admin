@@ -11,11 +11,11 @@ import { AdminHeaderTitle } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramCollectionSelector from '../../program/ProgramCollectionSelector'
 import craftMessages from '../translation'
+import CarouselSettingGroup from './CarouselSettingGroup'
 
 const ProgramCollectionSettings: CraftElementSettings<ProgramCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-
   return (
     <Form
       className="pt-3"
@@ -27,14 +27,14 @@ const ProgramCollectionSettings: CraftElementSettings<ProgramCollectionProps> = 
         form.validateFields()
       }}
     >
-      <Form.Item
-        label={
-          <CraftSettingLabel>
-            {formatMessage(craftMessages.ProgramCollectionSettings.programSectionId)}
-          </CraftSettingLabel>
-        }
-      >
-        <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+      <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].collectionVariant)}</CraftSettingLabel>}>
+        <Select
+          value={props.collectionVariant || 'grid'}
+          onChange={collectionVariant => onPropsChange?.({ ...props, collectionVariant })}
+        >
+          <Select.Option value="grid">{formatMessage(craftMessages['*'].grid)}</Select.Option>
+          <Select.Option value="carousel">{formatMessage(craftMessages['*'].carousel)}</Select.Option>
+        </Select>
       </Form.Item>
       <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].variant)}</CraftSettingLabel>}>
         <Select
@@ -57,11 +57,30 @@ const ProgramCollectionSettings: CraftElementSettings<ProgramCollectionProps> = 
       <Form.Item>
         <LayoutInput value={props.layout} onChange={layout => onPropsChange?.({ ...props, layout })} />
       </Form.Item>
-      <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
+
+      {props.collectionVariant === 'carousel' && (
+        <CarouselSettingGroup
+          value={props.carousel}
+          onChange={carousel =>
+            onPropsChange?.({ ...props, carousel, customStyle: { ...props.customStyle, ...carousel.customStyle } })
+          }
+        />
+      )}
+
+      <Collapse ghost expandIconPosition="right">
         <StyledCollapsePanel
           key="advancedSetting"
           header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
         >
+          <Form.Item
+            label={
+              <CraftSettingLabel>
+                {formatMessage(craftMessages.ProgramCollectionSettings.programSectionId)}
+              </CraftSettingLabel>
+            }
+          >
+            <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+          </Form.Item>
           <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
             <Input
               className="mt-2"

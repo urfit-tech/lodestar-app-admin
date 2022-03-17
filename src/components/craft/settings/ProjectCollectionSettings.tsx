@@ -1,4 +1,4 @@
-import { Collapse, Form, Input, Switch } from 'antd'
+import { Collapse, Form, Input, Select, Switch } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ProjectCollectionProps } from 'lodestar-app-element/src/components/collections/ProjectCollection'
 import { useIntl } from 'react-intl'
@@ -11,6 +11,7 @@ import { AdminHeaderTitle } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
 import ProjectCollectionSelector from '../../project/ProjectCollectionSelector'
 import craftMessages from '../translation'
+import CarouselSettingGroup from './CarouselSettingGroup'
 
 const ProjectCollectionSettings: CraftElementSettings<ProjectCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
@@ -26,14 +27,14 @@ const ProjectCollectionSettings: CraftElementSettings<ProjectCollectionProps> = 
         form.validateFields()
       }}
     >
-      <Form.Item
-        label={
-          <CraftSettingLabel>
-            {formatMessage(craftMessages.ProjectCollectionSettings.projectSectionId)}
-          </CraftSettingLabel>
-        }
-      >
-        <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+      <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].collectionVariant)}</CraftSettingLabel>}>
+        <Select
+          value={props.collectionVariant || 'grid'}
+          onChange={collectionVariant => onPropsChange?.({ ...props, collectionVariant })}
+        >
+          <Select.Option value="grid">{formatMessage(craftMessages['*'].grid)}</Select.Option>
+          <Select.Option value="carousel">{formatMessage(craftMessages['*'].carousel)}</Select.Option>
+        </Select>
       </Form.Item>
       <Form.Item className="mb-0">
         <ProjectCollectionSelector
@@ -52,11 +53,30 @@ const ProjectCollectionSettings: CraftElementSettings<ProjectCollectionProps> = 
       <Form.Item>
         <LayoutInput value={props.layout} onChange={layout => onPropsChange?.({ ...props, layout })} />
       </Form.Item>
+
+      {props.collectionVariant === 'carousel' && (
+        <CarouselSettingGroup
+          value={props.carousel}
+          onChange={carousel =>
+            onPropsChange?.({ ...props, carousel, customStyle: { ...props.customStyle, ...carousel.customStyle } })
+          }
+        />
+      )}
+
       <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
         <StyledCollapsePanel
           key="advancedSetting"
           header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
         >
+          <Form.Item
+            label={
+              <CraftSettingLabel>
+                {formatMessage(craftMessages.ProjectCollectionSettings.projectSectionId)}
+              </CraftSettingLabel>
+            }
+          >
+            <Input value={props.name} onChange={e => onPropsChange?.({ ...props, name: e.target.value })} />
+          </Form.Item>
           <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
             <Input
               className="mt-2"

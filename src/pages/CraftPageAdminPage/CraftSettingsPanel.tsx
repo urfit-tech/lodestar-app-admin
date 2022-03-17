@@ -14,10 +14,14 @@ export type CraftElementSettings<P = any> = React.ElementType<{
 
 export const StyledPanel = styled.div`
   position: fixed;
-  width: 400px;
-  height: 70vh;
   background-color: white;
   border: 1px solid var(--gray);
+`
+
+const StyledPanelContent = styled.div`
+  width: 400px;
+  height: 70vh;
+  padding: 8px 16px;
   overflow: auto;
 `
 export const CraftSettingLabel = styled.span`
@@ -83,11 +87,11 @@ const CraftSettingsPanel: React.VFC = () => {
             }
           />
         </div>
-        <div className="px-3">
+        <StyledPanelContent>
           {editor.currentNode?.related.settings
             ? React.createElement(editor.currentNode?.related.settings)
             : 'Please select an element.'}
-        </div>
+        </StyledPanelContent>
       </StyledPanel>
     </Draggable>
   )
