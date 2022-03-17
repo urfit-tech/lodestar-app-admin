@@ -1,8 +1,13 @@
-import { Form, Input } from 'antd'
+import { Collapse, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ProgramContentCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramContentCollection'
 import { useIntl } from 'react-intl'
-import { CraftElementSettings, CraftSettingLabel } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import {
+  CraftElementSettings,
+  CraftSettingLabel,
+  StyledCollapsePanel,
+} from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import { AdminHeaderTitle } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
 import ProgramContentCollectionSelector from '../../program/ProgramContentCollectionSelector'
 import craftMessages from '../translation'
@@ -42,6 +47,20 @@ const ProgramContentCollectionSettings: CraftElementSettings<ProgramContentColle
       <Form.Item>
         <LayoutInput value={props.layout} onChange={layout => onPropsChange?.({ ...props, layout })} />
       </Form.Item>
+      <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
+        <StyledCollapsePanel
+          key="advancedSetting"
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
+            <Input
+              className="mt-2"
+              value={props.className}
+              onChange={e => onPropsChange?.({ ...props, className: e.target.value.toString() })}
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
     </Form>
   )
 }

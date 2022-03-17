@@ -70,6 +70,19 @@ const TitleSettings: CraftElementSettings<TitleProps> = ({ props, onPropsChange 
             />
           </Form.Item>
         </StyledCollapsePanel>
+
+        <StyledCollapsePanel
+          key="advancedSetting"
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
+            <Input
+              className="mt-2"
+              value={props.className}
+              onChange={e => onPropsChange?.({ ...props, className: e.target.value.toString() })}
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
       </Collapse>
     </Form>
   )

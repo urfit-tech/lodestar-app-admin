@@ -1,11 +1,18 @@
-import { Form } from 'antd'
+import { Collapse, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CardProps } from 'lodestar-app-element/src/components/cards/Card'
+import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { CraftElementSettings } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import {
+  CraftElementSettings,
+  CraftSettingLabel,
+  StyledCollapsePanel,
+} from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import { AdminHeaderTitle } from '../../admin'
 import BackgroundInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
+import craftMessages from '../translation'
 
 type FieldValues = {
   spaceStyle: CSSObject
@@ -15,6 +22,7 @@ type FieldValues = {
 
 const CardSettings: CraftElementSettings<CardProps> = ({ props, onPropsChange }) => {
   const [form] = useForm<FieldValues>()
+  const { formatMessage } = useIntl()
 
   const handleChange = () => {
     form
@@ -56,6 +64,21 @@ const CardSettings: CraftElementSettings<CardProps> = ({ props, onPropsChange })
       <Form.Item name="backgroundStyle">
         <BackgroundInput />
       </Form.Item>
+
+      <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
+        <StyledCollapsePanel
+          key="advancedSetting"
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
+            <Input
+              className="mt-2"
+              value={props.className}
+              onChange={e => onPropsChange?.({ ...props, className: e.target.value.toString() })}
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
     </Form>
   )
 }

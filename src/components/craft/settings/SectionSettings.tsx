@@ -1,4 +1,4 @@
-import { Checkbox, Radio } from 'antd'
+import { Checkbox, Collapse, Input, Radio } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { SectionProps } from 'lodestar-app-element/src/components/common/Section'
@@ -6,8 +6,10 @@ import { useIntl } from 'react-intl'
 import {
   CraftElementSettings,
   CraftSettingLabel,
+  StyledCollapsePanel,
   StyledUnderLineInput,
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import { AdminHeaderTitle } from '../../admin'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SpaceStyleInput from '../inputs/SpaceStyleInput'
@@ -189,6 +191,20 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
           onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
         />
       </Form.Item>
+      <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
+        <StyledCollapsePanel
+          key="advancedSetting"
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
+            <Input
+              className="mt-2"
+              value={props.className}
+              onChange={e => onPropsChange?.({ ...props, className: e.target.value.toString() })}
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
     </Form>
   )
 }

@@ -1,11 +1,12 @@
 import { useNode } from '@craftjs/core'
-import { Checkbox, Collapse, Form, InputNumber } from 'antd'
+import { Checkbox, Collapse, Form, Input, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { CarouselProps } from 'lodestar-app-element/src/components/common/Carousel'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
 import {
   CraftElementSettings,
+  CraftSettingLabel,
   CraftSlider,
   StyledCollapsePanel,
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
@@ -343,6 +344,19 @@ const CarouselSettings: CraftElementSettings<CarouselProps> = ({ props, onPropsC
               </Form.Item>
             </>
           )}
+        </StyledCollapsePanel>
+
+        <StyledCollapsePanel
+          key="advancedSetting"
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
+            <Input
+              className="mt-2"
+              value={props.className}
+              onChange={e => onPropsChange?.({ ...props, className: e.target.value.toString() })}
+            />
+          </Form.Item>
         </StyledCollapsePanel>
       </Collapse>
     </Form>

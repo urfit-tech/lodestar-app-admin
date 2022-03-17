@@ -1,10 +1,15 @@
-import { InputNumber } from 'antd'
+import { Collapse, Input, InputNumber } from 'antd'
 import Form from 'antd/lib/form/'
 import { useForm } from 'antd/lib/form/Form'
 import { ImageProps } from 'lodestar-app-element/src/components/common/Image'
 import { useIntl } from 'react-intl'
 import { CSSObject } from 'styled-components'
-import { CraftElementSettings } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import {
+  CraftElementSettings,
+  CraftSettingLabel,
+  StyledCollapsePanel,
+} from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import { AdminHeaderTitle } from '../../admin'
 import BackgroundStyleInput from '../inputs/BackgroundStyleInput'
 import BorderStyleInput from '../inputs/BorderStyleInput'
 import SizeStyleInput, { extractNumber, extractSizeUnit } from '../inputs/SizeStyleInput'
@@ -70,6 +75,21 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           onChange={value => onPropsChange?.({ ...props, customStyle: { ...props.customStyle, ...value } })}
         />
       </Form.Item>
+
+      <Collapse ghost expandIconPosition="right" defaultActiveKey="buttonSetting">
+        <StyledCollapsePanel
+          key="advancedSetting"
+          header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
+        >
+          <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
+            <Input
+              className="mt-2"
+              value={props.className}
+              onChange={e => onPropsChange?.({ ...props, className: e.target.value.toString() })}
+            />
+          </Form.Item>
+        </StyledCollapsePanel>
+      </Collapse>
     </Form>
   )
 }

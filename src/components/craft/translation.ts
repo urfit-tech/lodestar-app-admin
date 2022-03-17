@@ -23,6 +23,8 @@ const craftMessages = {
     lighter: { id: 'craft.*.lighter', defaultMessage: '細' },
     normal: { id: 'craft.*.normal', defaultMessage: '中' },
     bold: { id: 'craft.*.bold', defaultMessage: '粗' },
+    advancedSetting: { id: 'craft.*.advancedSetting', defaultMessage: '進階設定' },
+    className: { id: 'craft.*.className', defaultMessage: '類別名稱' },
   }),
   ProgramCollectionSettings: defineMessages({
     programSectionId: { id: 'craft.ProgramCollectionSettings.programSectionId', defaultMessage: '課程區塊 ID' },
