@@ -111,7 +111,7 @@ const MemberContractAdminBlock: React.FC<{
       {contracts.map(contract => (
         <a
           key={contract.id}
-          href={`/admin/members/${memberId}/contracts/${contract.id}`}
+          href={`/members/${memberId}/contracts/${contract.id}`}
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -65,11 +65,6 @@ export const routesProps = {
     pageName: 'SettingAdminPage',
     authenticated: true,
   },
-  member_contract: {
-    path: '/members/:memberId/contracts/:memberContractId',
-    pageName: 'ContractPage',
-    authenticated: true,
-  },
   media_library: {
     path: '/media-library',
     pageName: 'MediaLibraryPage',
