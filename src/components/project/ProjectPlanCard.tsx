@@ -1,3 +1,4 @@
+import EditOutlined from '@ant-design/icons/lib/icons/EditOutlined'
 import { Typography } from 'antd'
 import Card, { CardProps } from 'antd/lib/card'
 import React from 'react'
@@ -9,6 +10,7 @@ import { ProjectPlan, ProjectPlanPeriodType } from '../../types/project'
 import AdminCard from '../admin/AdminCard'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
+import ProjectPlanAdminModal from './ProjectPlanAdminModal'
 
 const CoverImage = styled.div<{ src: string }>`
   padding-top: calc(100% / 3);
@@ -16,11 +18,19 @@ const CoverImage = styled.div<{ src: string }>`
   background-size: cover;
   background-position: center;
 `
+const StyledTitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
 const StyledTitle = styled.div`
   color: var(--gray-darker);
   font-size: 16px;
   font-weight: bold;
   letter-spacing: 0.2px;
+  width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 const ExtraContentBlock = styled.div`
   position: absolute;
@@ -45,8 +55,10 @@ const StyledOnSale = styled.div<{ status?: string }>`
 const ProjectPlanCard: React.FC<
   {
     projectPlan: ProjectPlan
+    projectId: string
+    onRefetch?: () => void
   } & CardProps
-> = ({ projectPlan, ...props }) => {
+> = ({ projectPlan, projectId, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const isOnSale = (projectPlan.soldAt?.getTime() || 0) > Date.now()
 
@@ -54,7 +66,29 @@ const ProjectPlanCard: React.FC<
     <>
       <AdminCard variant="projectPlan" cover={<CoverImage src={projectPlan.coverUrl || EmptyCover} />} {...props}>
         <Card.Meta
-          title={<StyledTitle className="mb-2">{projectPlan.title}</StyledTitle>}
+          title={
+            <StyledTitleContainer className="mb-2">
+              <StyledTitle>{projectPlan.title}</StyledTitle>
+              <ProjectPlanAdminModal
+                projectId={projectId}
+                projectPlan={projectPlan}
+                renderTrigger={({ onOpen }) => (
+                  <EditOutlined
+                    onClick={() =>
+                      onOpen?.(
+                        projectPlan.periodAmount && projectPlan.periodType
+                          ? projectPlan.autoRenewed
+                            ? 'subscription'
+                            : 'period'
+                          : 'perpetual',
+                      )
+                    }
+                  />
+                )}
+                onRefetch={onRefetch}
+              />
+            </StyledTitleContainer>
+          }
           description={
             <>
               <PriceLabel

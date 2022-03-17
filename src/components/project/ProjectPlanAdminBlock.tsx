@@ -1,27 +1,17 @@
-import { EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ProjectAdminProps, ProjectPlanSortProps } from '../../types/project'
-import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 import ItemsSortingModal from '../common/ItemsSortingModal'
 import ProjectPlanAdminModal from './ProjectPlanAdminModal'
 import ProjectPlanCard from './ProjectPlanCard'
 import projectMessages from './translation'
-
-const StyledButton = styled(Button)`
-  && {
-    background: none;
-    border: 1px solid white;
-    color: white;
-  }
-`
 
 const ProjectPlanAdminBlock: React.FC<{
   projectId: string
@@ -85,31 +75,7 @@ const ProjectPlanAdminBlock: React.FC<{
       <div className="row">
         {project.projectPlan.map(projectPlan => (
           <div key={projectPlan.id} className="col-12 col-md-6 col-lg-4 mb-5">
-            <OverlayWrapper>
-              <ProjectPlanCard projectPlan={projectPlan} />
-              <OverlayBlock>
-                <div>
-                  <ProjectPlanAdminModal
-                    projectId={project.id}
-                    projectPlan={projectPlan}
-                    renderTrigger={({ onOpen }) => (
-                      <EditOutlined
-                        onClick={() =>
-                          onOpen?.(
-                            projectPlan.periodAmount && projectPlan.periodType
-                              ? projectPlan.autoRenewed
-                                ? 'subscription'
-                                : 'period'
-                              : 'perpetual',
-                          )
-                        }
-                      />
-                    )}
-                    onRefetch={onRefetch}
-                  />
-                </div>
-              </OverlayBlock>
-            </OverlayWrapper>
+            <ProjectPlanCard projectPlan={projectPlan} projectId={project.id} onRefetch={onRefetch} />
           </div>
         ))}
       </div>

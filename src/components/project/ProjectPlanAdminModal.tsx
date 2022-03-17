@@ -133,6 +133,7 @@ const ProjectPlanAdminModal: React.FC<
                   variables: {
                     projectPlanId: projectPlan?.id,
                     data: values.planProducts.map(planProduct => ({
+                      project_plan_id: projectPlan?.id,
                       product_id: planProduct.id,
                       options: planProduct.options,
                     })),
