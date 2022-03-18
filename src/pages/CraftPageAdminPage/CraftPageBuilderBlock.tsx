@@ -1,7 +1,8 @@
-import { Element, Frame } from '@craftjs/core'
-import { Button } from 'antd'
+import { Element, Frame, useEditor } from '@craftjs/core'
+import { Button, Tabs } from 'antd'
 import { CraftSection } from 'lodestar-app-element/src/components/common/CraftElement'
 import React, { useContext, useEffect, useState } from 'react'
+import ReactStyleEditor, { stringify as stringifyStyle } from 'react-style-editor'
 import ReactStyledFrame from 'react-styled-frame'
 import styled from 'styled-components'
 import { CraftPageAdminProps } from '../../types/craft'
@@ -19,12 +20,15 @@ const StyledPreviewBlock = styled.div`
   flex: 1;
   overflow: auto;
 `
-const StyledSettingBlock = styled.div`
-  display: flex;
-  flex-direction: column;
+const CraftSettingTabs = styled(Tabs)`
+  padding: 0 16px;
   width: 320px;
   height: 100%;
   border-right: 1px solid var(--gray);
+
+  .ant-tabs-content-holder {
+    overflow: auto;
+  }
 `
 
 const StyledFrame = styled(ReactStyledFrame)<{ device?: Device }>`
@@ -60,6 +64,9 @@ const CraftPageBuilderBlock: React.VFC<{
   onAppPageUpdate?: () => void
 }> = ({ pageAdmin, onAppPageUpdate }) => {
   const [active, setActive] = useState(true)
+  const { rootStyle, actions } = useEditor(state => {
+    return { rootStyle: state.nodes['ROOT']?.data?.custom?.style || [] }
+  })
   return (
     <StyledContent>
       <CraftSettingsPanel />
@@ -67,10 +74,25 @@ const CraftPageBuilderBlock: React.VFC<{
         {active ? '<' : '>'}
       </SettingBlockToggleButton>
       {active && (
-        <StyledSettingBlock>
-          <CraftToolbox />
-          <CraftPageBuilderLayer />
-        </StyledSettingBlock>
+        <CraftSettingTabs defaultActiveKey="toolbox">
+          <Tabs.TabPane tab="Toolbox" key="toolbox">
+            <CraftToolbox />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Layer" key="layer">
+            <CraftPageBuilderLayer />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Style" key="style">
+            <ReactStyleEditor
+              outputFormats="machine"
+              value={stringifyStyle(rootStyle)}
+              onChange={(style: unknown[]) => {
+                actions.setCustom('ROOT', custom => {
+                  custom.style = style
+                })
+              }}
+            />
+          </Tabs.TabPane>
+        </CraftSettingTabs>
       )}
       <StyledPreviewBlock>
         <PreviewFrame data={pageAdmin?.craftData} />
@@ -82,6 +104,9 @@ const CraftPageBuilderBlock: React.VFC<{
 const PreviewFrame: React.VFC<{ data: { [key: string]: string } | null }> = ({ data }) => {
   const { device } = useContext(CraftPageBuilderContext)
   const [headInnerHTML, setHeadInnerHTML] = useState<string>(document.head.innerHTML)
+  const { rootStyle } = useEditor(state => {
+    return { rootStyle: state.nodes['ROOT']?.data?.custom?.style || [] }
+  })
   useEffect(() => {
     const mutationObserver = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
@@ -94,6 +119,7 @@ const PreviewFrame: React.VFC<{ data: { [key: string]: string } | null }> = ({ d
   return (
     <StyledFrame device={device}>
       {headInnerHTML && <div dangerouslySetInnerHTML={{ __html: headInnerHTML }}></div>}
+      <style>{stringifyStyle(rootStyle)}</style>
       <Frame data={data ? JSON.stringify(data) : undefined}>
         <Element is={CraftSection} customStyle={{ padding: 40 }} canvas />
       </Frame>

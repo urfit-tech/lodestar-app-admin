@@ -69,7 +69,7 @@ const CraftSettingsPanel: React.VFC = () => {
   }))
   return (
     <Draggable handle=".draggable" defaultPosition={{ x: 200, y: 32 }}>
-      <StyledPanel style={{ zIndex: 1, display: editor.currentNode?.data.custom?.editing ? 'block' : 'none' }}>
+      <StyledPanel style={{ zIndex: 1, display: editor.currentNode ? 'block' : 'none' }}>
         <div
           className="d-flex align-items-center justify-content-between mb-2 draggable p-3"
           style={{ backgroundColor: 'var(--gray-light)', cursor: 'move' }}
@@ -79,12 +79,13 @@ const CraftSettingsPanel: React.VFC = () => {
             <span>{editor.currentNode?.data.displayName}</span>
           </h3>
           <CloseOutlined
-            onClick={() =>
+            onClick={() => {
               editor.currentNode &&
-              editor.actions.setCustom(editor.currentNode.id, custom => {
-                custom.editing = false
-              })
-            }
+                editor.actions.setCustom(editor.currentNode.id, custom => {
+                  custom.editing = false
+                })
+              editor.actions.selectNode()
+            }}
           />
         </div>
         <StyledPanelContent>

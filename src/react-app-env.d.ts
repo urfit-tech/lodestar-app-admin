@@ -7,6 +7,7 @@ declare module 'coupon-code'
 declare module 'react-calendar-heatmap'
 declare module 'react-social-login'
 declare module 'react-snapshot'
+declare module 'react-style-editor'
 declare module 'console' {
   export = typeof import('console')
 }

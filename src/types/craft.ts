@@ -5,6 +5,7 @@ export type CraftPageAdminProps = {
   publishedAt: Date | null
   editorId: string | null
   craftData: { [key: string]: string } | null
+  options: { customStyle?: string } | null
 }
 
 export type CraftPageColumnProps = {
@@ -13,4 +14,3 @@ export type CraftPageColumnProps = {
   url: string
   updateAt: Date
 }
-
