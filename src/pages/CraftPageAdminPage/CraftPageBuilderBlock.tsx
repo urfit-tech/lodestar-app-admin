@@ -104,9 +104,6 @@ const CraftPageBuilderBlock: React.VFC<{
 const PreviewFrame: React.VFC<{ data: { [key: string]: string } | null }> = ({ data }) => {
   const { device } = useContext(CraftPageBuilderContext)
   const [headInnerHTML, setHeadInnerHTML] = useState<string>(document.head.innerHTML)
-  const { rootStyle } = useEditor(state => {
-    return { rootStyle: state.nodes['ROOT']?.data?.custom?.style || [] }
-  })
   useEffect(() => {
     const mutationObserver = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
@@ -119,7 +116,6 @@ const PreviewFrame: React.VFC<{ data: { [key: string]: string } | null }> = ({ d
   return (
     <StyledFrame device={device}>
       {headInnerHTML && <div dangerouslySetInnerHTML={{ __html: headInnerHTML }}></div>}
-      <style>{stringifyStyle(rootStyle)}</style>
       <Frame data={data ? JSON.stringify(data) : undefined}>
         <Element is={CraftSection} customStyle={{ padding: 40 }} canvas />
       </Frame>
