@@ -88,7 +88,7 @@ const AllPracticeCollectionBlock: React.FC<{
   filters?: PracticeFiltersProps
 }> = ({ selectedStatus, filters }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
 
   let unreviewed: boolean | undefined
   switch (selectedStatus) {
@@ -103,7 +103,7 @@ const AllPracticeCollectionBlock: React.FC<{
   const { loadingPractice, errorPractice, practices, refetchPractice } = usePracticePreviewCollection({
     ...filters,
     unreviewed,
-    programRoleMemberId: currentUserRole !== 'app-owner' ? currentMemberId : undefined,
+    programRoleMemberId: currentUserRole === 'app-owner' || permissions['PRACTICE_ADMIN'] ? undefined : currentMemberId,
   })
 
   if (loadingPractice) {
