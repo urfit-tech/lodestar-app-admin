@@ -1,9 +1,15 @@
 import { Button, InputNumber } from 'antd'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import { TrashOIcon } from '../../images/icon'
 import { ProjectPlanProduct } from '../../types/project'
 import ProductSelector from '../form/ProductSelector'
 import projectMessages from './translation'
 
+const StyledDeleteButton = styled(Button)`
+  padding-top: 0.7rem;
+  padding-left: 1rem;
+`
 type ProjectPlanProductSelectorProps = {
   value?: ProjectPlanProduct[]
   onChange?: (value: ProjectPlanProduct[]) => void
@@ -37,6 +43,17 @@ const ProjectPlanProductSelector: React.FC<ProjectPlanProductSelectorProps> = ({
                   ...projectPlanProducts.slice(idx + 1),
                 ])
               }
+            />
+            <StyledDeleteButton
+              type="link"
+              icon={<TrashOIcon />}
+              onClick={() => {
+                onChange?.(
+                  projectPlanProducts.filter(element => {
+                    return element.id !== projectPlanProduct.id
+                  }),
+                )
+              }}
             />
           </div>
         )
