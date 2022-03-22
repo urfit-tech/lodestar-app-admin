@@ -19310,6 +19310,7 @@ export enum program_update_column {
   in_advance = "in_advance",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_deleted = "is_deleted",
+  is_enrolled_count_visible = "is_enrolled_count_visible",
   is_introduction_section_visible = "is_introduction_section_visible",
   is_issues_open = "is_issues_open",
   is_private = "is_private",
@@ -31713,6 +31714,7 @@ export interface program_bool_exp {
   in_advance?: Boolean_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_enrolled_count_visible?: Boolean_comparison_exp | null;
   is_introduction_section_visible?: Boolean_comparison_exp | null;
   is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
@@ -32844,6 +32846,7 @@ export interface program_insert_input {
   in_advance?: boolean | null;
   is_countdown_timer_visible?: boolean | null;
   is_deleted?: boolean | null;
+  is_enrolled_count_visible?: boolean | null;
   is_introduction_section_visible?: boolean | null;
   is_issues_open?: boolean | null;
   is_private?: boolean | null;
@@ -32943,6 +32946,7 @@ export interface program_order_by {
   in_advance?: order_by | null;
   is_countdown_timer_visible?: order_by | null;
   is_deleted?: order_by | null;
+  is_enrolled_count_visible?: order_by | null;
   is_introduction_section_visible?: order_by | null;
   is_issues_open?: order_by | null;
   is_private?: order_by | null;

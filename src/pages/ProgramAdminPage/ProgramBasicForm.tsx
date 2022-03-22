@@ -15,6 +15,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProductSku } from '../../hooks/data'
 import { ProgramAdminProps } from '../../types/program'
+import pageMessages from '../translation'
 
 type FieldProps = {
   title: string
@@ -23,6 +24,7 @@ type FieldProps = {
   languages?: string[]
   isIssuesOpen: boolean
   isIntroductionSectionVisible?: boolean
+  isEnrolledCountVisible: boolean
 }
 
 const ProgramBasicForm: React.FC<{
@@ -51,6 +53,7 @@ const ProgramBasicForm: React.FC<{
         supportLocales: values.languages?.length ? values.languages : null,
         isIssuesOpen: values.isIssuesOpen,
         isIntroductionSectionVisible: values.isIntroductionSectionVisible ?? program.isIntroductionSectionVisible,
+        isEnrolledCountVisible: values.isEnrolledCountVisible,
         programCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           program_id: program.id,
           category_id: categoryId,
@@ -91,6 +94,7 @@ const ProgramBasicForm: React.FC<{
         languages: program.supportLocales,
         isIssuesOpen: program.isIssuesOpen,
         isIntroductionSectionVisible: program.isIntroductionSectionVisible,
+        isEnrolledCountVisible: program.isEnrolledCountVisible,
       }}
       onFinish={handleSubmit}
     >
@@ -144,7 +148,15 @@ const ProgramBasicForm: React.FC<{
           <Radio value={false}>{formatMessage(programMessages.status.closed)}</Radio>
         </Radio.Group>
       </Form.Item>
-
+      <Form.Item
+        label={formatMessage(pageMessages.ProgramAdminPage.isEnrolledCountVisible)}
+        name="isEnrolledCountVisible"
+      >
+        <Radio.Group>
+          <Radio value={true}>{formatMessage(programMessages.status.active)}</Radio>
+          <Radio value={false}>{formatMessage(programMessages.status.closed)}</Radio>
+        </Radio.Group>
+      </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>
           {formatMessage(commonMessages.ui.cancel)}
@@ -163,6 +175,7 @@ const UPDATE_PROGRAM_BASIC = gql`
     $title: String
     $supportLocales: jsonb
     $isIssuesOpen: Boolean
+    $isEnrolledCountVisible: Boolean
     $isIntroductionSectionVisible: Boolean
     $productId: String
     $sku: String
@@ -177,6 +190,7 @@ const UPDATE_PROGRAM_BASIC = gql`
         support_locales: $supportLocales
         is_issues_open: $isIssuesOpen
         is_introduction_section_visible: $isIntroductionSectionVisible
+        is_enrolled_count_visible: $isEnrolledCountVisible
       }
     ) {
       affected_rows
