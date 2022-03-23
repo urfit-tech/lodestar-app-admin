@@ -38,6 +38,7 @@ export const useProgram = (programId: string) => {
           is_issues_open
           is_countdown_timer_visible
           is_introduction_section_visible
+          is_enrolled_count_visible
           program_content_sections(order_by: { position: asc }) {
             id
             title
@@ -154,6 +155,7 @@ export const useProgram = (programId: string) => {
       isIssuesOpen: data.program_by_pk.is_issues_open,
       isCountdownTimerVisible: data.program_by_pk.is_countdown_timer_visible,
       isIntroductionSectionVisible: data.program_by_pk.is_introduction_section_visible,
+      isEnrolledCountVisible: data.program_by_pk.is_enrolled_count_visible,
       contentSections: data.program_by_pk.program_content_sections.map(pcs => ({
         id: pcs.id,
         title: pcs.title,

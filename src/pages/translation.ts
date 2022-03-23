@@ -45,6 +45,9 @@ const pageMessages = {
     chooseProperty: { id: 'page.ProgramProgressCollectionAdminPage.chooseProperty', defaultMessage: '選擇欄位' },
     containKeyword: { id: 'page.ProgramProgressCollectionAdminPage.containKeyword', defaultMessage: '關鍵字包含' },
   }),
+  ProgramAdminPage: defineMessages({
+    isEnrolledCountVisible: { id: 'program.ProgramBasicForm.isEnrolledCountVisible', defaultMessage: '購買人數' },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },

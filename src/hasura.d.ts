@@ -3,11 +3,9 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_BASIC
 // ====================================================
-
 
 export interface UPDATE_ACTIVITY_BASIC_update_activity {
   __typename: "activity_mutation_response";
@@ -61,11 +59,9 @@ export interface UPDATE_ACTIVITY_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ACTIVITY_CATEGORIES
 // ====================================================
-
 
 export interface GET_ACTIVITY_CATEGORIES_category {
   __typename: "category";
@@ -85,11 +81,9 @@ export interface GET_ACTIVITY_CATEGORIES {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ACTIVITY_ID_LIST
 // ====================================================
-
 
 export interface GET_ACTIVITY_ID_LIST_activity {
   __typename: "activity";
@@ -109,11 +103,9 @@ export interface GET_ACTIVITY_ID_LIST {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_COVER
 // ====================================================
-
 
 export interface UPDATE_ACTIVITY_COVER_update_activity {
   __typename: "activity_mutation_response";
@@ -140,11 +132,9 @@ export interface UPDATE_ACTIVITY_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_INTRODUCTION
 // ====================================================
-
 
 export interface UPDATE_ACTIVITY_INTRODUCTION_update_activity {
   __typename: "activity_mutation_response";
@@ -171,11 +161,9 @@ export interface UPDATE_ACTIVITY_INTRODUCTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ACTIVITY_PARTICIPANTS
 // ====================================================
-
 
 export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment_activity_ticket {
   __typename: "activity_ticket";
@@ -225,11 +213,9 @@ export interface GET_ACTIVITY_PARTICIPANTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_ACTIVITY
 // ====================================================
-
 
 export interface PUBLISH_ACTIVITY_update_activity {
   __typename: "activity_mutation_response";
@@ -256,11 +242,9 @@ export interface PUBLISH_ACTIVITYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ACTIVITY_SESSION
 // ====================================================
-
 
 export interface INSERT_ACTIVITY_SESSION_insert_activity_session {
   __typename: "activity_session_mutation_response";
@@ -293,11 +277,9 @@ export interface INSERT_ACTIVITY_SESSIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_SESSION
 // ====================================================
-
 
 export interface UPDATE_ACTIVITY_SESSION_update_activity_session {
   __typename: "activity_session_mutation_response";
@@ -330,11 +312,9 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARCHIVE_ACTIVITY_SESSION
 // ====================================================
-
 
 export interface ARCHIVE_ACTIVITY_SESSION_delete_activity_session_ticket {
   __typename: "activity_session_ticket_mutation_response";
@@ -372,11 +352,9 @@ export interface ARCHIVE_ACTIVITY_SESSIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ACTIVITY_TAGS
 // ====================================================
-
 
 export interface GET_ACTIVITY_TAGS_activity_tag {
   __typename: "activity_tag";
@@ -395,11 +373,9 @@ export interface GET_ACTIVITY_TAGS {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ACTIVITY_TICKET
 // ====================================================
-
 
 export interface INSERT_ACTIVITY_TICKET_insert_activity_ticket {
   __typename: "activity_ticket_mutation_response";
@@ -434,11 +410,9 @@ export interface INSERT_ACTIVITY_TICKETVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_TICKET
 // ====================================================
-
 
 export interface UPDATE_ACTIVITY_TICKET_update_activity_ticket {
   __typename: "activity_ticket_mutation_response";
@@ -497,11 +471,9 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARCHIVE_ACTIVITY_TICKET
 // ====================================================
-
 
 export interface ARCHIVE_ACTIVITY_TICKET_delete_activity_session_ticket {
   __typename: "activity_session_ticket_mutation_response";
@@ -539,11 +511,9 @@ export interface ARCHIVE_ACTIVITY_TICKETVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_CATEGORY
 // ====================================================
-
 
 export interface INSERT_CATEGORY_insert_category {
   __typename: "category_mutation_response";
@@ -572,11 +542,9 @@ export interface INSERT_CATEGORYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_CATEGORY_NAME
 // ====================================================
-
 
 export interface UPDATE_CATEGORY_NAME_update_category {
   __typename: "category_mutation_response";
@@ -603,11 +571,9 @@ export interface UPDATE_CATEGORY_NAMEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_CATEGORY_POSITION
 // ====================================================
-
 
 export interface UPDATE_CATEGORY_POSITION_insert_category {
   __typename: "category_mutation_response";
@@ -633,11 +599,9 @@ export interface UPDATE_CATEGORY_POSITIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_CATEGORY
 // ====================================================
-
 
 export interface DELETE_CATEGORY_delete_category {
   __typename: "category_mutation_response";
@@ -663,11 +627,9 @@ export interface DELETE_CATEGORYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
 // ====================================================
-
 
 export interface UPDATE_APPOINTMENT_RESULT_update_order_product {
   __typename: "order_product_mutation_response";
@@ -694,11 +656,9 @@ export interface UPDATE_APPOINTMENT_RESULTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
 // ====================================================
-
 
 export interface UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan {
   __typename: "appointment_plan_mutation_response";
@@ -728,11 +688,9 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
 // ====================================================
-
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
   __typename: "member_public";
@@ -776,11 +734,9 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_COUNTS
 // ====================================================
-
 
 export interface GET_APPOINTMENT_PLAN_COUNTS_published_aggregate {
   __typename: "appointment_plan_aggregate_fields";
@@ -836,11 +792,9 @@ export interface GET_APPOINTMENT_PLAN_COUNTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_DESCRIPTION
 // ====================================================
-
 
 export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan {
   __typename: "appointment_plan_mutation_response";
@@ -867,11 +821,9 @@ export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_APPOINTMENT_PLAN
 // ====================================================
-
 
 export interface PUBLISH_APPOINTMENT_PLAN_update_appointment_plan {
   __typename: "appointment_plan_mutation_response";
@@ -899,11 +851,9 @@ export interface PUBLISH_APPOINTMENT_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_SALE
 // ====================================================
-
 
 export interface UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan {
   __typename: "appointment_plan_mutation_response";
@@ -932,11 +882,9 @@ export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_APPOINTMENT_SCHEDULE
 // ====================================================
-
 
 export interface DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule {
   __typename: "appointment_schedule_mutation_response";
@@ -962,11 +910,9 @@ export interface DELETE_APPOINTMENT_SCHEDULEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_SCHEDULE
 // ====================================================
-
 
 export interface UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule {
   __typename: "appointment_schedule_mutation_response";
@@ -993,11 +939,9 @@ export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_SCHEDULES
 // ====================================================
-
 
 export interface GET_APPOINTMENT_PLAN_SCHEDULES_appointment_plan_creator {
   __typename: "member_public";
@@ -1053,11 +997,9 @@ export interface GET_APPOINTMENT_PLAN_SCHEDULESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_POST_ROLE
 // ====================================================
-
 
 export interface UPDATE_POST_ROLE_update_post {
   __typename: "post_mutation_response";
@@ -1109,11 +1051,9 @@ export interface UPDATE_POST_ROLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_POST_BASIC
 // ====================================================
-
 
 export interface UPDATE_POST_BASIC_update_post {
   __typename: "post_mutation_response";
@@ -1204,11 +1144,9 @@ export interface UPDATE_POST_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_POST_DESCRIPTION
 // ====================================================
-
 
 export interface UPDATE_POST_DESCRIPTION_update_post {
   __typename: "post_mutation_response";
@@ -1235,11 +1173,9 @@ export interface UPDATE_POST_DESCRIPTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_POST
 // ====================================================
-
 
 export interface PUBLISH_POST_update_post {
   __typename: "post_mutation_response";
@@ -1266,11 +1202,9 @@ export interface PUBLISH_POSTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_POST_COVER
 // ====================================================
-
 
 export interface UPDATE_POST_COVER_update_post {
   __typename: "post_mutation_response";
@@ -1297,11 +1231,9 @@ export interface UPDATE_POST_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_POST_MERCHANDISE_COLLECTION
 // ====================================================
-
 
 export interface UPDATE_POST_MERCHANDISE_COLLECTION_delete_post_merchandise {
   __typename: "post_merchandise_mutation_response";
@@ -1340,11 +1272,9 @@ export interface UPDATE_POST_MERCHANDISE_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_POST_VIDEO_URL
 // ====================================================
-
 
 export interface UPDATE_POST_VIDEO_URL_update_post {
   __typename: "post_mutation_response";
@@ -1371,11 +1301,9 @@ export interface UPDATE_POST_VIDEO_URLVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COIN_RELEASE_HISTORY
 // ====================================================
-
 
 export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate {
   __typename: "coin_log_aggregate_fields";
@@ -1433,11 +1361,9 @@ export interface GET_COIN_RELEASE_HISTORYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COIN_ABOUT_TO_SEND
 // ====================================================
-
 
 export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate {
   __typename: "coin_log_aggregate_fields";
@@ -1495,11 +1421,9 @@ export interface GET_COIN_ABOUT_TO_SENDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_LOG_WITH_COINS_COLLECTION
 // ====================================================
-
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate {
   __typename: "order_log_aggregate_fields";
@@ -1580,11 +1504,9 @@ export interface GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_COIN_LOG
 // ====================================================
-
 
 export interface DELETE_COIN_LOG_delete_coin_log {
   __typename: "coin_log_mutation_response";
@@ -1610,11 +1532,9 @@ export interface DELETE_COIN_LOGVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_CATEGORY_LIST
 // ====================================================
-
 
 export interface GET_CATEGORY_LIST_category {
   __typename: "category";
@@ -1639,11 +1559,9 @@ export interface GET_CATEGORY_LISTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_COIN_LOG_COLLECTION
 // ====================================================
-
 
 export interface INSERT_COIN_LOG_COLLECTION_insert_coin_log {
   __typename: "coin_log_mutation_response";
@@ -1669,11 +1587,9 @@ export interface INSERT_COIN_LOG_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARCHIVE_ACTIVITY
 // ====================================================
-
 
 export interface ARCHIVE_ACTIVITY_update_activity {
   __typename: "activity_mutation_response";
@@ -1699,11 +1615,9 @@ export interface ARCHIVE_ACTIVITYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARCHIVE_PROGRAM
 // ====================================================
-
 
 export interface ARCHIVE_PROGRAM_update_program {
   __typename: "program_mutation_response";
@@ -1729,11 +1643,9 @@ export interface ARCHIVE_PROGRAMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARCHIVE_POST
 // ====================================================
-
 
 export interface ARCHIVE_POST_update_post {
   __typename: "post_mutation_response";
@@ -1759,11 +1671,9 @@ export interface ARCHIVE_POSTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARCHIVE_MERCHANDISE
 // ====================================================
-
 
 export interface ARCHIVE_MERCHANDISE_update_merchandise {
   __typename: "merchandise_mutation_response";
@@ -1789,11 +1699,9 @@ export interface ARCHIVE_MERCHANDISEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
-
 
 export interface INSERT_POINT_LOG_COLLECTION_insert_point_log {
   __typename: "point_log_mutation_response";
@@ -1819,11 +1727,9 @@ export interface INSERT_POINT_LOG_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PRODUCT_SKU
 // ====================================================
-
 
 export interface UPDATE_PRODUCT_SKU_update_product {
   __typename: "product_mutation_response";
@@ -1850,11 +1756,9 @@ export interface UPDATE_PRODUCT_SKUVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SALES_MEMBERS
 // ====================================================
-
 
 export interface GET_SALES_MEMBERS_member {
   __typename: "member";
@@ -1881,11 +1785,9 @@ export interface GET_SALES_MEMBERSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACTS
 // ====================================================
-
 
 export interface GET_MEMBER_CONTRACTS_member_contract_contract {
   __typename: "contract";
@@ -1925,11 +1827,9 @@ export interface GET_MEMBER_CONTRACTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: REVOKE_MEMBER_CONTRACT
 // ====================================================
-
 
 export interface REVOKE_MEMBER_CONTRACT_update_member_contract {
   __typename: "member_contract_mutation_response";
@@ -1957,11 +1857,9 @@ export interface REVOKE_MEMBER_CONTRACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COUPON_PLAN_PRODUCTS
 // ====================================================
-
 
 export interface GET_COUPON_PLAN_PRODUCTS_coupon_plan_product {
   __typename: "coupon_plan_product";
@@ -1985,11 +1883,9 @@ export interface GET_COUPON_PLAN_PRODUCTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_COUPON_PLAN
 // ====================================================
-
 
 export interface INSERT_COUPON_PLAN_insert_coupon_plan {
   __typename: "coupon_plan_mutation_response";
@@ -2024,11 +1920,9 @@ export interface INSERT_COUPON_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_COUPON_PLAN
 // ====================================================
-
 
 export interface UPDATE_COUPON_PLAN_update_coupon_plan {
   __typename: "coupon_plan_mutation_response";
@@ -2087,11 +1981,9 @@ export interface UPDATE_COUPON_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COUPON_CODE_EXPORT
 // ====================================================
-
 
 export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_member {
   __typename: "member";
@@ -2145,11 +2037,9 @@ export interface GET_COUPON_CODE_EXPORTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_APP_PAGE_TEMPLATE
 // ====================================================
-
 
 export interface INSERT_APP_PAGE_TEMPLATE_insert_app_page_template_one {
   __typename: "app_page_template";
@@ -2175,11 +2065,9 @@ export interface INSERT_APP_PAGE_TEMPLATEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_CREATOR_DISPLAY
 // ====================================================
-
 
 export interface INSERT_CREATOR_DISPLAY_insert_creator_display_one {
   __typename: "creator_display";
@@ -2202,11 +2090,9 @@ export interface INSERT_CREATOR_DISPLAYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_CREATOR_DISPLAY
 // ====================================================
-
 
 export interface DELETE_CREATOR_DISPLAY_delete_creator_display {
   __typename: "creator_display_mutation_response";
@@ -2232,11 +2118,9 @@ export interface DELETE_CREATOR_DISPLAYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_CONTENT_CREATOR_COLLECTION
 // ====================================================
-
 
 export interface GET_CONTENT_CREATOR_COLLECTION_member {
   __typename: "member";
@@ -2263,11 +2147,9 @@ export interface GET_CONTENT_CREATOR_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ALL_MEMBER_COLLECTION
 // ====================================================
-
 
 export interface GET_ALL_MEMBER_COLLECTION_member {
   __typename: "member";
@@ -2294,11 +2176,9 @@ export interface GET_ALL_MEMBER_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PERMISSION
 // ====================================================
-
 
 export interface GET_PERMISSION_permission {
   __typename: "permission";
@@ -2318,11 +2198,9 @@ export interface GET_PERMISSION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRODUCT_SELECTION_COLLECTION
 // ====================================================
-
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_program_plan_program {
   __typename: "program";
@@ -2430,11 +2308,9 @@ export interface GET_PRODUCT_SELECTION_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
-
 
 export interface UPDATE_ISSUE_STATUS_update_issue {
   __typename: "issue_mutation_response";
@@ -2461,11 +2337,9 @@ export interface UPDATE_ISSUE_STATUSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE
 // ====================================================
-
 
 export interface UPDATE_ISSUE_update_issue {
   __typename: "issue_mutation_response";
@@ -2494,11 +2368,9 @@ export interface UPDATE_ISSUEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_ISSUE
 // ====================================================
-
 
 export interface DELETE_ISSUE_delete_issue_reply_reaction {
   __typename: "issue_reply_reaction_mutation_response";
@@ -2560,11 +2432,9 @@ export interface DELETE_ISSUEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ISSUE_REACTION
 // ====================================================
-
 
 export interface INSERT_ISSUE_REACTION_insert_issue_reaction {
   __typename: "issue_reaction_mutation_response";
@@ -2591,11 +2461,9 @@ export interface INSERT_ISSUE_REACTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_ISSUE_REACTION
 // ====================================================
-
 
 export interface DELETE_ISSUE_REACTION_delete_issue_reaction {
   __typename: "issue_reaction_mutation_response";
@@ -2622,11 +2490,9 @@ export interface DELETE_ISSUE_REACTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ISSUE_REPLIES
 // ====================================================
-
 
 export interface GET_ISSUE_REPLIES_issue_reply_issue_reply_reactions_public_member {
   __typename: "member_public";
@@ -2670,11 +2536,9 @@ export interface GET_ISSUE_REPLIESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ISSUE_REPLY
 // ====================================================
-
 
 export interface INSERT_ISSUE_REPLY_insert_issue_reply {
   __typename: "issue_reply_mutation_response";
@@ -2702,11 +2566,9 @@ export interface INSERT_ISSUE_REPLYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ISSUE_REPLY_REACTION
 // ====================================================
-
 
 export interface INSERT_ISSUE_REPLY_REACTION_insert_issue_reply_reaction {
   __typename: "issue_reply_reaction_mutation_response";
@@ -2733,11 +2595,9 @@ export interface INSERT_ISSUE_REPLY_REACTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_ISSUE_REPLY_REACTION
 // ====================================================
-
 
 export interface DELETE_ISSUE_REPLY_REACTION_delete_issue_reply_reaction {
   __typename: "issue_reply_reaction_mutation_response";
@@ -2764,11 +2624,9 @@ export interface DELETE_ISSUE_REPLY_REACTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_ISSUE_REPLY
 // ====================================================
-
 
 export interface DELETE_ISSUE_REPLY_delete_issue_reply {
   __typename: "issue_reply_mutation_response";
@@ -2794,11 +2652,9 @@ export interface DELETE_ISSUE_REPLYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_REPLY
 // ====================================================
-
 
 export interface UPDATE_ISSUE_REPLY_update_issue_reply {
   __typename: "issue_reply_mutation_response";
@@ -2825,11 +2681,9 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_ID_LIST
 // ====================================================
-
 
 export interface GET_MEMBER_ID_LIST_member_public {
   __typename: "member_public";
@@ -2849,11 +2703,9 @@ export interface GET_MEMBER_ID_LIST {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_MEMBER
 // ====================================================
-
 
 export interface INSERT_MEMBER_insert_member_returning {
   __typename: "member";
@@ -2891,11 +2743,9 @@ export interface INSERT_MEMBERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: SEARCH_MEMBERS
 // ====================================================
-
 
 export interface SEARCH_MEMBERS_member_public_aggregate_aggregate {
   __typename: "member_public_aggregate_fields";
@@ -2925,11 +2775,9 @@ export interface SEARCH_MEMBERSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_EXPORT_COLLECTION
 // ====================================================
-
 
 export interface GET_MEMBER_EXPORT_COLLECTION_member_export {
   __typename: "member_export";
@@ -2966,11 +2814,9 @@ export interface GET_MEMBER_EXPORT_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_ROLE
 // ====================================================
-
 
 export interface UPDATE_MEMBER_ROLE_update_member {
   __typename: "member_mutation_response";
@@ -3047,11 +2893,9 @@ export interface UPDATE_MEMBER_ROLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_ABSTRACT
 // ====================================================
-
 
 export interface UPDATE_MEMBER_ABSTRACT_update_member {
   __typename: "member_mutation_response";
@@ -3080,11 +2924,9 @@ export interface UPDATE_MEMBER_ABSTRACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
 // ====================================================
-
 
 export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
   __typename: "member_mutation_response";
@@ -3229,11 +3071,9 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_PROPERTIES
 // ====================================================
-
 
 export interface GET_MEMBER_PROPERTIES_property {
   __typename: "property";
@@ -3253,11 +3093,9 @@ export interface GET_MEMBER_PROPERTIES {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_ACCOUNT
 // ====================================================
-
 
 export interface UPDATE_MEMBER_ACCOUNT_update_member {
   __typename: "member_mutation_response";
@@ -3285,11 +3123,9 @@ export interface UPDATE_MEMBER_ACCOUNTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_BASIC
 // ====================================================
-
 
 export interface UPDATE_MEMBER_BASIC_update_member {
   __typename: "member_mutation_response";
@@ -3382,11 +3218,9 @@ export interface UPDATE_MEMBER_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_SHOP_TITLE
 // ====================================================
-
 
 export interface UPDATE_MEMBER_SHOP_TITLE_update_member_shop {
   __typename: "member_shop_mutation_response";
@@ -3413,11 +3247,9 @@ export interface UPDATE_MEMBER_SHOP_TITLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_SHOP_COVER
 // ====================================================
-
 
 export interface UPDATE_MEMBER_SHOP_COVER_update_member_shop {
   __typename: "member_shop_mutation_response";
@@ -3444,11 +3276,9 @@ export interface UPDATE_MEMBER_SHOP_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_MEMBER_SHOP
 // ====================================================
-
 
 export interface INSERT_MEMBER_SHOP_insert_member_shop_returning {
   __typename: "member_shop";
@@ -3480,11 +3310,9 @@ export interface INSERT_MEMBER_SHOPVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_MEMBER_SHOP
 // ====================================================
-
 
 export interface PUBLISH_MEMBER_SHOP_update_member_shop {
   __typename: "member_shop_mutation_response";
@@ -3511,11 +3339,9 @@ export interface PUBLISH_MEMBER_SHOPVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_SHOP_TITLE_COLLECTION
 // ====================================================
-
 
 export interface GET_MEMBER_SHOP_TITLE_COLLECTION_member_shop {
   __typename: "member_shop";
@@ -3535,11 +3361,9 @@ export interface GET_MEMBER_SHOP_TITLE_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_BASIC
 // ====================================================
-
 
 export interface UPDATE_MERCHANDISE_BASIC_update_merchandise {
   __typename: "merchandise_mutation_response";
@@ -3630,11 +3454,9 @@ export interface UPDATE_MERCHANDISE_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_DESCRIPTION
 // ====================================================
-
 
 export interface UPDATE_MERCHANDISE_DESCRIPTION_update_merchandise {
   __typename: "merchandise_mutation_response";
@@ -3661,11 +3483,9 @@ export interface UPDATE_MERCHANDISE_DESCRIPTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_IMAGES
 // ====================================================
-
 
 export interface UPDATE_MERCHANDISE_IMAGES_delete_merchandise_img {
   __typename: "merchandise_img_mutation_response";
@@ -3704,11 +3524,9 @@ export interface UPDATE_MERCHANDISE_IMAGESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_INTRODUCTION
 // ====================================================
-
 
 export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
   __typename: "merchandise_mutation_response";
@@ -3735,11 +3553,9 @@ export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_MERCHANDISE
 // ====================================================
-
 
 export interface PUBLISH_MERCHANDISE_update_merchandise {
   __typename: "merchandise_mutation_response";
@@ -3766,11 +3582,9 @@ export interface PUBLISH_MERCHANDISEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_SALES
 // ====================================================
-
 
 export interface UPDATE_MERCHANDISE_SALES_update_merchandise {
   __typename: "merchandise_mutation_response";
@@ -3800,11 +3614,9 @@ export interface UPDATE_MERCHANDISE_SALESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE_SPEC_COLLECTION
 // ====================================================
-
 
 export interface INSERT_MERCHANDISE_SPEC_COLLECTION_delete_merchandise_spec_file {
   __typename: "merchandise_spec_file_mutation_response";
@@ -3862,11 +3674,9 @@ export interface INSERT_MERCHANDISE_SPEC_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PRODUCT_COIN_BACK
 // ====================================================
-
 
 export interface UPDATE_PRODUCT_COIN_BACK_update_product_returning {
   __typename: "product";
@@ -3913,11 +3723,9 @@ export interface UPDATE_PRODUCT_COIN_BACKVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_SHIPPING_METHODS
 // ====================================================
-
 
 export interface UPDATE_SHIPPING_METHODS_update_member_shop {
   __typename: "member_shop_mutation_response";
@@ -3944,11 +3752,9 @@ export interface UPDATE_SHIPPING_METHODSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: READ_ALL_NOTIFICATIONS
 // ====================================================
-
 
 export interface READ_ALL_NOTIFICATIONS_update_notification {
   __typename: "notification_mutation_response";
@@ -3974,11 +3780,9 @@ export interface READ_ALL_NOTIFICATIONSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: READ_NOTIFICATION
 // ====================================================
-
 
 export interface READ_NOTIFICATION_update_notification {
   __typename: "notification_mutation_response";
@@ -4005,11 +3809,9 @@ export interface READ_NOTIFICATIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PERMISSION_GROUP
 // ====================================================
-
 
 export interface INSERT_PERMISSION_GROUP_insert_permission_group_returning {
   __typename: "permission_group";
@@ -4045,11 +3847,9 @@ export interface INSERT_PERMISSION_GROUPVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PERMISSION_GROUP
 // ====================================================
-
 
 export interface UPDATE_PERMISSION_GROUP_update_permission_group {
   __typename: "permission_group_mutation_response";
@@ -4076,11 +3876,9 @@ export interface UPDATE_PERMISSION_GROUPVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PERMISSION_GROUP_PERMISSION
 // ====================================================
-
 
 export interface INSERT_PERMISSION_GROUP_PERMISSION_insert_permission_group_permission {
   __typename: "permission_group_permission_mutation_response";
@@ -4106,11 +3904,9 @@ export interface INSERT_PERMISSION_GROUP_PERMISSIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PERMISSION_GROUP_PERMISSION
 // ====================================================
-
 
 export interface UPDATE_PERMISSION_GROUP_PERMISSION_delete_permission_group_permission {
   __typename: "permission_group_permission_mutation_response";
@@ -4149,11 +3945,9 @@ export interface UPDATE_PERMISSION_GROUP_PERMISSIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_PERMISSION_GROUP
 // ====================================================
-
 
 export interface DELETE_PERMISSION_GROUP_delete_member_permission_group {
   __typename: "member_permission_group_mutation_response";
@@ -4203,11 +3997,9 @@ export interface DELETE_PERMISSION_GROUPVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: CREATE_PODCAST_PLAN
 // ====================================================
-
 
 export interface CREATE_PODCAST_PLAN_insert_podcast_plan {
   __typename: "podcast_plan_mutation_response";
@@ -4239,11 +4031,9 @@ export interface CREATE_PODCAST_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PLAN
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PLAN_update_podcast_plan {
   __typename: "podcast_plan_mutation_response";
@@ -4276,11 +4066,9 @@ export interface UPDATE_PODCAST_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BASIC
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_BASIC_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4372,11 +4160,9 @@ export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4418,11 +4204,9 @@ export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_DURATION
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_DURATION_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4451,11 +4235,9 @@ export interface UPDATE_PODCAST_PROGRAM_DURATIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_ROLE
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_ROLE_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4507,11 +4289,9 @@ export interface UPDATE_PODCAST_PROGRAM_ROLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_COVER
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_COVER_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4539,11 +4319,9 @@ export interface UPDATE_PODCAST_PROGRAM_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_INTRO
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_INTRO_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4571,11 +4349,9 @@ export interface UPDATE_PODCAST_PROGRAM_INTROVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_PLAN
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4605,11 +4381,9 @@ export interface UPDATE_PODCAST_PROGRAM_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_PODCAST_PROGRAM
 // ====================================================
-
 
 export interface PUBLISH_PODCAST_PROGRAM_update_podcast_program {
   __typename: "podcast_program_mutation_response";
@@ -4636,11 +4410,9 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_ALBUM_BASIC
 // ====================================================
-
 
 export interface UPDATE_PODCAST_ALBUM_BASIC_update_podcast_album {
   __typename: "podcast_album_mutation_response";
@@ -4694,11 +4466,9 @@ export interface UPDATE_PODCAST_ALBUM_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_ALBUM_COVER
 // ====================================================
-
 
 export interface UPDATE_PODCAST_ALBUM_COVER_update_podcast_album {
   __typename: "podcast_album_mutation_response";
@@ -4725,11 +4495,9 @@ export interface UPDATE_PODCAST_ALBUM_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PODCAST_ALBUM_PREVIEW_COLLECTION
 // ====================================================
-
 
 export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTION_podcast_album_author {
   __typename: "member_public";
@@ -4765,11 +4533,9 @@ export interface GET_PODCAST_ALBUM_PREVIEW_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_ALBUM_IS_DELETED
 // ====================================================
-
 
 export interface UPDATE_PODCAST_ALBUM_IS_DELETED_update_podcast_album {
   __typename: "podcast_album_mutation_response";
@@ -4795,11 +4561,9 @@ export interface UPDATE_PODCAST_ALBUM_IS_DELETEDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_ALBUM_DESCRIPTION
 // ====================================================
-
 
 export interface UPDATE_PODCAST_ALBUM_DESCRIPTION_update_podcast_album {
   __typename: "podcast_album_mutation_response";
@@ -4826,11 +4590,9 @@ export interface UPDATE_PODCAST_ALBUM_DESCRIPTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_AVAILABLE_PODCAST_PROGRAM_COLLECTION
 // ====================================================
-
 
 export interface GET_AVAILABLE_PODCAST_PROGRAM_COLLECTION_podcast_program {
   __typename: "podcast_program";
@@ -4855,11 +4617,9 @@ export interface GET_AVAILABLE_PODCAST_PROGRAM_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM
 // ====================================================
-
 
 export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAM_insert_podcast_album_podcast_program {
   __typename: "podcast_album_podcast_program_mutation_response";
@@ -4899,11 +4659,9 @@ export interface UPSERT_PODCAST_ALBUM_PODCAST_PROGRAMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_PODCAST_ALBUM
 // ====================================================
-
 
 export interface PUBLISH_PODCAST_ALBUM_update_podcast_album {
   __typename: "podcast_album_mutation_response";
@@ -4930,11 +4688,9 @@ export interface PUBLISH_PODCAST_ALBUMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PRACTICE_STATUS
 // ====================================================
-
 
 export interface UPDATE_PRACTICE_STATUS_update_practice {
   __typename: "practice_mutation_response";
@@ -4961,11 +4717,9 @@ export interface UPDATE_PRACTICE_STATUSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PRACTICE_REACTION
 // ====================================================
-
 
 export interface INSERT_PRACTICE_REACTION_insert_practice_reaction {
   __typename: "practice_reaction_mutation_response";
@@ -4992,11 +4746,9 @@ export interface INSERT_PRACTICE_REACTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_PRACTICE_REACTION
 // ====================================================
-
 
 export interface DELETE_PRACTICE_REACTION_delete_practice_reaction {
   __typename: "practice_reaction_mutation_response";
@@ -5023,11 +4775,9 @@ export interface DELETE_PRACTICE_REACTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRACTICE_ISSUE_AMOUNT
 // ====================================================
-
 
 export interface GET_PRACTICE_ISSUE_AMOUNT_issue_aggregate_aggregate {
   __typename: "issue_aggregate_fields";
@@ -5055,11 +4805,9 @@ export interface GET_PRACTICE_ISSUE_AMOUNTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_EXERCISE
 // ====================================================
-
 
 export interface UPDATE_EXERCISE_update_program_content {
   __typename: "program_content_mutation_response";
@@ -5100,11 +4848,9 @@ export interface UPDATE_EXERCISEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_EXERCISE_POSITION
 // ====================================================
-
 
 export interface UPDATE_EXERCISE_POSITION_update_program_content_body {
   __typename: "program_content_body_mutation_response";
@@ -5131,11 +4877,9 @@ export interface UPDATE_EXERCISE_POSITIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PRACTICE
 // ====================================================
-
 
 export interface UPDATE_PRACTICE_update_program_content {
   __typename: "program_content_mutation_response";
@@ -5180,11 +4924,9 @@ export interface UPDATE_PRACTICEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_CATEGORIES
 // ====================================================
-
 
 export interface GET_PROGRAM_CATEGORIES_category {
   __typename: "category";
@@ -5204,11 +4946,9 @@ export interface GET_PROGRAM_CATEGORIES {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_ID_LIST
 // ====================================================
-
 
 export interface GET_PROGRAM_ID_LIST_program {
   __typename: "program";
@@ -5228,11 +4968,9 @@ export interface GET_PROGRAM_ID_LIST {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
-
 
 export interface PUBLISH_PROGRAM_CONTENT_update_program_content {
   __typename: "program_content_mutation_response";
@@ -5259,11 +4997,9 @@ export interface PUBLISH_PROGRAM_CONTENTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_CONTENT_ID_LIST
 // ====================================================
-
 
 export interface GET_PROGRAM_CONTENT_ID_LIST_program_content {
   __typename: "program_content";
@@ -5283,11 +5019,9 @@ export interface GET_PROGRAM_CONTENT_ID_LIST {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
-
 
 export interface INSERT_PROGRAM_CONTENT_insert_program_content_returning {
   __typename: "program_content";
@@ -5323,11 +5057,9 @@ export interface INSERT_PROGRAM_CONTENTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_SECTION
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_CONTENT_SECTION_update_program_content_section {
   __typename: "program_content_section_mutation_response";
@@ -5354,11 +5086,9 @@ export interface UPDATE_PROGRAM_CONTENT_SECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT_SECTION
 // ====================================================
-
 
 export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_progress {
   __typename: "program_content_progress_mutation_response";
@@ -5420,11 +5150,9 @@ export interface DELETE_PROGRAM_CONTENT_SECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_PROGRAM_GROUP_BUYING_PLAN
 // ====================================================
-
 
 export interface UPSERT_PROGRAM_GROUP_BUYING_PLAN_insert_program_plan {
   __typename: "program_plan_mutation_response";
@@ -5463,11 +5191,9 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_CATEGORIES
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_CATEGORIES_category {
   __typename: "category";
@@ -5487,11 +5213,9 @@ export interface GET_PROGRAM_PACKAGE_CATEGORIES {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_ID_LIST
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_ID_LIST_program_package {
   __typename: "program_package";
@@ -5511,11 +5235,9 @@ export interface GET_PROGRAM_PACKAGE_ID_LIST {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PERPETUAL_PLAN
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_PERPETUAL_PLAN_update_program {
   __typename: "program_mutation_response";
@@ -5557,11 +5279,9 @@ export interface UPDATE_PROGRAM_PERPETUAL_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_PROGRAM_PLAN
 // ====================================================
-
 
 export interface UPSERT_PROGRAM_PLAN_insert_program_plan {
   __typename: "program_plan_mutation_response";
@@ -5604,11 +5324,9 @@ export interface UPSERT_PROGRAM_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PLANS
 // ====================================================
-
 
 export interface GET_PROGRAM_PLANS_program_plan {
   __typename: "program_plan";
@@ -5632,11 +5350,9 @@ export interface GET_PROGRAM_PLANSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT
 // ====================================================
-
 
 export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT_program_plan_enrollment_aggregate_aggregate {
   __typename: "program_plan_enrollment_aggregate_fields";
@@ -5664,11 +5380,9 @@ export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_TAGS
 // ====================================================
-
 
 export interface GET_PROGRAM_TAGS_program_tag {
   __typename: "program_tag";
@@ -5687,11 +5401,9 @@ export interface GET_PROGRAM_TAGS {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_BASIC
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_PACKAGE_BASIC_update_program_package {
   __typename: "program_package_mutation_response";
@@ -5743,11 +5455,9 @@ export interface UPDATE_PROGRAM_PACKAGE_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_COVER
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_PACKAGE_COVER_update_program_package {
   __typename: "program_package_mutation_response";
@@ -5774,11 +5484,9 @@ export interface UPDATE_PROGRAM_PACKAGE_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_DESCRIPTION
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_PACKAGE_DESCRIPTION_update_program_package {
   __typename: "program_package_mutation_response";
@@ -5805,11 +5513,9 @@ export interface UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_PACKAGE_PLAN
 // ====================================================
-
 
 export interface INSERT_PROGRAM_PACKAGE_PLAN_insert_program_package_plan {
   __typename: "program_package_plan_mutation_response";
@@ -5835,11 +5541,9 @@ export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION_insert_program_package_plan {
   __typename: "program_package_plan_mutation_response";
@@ -5865,11 +5569,9 @@ export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_AVAILABLE_PROGRAM_COLLECTION
 // ====================================================
-
 
 export interface GET_AVAILABLE_PROGRAM_COLLECTION_program {
   __typename: "program";
@@ -5895,11 +5597,9 @@ export interface GET_AVAILABLE_PROGRAM_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_PACKAGE_PROGRAM
 // ====================================================
-
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
   __typename: "program_tempo_delivery_mutation_response";
@@ -5951,11 +5651,9 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_PACKAGE
 // ====================================================
-
 
 export interface PUBLISH_PROGRAM_PACKAGE_update_program_package {
   __typename: "program_package_mutation_response";
@@ -5982,11 +5680,9 @@ export interface PUBLISH_PROGRAM_PACKAGEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROJECT_BASIC
 // ====================================================
-
 
 export interface UPDATE_PROJECT_BASIC_update_project {
   __typename: "project_mutation_response";
@@ -6043,11 +5739,9 @@ export interface UPDATE_PROJECT_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROJECT_CATEGORIES
 // ====================================================
-
 
 export interface GET_PROJECT_CATEGORIES_category {
   __typename: "category";
@@ -6067,11 +5761,9 @@ export interface GET_PROJECT_CATEGORIES {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROJECT_PREVIEW_COLLECTION
 // ====================================================
-
 
 export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate {
   __typename: "project_aggregate_fields";
@@ -6150,11 +5842,9 @@ export interface GET_PROJECT_PREVIEW_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROJECT_SORT_COLLECTION
 // ====================================================
-
 
 export interface GET_PROJECT_SORT_COLLECTION_project {
   __typename: "project";
@@ -6182,11 +5872,9 @@ export interface GET_PROJECT_SORT_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROJECT_POSITION_COLLECTION
 // ====================================================
-
 
 export interface UPDATE_PROJECT_POSITION_COLLECTION_insert_project {
   __typename: "project_mutation_response";
@@ -6212,11 +5900,9 @@ export interface UPDATE_PROJECT_POSITION_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROJECT_ID_LIST
 // ====================================================
-
 
 export interface GET_PROJECT_ID_LIST_project {
   __typename: "project";
@@ -6236,11 +5922,9 @@ export interface GET_PROJECT_ID_LIST {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROJECT_COVER
 // ====================================================
-
 
 export interface UPDATE_PROJECT_COVER_update_project {
   __typename: "project_mutation_response";
@@ -6268,11 +5952,9 @@ export interface UPDATE_PROJECT_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROJECT_INTRO
 // ====================================================
-
 
 export interface UPDATE_PROJECT_INTRO_update_project {
   __typename: "project_mutation_response";
@@ -6303,11 +5985,9 @@ export interface UPDATE_PROJECT_INTROVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROJECT_PLAN_SORT_COLLECTION
 // ====================================================
-
 
 export interface GET_PROJECT_PLAN_SORT_COLLECTION_project_plan {
   __typename: "project_plan";
@@ -6332,11 +6012,9 @@ export interface GET_PROJECT_PLAN_SORT_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROJECT_PLAN_POSITION_COLLECTION
 // ====================================================
-
 
 export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan {
   __typename: "project_plan_mutation_response";
@@ -6362,11 +6040,9 @@ export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROJECT_PLAN_COVER_URL
 // ====================================================
-
 
 export interface UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan {
   __typename: "project_plan_mutation_response";
@@ -6393,11 +6069,9 @@ export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_PROJECT_PLAN
 // ====================================================
-
 
 export interface UPSERT_PROJECT_PLAN_insert_project_plan_one {
   __typename: "project_plan";
@@ -6420,11 +6094,9 @@ export interface UPSERT_PROJECT_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_PROJECT_PLAN_PRODUCT
 // ====================================================
-
 
 export interface UPSERT_PROJECT_PLAN_PRODUCT_delete_project_plan_product {
   __typename: "project_plan_product_mutation_response";
@@ -6463,11 +6135,9 @@ export interface UPSERT_PROJECT_PLAN_PRODUCTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_PROJECT
 // ====================================================
-
 
 export interface PUBLISH_PROJECT_update_project {
   __typename: "project_mutation_response";
@@ -6494,11 +6164,9 @@ export interface PUBLISH_PROJECTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_LATEST_MEMBER_NOTE_STATUS
 // ====================================================
-
 
 export interface GET_LATEST_MEMBER_NOTE_STATUS_member_note {
   __typename: "member_note";
@@ -6525,11 +6193,9 @@ export interface GET_LATEST_MEMBER_NOTE_STATUSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PAYMENT_LOG
 // ====================================================
-
 
 export interface INSERT_PAYMENT_LOG_insert_payment_log_one {
   __typename: "payment_log";
@@ -6552,11 +6218,9 @@ export interface INSERT_PAYMENT_LOGVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_PAYMENT_STATUS
 // ====================================================
-
 
 export interface GET_ORDER_PAYMENT_STATUS_order_payment_status {
   __typename: "order_payment_status";
@@ -6581,11 +6245,9 @@ export interface GET_ORDER_PAYMENT_STATUSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ORDER_LOG_STATUS
 // ====================================================
-
 
 export interface UPDATE_ORDER_LOG_STATUS_update_order_log {
   __typename: "order_log_mutation_response";
@@ -6613,11 +6275,9 @@ export interface UPDATE_ORDER_LOG_STATUSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_LOG_EXPORT
 // ====================================================
-
 
 export interface GET_ORDER_LOG_EXPORT_order_log_export {
   __typename: "order_log_export";
@@ -6662,11 +6322,9 @@ export interface GET_ORDER_LOG_EXPORTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_PRODUCT_EXPORT
 // ====================================================
-
 
 export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
   __typename: "order_product_export";
@@ -6699,11 +6357,9 @@ export interface GET_ORDER_PRODUCT_EXPORTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_DISCOUNT_COLLECTION
 // ====================================================
-
 
 export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
   __typename: "order_log";
@@ -6747,11 +6403,9 @@ export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PAYMENT_LOG_EXPORT
 // ====================================================
-
 
 export interface GET_PAYMENT_LOG_EXPORT_payment_log_export {
   __typename: "payment_log_export";
@@ -6787,11 +6441,9 @@ export interface GET_PAYMENT_LOG_EXPORTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_VOUCHER_CODE_BY_VOUCHER
 // ====================================================
-
 
 export interface GET_VOUCHER_CODE_BY_VOUCHER_voucher_by_pk_voucher_code {
   __typename: "voucher_code";
@@ -6824,11 +6476,9 @@ export interface GET_VOUCHER_CODE_BY_VOUCHERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COUPON_CODE_BY_COUPON
 // ====================================================
-
 
 export interface GET_COUPON_CODE_BY_COUPON_coupon_by_pk_coupon_code {
   __typename: "coupon_code";
@@ -6861,11 +6511,9 @@ export interface GET_COUPON_CODE_BY_COUPONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ORDER_PRODUCT_DELIVERED_AT
 // ====================================================
-
 
 export interface UPDATE_ORDER_PRODUCT_DELIVERED_AT_update_order_product {
   __typename: "order_product_mutation_response";
@@ -6892,11 +6540,9 @@ export interface UPDATE_ORDER_PRODUCT_DELIVERED_ATVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
-
 
 export interface GET_PRODUCT_OWNER_ORDERS_order_product_order_log {
   __typename: "order_log";
@@ -6934,11 +6580,9 @@ export interface GET_PRODUCT_OWNER_ORDERSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: CLOSE_LEAD
 // ====================================================
-
 
 export interface CLOSE_LEAD_update_member {
   __typename: "member_mutation_response";
@@ -6964,11 +6608,9 @@ export interface CLOSE_LEADVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: TRANSFER_LEAD
 // ====================================================
-
 
 export interface TRANSFER_LEAD_update_member {
   __typename: "member_mutation_response";
@@ -6995,11 +6637,9 @@ export interface TRANSFER_LEADVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_TOTAL_ORDER_AMOUNT
 // ====================================================
-
 
 export interface GET_TOTAL_ORDER_AMOUNT_order_product_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
@@ -7047,11 +6687,9 @@ export interface GET_TOTAL_ORDER_AMOUNT {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SELF_ORDER_AMOUNT
 // ====================================================
-
 
 export interface GET_SELF_ORDER_AMOUNT_order_product_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
@@ -7103,11 +6741,9 @@ export interface GET_SELF_ORDER_AMOUNTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_TOTAL_AMOUNT
 // ====================================================
-
 
 export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
@@ -7159,11 +6795,9 @@ export interface GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_SUBSCRIPTION_CANCELED
 // ====================================================
-
 
 export interface UPDATE_SUBSCRIPTION_CANCELED_update_order_product {
   __typename: "order_product_mutation_response";
@@ -7190,11 +6824,9 @@ export interface UPDATE_SUBSCRIPTION_CANCELEDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_CONTACT
 // ====================================================
-
 
 export interface GET_ORDER_CONTACT_order_contact_member {
   __typename: "member_public";
@@ -7252,11 +6884,9 @@ export interface GET_ORDER_CONTACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ORDER_CONTACT
 // ====================================================
-
 
 export interface INSERT_ORDER_CONTACT_insert_order_contact {
   __typename: "order_contact_mutation_response";
@@ -7284,11 +6914,9 @@ export interface INSERT_ORDER_CONTACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ORDER_CONTACT_READ_AT
 // ====================================================
-
 
 export interface UPDATE_ORDER_CONTACT_READ_AT_update_order_contact {
   __typename: "order_contact_mutation_response";
@@ -7316,11 +6944,9 @@ export interface UPDATE_ORDER_CONTACT_READ_ATVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ORDER_PRODUCT_FILES
 // ====================================================
-
 
 export interface UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file {
   __typename: "order_product_file_mutation_response";
@@ -7359,11 +6985,9 @@ export interface UPDATE_ORDER_PRODUCT_FILESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_DELIVER_INFO
 // ====================================================
-
 
 export interface UPDATE_DELIVER_INFO_update_order_log {
   __typename: "order_log_mutation_response";
@@ -7391,11 +7015,9 @@ export interface UPDATE_DELIVER_INFOVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
-
 
 export interface GET_MEMBER_TASK_COLLECTION_executors_executor {
   __typename: "member";
@@ -7528,11 +7150,9 @@ export interface GET_MEMBER_TASK_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_TASK
 // ====================================================
-
 
 export interface INSERT_TASK_insert_member_task {
   __typename: "member_task_mutation_response";
@@ -7558,11 +7178,9 @@ export interface INSERT_TASKVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_TASK
 // ====================================================
-
 
 export interface DELETE_TASK_delete_member_task {
   __typename: "member_task_mutation_response";
@@ -7588,11 +7206,9 @@ export interface DELETE_TASKVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_VOUCHER_COLLECTION
 // ====================================================
-
 
 export interface GET_MEMBER_VOUCHER_COLLECTION_voucher_status {
   __typename: "voucher_status";
@@ -7659,11 +7275,9 @@ export interface GET_MEMBER_VOUCHER_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_LOCALES
 // ====================================================
-
 
 export interface GET_LOCALES_locale {
   __typename: "locale";
@@ -7682,11 +7296,9 @@ export interface GET_LOCALES {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ACTIVITY_COLLECTION_ADMIN
 // ====================================================
-
 
 export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions {
   __typename: "activity_session";
@@ -7771,11 +7383,9 @@ export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ACTIVITY_ADMIN
 // ====================================================
-
 
 export interface GET_ACTIVITY_ADMIN_activity_activity_categories_category {
   __typename: "category";
@@ -7947,11 +7557,9 @@ export interface GET_ACTIVITY_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
 // ====================================================
-
 
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules {
   __typename: "appointment_schedule";
@@ -8052,11 +7660,9 @@ export interface GET_APPOINTMENT_PLAN_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_CREATOR
 // ====================================================
-
 
 export interface GET_APPOINTMENT_ENROLLMENT_CREATOR_member {
   __typename: "member";
@@ -8076,11 +7682,9 @@ export interface GET_APPOINTMENT_ENROLLMENT_CREATOR {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APPOINTMENT_ENROLLMENTS
 // ====================================================
-
 
 export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate {
   __typename: "appointment_enrollment_aggregate_fields";
@@ -8183,11 +7787,9 @@ export interface GET_APPOINTMENT_ENROLLMENTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_APPOINTMENT_SCHEDULES
 // ====================================================
-
 
 export interface INSERT_APPOINTMENT_SCHEDULES_insert_appointment_schedule {
   __typename: "appointment_schedule_mutation_response";
@@ -8213,11 +7815,9 @@ export interface INSERT_APPOINTMENT_SCHEDULESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APP_PAGE
 // ====================================================
-
 
 export interface GET_APP_PAGE_app_page_by_pk_editor {
   __typename: "member_public";
@@ -8256,11 +7856,9 @@ export interface GET_APP_PAGEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APP_PAGE_COLLECTION
 // ====================================================
-
 
 export interface GET_APP_PAGE_COLLECTION_app_page_editor {
   __typename: "member_public";
@@ -8299,11 +7897,9 @@ export interface GET_APP_PAGE_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_APP_PAGE
 // ====================================================
-
 
 export interface INSERT_APP_PAGE_insert_app_page_one {
   __typename: "app_page";
@@ -8331,11 +7927,9 @@ export interface INSERT_APP_PAGEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APP_PAGE
 // ====================================================
-
 
 export interface UPDATE_APP_PAGE_update_app_page_by_pk {
   __typename: "app_page";
@@ -8359,11 +7953,9 @@ export interface UPDATE_APP_PAGEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ATTEND
 // ====================================================
-
 
 export interface GET_ATTEND_attend {
   __typename: "attend";
@@ -8387,11 +7979,9 @@ export interface GET_ATTENDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ATTEND
 // ====================================================
-
 
 export interface INSERT_ATTEND_insert_attend_one {
   __typename: "attend";
@@ -8414,11 +8004,9 @@ export interface INSERT_ATTENDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_ATTEND
 // ====================================================
-
 
 export interface UPDATE_ATTEND_update_attend {
   __typename: "attend_mutation_response";
@@ -8445,11 +8033,9 @@ export interface UPDATE_ATTENDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_POST
 // ====================================================
-
 
 export interface GET_POST_post_by_pk_post_categories_category {
   __typename: "category";
@@ -8550,11 +8136,9 @@ export interface GET_POSTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_POSTS
 // ====================================================
-
 
 export interface GET_POSTS_post_post_roles_member {
   __typename: "member_public";
@@ -8607,11 +8191,9 @@ export interface GET_POSTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ENROLLED_CARD_IDS
 // ====================================================
-
 
 export interface GET_ENROLLED_CARD_IDS_card_enrollment {
   __typename: "card_enrollment";
@@ -8634,11 +8216,9 @@ export interface GET_ENROLLED_CARD_IDSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ENROLLED_CARD
 // ====================================================
-
 
 export interface GET_ENROLLED_CARD_card_by_pk {
   __typename: "card";
@@ -8665,11 +8245,9 @@ export interface GET_ENROLLED_CARDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ENROLLED_CARDS
 // ====================================================
-
 
 export interface GET_ENROLLED_CARDS_card_enrollment_card {
   __typename: "card";
@@ -8704,11 +8282,9 @@ export interface GET_ENROLLED_CARDSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COUPON_PLAN_COLLECTION
 // ====================================================
-
 
 export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate_sum {
   __typename: "coupon_code_sum_fields";
@@ -8772,11 +8348,9 @@ export interface GET_COUPON_PLAN_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COUPON__CODE_COLLECTION
 // ====================================================
-
 
 export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_aggregate_aggregate {
   __typename: "coupon_aggregate_fields";
@@ -8815,11 +8389,9 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
 // ====================================================
-
 
 export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
   __typename: "voucher_code_sum_fields";
@@ -8878,11 +8450,9 @@ export interface GET_VOUCHER_PLAN_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_VOUCHER_PLAN
 // ====================================================
-
 
 export interface INSERT_VOUCHER_PLAN_insert_voucher_plan {
   __typename: "voucher_plan_mutation_response";
@@ -8916,11 +8486,9 @@ export interface INSERT_VOUCHER_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_VOUCHER_PLAN
 // ====================================================
-
 
 export interface UPDATE_VOUCHER_PLAN_update_voucher_plan {
   __typename: "voucher_plan_mutation_response";
@@ -8978,11 +8546,9 @@ export interface UPDATE_VOUCHER_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_VOUCHER_CODE
 // ====================================================
-
 
 export interface GET_VOUCHER_CODE_voucher_code_vouchers_member {
   __typename: "member";
@@ -9036,11 +8602,9 @@ export interface GET_VOUCHER_CODEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_CREATOR_COLLECTION
 // ====================================================
-
 
 export interface GET_CREATOR_COLLECTION_creator_creator_categories_category {
   __typename: "category";
@@ -9091,11 +8655,9 @@ export interface GET_CREATOR_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_TAGS
 // ====================================================
-
 
 export interface GET_TAGS_app_tag {
   __typename: "app_tag";
@@ -9114,11 +8676,9 @@ export interface GET_TAGS {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_CATEGORIES
 // ====================================================
-
 
 export interface GET_CATEGORIES_category {
   __typename: "category";
@@ -9144,11 +8704,9 @@ export interface GET_CATEGORIESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_NOTIFICATIONS
 // ====================================================
-
 
 export interface GET_NOTIFICATIONS_notification {
   __typename: "notification";
@@ -9179,11 +8737,9 @@ export interface GET_NOTIFICATIONSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRODUCT_INVENTORY
 // ====================================================
-
 
 export interface GET_PRODUCT_INVENTORY_product_inventory {
   __typename: "product_inventory";
@@ -9233,11 +8789,9 @@ export interface GET_PRODUCT_INVENTORYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARRANGE_PRODUCT_INVENTORY
 // ====================================================
-
 
 export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory_one {
   __typename: "product_inventory";
@@ -9260,11 +8814,9 @@ export interface ARRANGE_PRODUCT_INVENTORYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PHYSICAL_PRODUCT_ORDER_LOG
 // ====================================================
-
 
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_order_product_files {
   __typename: "order_product_file";
@@ -9352,11 +8904,9 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOGVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRODUCT_SIMPLE
 // ====================================================
-
 
 export interface GET_PRODUCT_SIMPLE_program_by_pk {
   __typename: "program";
@@ -9633,11 +9183,9 @@ export interface GET_PRODUCT_SIMPLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ATTACHMENT
 // ====================================================
-
 
 export interface INSERT_ATTACHMENT_insert_attachment_returning {
   __typename: "attachment";
@@ -9668,11 +9216,9 @@ export interface INSERT_ATTACHMENTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ARCHIVE_ATTACHMENTS
 // ====================================================
-
 
 export interface ARCHIVE_ATTACHMENTS_update_attachment {
   __typename: "attachment_mutation_response";
@@ -9698,11 +9244,9 @@ export interface ARCHIVE_ATTACHMENTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_ATTACHMENTS
 // ====================================================
-
 
 export interface DELETE_ATTACHMENTS_delete_program_content_video {
   __typename: "program_content_video_mutation_response";
@@ -9740,11 +9284,9 @@ export interface DELETE_ATTACHMENTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_COUPON_COLLECTION
 // ====================================================
-
 
 export interface GET_COUPON_COLLECTION_coupon_status {
   __typename: "coupon_status";
@@ -9816,11 +9358,9 @@ export interface GET_COUPON_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRODUCT_SKU
 // ====================================================
-
 
 export interface GET_PRODUCT_SKU_product_by_pk {
   __typename: "product";
@@ -9843,11 +9383,9 @@ export interface GET_PRODUCT_SKUVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ATTACHMENTS
 // ====================================================
-
 
 export interface GET_ATTACHMENTS_attachment_aggregate_aggregate_max {
   __typename: "attachment_max_fields";
@@ -9919,11 +9457,9 @@ export interface GET_ATTACHMENTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ALL_BRIEF_PRODUCT_COLLECTION
 // ====================================================
-
 
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
   __typename: "program";
@@ -10096,11 +9632,9 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
-
 
 export interface GET_MEMBER_member_by_pk_member_specialities {
   __typename: "member_speciality";
@@ -10163,11 +9697,9 @@ export interface GET_MEMBERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_ADMIN
 // ====================================================
-
 
 export interface GET_MEMBER_ADMIN_member_by_pk_manager {
   __typename: "member";
@@ -10427,11 +9959,9 @@ export interface GET_MEMBER_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_NOTES_ADMIN
 // ====================================================
-
 
 export interface GET_MEMBER_NOTES_ADMIN_category {
   __typename: "category";
@@ -10623,11 +10153,9 @@ export interface GET_MEMBER_NOTES_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_MEMBER_NOTE
 // ====================================================
-
 
 export interface INSERT_MEMBER_NOTE_insert_member_note_one {
   __typename: "member_note";
@@ -10657,11 +10185,9 @@ export interface INSERT_MEMBER_NOTEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_NOTE
 // ====================================================
-
 
 export interface UPDATE_MEMBER_NOTE_update_member_note_by_pk {
   __typename: "member_note";
@@ -10685,11 +10211,9 @@ export interface UPDATE_MEMBER_NOTEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_MEMBER_NOTE
 // ====================================================
-
 
 export interface DELETE_MEMBER_NOTE_update_member_note {
   __typename: "member_note_mutation_response";
@@ -10717,11 +10241,9 @@ export interface DELETE_MEMBER_NOTEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PUBLIC_MEMBER
 // ====================================================
-
 
 export interface GET_PUBLIC_MEMBER_member_public {
   __typename: "member_public";
@@ -10749,11 +10271,9 @@ export interface GET_PUBLIC_MEMBERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_ROLE_COUNT
 // ====================================================
-
 
 export interface GET_MEMBER_ROLE_COUNT_all_aggregate {
   __typename: "member_aggregate_fields";
@@ -10826,11 +10346,9 @@ export interface GET_MEMBER_ROLE_COUNTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PAGE_MEMBER_COLLECTION
 // ====================================================
-
 
 export interface GET_PAGE_MEMBER_COLLECTION_member_aggregate_aggregate {
   __typename: "member_aggregate_fields";
@@ -10985,11 +10503,9 @@ export interface GET_PAGE_MEMBER_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_SUMMARY_COLLECTION
 // ====================================================
-
 
 export interface GET_MEMBER_SUMMARY_COLLECTION_member {
   __typename: "member";
@@ -11012,11 +10528,9 @@ export interface GET_MEMBER_SUMMARY_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROPERTY
 // ====================================================
-
 
 export interface GET_PROPERTY_property {
   __typename: "property";
@@ -11041,11 +10555,9 @@ export interface GET_PROPERTYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_AVATAR
 // ====================================================
-
 
 export interface UPDATE_MEMBER_AVATAR_update_member {
   __typename: "member_mutation_response";
@@ -11072,11 +10584,9 @@ export interface UPDATE_MEMBER_AVATARVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_PROPERTY_COLLECTION
 // ====================================================
-
 
 export interface GET_MEMBER_PROPERTY_COLLECTION_member_property_property {
   __typename: "property";
@@ -11110,11 +10620,9 @@ export interface GET_MEMBER_PROPERTY_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
 // ====================================================
-
 
 export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
   __typename: "member_property_mutation_response";
@@ -11153,11 +10661,9 @@ export interface UPDATE_MEMBER_PROPERTYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MERCHANDISE_COLLECTION
 // ====================================================
-
 
 export interface GET_MERCHANDISE_COLLECTION_merchandise_merchandise_imgs {
   __typename: "merchandise_img";
@@ -11195,11 +10701,9 @@ export interface GET_MERCHANDISE_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MERCHANDISE
 // ====================================================
-
 
 export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_categories_category {
   __typename: "category";
@@ -11301,11 +10805,9 @@ export interface GET_MERCHANDISEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MERCHANDISE_SPEC_PRODUCTS
 // ====================================================
-
 
 export interface GET_MERCHANDISE_SPEC_PRODUCTS_product {
   __typename: "product";
@@ -11339,11 +10841,9 @@ export interface GET_MERCHANDISE_SPEC_PRODUCTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_SHOP_COLLECTION
 // ====================================================
-
 
 export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member {
   __typename: "member_public";
@@ -11394,11 +10894,9 @@ export interface GET_MEMBER_SHOP_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_SHOP
 // ====================================================
-
 
 export interface GET_MEMBER_SHOP_member_shop_by_pk_member {
   __typename: "member_public";
@@ -11472,11 +10970,9 @@ export interface GET_MEMBER_SHOPVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MERCHANDISE_SPEC_INVENTORY_STATUS
 // ====================================================
-
 
 export interface GET_MERCHANDISE_SPEC_INVENTORY_STATUS_merchandise_spec_inventory_status {
   __typename: "merchandise_spec_inventory_status";
@@ -11499,11 +10995,9 @@ export interface GET_MERCHANDISE_SPEC_INVENTORY_STATUS {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MERCHANDISE_SPEC_COLLECTION
 // ====================================================
-
 
 export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_merchandise_imgs {
   __typename: "merchandise_img";
@@ -11562,11 +11056,9 @@ export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_LOG_STATUS
 // ====================================================
-
 
 export interface GET_ORDER_LOG_STATUS_order_log {
   __typename: "order_log";
@@ -11588,11 +11080,9 @@ export interface GET_ORDER_LOG_STATUS {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ALL_ORDER_LOG
 // ====================================================
-
 
 export interface GET_ALL_ORDER_LOG_order_log_aggregate_aggregate {
   __typename: "order_log_aggregate_fields";
@@ -11620,11 +11110,9 @@ export interface GET_ALL_ORDER_LOGVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDERS
 // ====================================================
-
 
 export interface GET_ORDERS_order_log_aggregate_aggregate {
   __typename: "order_log_aggregate_fields";
@@ -11759,11 +11247,9 @@ export interface GET_ORDERSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ROLE_PERMISSION
 // ====================================================
-
 
 export interface GET_ROLE_PERMISSION_role_permission {
   __typename: "role_permission";
@@ -11784,11 +11270,9 @@ export interface GET_ROLE_PERMISSION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PERMISSION_GROUP_COLLECTION
 // ====================================================
-
 
 export interface GET_PERMISSION_GROUP_COLLECTION_permission_group_permission_group_permissions {
   __typename: "permission_group_permission";
@@ -11822,11 +11306,9 @@ export interface GET_PERMISSION_GROUP_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PERMISSION_GROUPS_DROPDOWN_MENU
 // ====================================================
-
 
 export interface GET_PERMISSION_GROUPS_DROPDOWN_MENU_member_permission_group_member {
   __typename: "member";
@@ -11866,11 +11348,9 @@ export interface GET_PERMISSION_GROUPS_DROPDOWN_MENUVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN_COLLECTION
 // ====================================================
-
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_creator {
   __typename: "member_public";
@@ -11964,11 +11444,9 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN
 // ====================================================
-
 
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_audios {
   __typename: "podcast_program_audio";
@@ -12086,11 +11564,9 @@ export interface GET_PODCAST_PROGRAM_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
 // ====================================================
-
 
 export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate_aggregate {
   __typename: "podcast_plan_enrollment_aggregate_fields";
@@ -12147,11 +11623,9 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PODCAST_ALBUM
 // ====================================================
-
 
 export interface GET_PODCAST_ALBUM_podcast_album_by_pk_podcast_album_categories_category {
   __typename: "category";
@@ -12231,11 +11705,9 @@ export interface GET_PODCAST_ALBUMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PODCAST_ALBUM_COUNTS
 // ====================================================
-
 
 export interface GET_PODCAST_ALBUM_COUNTS_draft_aggregate {
   __typename: "podcast_album_aggregate_fields";
@@ -12277,11 +11749,9 @@ export interface GET_PODCAST_ALBUM_COUNTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_BY_ID
 // ====================================================
-
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_body {
   __typename: "program_content_body";
@@ -12485,6 +11955,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk {
   is_issues_open: boolean;
   is_countdown_timer_visible: boolean;
   is_introduction_section_visible: boolean;
+  is_enrolled_count_visible: boolean;
   /**
    * An array relationship
    */
@@ -12527,11 +11998,9 @@ export interface GET_PROGRAM_BY_IDVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_CONTENT_BODY
 // ====================================================
-
 
 export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_body {
   __typename: "program_content_body";
@@ -12575,11 +12044,9 @@ export interface GET_PROGRAM_CONTENT_BODYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAMS
 // ====================================================
-
 
 export interface GET_PROGRAMS_program_program_content_sections_program_contents {
   __typename: "program_content";
@@ -12627,11 +12094,9 @@ export interface GET_PROGRAMSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_CONTENT_ENROLLMENT
 // ====================================================
-
 
 export interface GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment_program {
   __typename: "program";
@@ -12659,11 +12124,9 @@ export interface GET_PROGRAM_CONTENT_ENROLLMENT {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PROGRESS
 // ====================================================
-
 
 export interface GET_PROGRAM_PROGRESS_member_program_content_enrollments_program_program_content_sections_program_contents_aggregate_aggregate_sum {
   __typename: "program_content_sum_fields";
@@ -12749,11 +12212,9 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT_BODY
 // ====================================================
-
 
 export interface INSERT_PROGRAM_CONTENT_BODY_insert_program_content_body_one {
   __typename: "program_content_body";
@@ -12776,11 +12237,9 @@ export interface INSERT_PROGRAM_CONTENT_BODYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_CONTENT_update_program_content {
   __typename: "program_content_mutation_response";
@@ -12813,11 +12272,9 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_BODY
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_CONTENT_BODY_update_program_content_body {
   __typename: "program_content_body_mutation_response";
@@ -12846,11 +12303,9 @@ export interface UPDATE_PROGRAM_CONTENT_BODYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT
 // ====================================================
-
 
 export interface DELETE_PROGRAM_CONTENT_delete_practice {
   __typename: "practice_mutation_response";
@@ -12924,11 +12379,9 @@ export interface DELETE_PROGRAM_CONTENTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SPECIFIC_PROGRAM_CONTENT
 // ====================================================
-
 
 export interface GET_SPECIFIC_PROGRAM_CONTENT_program_content_by_pk_program_content_body {
   __typename: "program_content_body";
@@ -13030,11 +12483,9 @@ export interface GET_SPECIFIC_PROGRAM_CONTENTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_PLAN
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_CONTENT_PLAN_delete_program_content_plan {
   __typename: "program_content_plan_mutation_response";
@@ -13073,11 +12524,9 @@ export interface UPDATE_PROGRAM_CONTENT_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_MATERIALS
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material {
   __typename: "program_content_material_mutation_response";
@@ -13116,11 +12565,9 @@ export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_VIDEOS
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_CONTENT_VIDEOS_delete_program_content_video {
   __typename: "program_content_video_mutation_response";
@@ -13159,11 +12606,9 @@ export interface UPDATE_PROGRAM_CONTENT_VIDEOSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_COLLECTION
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_COLLECTION_program_package {
   __typename: "program_package";
@@ -13185,11 +12630,9 @@ export interface GET_PROGRAM_PACKAGE_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_ENROLLMENT
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_ENROLLMENT_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
   __typename: "program_package_plan_enrollment_aggregate_fields";
@@ -13230,11 +12673,9 @@ export interface GET_PROGRAM_PACKAGE_ENROLLMENT {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_PLAN_COLLECTION
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTION_program_package_plan {
   __typename: "program_package_plan";
@@ -13259,11 +12700,9 @@ export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_package_program_program {
   __typename: "program";
@@ -13296,11 +12735,9 @@ export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT_program_package_plan_enrollment_member {
   __typename: "member";
@@ -13335,11 +12772,9 @@ export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_TEMPO_DELIVERY
 // ====================================================
-
 
 export interface GET_PROGRAM_TEMPO_DELIVERY_program_tempo_delivery_program_package_program {
   __typename: "program_package_program";
@@ -13374,11 +12809,9 @@ export interface GET_PROGRAM_TEMPO_DELIVERYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELIVER_PROGRAM_COLLECTION
 // ====================================================
-
 
 export interface DELIVER_PROGRAM_COLLECTION_insert_program_tempo_delivery {
   __typename: "program_tempo_delivery_mutation_response";
@@ -13404,11 +12837,9 @@ export interface DELIVER_PROGRAM_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE
 // ====================================================
-
 
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs_program {
   __typename: "program";
@@ -13513,11 +12944,9 @@ export interface GET_PROGRAM_PACKAGEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROJECT
 // ====================================================
-
 
 export interface INSERT_PROJECT_insert_project_returning {
   __typename: "project";
@@ -13555,11 +12984,9 @@ export interface INSERT_PROJECTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SALES
 // ====================================================
-
 
 export interface GET_SALES_member_by_pk_member_properties {
   __typename: "member_property";
@@ -13641,11 +13068,9 @@ export interface GET_SALESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SALES_LEADS
 // ====================================================
-
 
 export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
   __typename: "member_phone";
@@ -13712,11 +13137,9 @@ export interface GET_SALES_LEADSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_ACTIVITY
 // ====================================================
-
 
 export interface INSERT_ACTIVITY_insert_activity_returning {
   __typename: "activity";
@@ -13754,11 +13177,9 @@ export interface INSERT_ACTIVITYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_LOGO
 // ====================================================
-
 
 export interface UPDATE_LOGO_insert_app_setting {
   __typename: "app_setting_mutation_response";
@@ -13785,11 +13206,9 @@ export interface UPDATE_LOGOVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APP_HOSTS
 // ====================================================
-
 
 export interface UPDATE_APP_HOSTS_delete_app_host {
   __typename: "app_host_mutation_response";
@@ -13828,11 +13247,9 @@ export interface UPDATE_APP_HOSTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_APP_NAVS
 // ====================================================
-
 
 export interface UPDATE_APP_NAVS_delete_app_nav {
   __typename: "app_nav_mutation_response";
@@ -13871,11 +13288,9 @@ export interface UPDATE_APP_NAVSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: CREATE_APPOINTMENT_PLAN
 // ====================================================
-
 
 export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning {
   __typename: "appointment_plan";
@@ -13911,11 +13326,9 @@ export interface CREATE_APPOINTMENT_PLANVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_APP_SECRETS
 // ====================================================
-
 
 export interface UPSERT_APP_SECRETS_insert_app_secret {
   __typename: "app_secret_mutation_response";
@@ -13941,11 +13354,9 @@ export interface UPSERT_APP_SECRETSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SECRETS
 // ====================================================
-
 
 export interface GET_SECRETS_setting_app_secrets {
   __typename: "app_secret";
@@ -13984,11 +13395,9 @@ export interface GET_SECRETSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_APP_SETTINGS
 // ====================================================
-
 
 export interface UPSERT_APP_SETTINGS_insert_app_setting {
   __typename: "app_setting_mutation_response";
@@ -14014,11 +13423,9 @@ export interface UPSERT_APP_SETTINGSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SETTINGS
 // ====================================================
-
 
 export interface GET_SETTINGS_setting_app_settings {
   __typename: "app_setting";
@@ -14057,11 +13464,9 @@ export interface GET_SETTINGSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_POST
 // ====================================================
-
 
 export interface INSERT_POST_insert_post_returning {
   __typename: "post";
@@ -14099,11 +13504,9 @@ export interface INSERT_POSTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACT
 // ====================================================
-
 
 export interface GET_MEMBER_CONTRACT_member_contract_by_pk_contract {
   __typename: "contract";
@@ -14143,11 +13546,9 @@ export interface GET_MEMBER_CONTRACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SIMPLE_COUPON_PLAN_COLLECTION
 // ====================================================
-
 
 export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products {
   __typename: "coupon_plan_product";
@@ -14190,11 +13591,9 @@ export interface GET_SIMPLE_COUPON_PLAN_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_APP_PAGE_TEMPLATES
 // ====================================================
-
 
 export interface GET_APP_PAGE_TEMPLATES_app_page_template {
   __typename: "app_page_template";
@@ -14217,11 +13616,9 @@ export interface GET_APP_PAGE_TEMPLATES {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: CHECK_APP_PAGE_PATH
 // ====================================================
-
 
 export interface CHECK_APP_PAGE_PATH_app_page {
   __typename: "app_page";
@@ -14244,11 +13641,9 @@ export interface CHECK_APP_PAGE_PATHVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_EXERCISE_COLLECTION
 // ====================================================
-
 
 export interface GET_EXERCISE_COLLECTION_program_content_by_pk_program_content_body {
   __typename: "program_content_body";
@@ -14338,11 +13733,9 @@ export interface GET_EXERCISE_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_LEARNING_REPORT
 // ====================================================
-
 
 export interface GET_LEARNING_REPORT_total_member_aggregate {
   __typename: "member_aggregate_fields";
@@ -14432,11 +13825,9 @@ export interface GET_LEARNING_REPORTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_MEMBER_NOTE_REJECTED_AT
 // ====================================================
-
 
 export interface INSERT_MEMBER_NOTE_REJECTED_AT_insert_member_note_one {
   __typename: "member_note";
@@ -14462,11 +13853,9 @@ export interface INSERT_MEMBER_NOTE_REJECTED_ATVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_HISTORY
 // ====================================================
-
 
 export interface GET_HISTORY_program_content_log_program_content_program_content_section_program {
   __typename: "program";
@@ -14527,11 +13916,9 @@ export interface GET_HISTORYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_CONTRACT_INFO
 // ====================================================
-
 
 export interface GET_CONTRACT_INFO_member_by_pk_member_phones {
   __typename: "member_phone";
@@ -14656,11 +14043,9 @@ export interface GET_CONTRACT_INFOVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: ADD_MEMBER_CONTRACT
 // ====================================================
-
 
 export interface ADD_MEMBER_CONTRACT_insert_member_contract_one {
   __typename: "member_contract";
@@ -14689,11 +14074,9 @@ export interface ADD_MEMBER_CONTRACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_REFERRAL_MEMBER
 // ====================================================
-
 
 export interface GET_REFERRAL_MEMBER_member {
   __typename: "member";
@@ -14718,11 +14101,9 @@ export interface GET_REFERRAL_MEMBERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROPERTY
 // ====================================================
-
 
 export interface INSERT_PROPERTY_insert_property {
   __typename: "property_mutation_response";
@@ -14748,11 +14129,9 @@ export interface INSERT_PROPERTYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROPERTY
 // ====================================================
-
 
 export interface UPDATE_PROPERTY_update_property {
   __typename: "property_mutation_response";
@@ -14779,11 +14158,9 @@ export interface UPDATE_PROPERTYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROPERTY_POSITION
 // ====================================================
-
 
 export interface UPDATE_PROPERTY_POSITION_insert_property {
   __typename: "property_mutation_response";
@@ -14809,11 +14186,9 @@ export interface UPDATE_PROPERTY_POSITIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_PROPERTY
 // ====================================================
-
 
 export interface DELETE_PROPERTY_delete_member_property {
   __typename: "member_property_mutation_response";
@@ -14851,11 +14226,9 @@ export interface DELETE_PROPERTYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
-
 
 export interface INSERT_MERCHANDISE_insert_merchandise_one {
   __typename: "merchandise";
@@ -14885,11 +14258,9 @@ export interface INSERT_MERCHANDISEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTION
 // ====================================================
-
 
 export interface UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTION_insert_podcast_album_podcast_program {
   __typename: "podcast_album_podcast_program_mutation_response";
@@ -14915,11 +14286,9 @@ export interface UPDATE_PODCAST_ALBUM_PODCAST_PROGRAM_POSITION_COLLECTIONVariabl
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PODCAST_ALBUM
 // ====================================================
-
 
 export interface INSERT_PODCAST_ALBUM_insert_podcast_album_returning {
   __typename: "podcast_album";
@@ -14956,11 +14325,9 @@ export interface INSERT_PODCAST_ALBUMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: CREATE_PODCAST_PROGRAM
 // ====================================================
-
 
 export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
   __typename: "podcast_program";
@@ -14997,11 +14364,9 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_POINT_RELEASE_HISTORY
 // ====================================================
-
 
 export interface GET_POINT_RELEASE_HISTORY_point_log_member {
   __typename: "member";
@@ -15043,11 +14408,9 @@ export interface GET_POINT_RELEASE_HISTORYVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ORDER_LOG_WITH_POINTS_COLLECTION
 // ====================================================
-
 
 export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_member {
   __typename: "member";
@@ -15113,11 +14476,9 @@ export interface GET_ORDER_LOG_WITH_POINTS_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_POINT_LOG
 // ====================================================
-
 
 export interface DELETE_POINT_LOG_delete_point_log {
   __typename: "point_log_mutation_response";
@@ -15143,11 +14504,9 @@ export interface DELETE_POINT_LOGVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PRACTICE_PREVIEW_COLLECTION
 // ====================================================
-
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program_program_roles {
   __typename: "program_role";
@@ -15232,11 +14591,9 @@ export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_BASIC_update_program {
   __typename: "program_mutation_response";
@@ -15330,6 +14687,7 @@ export interface UPDATE_PROGRAM_BASICVariables {
   title?: string | null;
   supportLocales?: any | null;
   isIssuesOpen?: boolean | null;
+  isEnrolledCountVisible?: boolean | null;
   isIntroductionSectionVisible?: boolean | null;
   productId?: string | null;
   sku?: string | null;
@@ -15343,11 +14701,9 @@ export interface UPDATE_PROGRAM_BASICVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_COVER
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_COVER_update_program {
   __typename: "program_mutation_response";
@@ -15374,11 +14730,9 @@ export interface UPDATE_PROGRAM_COVERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_INTRO
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_INTRO_update_program {
   __typename: "program_mutation_response";
@@ -15407,11 +14761,9 @@ export interface UPDATE_PROGRAM_INTROVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM
 // ====================================================
-
 
 export interface PUBLISH_PROGRAM_update_program {
   __typename: "program_mutation_response";
@@ -15439,11 +14791,9 @@ export interface PUBLISH_PROGRAMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: SEND_PROGRAM_APPROVAL
 // ====================================================
-
 
 export interface SEND_PROGRAM_APPROVAL_insert_program_approval {
   __typename: "program_approval_mutation_response";
@@ -15470,11 +14820,9 @@ export interface SEND_PROGRAM_APPROVALVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: CANCEL_PROGRAM_APPROVAL
 // ====================================================
-
 
 export interface CANCEL_PROGRAM_APPROVAL_update_program_approval {
   __typename: "program_approval_mutation_response";
@@ -15500,11 +14848,9 @@ export interface CANCEL_PROGRAM_APPROVALVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_APPROVAL
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_APPROVAL_update_program_approval {
   __typename: "program_approval_mutation_response";
@@ -15532,11 +14878,9 @@ export interface UPDATE_PROGRAM_APPROVALVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_ROLE
 // ====================================================
-
 
 export interface INSERT_PROGRAM_ROLE_insert_program_role {
   __typename: "program_role_mutation_response";
@@ -15562,11 +14906,9 @@ export interface INSERT_PROGRAM_ROLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: DELETE_PROGRAM_ROLE
 // ====================================================
-
 
 export interface DELETE_PROGRAM_ROLE_delete_program_role {
   __typename: "program_role_mutation_response";
@@ -15593,11 +14935,9 @@ export interface DELETE_PROGRAM_ROLEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_SHARING_CODE_COLLECTION
 // ====================================================
-
 
 export interface GET_SHARING_CODE_COLLECTION_sharing_code {
   __typename: "sharing_code";
@@ -15623,11 +14963,9 @@ export interface GET_SHARING_CODE_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_SHARING_CODE
 // ====================================================
-
 
 export interface INSERT_SHARING_CODE_delete_sharing_code {
   __typename: "sharing_code_mutation_response";
@@ -15666,11 +15004,9 @@ export interface INSERT_SHARING_CODEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
 // ====================================================
-
 
 export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning {
   __typename: "program_content_section";
@@ -15703,11 +15039,9 @@ export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_PROGRAM_CONTENT_SECTIONS
 // ====================================================
-
 
 export interface UPSERT_PROGRAM_CONTENT_SECTIONS_insert_program_content_section {
   __typename: "program_content_section_mutation_response";
@@ -15733,11 +15067,9 @@ export interface UPSERT_PROGRAM_CONTENT_SECTIONSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPSERT_PROGRAM_CONTENTS
 // ====================================================
-
 
 export interface UPSERT_PROGRAM_CONTENTS_insert_program_content {
   __typename: "program_content_mutation_response";
@@ -15763,11 +15095,9 @@ export interface UPSERT_PROGRAM_CONTENTSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_ENROLLMENT
 // ====================================================
-
 
 export interface GET_PROGRAM_ENROLLMENT_program_program_plans_program_plan_enrollments_aggregate_aggregate {
   __typename: "program_plan_enrollment_aggregate_fields";
@@ -15809,11 +15139,9 @@ export interface GET_PROGRAM_ENROLLMENT {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION
 // ====================================================
-
 
 export interface GET_PROGRAM_PREVIEW_COLLECTION_program_aggregate_aggregate {
   __typename: "program_aggregate_fields";
@@ -15897,11 +15225,9 @@ export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROGRAM_SORT_COLLECTION
 // ====================================================
-
 
 export interface GET_PROGRAM_SORT_COLLECTION_program {
   __typename: "program";
@@ -15925,11 +15251,9 @@ export interface GET_PROGRAM_SORT_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM
 // ====================================================
-
 
 export interface INSERT_PROGRAM_insert_program_returning {
   __typename: "program";
@@ -15964,11 +15288,9 @@ export interface INSERT_PROGRAMVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_POSITION_COLLECTION
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_POSITION_COLLECTION_insert_program {
   __typename: "program_mutation_response";
@@ -15994,11 +15316,9 @@ export interface UPDATE_PROGRAM_POSITION_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_CREATOR_PROGRAM_ISSUES
 // ====================================================
-
 
 export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_reactions {
   __typename: "issue_reaction";
@@ -16071,11 +15391,9 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION
 // ====================================================
-
 
 export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program {
   __typename: "program_package_program_mutation_response";
@@ -16101,11 +15419,9 @@ export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
 // ====================================================
-
 
 export interface INSERT_PROGRAM_PACKAGE_insert_program_package_returning {
   __typename: "program_package";
@@ -16141,11 +15457,9 @@ export interface INSERT_PROGRAM_PACKAGEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS
 // ====================================================
-
 
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_property {
   __typename: "property";
@@ -16278,11 +15592,9 @@ export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_PROJECT_ADMIN
 // ====================================================
-
 
 export interface GET_PROJECT_ADMIN_project_by_pk_creator {
   __typename: "member_public";
@@ -16417,11 +15729,9 @@ export interface GET_PROJECT_ADMINVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_AUDIO_DATA
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_AUDIO_DATA_update_podcast_program_audio {
   __typename: "podcast_program_audio_mutation_response";
@@ -16448,11 +15758,9 @@ export interface UPDATE_PODCAST_PROGRAM_AUDIO_DATAVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_AUDIO_POSITION
 // ====================================================
-
 
 export interface UPDATE_PODCAST_PROGRAM_AUDIO_POSITION_insert_podcast_program_audio {
   __typename: "podcast_program_audio_mutation_response";
@@ -16478,11 +15786,9 @@ export interface UPDATE_PODCAST_PROGRAM_AUDIO_POSITIONVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_LEAD_CANDIDATES
 // ====================================================
-
 
 export interface GET_LEAD_CANDIDATES_member {
   __typename: "member";
@@ -16505,11 +15811,9 @@ export interface GET_LEAD_CANDIDATESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_ASSIGNED_LEADS
 // ====================================================
-
 
 export interface GET_ASSIGNED_LEADS_audit_log {
   __typename: "audit_log";
@@ -16534,11 +15838,9 @@ export interface GET_ASSIGNED_LEADSVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL mutation operation: UPDATE_LEAD_MANAGER
 // ====================================================
-
 
 export interface UPDATE_LEAD_MANAGER_update_member {
   __typename: "member_mutation_response";
@@ -16566,11 +15868,9 @@ export interface UPDATE_LEAD_MANAGERVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_TODAY_MEMBER_CONTRACT
 // ====================================================
-
 
 export interface GET_TODAY_MEMBER_CONTRACT_order_executor_sharing_executor {
   __typename: "member";
@@ -16621,11 +15921,9 @@ export interface GET_TODAY_MEMBER_CONTRACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 // ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACT_SALES
 // ====================================================
-
 
 export interface GET_MEMBER_CONTRACT_SALES_order_executor_member {
   __typename: "member";
@@ -16692,11 +15990,9 @@ export interface GET_MEMBER_CONTRACT_SALESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
-
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
-
 
 /**
  * unique or primary key constraints on table "activity_attendance"
@@ -17207,9 +16503,11 @@ export enum category_constraint {
 export enum category_update_column {
   app_id = "app_id",
   class = "class",
+  created_at = "created_at",
   id = "id",
   name = "name",
   position = "position",
+  updated_at = "updated_at",
 }
 
 /**
@@ -17346,8 +16644,10 @@ export enum coupon_code_update_column {
   code = "code",
   count = "count",
   coupon_plan_id = "coupon_plan_id",
+  created_at = "created_at",
   id = "id",
   remaining = "remaining",
+  updated_at = "updated_at",
 }
 
 /**
@@ -17387,6 +16687,7 @@ export enum coupon_plan_product_update_column {
 export enum coupon_plan_update_column {
   amount = "amount",
   constraint = "constraint",
+  created_at = "created_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -18811,8 +18112,10 @@ export enum post_update_column {
   description = "description",
   id = "id",
   is_deleted = "is_deleted",
+  meta_tag = "meta_tag",
   position = "position",
   published_at = "published_at",
+  source = "source",
   title = "title",
   updated_at = "updated_at",
   video_url = "video_url",
@@ -18894,10 +18197,12 @@ export enum product_update_column {
   coin_back = "coin_back",
   coin_period_amount = "coin_period_amount",
   coin_period_type = "coin_period_type",
+  created_at = "created_at",
   id = "id",
   sku = "sku",
   target = "target",
   type = "type",
+  updated_at = "updated_at",
 }
 
 /**
@@ -19181,6 +18486,7 @@ export enum program_package_update_column {
   creator_id = "creator_id",
   description = "description",
   id = "id",
+  meta_tag = "meta_tag",
   published_at = "published_at",
   title = "title",
 }
@@ -19310,6 +18616,7 @@ export enum program_update_column {
   in_advance = "in_advance",
   is_countdown_timer_visible = "is_countdown_timer_visible",
   is_deleted = "is_deleted",
+  is_enrolled_count_visible = "is_enrolled_count_visible",
   is_introduction_section_visible = "is_introduction_section_visible",
   is_issues_open = "is_issues_open",
   is_private = "is_private",
@@ -19477,6 +18784,24 @@ export enum property_update_column {
  */
 export enum review_constraint {
   review_pkey = "review_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "review_reaction"
+ */
+export enum review_reaction_constraint {
+  review_reaction_pkey = "review_reaction_pkey",
+  review_reaction_review_id_member_id_key = "review_reaction_review_id_member_id_key",
+}
+
+/**
+ * update columns of table "review_reaction"
+ */
+export enum review_reaction_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  review_id = "review_id",
 }
 
 /**
@@ -19702,6 +19027,7 @@ export enum voucher_plan_product_update_column {
  */
 export enum voucher_plan_update_column {
   app_id = "app_id",
+  created_at = "created_at",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -19709,6 +19035,7 @@ export enum voucher_plan_update_column {
   product_quantity_limit = "product_quantity_limit",
   started_at = "started_at",
   title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -22574,6 +21901,7 @@ export interface category_bool_exp {
   activity_categories?: activity_category_bool_exp | null;
   app_id?: String_comparison_exp | null;
   class?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   creator_categories?: creator_category_bool_exp | null;
   id?: String_comparison_exp | null;
   member_categories?: member_category_bool_exp | null;
@@ -22586,6 +21914,7 @@ export interface category_bool_exp {
   program_categories?: program_category_bool_exp | null;
   program_package_categories?: program_package_category_bool_exp | null;
   project_categories?: project_category_bool_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -22595,6 +21924,7 @@ export interface category_insert_input {
   activity_categories?: activity_category_arr_rel_insert_input | null;
   app_id?: string | null;
   class?: string | null;
+  created_at?: any | null;
   creator_categories?: creator_category_arr_rel_insert_input | null;
   id?: string | null;
   member_categories?: member_category_arr_rel_insert_input | null;
@@ -22607,6 +21937,7 @@ export interface category_insert_input {
   program_categories?: program_category_arr_rel_insert_input | null;
   program_package_categories?: program_package_category_arr_rel_insert_input | null;
   project_categories?: project_category_arr_rel_insert_input | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -23369,8 +22700,10 @@ export interface coupon_code_bool_exp {
   coupon_plan?: coupon_plan_bool_exp | null;
   coupon_plan_id?: uuid_comparison_exp | null;
   coupons?: coupon_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   remaining?: Int_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -23383,8 +22716,10 @@ export interface coupon_code_insert_input {
   coupon_plan?: coupon_plan_obj_rel_insert_input | null;
   coupon_plan_id?: any | null;
   coupons?: coupon_arr_rel_insert_input | null;
+  created_at?: any | null;
   id?: any | null;
   remaining?: number | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -23395,8 +22730,10 @@ export interface coupon_code_max_order_by {
   code?: order_by | null;
   count?: order_by | null;
   coupon_plan_id?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   remaining?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -23407,8 +22744,10 @@ export interface coupon_code_min_order_by {
   code?: order_by | null;
   count?: order_by | null;
   coupon_plan_id?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   remaining?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -23438,8 +22777,10 @@ export interface coupon_code_order_by {
   coupon_plan?: coupon_plan_order_by | null;
   coupon_plan_id?: order_by | null;
   coupons_aggregate?: coupon_aggregate_order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   remaining?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -23573,6 +22914,7 @@ export interface coupon_plan_bool_exp {
   constraint?: numeric_comparison_exp | null;
   coupon_codes?: coupon_code_bool_exp | null;
   coupon_plan_products?: coupon_plan_product_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -23591,6 +22933,7 @@ export interface coupon_plan_insert_input {
   constraint?: any | null;
   coupon_codes?: coupon_code_arr_rel_insert_input | null;
   coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
+  created_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -23626,6 +22969,7 @@ export interface coupon_plan_order_by {
   constraint?: order_by | null;
   coupon_codes_aggregate?: coupon_code_aggregate_order_by | null;
   coupon_plan_products_aggregate?: coupon_plan_product_aggregate_order_by | null;
+  created_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -30609,12 +29953,14 @@ export interface post_bool_exp {
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  meta_tag?: jsonb_comparison_exp | null;
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
   post_merchandises?: post_merchandise_bool_exp | null;
   post_roles?: post_role_bool_exp | null;
   post_tags?: post_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  source?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
   video_url?: String_comparison_exp | null;
@@ -30678,12 +30024,14 @@ export interface post_insert_input {
   description?: string | null;
   id?: any | null;
   is_deleted?: boolean | null;
+  meta_tag?: any | null;
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
   post_merchandises?: post_merchandise_arr_rel_insert_input | null;
   post_roles?: post_role_arr_rel_insert_input | null;
   post_tags?: post_tag_arr_rel_insert_input | null;
   published_at?: any | null;
+  source?: string | null;
   title?: string | null;
   updated_at?: any | null;
   video_url?: string | null;
@@ -30703,6 +30051,7 @@ export interface post_max_order_by {
   id?: order_by | null;
   position?: order_by | null;
   published_at?: order_by | null;
+  source?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
   video_url?: order_by | null;
@@ -30766,6 +30115,7 @@ export interface post_min_order_by {
   id?: order_by | null;
   position?: order_by | null;
   published_at?: order_by | null;
+  source?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
   video_url?: order_by | null;
@@ -31152,6 +30502,7 @@ export interface product_bool_exp {
   coin_period_amount?: Int_comparison_exp | null;
   coin_period_type?: String_comparison_exp | null;
   coupon_plan_products?: coupon_plan_product_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   order_products?: order_product_bool_exp | null;
   product_enrollments?: product_enrollment_bool_exp | null;
@@ -31161,6 +30512,7 @@ export interface product_bool_exp {
   sku?: String_comparison_exp | null;
   target?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
   voucher_plan_products?: voucher_plan_product_bool_exp | null;
 }
 
@@ -31213,12 +30565,14 @@ export interface product_insert_input {
   coin_period_amount?: number | null;
   coin_period_type?: string | null;
   coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
+  created_at?: any | null;
   id?: string | null;
   order_products?: order_product_arr_rel_insert_input | null;
   product_inventories?: product_inventory_arr_rel_insert_input | null;
   sku?: string | null;
   target?: string | null;
   type?: string | null;
+  updated_at?: any | null;
   voucher_plan_products?: voucher_plan_product_arr_rel_insert_input | null;
 }
 
@@ -31423,6 +30777,7 @@ export interface product_order_by {
   coin_period_amount?: order_by | null;
   coin_period_type?: order_by | null;
   coupon_plan_products_aggregate?: coupon_plan_product_aggregate_order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   order_products_aggregate?: order_product_aggregate_order_by | null;
   product_enrollments_aggregate?: product_enrollment_aggregate_order_by | null;
@@ -31432,6 +30787,7 @@ export interface product_order_by {
   sku?: order_by | null;
   target?: order_by | null;
   type?: order_by | null;
+  updated_at?: order_by | null;
   voucher_plan_products_aggregate?: voucher_plan_product_aggregate_order_by | null;
 }
 
@@ -31469,10 +30825,12 @@ export interface product_set_input {
   coin_back?: any | null;
   coin_period_amount?: number | null;
   coin_period_type?: string | null;
+  created_at?: any | null;
   id?: string | null;
   sku?: string | null;
   target?: string | null;
   type?: string | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -31713,6 +31071,7 @@ export interface program_bool_exp {
   in_advance?: Boolean_comparison_exp | null;
   is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_enrolled_count_visible?: Boolean_comparison_exp | null;
   is_introduction_section_visible?: Boolean_comparison_exp | null;
   is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
@@ -31729,10 +31088,12 @@ export interface program_bool_exp {
   program_content_enrollments?: program_content_enrollment_bool_exp | null;
   program_content_progress_enrollments?: program_content_progress_enrollment_bool_exp | null;
   program_content_sections?: program_content_section_bool_exp | null;
+  program_duration?: program_duration_bool_exp | null;
   program_enrollments?: program_enrollment_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;
   program_plans?: program_plan_bool_exp | null;
   program_related_items?: program_related_item_bool_exp | null;
+  program_review_score?: program_review_score_bool_exp | null;
   program_roles?: program_role_bool_exp | null;
   program_tags?: program_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -32728,6 +32089,27 @@ export interface program_content_video_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "program_duration". All fields are combined with a logical 'AND'.
+ */
+export interface program_duration_bool_exp {
+  _and?: (program_duration_bool_exp | null)[] | null;
+  _not?: program_duration_bool_exp | null;
+  _or?: (program_duration_bool_exp | null)[] | null;
+  duration?: numeric_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "program_duration"
+ */
+export interface program_duration_order_by {
+  duration?: order_by | null;
+  program?: program_order_by | null;
+  program_id?: order_by | null;
+}
+
+/**
  * order by aggregate values of table "program_editor"
  */
 export interface program_editor_aggregate_order_by {
@@ -32844,6 +32226,7 @@ export interface program_insert_input {
   in_advance?: boolean | null;
   is_countdown_timer_visible?: boolean | null;
   is_deleted?: boolean | null;
+  is_enrolled_count_visible?: boolean | null;
   is_introduction_section_visible?: boolean | null;
   is_issues_open?: boolean | null;
   is_private?: boolean | null;
@@ -32943,6 +32326,7 @@ export interface program_order_by {
   in_advance?: order_by | null;
   is_countdown_timer_visible?: order_by | null;
   is_deleted?: order_by | null;
+  is_enrolled_count_visible?: order_by | null;
   is_introduction_section_visible?: order_by | null;
   is_issues_open?: order_by | null;
   is_private?: order_by | null;
@@ -32959,10 +32343,12 @@ export interface program_order_by {
   program_content_enrollments_aggregate?: program_content_enrollment_aggregate_order_by | null;
   program_content_progress_enrollments_aggregate?: program_content_progress_enrollment_aggregate_order_by | null;
   program_content_sections_aggregate?: program_content_section_aggregate_order_by | null;
+  program_duration?: program_duration_order_by | null;
   program_enrollments_aggregate?: program_enrollment_aggregate_order_by | null;
   program_package_programs_aggregate?: program_package_program_aggregate_order_by | null;
   program_plans_aggregate?: program_plan_aggregate_order_by | null;
   program_related_items_aggregate?: program_related_item_aggregate_order_by | null;
+  program_review_score?: program_review_score_order_by | null;
   program_roles_aggregate?: program_role_aggregate_order_by | null;
   program_tags_aggregate?: program_tag_aggregate_order_by | null;
   published_at?: order_by | null;
@@ -33005,6 +32391,7 @@ export interface program_package_bool_exp {
   creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  meta_tag?: jsonb_comparison_exp | null;
   program_package_categories?: program_package_category_bool_exp | null;
   program_package_plans?: program_package_plan_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;
@@ -33067,6 +32454,7 @@ export interface program_package_insert_input {
   creator_id?: string | null;
   description?: string | null;
   id?: any | null;
+  meta_tag?: any | null;
   program_package_categories?: program_package_category_arr_rel_insert_input | null;
   program_package_plans?: program_package_plan_arr_rel_insert_input | null;
   program_package_programs?: program_package_program_arr_rel_insert_input | null;
@@ -33766,6 +33154,27 @@ export interface program_related_item_var_samp_order_by {
  */
 export interface program_related_item_variance_order_by {
   weight?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_review_score". All fields are combined with a logical 'AND'.
+ */
+export interface program_review_score_bool_exp {
+  _and?: (program_review_score_bool_exp | null)[] | null;
+  _not?: program_review_score_bool_exp | null;
+  _or?: (program_review_score_bool_exp | null)[] | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  score?: numeric_comparison_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "program_review_score"
+ */
+export interface program_review_score_order_by {
+  program?: program_order_by | null;
+  program_id?: order_by | null;
+  score?: order_by | null;
 }
 
 /**
@@ -35055,6 +34464,7 @@ export interface review_bool_exp {
   member_id?: String_comparison_exp | null;
   path?: String_comparison_exp | null;
   private_content?: String_comparison_exp | null;
+  review_reactions?: review_reaction_bool_exp | null;
   review_replies?: review_reply_bool_exp | null;
   score?: numeric_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -35073,6 +34483,7 @@ export interface review_insert_input {
   member_id?: string | null;
   path?: string | null;
   private_content?: string | null;
+  review_reactions?: review_reaction_arr_rel_insert_input | null;
   review_replies?: review_reply_arr_rel_insert_input | null;
   score?: any | null;
   title?: string | null;
@@ -35126,6 +34537,50 @@ export interface review_on_conflict {
   constraint: review_constraint;
   update_columns: review_update_column[];
   where?: review_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "review_reaction"
+ */
+export interface review_reaction_arr_rel_insert_input {
+  data: review_reaction_insert_input[];
+  on_conflict?: review_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "review_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface review_reaction_bool_exp {
+  _and?: (review_reaction_bool_exp | null)[] | null;
+  _not?: review_reaction_bool_exp | null;
+  _or?: (review_reaction_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  review?: review_bool_exp | null;
+  review_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "review_reaction"
+ */
+export interface review_reaction_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  review?: review_obj_rel_insert_input | null;
+  review_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "review_reaction"
+ */
+export interface review_reaction_on_conflict {
+  constraint: review_reaction_constraint;
+  update_columns: review_reaction_update_column[];
+  where?: review_reaction_bool_exp | null;
 }
 
 /**
@@ -35829,6 +35284,7 @@ export interface voucher_plan_bool_exp {
   _or?: (voucher_plan_bool_exp | null)[] | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -35836,6 +35292,7 @@ export interface voucher_plan_bool_exp {
   product_quantity_limit?: Int_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
   voucher_codes?: voucher_code_bool_exp | null;
   voucher_plan_products?: voucher_plan_product_bool_exp | null;
 }
@@ -35846,6 +35303,7 @@ export interface voucher_plan_bool_exp {
 export interface voucher_plan_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  created_at?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -35853,6 +35311,7 @@ export interface voucher_plan_insert_input {
   product_quantity_limit?: number | null;
   started_at?: any | null;
   title?: string | null;
+  updated_at?: any | null;
   voucher_codes?: voucher_code_arr_rel_insert_input | null;
   voucher_plan_products?: voucher_plan_product_arr_rel_insert_input | null;
 }
@@ -35862,12 +35321,14 @@ export interface voucher_plan_insert_input {
  */
 export interface voucher_plan_max_order_by {
   app_id?: order_by | null;
+  created_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;
   started_at?: order_by | null;
   title?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -35875,12 +35336,14 @@ export interface voucher_plan_max_order_by {
  */
 export interface voucher_plan_min_order_by {
   app_id?: order_by | null;
+  created_at?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;
   started_at?: order_by | null;
   title?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -36347,4 +35810,3 @@ export interface xuemi_trigger_on_conflict {
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
-
