@@ -2187,7 +2187,7 @@
   dependencies:
     "@craftjs/utils" "^0.1.0-beta.20"
 
-"@craftjs/utils@^0.1.0-beta.20":
+"@craftjs/utils@0.1.0-beta.20", "@craftjs/utils@^0.1.0-beta.20":
   version "0.1.0-beta.20"
   resolved "https://registry.yarnpkg.com/@craftjs/utils/-/utils-0.1.0-beta.20.tgz#2ba535b043e45368dc60bcf06614dab5ba2d0899"
   integrity sha512-KevLljnpEvHxpB2nxRZyQG2i4GDivIkY58depi+ynQP2ALonNuxEGVO2QsuDJ+p1z4eOtv0Xi/D3o6Qr84eAzQ==
@@ -11580,7 +11580,7 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-element@urfit-tech/lodestar-app-element#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/63f6aab1f7693ddda187124d1ac175d1ea10d250"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/19ad012651a1f7c127329c600ebcf6df84d6882c"
   dependencies:
     "@apollo/react-hooks" "3.1.5"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
