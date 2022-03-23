@@ -96,7 +96,7 @@ const couponMessages = {
     enter: { id: 'coupon.CouponSelectionModal.enter', defaultMessage: '輸入折扣碼' },
     add: { id: 'coupon.CouponSelectionModal.add', defaultMessage: '新增' },
     addSuccessfully: { id: 'coupon.CouponSelectionModal.addSuccessfully', defaultMessage: '新增成功' },
-    addFailed: { id: 'coupon.CouponSelectionModal.addFailed', defaultMessage: '新增成功' },
+    addFailed: { id: 'coupon.CouponSelectionModal.addFailed', defaultMessage: '新增失敗' },
   }),
 }
 export default couponMessages
