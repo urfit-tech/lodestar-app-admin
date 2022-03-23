@@ -1656,4 +1656,8 @@ export const codeMessages = defineMessages({
     id: 'code.E_SEND_EMAIL',
     defaultMessage: '寄送信件失敗',
   },
+  E_PAYMENT_PROCEED: {
+    id: 'code.E_PAYMENT_PROCEED',
+    defaultMessage: 'payment proceed is error',
+  },
 })
