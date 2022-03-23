@@ -441,7 +441,9 @@ const AppointmentPlanAppointmentModal: React.FC<
           )}
           {appointmentStep === 'failed' && (
             <StyledStatusBlock>
-              <StatusAlertIcon />
+              <div className="d-flex justify-content-center mb-2">
+                <StatusAlertIcon />
+              </div>
               <StyledTitle className="mb-1">{formatMessage(messages.appointmentFailed)}</StyledTitle>
               <div>{formatMessage(messages.reschedule)}</div>
             </StyledStatusBlock>
