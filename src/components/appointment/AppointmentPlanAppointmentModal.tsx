@@ -353,6 +353,7 @@ const AppointmentPlanAppointmentModal: React.FC<
                       onChange={discountId => {
                         setAppointmentValues(values => ({ ...values, discountId }))
                       }}
+                      withAddDiscount={false}
                     />
                   </div>
                   <StyledSubTitle className="mb-3">{formatMessage(messages.contactInformation)}</StyledSubTitle>

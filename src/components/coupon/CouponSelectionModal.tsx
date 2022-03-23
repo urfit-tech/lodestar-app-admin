@@ -20,7 +20,8 @@ const CouponSelectionModal: React.FC<{
     setVisible: React.Dispatch<React.SetStateAction<boolean>>
     selectedCoupon?: CouponProps
   }>
-}> = ({ memberId, orderProducts, orderDiscounts, onSelect, render }) => {
+  withAddCoupon?: boolean
+}> = ({ memberId, orderProducts, orderDiscounts, onSelect, render, withAddCoupon }) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const { coupons, loadingCoupons, refetchCoupons } = useCouponCollection(memberId)
@@ -111,28 +112,30 @@ const CouponSelectionModal: React.FC<{
               )
             })
         )}
-
-        <Divider>{formatMessage(couponMessages.CouponSelectionModal.or)}</Divider>
-
-        <div className="d-flex">
-          <div className="flex-grow-1">
-            <Input
-              style={{ borderRadius: '4px 0px 0px 4px' }}
-              placeholder={formatMessage(couponMessages.CouponSelectionModal.enter)}
-              value={code}
-              onChange={e => setCode(e.target.value)}
-            />
-          </div>
-          <Button
-            block
-            type="primary"
-            style={{ width: '72px', borderRadius: '0px 4px 4px 0px' }}
-            loading={inserting}
-            onClick={handleCouponInsert}
-          >
-            {formatMessage(couponMessages.CouponSelectionModal.add)}
-          </Button>
-        </div>
+        {withAddCoupon && (
+          <>
+            <Divider>{formatMessage(couponMessages.CouponSelectionModal.or)}</Divider>
+            <div className="d-flex">
+              <div className="flex-grow-1">
+                <Input
+                  style={{ borderRadius: '4px 0px 0px 4px' }}
+                  placeholder={formatMessage(couponMessages.CouponSelectionModal.enter)}
+                  value={code}
+                  onChange={e => setCode(e.target.value)}
+                />
+              </div>
+              <Button
+                block
+                type="primary"
+                style={{ width: '72px', borderRadius: '0px 4px 4px 0px' }}
+                loading={inserting}
+                onClick={handleCouponInsert}
+              >
+                {formatMessage(couponMessages.CouponSelectionModal.add)}
+              </Button>
+            </div>
+          </>
+        )}
       </Modal>
     </>
   )

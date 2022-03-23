@@ -22,7 +22,8 @@ const DiscountSelectionCard: React.FC<{
   memberId?: string | null
   check?: CheckProps
   onChange?: (discountId: string) => void
-}> = ({ value: discountId, memberId, check, onChange }) => {
+  withAddDiscount?: boolean
+}> = ({ value: discountId, memberId, check, onChange, withAddDiscount }) => {
   const { formatMessage } = useIntl()
   const { setVisible: setAuthModalVisible } = useContext(AuthModalContext)
   const { enrolledMembershipCardIds } = useEnrolledMembershipCardIds(memberId || '')
@@ -58,6 +59,7 @@ const DiscountSelectionCard: React.FC<{
                     {selectedCoupon && <span className="ml-3">{selectedCoupon.couponCode?.couponPlan.title}</span>}
                   </>
                 )}
+                withAddCoupon={withAddDiscount}
               />
             ) : (
               <Button onClick={() => setAuthModalVisible && setAuthModalVisible(true)}>
