@@ -51,6 +51,9 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
               tag: nav.tag,
               external: nav.external,
               position: index,
+              icon: nav.icon,
+              locale: nav.locale,
+              parent_id: nav.parentId,
             }
           }),
         ),

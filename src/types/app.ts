@@ -80,5 +80,8 @@ export type AppProps = {
     external: boolean
     tag: string | null
     position: number
+    icon: string
+    locale: string
+    parentId: string
   }[]
 }
