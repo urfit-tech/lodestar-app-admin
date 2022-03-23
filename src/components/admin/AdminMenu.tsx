@@ -71,7 +71,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         permissions.PROGRAM_PROGRESS_READ ||
         permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN ||
         permissions.PROGRAM_CATEGORY_ADMIN ||
-        permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN,
+        permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN ||
+        permissions.PRACTICE_ADMIN,
       icon: () => <BookIcon />,
       key: 'program_admin',
       name: formatMessage(adminMessages.AdminMenu.programAdmin),
