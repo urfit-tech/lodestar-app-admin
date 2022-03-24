@@ -130,7 +130,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.project && currentUserRole === 'app-owner',
+      permissionIsAllowed: !!enabledModules.project && permissions.PROJECT_ADMIN,
       key: 'project_admin',
       icon: () => <ProjectIcon />,
       name: formatMessage(adminMessages.AdminMenu.projectAdmin),
