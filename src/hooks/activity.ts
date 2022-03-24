@@ -43,7 +43,6 @@ export const useActivityCollection = (memberId: string | null) => {
         }
       }
     `,
-    { variables: { memberId } },
   )
 
   const activities: {
@@ -168,9 +167,8 @@ export const useActivityAdmin = (activityId: string) => {
     `,
     { variables: { activityId } },
   )
-
   const activityAdmin: ActivityAdminProps | null =
-    loading || error || !data || !data?.activity
+    loading || error || !data || !data?.activity.length
       ? null
       : {
           id: data.activity[0]?.id,
