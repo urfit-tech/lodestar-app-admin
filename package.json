@@ -52,5 +52,8 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "resolutions": {
+    "@craftjs/utils": "0.1.0-beta.20"
   }
 }
