@@ -10,7 +10,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
-import { Attachment, CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
+import { Attachment, CategoryProps, ClassType, ProductInventoryLogProps } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
@@ -18,6 +18,7 @@ import { Uppy } from '@uppy/core'
 import XHRUpload from '@uppy/xhr-upload'
 import { MetaProductType } from '../components/common/MetaProductDeletionBlock'
 import { defineMessage } from '@formatjs/intl'
+import { ProductType } from 'lodestar-app-element/src/types/product'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
@@ -1115,6 +1116,10 @@ export const useAllBriefProductCollection = () => {
             title
           }
         }
+        voucher_plan(where: { sale_amount: { _is_null: false } }) {
+          id
+          title
+        }
       }
     `,
   )
@@ -1192,6 +1197,12 @@ export const useAllBriefProductCollection = () => {
                 title: programPackagePlan.title,
                 parent: programPackagePlan.program_package.title,
                 publishedAt: programPackagePlan.published_at ? new Date(programPackagePlan.published_at) : null,
+              }))
+            : undefined,
+          VoucherPlan: enabledModules.sale_voucher
+            ? data.voucher_plan.map(v => ({
+                productId: `VoucherPlan_${v.id}`,
+                title: v.title,
               }))
             : undefined,
         }

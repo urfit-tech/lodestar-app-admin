@@ -168,6 +168,8 @@ export const useVoucherPlanCollection = (appId: string) => {
           ended_at
           product_quantity_limit
           is_transferable
+          sale_amount
+          sale_price
           voucher_codes_aggregate {
             aggregate {
               sum {
@@ -201,6 +203,7 @@ export const useVoucherPlanCollection = (appId: string) => {
       remaining,
       productIds: v.voucher_plan_products.map(product => product.product_id),
       isTransferable: v.is_transferable,
+      sale: v.sale_amount ? { amount: v.sale_amount, price: v.sale_price } : undefined,
     }
   })
 
@@ -258,6 +261,8 @@ export const useMutateVoucherPlan = () => {
         $voucherCodes: [voucher_code_insert_input!]!
         $voucherPlanProducts: [voucher_plan_product_insert_input!]!
         $isTransferable: Boolean
+        $saleAmount: Int
+        $salePrice: numeric
       ) {
         insert_voucher_plan(
           objects: {
@@ -270,6 +275,8 @@ export const useMutateVoucherPlan = () => {
             voucher_codes: { data: $voucherCodes }
             voucher_plan_products: { data: $voucherPlanProducts }
             is_transferable: $isTransferable
+            sale_amount: $saleAmount
+            sale_price: $salePrice
           }
         ) {
           affected_rows
@@ -278,10 +285,13 @@ export const useMutateVoucherPlan = () => {
     `,
   )
   const insertVoucherPlan = (values: VoucherPlanFields) => {
+    const { sale, ...restValues } = values
     return insertVoucherPlanHandler({
       variables: {
-        ...values,
+        ...restValues,
         appId,
+        saleAmount: sale?.amount,
+        salePrice: sale?.price,
         voucherCodes:
           values.voucherCodes?.flatMap(voucherCode =>
             voucherCode.type === 'random'

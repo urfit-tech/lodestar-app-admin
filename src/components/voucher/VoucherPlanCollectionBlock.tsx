@@ -25,6 +25,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
   ) => {
     setLoading(true)
 
+    console.log({ values })
     insertVoucherPlan(values)
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullyCreated))

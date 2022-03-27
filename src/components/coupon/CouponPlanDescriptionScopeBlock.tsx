@@ -1,11 +1,11 @@
 import Icon from '@ant-design/icons'
+import { ProductType } from 'lodestar-app-element/src/types/product'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { ReactComponent as CheckIcon } from '../../images/icon/check.svg'
 import { CouponPlanType } from '../../types/checkout'
-import { ProductType } from '../../types/general'
 import ProductItem from '../common/ProductItem'
 import couponMessages from './translation'
 

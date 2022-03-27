@@ -1,4 +1,4 @@
-import { ProductType } from './general'
+import { ProductType } from 'lodestar-app-element/src/types/product'
 
 export type CouponPlanType = 'cash' | 'percent'
 
@@ -50,6 +50,7 @@ export type VoucherPlanBriefProps = {
   isTransferable: boolean
   available?: boolean
   action?: React.ReactNode
+  sale?: { amount: number; price: number }
 }
 
 export type VoucherPlanProps = VoucherPlanBriefProps & {

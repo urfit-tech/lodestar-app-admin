@@ -1,4 +1,5 @@
 import { Spin, Typography } from 'antd'
+import { ProductType } from 'lodestar-app-element/src/types/product'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -8,7 +9,6 @@ import { currencyFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useSimpleProduct } from '../../hooks/data'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ProductType } from '../../types/general'
 import { CustomRatioImage } from './Image'
 import PriceLabel from './PriceLabel'
 

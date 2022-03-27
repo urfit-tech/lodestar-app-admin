@@ -12,19 +12,6 @@ export type ClassType =
   | 'member'
   | 'creator'
   | 'podcastAlbum'
-export type ProductType =
-  | 'ProgramPlan'
-  | 'ProgramContent'
-  | 'ProgramPackagePlan'
-  | 'ProjectPlan'
-  | 'Card'
-  | 'ActivityTicket'
-  | 'Merchandise'
-  | 'MerchandiseSpec'
-  | 'PodcastProgram'
-  | 'PodcastPlan'
-  | 'AppointmentPlan'
-  | 'PodcastAlbum'
 
 export type CategoryProps = {
   id: string

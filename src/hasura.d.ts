@@ -8424,6 +8424,8 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   ended_at: any | null;
   product_quantity_limit: number;
   is_transferable: boolean;
+  sale_amount: number | null;
+  sale_price: any | null;
   /**
    * An aggregated array relationship
    */
@@ -8479,6 +8481,8 @@ export interface INSERT_VOUCHER_PLANVariables {
   voucherCodes: voucher_code_insert_input[];
   voucherPlanProducts: voucher_plan_product_insert_input[];
   isTransferable?: boolean | null;
+  saleAmount?: number | null;
+  salePrice?: any | null;
 }
 
 /* tslint:disable */
@@ -9592,6 +9596,12 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
   program_package: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package;
 }
 
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  title: string;
+}
+
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
   /**
    * fetch data from the table: "program_plan"
@@ -9625,6 +9635,10 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
    * fetch data from the table: "program_package_plan"
    */
   program_package_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan[];
+  /**
+   * fetch data from the table: "voucher_plan"
+   */
+  voucher_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_voucher_plan[];
 }
 
 /* tslint:disable */
@@ -19033,6 +19047,8 @@ export enum voucher_plan_update_column {
   id = "id",
   is_transferable = "is_transferable",
   product_quantity_limit = "product_quantity_limit",
+  sale_amount = "sale_amount",
+  sale_price = "sale_price",
   started_at = "started_at",
   title = "title",
   updated_at = "updated_at",
@@ -19043,6 +19059,7 @@ export enum voucher_plan_update_column {
  */
 export enum voucher_update_column {
   created_at = "created_at",
+  deleted_at = "deleted_at",
   id = "id",
   member_id = "member_id",
   voucher_code_id = "voucher_code_id",
@@ -35140,6 +35157,7 @@ export interface voucher_bool_exp {
   _not?: voucher_bool_exp | null;
   _or?: (voucher_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamp_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -35207,6 +35225,7 @@ export interface voucher_code_on_conflict {
  */
 export interface voucher_insert_input {
   created_at?: any | null;
+  deleted_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
@@ -35219,6 +35238,7 @@ export interface voucher_insert_input {
  */
 export interface voucher_max_order_by {
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   voucher_code_id?: order_by | null;
@@ -35229,6 +35249,7 @@ export interface voucher_max_order_by {
  */
 export interface voucher_min_order_by {
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   voucher_code_id?: order_by | null;
@@ -35273,6 +35294,8 @@ export interface voucher_plan_arr_rel_insert_input {
  */
 export interface voucher_plan_avg_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35290,6 +35313,8 @@ export interface voucher_plan_bool_exp {
   id?: uuid_comparison_exp | null;
   is_transferable?: Boolean_comparison_exp | null;
   product_quantity_limit?: Int_comparison_exp | null;
+  sale_amount?: Int_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -35309,6 +35334,8 @@ export interface voucher_plan_insert_input {
   id?: any | null;
   is_transferable?: boolean | null;
   product_quantity_limit?: number | null;
+  sale_amount?: number | null;
+  sale_price?: any | null;
   started_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
@@ -35326,6 +35353,8 @@ export interface voucher_plan_max_order_by {
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
   started_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
@@ -35341,6 +35370,8 @@ export interface voucher_plan_min_order_by {
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
   started_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
@@ -35437,6 +35468,8 @@ export interface voucher_plan_product_on_conflict {
  */
 export interface voucher_plan_stddev_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35444,6 +35477,8 @@ export interface voucher_plan_stddev_order_by {
  */
 export interface voucher_plan_stddev_pop_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35451,6 +35486,8 @@ export interface voucher_plan_stddev_pop_order_by {
  */
 export interface voucher_plan_stddev_samp_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35458,6 +35495,8 @@ export interface voucher_plan_stddev_samp_order_by {
  */
 export interface voucher_plan_sum_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35465,6 +35504,8 @@ export interface voucher_plan_sum_order_by {
  */
 export interface voucher_plan_var_pop_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35472,6 +35513,8 @@ export interface voucher_plan_var_pop_order_by {
  */
 export interface voucher_plan_var_samp_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35479,6 +35522,8 @@ export interface voucher_plan_var_samp_order_by {
  */
 export interface voucher_plan_variance_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**

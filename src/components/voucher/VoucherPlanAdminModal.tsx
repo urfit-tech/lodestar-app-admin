@@ -14,6 +14,7 @@ const messages = defineMessages({
   exchangeItemsAmount: { id: 'promotion.label.exchangeItemsAmount', defaultMessage: '兌換項目數量' },
   exchangeItems: { id: 'promotion.label.exchangeItems', defaultMessage: '兌換項目' },
   isTransferable: { id: 'promotion.label.isTransferable', defaultMessage: '允許用戶自行轉贈' },
+  isSaleable: { id: 'promotion.label.isSaleable', defaultMessage: '可銷售（每份）' },
 })
 
 export type VoucherPlanFields = {
@@ -25,6 +26,7 @@ export type VoucherPlanFields = {
   endedAt?: Date
   description: string
   isTransferable: boolean
+  sale?: { amount: number; price: number }
 }
 
 const VoucherPlanAdminModal: React.FC<
@@ -84,6 +86,7 @@ const VoucherPlanAdminModal: React.FC<
           endedAt: voucherPlan?.endedAt ? moment(voucherPlan.endedAt) : null,
           description: voucherPlan?.description,
           isTransferable: !!voucherPlan?.isTransferable,
+          sale: voucherPlan?.sale,
         }}
       >
         <Form.Item
@@ -132,6 +135,12 @@ const VoucherPlanAdminModal: React.FC<
         <Form.Item name="isTransferable" valuePropName="checked" noStyle={!enabledModules.transfer_voucher}>
           {enabledModules.transfer_voucher && <Checkbox>{formatMessage(messages.isTransferable)}</Checkbox>}
         </Form.Item>
+
+        {enabledModules.sale_voucher && (
+          <Form.Item name="sale" noStyle={!enabledModules.sale_voucher}>
+            <SaleVoucherInput />
+          </Form.Item>
+        )}
         <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
           <Form.Item className="d-inline-block m-0" name="startedAt">
             <DatePicker
@@ -154,6 +163,39 @@ const VoucherPlanAdminModal: React.FC<
         </Form.Item>
       </Form>
     </AdminModal>
+  )
+}
+
+const SaleVoucherInput: React.VFC<{
+  value?: { amount: number; price: number }
+  onChange?: (value?: { amount: number; price: number }) => void
+}> = ({ value, onChange }) => {
+  const { formatMessage } = useIntl()
+  const saleable = !!value?.amount
+  return (
+    <div>
+      <Checkbox
+        className="mb-2"
+        checked={saleable}
+        onChange={e => onChange?.(e.target.checked ? { amount: 1, price: 0 } : undefined)}
+      >
+        {formatMessage(messages.isSaleable)}
+      </Checkbox>
+      {saleable && (
+        <Input.Group>
+          <Input
+            value={value.amount}
+            onChange={e => onChange?.({ ...value, amount: Number(e.target.value) || 1 })}
+            addonAfter="張"
+          />
+          <Input
+            value={value.price}
+            onChange={e => onChange?.({ ...value, price: Number(e.target.value) || 0 })}
+            addonAfter="元"
+          />
+        </Input.Group>
+      )}
+    </div>
   )
 }
 
