@@ -22,7 +22,7 @@ type PracticeFiltersProps = {
 
 const PracticeCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const [selectedStatus, setSelectedStatus] = useState<string>('unreviewed')
   const [selectedId, setSelectedId] = useState<{
     program?: string
@@ -52,7 +52,7 @@ const PracticeCollectionAdminPage: React.FC = () => {
             <ProgramTreeSelector
               treeNodeSelectable
               allowContentType="practice"
-              memberId={currentUserRole === 'content-creator' && currentMemberId ? currentMemberId : undefined}
+              memberId={permissions.PRACTICE_NORMAL && currentMemberId ? currentMemberId : undefined}
               onSelect={(value, option) => {
                 setSelectedId({ [option.group]: value })
               }}
@@ -88,7 +88,7 @@ const AllPracticeCollectionBlock: React.FC<{
   filters?: PracticeFiltersProps
 }> = ({ selectedStatus, filters }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
 
   let unreviewed: boolean | undefined
   switch (selectedStatus) {
@@ -103,7 +103,7 @@ const AllPracticeCollectionBlock: React.FC<{
   const { loadingPractice, errorPractice, practices, refetchPractice } = usePracticePreviewCollection({
     ...filters,
     unreviewed,
-    programRoleMemberId: currentUserRole === 'app-owner' || permissions['PRACTICE_ADMIN'] ? undefined : currentMemberId,
+    programRoleMemberId: permissions.PRACTICE_ADMIN ? undefined : currentMemberId,
   })
 
   if (loadingPractice) {

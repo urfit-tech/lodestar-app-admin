@@ -72,7 +72,9 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN ||
         permissions.PROGRAM_CATEGORY_ADMIN ||
         permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN ||
-        permissions.PRACTICE_ADMIN,
+        permissions.PRACTICE_ADMIN ||
+        permissions.PROGRAM_NORMAL ||
+        permissions.PROGRAM_ISSUE_NORMAL,
       icon: () => <BookIcon />,
       key: 'program_admin',
       name: formatMessage(adminMessages.AdminMenu.programAdmin),
@@ -83,12 +85,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(adminMessages.AdminMenu.programs),
         },
         {
-          permissionIsAllowed: permissions.PROGRAM_ISSUE_ADMIN,
+          permissionIsAllowed: permissions.PROGRAM_ISSUE_ADMIN || permissions.PROGRAM_ISSUE_NORMAL,
           key: 'program_issue_collection',
           name: formatMessage(adminMessages.AdminMenu.programIssues),
         },
         {
-          permissionIsAllowed: !!enabledModules.practice && permissions.PRACTICE_ADMIN,
+          permissionIsAllowed: !!enabledModules.practice && (permissions.PRACTICE_ADMIN || permissions.PRACTICE_NORMAL),
           key: 'practice_collection',
           name: formatMessage(adminMessages.AdminMenu.practice),
         },
