@@ -2,10 +2,11 @@ import Icon from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { useHistory } from 'react-router-dom'
+import { Redirect, useHistory } from 'react-router-dom'
 import { AdminPageBlock, AdminPageTitle } from '../components/admin'
 import ProductCreationModal from '../components/common/ProductCreationModal'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -17,10 +18,15 @@ import { ReactComponent as MicrophoneOIcon } from '../images/icon/microphone-o.s
 const PodcastProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentUserRole, currentMemberId } = useAuth()
+  const { enabledModules } = useApp()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const [createPodcastProgram] = useMutation<hasura.CREATE_PODCAST_PROGRAM, hasura.CREATE_PODCAST_PROGRAMVariables>(
     CREATE_PODCAST_PROGRAM,
   )
+
+  if (!enabledModules.podcast || !permissions.PODCAST_ADMIN || !permissions.PODCAST_NORMAL) {
+    return <Redirect to="/" />
+  }
 
   return (
     <AdminLayout>
@@ -57,7 +63,7 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
 
           <AdminPageBlock>
             <PodcastProgramCollectionAdminTable
-              memberId={currentUserRole === 'content-creator' ? currentMemberId : undefined}
+              memberId={permissions.PODCAST_NORMAL ? undefined : permissions.PODCAST_NORMAL ? currentMemberId : ''}
             />
           </AdminPageBlock>
         </>
