@@ -17,7 +17,7 @@ import { ReactComponent as CalendarAltOIcon } from '../images/icon/calendar-alt-
 const AppointmentPlanCollectionAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentUserRole, currentMemberId, permissions } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const [createAppointmentPlan] = useMutation<hasura.CREATE_APPOINTMENT_PLAN, hasura.CREATE_APPOINTMENT_PLANVariables>(
     CREATE_APPOINTMENT_PLAN,
   )
@@ -51,7 +51,7 @@ const AppointmentPlanCollectionAdminPage: React.VFC = () => {
       {currentMemberId && (
         <AppointmentPlanCollectionTabs
           creatorId={
-            currentUserRole === 'app-owner' || permissions.APPOINTMENT_PLAN_ADMIN ? undefined : currentMemberId
+            permissions.APPOINTMENT_PLAN_ADMIN ? undefined : permissions.APPOINTMENT_PLAN_NORMAL ? currentMemberId : ''
           }
         />
       )}

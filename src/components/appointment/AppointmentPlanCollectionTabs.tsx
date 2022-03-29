@@ -33,6 +33,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
       condition: {
         published_at: { _is_null: false },
         is_private: { _eq: false },
+        creator_id: { _eq: creatorId },
       },
       withAppointmentButton: true,
       permissionIsAllowed: true,
@@ -43,6 +44,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
       condition: {
         published_at: { _is_null: false },
         is_private: { _eq: true },
+        creator_id: { _eq: creatorId },
       },
       withAppointmentButton: true,
       permissionIsAllowed: !!enabledModules.private_appointment_plan,
@@ -52,6 +54,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
       tab: formatMessage(commonMessages.status.notPublished),
       condition: {
         published_at: { _is_null: true },
+        creator_id: { _eq: creatorId },
       },
       withAppointmentButton: false,
       permissionIsAllowed: true,
@@ -66,10 +69,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} ${`(${counts[tabContent.key]})`}`}>
             <AdminPageBlock>
               <AppointmentPlanCollectionTable
-                condition={{
-                  ...tabContent.condition,
-                  creator_id: creatorId ? { _eq: creatorId } : undefined,
-                }}
+                condition={tabContent.condition}
                 withAppointmentButton={tabContent?.withAppointmentButton}
               />
             </AdminPageBlock>

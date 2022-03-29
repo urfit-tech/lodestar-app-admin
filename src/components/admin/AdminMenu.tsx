@@ -189,18 +189,22 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        !!enabledModules.appointment && (permissions.APPOINTMENT_PLAN_ADMIN || permissions.APPOINTMENT_PERIOD_ADMIN),
+        !!enabledModules.appointment &&
+        (permissions.APPOINTMENT_PLAN_ADMIN ||
+          permissions.APPOINTMENT_PERIOD_ADMIN ||
+          permissions.APPOINTMENT_PLAN_NORMAL ||
+          permissions.APPOINTMENT_PERIOD_NORMAL),
       key: 'appointment_admin',
       icon: () => <CalendarAltIcon />,
       name: formatMessage(adminMessages.AdminMenu.appointmentAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: permissions.APPOINTMENT_PLAN_ADMIN,
+          permissionIsAllowed: permissions.APPOINTMENT_PLAN_ADMIN || permissions.APPOINTMENT_PLAN_NORMAL,
           key: 'appointment_plan_collection',
           name: formatMessage(adminMessages.AdminMenu.appointmentPlans),
         },
         {
-          permissionIsAllowed: permissions.APPOINTMENT_PERIOD_ADMIN,
+          permissionIsAllowed: permissions.APPOINTMENT_PERIOD_ADMIN || permissions.APPOINTMENT_PERIOD_NORMAL,
           key: 'appointment_period_collection',
           name: formatMessage(adminMessages.AdminMenu.appointments),
         },
