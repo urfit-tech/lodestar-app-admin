@@ -36,7 +36,7 @@ const ProgramIssueCollectionAdminPage = () => {
           </Select>
         </div>
         <div className="col-12 col-sm-9 pl-md-0">
-          {currentMemberId && currentUserRole === 'app-owner' && (
+          {currentMemberId && permissions.PROGRAM_ISSUE_ADMIN && (
             <OwnedProgramSelector
               value={selectedProgramId}
               onChange={key => setSelectedProgramId(Array.isArray(key) ? key[0] : key)}
