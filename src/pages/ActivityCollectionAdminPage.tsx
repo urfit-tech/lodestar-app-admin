@@ -18,7 +18,7 @@ import { ReactComponent as CalendarAltIcon } from '../images/icon/calendar-alt.s
 const ActivityCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const { id: appId } = useApp()
   const [createActivity] = useMutation<hasura.INSERT_ACTIVITY, hasura.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
 
@@ -56,7 +56,9 @@ const ActivityCollectionAdminPage: React.FC = () => {
               }
             />
           </div>
-          <ActivityCollectionTabs memberId={currentUserRole === 'app-owner' ? null : currentMemberId} />
+          <ActivityCollectionTabs
+            memberId={permissions.ACTIVITY_ADMIN ? null : permissions.ACTIVITY_NORMAL ? currentMemberId : ''}
+          />
         </>
       )}
     </AdminLayout>

@@ -230,13 +230,14 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        !!enabledModules.activity && (permissions.ACTIVITY_ADMIN || permissions.ACTIVITY_CATEGORY_ADMIN),
+        !!enabledModules.activity &&
+        (permissions.ACTIVITY_ADMIN || permissions.ACTIVITY_CATEGORY_ADMIN || permissions.ACTIVITY_NORMAL),
       key: 'activity_admin',
       icon: () => <CalendarAltIcon />,
       name: formatMessage(adminMessages.AdminMenu.activityAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: permissions.ACTIVITY_ADMIN,
+          permissionIsAllowed: permissions.ACTIVITY_ADMIN || permissions.ACTIVITY_NORMAL,
           key: 'activity_collection',
           name: formatMessage(adminMessages.AdminMenu.activities),
         },
