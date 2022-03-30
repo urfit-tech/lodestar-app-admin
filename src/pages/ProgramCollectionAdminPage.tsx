@@ -52,7 +52,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
 
   const [insertProgram] = useMutation<hasura.INSERT_PROGRAM, hasura.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
 
-  if (!permissions.PROGRAM_ADMIN) {
+  if (!permissions.PROGRAM_ADMIN && !permissions.PROGRAM_NORMAL) {
     return <ForbiddenPage />
   }
 

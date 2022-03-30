@@ -80,7 +80,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(adminMessages.AdminMenu.programAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: permissions.PROGRAM_ADMIN,
+          permissionIsAllowed: permissions.PROGRAM_ADMIN || permissions.PROGRAM_NORMAL,
           key: 'program_collection',
           name: formatMessage(adminMessages.AdminMenu.programs),
         },
