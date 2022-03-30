@@ -13,7 +13,7 @@ import { ReactComponent as UserIcon } from '../images/icon/user.svg'
 
 const SettingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
 
   return (
     <AdminLayout>
