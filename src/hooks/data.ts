@@ -17,7 +17,6 @@ import { CouponProps } from '../types/checkout'
 import { Uppy } from '@uppy/core'
 import XHRUpload from '@uppy/xhr-upload'
 import { MetaProductType } from '../components/common/MetaProductDeletionBlock'
-import { defineMessage } from '@formatjs/intl'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 
 export const useTags = () => {

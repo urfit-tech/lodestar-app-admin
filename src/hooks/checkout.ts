@@ -5,14 +5,7 @@ import { reverse, times } from 'ramda'
 import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
-import {
-  CouponCodeProps,
-  CouponPlanProps,
-  CouponProps,
-  VoucherCodeProps,
-  VoucherPlanProps,
-  VoucherProps,
-} from '../types/checkout'
+import { CouponCodeProps, CouponPlanProps, VoucherCodeProps, VoucherPlanProps, VoucherProps } from '../types/checkout'
 
 import axios from 'axios'
 import { prop, sum } from 'ramda'
