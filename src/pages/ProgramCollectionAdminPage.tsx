@@ -44,7 +44,7 @@ const StyledButton = styled(Button)`
 const ProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const { loading, id: appId, enabledModules } = useApp()
   const [searchText, setSearchText] = useState('')
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
@@ -180,7 +180,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                 condition={tabContent.condition}
                 orderBy={tabContent?.orderBy}
                 withSortingButton={tabContent.withSortingButton}
-                memberId={currentUserRole === 'content-creator' ? currentMemberId : undefined}
+                memberId={permissions.PROGRAM_ADMIN ? undefined : permissions.PROGRAM_NORMAL ? currentMemberId : ''}
                 onReady={count =>
                   count !== counts[tabContent.key] &&
                   setCounts({
