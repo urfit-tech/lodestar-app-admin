@@ -10,17 +10,28 @@ import ProjectCollectionBlock from './ProjectCollectionBlock'
 
 const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ projectType }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
   const { id: appId } = useApp()
-  const permissionOfProjectType =
+  const adminPermissionOfProjectType =
     projectType === 'funding'
       ? 'PROJECT_FUNDING_ADMIN'
       : projectType === 'pre-order'
       ? 'PROJECT_PRE_ORDER_ADMIN'
       : 'null'
+  const permissionOfProjectType =
+    projectType === 'funding'
+      ? 'PROJECT_FUNDING_NORMAL'
+      : projectType === 'pre-order'
+      ? 'PROJECT_PRE_ORDER_NORMAL'
+      : 'null'
+
   const creatorId = {
-    _eq: currentUserRole === 'app-owner' || permissions[permissionOfProjectType] ? null : currentMemberId,
+    _eq: permissions[adminPermissionOfProjectType]
+      ? undefined
+      : permissions[permissionOfProjectType]
+      ? currentMemberId
+      : '',
   }
 
   const tabContents: {
