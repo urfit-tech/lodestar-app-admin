@@ -1421,6 +1421,7 @@ export const permissionGroupsMessages = defineMessages({
   project: { id: 'permission.label.project', defaultMessage: '專案管理' },
   contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
   mediaLibrary: { id: 'permission.label.mediaLibrary', defaultMessage: '媒體庫' },
+  analysis: { id: 'permission.label.analysis', defaultMessage: '數據分析' },
 })
 
 export const permissionGroupsAdminMessages = {
