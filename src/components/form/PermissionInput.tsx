@@ -53,6 +53,7 @@ const PermissionInput: React.FC<{
     project: !!enabledModules.project,
     contract: !!enabledModules.contract,
     mediaLibrary: true,
+    analysis: !!enabledModules.analysis,
   }
 
   return (
