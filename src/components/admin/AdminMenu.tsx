@@ -359,7 +359,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.member_note && currentUserRole === 'app-owner',
+      permissionIsAllowed: !!enabledModules.member_note && permissions.MEMBER_NOTE_ADMIN,
       key: 'note_collection',
       icon: () => <UsersIcon />,
       name: formatMessage(adminMessages.AdminMenu.noteAdmin),
@@ -428,12 +428,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: true,
       key: 'settings',
       icon: () => <UserIcon />,
-      name:
-        currentUserRole === 'app-owner'
-          ? formatMessage(adminMessages.AdminMenu.ownerSettings)
-          : currentUserRole === 'content-creator'
-          ? formatMessage(adminMessages.AdminMenu.creatorSettings)
-          : formatMessage(adminMessages.AdminMenu.memberSettings),
+      name: permissions.SETTING_ADMIN
+        ? formatMessage(adminMessages.AdminMenu.ownerSettings)
+        : permissions.SETTING_NORMAL
+        ? formatMessage(adminMessages.AdminMenu.creatorSettings)
+        : formatMessage(adminMessages.AdminMenu.memberSettings),
     },
     {
       permissionIsAllowed: permissions.APP_SETTING_ADMIN,
