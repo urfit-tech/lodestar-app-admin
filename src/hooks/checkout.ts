@@ -328,6 +328,8 @@ export const useMutateVoucherPlan = () => {
         $productQuantityLimit: Int!
         $voucherPlanProducts: [voucher_plan_product_insert_input!]!
         $isTransferable: Boolean
+        $saleAmount: Int
+        $salePrice: numeric
       ) {
         update_voucher_plan(
           where: { id: { _eq: $voucherPlanId } }
@@ -339,6 +341,8 @@ export const useMutateVoucherPlan = () => {
             ended_at: $endedAt
             product_quantity_limit: $productQuantityLimit
             is_transferable: $isTransferable
+            sale_amount: $saleAmount
+            sale_price: $salePrice
           }
         ) {
           affected_rows
@@ -353,11 +357,14 @@ export const useMutateVoucherPlan = () => {
     `,
   )
   const updateVoucherPlan = (values: VoucherPlanFields, voucherPlanId: string) => {
+    const { sale, ...restValues } = values
     return updateVoucherPlanHandler({
       variables: {
-        ...values,
+        ...restValues,
         voucherPlanId,
         appId,
+        saleAmount: sale?.amount,
+        salePrice: sale?.price,
         description: encodeURI(values.description || ''),
         voucherPlanProducts: values.voucherPlanProducts.flatMap(productId => ({
           voucher_plan_id: voucherPlanId,

@@ -8543,6 +8543,8 @@ export interface UPDATE_VOUCHER_PLANVariables {
   productQuantityLimit: number;
   voucherPlanProducts: voucher_plan_product_insert_input[];
   isTransferable?: boolean | null;
+  saleAmount?: number | null;
+  salePrice?: any | null;
 }
 
 /* tslint:disable */
@@ -16518,6 +16520,7 @@ export enum category_update_column {
   app_id = "app_id",
   class = "class",
   created_at = "created_at",
+  filterable = "filterable",
   id = "id",
   name = "name",
   position = "position",
@@ -18981,6 +18984,7 @@ export enum tag_constraint {
  */
 export enum tag_update_column {
   created_at = "created_at",
+  filterable = "filterable",
   name = "name",
   type = "type",
   updated_at = "updated_at",
@@ -21920,6 +21924,7 @@ export interface category_bool_exp {
   class?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   creator_categories?: creator_category_bool_exp | null;
+  filterable?: Boolean_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_categories?: member_category_bool_exp | null;
   member_tasks?: member_task_bool_exp | null;
@@ -21943,6 +21948,7 @@ export interface category_insert_input {
   class?: string | null;
   created_at?: any | null;
   creator_categories?: creator_category_arr_rel_insert_input | null;
+  filterable?: boolean | null;
   id?: string | null;
   member_categories?: member_category_arr_rel_insert_input | null;
   member_tasks?: member_task_arr_rel_insert_input | null;
@@ -35042,6 +35048,7 @@ export interface tag_bool_exp {
   _or?: (tag_bool_exp | null)[] | null;
   activity_tags?: activity_tag_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  filterable?: Boolean_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
@@ -35059,6 +35066,7 @@ export interface tag_bool_exp {
 export interface tag_insert_input {
   activity_tags?: activity_tag_arr_rel_insert_input | null;
   created_at?: any | null;
+  filterable?: boolean | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
