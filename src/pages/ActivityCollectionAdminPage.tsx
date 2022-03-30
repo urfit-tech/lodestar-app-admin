@@ -14,13 +14,18 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import { ReactComponent as CalendarAltIcon } from '../images/icon/calendar-alt.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const ActivityCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole, permissions } = useAuth()
-  const { id: appId } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const [createActivity] = useMutation<hasura.INSERT_ACTIVITY, hasura.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
+
+  if (!enabledModules.activity || (!permissions.ACTIVITY_ADMIN && !permissions.ACTIVITY_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

@@ -5,6 +5,7 @@ import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { keys, trim } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -14,10 +15,12 @@ import AdminLayout from '../components/layout/AdminLayout'
 import * as hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages } from '../helpers/translation'
+import ForbiddenPage from './ForbiddenPage'
 
 const AppSettingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { id: appId, settings: appSettings } = useApp()
+  const { permissions } = useAuth()
   const { data: settingsData, loading } = useQuery<hasura.GET_SETTINGS, hasura.GET_SETTINGSVariables>(GET_SETTINGS, {
     variables: { appId },
   })
@@ -37,6 +40,10 @@ const AppSettingAdminPage: React.FC = () => {
       }
       return accum
     }, {} as Record<string, AppSettings>) || {}
+
+  if (!permissions.APP_SETTING_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

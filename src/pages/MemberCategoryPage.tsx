@@ -12,7 +12,7 @@ const ProgramCategoryPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { permissions, isAuthenticating } = useAuth()
 
-  if (!isAuthenticating && !permissions['MEMBER_CATEGORY_ADMIN']) {
+  if (!isAuthenticating && !permissions.MEMBER_CATEGORY_ADMIN) {
     return <ForbiddenPage />
   }
 

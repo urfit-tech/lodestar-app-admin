@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Input, Select, Skeleton, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -10,6 +11,7 @@ import MerchandiseInventoryCard from '../components/merchandise/MerchandiseInven
 import { commonMessages, merchandiseMessages } from '../helpers/translation'
 import { useMemberShopCollection, useMerchandiseSpecCollection } from '../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../images/icon/shop.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const { Search } = Input
 
@@ -26,6 +28,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
   const { memberShops } = useMemberShopCollection()
   const [selectedMemberShop, setSelectedMemberShop] = useState<string>('all')
   const [merchandiseSearch, setMerchandiseSearch] = useState<string | undefined>(undefined)
+  const { enabledModules } = useApp()
   const { isAuthenticating, currentMemberId, permissions } = useAuth()
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     merchandiseSearch,
@@ -73,6 +76,10 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
               .filter(merchandiseSpec => !merchandiseSpec.publishedAt),
     },
   ]
+
+  if (!enabledModules.merchandise || (!permissions.MERCHANDISE_ADMIN && !permissions.MERCHANDISE_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

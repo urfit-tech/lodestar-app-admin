@@ -20,6 +20,7 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages, programMessages } from '../helpers/translation'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../types/program'
+import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
 
 type ProgramSortProps = {
@@ -50,6 +51,10 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
 
   const [insertProgram] = useMutation<hasura.INSERT_PROGRAM, hasura.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
+
+  if (!permissions.PROGRAM_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   if (!currentMemberId || loading) {
     return <LoadingPage />

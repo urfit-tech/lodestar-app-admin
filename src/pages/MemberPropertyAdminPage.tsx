@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../components/admin'
@@ -13,10 +14,13 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import { useProperty } from '../hooks/member'
+import ForbiddenPage from './ForbiddenPage'
 
 const MemberPropertyAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const app = useApp()
+  const { enabledModules } = useApp()
+  const { permissions } = useAuth()
   const { loadingProperties, properties, refetchProperties } = useProperty()
   const [insertProperty] = useMutation<hasura.INSERT_PROPERTY, hasura.INSERT_PROPERTYVariables>(INSERT_PROPERTY)
   const [updateProperty] = useMutation<hasura.UPDATE_PROPERTY, hasura.UPDATE_PROPERTYVariables>(UPDATE_PROPERTY)
@@ -26,6 +30,10 @@ const MemberPropertyAdminPage: React.FC = () => {
   >(UPDATE_PROPERTY_POSITION)
   const [deleteProperty] = useMutation<hasura.DELETE_PROPERTY, hasura.DELETE_PROPERTYVariables>(DELETE_PROPERTY)
   const [loading, setLoading] = useState(false)
+
+  if (!enabledModules.member_property || !permissions.MEMBER_PROPERTY_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

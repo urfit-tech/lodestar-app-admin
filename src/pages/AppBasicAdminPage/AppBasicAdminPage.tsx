@@ -1,15 +1,22 @@
 import { GlobalOutlined } from '@ant-design/icons'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { commonMessages } from '../../helpers/translation'
+import ForbiddenPage from '../ForbiddenPage'
 import AppBasicAdminCard from './AppBasicAdminCard'
 import AppHostAdminCard from './AppHostAdminCard'
 import AppNavAdminCard from './AppNavAdminCard'
 
 const AppBasicAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
+
+  if (!permissions.APP_SETTING_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

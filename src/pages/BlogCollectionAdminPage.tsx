@@ -15,12 +15,13 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { blogMessages, commonMessages } from '../helpers/translation'
 import { usePostCollection } from '../hooks/blog'
+import ForbiddenPage from './ForbiddenPage'
 
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId } = useAuth()
-  const { id: appId } = useApp()
+  const { currentMemberId, permissions } = useAuth()
+  const { id: appId, enabledModules } = useApp()
   const { posts, refetchPosts } = usePostCollection()
   const [insertPost] = useMutation<hasura.INSERT_POST, hasura.INSERT_POSTVariables>(INSERT_POST)
 
@@ -36,6 +37,10 @@ const BlogAdminCollectionPage: React.FC = () => {
       posts: posts.filter(post => !post.publishedAt),
     },
   ]
+
+  if (!enabledModules.blog || (!permissions.POST_ADMIN && !permissions.POST_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

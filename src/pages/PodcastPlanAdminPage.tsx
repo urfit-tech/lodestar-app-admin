@@ -4,7 +4,6 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { Redirect } from 'react-router-dom'
 import { AdminPageTitle } from '../components/admin'
 import AdminCard from '../components/admin/AdminCard'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -13,6 +12,7 @@ import PodcastPlanCollectionAdminTable from '../components/podcast/PodcastPlanCo
 import { commonMessages, podcastMessages } from '../helpers/translation'
 import { usePodcastPlanAdminCollection } from '../hooks/podcast'
 import { ReactComponent as DiscountIcon } from '../images/icon/discount.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const PodcastPlanAdminPage: React.FC = () => {
   const { enabledModules } = useApp()
@@ -23,8 +23,8 @@ const PodcastPlanAdminPage: React.FC = () => {
     permissions.PODCAST_ADMIN ? undefined : permissions.PODCAST_NORMAL ? currentMemberId || '' : '',
   )
 
-  if (!enabledModules.podcast || !permissions.PODCAST_ADMIN || !permissions.PODCAST_NORMAL) {
-    return <Redirect to="/" />
+  if (!enabledModules.podcast || (!permissions.PODCAST_ADMIN && !permissions.PODCAST_NORMAL)) {
+    return <ForbiddenPage />
   }
 
   return (

@@ -6,7 +6,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { Redirect, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { AdminPageBlock, AdminPageTitle } from '../components/admin'
 import ProductCreationModal from '../components/common/ProductCreationModal'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -14,6 +14,7 @@ import PodcastProgramCollectionAdminTable from '../components/podcast/PodcastPro
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
 import { ReactComponent as MicrophoneOIcon } from '../images/icon/microphone-o.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const PodcastProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -24,8 +25,8 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
     CREATE_PODCAST_PROGRAM,
   )
 
-  if (!enabledModules.podcast || !permissions.PODCAST_ADMIN || !permissions.PODCAST_NORMAL) {
-    return <Redirect to="/" />
+  if (!enabledModules.podcast || (!permissions.PODCAST_ADMIN && !permissions.PODCAST_NORMAL)) {
+    return <ForbiddenPage />
   }
 
   return (

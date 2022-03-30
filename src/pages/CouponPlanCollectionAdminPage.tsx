@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -14,6 +15,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import hasura from '../hasura'
 import { DiscountIcon } from '../images/icon'
 import { CouponPlanProps } from '../types/checkout'
+import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
 const StyledCount = styled.span`
@@ -26,6 +28,7 @@ const StyledCount = styled.span`
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { permissions } = useAuth()
   const { couponPlans, loadingCouponPlans, refetchCouponPlans } = useSimpleCouponPlanCollection()
 
   const tabContents = [
@@ -51,6 +54,10 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
       couponPlans: couponPlans.filter(couponPlan => couponPlan.endedAt && couponPlan.endedAt.getTime() < Date.now()),
     },
   ]
+
+  if (!permissions.COUPON_PLAN_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

@@ -20,6 +20,7 @@ import { commonMessages, memberMessages, podcastMessages } from '../helpers/tran
 import { useMutateAttachment, useUploadAttachments } from '../hooks/data'
 import { useMemberNotesAdmin, useMutateMemberNote } from '../hooks/member'
 import { NoteAdminProps } from '../types/member'
+import ForbiddenPage from './ForbiddenPage'
 
 const messages = defineMessages({
   memberNoteCreatedAt: { id: 'member.label.memberNoteCreatedAt', defaultMessage: '聯絡時間' },
@@ -74,8 +75,8 @@ type FiltersProps = {
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { authToken } = useAuth()
-
+  const { authToken, permissions } = useAuth()
+  const { enabledModules } = useApp()
   const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
     created_at: 'desc' as hasura.order_by,
   })
@@ -325,6 +326,10 @@ const NoteCollectionPage: React.FC = () => {
       ),
     },
   ]
+
+  if (!enabledModules.member_note || !permissions.MEMBER_NOTE_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

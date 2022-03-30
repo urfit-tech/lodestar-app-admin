@@ -13,12 +13,17 @@ import { EditableProgramSelector, OwnedProgramSelector } from '../components/pro
 import hasura from '../hasura'
 import { commonMessages, errorMessages, programMessages } from '../helpers/translation'
 import { IssueProps } from '../types/general'
+import ForbiddenPage from './ForbiddenPage'
 
 const ProgramIssueCollectionAdminPage = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const [selectedProgramId, setSelectedProgramId] = useState<string>('all')
   const [selectedStatus, setSelectedStatus] = useState<string>('unsolved')
+
+  if (!permissions.PROGRAM_ISSUE_ADMIN && !permissions.PROGRAM_ISSUE_NORMAL) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

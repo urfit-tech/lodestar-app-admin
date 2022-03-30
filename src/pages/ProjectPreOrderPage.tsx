@@ -11,14 +11,19 @@ import ProjectCollectionTabs from '../components/project/ProjectCollectionTabs'
 import { commonMessages } from '../helpers/translation'
 import { useProject } from '../hooks/project'
 import { ReactComponent as ProjectIcon } from '../images/icon/project.svg'
+import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
 const ProjectPreOrderPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId, currentUserRole } = useAuth()
-  const { id: appId } = useApp()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { id: appId, enabledModules } = useApp()
   const { insertProject } = useProject()
+
+  if (!enabledModules.project || !permissions.PROJECT_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

@@ -1,6 +1,7 @@
 import Icon from '@ant-design/icons'
 import { Skeleton } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../components/admin'
@@ -9,11 +10,12 @@ import DefaultLayout from '../components/layout/DefaultLayout'
 import VoucherPlanCollectionBlock from '../components/voucher/VoucherPlanCollectionBlock'
 import { commonMessages } from '../helpers/translation'
 import { ReactComponent as DiscountIcon } from '../images/icon/discount.svg'
-import NotFoundPage from './NotFoundPage'
+import ForbiddenPage from './ForbiddenPage'
 
 const VoucherPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { loading, enabledModules } = useApp()
+  const { permissions } = useAuth()
 
   if (loading) {
     return (
@@ -23,8 +25,8 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
     )
   }
 
-  if (!enabledModules.voucher) {
-    return <NotFoundPage />
+  if (!enabledModules.voucher || !permissions.VOUCHER_PLAN_ADMIN) {
+    return <ForbiddenPage />
   }
 
   return (

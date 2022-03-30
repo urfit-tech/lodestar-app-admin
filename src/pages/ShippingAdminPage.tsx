@@ -1,5 +1,6 @@
 import Icon, { CaretDownOutlined, CaretUpOutlined, DownloadOutlined } from '@ant-design/icons'
 import { Button, Input, Skeleton, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -11,6 +12,7 @@ import { downloadCSV, toCSV } from '../helpers'
 import { commonMessages, merchandiseMessages } from '../helpers/translation'
 import { useOrderPhysicalProductLog } from '../hooks/data'
 import { ReactComponent as ShopIcon } from '../images/icon/shop.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const messages = defineMessages({
   allShop: { id: 'common.label.allShop', defaultMessage: '全部商店' },
@@ -23,6 +25,7 @@ const messages = defineMessages({
 
 const ShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const { isAuthenticating, currentMemberId, permissions } = useAuth()
   const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog(
     permissions.SHIPPING_ADMIN ? undefined : permissions.SHIPPING_NORMAL ? currentMemberId || '' : '',
@@ -120,6 +123,14 @@ const ShippingAdminPage: React.FC = () => {
       })
     downloadCSV(`${activeKey}_.csv`, toCSV(data))
   }
+
+  if (
+    (!enabledModules.merchandise && !enabledModules.project) ||
+    (!permissions.SHIPPING_ADMIN && !permissions.SHIPPING_NORMAL)
+  ) {
+    return <ForbiddenPage />
+  }
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">

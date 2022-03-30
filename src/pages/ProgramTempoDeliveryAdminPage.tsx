@@ -1,6 +1,8 @@
 import Icon, { CaretDownOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Divider, Dropdown, Form, Menu, Select, Spin, Table, Tooltip } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -23,6 +25,7 @@ import {
 import { ReactComponent as BookIcon } from '../images/icon/book.svg'
 import { ReactComponent as FileCheckIcon } from '../images/icon/file-check.svg'
 import { MemberBriefProps } from '../types/member'
+import ForbiddenPage from './ForbiddenPage'
 
 const StyledProgramPackageTitle = styled.div`
   margin: 0 auto;
@@ -74,6 +77,8 @@ const StyledMemberEmail = styled.div`
 
 const ProgramTempoDeliveryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
+  const { permissions } = useAuth()
 
   const { loading: loadingProgramPackage, programPackages } = useProgramPackageCollection()
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null)
@@ -110,6 +115,10 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
       })
       .catch(handleError)
       .finally(() => setLoading(false))
+  }
+
+  if (!enabledModules.tempo_delivery || !permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN) {
+    return <ForbiddenPage />
   }
 
   return (

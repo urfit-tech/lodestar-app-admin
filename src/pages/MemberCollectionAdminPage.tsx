@@ -23,6 +23,7 @@ import { useMemberCollection, useMemberRoleCount, useProperty } from '../hooks/m
 import { usePermissionGroupsDropdownMenu } from '../hooks/permission'
 import { ReactComponent as TableIcon } from '../images/icon/table.svg'
 import { MemberInfoProps, UserRole } from '../types/member'
+import ForbiddenPage from './ForbiddenPage'
 
 const StyledDropdown = styled(Dropdown)`
   width: 100%;
@@ -376,6 +377,10 @@ const MemberCollectionAdminPage: React.FC = () => {
         return column
       }),
   ]
+
+  if (!permissions.MEMBER_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

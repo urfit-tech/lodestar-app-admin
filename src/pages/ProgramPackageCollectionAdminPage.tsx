@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -15,11 +16,13 @@ import { handleError } from '../helpers'
 import { commonMessages, programPackageMessages } from '../helpers/translation'
 import { useProgramPackageCollection } from '../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../images/icon/book.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { id: appId } = useApp()
+  const { id: appId, enabledModules } = useApp()
+  const { permissions } = useAuth()
   const { programPackages, refetch } = useProgramPackageCollection()
   const [createProgramPackage] = useMutation<hasura.INSERT_PROGRAM_PACKAGE, hasura.INSERT_PROGRAM_PACKAGEVariables>(
     INSERT_PROGRAM_PACKAGE,
@@ -38,6 +41,10 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
       isPublished: false,
     },
   ]
+
+  if (!enabledModules.program_package && !permissions.PROGRAM_PACKAGE_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

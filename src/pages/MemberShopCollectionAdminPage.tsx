@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Skeleton, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -14,6 +15,7 @@ import { commonMessages, merchandiseMessages } from '../helpers/translation'
 import { useMemberShopCollection } from '../hooks/merchandise'
 import DefaultAvatar from '../images/default/avatar.svg'
 import { ReactComponent as ShopIcon } from '../images/icon/shop.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const StyledCard = styled.div`
   padding-top: 2.5rem;
@@ -45,6 +47,7 @@ const StyledCardMeta = styled.div`
 const MemberShopCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { enabledModules } = useApp()
   const { currentMemberId, permissions, isAuthenticating } = useAuth()
   const { loadingMemberShops, memberShops } = useMemberShopCollection(
     permissions.MERCHANDISE_ADMIN ? undefined : permissions.MERCHANDISE_NORMAL ? currentMemberId || '' : '',
@@ -62,6 +65,10 @@ const MemberShopCollectionAdminPage: React.FC = () => {
       memberShops: memberShops.filter(memberShop => !memberShop.publishedAt),
     },
   ]
+
+  if (!enabledModules.merchandise || (!permissions.MERCHANDISE_ADMIN && !permissions.MERCHANDISE_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
