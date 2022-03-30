@@ -25,7 +25,7 @@ const ShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { isAuthenticating, currentMemberId, permissions } = useAuth()
   const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog(
-    permissions.MERCHANDISE_ADMIN ? undefined : permissions.MERCHANDISE_NORMAL ? currentMemberId || '' : '',
+    permissions.SHIPPING_ADMIN ? undefined : permissions.SHIPPING_NORMAL ? currentMemberId || '' : '',
   )
   const [searchText, setSearchText] = useState('')
   const [selectedShopId, setSelectedShopId] = useState('')

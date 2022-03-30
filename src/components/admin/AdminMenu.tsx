@@ -294,7 +294,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     {
       permissionIsAllowed:
         (!!enabledModules.merchandise || !!enabledModules.project) &&
-        (currentUserRole === 'app-owner' || currentUserRole === 'content-creator'),
+        (permissions.SHIPPING_ADMIN || permissions.SHIPPING_NORMAL),
       key: 'shipping',
       icon: () => <GoldenFilled className="mr-0" />,
       name: formatMessage(adminMessages.AdminMenu.shipping),
