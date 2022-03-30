@@ -122,12 +122,15 @@ export const MemberContractCollectionBlock: React.FC<{
   ])
 
   const displayMemberContracts =
-    currentUserRole === 'app-owner'
+    permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL
       ? memberContracts
-      : memberContracts.filter(
+      : permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL
+      ? memberContracts.filter(
           mc =>
             mc.authorId === currentMemberId || mc.orderExecutors?.map(v => v.memberId)?.includes(currentMemberId || ''),
         )
+      : []
+
   const activeMemberContract = displayMemberContracts.find(mc => mc.id === activeMemberContractId)
 
   const priceAmountList = map(([status, amount]) => {
@@ -547,14 +550,19 @@ export const MemberContractCollectionBlock: React.FC<{
                 dataSource={displayMemberContracts}
                 scroll={{ x: true }}
                 rowKey={row => row.id}
-                rowClassName={permissions.CONTRACT_VALUE_VIEW ? 'cursor-pointer' : undefined}
+                rowClassName={
+                  permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL
+                    ? 'cursor-pointer'
+                    : undefined
+                }
                 onRow={record => ({
-                  onClick: permissions.CONTRACT_VALUE_VIEW
-                    ? () => {
-                        setActiveMemberContractId(record.id)
-                        setVisible(true)
-                      }
-                    : undefined,
+                  onClick:
+                    permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL
+                      ? () => {
+                          setActiveMemberContractId(record.id)
+                          setVisible(true)
+                        }
+                      : undefined,
                 })}
                 onChange={(pagination, filters, sorter) => {
                   const newSorter = sorter as SorterResult<MemberContractProps>

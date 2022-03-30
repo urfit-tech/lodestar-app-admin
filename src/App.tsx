@@ -32,7 +32,7 @@ const App: React.FC = () => {
           const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
             {
-              permissionIsAllowed: role !== 'content-creator',
+              permissionIsAllowed: permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL,
               key: 'member_contract_collection',
               icon: () => <UserCopyIcon />,
               name: '合約資料管理',
