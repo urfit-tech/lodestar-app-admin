@@ -428,11 +428,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       permissionIsAllowed: true,
       key: 'settings',
       icon: () => <UserIcon />,
-      name: permissions.SETTING_ADMIN
-        ? formatMessage(adminMessages.AdminMenu.ownerSettings)
-        : permissions.SETTING_NORMAL
-        ? formatMessage(adminMessages.AdminMenu.creatorSettings)
-        : formatMessage(adminMessages.AdminMenu.memberSettings),
+      name:
+        currentUserRole === 'app-owner'
+          ? formatMessage(adminMessages.AdminMenu.ownerSettings)
+          : currentUserRole === 'content-creator'
+          ? formatMessage(adminMessages.AdminMenu.creatorSettings)
+          : formatMessage(adminMessages.AdminMenu.memberSettings),
     },
     {
       permissionIsAllowed: permissions.APP_SETTING_ADMIN,

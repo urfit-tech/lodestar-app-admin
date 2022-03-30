@@ -10,23 +10,18 @@ import ProfileBasicCard from '../components/member/ProfileBasicCard'
 import ProfilePasswordAdminCard from '../components/member/ProfilePasswordAdminCard'
 import { commonMessages } from '../helpers/translation'
 import { ReactComponent as UserIcon } from '../images/icon/user.svg'
-import ForbiddenPage from './ForbiddenPage'
 
 const SettingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, permissions } = useAuth()
-
-  if (!permissions.SETTING_ADMIN || permissions.SETTING_NORMAL) {
-    return <ForbiddenPage />
-  }
+  const { currentMemberId, permissions, currentUserRole } = useAuth()
 
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <UserIcon />} className="mr-3" />
-        {permissions.SETTING_ADMIN ? (
+        {currentUserRole === 'app-owner' ? (
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
-        ) : permissions.SETTING_NORMAL ? (
+        ) : currentUserRole === 'content-creator' ? (
           <span>{formatMessage(commonMessages.menu.creatorSettings)}</span>
         ) : (
           <span>{formatMessage(commonMessages.menu.memberSettings)}</span>
@@ -39,11 +34,11 @@ const SettingAdminPage: React.FC = () => {
         <ProfileBasicCard
           className="mb-4"
           memberId={currentMemberId}
-          withTitle={permissions.SETTING_NORMAL}
-          withFields={permissions.SETTING_NORMAL}
-          withTags={permissions.SETTING_NORMAL}
-          withAbstract={permissions.SETTING_NORMAL}
-          withDescription={permissions.SETTING_NORMAL}
+          withTitle={currentUserRole === 'content-creator'}
+          withFields={currentUserRole === 'content-creator'}
+          withTags={currentUserRole === 'content-creator'}
+          withAbstract={currentUserRole === 'content-creator'}
+          withDescription={currentUserRole === 'content-creator'}
         />
       )}
 
