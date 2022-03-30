@@ -250,23 +250,18 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        !!enabledModules.blog &&
-        (currentUserRole === 'app-owner' ||
-          currentUserRole === 'content-creator' ||
-          permissions.POST_ADMIN ||
-          permissions.POST_CATEGORY_ADMIN),
+        !!enabledModules.blog && (permissions.POST_ADMIN || permissions.POST_CATEGORY_ADMIN || permissions.POST_NORMAL),
       key: 'blog_admin',
       icon: () => <ShoppingFilled className="mr-0" />,
       name: formatMessage(adminMessages.AdminMenu.blogAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed:
-            currentUserRole === 'app-owner' || currentUserRole === 'content-creator' || permissions.POST_ADMIN,
+          permissionIsAllowed: permissions.POST_ADMIN || permissions.POST_NORMAL,
           key: 'blog_collection',
           name: formatMessage(adminMessages.AdminMenu.blogPosts),
         },
         {
-          permissionIsAllowed: currentUserRole === 'app-owner' || permissions.POST_CATEGORY_ADMIN,
+          permissionIsAllowed: permissions.POST_CATEGORY_ADMIN,
           key: 'blog_category',
           name: formatMessage(adminMessages.AdminMenu.blogCategory),
         },
