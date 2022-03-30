@@ -10,6 +10,7 @@ import moment, { Moment } from 'moment'
 import { groupBy, map, mapObjIndexed, split, sum, toPairs } from 'ramda'
 import React, { useState } from 'react'
 import hasura from '../hasura'
+import ForbiddenPage from './ForbiddenPage'
 
 type LogsProps = {
   id: string | null
@@ -22,7 +23,11 @@ type LogsProps = {
 
 const SalesActivenessPage: React.FC = () => {
   const [range, setRange] = useState<[Moment, Moment]>([moment().startOf('month'), moment().endOf('month')])
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, permissions } = useAuth()
+
+  if (!permissions.ANALYSIS_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

@@ -5,12 +5,14 @@ import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { countBy, eqProps, filter, flatten, map, pipe, split, trim, unionWith, uniq } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import SalesMemberInput from '../components/common/SalesMemberInput'
 import hasura from '../hasura'
+import ForbiddenPage from './ForbiddenPage'
 
 const count = pipe(
   map(
@@ -34,6 +36,11 @@ const SalesMaterialsPage: React.FC = () => {
   const [selectedSalesId, setSelectedSalesId] = useState('')
   const [isSelectedAllSales, setIsSelectedAllSales] = useState(false)
   const [selectedMaterialName, setSelectedMaterialName] = useState('廣告素材')
+  const { permissions } = useAuth()
+
+  if (!permissions.ANALYSIS_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

@@ -6,10 +6,12 @@ import { Form, Input, Select } from 'antd'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { countBy, map, pipe, toPairs } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import hasura from '../hasura'
+import ForbiddenPage from './ForbiddenPage'
 
 const memberPropertySelectNames = [
   '學習動機',
@@ -29,6 +31,7 @@ const StyledSearchIcon = styled(SearchOutlined)`
 `
 
 const AdvertisingAudiencePage: React.FC = () => {
+  const { permissions } = useAuth()
   const [selectedPropertyId, setSelectedPropertyId] = useState('')
   const [learningAreaSearchTexts, setLearningAreaSearchTexts] = useState<string[]>([])
   const { loadingProperties, errorProperties, properties } = useProperty({
@@ -71,6 +74,10 @@ const AdvertisingAudiencePage: React.FC = () => {
       position: 'middle',
       layout: [{ type: 'interval-adjust-position' }, { type: 'interval-hide-overlap' }, { type: 'adjust-color' }],
     },
+  }
+
+  if (!permissions.ANALYSIS_ADMIN) {
+    return <ForbiddenPage />
   }
 
   return (

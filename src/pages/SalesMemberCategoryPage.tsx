@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import CategorySelector from '../components/common/CategorySelector'
 import hasura from '../hasura'
+import ForbiddenPage from './ForbiddenPage'
 
 type AssignedMemberProps = {
   id: string
@@ -45,7 +46,7 @@ const StyledFilter = styled.div`
 `
 
 export default function SalesMemberCategoryPage() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, permissions } = useAuth()
   const [condition, setCondition] = useState<{
     startedAt: Date | null
     endedAt: Date | null
@@ -130,6 +131,10 @@ export default function SalesMemberCategoryPage() {
   }, toPairs(sales))
 
   type RecordType = typeof dataSource[number]
+
+  if (!permissions.ANALYSIS_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

@@ -76,7 +76,7 @@ const App: React.FC = () => {
               ],
             },
             {
-              permissionIsAllowed: role === 'app-owner',
+              permissionIsAllowed: permissions.ANALYSIS_ADMIN,
               key: 'analytics',
               icon: () => <BarChartOutlined style={{ margin: 0 }} />,
               name: '數據分析',
