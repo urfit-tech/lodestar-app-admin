@@ -13,15 +13,15 @@ import { ReactComponent as UserIcon } from '../images/icon/user.svg'
 
 const SettingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
 
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <UserIcon />} className="mr-3" />
-        {currentUserRole === 'app-owner' ? (
+        {permissions.SETTING_ADMIN ? (
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
-        ) : currentUserRole === 'content-creator' ? (
+        ) : permissions.SETTING_NORMAL ? (
           <span>{formatMessage(commonMessages.menu.creatorSettings)}</span>
         ) : (
           <span>{formatMessage(commonMessages.menu.memberSettings)}</span>
@@ -34,11 +34,11 @@ const SettingAdminPage: React.FC = () => {
         <ProfileBasicCard
           className="mb-4"
           memberId={currentMemberId}
-          withTitle={currentUserRole === 'content-creator'}
-          withFields={currentUserRole === 'content-creator'}
-          withTags={currentUserRole === 'content-creator'}
-          withAbstract={currentUserRole === 'content-creator'}
-          withDescription={currentUserRole === 'content-creator'}
+          withTitle={permissions.SETTING_NORMAL}
+          withFields={permissions.SETTING_NORMAL}
+          withTags={permissions.SETTING_NORMAL}
+          withAbstract={permissions.SETTING_NORMAL}
+          withDescription={permissions.SETTING_NORMAL}
         />
       )}
 
