@@ -25,7 +25,7 @@ const messages = defineMessages({
 
 const ExerciseResultPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { currentUserRole, currentMemberId } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
 
   const [selectedContentId, setSelectedContentId] = useState('')
 
@@ -38,12 +38,14 @@ const ExerciseResultPage: React.VFC = () => {
 
       <div className="row mb-4">
         <div className="col-12 col-lg-6">
-          <ProgramTreeSelector
-            allowContentType="exercise"
-            treeNodeSelectable={false}
-            memberId={currentUserRole === 'content-creator' ? currentMemberId || '' : undefined}
-            onChange={value => setSelectedContentId(value)}
-          />
+          {currentMemberId && (
+            <ProgramTreeSelector
+              allowContentType="exercise"
+              treeNodeSelectable={false}
+              memberId={permissions.EXERCISE_ADMIN ? undefined : permissions.EXERCISE_NORMAL ? currentMemberId : ''}
+              onChange={value => setSelectedContentId(value)}
+            />
+          )}
         </div>
       </div>
 
