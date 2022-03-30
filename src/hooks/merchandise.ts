@@ -203,7 +203,7 @@ export const useMerchandise = (id: string) => {
   }
 }
 
-export const useMemberShopCollection = (memberId?: string | null) => {
+export const useMemberShopCollection = (memberId?: string) => {
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_MEMBER_SHOP_COLLECTION,
     hasura.GET_MEMBER_SHOP_COLLECTIONVariables

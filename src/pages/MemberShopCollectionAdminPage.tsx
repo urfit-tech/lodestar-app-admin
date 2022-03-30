@@ -45,9 +45,9 @@ const StyledCardMeta = styled.div`
 const MemberShopCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { currentMemberId, currentUserRole, isAuthenticating } = useAuth()
+  const { currentMemberId, permissions, isAuthenticating } = useAuth()
   const { loadingMemberShops, memberShops } = useMemberShopCollection(
-    currentUserRole !== 'app-owner' ? currentMemberId : undefined,
+    permissions.MERCHANDISE_ADMIN ? undefined : permissions.MERCHANDISE_NORMAL ? currentMemberId || '' : '',
   )
 
   const tabContents = [

@@ -26,11 +26,11 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
   const { memberShops } = useMemberShopCollection()
   const [selectedMemberShop, setSelectedMemberShop] = useState<string>('all')
   const [merchandiseSearch, setMerchandiseSearch] = useState<string | undefined>(undefined)
-  const { isAuthenticating, currentMemberId, currentUserRole } = useAuth()
+  const { isAuthenticating, currentMemberId, permissions } = useAuth()
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     merchandiseSearch,
     isLimited: true,
-    memberId: currentUserRole === 'content-creator' ? currentMemberId || '' : undefined,
+    memberId: permissions.MERCHANDISE_ADMIN ? undefined : permissions.MERCHANDISE_NORMAL ? currentMemberId || '' : '',
   })
 
   const tabContents = [

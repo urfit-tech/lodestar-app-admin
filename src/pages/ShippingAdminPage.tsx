@@ -23,9 +23,9 @@ const messages = defineMessages({
 
 const ShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { isAuthenticating, currentMemberId, currentUserRole } = useAuth()
+  const { isAuthenticating, currentMemberId, permissions } = useAuth()
   const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog(
-    currentUserRole === 'content-creator' ? currentMemberId : undefined,
+    permissions.MERCHANDISE_ADMIN ? undefined : permissions.MERCHANDISE_NORMAL ? currentMemberId || '' : '',
   )
   const [searchText, setSearchText] = useState('')
   const [selectedShopId, setSelectedShopId] = useState('')

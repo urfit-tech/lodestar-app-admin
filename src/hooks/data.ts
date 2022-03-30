@@ -230,7 +230,7 @@ export const useArrangeProductInventory = (productId: string) => {
     })
 }
 
-export const useOrderPhysicalProductLog = (memberId?: string | null) => {
+export const useOrderPhysicalProductLog = (memberId?: string) => {
   const { error, loading, data, refetch } = useQuery<hasura.GET_PHYSICAL_PRODUCT_ORDER_LOG>(
     gql`
       query GET_PHYSICAL_PRODUCT_ORDER_LOG($memberId: String) {
@@ -829,7 +829,7 @@ export const useProductSku = (productId: string) => {
 }
 
 export const useAttachments = (options?: { contentType?: string; status?: string }) => {
-  const { currentMemberId, currentUserRole, authToken, permissions } = useAuth()
+  const { currentMemberId, authToken, permissions } = useAuth()
   const contentTypeLike = options?.contentType?.replace('*', '%')
   const { data, loading, refetch } = useQuery<hasura.GET_ATTACHMENTS, hasura.GET_ATTACHMENTSVariables>(
     gql`

@@ -269,7 +269,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        !!enabledModules.merchandise && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator'),
+        !!enabledModules.merchandise && (permissions.MERCHANDISE_ADMIN || permissions.MERCHANDISE_NORMAL),
       key: 'merchandise_admin',
       icon: () => <ShopIcon />,
       name: formatMessage(adminMessages.AdminMenu.eCommerce),
