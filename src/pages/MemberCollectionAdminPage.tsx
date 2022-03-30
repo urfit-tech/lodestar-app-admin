@@ -417,9 +417,7 @@ const MemberCollectionAdminPage: React.FC = () => {
               {formatMessage(memberMessages.label.field)}
             </StyledButton>
           </Popover>
-          <div className="mr-2">
-            {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
-          </div>
+          <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal onRefetch={refetchMembers} />}</div>
           <div className="mr-2">
             <MemberImportModal onRefetch={refetchMembers} />
           </div>
