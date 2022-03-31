@@ -16,6 +16,7 @@ import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
+import ForbiddenPage from '../ForbiddenPage'
 
 export type MemberContract = {
   id: string
@@ -58,12 +59,16 @@ const SalesPerformancePage: React.VFC = () => {
   const [activeManagerId, setActiveManagerId] = useState<string>()
   const { formatMessage } = useIntl()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   useEffect(() => {
     currentMemberId && setActiveManagerId(currentMemberId)
   }, [currentMemberId])
+
+  if (!permissions.SALES_PERFORMANCE_ADMIN && !permissions.SALES_CALL_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

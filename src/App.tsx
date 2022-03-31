@@ -44,12 +44,12 @@ const App: React.FC = () => {
               name: '業務專區',
               subMenuItems: [
                 {
-                  permissionIsAllowed: true,
+                  permissionIsAllowed: permissions.SALES_PERFORMANCE_ADMIN,
                   key: 'sales_performance',
                   name: '業績總表',
                 },
                 {
-                  permissionIsAllowed: true,
+                  permissionIsAllowed: permissions.SALES_LEAD_ADMIN,
                   key: 'sales_lead',
                   name: '名單撥打',
                 },

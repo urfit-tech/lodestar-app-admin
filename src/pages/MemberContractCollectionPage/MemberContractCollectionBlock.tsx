@@ -121,15 +121,14 @@ export const MemberContractCollectionBlock: React.FC<{
     'orderExecutors',
   ])
 
-  const displayMemberContracts =
-    permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL
-      ? memberContracts
-      : permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL
-      ? memberContracts.filter(
-          mc =>
-            mc.authorId === currentMemberId || mc.orderExecutors?.map(v => v.memberId)?.includes(currentMemberId || ''),
-        )
-      : []
+  const displayMemberContracts = permissions.CONTRACT_VALUE_VIEW_ADMIN
+    ? memberContracts
+    : permissions.CONTRACT_VALUE_VIEW_NORMAL
+    ? memberContracts.filter(
+        mc =>
+          mc.authorId === currentMemberId || mc.orderExecutors?.map(v => v.memberId)?.includes(currentMemberId || ''),
+      )
+    : []
 
   const activeMemberContract = displayMemberContracts.find(mc => mc.id === activeMemberContractId)
 
