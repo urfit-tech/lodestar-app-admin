@@ -181,10 +181,11 @@ export const useActivityAdmin = (activityId: string) => {
           isParticipantsVisible: data.activity[0]?.is_participants_visible,
           organizerId: data.activity[0]?.organizer_id,
           supportLocales: data.activity[0]?.support_locales || [],
-          categories: data.activity[0]?.activity_categories.map(v => ({
-            id: v.category.id,
-            name: v.category.name,
-          })),
+          categories:
+            data.activity[0]?.activity_categories.map(v => ({
+              id: v.category.id,
+              name: v.category.name,
+            })) || [],
           tickets:
             data?.activity[0]?.activity_tickets?.map(v => ({
               id: v.id,
