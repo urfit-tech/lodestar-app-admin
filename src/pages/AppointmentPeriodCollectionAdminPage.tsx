@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Button, DatePicker, Input, Select, Skeleton, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -11,6 +12,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import { appointmentMessages, commonMessages } from '../helpers/translation'
 import { useAppointmentEnrollmentCollection, useAppointmentEnrollmentCreator } from '../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../images/icon/calendar-alt-o.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const StyledFilterBlock = styled.div`
   margin-bottom: 2rem;
@@ -23,7 +25,8 @@ const messages = defineMessages({
 
 const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentUserRole } = useAuth()
+  const { enabledModules } = useApp()
+  const { currentUserRole, permissions } = useAuth()
   const [startedAt, setStartedAt] = useState<Date | null>(null)
   const [endedAt, setEndedAt] = useState<Date | null>(null)
   const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
@@ -48,6 +51,13 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
       isFinished: true,
     },
   ]
+
+  if (
+    !enabledModules.appointment ||
+    (!permissions.APPOINTMENT_PERIOD_ADMIN && !permissions.APPOINTMENT_PERIOD_NORMAL)
+  ) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

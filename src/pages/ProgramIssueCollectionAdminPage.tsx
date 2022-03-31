@@ -13,12 +13,17 @@ import { EditableProgramSelector, OwnedProgramSelector } from '../components/pro
 import hasura from '../hasura'
 import { commonMessages, errorMessages, programMessages } from '../helpers/translation'
 import { IssueProps } from '../types/general'
+import ForbiddenPage from './ForbiddenPage'
 
 const ProgramIssueCollectionAdminPage = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const [selectedProgramId, setSelectedProgramId] = useState<string>('all')
   const [selectedStatus, setSelectedStatus] = useState<string>('unsolved')
+
+  if (!permissions.PROGRAM_ISSUE_ADMIN && !permissions.PROGRAM_ISSUE_NORMAL) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
@@ -36,13 +41,13 @@ const ProgramIssueCollectionAdminPage = () => {
           </Select>
         </div>
         <div className="col-12 col-sm-9 pl-md-0">
-          {currentMemberId && currentUserRole === 'app-owner' && (
+          {currentMemberId && permissions.PROGRAM_ISSUE_ADMIN && (
             <OwnedProgramSelector
               value={selectedProgramId}
               onChange={key => setSelectedProgramId(Array.isArray(key) ? key[0] : key)}
             />
           )}
-          {currentMemberId && currentUserRole === 'content-creator' && (
+          {currentMemberId && permissions.PROGRAM_ISSUE_NORMAL && (
             <EditableProgramSelector
               value={selectedProgramId}
               memberId={currentMemberId}
@@ -56,7 +61,7 @@ const ProgramIssueCollectionAdminPage = () => {
           selectedProgramId={selectedProgramId}
           selectedStatus={selectedStatus}
           currentMemberId={currentMemberId}
-          currentUserRole={currentUserRole}
+          permissions={permissions}
         />
       )}
     </AdminLayout>
@@ -67,8 +72,8 @@ const AllProgramIssueCollectionBlock: React.FC<{
   selectedProgramId: string
   selectedStatus: string
   currentMemberId: string
-  currentUserRole: string
-}> = ({ selectedProgramId, selectedStatus, currentMemberId, currentUserRole }) => {
+  permissions: { [key: string]: boolean }
+}> = ({ selectedProgramId, selectedStatus, currentMemberId, permissions }) => {
   const { formatMessage } = useIntl()
 
   let unsolved: boolean | undefined
@@ -82,7 +87,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
   }
 
   const { loading, error, issues, refetch } = useGetCreatorProgramIssue(
-    currentUserRole === 'content-creator' ? currentMemberId : null,
+    permissions.PROGRAM_ISSUE_ADMIN ? null : permissions.PROGRAM_ISSUE_NORMAL ? currentMemberId : '',
     selectedProgramId,
     unsolved,
   )

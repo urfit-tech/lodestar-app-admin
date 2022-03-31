@@ -4,6 +4,7 @@ import { Button, DatePicker, Form, Result, Slider, Statistic, Steps } from 'antd
 import { ResultProps } from 'antd/lib/result'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -14,6 +15,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import hasura from '../hasura'
 import { notEmpty } from '../helpers'
 import { salesMessages } from '../helpers/translation'
+import ForbiddenPage from './ForbiddenPage'
 
 type Filter = {
   categoryIds: string[]
@@ -30,6 +32,7 @@ type AssignResult = {
 const SalesLeadDeliveryPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
+  const { permissions } = useAuth()
   const [currentStep, setCurrentStep] = useState(0)
   const [assignedResult, setAssignedResult] = useState<AssignResult>()
   const [filter, setFilter] = useState<Filter>({
@@ -41,6 +44,10 @@ const SalesLeadDeliveryPage: React.VFC = () => {
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
   )
+
+  if (!permissions.SALES_LEAD_DELIVERY_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

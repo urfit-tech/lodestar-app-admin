@@ -20,6 +20,7 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages, programMessages } from '../helpers/translation'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../types/program'
+import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
 
 type ProgramSortProps = {
@@ -44,12 +45,16 @@ const StyledButton = styled(Button)`
 const ProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const { loading, id: appId, enabledModules } = useApp()
   const [searchText, setSearchText] = useState('')
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
 
   const [insertProgram] = useMutation<hasura.INSERT_PROGRAM, hasura.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
+
+  if (!permissions.PROGRAM_ADMIN && !permissions.PROGRAM_NORMAL) {
+    return <ForbiddenPage />
+  }
 
   if (!currentMemberId || loading) {
     return <LoadingPage />
@@ -180,7 +185,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                 condition={tabContent.condition}
                 orderBy={tabContent?.orderBy}
                 withSortingButton={tabContent.withSortingButton}
-                memberId={currentUserRole === 'content-creator' ? currentMemberId : undefined}
+                memberId={permissions.PROGRAM_ADMIN ? undefined : permissions.PROGRAM_NORMAL ? currentMemberId : ''}
                 onReady={count =>
                   count !== counts[tabContent.key] &&
                   setCounts({

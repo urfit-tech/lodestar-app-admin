@@ -1421,6 +1421,9 @@ export const permissionGroupsMessages = defineMessages({
   project: { id: 'permission.label.project', defaultMessage: '專案管理' },
   contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
   mediaLibrary: { id: 'permission.label.mediaLibrary', defaultMessage: '媒體庫' },
+  analysis: { id: 'permission.label.analysis', defaultMessage: '數據分析' },
+  salesLead: { id: 'permission.label.salesLead', defaultMessage: '名單派發' },
+  salesManagement: { id: 'permission.label.salesManagement', defaultMessage: '業務管理' },
 })
 
 export const permissionGroupsAdminMessages = {
@@ -1577,7 +1580,8 @@ export const permissionMessages = defineMessages({
   PRACTICE_ADMIN: { id: 'permission.PRACTICE_ADMIN', defaultMessage: '所有作業功能' },
 
   // contract
-  CONTRACT_VALUE_VIEW: { id: 'permission.CONTRACT_VALUE_VIEW', defaultMessage: '檢視合約' },
+  CONTRACT_VALUE_VIEW_ADMIN: { id: 'permission.CONTRACT_VALUE_VIEW_ADMIN', defaultMessage: '檢視所有的合約' },
+  CONTRACT_VALUE_VIEW_NORMAL: { id: 'permission.CONTRACT_VALUE_VIEW_NORMAL', defaultMessage: '檢視自己建立的合約' },
   CONTRACT_APPROVED_AT_EDIT: { id: 'permission.CONTRACT_APPROVED_AT_EDIT', defaultMessage: '編輯審核通過日期' },
   CONTRACT_CANCELED_AT_EDIT: { id: 'permission.CONTRACT_CANCELED_AT_EDIT', defaultMessage: '編輯取消日期' },
   CONTRACT_REFUND_AT_EDIT: { id: 'permission.CONTRACT_REFUND_AT_EDIT', defaultMessage: '編輯提出退費日期' },

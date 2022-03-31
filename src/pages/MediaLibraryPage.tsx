@@ -20,6 +20,7 @@ import {
 } from '../components/library/VideoLibraryItem'
 import { commonMessages } from '../helpers/translation'
 import { useAttachments } from '../hooks/data'
+import ForbiddenPage from './ForbiddenPage'
 
 const MediaLibrary: React.FC = () => {
   const { settings } = useApp()
@@ -28,7 +29,7 @@ const MediaLibrary: React.FC = () => {
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
   const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
-  const { authToken } = useAuth()
+  const { authToken, permissions } = useAuth()
   const {
     totalDuration,
     totalSize,
@@ -153,6 +154,10 @@ const MediaLibrary: React.FC = () => {
       render: text => moment(text).format('MM/DD HH:mm'),
     },
   ]
+
+  if (!permissions.MEDIA_LIBRARY_ADMIN) {
+    return <ForbiddenPage />
+  }
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">

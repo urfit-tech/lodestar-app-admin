@@ -10,9 +10,29 @@ import ProjectCollectionBlock from './ProjectCollectionBlock'
 
 const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ projectType }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
   const { id: appId } = useApp()
+  const adminPermissionOfProjectType =
+    projectType === 'funding'
+      ? 'PROJECT_FUNDING_ADMIN'
+      : projectType === 'pre-order'
+      ? 'PROJECT_PRE_ORDER_ADMIN'
+      : 'null'
+  const permissionOfProjectType =
+    projectType === 'funding'
+      ? 'PROJECT_FUNDING_NORMAL'
+      : projectType === 'pre-order'
+      ? 'PROJECT_PRE_ORDER_NORMAL'
+      : 'null'
+
+  const creatorId = {
+    _eq: permissions[adminPermissionOfProjectType]
+      ? undefined
+      : permissions[permissionOfProjectType]
+      ? currentMemberId
+      : '',
+  }
 
   const tabContents: {
     key: string
@@ -28,7 +48,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         type: { _eq: projectType },
         published_at: { _is_null: false },
         _or: [{ expired_at: { _gt: 'now()' } }, { expired_at: { _is_null: true } }],
-        creator_id: { _eq: currentUserRole !== 'app-owner' ? currentMemberId : null },
+        creator_id: creatorId,
       },
       orderBy: [{ position: 'asc' as hasura.order_by }],
       withSortingButton: true,
@@ -39,7 +59,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
       condition: {
         type: { _eq: projectType },
         published_at: { _is_null: true },
-        creator_id: { _eq: currentUserRole !== 'app-owner' ? currentMemberId : null },
+        creator_id: creatorId,
       },
     },
     {
@@ -49,7 +69,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         type: { _eq: projectType },
         published_at: { _is_null: false },
         expired_at: { _lt: 'now()' },
-        creator_id: { _eq: currentUserRole !== 'app-owner' ? currentMemberId : null },
+        creator_id: creatorId,
       },
     },
   ]

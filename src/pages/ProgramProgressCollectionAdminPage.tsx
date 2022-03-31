@@ -17,8 +17,8 @@ import { OwnedProgramSelector } from '../components/program/ProgramSelector'
 import hasura from '../hasura'
 import { downloadCSV, toCSV } from '../helpers'
 import { commonMessages } from '../helpers/translation'
+import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
-import NotFoundPage from './NotFoundPage'
 import pageMessages from './translation'
 const messages = defineMessages({
   learningDuration: { id: 'common.label.learningDuration', defaultMessage: '學習時數' },
@@ -38,7 +38,7 @@ type ProgramFilter =
 const ProgramProgressCollectionAdminPage: React.FC = () => {
   const [exporting, setExporting] = useState(false)
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const apolloClient = useApolloClient()
   const { enabledModules, loading } = useApp()
   const [programFilter, setProgramFilter] = useState<ProgramFilter>({ type: 'all' })
@@ -162,8 +162,8 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
     return <LoadingPage />
   }
 
-  if (!enabledModules.learning_statistics) {
-    return <NotFoundPage />
+  if (!enabledModules.learning_statistics && !permissions.PROGRAM_PROGRESS_READ) {
+    return <ForbiddenPage />
   }
 
   return (

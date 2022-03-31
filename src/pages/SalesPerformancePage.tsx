@@ -16,6 +16,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import hasura from '../hasura'
 import { notEmpty } from '../helpers'
 import { salesMessages } from '../helpers/translation'
+import ForbiddenPage from './ForbiddenPage'
 
 type MemberContract = {
   id: string
@@ -54,6 +55,7 @@ const SalesPerformancePage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
   const { currentMemberId } = useAuth()
+  const { enabledModules } = useApp()
 
   useEffect(() => {
     currentMemberId && setActiveManagerId(currentMemberId)
@@ -129,6 +131,10 @@ const SalesPerformancePage: React.VFC = () => {
   const agreedPerformance = sum(filteredMemberContracts.filter(mc => mc.agreedAt).map(mc => mc.performance))
   const approvedPerformance = sum(filteredMemberContracts.filter(mc => mc.approvedAt).map(mc => mc.performance))
   const canceledPerformance = sum(filteredMemberContracts.filter(mc => mc.canceledAt).map(mc => mc.performance))
+
+  if (!enabledModules.sales) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

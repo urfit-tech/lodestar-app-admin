@@ -1,12 +1,12 @@
 import { Checkbox, Radio, Tag, TreeSelect } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { ProductType } from 'lodestar-app-element/src/types/product'
 import { keys } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import { useAllBriefProductCollection } from '../../hooks/data'
-import { ProductType } from '../../types/general'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 
 const StyledLabel = styled.div`

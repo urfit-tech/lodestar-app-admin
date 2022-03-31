@@ -1,6 +1,7 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Tabs } from 'antd'
 import gql from 'graphql-tag'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
@@ -8,6 +9,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import { commonMessages } from '../../helpers/translation'
 import { useAppPageCollection } from '../../hooks/appPage'
 import { PageIcon } from '../../images/icon'
+import ForbiddenPage from '../ForbiddenPage'
 import CraftPageCollectionTable from './CraftPageCollectionTable'
 import CraftPageCreationModal from './CraftPageCreationModal'
 
@@ -15,6 +17,7 @@ const CraftPageCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { loadingAppPages, appPages, refetchAppPages } = useAppPageCollection()
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const { permissions } = useAuth()
 
   const tabContents = [
     {
@@ -46,6 +49,10 @@ const CraftPageCollectionPage: React.VFC = () => {
         })),
     },
   ]
+
+  if (!permissions.CRAFT_PAGE_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

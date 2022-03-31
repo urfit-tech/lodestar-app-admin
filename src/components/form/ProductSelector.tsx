@@ -2,11 +2,11 @@ import { useQuery } from '@apollo/react-hooks'
 import { Spin, Tag, TreeSelect } from 'antd'
 import { DataNode } from 'antd/lib/tree'
 import gql from 'graphql-tag'
+import { ProductType } from 'lodestar-app-element/src/types/product'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { ProductType } from '../../types/general'
 
 const productTypeLabel = (productType: string) => {
   switch (productType) {
