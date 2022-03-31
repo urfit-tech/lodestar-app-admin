@@ -11588,7 +11588,7 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-admin@urfit-tech/lodestar-app-admin.git#release:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/7e9ad35ffe4d5a7d951fd5ec27ee4566b7d048cc"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/21e642196abec2f23cbbee6b66a578f6e9634f36"
   dependencies:
     "@ant-design/charts" "1.2.14"
     "@ant-design/compatible" "^1.0.8"
@@ -11652,7 +11652,7 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#release:
     less-loader "^7.1.0"
     lint-staged "^10.5.4"
     lodash "^4.17.21"
-    lodestar-app-element urfit-tech/lodestar-app-element#master
+    lodestar-app-element urfit-tech/lodestar-app-element#v1.5.8
     md5 "^2.3.0"
     moment "^2.29.1"
     moment-range "^4.0.2"
@@ -11695,9 +11695,9 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#release:
     uuid "8.3.2"
     wavesurfer.js "^4.1.1"
 
-lodestar-app-element@urfit-tech/lodestar-app-element#master:
+lodestar-app-element@urfit-tech/lodestar-app-element#v1.5.8:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/4810222de861ec560616904f0826a8b6960453a5"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/9b535a43606e19d91d1d4497188535208cccfc21"
   dependencies:
     "@apollo/react-hooks" "3.1.5"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
