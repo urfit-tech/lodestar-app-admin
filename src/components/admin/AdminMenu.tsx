@@ -371,12 +371,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(adminMessages.AdminMenu.salesManagement),
       subMenuItems: [
         {
-          permissionIsAllowed: !!enabledModules.sales,
+          permissionIsAllowed: !!enabledModules.sales && permissions.SALES_PERFORMANCE_ADMIN,
           key: 'sales_performance',
           name: formatMessage(adminMessages.AdminMenu.salesPerformance),
         },
         {
-          permissionIsAllowed: !!enabledModules.sales,
+          permissionIsAllowed: !!enabledModules.sales && permissions.SALES_LEAD_ADMIN,
           key: 'sales_lead',
           name: formatMessage(adminMessages.AdminMenu.salesLead),
         },
