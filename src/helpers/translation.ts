@@ -1422,6 +1422,7 @@ export const permissionGroupsMessages = defineMessages({
   contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
   mediaLibrary: { id: 'permission.label.mediaLibrary', defaultMessage: '媒體庫' },
   analysis: { id: 'permission.label.analysis', defaultMessage: '數據分析' },
+  salesLead: { id: 'permission.label.salesLead', defaultMessage: '名單派發' },
 })
 
 export const permissionGroupsAdminMessages = {

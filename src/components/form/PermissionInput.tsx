@@ -25,7 +25,7 @@ const PermissionInput: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ fixOptions = [], value, onChange }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { loadingPermissions, permissions: allPermissions } = usePermissionCollection()
 
   if (loadingPermissions) {
@@ -54,6 +54,7 @@ const PermissionInput: React.FC<{
     contract: !!enabledModules.contract,
     mediaLibrary: true,
     analysis: !!enabledModules.analysis,
+    salesLead: settings['custom.permission_group'] === '1',
   }
 
   return (
