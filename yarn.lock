@@ -2194,7 +2194,7 @@
   dependencies:
     "@craftjs/utils" "^0.1.0-beta.20"
 
-"@craftjs/utils@^0.1.0-beta.20":
+"@craftjs/utils@0.1.0-beta.20", "@craftjs/utils@^0.1.0-beta.20":
   version "0.1.0-beta.20"
   resolved "https://registry.yarnpkg.com/@craftjs/utils/-/utils-0.1.0-beta.20.tgz#2ba535b043e45368dc60bcf06614dab5ba2d0899"
   integrity sha512-KevLljnpEvHxpB2nxRZyQG2i4GDivIkY58depi+ynQP2ALonNuxEGVO2QsuDJ+p1z4eOtv0Xi/D3o6Qr84eAzQ==
@@ -11599,7 +11599,7 @@ lodash.xorby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-lodestar-app-element@urfit-tech/lodestar-app-element#v1.5.7:
+lodestar-app-element@urfit-tech/lodestar-app-element#v1.5.8:
   version "0.1.0"
   resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/9b535a43606e19d91d1d4497188535208cccfc21"
   dependencies:
