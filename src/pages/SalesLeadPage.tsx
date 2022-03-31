@@ -29,7 +29,7 @@ const SalesLeadPage: React.VFC = () => {
   const [saleId, setSaleId] = useState<string | undefined>()
   useMemberContractNotification()
 
-  if (!enabledModules.sales) {
+  if (!enabledModules.sales || !permissions.SALES_LEAD_ADMIN) {
     return <ForbiddenPage />
   }
 
@@ -40,7 +40,7 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {permissions.SALES_LEAD_ADMIN && currentMemberId ? (
+        {permissions.SALES_LEAD_SELECTOR_ADMIN && currentMemberId ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">承辦人：</span>
             <SalesMemberInput value={saleId ? saleId : currentMemberId} onChange={value => setSaleId(value)} />

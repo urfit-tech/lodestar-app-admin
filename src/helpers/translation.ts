@@ -1423,6 +1423,7 @@ export const permissionGroupsMessages = defineMessages({
   mediaLibrary: { id: 'permission.label.mediaLibrary', defaultMessage: '媒體庫' },
   analysis: { id: 'permission.label.analysis', defaultMessage: '數據分析' },
   salesLead: { id: 'permission.label.salesLead', defaultMessage: '名單派發' },
+  salesManagement: { id: 'permission.label.salesManagement', defaultMessage: '業務管理' },
 })
 
 export const permissionGroupsAdminMessages = {
