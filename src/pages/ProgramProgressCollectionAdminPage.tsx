@@ -20,6 +20,7 @@ import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
 import pageMessages from './translation'
+
 const messages = defineMessages({
   learningDuration: { id: 'common.label.learningDuration', defaultMessage: '學習時數' },
   learningProgress: { id: 'common.label.learningProgress', defaultMessage: '學習進度' },
@@ -42,7 +43,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
   const apolloClient = useApolloClient()
   const { enabledModules, loading } = useApp()
   const [programFilter, setProgramFilter] = useState<ProgramFilter>({ type: 'all' })
-  const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'all' })
+  const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'selectedMember', memberIds: [] })
 
   const handleExport = () => {
     setExporting(true)
@@ -76,20 +77,20 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
       .then(({ data }) => {
         const rows: string[][] = [
           [
-            'Categories',
-            'Program title',
-            'Program content section title',
-            'Program content title',
-            'Program content type',
-            'Program content duration',
-            'Member name',
-            'Member email',
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.categories),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programTitle),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentSectionTitle),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentTitle),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentType),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentDuration),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.memberName),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.memberEmail),
             ...data.property.map(p => p.name),
-            'Watched duration',
-            'Watched percentage',
-            'Total percentage',
-            'Exercise scores',
-            '#Practices',
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.watchedDuration),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.watchedPercentage),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.totalPercentage),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseScores),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.practices),
           ],
         ]
         data.program.forEach(p => {
@@ -136,7 +137,8 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                   programContentSectionTitle,
                   programContentTitle,
                   programContentType,
-                  programContentDuration,
+                  // FIXME remove any type in the future
+                  Math.ceil(Number(programContentDuration) / 60).toString() as any,
                   memberName,
                   memberEmail,
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
@@ -249,9 +251,6 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                       : setMemberFilter({ type: v, propertyId: '', valueLike: '' })
                   }
                 >
-                  <Select.Option value="all">
-                    {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.all)}
-                  </Select.Option>
                   <Select.Option value="selectedMember">
                     {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.selectedMember)}
                   </Select.Option>
@@ -339,14 +338,14 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
     }
     program(where: $programCondition) {
       title
-      program_categories {
+      program_categories(order_by: { position: asc }) {
         category {
           name
         }
       }
-      program_content_sections {
+      program_content_sections(order_by: { position: asc }) {
         title
-        program_contents {
+        program_contents(order_by: { position: asc }) {
           title
           duration
           practices {
