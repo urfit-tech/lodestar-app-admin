@@ -70,8 +70,15 @@ const pageMessages = {
       id: 'page.ProgramProgressCollectionAdminPage.watchedPercentage',
       defaultMessage: '學習進度',
     },
+    firstWatchedAt: { id: 'page.ProgramProgressCollectionAdminPage.firstWatchedAt', defaultMessage: '初次觀看時間' },
+    lastWatchedAt: { id: 'page.ProgramProgressCollectionAdminPage.lastWatchedAt', defaultMessage: '最後觀看時間' },
     totalPercentage: { id: 'page.ProgramProgressCollectionAdminPage.totalPercentage', defaultMessage: '總課程完成率' },
+    exerciseStatus: { id: 'pageProgramProgressCollectionAdminPage.exerciseStatusF', defaultMessage: '測驗狀態' },
     exerciseScores: { id: 'page.ProgramProgressCollectionAdminPage.exerciseScores', defaultMessage: '測驗分數' },
+    exercisePassedAt: {
+      id: 'page.ProgramProgressCollectionAdminPage.exercisePassedAt',
+      defaultMessage: '測驗通過時間',
+    },
     practices: { id: 'page.ProgramProgressCollectionAdminPage.practices', defaultMessage: '作業' },
   }),
   ProgramAdminPage: defineMessages({

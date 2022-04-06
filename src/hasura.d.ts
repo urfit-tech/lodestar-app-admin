@@ -3686,7 +3686,7 @@ export interface UPDATE_PRODUCT_COIN_BACK_update_product_returning {
   id: string;
   target: string;
   /**
-   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan / VoucherPlan
    */
   type: string;
   coin_back: any;
@@ -10832,7 +10832,7 @@ export interface GET_MERCHANDISE_SPEC_PRODUCTS_product {
    */
   id: string;
   /**
-   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan / VoucherPlan
    */
   type: string;
   target: string;
@@ -11161,7 +11161,7 @@ export interface GET_ORDERS_order_log_order_products_product {
    */
   id: string;
   /**
-   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan / VoucherPlan
    */
   type: string;
 }
@@ -15523,12 +15523,15 @@ export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_s
   id: any;
   member_id: string;
   answer: any | null;
+  updated_at: any;
 }
 
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_progress {
   __typename: "program_content_progress";
   member_id: string;
   progress: any;
+  created_at: any | null;
+  updated_at: any | null;
 }
 
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_body {
@@ -15543,6 +15546,7 @@ export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_s
    * sec
    */
   duration: any | null;
+  metadata: any | null;
   /**
    * An array relationship
    */
@@ -31665,7 +31669,10 @@ export interface program_content_progress_enrollment_bool_exp {
   last_progress?: numeric_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
+  program_content_section?: program_content_section_bool_exp | null;
   program_content_section_id?: uuid_comparison_exp | null;
   program_id?: uuid_comparison_exp | null;
   progress?: numeric_comparison_exp | null;

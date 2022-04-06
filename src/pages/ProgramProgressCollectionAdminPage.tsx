@@ -88,8 +88,12 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
             ...data.property.map(p => p.name),
             formatMessage(pageMessages.ProgramProgressCollectionAdminPage.watchedDuration),
             formatMessage(pageMessages.ProgramProgressCollectionAdminPage.watchedPercentage),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.firstWatchedAt),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.lastWatchedAt),
             formatMessage(pageMessages.ProgramProgressCollectionAdminPage.totalPercentage),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseStatus),
             formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseScores),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassedAt),
             formatMessage(pageMessages.ProgramProgressCollectionAdminPage.practices),
           ],
         ]
@@ -117,9 +121,13 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                     ),
                   ),
                 )
-                const watchedProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)?.progress || 0
+                const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
+                const watchedProgress = memberProgramContentProgress?.progress || 0
+                const firstWatchedAt = memberProgramContentProgress?.created_at || null
+                const lastWatchedAt = memberProgramContentProgress?.updated_at || null
                 const watchedDuration = programContentDuration * watchedProgress
-                const exercisePoint = pc.exercises
+                const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
+                const exercisePoint = exercises
                   .map(ex => {
                     const totalQuestionPoints = sum(
                       ex.answer.map((ans: { questionPoints: number }) => ans.questionPoints || 0),
@@ -129,8 +137,20 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                     )
                     return `${totalGainedPoints}/${totalQuestionPoints}`
                   })
-                  .join()
-
+                  .join(', ')
+                const hightestScore = exercises
+                  .map(ex => ({
+                    totalGainedPoints: sum(ex.answer.map((ans: { gainedPoints: number }) => ans.gainedPoints || 0)),
+                    updatedAt: ex.updated_at,
+                  }))
+                  .reduce(
+                    (accu, curr) => {
+                      return curr.totalGainedPoints > accu.totalGainedPoints ? curr : accu
+                    },
+                    { totalGainedPoints: 0, updatedAt: null },
+                  )
+                const exerciseStatus = hightestScore.totalGainedPoints > pc.metadata?.passingScore ? 'PASSED' : 'FAILED'
+                const exercisePassedAt = exerciseStatus === 'PASSED' ? hightestScore.updatedAt : null
                 rows.push([
                   categories,
                   programTitle,
@@ -144,15 +164,20 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
                   watchedDuration,
                   (watchedProgress * 100).toFixed(0) + '%',
-                  ((memberWatchedDuration / programDuration) * 100).toFixed(0) + '%',
+                  firstWatchedAt,
+                  lastWatchedAt,
+                  ((memberWatchedDuration / (programDuration || 1)) * 100).toFixed(0) + '%',
+                  exerciseStatus,
                   exercisePoint,
+                  exercisePassedAt,
                   pc.practices.filter(p => p.member_id === m.id).length,
                 ])
               })
             })
           })
         })
-        downloadCSV('learning_' + moment().format('MMDDSSS'), toCSV(rows))
+        const memberBaseRows = rows.sort((a, b) => (a[7] > b[7] ? 1 : -1))
+        downloadCSV('learning_' + moment().format('MMDDSSS'), toCSV(memberBaseRows))
       })
       .catch(error => {
         message.error(error)
@@ -348,6 +373,7 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
         program_contents(order_by: { position: asc }) {
           title
           duration
+          metadata
           practices {
             member_id
           }
@@ -355,10 +381,13 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
             id
             member_id
             answer
+            updated_at
           }
           program_content_progress {
             member_id
             progress
+            created_at
+            updated_at
           }
           program_content_body {
             type
