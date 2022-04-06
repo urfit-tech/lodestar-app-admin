@@ -117,9 +117,9 @@ const MemberCoinAdminBlock: React.VFC<{
     memberId,
   })
   const { loadingCoinFutureLogs, errorCoinFutureLogs, coinFutureLogs, refetchCoinFutureLogs, loadMoreCoinFutureLogs } =
-    useFutureCoinLogCollection({ ...fieldFilter })
+    useFutureCoinLogCollection({ ...fieldFilter, memberId })
   const { loadingOrderLogs, errorOrderLogs, orderLogs, refetchOrderLogs, loadMoreOrderLogs } =
-    useOrderLogWithCoinsCollection({ ...fieldFilter })
+    useOrderLogWithCoinsCollection({ ...fieldFilter, memberId })
 
   const [loading, setLoading] = useState(false)
 
@@ -587,12 +587,16 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
   }
 }
 
-const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }) => {
+const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
   const condition: hasura.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
+    member_id: filter?.memberId
+      ? {
+          _eq: filter.memberId,
+        }
+      : undefined,
     member: filter?.nameAndEmail
       ? {
-          name: { _like: `%${filter.nameAndEmail}%` },
-          email: { _like: `%${filter.nameAndEmail}%` },
+          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
     title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
@@ -681,13 +685,22 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
   }
 }
 
-const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndEmail?: string; title?: string }) => {
+const useOrderLogWithCoinsCollection = (filter?: {
+  orderLogId?: string
+  nameAndEmail?: string
+  title?: string
+  memberId?: string
+}) => {
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
     id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
+    member_id: filter?.memberId
+      ? {
+          _eq: filter.memberId,
+        }
+      : undefined,
     member: filter?.nameAndEmail
       ? {
-          name: { _like: `%${filter.nameAndEmail}%` },
-          email: { _like: `%${filter.nameAndEmail}%` },
+          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
     order_discounts: filter?.title
