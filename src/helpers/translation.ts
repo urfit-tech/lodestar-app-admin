@@ -1567,7 +1567,33 @@ export const permissionMessages = defineMessages({
   MEMBER_EMAIL_EDIT: { id: 'permission.MEMBER_EMAIL_EDIT', defaultMessage: '編輯信箱' },
   MEMBER_USERNAME_EDIT: { id: 'permission.MEMBER_USERNAME_EDIT', defaultMessage: '編輯帳號' },
   MEMBER_CREATE: { id: 'permission.MEMBER_CREATE', defaultMessage: '添加會員' },
-  CHECK_MEMBER_PROGRAM_INFO: { id: 'permission.CHECK_MEMBER_PROGRAM_INFO', defaultMessage: '查看會員課程資訊' },
+  CHECK_MEMBER_PAGE_PROGRAM_INFO: {
+    id: 'permission.CHECK_MEMBER_PAGE_PROGRAM_INFO',
+    defaultMessage: '查看會員主頁課程資訊',
+  },
+  CHECK_MEMBER_PAGE_PROJECT_INFO: {
+    id: 'permission.CHECK_MEMBER_PAGE_PROJECT_INFO',
+    defaultMessage: '查看會員主頁專案資訊',
+  },
+  CHECK_MEMBER_PAGE_ACTIVITY_INFO: {
+    id: 'permission.CHECK_MEMBER_PAGE_ACTIVITY_INFO',
+    defaultMessage: '查看會員主頁活動資訊',
+  },
+  CHECK_MEMBER_PAGE_PODCAST_INFO: {
+    id: 'permission.CHECK_MEMBER_PAGE_PODCAST_INFO',
+    defaultMessage: '查看會員主頁廣播資訊',
+  },
+  CHECK_MEMBER_PAGE_APPOINTMENT_INFO: {
+    id: 'permission.CHECK_MEMBER_PAGE_APPOINTMENT_INFO',
+    defaultMessage: '查看會員主頁預約資訊',
+  },
+  CHECK_MEMBER_PAGE_MERCHANDISE_INFO: {
+    id: 'permission.CHECK_MEMBER_PAGE_MERCHANDISE_INFO',
+    defaultMessage: '查看會員主頁商品紀錄',
+  },
+  CHECK_MEMBER_ORDER: { id: 'permission.CHECK_MEMBER_ORDER', defaultMessage: '查看會員訂單記錄' },
+  CHECK_MEMBER_COIN: { id: 'permission.CHECK_MEMBER_COIN', defaultMessage: '查看會員代幣紀錄' },
+  CHECK_MEMBER_HISTORY: { id: 'permission.CHECK_MEMBER_HISTORY', defaultMessage: '查看會員歷程紀錄' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
