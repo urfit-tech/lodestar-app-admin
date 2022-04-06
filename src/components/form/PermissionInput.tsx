@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { Checkbox, Divider, Spin } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { groupBy, uniq } from 'ramda'
+import { groupBy, prop, sortBy, uniq } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -83,7 +83,7 @@ const PermissionInput: React.FC<{
                   ? formatMessage(permissionGroupsMessages[groupId as keyof typeof permissionGroupsMessages])
                   : groupId
               }
-              options={permissionGroups[groupId].map(permission => permission.id)}
+              options={sortBy(prop('id'))(permissionGroups[groupId]).map(permission => permission.id)}
               fixedOptions={fixOptions}
               value={value}
               onChange={onChange}
