@@ -130,7 +130,7 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.member_admin.path)
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentUserRole, permissions } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -185,9 +185,16 @@ const MemberAdminLayout: React.FC<{
 
         <AdminHeaderTitle>{member?.name || member?.username || member.id}</AdminHeaderTitle>
 
-        <a href={`//${host}/members/${member.id}`} target="_blank" rel="noopener noreferrer">
-          <Button>{formatMessage(memberMessages.ui.memberPage)}</Button>
-        </a>
+        {(permissions.CHECK_MEMBER_PAGE_PROGRAM_INFO ||
+          permissions.CHECK_MEMBER_PAGE_PROJECT_INFO ||
+          permissions.CHECK_MEMBER_PAGE_ACTIVITY_INFO ||
+          permissions.CHECK_MEMBER_PAGE_PODCAST_INFO ||
+          permissions.CHECK_MEMBER_PAGE_APPOINTMENT_INFO ||
+          permissions.CHECK_MEMBER_PAGE_MERCHANDISE_INFO) && (
+          <a href={`//${host}/members/${member.id}`} target="_blank" rel="noopener noreferrer">
+            <Button>{formatMessage(memberMessages.ui.memberPage)}</Button>
+          </a>
+        )}
       </AdminHeader>
 
       <Layout>
