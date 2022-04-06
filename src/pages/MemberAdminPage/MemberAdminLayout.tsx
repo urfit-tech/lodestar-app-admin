@@ -82,7 +82,7 @@ const StyledSingleUploader = styled(SingleUploader)`
     }
   }
 `
-const StyledImageHoverMask = styled.div<{ loading: boolean }>`
+const StyledImageHoverMask = styled.div<{ status?: string }>`
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -96,7 +96,7 @@ const StyledImageHoverMask = styled.div<{ loading: boolean }>`
     opacity: 0;
   }
   ${props =>
-    props.loading &&
+    props.status === 'loading' &&
     css`
       & ${StyledSingleUploader} {
         opacity: 1;
@@ -201,7 +201,7 @@ const MemberAdminLayout: React.FC<{
                 shape="circle"
                 className="mx-auto"
               />
-              <StyledImageHoverMask loading={loading}>
+              <StyledImageHoverMask status={loading ? 'loading' : undefined}>
                 <StyledSingleUploader
                   accept="image/*"
                   listType="picture-card"
