@@ -73,7 +73,9 @@ const pageMessages = {
     firstWatchedAt: { id: 'page.ProgramProgressCollectionAdminPage.firstWatchedAt', defaultMessage: '初次觀看時間' },
     lastWatchedAt: { id: 'page.ProgramProgressCollectionAdminPage.lastWatchedAt', defaultMessage: '最後觀看時間' },
     totalPercentage: { id: 'page.ProgramProgressCollectionAdminPage.totalPercentage', defaultMessage: '總課程完成率' },
-    exerciseStatus: { id: 'pageProgramProgressCollectionAdminPage.exerciseStatusF', defaultMessage: '測驗狀態' },
+    exerciseStatus: { id: 'pageProgramProgressCollectionAdminPage.exerciseStatus', defaultMessage: '測驗狀態' },
+    exercisePassed: { id: 'pageProgramProgressCollectionAdminPage.exercisePassed', defaultMessage: '通過' },
+    exerciseFailed: { id: 'pageProgramProgressCollectionAdminPage.exerciseFailed', defaultMessage: '未通過' },
     exerciseScores: { id: 'page.ProgramProgressCollectionAdminPage.exerciseScores', defaultMessage: '測驗分數' },
     exercisePassedAt: {
       id: 'page.ProgramProgressCollectionAdminPage.exercisePassedAt',

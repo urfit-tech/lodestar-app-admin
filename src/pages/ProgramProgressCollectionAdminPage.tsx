@@ -117,14 +117,14 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                     pcs.program_contents.flatMap(pc =>
                       pc.program_content_progress
                         .filter(pcp => pcp.member_id === m.id)
-                        .map(pcp => pcp.progress * programContentDuration),
+                        .map(pcp => pcp.progress * pc.duration),
                     ),
                   ),
                 )
                 const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
                 const watchedProgress = memberProgramContentProgress?.progress || 0
-                const firstWatchedAt = memberProgramContentProgress?.created_at || null
-                const lastWatchedAt = memberProgramContentProgress?.updated_at || null
+                const firstWatchedAt = memberProgramContentProgress?.created_at || ''
+                const lastWatchedAt = memberProgramContentProgress?.updated_at || ''
                 const watchedDuration = programContentDuration * watchedProgress
                 const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
                 const exercisePoint = exercises
@@ -149,16 +149,22 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                     },
                     { totalGainedPoints: 0, updatedAt: null },
                   )
-                const exerciseStatus = hightestScore.totalGainedPoints > pc.metadata?.passingScore ? 'PASSED' : 'FAILED'
-                const exercisePassedAt = exerciseStatus === 'PASSED' ? hightestScore.updatedAt : null
+                const exerciseStatus =
+                  hightestScore.totalGainedPoints > pc.metadata?.passingScore
+                    ? formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassed)
+                    : formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseFailed)
+                const exercisePassedAt =
+                  exerciseStatus === formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassed)
+                    ? hightestScore.updatedAt
+                    : ''
+
                 rows.push([
                   categories,
                   programTitle,
                   programContentSectionTitle,
                   programContentTitle,
                   programContentType,
-                  // FIXME remove any type in the future
-                  Math.ceil(Number(programContentDuration) / 60).toString() as any,
+                  Math.ceil(Number(programContentDuration) / 60).toString(),
                   memberName,
                   memberEmail,
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
