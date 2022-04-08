@@ -5,6 +5,7 @@ import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
+import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -734,13 +735,8 @@ const useOrderLogWithCoinsCollection = (filter?: {
           order_discounts(where: { type: { _eq: "Coin" } }, limit: 1) {
             id
             name
-          }
-          order_discounts_aggregate(where: { type: { _eq: "Coin" } }) {
-            aggregate {
-              sum {
-                price
-              }
-            }
+            price
+            options
           }
         }
       }
@@ -765,7 +761,7 @@ const useOrderLogWithCoinsCollection = (filter?: {
             email: orderLog.member.email,
           },
           title: orderLog.order_discounts[0]?.name || '',
-          amount: orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
+          amount: sum(orderLog.order_discounts.map(v => v.price / (v.options?.exchangeRate || 1))),
         }))
 
   const loadMoreOrderLogs = () =>

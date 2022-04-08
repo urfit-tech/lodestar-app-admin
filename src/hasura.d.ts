@@ -1448,21 +1448,8 @@ export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts {
   __typename: "order_discount";
   id: any;
   name: string;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
-  __typename: "order_discount_sum_fields";
-  price: any | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate {
-  __typename: "order_discount_aggregate_fields";
-  sum: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate {
-  __typename: "order_discount_aggregate";
-  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
+  price: any;
+  options: any | null;
 }
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
@@ -1477,10 +1464,6 @@ export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
    * An array relationship
    */
   order_discounts: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts[];
-  /**
-   * An aggregated array relationship
-   */
-  order_discounts_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate;
 }
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION {
