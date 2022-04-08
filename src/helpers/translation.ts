@@ -1644,6 +1644,14 @@ export const permissionMessages = defineMessages({
 
   // analysis
   ANALYSIS_ADMIN: { id: 'permission.ANALYSIS_ADMIN', defaultMessage: '所有數據分析功能' },
+
+  // sales
+  SALES_PERFORMANCE_ADMIN: { id: 'permission.SALES_PERFORMANCE_ADMIN', defaultMessage: '業績總表' },
+
+  // sales_lead
+  SALES_LEAD_ADMIN: { id: 'permission.SALES_LEAD_ADMIN', defaultMessage: '名單撥打' },
+  SALES_LEAD_DELIVERY_ADMIN: { id: 'permission.SALES_LEAD_DELIVERY_ADMIN', defaultMessage: '名單分派功能' },
+  SALES_LEAD_SELECTOR_ADMIN: { id: 'permission.SALES_LEAD_SELECTOR_ADMIN', defaultMessage: '名單撥打選擇器功能' },
 })
 
 export const salesMessages = defineMessages({

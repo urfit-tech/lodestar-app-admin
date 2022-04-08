@@ -365,7 +365,9 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(adminMessages.AdminMenu.noteAdmin),
     },
     {
-      permissionIsAllowed: !!enabledModules.sales,
+      permissionIsAllowed:
+        !!enabledModules.sales &&
+        (permissions.SALES_PERFORMANCE_ADMIN || permissions.SALES_LEAD_ADMIN || permissions.SALES_LEAD_DELIVERY_ADMIN),
       key: 'sales_management',
       icon: () => <PhoneIcon />,
       name: formatMessage(adminMessages.AdminMenu.salesManagement),
