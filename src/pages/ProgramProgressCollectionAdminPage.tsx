@@ -15,7 +15,7 @@ import MemberPropertySelector from '../components/member/MemberPropertySelector'
 import ProgramCategorySelect from '../components/program/ProgramCategorySelect'
 import { OwnedProgramSelector } from '../components/program/ProgramSelector'
 import hasura from '../hasura'
-import { downloadCSV, toCSV } from '../helpers'
+import { downloadCSV, stableSort, toCSV } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
@@ -36,6 +36,7 @@ type ProgramFilter =
   | { type: 'all' }
   | { type: 'selectedProgram'; programIds: string[] }
   | { type: 'selectedCategory'; categoryIds: string[] }
+
 const ProgramProgressCollectionAdminPage: React.FC = () => {
   const [exporting, setExporting] = useState(false)
   const { formatMessage } = useIntl()
@@ -168,7 +169,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                   memberName,
                   memberEmail,
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
-                  watchedDuration,
+                  Math.ceil(Number(watchedDuration) / 60).toString(),
                   (watchedProgress * 100).toFixed(0) + '%',
                   firstWatchedAt,
                   lastWatchedAt,
@@ -182,7 +183,11 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
             })
           })
         })
-        const memberBaseRows = rows.sort((a, b) => (a[7] > b[7] ? 1 : -1))
+        const memberBaseRows = stableSort(rows, (a, b) => {
+          if (a[7] > b[7]) return 1
+          else if (a[7] < b[7]) return -1
+          else return 0
+        })
         downloadCSV('learning_' + moment().format('MMDDSSS'), toCSV(memberBaseRows))
       })
       .catch(error => {
