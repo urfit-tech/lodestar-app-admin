@@ -23,11 +23,14 @@ export const OwnedProgramSelector: React.FC<{ noAll?: boolean } & SelectProps<st
       loading={loadingPrograms}
       style={{ width: '100%' }}
       defaultValue={noAll ? undefined : 'all'}
+      filterOption={(input, option) =>
+        option?.label ? (option.label as string).toLowerCase().indexOf(input.toLowerCase()) >= 0 : true
+      }
       {...selectProps}
     >
       {!noAll && <Select.Option value="all">{formatMessage(programMessages.label.wholeProgram)}</Select.Option>}
       {programs.map(program => (
-        <Select.Option key={program.id} value={program.id}>
+        <Select.Option key={program.id} value={program.id} label={program.title}>
           {program.title}
         </Select.Option>
       ))}
