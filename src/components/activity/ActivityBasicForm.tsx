@@ -13,10 +13,12 @@ import { ActivityAdminProps } from '../../types/activity'
 import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
 import LanguageSelector from '../form/LanguageSelector'
+import TagSelector from '../form/TagSelector'
 
 type FieldProps = {
   title: string
   categoryIds: string[]
+  tags: string[]
   languages?: string[]
   isParticipantsVisible: 'public' | 'private'
 }
@@ -49,6 +51,15 @@ const ActivityBasicForm: React.FC<{
           category_id: categoryId,
           position: index,
         })),
+        tags: values.tags.map((activityTag: string) => ({
+          name: activityTag,
+          type: '',
+        })),
+        activityTags: values.tags.map((activityTag: string, index: number) => ({
+          activity_id: activityAdmin.id,
+          tag_name: activityTag,
+          position: index,
+        })),
         isParticipantsVisible: values.isParticipantsVisible === 'public',
       },
     })
@@ -71,6 +82,7 @@ const ActivityBasicForm: React.FC<{
       initialValues={{
         title: activityAdmin.title,
         categoryIds: activityAdmin.categories.map(category => category.id),
+        tags: activityAdmin.tags,
         languages: activityAdmin.supportLocales.map(supportLocale => supportLocale),
         isParticipantsVisible: activityAdmin.isParticipantsVisible ? 'public' : 'private',
       }}
@@ -92,6 +104,9 @@ const ActivityBasicForm: React.FC<{
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="activity" />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
+        <TagSelector />
       </Form.Item>
       <Form.Item
         label={
@@ -132,6 +147,8 @@ const UPDATE_ACTIVITY_BASIC = gql`
     $isParticipantsVisible: Boolean!
     $activityCategories: [activity_category_insert_input!]!
     $supportLocales: jsonb
+    $tags: [tag_insert_input!]!
+    $activityTags: [activity_tag_insert_input!]!
   ) {
     update_activity(
       where: { id: { _eq: $activityId } }
@@ -145,6 +162,16 @@ const UPDATE_ACTIVITY_BASIC = gql`
     }
 
     insert_activity_category(objects: $activityCategories) {
+      affected_rows
+    }
+
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    delete_activity_tag(where: { activity_id: { _eq: $activityId } }) {
+      affected_rows
+    }
+    insert_activity_tag(objects: $activityTags) {
       affected_rows
     }
   }
