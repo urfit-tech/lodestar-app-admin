@@ -192,7 +192,7 @@ export const useActivityAdmin = (activityId: string) => {
               id: v.category.id,
               name: v.category.name,
             })) || [],
-          tags: data.activity[0]?.activity_tags.map(activityTag => activityTag.tag.name),
+          tags: data.activity[0]?.activity_tags.map(activityTag => activityTag.tag.name) || [],
           tickets:
             data?.activity[0]?.activity_tickets?.map(v => ({
               id: v.id,
