@@ -31,6 +31,30 @@ export interface UPDATE_ACTIVITY_BASIC_insert_activity_category {
   affected_rows: number;
 }
 
+export interface UPDATE_ACTIVITY_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_BASIC_delete_activity_tag {
+  __typename: "activity_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_BASIC_insert_activity_tag {
+  __typename: "activity_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_ACTIVITY_BASIC {
   /**
    * update data of the table: "activity"
@@ -44,6 +68,18 @@ export interface UPDATE_ACTIVITY_BASIC {
    * insert data into the table: "activity_category"
    */
   insert_activity_category: UPDATE_ACTIVITY_BASIC_insert_activity_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_ACTIVITY_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "activity_tag"
+   */
+  delete_activity_tag: UPDATE_ACTIVITY_BASIC_delete_activity_tag | null;
+  /**
+   * insert data into the table: "activity_tag"
+   */
+  insert_activity_tag: UPDATE_ACTIVITY_BASIC_insert_activity_tag | null;
 }
 
 export interface UPDATE_ACTIVITY_BASICVariables {
@@ -52,6 +88,8 @@ export interface UPDATE_ACTIVITY_BASICVariables {
   isParticipantsVisible: boolean;
   activityCategories: activity_category_insert_input[];
   supportLocales?: any | null;
+  tags: tag_insert_input[];
+  activityTags: activity_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -7385,6 +7423,20 @@ export interface GET_ACTIVITY_ADMIN_activity_activity_categories {
   category: GET_ACTIVITY_ADMIN_activity_activity_categories_category;
 }
 
+export interface GET_ACTIVITY_ADMIN_activity_activity_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_activity_tags {
+  __typename: "activity_tag";
+  id: any;
+  /**
+   * An object relationship
+   */
+  tag: GET_ACTIVITY_ADMIN_activity_activity_tags_tag;
+}
+
 export interface GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_session_tickets_activity_session {
   __typename: "activity_session";
   id: any;
@@ -7514,6 +7566,10 @@ export interface GET_ACTIVITY_ADMIN_activity {
    * An array relationship
    */
   activity_categories: GET_ACTIVITY_ADMIN_activity_activity_categories[];
+  /**
+   * An array relationship
+   */
+  activity_tags: GET_ACTIVITY_ADMIN_activity_activity_tags[];
   /**
    * An array relationship
    */

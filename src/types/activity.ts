@@ -50,6 +50,7 @@ export type ActivityTicketSessionProps = {
 
 export type ActivityAdminProps = ActivityProps & {
   categories: CategoryProps[]
+  tags: string[]
   tickets: (ActivityTicketProps & {
     sessions: ActivityTicketSessionProps[]
   })[]
