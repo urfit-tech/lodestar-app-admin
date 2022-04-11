@@ -18,8 +18,8 @@ import { commonMessages, errorMessages, promotionMessages } from '../helpers/tra
 import { ReactComponent as PointIcon } from '../images/icon/point.svg'
 import { ReactComponent as TextIcon } from '../images/icon/text.svg'
 import { MemberBriefProps } from '../types/member'
+import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
-import NotFoundPage from './NotFoundPage'
 
 const messages = defineMessages({
   pointReleaseHistory: { id: 'promotion.label.pointReleaseHistory', defaultMessage: '發送紀錄' },
@@ -100,7 +100,7 @@ const PointHistoryAdminPage: React.FC = () => {
   }
 
   if (!enabledModules.point) {
-    return <NotFoundPage />
+    return <ForbiddenPage />
   }
 
   return (

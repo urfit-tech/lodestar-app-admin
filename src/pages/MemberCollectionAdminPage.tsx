@@ -23,6 +23,7 @@ import { useMemberCollection, useMemberRoleCount, useProperty } from '../hooks/m
 import { usePermissionGroupsDropdownMenu } from '../hooks/permission'
 import { ReactComponent as TableIcon } from '../images/icon/table.svg'
 import { MemberInfoProps, UserRole } from '../types/member'
+import ForbiddenPage from './ForbiddenPage'
 
 const StyledDropdown = styled(Dropdown)`
   width: 100%;
@@ -377,6 +378,10 @@ const MemberCollectionAdminPage: React.FC = () => {
       }),
   ]
 
+  if (!permissions.MEMBER_ADMIN) {
+    return <ForbiddenPage />
+  }
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -417,9 +422,7 @@ const MemberCollectionAdminPage: React.FC = () => {
               {formatMessage(memberMessages.label.field)}
             </StyledButton>
           </Popover>
-          <div className="mr-2">
-            {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
-          </div>
+          <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal onRefetch={refetchMembers} />}</div>
           <div className="mr-2">
             <MemberImportModal onRefetch={refetchMembers} />
           </div>

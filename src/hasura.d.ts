@@ -31,6 +31,30 @@ export interface UPDATE_ACTIVITY_BASIC_insert_activity_category {
   affected_rows: number;
 }
 
+export interface UPDATE_ACTIVITY_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_BASIC_delete_activity_tag {
+  __typename: "activity_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_BASIC_insert_activity_tag {
+  __typename: "activity_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_ACTIVITY_BASIC {
   /**
    * update data of the table: "activity"
@@ -44,6 +68,18 @@ export interface UPDATE_ACTIVITY_BASIC {
    * insert data into the table: "activity_category"
    */
   insert_activity_category: UPDATE_ACTIVITY_BASIC_insert_activity_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_ACTIVITY_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "activity_tag"
+   */
+  delete_activity_tag: UPDATE_ACTIVITY_BASIC_delete_activity_tag | null;
+  /**
+   * insert data into the table: "activity_tag"
+   */
+  insert_activity_tag: UPDATE_ACTIVITY_BASIC_insert_activity_tag | null;
 }
 
 export interface UPDATE_ACTIVITY_BASICVariables {
@@ -52,6 +88,8 @@ export interface UPDATE_ACTIVITY_BASICVariables {
   isParticipantsVisible: boolean;
   activityCategories: activity_category_insert_input[];
   supportLocales?: any | null;
+  tags: tag_insert_input[];
+  activityTags: activity_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -1448,21 +1486,8 @@ export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts {
   __typename: "order_discount";
   id: any;
   name: string;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
-  __typename: "order_discount_sum_fields";
-  price: any | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate {
-  __typename: "order_discount_aggregate_fields";
-  sum: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
-}
-
-export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate {
-  __typename: "order_discount_aggregate";
-  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
+  price: any;
+  options: any | null;
 }
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
@@ -1477,10 +1502,6 @@ export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
    * An array relationship
    */
   order_discounts: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts[];
-  /**
-   * An aggregated array relationship
-   */
-  order_discounts_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate;
 }
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION {
@@ -3686,7 +3707,7 @@ export interface UPDATE_PRODUCT_COIN_BACK_update_product_returning {
   id: string;
   target: string;
   /**
-   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan / VoucherPlan
    */
   type: string;
   coin_back: any;
@@ -7402,6 +7423,20 @@ export interface GET_ACTIVITY_ADMIN_activity_activity_categories {
   category: GET_ACTIVITY_ADMIN_activity_activity_categories_category;
 }
 
+export interface GET_ACTIVITY_ADMIN_activity_activity_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_activity_tags {
+  __typename: "activity_tag";
+  id: any;
+  /**
+   * An object relationship
+   */
+  tag: GET_ACTIVITY_ADMIN_activity_activity_tags_tag;
+}
+
 export interface GET_ACTIVITY_ADMIN_activity_activity_tickets_activity_session_tickets_activity_session {
   __typename: "activity_session";
   id: any;
@@ -7531,6 +7566,10 @@ export interface GET_ACTIVITY_ADMIN_activity {
    * An array relationship
    */
   activity_categories: GET_ACTIVITY_ADMIN_activity_activity_categories[];
+  /**
+   * An array relationship
+   */
+  activity_tags: GET_ACTIVITY_ADMIN_activity_activity_tags[];
   /**
    * An array relationship
    */
@@ -8424,6 +8463,8 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   ended_at: any | null;
   product_quantity_limit: number;
   is_transferable: boolean;
+  sale_amount: number | null;
+  sale_price: any | null;
   /**
    * An aggregated array relationship
    */
@@ -8479,6 +8520,8 @@ export interface INSERT_VOUCHER_PLANVariables {
   voucherCodes: voucher_code_insert_input[];
   voucherPlanProducts: voucher_plan_product_insert_input[];
   isTransferable?: boolean | null;
+  saleAmount?: number | null;
+  salePrice?: any | null;
 }
 
 /* tslint:disable */
@@ -8539,6 +8582,8 @@ export interface UPDATE_VOUCHER_PLANVariables {
   productQuantityLimit: number;
   voucherPlanProducts: voucher_plan_product_insert_input[];
   isTransferable?: boolean | null;
+  saleAmount?: number | null;
+  salePrice?: any | null;
 }
 
 /* tslint:disable */
@@ -9592,6 +9637,12 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
   program_package: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package;
 }
 
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  title: string;
+}
+
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
   /**
    * fetch data from the table: "program_plan"
@@ -9625,6 +9676,10 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
    * fetch data from the table: "program_package_plan"
    */
   program_package_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan[];
+  /**
+   * fetch data from the table: "voucher_plan"
+   */
+  voucher_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_voucher_plan[];
 }
 
 /* tslint:disable */
@@ -10816,7 +10871,7 @@ export interface GET_MERCHANDISE_SPEC_PRODUCTS_product {
    */
   id: string;
   /**
-   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan / VoucherPlan
    */
   type: string;
   target: string;
@@ -11145,7 +11200,7 @@ export interface GET_ORDERS_order_log_order_products_product {
    */
   id: string;
   /**
-   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / MerchandiseSpec / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan / VoucherPlan
    */
   type: string;
 }
@@ -15507,12 +15562,15 @@ export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_s
   id: any;
   member_id: string;
   answer: any | null;
+  updated_at: any;
 }
 
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_progress {
   __typename: "program_content_progress";
   member_id: string;
   progress: any;
+  created_at: any | null;
+  updated_at: any | null;
 }
 
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_body {
@@ -15527,6 +15585,7 @@ export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_s
    * sec
    */
   duration: any | null;
+  metadata: any | null;
   /**
    * An array relationship
    */
@@ -16504,6 +16563,7 @@ export enum category_update_column {
   app_id = "app_id",
   class = "class",
   created_at = "created_at",
+  filterable = "filterable",
   id = "id",
   name = "name",
   position = "position",
@@ -18967,6 +19027,7 @@ export enum tag_constraint {
  */
 export enum tag_update_column {
   created_at = "created_at",
+  filterable = "filterable",
   name = "name",
   type = "type",
   updated_at = "updated_at",
@@ -19033,6 +19094,8 @@ export enum voucher_plan_update_column {
   id = "id",
   is_transferable = "is_transferable",
   product_quantity_limit = "product_quantity_limit",
+  sale_amount = "sale_amount",
+  sale_price = "sale_price",
   started_at = "started_at",
   title = "title",
   updated_at = "updated_at",
@@ -19043,6 +19106,7 @@ export enum voucher_plan_update_column {
  */
 export enum voucher_update_column {
   created_at = "created_at",
+  deleted_at = "deleted_at",
   id = "id",
   member_id = "member_id",
   voucher_code_id = "voucher_code_id",
@@ -21903,6 +21967,7 @@ export interface category_bool_exp {
   class?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   creator_categories?: creator_category_bool_exp | null;
+  filterable?: Boolean_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_categories?: member_category_bool_exp | null;
   member_tasks?: member_task_bool_exp | null;
@@ -21926,6 +21991,7 @@ export interface category_insert_input {
   class?: string | null;
   created_at?: any | null;
   creator_categories?: creator_category_arr_rel_insert_input | null;
+  filterable?: boolean | null;
   id?: string | null;
   member_categories?: member_category_arr_rel_insert_input | null;
   member_tasks?: member_task_arr_rel_insert_input | null;
@@ -31642,7 +31708,10 @@ export interface program_content_progress_enrollment_bool_exp {
   last_progress?: numeric_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
+  program_content_section?: program_content_section_bool_exp | null;
   program_content_section_id?: uuid_comparison_exp | null;
   program_id?: uuid_comparison_exp | null;
   progress?: numeric_comparison_exp | null;
@@ -35025,6 +35094,7 @@ export interface tag_bool_exp {
   _or?: (tag_bool_exp | null)[] | null;
   activity_tags?: activity_tag_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  filterable?: Boolean_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
@@ -35042,6 +35112,7 @@ export interface tag_bool_exp {
 export interface tag_insert_input {
   activity_tags?: activity_tag_arr_rel_insert_input | null;
   created_at?: any | null;
+  filterable?: boolean | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
@@ -35140,6 +35211,7 @@ export interface voucher_bool_exp {
   _not?: voucher_bool_exp | null;
   _or?: (voucher_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamp_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -35207,6 +35279,7 @@ export interface voucher_code_on_conflict {
  */
 export interface voucher_insert_input {
   created_at?: any | null;
+  deleted_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
@@ -35219,6 +35292,7 @@ export interface voucher_insert_input {
  */
 export interface voucher_max_order_by {
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   voucher_code_id?: order_by | null;
@@ -35229,6 +35303,7 @@ export interface voucher_max_order_by {
  */
 export interface voucher_min_order_by {
   created_at?: order_by | null;
+  deleted_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   voucher_code_id?: order_by | null;
@@ -35273,6 +35348,8 @@ export interface voucher_plan_arr_rel_insert_input {
  */
 export interface voucher_plan_avg_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35290,6 +35367,8 @@ export interface voucher_plan_bool_exp {
   id?: uuid_comparison_exp | null;
   is_transferable?: Boolean_comparison_exp | null;
   product_quantity_limit?: Int_comparison_exp | null;
+  sale_amount?: Int_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -35309,6 +35388,8 @@ export interface voucher_plan_insert_input {
   id?: any | null;
   is_transferable?: boolean | null;
   product_quantity_limit?: number | null;
+  sale_amount?: number | null;
+  sale_price?: any | null;
   started_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
@@ -35326,6 +35407,8 @@ export interface voucher_plan_max_order_by {
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
   started_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
@@ -35341,6 +35424,8 @@ export interface voucher_plan_min_order_by {
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
   started_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
@@ -35437,6 +35522,8 @@ export interface voucher_plan_product_on_conflict {
  */
 export interface voucher_plan_stddev_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35444,6 +35531,8 @@ export interface voucher_plan_stddev_order_by {
  */
 export interface voucher_plan_stddev_pop_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35451,6 +35540,8 @@ export interface voucher_plan_stddev_pop_order_by {
  */
 export interface voucher_plan_stddev_samp_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35458,6 +35549,8 @@ export interface voucher_plan_stddev_samp_order_by {
  */
 export interface voucher_plan_sum_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35465,6 +35558,8 @@ export interface voucher_plan_sum_order_by {
  */
 export interface voucher_plan_var_pop_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35472,6 +35567,8 @@ export interface voucher_plan_var_pop_order_by {
  */
 export interface voucher_plan_var_samp_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -35479,6 +35576,8 @@ export interface voucher_plan_var_samp_order_by {
  */
 export interface voucher_plan_variance_order_by {
   product_quantity_limit?: order_by | null;
+  sale_amount?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**

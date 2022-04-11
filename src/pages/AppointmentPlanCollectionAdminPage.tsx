@@ -1,6 +1,7 @@
 import Icon from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -13,14 +14,20 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import { ReactComponent as CalendarAltOIcon } from '../images/icon/calendar-alt-o.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const AppointmentPlanCollectionAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentUserRole, currentMemberId, permissions } = useAuth()
+  const { enabledModules } = useApp()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const [createAppointmentPlan] = useMutation<hasura.CREATE_APPOINTMENT_PLAN, hasura.CREATE_APPOINTMENT_PLANVariables>(
     CREATE_APPOINTMENT_PLAN,
   )
+
+  if (!enabledModules.appointment || (!permissions.APPOINTMENT_PLAN_ADMIN && !permissions.APPOINTMENT_PLAN_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
@@ -51,7 +58,7 @@ const AppointmentPlanCollectionAdminPage: React.VFC = () => {
       {currentMemberId && (
         <AppointmentPlanCollectionTabs
           creatorId={
-            currentUserRole === 'app-owner' || permissions.APPOINTMENT_PLAN_ADMIN ? undefined : currentMemberId
+            permissions.APPOINTMENT_PLAN_ADMIN ? undefined : permissions.APPOINTMENT_PLAN_NORMAL ? currentMemberId : ''
           }
         />
       )}

@@ -2,6 +2,7 @@ import Icon from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { sum } from 'ramda'
 import React, { useState } from 'react'
@@ -13,6 +14,7 @@ import hasura from '../../hasura'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 import { QuestionProps } from '../../types/program'
+import ForbiddenPage from '../ForbiddenPage'
 import ExerciseDisplayTable, { ExerciseDisplayProps } from './ExerciseDisplayTable'
 import ExerciseSummaryBlock from './ExerciseSummaryBlock'
 import QuestionChartsBlock from './QuestionChartsBlock'
@@ -25,9 +27,14 @@ const messages = defineMessages({
 
 const ExerciseResultPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { currentUserRole, currentMemberId } = useAuth()
+  const { enabledModules } = useApp()
+  const { permissions, currentMemberId } = useAuth()
 
   const [selectedContentId, setSelectedContentId] = useState('')
+
+  if (!enabledModules.exercise) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
@@ -38,12 +45,14 @@ const ExerciseResultPage: React.VFC = () => {
 
       <div className="row mb-4">
         <div className="col-12 col-lg-6">
-          <ProgramTreeSelector
-            allowContentType="exercise"
-            treeNodeSelectable={false}
-            memberId={currentUserRole === 'content-creator' ? currentMemberId || '' : undefined}
-            onChange={value => setSelectedContentId(value)}
-          />
+          {currentMemberId && (
+            <ProgramTreeSelector
+              allowContentType="exercise"
+              treeNodeSelectable={false}
+              memberId={permissions.EXERCISE_ADMIN ? undefined : permissions.EXERCISE_NORMAL ? currentMemberId : ''}
+              onChange={value => setSelectedContentId(value)}
+            />
+          )}
         </div>
       </div>
 

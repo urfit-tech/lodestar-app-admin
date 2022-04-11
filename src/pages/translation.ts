@@ -44,6 +44,44 @@ const pageMessages = {
     property: { id: 'page.ProgramProgressCollectionAdminPage.property', defaultMessage: '自訂欄位' },
     chooseProperty: { id: 'page.ProgramProgressCollectionAdminPage.chooseProperty', defaultMessage: '選擇欄位' },
     containKeyword: { id: 'page.ProgramProgressCollectionAdminPage.containKeyword', defaultMessage: '關鍵字包含' },
+
+    categories: { id: 'page.ProgramProgressCollectionAdminPage.categories', defaultMessage: '課程分類' },
+    programTitle: { id: 'page.ProgramProgressCollectionAdminPage.programTitle', defaultMessage: '課程名稱' },
+    programContentSectionTitle: {
+      id: 'page.ProgramProgressCollectionAdminPage.programContentSectionTitle',
+      defaultMessage: '章節名稱',
+    },
+    programContentTitle: {
+      id: 'page.ProgramProgressCollectionAdminPage.programContentTitle',
+      defaultMessage: '單元名稱',
+    },
+    programContentType: {
+      id: 'page.ProgramProgressCollectionAdminPage.programContentType',
+      defaultMessage: '單元類型',
+    },
+    programContentDuration: {
+      id: 'page.ProgramProgressCollectionAdminPage.programContentDuration',
+      defaultMessage: '單元時長(分)',
+    },
+    memberName: { id: 'page.ProgramProgressCollectionAdminPage.memberName', defaultMessage: '姓名' },
+    memberEmail: { id: 'page.ProgramProgressCollectionAdminPage.memberEmail', defaultMessage: 'Email' },
+    watchedDuration: { id: 'page.ProgramProgressCollectionAdminPage.watchedDuration', defaultMessage: '學習時間(分)' },
+    watchedPercentage: {
+      id: 'page.ProgramProgressCollectionAdminPage.watchedPercentage',
+      defaultMessage: '學習進度',
+    },
+    firstWatchedAt: { id: 'page.ProgramProgressCollectionAdminPage.firstWatchedAt', defaultMessage: '初次觀看時間' },
+    lastWatchedAt: { id: 'page.ProgramProgressCollectionAdminPage.lastWatchedAt', defaultMessage: '最後觀看時間' },
+    totalPercentage: { id: 'page.ProgramProgressCollectionAdminPage.totalPercentage', defaultMessage: '總課程完成率' },
+    exerciseStatus: { id: 'pageProgramProgressCollectionAdminPage.exerciseStatus', defaultMessage: '測驗狀態' },
+    exercisePassed: { id: 'pageProgramProgressCollectionAdminPage.exercisePassed', defaultMessage: '通過' },
+    exerciseFailed: { id: 'pageProgramProgressCollectionAdminPage.exerciseFailed', defaultMessage: '未通過' },
+    exerciseScores: { id: 'page.ProgramProgressCollectionAdminPage.exerciseScores', defaultMessage: '測驗分數' },
+    exercisePassedAt: {
+      id: 'page.ProgramProgressCollectionAdminPage.exercisePassedAt',
+      defaultMessage: '測驗通過時間',
+    },
+    practices: { id: 'page.ProgramProgressCollectionAdminPage.practices', defaultMessage: '作業' },
   }),
   ProgramAdminPage: defineMessages({
     isEnrolledCountVisible: { id: 'program.ProgramBasicForm.isEnrolledCountVisible', defaultMessage: '購買人數' },

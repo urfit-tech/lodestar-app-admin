@@ -1,5 +1,7 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Button, Skeleton } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle, EmptyBlock } from '../components/admin'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -8,10 +10,17 @@ import PermissionGroupAdminModal from '../components/permission/PermissionGroupA
 import { commonMessages, permissionGroupsAdminMessages } from '../helpers/translation'
 import { usePermissionGroupCollection } from '../hooks/permission'
 import { ReactComponent as UsersIcon } from '../images/icon/users.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const PermissionGroupAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { loadingPermissionGroups, permissionGroups, refetchPermissionGroups } = usePermissionGroupCollection()
+  const { permissions } = useAuth()
+  const { enabledModules } = useApp()
+
+  if (!enabledModules.permission_group || !permissions.PERMISSION_GROUP_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

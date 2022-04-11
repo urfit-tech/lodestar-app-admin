@@ -2,6 +2,7 @@ import Icon from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Input, Select, Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -12,6 +13,7 @@ import { ProgramTreeSelector } from '../components/program/ProgramSelector'
 import hasura from '../hasura'
 import { commonMessages, errorMessages, programMessages } from '../helpers/translation'
 import { ReactComponent as BookIcon } from '../images/icon/book.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 type PracticeFiltersProps = {
   searchText?: string
@@ -22,7 +24,8 @@ type PracticeFiltersProps = {
 
 const PracticeCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { enabledModules } = useApp()
+  const { currentMemberId, permissions } = useAuth()
   const [selectedStatus, setSelectedStatus] = useState<string>('unreviewed')
   const [selectedId, setSelectedId] = useState<{
     program?: string
@@ -31,6 +34,10 @@ const PracticeCollectionAdminPage: React.FC = () => {
   }>({})
 
   const [searchText, setSearchText] = useState('')
+
+  if (!enabledModules.practice || (!permissions.PRACTICE_ADMIN && !permissions.PRACTICE_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
@@ -52,7 +59,7 @@ const PracticeCollectionAdminPage: React.FC = () => {
             <ProgramTreeSelector
               treeNodeSelectable
               allowContentType="practice"
-              memberId={currentUserRole === 'content-creator' && currentMemberId ? currentMemberId : undefined}
+              memberId={permissions.PRACTICE_NORMAL && currentMemberId ? currentMemberId : undefined}
               onSelect={(value, option) => {
                 setSelectedId({ [option.group]: value })
               }}
@@ -88,7 +95,7 @@ const AllPracticeCollectionBlock: React.FC<{
   filters?: PracticeFiltersProps
 }> = ({ selectedStatus, filters }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
 
   let unreviewed: boolean | undefined
   switch (selectedStatus) {
@@ -103,7 +110,7 @@ const AllPracticeCollectionBlock: React.FC<{
   const { loadingPractice, errorPractice, practices, refetchPractice } = usePracticePreviewCollection({
     ...filters,
     unreviewed,
-    programRoleMemberId: currentUserRole === 'app-owner' || permissions['PRACTICE_ADMIN'] ? undefined : currentMemberId,
+    programRoleMemberId: permissions.PRACTICE_ADMIN ? undefined : currentMemberId,
   })
 
   if (loadingPractice) {

@@ -168,6 +168,23 @@ export const notEmpty = <T>(value: T | null | undefined): value is T => {
   return value !== null && value !== undefined
 }
 
+export const stableSort = (array: any[], customCompareFunction: (a: any[], b: any[]) => number) => {
+  const arrayWithPosition = array.map((element, index) => [element, index])
+  const compare = !!customCompareFunction
+    ? customCompareFunction
+    : (a: any, b: any) => {
+        if (a > b) return 1
+        if (a < b) return -1
+        return 0
+      }
+  const stableCompare = (a: any[], b: any[]) => {
+    const order = compare(a[0], b[0])
+    return order !== 0 ? order : a[1] - b[1]
+  }
+  const sortedArray = arrayWithPosition.sort(stableCompare).map(element => element[0])
+  return sortedArray
+}
+
 export const toCSV: (data: string[][]) => string = data => {
   const columns = data.shift()
 

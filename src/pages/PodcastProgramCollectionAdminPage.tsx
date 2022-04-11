@@ -2,6 +2,7 @@ import Icon from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -13,14 +14,20 @@ import PodcastProgramCollectionAdminTable from '../components/podcast/PodcastPro
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
 import { ReactComponent as MicrophoneOIcon } from '../images/icon/microphone-o.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const PodcastProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentUserRole, currentMemberId } = useAuth()
+  const { enabledModules } = useApp()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const [createPodcastProgram] = useMutation<hasura.CREATE_PODCAST_PROGRAM, hasura.CREATE_PODCAST_PROGRAMVariables>(
     CREATE_PODCAST_PROGRAM,
   )
+
+  if (!enabledModules.podcast || (!permissions.PODCAST_ADMIN && !permissions.PODCAST_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
@@ -57,7 +64,7 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
 
           <AdminPageBlock>
             <PodcastProgramCollectionAdminTable
-              memberId={currentUserRole === 'content-creator' ? currentMemberId : undefined}
+              memberId={permissions.PODCAST_NORMAL ? undefined : permissions.PODCAST_NORMAL ? currentMemberId : ''}
             />
           </AdminPageBlock>
         </>

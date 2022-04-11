@@ -79,7 +79,7 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
-        enabledModules.coin && (
+        enabledModules.coin && (permissions.COIN_ADMIN || permissions.CHECK_MEMBER_COIN) && (
           <Tabs.TabPane key="coin" tab={formatMessage(commonMessages.menu.coinHistory)}>
             <div className="p-5">
               <MemberCoinAdminBlock memberId={memberId} withSendingModal={false} />
@@ -93,18 +93,21 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
-        permissions.SALES_RECORDS_ADMIN && (
+        (permissions.SALES_RECORDS_ADMIN || permissions.CHECK_MEMBER_ORDER) && (
           <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
             <div className="p-5">
               <SaleCollectionAdminCard memberId={memberId} />
             </div>
           </Tabs.TabPane>
         ),
-        <Tabs.TabPane key="history" tab={formatMessage(memberMessages.label.history)}>
-          <div className="p-5">
-            <MemberHistoryAdminBlock memberId={memberId} />
-          </div>
-        </Tabs.TabPane>,
+
+        permissions.CHECK_MEMBER_HISTORY && (
+          <Tabs.TabPane key="history" tab={formatMessage(memberMessages.label.history)}>
+            <div className="p-5">
+              <MemberHistoryAdminBlock memberId={memberId} />
+            </div>
+          </Tabs.TabPane>
+        ),
         currentUserRole === 'app-owner' && (
           <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
             <div className="p-5">

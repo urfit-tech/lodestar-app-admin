@@ -5,6 +5,7 @@ import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
+import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -117,9 +118,9 @@ const MemberCoinAdminBlock: React.VFC<{
     memberId,
   })
   const { loadingCoinFutureLogs, errorCoinFutureLogs, coinFutureLogs, refetchCoinFutureLogs, loadMoreCoinFutureLogs } =
-    useFutureCoinLogCollection({ ...fieldFilter })
+    useFutureCoinLogCollection({ ...fieldFilter, memberId })
   const { loadingOrderLogs, errorOrderLogs, orderLogs, refetchOrderLogs, loadMoreOrderLogs } =
-    useOrderLogWithCoinsCollection({ ...fieldFilter })
+    useOrderLogWithCoinsCollection({ ...fieldFilter, memberId })
 
   const [loading, setLoading] = useState(false)
 
@@ -587,12 +588,16 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
   }
 }
 
-const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }) => {
+const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; memberId?: string }) => {
   const condition: hasura.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
+    member_id: filter?.memberId
+      ? {
+          _eq: filter.memberId,
+        }
+      : undefined,
     member: filter?.nameAndEmail
       ? {
-          name: { _like: `%${filter.nameAndEmail}%` },
-          email: { _like: `%${filter.nameAndEmail}%` },
+          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
     title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
@@ -681,13 +686,22 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
   }
 }
 
-const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndEmail?: string; title?: string }) => {
+const useOrderLogWithCoinsCollection = (filter?: {
+  orderLogId?: string
+  nameAndEmail?: string
+  title?: string
+  memberId?: string
+}) => {
   const condition: hasura.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
     id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
+    member_id: filter?.memberId
+      ? {
+          _eq: filter.memberId,
+        }
+      : undefined,
     member: filter?.nameAndEmail
       ? {
-          name: { _like: `%${filter.nameAndEmail}%` },
-          email: { _like: `%${filter.nameAndEmail}%` },
+          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
         }
       : undefined,
     order_discounts: filter?.title
@@ -721,13 +735,8 @@ const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndE
           order_discounts(where: { type: { _eq: "Coin" } }, limit: 1) {
             id
             name
-          }
-          order_discounts_aggregate(where: { type: { _eq: "Coin" } }) {
-            aggregate {
-              sum {
-                price
-              }
-            }
+            price
+            options
           }
         }
       }
@@ -752,7 +761,7 @@ const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndE
             email: orderLog.member.email,
           },
           title: orderLog.order_discounts[0]?.name || '',
-          amount: orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
+          amount: sum(orderLog.order_discounts.map(v => v.price / (v.options?.exchangeRate || 1))),
         }))
 
   const loadMoreOrderLogs = () =>

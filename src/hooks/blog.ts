@@ -91,14 +91,16 @@ export const usePost = (postId: string) => {
   }
 }
 
-export const usePostCollection = (filter?: { currentMemberId?: string; currentUserRole?: string }) => {
+export const usePostCollection = () => {
   const { permissions } = useAuth()
+  const { currentMemberId } = useAuth()
   const condition: hasura.GET_POSTSVariables['condition'] = {
     is_deleted: { _eq: false },
-    post_roles:
-      filter?.currentUserRole === 'app-owner' || permissions['POST_ADMIN']
-        ? undefined
-        : { member: { id: { _eq: `${filter?.currentMemberId}` } } },
+    post_roles: permissions.POST_ADMIN
+      ? undefined
+      : permissions.POST_NORMAL
+      ? { member: { id: { _eq: currentMemberId } } }
+      : { member: { id: { _eq: '' } } },
   }
   const { loading, error, data, refetch } = useQuery<hasura.GET_POSTS, hasura.GET_POSTSVariables>(
     gql`

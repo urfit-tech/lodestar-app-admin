@@ -1,5 +1,6 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Button, Skeleton } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -11,14 +12,20 @@ import PodcastPlanCollectionAdminTable from '../components/podcast/PodcastPlanCo
 import { commonMessages, podcastMessages } from '../helpers/translation'
 import { usePodcastPlanAdminCollection } from '../hooks/podcast'
 import { ReactComponent as DiscountIcon } from '../images/icon/discount.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const PodcastPlanAdminPage: React.FC = () => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
 
   const { loadingPodcastPlans, podcastPlans, refetchPodcastPlans } = usePodcastPlanAdminCollection(
-    currentUserRole === 'app-owner' ? undefined : currentMemberId || '',
+    permissions.PODCAST_ADMIN ? undefined : permissions.PODCAST_NORMAL ? currentMemberId || '' : '',
   )
+
+  if (!enabledModules.podcast || (!permissions.PODCAST_ADMIN && !permissions.PODCAST_NORMAL)) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>

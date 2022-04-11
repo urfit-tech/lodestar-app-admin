@@ -2,6 +2,7 @@ import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Badge, Button, notification, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -14,6 +15,7 @@ import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
 import { salesMessages } from '../helpers/translation'
 import { useSales, useSalesLeads } from '../hooks/sales'
+import ForbiddenPage from './ForbiddenPage'
 
 const StyledManagerBlock = styled.div`
   width: 400px;
@@ -21,10 +23,16 @@ const StyledManagerBlock = styled.div`
 
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentMember } = useAuth()
+  const { enabledModules } = useApp()
+  const { currentMemberId, currentMember, permissions } = useAuth()
   const [activeKey, setActiveKey] = useState('idled')
   const [saleId, setSaleId] = useState<string | undefined>()
   useMemberContractNotification()
+
+  if (!enabledModules.sales || !permissions.SALES_LEAD_ADMIN) {
+    return <ForbiddenPage />
+  }
+
   return (
     <AdminLayout>
       <div className="mb-3 d-flex justify-content-between align-items-center">
@@ -32,10 +40,10 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {currentMember?.role === 'app-owner' ? (
+        {permissions.SALES_LEAD_SELECTOR_ADMIN && currentMemberId ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">承辦人：</span>
-            <SalesMemberInput value={saleId ? saleId : currentMember.id} onChange={value => setSaleId(value)} />
+            <SalesMemberInput value={saleId ? saleId : currentMemberId} onChange={value => setSaleId(value)} />
           </StyledManagerBlock>
         ) : currentMember?.role === 'general-member' ? (
           <div>承辦編號：{currentMember.id}</div>

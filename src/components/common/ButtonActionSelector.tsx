@@ -101,7 +101,15 @@ const PurchaseProductSelector: React.FC<{
   const [selectedProductId, setSelectedProductId] = useState<string | undefined>(value?.productId)
 
   const partBriefProducts = pick(
-    ['ActivityTicket', 'PodcastPlan', 'PodcastProgram', 'ProgramPackagePlan', 'ProgramPlan', 'ProjectPlan'],
+    [
+      'ActivityTicket',
+      'PodcastPlan',
+      'PodcastProgram',
+      'ProgramPackagePlan',
+      'ProgramPlan',
+      'ProjectPlan',
+      'VoucherPlan',
+    ],
     briefProducts,
   )
 

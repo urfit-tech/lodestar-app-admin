@@ -37,7 +37,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
-  const { currentUserRole, currentMemberId } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
   const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
 
   return (
@@ -126,7 +126,13 @@ const AppointmentPlanAdminPage: React.FC = () => {
                 {appointmentPlanAdmin && currentMemberId && (
                   <AppointmentScheduleImportModal
                     appointmentPlanAdmin={appointmentPlanAdmin}
-                    creatorId={currentUserRole === 'app-owner' ? undefined : currentMemberId}
+                    creatorId={
+                      permissions.APPOINTMENT_PLAN_ADMIN
+                        ? undefined
+                        : permissions.APPOINTMENT_PLAN_NORMAL
+                        ? currentMemberId
+                        : ''
+                    }
                     onRefetch={refetchAppointmentPlanAdmin}
                   />
                 )}

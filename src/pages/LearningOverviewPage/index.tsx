@@ -11,6 +11,7 @@ import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
+import ForbiddenPage from '../ForbiddenPage'
 import LearningDualChart from './LearningDualChart'
 import LearningHeatmap from './LearningHeatmap'
 import LearningRadar from './LearningRadar'
@@ -18,7 +19,7 @@ import ProgressFunnel from './ProgressFunnel'
 
 const LearningOverviewPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const {
     recentLearningCount,
     recentLearningDuration,
@@ -29,6 +30,11 @@ const LearningOverviewPage: React.VFC = () => {
     totalMemberCount,
     enrolledMemberCount,
   } = useLearningReport(appId)
+
+  if (!enabledModules.learning_statistics_advanced) {
+    return <ForbiddenPage />
+  }
+
   return (
     <AdminLayout>
       <div className="mb-3 d-flex justify-content-between align-items-center">

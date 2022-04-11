@@ -15,11 +15,12 @@ import MemberPropertySelector from '../components/member/MemberPropertySelector'
 import ProgramCategorySelect from '../components/program/ProgramCategorySelect'
 import { OwnedProgramSelector } from '../components/program/ProgramSelector'
 import hasura from '../hasura'
-import { downloadCSV, toCSV } from '../helpers'
+import { downloadCSV, stableSort, toCSV } from '../helpers'
 import { commonMessages } from '../helpers/translation'
+import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
-import NotFoundPage from './NotFoundPage'
 import pageMessages from './translation'
+
 const messages = defineMessages({
   learningDuration: { id: 'common.label.learningDuration', defaultMessage: '學習時數' },
   learningProgress: { id: 'common.label.learningProgress', defaultMessage: '學習進度' },
@@ -35,14 +36,15 @@ type ProgramFilter =
   | { type: 'all' }
   | { type: 'selectedProgram'; programIds: string[] }
   | { type: 'selectedCategory'; categoryIds: string[] }
+
 const ProgramProgressCollectionAdminPage: React.FC = () => {
   const [exporting, setExporting] = useState(false)
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const apolloClient = useApolloClient()
   const { enabledModules, loading } = useApp()
   const [programFilter, setProgramFilter] = useState<ProgramFilter>({ type: 'all' })
-  const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'all' })
+  const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'selectedMember', memberIds: [] })
 
   const handleExport = () => {
     setExporting(true)
@@ -76,20 +78,24 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
       .then(({ data }) => {
         const rows: string[][] = [
           [
-            'Categories',
-            'Program title',
-            'Program content section title',
-            'Program content title',
-            'Program content type',
-            'Program content duration',
-            'Member name',
-            'Member email',
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.categories),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programTitle),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentSectionTitle),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentTitle),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentType),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.programContentDuration),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.memberName),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.memberEmail),
             ...data.property.map(p => p.name),
-            'Watched duration',
-            'Watched percentage',
-            'Total percentage',
-            'Exercise scores',
-            '#Practices',
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.watchedDuration),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.watchedPercentage),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.firstWatchedAt),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.lastWatchedAt),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.totalPercentage),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseStatus),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseScores),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassedAt),
+            formatMessage(pageMessages.ProgramProgressCollectionAdminPage.practices),
           ],
         ]
         data.program.forEach(p => {
@@ -112,13 +118,17 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                     pcs.program_contents.flatMap(pc =>
                       pc.program_content_progress
                         .filter(pcp => pcp.member_id === m.id)
-                        .map(pcp => pcp.progress * programContentDuration),
+                        .map(pcp => pcp.progress * pc.duration),
                     ),
                   ),
                 )
-                const watchedProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)?.progress || 0
+                const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
+                const watchedProgress = memberProgramContentProgress?.progress || 0
+                const firstWatchedAt = memberProgramContentProgress?.created_at || ''
+                const lastWatchedAt = memberProgramContentProgress?.updated_at || ''
                 const watchedDuration = programContentDuration * watchedProgress
-                const exercisePoint = pc.exercises
+                const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
+                const exercisePoint = exercises
                   .map(ex => {
                     const totalQuestionPoints = sum(
                       ex.answer.map((ans: { questionPoints: number }) => ans.questionPoints || 0),
@@ -128,7 +138,26 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                     )
                     return `${totalGainedPoints}/${totalQuestionPoints}`
                   })
-                  .join()
+                  .join(', ')
+                const hightestScore = exercises
+                  .map(ex => ({
+                    totalGainedPoints: sum(ex.answer.map((ans: { gainedPoints: number }) => ans.gainedPoints || 0)),
+                    updatedAt: ex.updated_at,
+                  }))
+                  .reduce(
+                    (accu, curr) => {
+                      return curr.totalGainedPoints > accu.totalGainedPoints ? curr : accu
+                    },
+                    { totalGainedPoints: 0, updatedAt: null },
+                  )
+                const exerciseStatus =
+                  hightestScore.totalGainedPoints > pc.metadata?.passingScore
+                    ? formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassed)
+                    : formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseFailed)
+                const exercisePassedAt =
+                  exerciseStatus === formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassed)
+                    ? hightestScore.updatedAt
+                    : ''
 
                 rows.push([
                   categories,
@@ -136,21 +165,30 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                   programContentSectionTitle,
                   programContentTitle,
                   programContentType,
-                  programContentDuration,
+                  Math.ceil(Number(programContentDuration) / 60).toString(),
                   memberName,
                   memberEmail,
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
-                  watchedDuration,
+                  Math.ceil(Number(watchedDuration) / 60).toString(),
                   (watchedProgress * 100).toFixed(0) + '%',
-                  ((memberWatchedDuration / programDuration) * 100).toFixed(0) + '%',
+                  firstWatchedAt,
+                  lastWatchedAt,
+                  ((memberWatchedDuration / (programDuration || 1)) * 100).toFixed(0) + '%',
+                  exerciseStatus,
                   exercisePoint,
+                  exercisePassedAt,
                   pc.practices.filter(p => p.member_id === m.id).length,
                 ])
               })
             })
           })
         })
-        downloadCSV('learning_' + moment().format('MMDDSSS'), toCSV(rows))
+        const memberBaseRows = stableSort(rows, (a, b) => {
+          if (a[7] > b[7]) return 1
+          else if (a[7] < b[7]) return -1
+          else return 0
+        })
+        downloadCSV('learning_' + moment().format('MMDDSSS'), toCSV(memberBaseRows))
       })
       .catch(error => {
         message.error(error)
@@ -162,8 +200,8 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
     return <LoadingPage />
   }
 
-  if (!enabledModules.learning_statistics) {
-    return <NotFoundPage />
+  if (!enabledModules.learning_statistics && !permissions.PROGRAM_PROGRESS_READ) {
+    return <ForbiddenPage />
   }
 
   return (
@@ -249,9 +287,6 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                       : setMemberFilter({ type: v, propertyId: '', valueLike: '' })
                   }
                 >
-                  <Select.Option value="all">
-                    {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.all)}
-                  </Select.Option>
                   <Select.Option value="selectedMember">
                     {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.selectedMember)}
                   </Select.Option>
@@ -339,16 +374,17 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
     }
     program(where: $programCondition) {
       title
-      program_categories {
+      program_categories(order_by: { position: asc }) {
         category {
           name
         }
       }
-      program_content_sections {
+      program_content_sections(order_by: { position: asc }) {
         title
-        program_contents {
+        program_contents(order_by: { position: asc }) {
           title
           duration
+          metadata
           practices {
             member_id
           }
@@ -356,10 +392,13 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
             id
             member_id
             answer
+            updated_at
           }
           program_content_progress {
             member_id
             progress
+            created_at
+            updated_at
           }
           program_content_body {
             type

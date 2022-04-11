@@ -14,15 +14,20 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages, podcastAlbumMessages } from '../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../images/icon/microphone.svg'
+import ForbiddenPage from './ForbiddenPage'
 
 const PodcastAlbumCollectionAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
-  const { currentMemberId } = useAuth()
+  const { id: appId, enabledModules } = useApp()
+  const { currentMemberId, permissions } = useAuth()
   const history = useHistory()
   const [createPodcastAlbum] = useMutation<hasura.INSERT_PODCAST_ALBUM, hasura.INSERT_PODCAST_ALBUMVariables>(
     INSERT_PODCAST_ALBUM,
   )
+
+  if (!enabledModules.podcast || !permissions.PODCAST_ALBUM_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
