@@ -16,9 +16,9 @@ const LanguageSelector: React.FC<{
       onChange={onChange}
       placeholder={formatMessage(commonMessages.label.supportedLanguages)}
     >
-      <Select.Option value="zh">繁體中文</Select.Option>
+      <Select.Option value="zh-tw">繁體中文</Select.Option>
       <Select.Option value="zh-cn">简体中文</Select.Option>
-      <Select.Option value="en">English</Select.Option>
+      <Select.Option value="en-us">English</Select.Option>
       <Select.Option value="vi">Tiếng việt</Select.Option>
     </Select>
   )

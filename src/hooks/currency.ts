@@ -1,11 +1,11 @@
 import { useContext } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import LanguageContext from '../contexts/LanguageContext'
+import LocaleContext from '../contexts/LocaleContext'
 import { Currency } from '../types/app'
 
 export const useCurrency = (currencyId?: string) => {
   const { currencies, settings } = useApp()
-  const { locale } = useContext(LanguageContext)
+  const { currentLocale } = useContext(LocaleContext)
 
   const formatCurrency = (value: number) => {
     const currentCurrencyId = currencyId || settings['currency_id'] || 'TWD'
@@ -15,7 +15,7 @@ export const useCurrency = (currencyId?: string) => {
       return value + ' ' + (settings['coin.unit'] || 'LSC')
     }
     return (
-      value.toLocaleString(locale || navigator.language, {
+      value.toLocaleString(currentLocale || navigator.language, {
         style: 'currency',
         currency: currentCurrencyId,
         maximumFractionDigits: currency?.minorUnits || 0,

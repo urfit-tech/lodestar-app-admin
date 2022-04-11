@@ -9,5 +9,5 @@ manageTranslations({
   messagesDirectory: 'build/messages/src/extracted/',
   translationsDirectory: 'src/translations/locales/',
   whitelistsDirectory: 'src/translations/locales/whitelists/',
-  languages: ['zh', 'en', 'vi', 'zh-cn', 'zh-acsi','id'],
+  languages: ['zh-tw', 'zh-cn', 'en-us', 'vi', 'id'],
 })

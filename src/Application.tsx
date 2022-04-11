@@ -11,7 +11,7 @@ import { LodestarAppProvider } from 'lodestar-app-element/src/contexts/LodestarA
 import React from 'react'
 import AdminRouter, { RouteProps } from './components/common/AdminRouter'
 import { CustomRendererProps, CustomRendererProvider } from './contexts/CustomRendererContext'
-import { LanguageProvider } from './contexts/LanguageContext'
+import { LocaleProvider } from './contexts/LocaleContext'
 import './styles/default/index.scss'
 
 const Application: React.FC<{
@@ -21,13 +21,13 @@ const Application: React.FC<{
 }> = ({ appId, extraRouteProps = {}, customRender }) => {
   return (
     <LodestarAppProvider appId={appId}>
-      <LanguageProvider>
+      <LocaleProvider>
         <ConfigProvider locale={zhTW}>
           <CustomRendererProvider renderer={customRender}>
             <AdminRouter extraRouteProps={extraRouteProps} />
           </CustomRendererProvider>
         </ConfigProvider>
-      </LanguageProvider>
+      </LocaleProvider>
     </LodestarAppProvider>
   )
 }

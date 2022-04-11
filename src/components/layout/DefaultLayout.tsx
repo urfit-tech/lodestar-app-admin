@@ -6,7 +6,7 @@ import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
-import LanguageContext from '../../contexts/LanguageContext'
+import LocaleContext, { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
 import defaultSettings from '../../settings'
 import AttendButton from '../attend/AttendButton'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
@@ -89,15 +89,7 @@ export const DefaultLayoutHeader: React.FC<{
 }> = ({ renderTitle }) => {
   const { currentMemberId, permissions } = useAuth()
   const { enabledModules, id: appId, settings } = useApp()
-  const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
-
-  const languageOptions: string[] = (() => {
-    try {
-      return JSON.parse(settings['locale.languages'])
-    } catch {
-      return []
-    }
-  })()
+  const { currentLocale, setCurrentLocale } = useContext(LocaleContext)
 
   let Logo: string | undefined
   try {
@@ -125,51 +117,25 @@ export const DefaultLayoutHeader: React.FC<{
       )}
 
       <div className="d-flex align-items-center">
-        {enabledModules.locale && languageOptions.length > 1 && (
+        {enabledModules.locale && (
           <>
             <Dropdown
               trigger={['click']}
               overlay={
                 <Menu>
-                  {languageOptions.includes('zh') && (
-                    <Menu.Item key="zh">
-                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('zh')}>
-                        繁體中文
+                  {SUPPORTED_LOCALES.map(supportedLocale => (
+                    <Menu.Item key={supportedLocale.locale}>
+                      <StyledButton type="link" size="small" onClick={() => setCurrentLocale?.(supportedLocale.locale)}>
+                        {supportedLocale.label}
                       </StyledButton>
                     </Menu.Item>
-                  )}
-                  {languageOptions.includes('zh-cn') && (
-                    <Menu.Item key="zh-cn">
-                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('zh-cn')}>
-                        简体中文
-                      </StyledButton>
-                    </Menu.Item>
-                  )}
-                  {languageOptions.includes('en') && (
-                    <Menu.Item key="en">
-                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('en')}>
-                        English
-                      </StyledButton>
-                    </Menu.Item>
-                  )}
-                  {languageOptions.includes('vi') && (
-                    <Menu.Item key="vi">
-                      <StyledButton type="link" size="small" onClick={() => setCurrentLanguage?.('vi')}>
-                        Tiếng việt
-                      </StyledButton>
-                    </Menu.Item>
-                  )}
+                  ))}
                 </Menu>
               }
             >
               <StyledButton type="link" size="small">
-                {currentLanguage.startsWith('en')
-                  ? 'EN'
-                  : currentLanguage.startsWith('vi')
-                  ? 'Tiếng việt'
-                  : currentLanguage.startsWith('zh')
-                  ? '繁中'
-                  : 'Unknown'}
+                {SUPPORTED_LOCALES.find(supportedLocale => currentLocale === supportedLocale.locale)?.label ||
+                  'Unknown'}
                 <DownOutlined />
               </StyledButton>
             </Dropdown>
