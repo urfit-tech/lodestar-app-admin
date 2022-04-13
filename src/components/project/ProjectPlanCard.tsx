@@ -127,8 +127,8 @@ const ProjectPlanCard: React.FC<
                     renderTrigger={({ sku, onOpen }) => (
                       <Button type="link" onClick={() => onOpen?.()}>
                         {sku
-                          ? `${formatMessage(commonMessages.label.sku)}: ${sku}`
-                          : formatMessage(commonMessages.label.skuSetting)}
+                          ? `${formatMessage(projectMessages.ProjectPlanCard.sku)}: ${sku}`
+                          : formatMessage(projectMessages.ProjectPlanCard.skuSetting)}
                       </Button>
                     )}
                   />

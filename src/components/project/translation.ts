@@ -26,6 +26,8 @@ const projectMessages = {
   ProjectPlanCard: defineMessages({
     onSale: { id: 'project.ProjectPlanCard.onSale', defaultMessage: '發售中' },
     notSale: { id: 'project.ProjectPlanCard.notSale', defaultMessage: '已停售' },
+    sku: { id: 'project.ProjectPlanCard.sku', defaultMessage: 'SKU' },
+    skuSetting: { id: 'project.ProjectPlanCard.skuSetting', defaultMessage: '設定料號' },
   }),
   ProjectPlanProductSelector: defineMessages({
     sku: { id: 'project.ProjectPlanProductSelector.sku', defaultMessage: '料號（SKU）' },
