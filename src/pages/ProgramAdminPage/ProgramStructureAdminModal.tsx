@@ -3,19 +3,14 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import AdminModal from '../../components/admin/AdminModal'
 import DraggableItem from '../../components/common/DraggableItem'
 import hasura from '../../hasura'
-import { commonMessages } from '../../helpers/translation'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
-
-const messages = defineMessages({
-  sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
-  contentSorting: { id: 'program.label.contentSorting', defaultMessage: '內容排序' },
-})
+import ProgramAdminPageMessages from './translation'
 
 const StyledDraggableSectionLabel = styled.div`
   color: ${props => props.theme['@primary-color']};
@@ -88,18 +83,18 @@ const ProgramStructureAdminModal: React.FC<{
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="link" icon={<DragOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(messages.contentSorting)}
+          {formatMessage(ProgramAdminPageMessages.ProgramStructureAdminModal.contentSorting)}
         </Button>
       )}
-      title={formatMessage(messages.contentSorting)}
+      title={formatMessage(ProgramAdminPageMessages.ProgramStructureAdminModal.contentSorting)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(ProgramAdminPageMessages['*'].cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
-            {formatMessage(commonMessages.ui.confirm)}
+            {formatMessage(ProgramAdminPageMessages['*'].confirm)}
           </Button>
         </>
       )}

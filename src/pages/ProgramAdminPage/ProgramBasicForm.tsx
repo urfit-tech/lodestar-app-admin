@@ -12,10 +12,9 @@ import LanguageSelector from '../../components/form/LanguageSelector'
 import TagSelector from '../../components/form/TagSelector'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProductSku } from '../../hooks/data'
 import { ProgramAdminProps } from '../../types/program'
-import pageMessages from '../translation'
+import ProgramAdminPageMessages from './translation'
 
 type FieldProps = {
   title: string
@@ -37,7 +36,7 @@ const ProgramBasicForm: React.FC<{
   const [updateProgramBasic] = useMutation<hasura.UPDATE_PROGRAM_BASIC, hasura.UPDATE_PROGRAM_BASICVariables>(
     UPDATE_PROGRAM_BASIC,
   )
-  const { loadingProduct, product, refetchProduct } = useProductSku(`Program_${program?.id}`)
+  const { loadingProduct, refetchProduct } = useProductSku(`Program_${program?.id}`)
   const [loading, setLoading] = useState(false)
 
   if (!program || loadingProduct) {
@@ -72,7 +71,7 @@ const ProgramBasicForm: React.FC<{
       },
     })
       .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
+        message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
         refetchProduct()
         onRefetch?.()
       })
@@ -98,20 +97,23 @@ const ProgramBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(programMessages.label.programTitle)} name="title">
+      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.programTitle)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
+      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.category)} name="categoryIds">
         <CategorySelector classType="program" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.label.tag)} name="tags">
+      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.tag)} name="tags">
         <TagSelector />
       </Form.Item>
       <Form.Item
         label={
           <span className="d-flex align-items-center">
-            {formatMessage(commonMessages.label.languages)}
-            <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
+            {formatMessage(ProgramAdminPageMessages.ProgramBasicForm.languages)}
+            <Tooltip
+              placement="top"
+              title={<StyledTips>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.locale)}</StyledTips>}
+            >
               <QuestionCircleFilled className="ml-2" />
             </Tooltip>
           </span>
@@ -125,10 +127,10 @@ const ProgramBasicForm: React.FC<{
       <Form.Item
         label={
           <span className="d-flex align-items-center">
-            {formatMessage(programMessages.label.isIntroductionSectionVisible)}
+            {formatMessage(ProgramAdminPageMessages.ProgramBasicForm.isIntroductionSectionVisible)}
             <Tooltip
               placement="top"
-              title={<StyledTips>{formatMessage(commonMessages.text.sectionVisible)}</StyledTips>}
+              title={<StyledTips>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.sectionVisible)}</StyledTips>}
             >
               <QuestionCircleFilled className="ml-2" />
             </Tooltip>
@@ -137,32 +139,32 @@ const ProgramBasicForm: React.FC<{
         name="isIntroductionSectionVisible"
       >
         <Radio.Group>
-          <Radio value={true}>{formatMessage(programMessages.status.displayAllSection)}</Radio>
-          <Radio value={false}>{formatMessage(programMessages.status.displayTrial)}</Radio>
+          <Radio value={true}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.displayAllSection)}</Radio>
+          <Radio value={false}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.displayTrial)}</Radio>
         </Radio.Group>
       </Form.Item>
 
-      <Form.Item label={formatMessage(programMessages.label.isIssuesOpen)} name="isIssuesOpen">
+      <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.isIssuesOpen)} name="isIssuesOpen">
         <Radio.Group>
-          <Radio value={true}>{formatMessage(programMessages.status.active)}</Radio>
-          <Radio value={false}>{formatMessage(programMessages.status.closed)}</Radio>
+          <Radio value={true}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.active)}</Radio>
+          <Radio value={false}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.closed)}</Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item
-        label={formatMessage(pageMessages.ProgramAdminPage.isEnrolledCountVisible)}
+        label={formatMessage(ProgramAdminPageMessages.ProgramBasicForm.isEnrolledCountVisible)}
         name="isEnrolledCountVisible"
       >
         <Radio.Group>
-          <Radio value={true}>{formatMessage(programMessages.status.active)}</Radio>
-          <Radio value={false}>{formatMessage(programMessages.status.closed)}</Radio>
+          <Radio value={true}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.active)}</Radio>
+          <Radio value={false}>{formatMessage(ProgramAdminPageMessages.ProgramBasicForm.closed)}</Radio>
         </Radio.Group>
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>
-          {formatMessage(commonMessages.ui.cancel)}
+          {formatMessage(ProgramAdminPageMessages['*'].cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          {formatMessage(commonMessages.ui.save)}
+          {formatMessage(ProgramAdminPageMessages['*'].save)}
         </Button>
       </Form.Item>
     </Form>

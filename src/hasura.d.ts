@@ -12006,6 +12006,8 @@ export interface GET_PROGRAM_BY_ID_program_by_pk {
   sale_price: any | null;
   list_price: any | null;
   cover_url: string | null;
+  cover_mobile_url: string | null;
+  cover_thumbnail_url: string | null;
   cover_video_url: string | null;
   published_at: any | null;
   in_advance: boolean;
@@ -14783,7 +14785,9 @@ export interface UPDATE_PROGRAM_COVER {
 
 export interface UPDATE_PROGRAM_COVERVariables {
   programId: any;
-  coverUrl?: string | null;
+  coverDefaultUrl?: string | null;
+  coverMobileUrl?: string | null;
+  coverThumbnailUrl?: string | null;
 }
 
 /* tslint:disable */
@@ -18708,6 +18712,8 @@ export enum program_tempo_delivery_update_column {
 export enum program_update_column {
   abstract = "abstract",
   app_id = "app_id",
+  cover_mobile_url = "cover_mobile_url",
+  cover_thumbnail_url = "cover_thumbnail_url",
   cover_url = "cover_url",
   cover_video_url = "cover_video_url",
   created_at = "created_at",
@@ -31248,6 +31254,8 @@ export interface program_bool_exp {
   abstract?: String_comparison_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  cover_mobile_url?: String_comparison_exp | null;
+  cover_thumbnail_url?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   cover_video_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -32406,6 +32414,8 @@ export interface program_insert_input {
   abstract?: string | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  cover_mobile_url?: string | null;
+  cover_thumbnail_url?: string | null;
   cover_url?: string | null;
   cover_video_url?: string | null;
   created_at?: any | null;
@@ -32448,6 +32458,8 @@ export interface program_insert_input {
 export interface program_max_order_by {
   abstract?: order_by | null;
   app_id?: order_by | null;
+  cover_mobile_url?: order_by | null;
+  cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
@@ -32468,6 +32480,8 @@ export interface program_max_order_by {
 export interface program_min_order_by {
   abstract?: order_by | null;
   app_id?: order_by | null;
+  cover_mobile_url?: order_by | null;
+  cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
@@ -32506,6 +32520,8 @@ export interface program_order_by {
   abstract?: order_by | null;
   app?: app_order_by | null;
   app_id?: order_by | null;
+  cover_mobile_url?: order_by | null;
+  cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;

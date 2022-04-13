@@ -28,6 +28,8 @@ export const useProgram = (programId: string) => {
           sale_price
           list_price
           cover_url
+          cover_mobile_url
+          cover_thumbnail_url
           cover_video_url
           published_at
           in_advance
@@ -145,6 +147,8 @@ export const useProgram = (programId: string) => {
       abstract: data.program_by_pk.abstract,
       description: data.program_by_pk.description,
       coverUrl: data.program_by_pk.cover_url,
+      coverMobileUrl: data.program_by_pk.cover_mobile_url,
+      coverThumbnailUrl: data.program_by_pk.cover_thumbnail_url,
       coverVideoUrl: data.program_by_pk.cover_video_url,
       publishedAt: data.program_by_pk.published_at && new Date(data.program_by_pk.published_at),
       inAdvance: data.program_by_pk.in_advance,
