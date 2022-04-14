@@ -22,7 +22,17 @@ const projectMessages = {
   }),
   ProjectPlanAdminModal: defineMessages({
     deliverables: { id: 'project.ProjectPlanAdminModal.deliverables', defaultMessage: '交付項目' },
-    addDeliverables: { id: 'project.ProjectPlanAdminModal.addDeliverables', defaultMessage: '新增項目' },
+  }),
+  ProjectPlanCard: defineMessages({
+    onSale: { id: 'project.ProjectPlanCard.onSale', defaultMessage: '發售中' },
+    notSale: { id: 'project.ProjectPlanCard.notSale', defaultMessage: '已停售' },
+    sku: { id: 'project.ProjectPlanCard.sku', defaultMessage: 'SKU' },
+    skuSetting: { id: 'project.ProjectPlanCard.skuSetting', defaultMessage: '設定料號' },
+  }),
+  ProjectPlanProductSelector: defineMessages({
+    sku: { id: 'project.ProjectPlanProductSelector.sku', defaultMessage: '料號（SKU）' },
+    recognizePrice: { id: 'project.ProjectPlanProductSelector.recognizePrice', defaultMessage: '認列金額' },
+    addDeliverables: { id: 'project.ProjectPlanProductSelector.addDeliverables', defaultMessage: '新增項目' },
   }),
 }
 

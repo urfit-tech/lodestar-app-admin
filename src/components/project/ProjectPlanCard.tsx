@@ -1,6 +1,7 @@
 import EditOutlined from '@ant-design/icons/lib/icons/EditOutlined'
-import { Typography } from 'antd'
+import { Button, Divider, Tag, Typography } from 'antd'
 import Card, { CardProps } from 'antd/lib/card'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -9,8 +10,10 @@ import EmptyCover from '../../images/default/empty-cover.png'
 import { ProjectPlan, ProjectPlanPeriodType } from '../../types/project'
 import AdminCard from '../admin/AdminCard'
 import PriceLabel from '../common/PriceLabel'
+import ProductSkuModal from '../common/ProductSkuModal'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProjectPlanAdminModal from './ProjectPlanAdminModal'
+import projectMessages from './translation'
 
 const CoverImage = styled.div<{ src: string }>`
   padding-top: calc(100% / 3);
@@ -60,7 +63,14 @@ const ProjectPlanCard: React.FC<
   } & CardProps
 > = ({ projectPlan, projectId, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const isOnSale = (projectPlan.soldAt?.getTime() || 0) > Date.now()
+  const projectPlanType =
+    projectPlan.periodAmount && projectPlan.periodType
+      ? projectPlan.autoRenewed
+        ? 'subscription'
+        : 'period'
+      : 'perpetual'
 
   return (
     <>
@@ -68,23 +78,20 @@ const ProjectPlanCard: React.FC<
         <Card.Meta
           title={
             <StyledTitleContainer className="mb-2">
-              <StyledTitle>{projectPlan.title}</StyledTitle>
+              <div className="d-flex align-items-center">
+                <Tag className="mr-2">
+                  {projectPlanType === 'subscription'
+                    ? formatMessage(commonMessages.ui.subscriptionPlan)
+                    : projectPlanType === 'period'
+                    ? formatMessage(commonMessages.ui.periodPlan)
+                    : formatMessage(commonMessages.ui.perpetualPlan)}
+                </Tag>
+                <StyledTitle>{projectPlan.title}</StyledTitle>
+              </div>
               <ProjectPlanAdminModal
                 projectId={projectId}
                 projectPlan={projectPlan}
-                renderTrigger={({ onOpen }) => (
-                  <EditOutlined
-                    onClick={() =>
-                      onOpen?.(
-                        projectPlan.periodAmount && projectPlan.periodType
-                          ? projectPlan.autoRenewed
-                            ? 'subscription'
-                            : 'period'
-                          : 'perpetual',
-                      )
-                    }
-                  />
-                )}
+                renderTrigger={({ onOpen }) => <EditOutlined onClick={() => onOpen?.(projectPlanType)} />}
                 onRefetch={onRefetch}
               />
             </StyledTitleContainer>
@@ -98,20 +105,33 @@ const ProjectPlanCard: React.FC<
                 periodAmount={1}
                 periodType={projectPlan.periodType as ProjectPlanPeriodType}
               />
+              <Divider />
               <Typography.Paragraph ellipsis={{ rows: 2 }} className="mt-4 mb-0">
                 <BraftContent>{projectPlan.description}</BraftContent>
               </Typography.Paragraph>
-
-              <ExtraContentBlock className="d-flex justify-content-between">
-                <div>
+              <ExtraContentBlock className="d-flex justify-content-between align-items-center">
+                <div className="d-flex">
+                  {projectPlan.publishedAt ? (
+                    <StyledOnSale status="onSale">{formatMessage(projectMessages.ProjectPlanCard.onSale)}</StyledOnSale>
+                  ) : (
+                    <StyledOnSale>{formatMessage(projectMessages.ProjectPlanCard.notSale)}</StyledOnSale>
+                  )}
+                  <span style={{ whiteSpace: 'pre-wrap' }}> / </span>
                   {formatMessage(commonMessages.label.amountParticipants, {
                     amount: projectPlan.projectPlanEnrollment,
                   })}
                 </div>
-                {projectPlan.publishedAt ? (
-                  <StyledOnSale status="onSale">發售中</StyledOnSale>
-                ) : (
-                  <StyledOnSale>已停售</StyledOnSale>
+                {enabledModules.sku && (
+                  <ProductSkuModal
+                    productId={`ProjectPlan_${projectPlan.id}`}
+                    renderTrigger={({ sku, onOpen }) => (
+                      <Button type="link" onClick={() => onOpen?.()}>
+                        {sku
+                          ? `${formatMessage(projectMessages.ProjectPlanCard.sku)}: ${sku}`
+                          : formatMessage(projectMessages.ProjectPlanCard.skuSetting)}
+                      </Button>
+                    )}
+                  />
                 )}
               </ExtraContentBlock>
             </>
