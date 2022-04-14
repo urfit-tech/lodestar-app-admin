@@ -8,6 +8,8 @@ export type ProgramRoleName = 'owner' | 'instructor' | 'assistant'
 export type ProgramPreviewProps = {
   id: string
   coverUrl: string | null
+  coverMobileUrl: string | null
+  coverThumbnailUrl: string | null
   title: string
   abstract: string | null
   instructors: {

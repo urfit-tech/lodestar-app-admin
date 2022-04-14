@@ -8807,6 +8807,9 @@ export interface GET_PRODUCT_INVENTORY_product_inventory {
 
 export interface GET_PRODUCT_INVENTORY_order_product_order_log {
   __typename: "order_log";
+  /**
+   * merchandise shipping advice
+   */
   delivered_at: any | null;
 }
 
@@ -8922,6 +8925,9 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
   created_at: any;
   updated_at: any | null;
   last_paid_at: any | null;
+  /**
+   * merchandise shipping advice
+   */
   delivered_at: any | null;
   deliver_message: string | null;
   shipping: any | null;
@@ -15249,6 +15255,8 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
   __typename: "program";
   id: any;
   cover_url: string | null;
+  cover_mobile_url: string | null;
+  cover_thumbnail_url: string | null;
   title: string;
   abstract: string | null;
   /**
