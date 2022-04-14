@@ -341,6 +341,8 @@ const useProgramPreviewCollection = (
       return {
         id: program.id,
         coverUrl: program.cover_url,
+        coverMobileUrl: program.cover_mobile_url,
+        coverThumbnailUrl: program.cover_thumbnail_url,
         title: program.title,
         abstract: program.abstract,
         instructors: program.program_roles.map(programRole => ({
@@ -467,6 +469,8 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
     program(where: $condition, order_by: $orderBy, limit: $limit) {
       id
       cover_url
+      cover_mobile_url
+      cover_thumbnail_url
       title
       abstract
       program_roles(where: { name: { _eq: "instructor" } }, order_by: { created_at: asc, id: desc }, limit: 1) {

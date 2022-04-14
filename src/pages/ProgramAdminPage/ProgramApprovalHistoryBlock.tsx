@@ -2,19 +2,11 @@ import Icon from '@ant-design/icons'
 import { Skeleton, Timeline } from 'antd'
 import moment from 'moment'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { ReactComponent as ExclamationCircle } from '../../images/icon/exclamation-circle.svg'
 import { ProgramAdminProps, ProgramApprovalProps } from '../../types/program'
-
-const messages = defineMessages({
-  sentApproval: { id: 'program.label.sentApproval', defaultMessage: '{date} 送審' },
-  advisement: { id: 'program.label.advisement', defaultMessage: '官方建議' },
-  pendingApproval: { id: 'program.status.pendingApproval', defaultMessage: '審核中' },
-  canceledApproval: { id: 'program.status.canceledApproval', defaultMessage: '取消送審' },
-  rejectedApproval: { id: 'program.status.rejectedApproval', defaultMessage: '審核失敗' },
-  approvedApproval: { id: 'program.status.approvedApproval', defaultMessage: '審核通過' },
-})
+import ProgramAdminPageMessages from './translation'
 
 const StyledTitle = styled.div`
   margin-bottom: 0.75rem;
@@ -74,19 +66,19 @@ const ProgramApprovalHistoryBlock: React.FC<{
         <Timeline.Item key={approval.id} color="#cdcdcd">
           <StyledTitle className="d-flex align-items-center">
             <span className="mr-2">
-              {formatMessage(messages.sentApproval, {
+              {formatMessage(ProgramAdminPageMessages.ProgramApprovalHistory.sentApproval, {
                 date: moment(approval.createdAt).format('YYYY-MM-DD HH:mm'),
               })}
             </span>
             <StyledTag variant={approval.status}>
               {approval.status === 'pending'
-                ? formatMessage(messages.pendingApproval)
+                ? formatMessage(ProgramAdminPageMessages['*'].pendingApproval)
                 : approval.status === 'canceled'
-                ? formatMessage(messages.canceledApproval)
+                ? formatMessage(ProgramAdminPageMessages.ProgramApprovalHistory.canceledApproval)
                 : approval.status === 'rejected'
-                ? formatMessage(messages.rejectedApproval)
+                ? formatMessage(ProgramAdminPageMessages['*'].rejectedApproval)
                 : approval.status === 'approved'
-                ? formatMessage(messages.approvedApproval)
+                ? formatMessage(ProgramAdminPageMessages.ProgramApprovalHistory.approvedApproval)
                 : null}
             </StyledTag>
           </StyledTitle>
@@ -97,7 +89,7 @@ const ProgramApprovalHistoryBlock: React.FC<{
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <StyledFeedbackTitle>
                   <Icon component={() => <ExclamationCircle />} className="mr-2" />
-                  <span>{formatMessage(messages.advisement)}</span>
+                  <span>{formatMessage(ProgramAdminPageMessages.ProgramApprovalHistory.advisement)}</span>
                 </StyledFeedbackTitle>
                 <StyledDate>{moment(approval.updatedAt).format('YYYY-MM-DD HH:mm')}</StyledDate>
               </div>

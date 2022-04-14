@@ -14,12 +14,12 @@ import { AdminBlock } from '../../components/admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../../components/common'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSearchIcon } from '../../images/default/status-search.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
 import { ProgramAdminProps, ProgramApprovalProps } from '../../types/program'
+import ProgramAdminPageMessages from './translation'
 
 type FieldProps = {
   description: string
@@ -44,7 +44,9 @@ const ProgramPublishBlock: React.FC<{
     UPDATE_PROGRAM_APPROVAL,
   )
 
-  const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublished))
+  const [publishState, setPublishState] = useState<string>(
+    formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.publiclyPublished),
+  )
   const [isVisible, setVisible] = useState(false)
   const [isApprovalVisible, setIsApprovalVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -57,23 +59,23 @@ const ProgramPublishBlock: React.FC<{
 
   !program.abstract &&
     errors.push({
-      message: formatMessage(programMessages.text.noProgramAbstract),
+      message: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.noProgramAbstract),
       to: `/programs/${program.id}?tab=general`,
     })
   !program.description &&
     errors.push({
-      message: formatMessage(programMessages.text.noProgramDescription),
+      message: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.noProgramDescription),
       to: `/programs/${program.id}?tab=general`,
     })
   sum(program.contentSections.map(section => section.programContents.length)) === 0 &&
     errors.push({
-      message: formatMessage(programMessages.text.noProgramContent),
+      message: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.noProgramContent),
       to: `/programs/${program.id}?tab=content`,
     })
 
   program.plans.length === 0 &&
     errors.push({
-      message: formatMessage(programMessages.text.noPrice),
+      message: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.noPrice),
       to: `/programs/${program.id}?tab=plan`,
     })
 
@@ -85,7 +87,7 @@ const ProgramPublishBlock: React.FC<{
     ),
   ) &&
     errors.push({
-      message: formatMessage(programMessages.text.invalidExercise),
+      message: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.invalidExercise),
       to: `/programs/${program.id}?tab=content`,
     })
 
@@ -111,39 +113,39 @@ const ProgramPublishBlock: React.FC<{
     }
   } = {
     published: {
-      title: formatMessage(commonMessages.status.publiclyPublished),
-      description: formatMessage(programMessages.text.isPubliclyPublishedNotation),
+      title: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.publiclyPublished),
+      description: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.isPubliclyPublishedNotation),
     },
     publishedInPrivate: {
-      title: formatMessage(commonMessages.status.privatelyPublished),
-      description: formatMessage(programMessages.text.isPrivatelyPublishedNotation),
+      title: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.privatelyPublished),
+      description: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.isPrivatelyPublishedNotation),
     },
     unpublished: {
-      title: formatMessage(commonMessages.status.unpublished),
-      description: formatMessage(programMessages.text.isUnpublishedNotation),
+      title: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.unpublished),
+      description: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.isUnpublishedNotation),
     },
     notValidated: {
-      title: formatMessage(commonMessages.status.notComplete),
-      description: formatMessage(programMessages.text.notCompleteNotation),
+      title: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.notComplete),
+      description: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.notCompleteNotation),
     },
     notYetApply: {
-      title: formatMessage(programMessages.label.notYetApply),
-      description: formatMessage(programMessages.text.notApprovedNotation),
+      title: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.notYetApproval),
+      description: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.notApprovedNotation),
     },
     pending: {
-      title: formatMessage(programMessages.label.pending),
+      title: formatMessage(ProgramAdminPageMessages['*'].pendingApproval),
       description:
         currentUserRole === 'app-owner'
-          ? formatMessage(programMessages.text.checkNotation)
-          : formatMessage(programMessages.text.notApprovedNotation),
+          ? formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.checkNotation)
+          : formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.notApprovedNotation),
     },
     rejected: {
-      title: formatMessage(programMessages.label.rejected),
-      description: formatMessage(programMessages.text.notApprovedNotation),
+      title: formatMessage(ProgramAdminPageMessages['*'].rejectedApproval),
+      description: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.notApprovedNotation),
     },
     approved: {
-      title: formatMessage(programMessages.label.approved),
-      description: formatMessage(programMessages.text.isUnpublishedNotation),
+      title: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.approved),
+      description: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.isUnpublishedNotation),
     },
   }
 
@@ -165,8 +167,8 @@ const ProgramPublishBlock: React.FC<{
   }
   const handleUnPublish = () => {
     Modal.confirm({
-      title: formatMessage(commonMessages.text.unpublishingTitle),
-      content: formatMessage(programMessages.text.unpublishingWarning),
+      title: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.unpublishingTitle),
+      content: formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.unpublishingWarning),
       onOk: () => {
         publishProgram({
           variables: {
@@ -226,7 +228,10 @@ const ProgramPublishBlock: React.FC<{
 
   const overlay = (
     <Menu>
-      {[formatMessage(commonMessages.ui.publiclyPublished), formatMessage(commonMessages.ui.privatelyPublished)]
+      {[
+        formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.publiclyPublished),
+        formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.privatelyPublished),
+      ]
         .filter(publishType => publishType !== publishState)
         .map(publishType => (
           <Menu.Item key={publishType}>
@@ -234,7 +239,9 @@ const ProgramPublishBlock: React.FC<{
               type="link"
               onClick={() => {
                 setPublishState(publishType)
-                handlePublish(publishType !== formatMessage(commonMessages.ui.publiclyPublished))
+                handlePublish(
+                  publishType !== formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.publiclyPublished),
+                )
               }}
             >
               {publishType}
@@ -275,7 +282,7 @@ const ProgramPublishBlock: React.FC<{
                 <span className="mr-1">{error.message}</span>
                 <span>
                   <Link to={error.to}>
-                    {formatMessage(commonMessages.ui.jumpTo)} <RightOutlined />
+                    {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.jumpTo)} <RightOutlined />
                   </Link>
                 </span>
               </div>
@@ -288,44 +295,52 @@ const ProgramPublishBlock: React.FC<{
             <div>{publishState}</div>
           </Dropdown.Button>
         ) : programStatus === 'published' || programStatus === 'publishedInPrivate' ? (
-          <Button onClick={handleUnPublish}>{formatMessage(commonMessages.ui.cancelPublishing)}</Button>
+          <Button onClick={handleUnPublish}>
+            {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.cancelPublishing)}
+          </Button>
         ) : programStatus === 'unpublished' || programStatus === 'approved' ? (
           <Dropdown.Button
             type="primary"
             icon={<DownOutlined />}
             overlay={overlay}
-            onClick={() => handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublished))}
+            onClick={() =>
+              handlePublish(
+                publishState === formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.privatelyPublished),
+              )
+            }
           >
             <div>{publishState}</div>
           </Dropdown.Button>
         ) : programStatus === 'notYetApply' ? (
           <Button type="primary" onClick={() => setIsApprovalVisible(true)}>
-            {formatMessage(programMessages.ui.apply)}
+            {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.apply)}
           </Button>
         ) : programStatus === 'pending' ? (
           currentUserRole === 'app-owner' ? (
             <div>
               <Button className="mr-2" onClick={() => setIsApprovalVisible(true)}>
-                {formatMessage(programMessages.ui.reject)}
+                {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.reject)}
               </Button>
               <Button type="primary" loading={loading} onClick={() => handleUpdateProgramApproval('approved')}>
-                {formatMessage(programMessages.ui.approve)}
+                {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.approve)}
               </Button>
             </div>
           ) : (
             <Button loading={loading} onClick={() => handleCancelProgramApproval()}>
-              {formatMessage(programMessages.ui.cancel)}
+              {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.cancel)}
             </Button>
           )
         ) : programStatus === 'rejected' ? (
-          <Button onClick={() => setIsApprovalVisible(true)}>{formatMessage(programMessages.ui.reApply)}</Button>
+          <Button onClick={() => setIsApprovalVisible(true)}>
+            {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.reApply)}
+          </Button>
         ) : null}
       </div>
 
       <StyledModal
         visible={isVisible}
-        okText={formatMessage(commonMessages.ui.publishConfirmation)}
-        cancelText={formatMessage(commonMessages.ui.back)}
+        okText={formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.publishConfirmation)}
+        cancelText={formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.back)}
         onOk={() => {
           handlePublish(true)
           setVisible(false)
@@ -333,19 +348,19 @@ const ProgramPublishBlock: React.FC<{
         onCancel={() => setVisible(false)}
       >
         <StyledModalTitle className="mb-4">
-          {formatMessage(programMessages.text.confirmPrivatelyPublishedTitle)}
+          {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.confirmPrivatelyPublishedTitle)}
         </StyledModalTitle>
         <StyledModalParagraph>
-          {formatMessage(programMessages.text.confirmPrivatelyPublishedNotation)}
+          {formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.confirmPrivatelyPublishedNotation)}
         </StyledModalParagraph>
       </StyledModal>
 
       {(programStatus === 'notYetApply' || programStatus === 'pending' || programStatus === 'rejected') && (
         <StyledModal
           visible={isApprovalVisible}
-          okText={formatMessage(commonMessages.ui.send)}
+          okText={formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.send)}
           okButtonProps={{ loading }}
-          cancelText={formatMessage(commonMessages.ui.back)}
+          cancelText={formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.back)}
           onOk={() =>
             form
               .validateFields()
@@ -361,16 +376,16 @@ const ProgramPublishBlock: React.FC<{
         >
           <StyledModalTitle className="mb-4">
             {programStatus === 'pending'
-              ? formatMessage(programMessages.label.rejectModalTitle)
-              : formatMessage(programMessages.label.applyModalTitle)}
+              ? formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.rejectModalTitle)
+              : formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.applyModalTitle)}
           </StyledModalTitle>
 
           <Form form={form} layout="vertical" colon={false} hideRequiredMark>
             <Form.Item
               label={
                 programStatus === 'pending'
-                  ? formatMessage(programMessages.label.rejectDescription)
-                  : formatMessage(programMessages.label.applyDescription)
+                  ? formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.rejectDescription)
+                  : formatMessage(ProgramAdminPageMessages.ProgramPublishBlock.applyDescription)
               }
               name="description"
               rules={[{ required: programStatus === 'pending', message: '' }]}

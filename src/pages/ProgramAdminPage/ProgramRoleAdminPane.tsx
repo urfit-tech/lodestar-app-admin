@@ -11,8 +11,8 @@ import MemberAvatar from '../../components/common/MemberAvatar'
 import ContentCreatorSelector from '../../components/form/ContentCreatorSelector'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, programMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
+import ProgramAdminPageMessages from './translation'
 
 const ProgramRoleAdminPane: React.FC<{
   program: ProgramAdminProps | null
@@ -60,7 +60,7 @@ const ProgramRoleAdminPane: React.FC<{
   return (
     <>
       <AdminBlock>
-        <AdminBlockTitle>{formatMessage(programMessages.label.programOwner)}</AdminBlockTitle>
+        <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.programOwner)}</AdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'owner')
           .map(role => (
@@ -69,7 +69,7 @@ const ProgramRoleAdminPane: React.FC<{
       </AdminBlock>
 
       <AdminBlock>
-        <AdminBlockTitle>{formatMessage(commonMessages.label.instructor)}</AdminBlockTitle>
+        <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.instructor)}</AdminBlockTitle>
         {program.roles
           .filter(role => role.name === 'instructor')
           .map((role, _, arr) => (
@@ -97,38 +97,29 @@ const ProgramRoleAdminPane: React.FC<{
         <AdminModal
           renderTrigger={({ setVisible }) => (
             <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
-              {formatMessage(commonMessages.ui.addInstructor)}
+              {formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.addInstructor)}
             </Button>
           )}
-          title={formatMessage(commonMessages.ui.addInstructor)}
+          title={formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.addInstructor)}
           footer={null}
           renderFooter={({ setVisible }) => (
             <>
               <Button className="mr-2" onClick={() => setVisible(false)}>
-                {formatMessage(commonMessages.ui.cancel)}
+                {formatMessage(ProgramAdminPageMessages['*'].cancel)}
               </Button>
               <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-                {formatMessage(commonMessages.ui.add)}
+                {formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.add)}
               </Button>
             </>
           )}
         >
           <Form layout="vertical" colon={false} hideRequiredMark>
-            <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
+            <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.selectInstructor)}>
               <ContentCreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
             </Form.Item>
           </Form>
         </AdminModal>
       </AdminBlock>
-
-      {/* <AdminBlock>
-        <AdminBlockTitle>{formatMessage(commonMessages.label.teachingAssistant)}</AdminBlockTitle>
-        {program.roles
-          .filter(role => role.name === 'assistant')
-          .map(role => (
-            <MemberAvatar key={role.id} size="32px" memberId={role.member?.id || ''} withName />
-          ))}
-      </AdminBlock> */}
     </>
   )
 }

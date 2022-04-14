@@ -83,9 +83,6 @@ const pageMessages = {
     },
     practices: { id: 'page.ProgramProgressCollectionAdminPage.practices', defaultMessage: '作業' },
   }),
-  ProgramAdminPage: defineMessages({
-    isEnrolledCountVisible: { id: 'program.ProgramBasicForm.isEnrolledCountVisible', defaultMessage: '購買人數' },
-  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },
