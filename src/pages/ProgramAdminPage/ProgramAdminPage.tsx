@@ -7,6 +7,7 @@ import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
   AdminBlock,
+  AdminBlockSubTitle,
   AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
@@ -95,7 +96,12 @@ const ProgramAdminPage: React.FC = () => {
               <AdminBlock>
                 {program?.id ? (
                   <>
-                    <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].programCover)}</AdminBlockTitle>
+                    <AdminBlockTitle className="mb-2">
+                      {formatMessage(ProgramAdminPageMessages['*'].programCover)}
+                    </AdminBlockTitle>
+                    <AdminBlockSubTitle className="mb-4">
+                      {formatMessage(ProgramAdminPageMessages['*'].programCoverDescription)}
+                    </AdminBlockSubTitle>
                     <ProgramCoverForm
                       programId={program.id}
                       coverDefaultUrl={program?.coverUrl || ''}

@@ -2,7 +2,7 @@ import { defineMessages } from 'react-intl'
 
 const ProgramAdminPageMessages = {
   '*': defineMessages({
-    save: { id: 'ProgramAdminPage.*.save', defaultMessage: '存擋 ' },
+    save: { id: 'ProgramAdminPage.*.save', defaultMessage: '存檔' },
     cancel: { id: 'ProgramAdminPage.*.cancel', defaultMessage: '取消' },
     confirm: { id: 'ProgramAdminPage.*.confirm', defaultMessage: '確定' },
     successfullySaved: { id: 'ProgramAdminPage.*.successfullySaved', defaultMessage: '儲存成功' },
@@ -26,6 +26,10 @@ const ProgramAdminPageMessages = {
     approvalHistory: { id: 'ProgramAdminPage.*.approvalHistory', defaultMessage: '審核紀錄' },
     pendingApproval: { id: 'ProgramAdminPage.*.pendingApproval', defaultMessage: '審核中' },
     rejectedApproval: { id: 'ProgramAdminPage.*.rejectedApproval', defaultMessage: '審核失敗' },
+    programCoverDescription: {
+      id: 'ProgramAdminPage.*.programCoverDescription',
+      defaultMessage: '若皆為同一張圖，只需上傳「預設」即可。',
+    },
   }),
   ProgramCoverForm: defineMessages({
     default: { id: 'ProgramAdminPage.ProgramCoverForm.default', defaultMessage: '預設' },
