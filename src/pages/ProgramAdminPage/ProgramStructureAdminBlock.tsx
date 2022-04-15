@@ -3,16 +3,12 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import ProgramContentSectionAdminCard from '../../components/program/ProgramContentSectionAdminCard'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ProgramAdminProps } from '../../types/program'
-
-const messages = defineMessages({
-  creatingBlock: { id: 'program.event.creatingBlock', defaultMessage: '新增區塊中' },
-  createBlock: { id: 'program.ui.createBlock', defaultMessage: '新增區塊' },
-})
+import ProgramAdminPageMessages from './translation'
 
 const ProgramStructureAdminBlock: React.FC<{
   program: ProgramAdminProps | null
@@ -62,7 +58,7 @@ const ProgramStructureAdminBlock: React.FC<{
           loading={loading}
           onClick={handleContentSectionAdd}
         >
-          {formatMessage(messages.createBlock)}
+          {formatMessage(ProgramAdminPageMessages.ProgramStructureAdminBlock.createBlock)}
         </Button>
       </Divider>
     </>

@@ -9,9 +9,9 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { copyToClipboard, handleError } from '../../helpers'
-import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
+import ProgramAdminPageMessages from './translation'
 
 const StyledLabel = styled.div`
   font-size: 14px;
@@ -76,7 +76,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
       },
     })
       .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
+        message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
         refetchSharingCodes()
       })
       .catch(handleError)
@@ -113,18 +113,22 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 <Form.Item
                   name={[field.name, 'code']}
                   fieldKey={[field.fieldKey, 'code']}
-                  label={<StyledLabel>{formatMessage(programMessages.label.code)}</StyledLabel>}
+                  label={
+                    <StyledLabel>
+                      {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.code)}
+                    </StyledLabel>
+                  }
                   className="mb-0 mr-3"
                   rules={[
                     {
                       required: true,
-                      message: formatMessage(programMessages.text.codeIsRequired),
+                      message: formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.codeIsRequired),
                     },
                   ]}
                   validateStatus={sharingCodeInputs[index]?.isDuplicated ? 'error' : undefined}
                   help={
                     sharingCodeInputs[index]?.code && sharingCodeInputs[index]?.isDuplicated
-                      ? formatMessage(programMessages.text.duplicatedCodesWarning)
+                      ? formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.duplicatedCodesWarning)
                       : undefined
                   }
                 >
@@ -133,7 +137,11 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 <Form.Item
                   name={[field.name, 'note']}
                   fieldKey={[field.fieldKey, 'note']}
-                  label={<StyledLabel>{formatMessage(programMessages.label.note)}</StyledLabel>}
+                  label={
+                    <StyledLabel>
+                      {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.note)}
+                    </StyledLabel>
+                  }
                   className="mb-0 mr-3"
                 >
                   <Input style={{ width: '220px' }} />
@@ -153,10 +161,12 @@ const ProgramSharingCodeAdminForm: React.FC<{
                           sharingCodeInputs[index]?.code || sharingCodes[index]?.code
                         }`,
                       )
-                      message.success(formatMessage(commonMessages.text.copiedToClipboard))
+                      message.success(
+                        formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.copiedToClipboard),
+                      )
                     }}
                   >
-                    {formatMessage(commonMessages.ui.copy)}
+                    {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.copy)}
                   </Button>
                 </StyledDescription>
               </div>
@@ -173,7 +183,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 })
               }
             >
-              {formatMessage(programMessages.ui.addUrl)}
+              {formatMessage(ProgramAdminPageMessages.ProgramSharingCodeAdminForm.addUrl)}
             </Button>
           </>
         )}
@@ -181,10 +191,10 @@ const ProgramSharingCodeAdminForm: React.FC<{
 
       <div>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          {formatMessage(commonMessages.ui.cancel)}
+          {formatMessage(ProgramAdminPageMessages['*'].cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          {formatMessage(commonMessages.ui.save)}
+          {formatMessage(ProgramAdminPageMessages['*'].save)}
         </Button>
       </div>
     </Form>

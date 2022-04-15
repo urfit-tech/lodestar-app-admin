@@ -40,6 +40,8 @@ const ExtraContentBlock = styled.div`
 const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
   id,
   coverUrl,
+  coverMobileUrl,
+  coverThumbnailUrl,
   title,
   abstract,
   instructors,
@@ -54,7 +56,11 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
   const { formatMessage } = useIntl()
 
   return (
-    <AdminCard variant="program" cover={<ProgramCover src={coverUrl} />} {...props}>
+    <AdminCard
+      variant="program"
+      cover={<ProgramCover src={coverThumbnailUrl || coverUrl || coverMobileUrl} />}
+      {...props}
+    >
       <Card.Meta
         title={<Typography.Title ellipsis={{ rows: 2 }}>{title}</Typography.Title>}
         description={

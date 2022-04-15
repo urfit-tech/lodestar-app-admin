@@ -24,22 +24,25 @@ const AppSecretAdminPage: React.FC = () => {
   const { data: secretsData, loading } = useQuery<hasura.GET_SECRETS, hasura.GET_SECRETSVariables>(GET_SECRETS, {
     variables: { appId },
   })
+
   const secrets =
-    secretsData?.setting.reduce((accum, v) => {
-      const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
-      if (!accum[namespace]) {
-        accum[namespace] = {}
-      }
-      const value = v.app_secrets.pop()?.value || ''
-      accum[namespace][v.key] = {
-        value,
-        type: v.type,
-        options: v.options,
-        isProtected: v.is_protected,
-        isRequired: v.is_required,
-      }
-      return accum
-    }, {} as Record<string, AppSecrets>) || {}
+    secretsData?.setting
+      .filter(v => v.app_secrets.length)
+      .reduce((accum, v) => {
+        const namespace = v.key.includes('.') ? v.key.split('.')[0] : ''
+        if (!accum[namespace]) {
+          accum[namespace] = {}
+        }
+        const value = v.app_secrets.pop()?.value || ''
+        accum[namespace][v.key] = {
+          value,
+          type: v.type,
+          options: v.options,
+          isProtected: v.is_protected,
+          isRequired: v.is_required,
+        }
+        return accum
+      }, {} as Record<string, AppSecrets>) || {}
 
   if (!permissions.APP_SETTING_ADMIN) {
     return <ForbiddenPage />

@@ -1,6 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button, Skeleton } from 'antd'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import ProgramPlanAdminModal from '../../components/program/ProgramPlanAdminModal'
@@ -13,7 +12,6 @@ const ProgramPlanAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
 
   if (!program) {
     return <Skeleton active />
@@ -47,21 +45,6 @@ const ProgramPlanAdminBlock: React.FC<{
       </div>
     </>
   )
-
-  // return (
-  //   <>
-  //     <AdminBlock>
-  //       <AdminBlockTitle>售價設定</AdminBlockTitle>
-  //       <ProgramPerpetualPlanAdminCard program={program} onRefetch={onRefetch} />
-  //     </AdminBlock>
-  //     {enabledModules['group_buying'] && (
-  //       <AdminBlock>
-  //         <AdminBlockTitle>多人方案</AdminBlockTitle>
-  //         <ProgramGroupBuyingAdminForm program={program} onRefetch={onRefetch} />
-  //       </AdminBlock>
-  //     )}
-  //   </>
-  // )
 }
 
 export default ProgramPlanAdminBlock
