@@ -204,6 +204,7 @@ const ProgramCoverForm: React.VFC<{
               setCoverImage(null)
               setCoverMobileImage(null)
               setCoverThumbnailImage(null)
+              form.resetFields()
             }}
           >
             {formatMessage(ProgramAdminPageMessages['*'].cancel)}
