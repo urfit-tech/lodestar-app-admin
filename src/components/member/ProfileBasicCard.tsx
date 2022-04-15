@@ -7,6 +7,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -52,6 +53,7 @@ const ProfileBasicCard: React.FC<
   )
 
   const [loading, setLoading] = useState(false)
+  const avatarId = uuid()
 
   if (!member) {
     return (
@@ -64,16 +66,15 @@ const ProfileBasicCard: React.FC<
 
   const handleUpdateAvatar = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateMemberAvatar({
       variables: {
         memberId,
-        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}/256?t=${uploadTime}`,
+        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}/${avatarId}`,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        refetchMember()
+        window.location.reload()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -136,7 +137,7 @@ const ProfileBasicCard: React.FC<
       >
         <Form.Item label={formatMessage(commonMessages.label.avatar)}>
           <ImageInput
-            path={`avatars/${appId}/${memberId}`}
+            path={`avatars/${appId}/${memberId}/${avatarId}`}
             image={{
               width: '128px',
               ratio: 1,
