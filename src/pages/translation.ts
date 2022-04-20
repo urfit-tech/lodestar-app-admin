@@ -18,14 +18,6 @@ const pageMessages = {
     sponsor: { id: 'project.*.sponsor', defaultMessage: '發起者' },
     unnamedProject: { id: 'project.*.unnamedProject', defaultMessage: '未命名專案' },
   }),
-  CouponPlanCollectionAdminPage: defineMessages({
-    coupons: { id: 'common.menu.couponPlans', defaultMessage: '折價方案' },
-    createCouponPlan: { id: 'promotion.ui.createCouponPlan', defaultMessage: '建立折價方案' },
-    editCouponPlan: { id: 'promotion.ui.editCouponPlan', defaultMessage: '編輯折價方案' },
-    available: { id: 'promotion.status.available', defaultMessage: '可使用' },
-    notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
-    unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
-  }),
   ProgramProgressCollectionAdminPage: defineMessages({
     all: { id: 'page.ProgramProgressCollectionAdminPage.all', defaultMessage: '全部' },
     selectedCategory: { id: 'page.ProgramProgressCollectionAdminPage.selectedCategory', defaultMessage: '指定分類' },

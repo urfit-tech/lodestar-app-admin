@@ -1,0 +1,2 @@
+import CouponPlanCollectionAdminPage from './CouponPlanCollectionAdminPage'
+export default CouponPlanCollectionAdminPage
