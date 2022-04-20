@@ -9,6 +9,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import AdminCard from '../../components/admin/AdminCard'
+import { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
 import * as hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -78,6 +79,19 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                     <div>
                       {fields.map(field => (
                         <Input.Group compact className="d-flex">
+                          <Form.Item
+                            {...field}
+                            name={[field.name, 'locale']}
+                            rules={[{ required: true, whitespace: true, message: 'required' }]}
+                          >
+                            <Select placeholder="locale">
+                              {SUPPORTED_LOCALES.map(supportedLocale => (
+                                <Select.Option key={supportedLocale.locale} value={supportedLocale.locale}>
+                                  {supportedLocale.label}
+                                </Select.Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
                           <Form.Item
                             {...field}
                             name={[field.name, 'label']}
