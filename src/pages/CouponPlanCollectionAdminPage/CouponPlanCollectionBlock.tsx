@@ -9,7 +9,6 @@ import CouponPlanAdminModal from '../../components/coupon/CouponPlanAdminModal'
 import CouponPlanDescriptionTabs from '../../components/coupon/CouponPlanDescriptionTabs'
 import hasura from '../../hasura'
 import { CouponPlanProps } from '../../types/checkout'
-import pageMessages from '../translation'
 import CouponPlanCollectionAdminPageMessages from './translation'
 
 const CouponCollectionBlock: React.VFC<{
@@ -18,10 +17,14 @@ const CouponCollectionBlock: React.VFC<{
 }> = ({ condition, isAvailable }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
-  const { couponPlanPreviews, loadingCouponPlans, refetchCouponPlans, loadMoreCouponPlans } =
+  const { couponPlanPreviews, errorCouponPlans, loadingCouponPlans, refetchCouponPlans, loadMoreCouponPlans } =
     usePreviewCouponPlanCollection(condition)
 
   if (loadingCouponPlans) return <Skeleton active />
+
+  if (errorCouponPlans) {
+    return <div>{formatMessage(CouponPlanCollectionAdminPageMessages['*'].fetchDataError)}</div>
+  }
 
   return (
     <div className="row">
@@ -51,7 +54,9 @@ const CouponCollectionBlock: React.VFC<{
                     <Menu.Item>
                       <CouponPlanAdminModal
                         renderTrigger={({ setVisible }) => (
-                          <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
+                          <span onClick={() => setVisible(true)}>
+                            {formatMessage(CouponPlanCollectionAdminPageMessages['*'].edit)}
+                          </span>
                         )}
                         icon={<EditOutlined />}
                         title={formatMessage(CouponPlanCollectionAdminPageMessages['*'].editCouponPlan)}

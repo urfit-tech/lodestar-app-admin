@@ -8,6 +8,8 @@ const CouponPlanCollectionAdminPageMessages = {
     available: { id: 'CouponPlanCollectionAdminPage.*.available', defaultMessage: '可使用' },
     notYet: { id: 'CouponPlanCollectionAdminPage.*.notYet', defaultMessage: '未啟用' },
     unavailable: { id: 'CouponPlanCollectionAdminPage.*.unavailable', defaultMessage: '已失效' },
+    fetchDataError: { id: 'CouponPlanCollectionAdminPage.*.fetchDataError', defaultMessage: '讀取錯誤' },
+    edit: { id: 'CouponPlanCollectionAdminPage.*.edit', defaultMessage: '編輯' },
   }),
   CouponCollectionBlock: defineMessages({
     showMore: { id: 'CouponPlanCollectionAdminPage.CouponCollectionBlock.showMore', defaultMessage: '顯示更多' },
