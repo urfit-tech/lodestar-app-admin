@@ -10,6 +10,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import styled, { css } from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../../components/admin'
 import { routesProps } from '../../components/common/AdminRouter'
 import { CustomRatioImage } from '../../components/common/Image'
@@ -136,6 +137,8 @@ const MemberAdminLayout: React.FC<{
   const [loading, setLoading] = useState(false)
   const [avatarFile, setAvatarFile] = useState<UploadFile | undefined>(undefined)
   const { renderMemberAdminLayout } = useCustomRenderer()
+  const avatarId = uuid()
+
   const [insertMemberNoteRejectedAt] = useMutation<
     hasura.INSERT_MEMBER_NOTE_REJECTED_AT,
     hasura.INSERT_MEMBER_NOTE_REJECTED_ATVariables
@@ -159,11 +162,10 @@ const MemberAdminLayout: React.FC<{
 
   const handleUpdateAvatar = () => {
     setLoading(true)
-    const uploadTime = Date.now()
     updateMemberAvatar({
       variables: {
         memberId: member.id,
-        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${member.id}/256?t=${uploadTime}`,
+        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${member.id}/${avatarId}`,
       },
     })
       .then(() => {
@@ -213,7 +215,7 @@ const MemberAdminLayout: React.FC<{
                   accept="image/*"
                   listType="picture-card"
                   showUploadList={false}
-                  path={`avatars/${appId}/${member.id}`}
+                  path={`avatars/${appId}/${member.id}/${avatarId}`}
                   onUploading={() => setLoading(true)}
                   onSuccess={() => {
                     setAvatarFile(undefined)

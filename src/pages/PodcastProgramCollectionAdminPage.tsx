@@ -64,7 +64,7 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
 
           <AdminPageBlock>
             <PodcastProgramCollectionAdminTable
-              memberId={permissions.PODCAST_NORMAL ? undefined : permissions.PODCAST_NORMAL ? currentMemberId : ''}
+              memberId={permissions.PODCAST_ADMIN ? undefined : permissions.PODCAST_NORMAL ? currentMemberId : ''}
             />
           </AdminPageBlock>
         </>

@@ -28,6 +28,13 @@ const FormWrapper = styled.div`
   }
 `
 
+const StyledUploadWarning = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  height: 100%;
+`
+
 const ProgramCoverForm: React.VFC<{
   programId: string | null
   coverDefaultUrl: string
@@ -101,8 +108,11 @@ const ProgramCoverForm: React.VFC<{
       },
     })
       .then(() => {
-        message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
+        setCoverImage(null)
+        setCoverMobileImage(null)
+        setCoverThumbnailImage(null)
         onRefetch?.()
+        message.success(formatMessage(ProgramAdminPageMessages['*'].successfullySaved))
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -139,7 +149,10 @@ const ProgramCoverForm: React.VFC<{
             </span>
           }
         >
-          <ImageUploader file={coverImage} initialCoverUrl={coverDefaultUrl} onChange={file => setCoverImage(file)} />
+          <div className="d-flex align-items-center">
+            <ImageUploader file={coverImage} initialCoverUrl={coverDefaultUrl} onChange={file => setCoverImage(file)} />
+            {coverImage && <StyledUploadWarning className="ml-2">* 尚未上傳</StyledUploadWarning>}
+          </div>
         </Form.Item>
 
         <Form.Item
@@ -149,11 +162,14 @@ const ProgramCoverForm: React.VFC<{
             </span>
           }
         >
-          <ImageUploader
-            file={coverMobileImage}
-            initialCoverUrl={coverMobileUrl}
-            onChange={file => setCoverMobileImage(file)}
-          />
+          <div className="d-flex align-items-center">
+            <ImageUploader
+              file={coverMobileImage}
+              initialCoverUrl={coverMobileUrl}
+              onChange={file => setCoverMobileImage(file)}
+            />
+            {coverMobileImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+          </div>
         </Form.Item>
 
         <Form.Item
@@ -171,15 +187,26 @@ const ProgramCoverForm: React.VFC<{
             </span>
           }
         >
-          <ImageUploader
-            file={coverThumbnailImage}
-            initialCoverUrl={coverThumbnailUrl}
-            onChange={file => setCoverThumbnailImage(file)}
-          />
+          <div className="d-flex align-items-center">
+            <ImageUploader
+              file={coverThumbnailImage}
+              initialCoverUrl={coverThumbnailUrl}
+              onChange={file => setCoverThumbnailImage(file)}
+            />
+            {coverThumbnailImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+          </div>
         </Form.Item>
 
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-          <Button className="mr-2" onClick={() => form.resetFields()}>
+          <Button
+            className="mr-2"
+            onClick={() => {
+              setCoverImage(null)
+              setCoverMobileImage(null)
+              setCoverThumbnailImage(null)
+              form.resetFields()
+            }}
+          >
             {formatMessage(ProgramAdminPageMessages['*'].cancel)}
           </Button>
           <Button type="primary" htmlType="submit" loading={loading}>

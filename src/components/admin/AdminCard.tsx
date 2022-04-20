@@ -65,7 +65,7 @@ const AdminCard = styled(Card)<{ variant?: string }>`
       overflow: hidden;
 
       .ant-card-body {
-        height: 18rem;
+        min-height: 18rem;
       }
 
       .ant-card-meta {

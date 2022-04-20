@@ -106,7 +106,7 @@ const ProjectPlanCard: React.FC<
                 periodType={projectPlan.periodType as ProjectPlanPeriodType}
               />
               <Divider />
-              <Typography.Paragraph ellipsis={{ rows: 2 }} className="mt-4 mb-0">
+              <Typography.Paragraph ellipsis={{ rows: 2 }} className="mt-4 mb-5 pb-2">
                 <BraftContent>{projectPlan.description}</BraftContent>
               </Typography.Paragraph>
               <ExtraContentBlock className="d-flex justify-content-between align-items-center">

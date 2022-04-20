@@ -13616,15 +13616,15 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SIMPLE_COUPON_PLAN_COLLECTION
+// GraphQL query operation: GET_PREVIEW_COUPON_PLAN_COLLECTION
 // ====================================================
 
-export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products {
+export interface GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products {
   __typename: "coupon_plan_product";
   product_id: string;
 }
 
-export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan {
+export interface GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan {
   __typename: "coupon_plan";
   id: any;
   title: string;
@@ -13637,22 +13637,38 @@ export interface GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan {
   constraint: any | null;
   started_at: any | null;
   ended_at: any | null;
+  updated_at: any | null;
   description: string | null;
   /**
    * An array relationship
    */
-  coupon_plan_products: GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products[];
+  coupon_plan_products: GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products[];
 }
 
-export interface GET_SIMPLE_COUPON_PLAN_COLLECTION {
+export interface GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan_aggregate_aggregate {
+  __typename: "coupon_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan_aggregate {
+  __typename: "coupon_plan_aggregate";
+  aggregate: GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan_aggregate_aggregate | null;
+}
+
+export interface GET_PREVIEW_COUPON_PLAN_COLLECTION {
   /**
    * fetch data from the table: "coupon_plan"
    */
-  coupon_plan: GET_SIMPLE_COUPON_PLAN_COLLECTION_coupon_plan[];
+  coupon_plan: GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan[];
+  /**
+   * fetch aggregated fields from the table: "coupon_plan"
+   */
+  coupon_plan_aggregate: GET_PREVIEW_COUPON_PLAN_COLLECTION_coupon_plan_aggregate;
 }
 
-export interface GET_SIMPLE_COUPON_PLAN_COLLECTIONVariables {
-  appId: string;
+export interface GET_PREVIEW_COUPON_PLAN_COLLECTIONVariables {
+  condition: coupon_plan_bool_exp;
+  limit: number;
 }
 
 /* tslint:disable */

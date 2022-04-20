@@ -131,9 +131,9 @@ const ProjectPlanAdminModal: React.FC<
               try {
                 await upsertProjectPlanProducts({
                   variables: {
-                    projectPlanId: projectPlan?.id,
+                    projectPlanId,
                     data: values.planProducts.map(planProduct => ({
-                      project_plan_id: projectPlan?.id,
+                      project_plan_id: projectPlanId,
                       product_id: planProduct.id,
                       options: planProduct.options,
                     })),
