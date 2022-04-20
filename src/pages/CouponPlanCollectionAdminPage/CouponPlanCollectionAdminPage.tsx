@@ -8,7 +8,7 @@ import CouponPlanAdminModal from '../../components/coupon/CouponPlanAdminModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { DiscountIcon } from '../../images/icon'
 import ForbiddenPage from '../ForbiddenPage'
-import CouponCollectionBlock from './CouponCollectionBlock'
+import CouponPlanCollectionBlock from './CouponPlanCollectionBlock'
 import CouponPlanCollectionAdminPageMessages from './translation'
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
@@ -85,7 +85,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
       <Tabs defaultActiveKey="available">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            <CouponCollectionBlock
+            <CouponPlanCollectionBlock
               key={stateCode}
               condition={tabContent.condition}
               isAvailable={tabContent.key === 'available'}
