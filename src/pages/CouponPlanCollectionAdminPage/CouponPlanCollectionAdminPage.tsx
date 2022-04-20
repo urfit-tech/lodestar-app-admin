@@ -84,12 +84,8 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 
       <Tabs defaultActiveKey="available">
         {tabContents.map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            <CouponPlanCollectionBlock
-              key={stateCode}
-              condition={tabContent.condition}
-              isAvailable={tabContent.key === 'available'}
-            />
+          <Tabs.TabPane key={`${tabContent.key}_${stateCode}`} tab={tabContent.tab}>
+            <CouponPlanCollectionBlock condition={tabContent.condition} isAvailable={tabContent.key === 'available'} />
           </Tabs.TabPane>
         ))}
       </Tabs>
