@@ -4,7 +4,6 @@ import { Button, Input, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
@@ -345,11 +344,13 @@ const useProgramPreviewCollection = (
         coverThumbnailUrl: program.cover_thumbnail_url,
         title: program.title,
         abstract: program.abstract,
-        instructors: program.program_roles.map(programRole => ({
-          id: programRole.member?.id || '',
-          avatarUrl: programRole.member?.picture_url || null,
-          name: programRole.member?.name || programRole.member?.username || '',
-        })),
+        instructors: data.program_role
+          .filter(v => v.program_id === program.id)
+          .map(programRole => ({
+            id: programRole.member?.id || '',
+            avatarUrl: programRole.member?.picture_url || null,
+            name: programRole.member?.name || programRole.member?.username || '',
+          })),
         listPrice: plan?.list_price ?? null,
         salePrice: plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now() ? plan.sale_price : null,
         periodAmount: plan?.period_amount || null,
@@ -362,16 +363,10 @@ const useProgramPreviewCollection = (
   const { data: enrollmentData } = useQuery<hasura.GET_PROGRAM_ENROLLMENT>(
     gql`
       query GET_PROGRAM_ENROLLMENT {
-        program {
-          id
-          program_plans(where: { published_at: { _lte: "now()" } }, order_by: { created_at: asc }) {
-            id
-            program_plan_enrollments_aggregate {
-              aggregate {
-                count
-              }
-            }
-          }
+        program_statistics {
+          program_id
+          program_plan_enrolled_count
+          program_package_plan_enrolled_count
         }
       }
     `,
@@ -379,11 +374,9 @@ const useProgramPreviewCollection = (
 
   if (enrollmentData) {
     programPreviews.forEach(v => {
-      const enrollmentAmount =
-        enrollmentData.program
-          .filter(w => w.id === v.id)
-          .map(x => sum(x.program_plans.map(y => y.program_plan_enrollments_aggregate.aggregate?.count || 0)))[0] || 0
-      v.enrollment = enrollmentAmount
+      const statistics = enrollmentData.program_statistics.find(s => s.program_id === v.id)
+      v.enrollment =
+        (statistics?.program_package_plan_enrolled_count || 0) + (statistics?.program_plan_enrolled_count || 0)
     })
   }
 
@@ -418,6 +411,7 @@ const useProgramPreviewCollection = (
               return {
                 program_aggregate: prev.program_aggregate,
                 program: [...prev.program, ...fetchMoreResult.program],
+                program_role: prev.program_role,
               }
             },
           })
@@ -466,6 +460,16 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
         count
       }
     }
+    program_role(where: { name: { _eq: "instructor" } }, order_by: { created_at: asc }) {
+      id
+      program_id
+      member {
+        id
+        picture_url
+        name
+        username
+      }
+    }
     program(where: $condition, order_by: $orderBy, limit: $limit) {
       id
       cover_url
@@ -473,15 +477,6 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       cover_thumbnail_url
       title
       abstract
-      program_roles(where: { name: { _eq: "instructor" } }, order_by: { created_at: asc, id: desc }, limit: 1) {
-        id
-        member {
-          id
-          picture_url
-          name
-          username
-        }
-      }
       list_price
       sale_price
       sold_at
