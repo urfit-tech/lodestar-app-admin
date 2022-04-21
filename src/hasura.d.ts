@@ -8467,6 +8467,7 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   description: string | null;
   started_at: any | null;
   ended_at: any | null;
+  updated_at: any | null;
   product_quantity_limit: number;
   is_transferable: boolean;
   sale_amount: number | null;
@@ -8481,15 +8482,30 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   voucher_plan_products: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products[];
 }
 
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_aggregate_aggregate {
+  __typename: "voucher_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_aggregate {
+  __typename: "voucher_plan_aggregate";
+  aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_aggregate_aggregate | null;
+}
+
 export interface GET_VOUCHER_PLAN_COLLECTION {
   /**
    * fetch data from the table: "voucher_plan"
    */
   voucher_plan: GET_VOUCHER_PLAN_COLLECTION_voucher_plan[];
+  /**
+   * fetch aggregated fields from the table: "voucher_plan"
+   */
+  voucher_plan_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_aggregate;
 }
 
 export interface GET_VOUCHER_PLAN_COLLECTIONVariables {
-  appId?: string | null;
+  condition: voucher_plan_bool_exp;
+  limit: number;
 }
 
 /* tslint:disable */

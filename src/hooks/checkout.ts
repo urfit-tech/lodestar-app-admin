@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
-import { reverse, times } from 'ramda'
+import { times } from 'ramda'
 import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
@@ -149,16 +149,20 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
   }
 }
 
-export const useVoucherPlanCollection = (appId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_VOUCHER_PLAN_COLLECTION>(
+export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLLECTIONVariables['condition']) => {
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    hasura.GET_VOUCHER_PLAN_COLLECTION,
+    hasura.GET_VOUCHER_PLAN_COLLECTIONVariables
+  >(
     gql`
-      query GET_VOUCHER_PLAN_COLLECTION($appId: String) {
-        voucher_plan(where: { app_id: { _eq: $appId } }) {
+      query GET_VOUCHER_PLAN_COLLECTION($condition: voucher_plan_bool_exp!, $limit: Int!) {
+        voucher_plan(where: $condition, order_by: [{ updated_at: desc }, { id: desc }], limit: $limit) {
           id
           title
           description
           started_at
           ended_at
+          updated_at
           product_quantity_limit
           is_transferable
           sale_amount
@@ -176,35 +180,60 @@ export const useVoucherPlanCollection = (appId: string) => {
             product_id
           }
         }
+        voucher_plan_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
       }
     `,
-    { variables: { appId } },
+    { variables: { condition: condition, limit: 50 } },
   )
 
-  const voucherPlanCollection: VoucherPlanProps[] = reverse(data?.voucher_plan || []).map(v => {
-    const remaining = v.voucher_codes_aggregate.aggregate?.sum?.remaining || 0
+  const voucherPlans: VoucherPlanProps[] =
+    data?.voucher_plan.map(v => {
+      const remaining = v.voucher_codes_aggregate.aggregate?.sum?.remaining || 0
+      return {
+        id: v.id,
+        title: v.title,
+        startedAt: v?.started_at || null,
+        endedAt: v?.ended_at || null,
+        productQuantityLimit: v.product_quantity_limit,
+        description: decodeURI(v.description || ''),
+        count: v.voucher_codes_aggregate.aggregate?.sum?.count || 0,
+        remaining,
+        productIds: v.voucher_plan_products.map(product => product.product_id),
+        isTransferable: v.is_transferable,
+        sale: v.sale_amount ? { amount: v.sale_amount, price: v.sale_price } : undefined,
+      }
+    }) || []
 
-    return {
-      id: v.id,
-      title: v.title,
-      startedAt: v?.started_at || null,
-      endedAt: v?.ended_at || null,
-      productQuantityLimit: v.product_quantity_limit,
-      available: remaining > 0 && (v.ended_at ? new Date(v.ended_at).getTime() > Date.now() : true),
-      description: decodeURI(v.description || ''),
-      count: v.voucher_codes_aggregate.aggregate?.sum?.count || 0,
-      remaining,
-      productIds: v.voucher_plan_products.map(product => product.product_id),
-      isTransferable: v.is_transferable,
-      sale: v.sale_amount ? { amount: v.sale_amount, price: v.sale_price } : undefined,
-    }
-  })
+  const loadMoreVoucherPlans =
+    (data?.voucher_plan.length || 0) < (data?.voucher_plan_aggregate.aggregate?.count || 0)
+      ? () =>
+          fetchMore({
+            variables: {
+              condition: { ...condition, updated_at: { _lt: data?.voucher_plan.slice(-1)[0]?.updated_at } },
+              limit: 50,
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return {
+                voucher_plan_aggregate: prev.voucher_plan_aggregate,
+                voucher_plan: [...prev.voucher_plan, ...fetchMoreResult.voucher_plan],
+              }
+            },
+          })
+      : undefined
 
   return {
     loading,
     error,
-    voucherPlanCollection,
+    voucherPlans,
     refetch,
+    loadMoreVoucherPlans,
   }
 }
 

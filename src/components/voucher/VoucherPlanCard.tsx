@@ -1,13 +1,14 @@
 import { Divider } from 'antd'
 import moment from 'moment'
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { rgba } from '../../helpers'
-import { promotionMessages } from '../../helpers/translation'
 import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
+import VoucherPlanCollectionAdminPageMessages from '../../pages/VoucherPlanCollectionAdminPage/translation'
 import { VoucherPlanBriefProps } from '../../types/checkout'
 import { BREAK_POINT } from '../common/Responsive'
+import VoucherPlanDetailModal from './VoucherPlanDetailModal'
 
 const StyledWrapper = styled.div`
   position: relative;
@@ -64,7 +65,7 @@ const StyledExtra = styled.div`
   font-size: 14px;
   letter-spacing: 0.4px;
 `
-const StyledAction = styled.div`
+const StyledMetaData = styled.div`
   width: 100%;
   color: var(--gray-dark);
   font-size: 14px;
@@ -85,13 +86,16 @@ const StyledTitle = styled.div`
   text-overflow: ellipsis;
 `
 
-const VoucherPlanCard: React.FC<VoucherPlanBriefProps> = ({
+const VoucherPlanCard: React.FC<VoucherPlanBriefProps & { renderEditDropdown?: ReactElement }> = ({
+  id,
   title,
   startedAt,
   endedAt,
   productQuantityLimit,
   available,
-  action,
+  count,
+  remaining,
+  renderEditDropdown,
 }) => {
   const { formatMessage } = useIntl()
 
@@ -105,23 +109,37 @@ const VoucherPlanCard: React.FC<VoucherPlanBriefProps> = ({
         <StyledContent className="flex-grow-1">
           <StyledTitle className="mb-1">{title}</StyledTitle>
           <div>
-            {startedAt ? moment(startedAt).format('YYYY/MM/DD') : formatMessage(promotionMessages.label.fromNow)}
+            {startedAt
+              ? moment(startedAt).format('YYYY/MM/DD')
+              : formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.fromNow)}
             {' ~ '}
-            {endedAt ? moment(endedAt).format('YYYY/MM/DD') : formatMessage(promotionMessages.label.forever)}
+            {endedAt
+              ? moment(endedAt).format('YYYY/MM/DD')
+              : formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.forever)}
           </div>
 
           <StyledExtra className="d-flex align-items-center justify-content-between mt-4">
-            <div>{formatMessage(promotionMessages.text.exchangeItemsNumber, { number: productQuantityLimit })}</div>
+            <div>
+              {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.exchangeItemsNumber, {
+                number: productQuantityLimit,
+              })}
+            </div>
           </StyledExtra>
         </StyledContent>
       </div>
 
-      {action && (
-        <>
-          <Divider />
-          <StyledAction className="d-flex justify-content-between align-items-center">{action}</StyledAction>
-        </>
-      )}
+      <Divider />
+      <StyledMetaData className="d-flex justify-content-between align-items-center">
+        <VoucherPlanDetailModal id={id} title={title} />
+
+        <div className="flex-grow-1">
+          {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.exchangedCount, {
+            exchanged: count - remaining,
+            total: count,
+          })}
+        </div>
+        <>{renderEditDropdown}</>
+      </StyledMetaData>
     </StyledWrapper>
   )
 }

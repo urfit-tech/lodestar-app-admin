@@ -370,7 +370,6 @@ export const commonMessages = {
     coinHistory: { id: 'common.menu.coinHistory', defaultMessage: '代幣紀錄' },
     pointSettings: { id: 'common.menu.pointSettings', defaultMessage: '點數設定' },
     pointHistory: { id: 'common.menu.pointHistory', defaultMessage: '點數紀錄' },
-    vouchers: { id: 'common.menu.voucherPlans', defaultMessage: '兌換方案' },
     categories: { id: 'common.menu.categories', defaultMessage: '分類設定' },
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
     permissionGroup: { id: 'common.menu.permissionGroup', defaultMessage: '權限組' },
@@ -449,9 +448,6 @@ export const errorMessages = {
     issueContent: { id: 'error.form.issueContent', defaultMessage: '請輸入回覆內容' },
     selectInstructor: { id: 'error.form.selectInstructor', defaultMessage: '請輸入帳號 或 Email' },
     date: { id: 'error.form.date', defaultMessage: '請選擇日期' },
-    voucherCodes: { id: 'error.form.voucherCodes', defaultMessage: '至少一組兌換碼' },
-    exchangeItemsAmount: { id: 'error.form.exchangeItemsAmount', defaultMessage: '數量至少為 1' },
-    exchangeItems: { id: 'error.form.exchangeItems', defaultMessage: '至少選一個兌換項目' },
     duration: { id: 'error.form.duration', defaultMessage: '請輸入時間長度' },
     memberIdIsRequired: { id: 'error.form.memberIdIsRequired', defaultMessage: '請選擇會員' },
   }),
@@ -460,7 +456,6 @@ export const errorMessages = {
     failedGoogleLogin: { id: 'error.event.failedGoogleLogin', defaultMessage: '無法從 Google 登入/註冊' },
     checkSamePassword: { id: 'error.event.checkSamePassword', defaultMessage: '請確認密碼與新密碼相同' },
     checkSameCodeName: { id: 'error.event.checkSameCodeName', defaultMessage: '網址代碼已被使用' },
-    duplicateVoucherCode: { id: 'error.event.duplicateVoucherCode', defaultMessage: '該兌換碼已被使用' },
     duplicateCouponCode: { id: 'error.event.duplicateCouponCode', defaultMessage: '該折扣碼碼已被使用' },
     failedPodcastRecording: { id: 'error.event.failedPodcastRecording', defaultMessage: '錄音失敗：無法取得錄製音檔' },
   }),
@@ -605,13 +600,11 @@ export const appointmentMessages = {
 export const promotionMessages = {
   ui: defineMessages({
     editCouponPlan: { id: 'promotion.ui.editCouponPlan', defaultMessage: '編輯折價方案' },
-    editVoucherPlan: { id: 'promotion.ui.editVoucherPlan', defaultMessage: '編輯兌換方案' },
     random: { id: 'promotion.ui.random', defaultMessage: '隨機' },
     custom: { id: 'promotion.ui.custom', defaultMessage: '自訂' },
     useNow: { id: 'promotion.ui.useNow', defaultMessage: '立即使用' },
     exchange: { id: 'promotion.ui.exchange', defaultMessage: '兌換' },
     addVoucher: { id: 'promotion.ui.addVoucher', defaultMessage: '新增兌換券' },
-    createVoucherPlan: { id: 'promotion.ui.createVoucherPlan', defaultMessage: '建立兌換方案' },
     exportCodes: { id: 'promotion.ui.exportCodes', defaultMessage: '匯出代碼' },
   }),
   label: defineMessages({
@@ -628,12 +621,9 @@ export const promotionMessages = {
     couponCodes: { id: 'promotion.label.couponCodes', defaultMessage: '折扣碼' },
     voucherCodes: { id: 'promotion.label.voucherCodes', defaultMessage: '兌換碼' },
     amount: { id: 'promotion.label.amount', defaultMessage: '數量' },
-    description: { id: 'promotion.label.description', defaultMessage: '使用限制與描述' },
     dollar: { id: 'promotion.label.dollar', defaultMessage: '元' },
-    voucherPlanTitle: { id: 'promotion.label.voucherPlanTitle', defaultMessage: '兌換方案名稱' },
   }),
   text: defineMessages({
-    exchangeItemsNumber: { id: 'promotion.text.exchangeItemsNumber', defaultMessage: '可兌換 {number} 個項目' },
     exchangeNotation: {
       id: 'promotion.text.exchangeNotation',
       defaultMessage: '兌換券為一次使用後失效，請一次兌換完畢',

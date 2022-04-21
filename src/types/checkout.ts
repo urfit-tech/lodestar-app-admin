@@ -49,7 +49,8 @@ export type VoucherPlanBriefProps = {
   productQuantityLimit: number
   isTransferable: boolean
   available?: boolean
-  action?: React.ReactNode
+  count: number
+  remaining: number
   sale?: { amount: number; price: number }
 }
 
