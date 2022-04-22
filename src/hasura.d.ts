@@ -8438,22 +8438,6 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
 // ====================================================
 
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
-  __typename: "voucher_code_sum_fields";
-  count: number | null;
-  remaining: number | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate {
-  __typename: "voucher_code_aggregate_fields";
-  sum: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate {
-  __typename: "voucher_code_aggregate";
-  aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate | null;
-}
-
 export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products {
   __typename: "voucher_plan_product";
   id: any;
@@ -8472,10 +8456,6 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   is_transferable: boolean;
   sale_amount: number | null;
   sale_price: any | null;
-  /**
-   * An aggregated array relationship
-   */
-  voucher_codes_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate;
   /**
    * An array relationship
    */
@@ -8504,6 +8484,52 @@ export interface GET_VOUCHER_PLAN_COLLECTION {
 }
 
 export interface GET_VOUCHER_PLAN_COLLECTIONVariables {
+  condition: voucher_plan_bool_exp;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_VOUCHER_CODES_AGGREGATE
+// ====================================================
+
+export interface GET_VOUCHER_CODES_AGGREGATE_voucher_plan_voucher_codes_aggregate_aggregate_sum {
+  __typename: "voucher_code_sum_fields";
+  count: number | null;
+  remaining: number | null;
+}
+
+export interface GET_VOUCHER_CODES_AGGREGATE_voucher_plan_voucher_codes_aggregate_aggregate {
+  __typename: "voucher_code_aggregate_fields";
+  sum: GET_VOUCHER_CODES_AGGREGATE_voucher_plan_voucher_codes_aggregate_aggregate_sum | null;
+}
+
+export interface GET_VOUCHER_CODES_AGGREGATE_voucher_plan_voucher_codes_aggregate {
+  __typename: "voucher_code_aggregate";
+  aggregate: GET_VOUCHER_CODES_AGGREGATE_voucher_plan_voucher_codes_aggregate_aggregate | null;
+}
+
+export interface GET_VOUCHER_CODES_AGGREGATE_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  /**
+   * An aggregated array relationship
+   */
+  voucher_codes_aggregate: GET_VOUCHER_CODES_AGGREGATE_voucher_plan_voucher_codes_aggregate;
+}
+
+export interface GET_VOUCHER_CODES_AGGREGATE {
+  /**
+   * fetch data from the table: "voucher_plan"
+   */
+  voucher_plan: GET_VOUCHER_CODES_AGGREGATE_voucher_plan[];
+}
+
+export interface GET_VOUCHER_CODES_AGGREGATEVariables {
   condition: voucher_plan_bool_exp;
   limit: number;
 }

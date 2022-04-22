@@ -167,14 +167,6 @@ export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLL
           is_transferable
           sale_amount
           sale_price
-          voucher_codes_aggregate {
-            aggregate {
-              sum {
-                count
-                remaining
-              }
-            }
-          }
           voucher_plan_products {
             id
             product_id
@@ -192,7 +184,6 @@ export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLL
 
   const voucherPlans: VoucherPlanProps[] =
     data?.voucher_plan.map(v => {
-      const remaining = v.voucher_codes_aggregate.aggregate?.sum?.remaining || 0
       return {
         id: v.id,
         title: v.title,
@@ -200,13 +191,43 @@ export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLL
         endedAt: v?.ended_at || null,
         productQuantityLimit: v.product_quantity_limit,
         description: decodeURI(v.description || ''),
-        count: v.voucher_codes_aggregate.aggregate?.sum?.count || 0,
-        remaining,
+        count: 0,
+        remaining: 0,
         productIds: v.voucher_plan_products.map(product => product.product_id),
         isTransferable: v.is_transferable,
         sale: v.sale_amount ? { amount: v.sale_amount, price: v.sale_price } : undefined,
       }
     }) || []
+
+  const { data: voucherCodesAggregateData } = useQuery<
+    hasura.GET_VOUCHER_CODES_AGGREGATE,
+    hasura.GET_VOUCHER_CODES_AGGREGATEVariables
+  >(
+    gql`
+      query GET_VOUCHER_CODES_AGGREGATE($condition: voucher_plan_bool_exp!, $limit: Int!) {
+        voucher_plan(where: $condition, order_by: [{ updated_at: desc }, { id: desc }], limit: $limit) {
+          id
+          voucher_codes_aggregate {
+            aggregate {
+              sum {
+                count
+                remaining
+              }
+            }
+          }
+        }
+      }
+    `,
+    { variables: { condition: condition, limit: 50 } },
+  )
+
+  if (voucherCodesAggregateData) {
+    voucherPlans.forEach(v => {
+      const data = voucherCodesAggregateData.voucher_plan.find(w => w.id === v.id)
+      v.count = data?.voucher_codes_aggregate.aggregate?.sum?.count || 0
+      v.remaining = data?.voucher_codes_aggregate.aggregate?.sum?.remaining || 0
+    })
+  }
 
   const loadMoreVoucherPlans =
     (data?.voucher_plan.length || 0) < (data?.voucher_plan_aggregate.aggregate?.count || 0)
