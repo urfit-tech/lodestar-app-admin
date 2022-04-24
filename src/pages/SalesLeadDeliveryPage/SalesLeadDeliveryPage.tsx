@@ -22,6 +22,7 @@ type Filter = {
   starRange: [number, number]
   starRangeIsNull: boolean
   marketingActivity: string
+  adMaterials: string
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -39,6 +40,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     assignedAtRange: null,
     starRangeIsNull: false,
     marketingActivity: '',
+    adMaterials: '',
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -138,6 +140,12 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
         <Input />
       </Form.Item>
       <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.adMaterials)}
+        name="adMaterials"
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
         name="createdAtRange"
       >
@@ -208,10 +216,20 @@ const ConfirmSection: React.FC<{
                 _gte: filter.starRange[0],
                 _lte: filter.starRange[1],
               },
-          member_properties:
-            filter.marketingActivity !== ''
-              ? { property: { name: { _eq: '行銷活動' } }, value: { _like: `%${filter.marketingActivity}%` } }
-              : undefined,
+          _and: [
+            {
+              member_properties:
+                filter.marketingActivity !== ''
+                  ? { property: { name: { _eq: '行銷活動' } }, value: { _like: `%${filter.marketingActivity}%` } }
+                  : undefined,
+            },
+            {
+              member_properties:
+                filter.adMaterials !== ''
+                  ? { property: { name: { _eq: '廣告素材' } }, value: { _like: `%${filter.adMaterials}%` } }
+                  : undefined,
+            },
+          ],
         },
       },
     },

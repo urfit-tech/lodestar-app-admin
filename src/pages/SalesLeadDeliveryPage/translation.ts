@@ -11,6 +11,7 @@ export const salesLeadDeliveryPageMessages = {
     starRangeIsNull: { id: 'page.salesLeadDeliveryPage.starRangeIsNull', defaultMessage: '沒有星等的人' },
     starRange: { id: 'page.salesLeadDeliveryPage.starRange', defaultMessage: '星等' },
     marketingActivity: { id: 'page.salesLeadDeliveryPage.marketingActivity', defaultMessage: '行銷活動' },
+    adMaterials: { id: 'page.salesLeadDeliveryPage.adMaterials', defaultMessage: '廣告素材' },
     createdAtRange: { id: 'page.salesLeadDeliveryPage.createdAtRange', defaultMessage: '名單建立日期' },
     assignedAtRange: { id: 'page.salesLeadDeliveryPage.assignedAtRange', defaultMessage: '名單派發日期' },
     nextStep: { id: 'page.salesLeadDeliveryPage.nextStep', defaultMessage: '下一步' },
