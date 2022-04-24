@@ -59,6 +59,7 @@ const MerchandiseInventoryAdminModal: React.FC<
       | 'merchandiseTitle'
       | 'memberShop'
     > & {
+      loadingInventoryStatus?: boolean
       onRefetch?: () => void
     }
 > = ({
@@ -71,17 +72,18 @@ const MerchandiseInventoryAdminModal: React.FC<
   merchandiseTitle,
   memberShop,
   onCancel,
+  loadingInventoryStatus,
   onRefetch,
   ...props
 }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
-  const [quantity, setQuantity] = useState('0')
+  const [quantity, setQuantity] = useState(0)
   const [comment, setComment] = useState('')
   const arrangeProductInventory = useArrangeProductInventory(`MerchandiseSpec_${id}`)
   const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`MerchandiseSpec_${id}`)
 
-  const handleSubmit = (closeModal?: () => void) => {
+  const handleSubmit = () => {
     if (inventoryStatus.buyableQuantity + Number(quantity) < 0) {
       return
     }
@@ -94,14 +96,24 @@ const MerchandiseInventoryAdminModal: React.FC<
       .then(() => {
         onRefetch?.()
         refetchInventoryLogs?.()
-        closeModal?.()
+        setQuantity(0)
+        setComment('')
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
   return (
-    <Modal width="70vw" footer={null} onCancel={onCancel} {...props}>
+    <Modal
+      width="70vw"
+      footer={null}
+      onCancel={e => {
+        onCancel && onCancel(e)
+        setQuantity(0)
+        setComment('')
+      }}
+      {...props}
+    >
       <div className="container py-2">
         <MerchandiseModalTitle>{formatMessage(merchandiseMessages.status.arrange)}</MerchandiseModalTitle>
         <div className="d-flex align-items-center my-sm-4 mb-1">
@@ -151,10 +163,9 @@ const MerchandiseInventoryAdminModal: React.FC<
           <div className="mr-2">
             <StyledLabel className="mb-1">{formatMessage(merchandiseMessages.ui.modifyInventory)}</StyledLabel>
             <QuantityInput
-              setInputValue={setQuantity}
-              value={Number(quantity)}
+              value={quantity}
               min={-inventoryStatus.buyableQuantity}
-              onChange={value => typeof value === 'number' && setQuantity(`${value}`)}
+              onChange={value => typeof value === 'number' && setQuantity(value)}
             />
           </div>
           <div className="flex-sm-grow-1 mr-sm-2">
@@ -165,23 +176,14 @@ const MerchandiseInventoryAdminModal: React.FC<
             <Button
               className="mr-2"
               onClick={e => {
-                setQuantity('0')
+                setQuantity(0)
                 setComment('')
                 onCancel?.(e)
               }}
             >
               {formatMessage(commonMessages.ui.cancel)}
             </Button>
-            <Button
-              loading={loading}
-              type="primary"
-              onClick={() =>
-                handleSubmit(() => {
-                  setQuantity('0')
-                  setComment('')
-                })
-              }
-            >
+            <Button loading={loading} type="primary" onClick={() => handleSubmit()}>
               {formatMessage(commonMessages.ui.save)}
             </Button>
           </div>

@@ -14,14 +14,11 @@ const StyledInputGroup = styled(Input.Group)`
 `
 
 const QuantityInput: React.FC<{
-  setInputValue: React.Dispatch<React.SetStateAction<string>>
   value?: number
   min?: number
   max?: number
   onChange?: (value: number | undefined) => void
-}> = ({ setInputValue, value = 0, min, max, onChange }) => {
-  // const [inputValue, setInputValue] = useState(`${value}`)
-
+}> = ({ value = 0, min, max, onChange }) => {
   return (
     <StyledInputGroup compact>
       <Button
@@ -32,19 +29,19 @@ const QuantityInput: React.FC<{
             return
           }
           onChange && onChange(newValue)
-          setInputValue(`${newValue}`)
         }}
       />
       <Input
         value={value}
-        onChange={e => setInputValue(e.target.value)}
+        onChange={e => {
+          onChange && onChange(parseInt(e.target.value))
+        }}
         onBlur={e => {
           const newValue = Number.isSafeInteger(parseInt(e.target.value)) ? parseInt(e.target.value) : value
           if ((typeof min === 'number' && newValue < min) || (typeof max === 'number' && newValue > max)) {
-            setInputValue(`${value}`)
+            onChange && onChange(value)
             return
           }
-          setInputValue(`${newValue}`)
           onChange && onChange(newValue)
         }}
       />
@@ -56,7 +53,6 @@ const QuantityInput: React.FC<{
             return
           }
           onChange && onChange(newValue)
-          setInputValue(`${newValue}`)
         }}
       />
     </StyledInputGroup>
