@@ -82,7 +82,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
 const useAppointmentPlansCounts = (creatorId?: string | null) => {
   const { data } = useQuery<hasura.GET_APPOINTMENT_PLAN_COUNTS, hasura.GET_APPOINTMENT_PLAN_COUNTSVariables>(
     gql`
-      query GET_APPOINTMENT_PLAN_COUNTS($condition: appointment_plan_bool_exp) {
+      query GET_APPOINTMENT_PLAN_COUNTS($condition: appointment_plan_bool_exp!) {
         published: appointment_plan_aggregate(
           where: { _and: [$condition, { published_at: { _is_null: false }, is_private: { _eq: false } }] }
         ) {
@@ -105,7 +105,7 @@ const useAppointmentPlansCounts = (creatorId?: string | null) => {
       }
     `,
     {
-      variables: { condition: creatorId ? { creator_id: { _eq: creatorId } } : undefined },
+      variables: { condition: creatorId ? { creator_id: { _eq: creatorId } } : {} },
       fetchPolicy: 'no-cache',
     },
   )

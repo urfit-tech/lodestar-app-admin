@@ -1,5 +1,5 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import { Button, Form, Select } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -65,7 +65,7 @@ const AppointmentScheduleImportModal: React.VFC<{
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, creatorId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingAppointmentPlans, appointmentPlans } = useAppointmentPlansWithSchedules(
+  const { refetch, loadingAppointmentPlans, appointmentPlans } = useAppointmentPlansWithSchedules(
     appointmentPlanAdmin,
     creatorId,
   )
@@ -114,7 +114,13 @@ const AppointmentScheduleImportModal: React.VFC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+        <Button
+          icon={<FileAddOutlined />}
+          onClick={() => {
+            refetch()
+            setVisible(true)
+          }}
+        >
           {formatMessage(appointmentMessages.ui.importPeriod)}
         </Button>
       )}
@@ -198,7 +204,7 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
     published_at: { _is_null: false },
   }
 
-  const { loading, data } = useQuery<
+  const [getAppointmentPlanSchedules, { loading, data }] = useLazyQuery<
     hasura.GET_APPOINTMENT_PLAN_SCHEDULES,
     hasura.GET_APPOINTMENT_PLAN_SCHEDULESVariables
   >(
@@ -208,25 +214,7 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
         $now: timestamptz!
         $startedAt: timestamptz!
       ) {
-        appointment_plan(
-          where: {
-            _and: [
-              $condition
-              {
-                appointment_schedules: {
-                  _or: [
-                    {
-                      interval_amount: { _is_null: false }
-                      interval_type: { _is_null: false }
-                      started_at: { _gte: $startedAt }
-                    }
-                    { started_at: { _gte: $now } }
-                  ]
-                }
-              }
-            ]
-          }
-        ) {
+        appointment_plan(where: { _and: [$condition] }) {
           id
           title
           creator {
@@ -256,13 +244,6 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
         }
       }
     `,
-    {
-      variables: {
-        condition,
-        now,
-        startedAt,
-      },
-    },
   )
 
   const appointmentPlans: AppointmentPlanImportingProps[] =
@@ -284,8 +265,13 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
     })) || []
 
   return {
+    refetch: () =>
+      getAppointmentPlanSchedules({
+        variables: { condition, now, startedAt },
+      }),
     loadingAppointmentPlans: loading,
     appointmentPlans: appointmentPlans
+      .filter(appointmentPlan => appointmentPlan.schedules.length > 0)
       .map(appointmentPlan => ({
         ...appointmentPlan,
         schedules: appointmentPlan.schedules.map(schedule => ({
