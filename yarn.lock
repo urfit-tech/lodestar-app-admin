@@ -11595,7 +11595,7 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/fc2a4fe0a20556621b5f4b23694ca41488fd11a8"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/c46eec5a6b1aab58ca28a2625c69779dbcc79aa7"
   dependencies:
     "@ant-design/charts" "1.2.14"
     "@ant-design/compatible" "^1.0.8"
@@ -11757,7 +11757,6 @@ lodestar-app-element@urfit-tech/lodestar-app-element#v1.7.2:
     react-router-dom "5.2.0"
     react-scripts "4.0.3"
     react-slick "0.28.1"
-    react-style-editor "^0.4.0"
     styled-components "5.1.1"
     ts-deep-pick "0.2.2"
     typescript "4.4.3"
