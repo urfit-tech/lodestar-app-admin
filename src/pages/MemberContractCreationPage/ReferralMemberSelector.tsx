@@ -16,11 +16,11 @@ const ReferralMemberSelector: React.VFC<SelectProps<string>> = ({ ...selectProps
           { email: { _ilike: `%${referralMemberFilter}%` } },
         ],
       }
-    : undefined
+    : {}
 
   const { loading, error, data } = useQuery<hasura.GET_REFERRAL_MEMBER, hasura.GET_REFERRAL_MEMBERVariables>(
     gql`
-      query GET_REFERRAL_MEMBER($condition: member_bool_exp) {
+      query GET_REFERRAL_MEMBER($condition: member_bool_exp!) {
         member(where: { _and: [{ member_contracts: {} }, $condition] }, limit: 10) {
           id
           name
