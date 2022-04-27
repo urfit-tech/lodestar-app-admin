@@ -9,8 +9,9 @@ import { flatten, range, sum, uniqBy } from 'ramda'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
-import { ContractInfo, ContractItem, FieldProps, paymentMethods } from '.'
+import { ContractInfo, ContractItem, FieldProps } from '.'
 import hasura from '../../hasura'
+import { paymentMethods } from '../../constants'
 
 const StyledOrder = styled.div`
   border: 1px solid var(--gray-darker);
