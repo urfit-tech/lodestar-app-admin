@@ -1,21 +1,16 @@
-import { Button, Checkbox, DatePicker, Form, Input, InputNumber } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import ProductSelector from '../../components/form/ProductSelector'
-import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
+import { handleError } from '../../helpers'
+import { useMutateVoucherPlan } from '../../hooks/checkout'
+import VoucherPlanCollectionAdminPageMessages from '../../pages/VoucherPlanCollectionAdminPage/translation'
 import { VoucherPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
-
-const messages = defineMessages({
-  exchangeItemsAmount: { id: 'promotion.label.exchangeItemsAmount', defaultMessage: '兌換項目數量' },
-  exchangeItems: { id: 'promotion.label.exchangeItems', defaultMessage: '兌換項目' },
-  isTransferable: { id: 'promotion.label.isTransferable', defaultMessage: '允許用戶自行轉贈' },
-  isSaleable: { id: 'promotion.label.isSaleable', defaultMessage: '可銷售（每份）' },
-})
 
 export type VoucherPlanFields = {
   title: string
@@ -32,25 +27,51 @@ export type VoucherPlanFields = {
 const VoucherPlanAdminModal: React.FC<
   AdminModalProps & {
     voucherPlan?: VoucherPlanProps
-    onSubmit?: (
-      setVisible: React.Dispatch<React.SetStateAction<boolean>>,
-      setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-      values: VoucherPlanFields,
-    ) => void
+    onRefetch?: () => void
   }
-> = ({ voucherPlan, onSubmit, ...props }) => {
+> = ({ voucherPlan, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const [form] = useForm<VoucherPlanFields>()
   const [loading, setLoading] = useState(false)
+  const { insertVoucherPlan, updateVoucherPlan } = useMutateVoucherPlan()
 
-  const handleClick = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
       .then(() => {
+        setLoading(true)
         const values = form.getFieldsValue()
-        if (onSubmit) {
-          onSubmit(setVisible, setLoading, values)
+        if (voucherPlan) {
+          updateVoucherPlan(values, voucherPlan.id)
+            .then(() => {
+              message.success(
+                formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.successfullySaved),
+              )
+              setVisible(false)
+              onRefetch?.()
+            })
+            .catch(handleError)
+            .finally(() => setLoading(false))
+        } else {
+          insertVoucherPlan(values)
+            .then(() => {
+              message.success(
+                formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.successfullyCreated),
+              )
+              setVisible(false)
+              onRefetch?.()
+            })
+            .catch(error => {
+              if (/^GraphQL error: Uniqueness violation/.test(error.message)) {
+                message.error(
+                  formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.duplicateVoucherCode),
+                )
+              } else {
+                handleError(error)
+              }
+            })
+            .finally(() => setLoading(false))
         }
       })
       .catch(() => {})
@@ -63,10 +84,10 @@ const VoucherPlanAdminModal: React.FC<
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(VoucherPlanCollectionAdminPageMessages['*'].cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleClick(setVisible)}>
-            {formatMessage(commonMessages.ui.confirm)}
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
+            {formatMessage(VoucherPlanCollectionAdminPageMessages['*'].confirm)}
           </Button>
         </>
       )}
@@ -90,13 +111,13 @@ const VoucherPlanAdminModal: React.FC<
         }}
       >
         <Form.Item
-          label={formatMessage(promotionMessages.label.voucherPlanTitle)}
+          label={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.voucherPlanTitle)}
           name="title"
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(promotionMessages.label.voucherPlanTitle),
+              message: formatMessage(VoucherPlanCollectionAdminPageMessages['*'].isRequired, {
+                field: formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.voucherPlanTitle),
               }),
             },
           ]}
@@ -106,18 +127,28 @@ const VoucherPlanAdminModal: React.FC<
 
         {!voucherPlan && (
           <Form.Item
-            label={formatMessage(promotionMessages.label.voucherCodes)}
+            label={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.voucherCodes)}
             name="voucherCodes"
-            rules={[{ required: true, message: formatMessage(errorMessages.form.voucherCodes) }]}
+            rules={[
+              {
+                required: true,
+                message: formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.errorVoucherCodes),
+              },
+            ]}
           >
             <PlanCodeSelector planType="voucher" />
           </Form.Item>
         )}
 
         <Form.Item
-          label={formatMessage(messages.exchangeItems)}
+          label={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.exchangeItems)}
           name="voucherPlanProducts"
-          rules={[{ required: true, message: formatMessage(errorMessages.form.exchangeItems) }]}
+          rules={[
+            {
+              required: true,
+              message: formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.errorExchangeItems),
+            },
+          ]}
         >
           <ProductSelector
             multiple
@@ -126,14 +157,25 @@ const VoucherPlanAdminModal: React.FC<
         </Form.Item>
 
         <Form.Item
-          label={formatMessage(messages.exchangeItemsAmount)}
+          label={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.exchangeItemsAmount)}
           name="productQuantityLimit"
-          rules={[{ required: true, message: formatMessage(errorMessages.form.exchangeItemsAmount) }]}
+          rules={[
+            {
+              required: true,
+              message: formatMessage(
+                VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.errorExchangeItemsAmount,
+              ),
+            },
+          ]}
         >
           <InputNumber min={1} />
         </Form.Item>
         <Form.Item name="isTransferable" valuePropName="checked" noStyle={!enabledModules.transfer_voucher}>
-          {enabledModules.transfer_voucher && <Checkbox>{formatMessage(messages.isTransferable)}</Checkbox>}
+          {enabledModules.transfer_voucher && (
+            <Checkbox>
+              {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.isTransferable)}
+            </Checkbox>
+          )}
         </Form.Item>
 
         {enabledModules.sale_voucher && (
@@ -141,12 +183,14 @@ const VoucherPlanAdminModal: React.FC<
             <SaleVoucherInput />
           </Form.Item>
         )}
-        <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
+        <Form.Item
+          label={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.availableDateRange)}
+        >
           <Form.Item className="d-inline-block m-0" name="startedAt">
             <DatePicker
               format="YYYY-MM-DD HH:mm"
               showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-              placeholder={formatMessage(commonMessages.label.startedAt)}
+              placeholder={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.startedAt)}
             />
           </Form.Item>
           <span className="d-inline-block px-2">-</span>
@@ -154,12 +198,18 @@ const VoucherPlanAdminModal: React.FC<
             <DatePicker
               format="YYYY-MM-DD HH:mm"
               showTime={{ defaultValue: moment('23:59:59', 'HH:mm:ss') }}
-              placeholder={formatMessage(commonMessages.label.endedAt)}
+              placeholder={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.endedAt)}
             />
           </Form.Item>
         </Form.Item>
-        <Form.Item label={formatMessage(promotionMessages.label.description)} name="description">
-          <Input.TextArea rows={4} placeholder={formatMessage(commonMessages.label.optional)} />
+        <Form.Item
+          label={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.description)}
+          name="description"
+        >
+          <Input.TextArea
+            rows={4}
+            placeholder={formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.optional)}
+          />
         </Form.Item>
       </Form>
     </AdminModal>
@@ -179,7 +229,7 @@ const SaleVoucherInput: React.VFC<{
         checked={saleable}
         onChange={e => onChange?.(e.target.checked ? { amount: 1, price: 0 } : undefined)}
       >
-        {formatMessage(messages.isSaleable)}
+        {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.isSaleable)}
       </Checkbox>
       {saleable && (
         <Input.Group>

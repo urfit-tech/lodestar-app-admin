@@ -364,7 +364,12 @@ export const useMerchandiseSpecCollection = (options?: {
   merchandiseId?: string
   memberId?: string
 }) => {
-  const { data: inventoryStatusData } = useQuery<hasura.GET_MERCHANDISE_SPEC_INVENTORY_STATUS>(
+  const {
+    loading: loadingInventoryStatus,
+    error: errorInventoryStatus,
+    data: inventoryStatus,
+    refetch: refetchInventoryStatus,
+  } = useQuery<hasura.GET_MERCHANDISE_SPEC_INVENTORY_STATUS>(
     gql`
       query GET_MERCHANDISE_SPEC_INVENTORY_STATUS {
         merchandise_spec_inventory_status {
@@ -381,7 +386,12 @@ export const useMerchandiseSpecCollection = (options?: {
     },
   )
 
-  const { loading, error, data, refetch } = useQuery<hasura.GET_MERCHANDISE_SPEC_COLLECTION>(
+  const {
+    loading: loadingMerchandiseSpecs,
+    error: errorMerchandiseSpecs,
+    data,
+    refetch: refetchMerchandiseSpecs,
+  } = useQuery<hasura.GET_MERCHANDISE_SPEC_COLLECTION>(
     gql`
       query GET_MERCHANDISE_SPEC_COLLECTION(
         $merchandiseSearchLike: String
@@ -432,10 +442,9 @@ export const useMerchandiseSpecCollection = (options?: {
       fetchPolicy: 'no-cache',
     },
   )
-  //const {loading, error, data, refetch } = useQuery<>
 
   let merchandiseSpecs: MerchandiseSpec[] =
-    loading || error || !data
+    loadingMerchandiseSpecs || errorMerchandiseSpecs || !data
       ? []
       : data.merchandise_spec.map(v => ({
           id: v.id,
@@ -457,8 +466,8 @@ export const useMerchandiseSpecCollection = (options?: {
           },
         }))
 
-  if (inventoryStatusData) {
-    inventoryStatusData.merchandise_spec_inventory_status.forEach(v => {
+  if (inventoryStatus) {
+    inventoryStatus.merchandise_spec_inventory_status.forEach(v => {
       merchandiseSpecs.forEach(merchandiseSpec => {
         if (merchandiseSpec.id === v.merchandise_spec_id) {
           merchandiseSpec.inventoryStatus = {
@@ -471,10 +480,15 @@ export const useMerchandiseSpecCollection = (options?: {
       })
     })
   }
+
   return {
-    loadingMerchandiseSpecs: loading,
-    errorMerchandiseSpecs: error,
+    loadingMerchandiseSpecs,
+    errorMerchandiseSpecs,
     merchandiseSpecs,
-    refetchMerchandiseSpecs: refetch,
+    refetchMerchandiseSpecs,
+    loadingInventoryStatus,
+    errorInventoryStatus,
+    inventoryStatus,
+    refetchInventoryStatus,
   }
 }

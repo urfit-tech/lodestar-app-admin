@@ -56,7 +56,7 @@ export const LocaleProvider: React.FC = ({ children }) => {
       navigator.language &&
       SUPPORTED_LOCALES.find(supportedLocale => supportedLocale.locale === navigator.language.toLowerCase())
     ) {
-      currentLocale = navigator.language
+      currentLocale = navigator.language.toLowerCase()
     }
     setCurrentLocale(currentLocale)
   }, [enabledModules, settings])

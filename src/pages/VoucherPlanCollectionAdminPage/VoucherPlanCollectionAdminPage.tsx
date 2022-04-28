@@ -1,18 +1,20 @@
-import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input, Tabs } from 'antd'
+import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { Button, Input, Skeleton, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { ReactComponent as DiscountIcon } from '../..//images/icon/discount.svg'
 import { AdminPageTitle } from '../../components/admin'
-import CouponPlanAdminModal from '../../components/coupon/CouponPlanAdminModal'
 import AdminLayout from '../../components/layout/AdminLayout'
-import { DiscountIcon } from '../../images/icon'
+import VoucherPlanAdminModal from '../../components/voucher/VoucherPlanAdminModal'
 import ForbiddenPage from '../ForbiddenPage'
-import CouponPlanCollectionBlock from './CouponPlanCollectionBlock'
-import CouponPlanCollectionAdminPageMessages from './translation'
+import VoucherPlanCollectionAdminPageMessages from './translation'
+import VoucherPlanCollectionBlock from './VoucherPlanCollectionBlock'
 
-const CouponPlanCollectionAdminPage: React.FC = () => {
+const VoucherPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const { permissions } = useAuth()
   const [searchText, setSearchText] = useState('')
   const [stateCode, setStateCode] = useState(Math.random())
@@ -20,56 +22,53 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
   const tabContents = [
     {
       key: 'available',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].available),
+      tab: formatMessage(VoucherPlanCollectionAdminPageMessages['*'].available),
       condition: {
         _or: [
-          { started_at: { _lte: 'now()' }, ended_at: { _gte: 'now()' } },
+          { ended_at: { _gte: 'now()' } },
           { started_at: { _is_null: true }, ended_at: { _is_null: true } },
-          { started_at: { _lte: 'now()' }, ended_at: { _is_null: true } },
+          { ended_at: { _is_null: true } },
           { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
         ],
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
-      },
-    },
-    {
-      key: 'notYet',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].notYet),
-      condition: {
-        started_at: { _gt: 'now()' },
-        title: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        voucher_codes: { remaining: { _nin: [0] } },
       },
     },
     {
       key: 'unavailable',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].unavailable),
+      tab: formatMessage(VoucherPlanCollectionAdminPageMessages['*'].unavailable),
       condition: {
-        ended_at: { _lt: 'now()' },
+        _or: [{ voucher_codes: { remaining: { _eq: 0 } } }, { ended_at: { _lt: 'now()' } }],
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
       },
     },
   ]
 
-  if (!permissions.COUPON_PLAN_ADMIN) {
+  if (Object.keys(enabledModules).length === 0 || Object.keys(permissions).length === 0) {
+    return <Skeleton active />
+  }
+
+  if (!enabledModules.voucher || !permissions.VOUCHER_PLAN_ADMIN) {
     return <ForbiddenPage />
   }
 
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
-        <DiscountIcon className="mr-3" />
-        <span>{formatMessage(CouponPlanCollectionAdminPageMessages['*'].coupons)}</span>
+        <Icon component={() => <DiscountIcon />} className="mr-3" />
+        <span>{formatMessage(VoucherPlanCollectionAdminPageMessages['*'].vouchers)}</span>
       </AdminPageTitle>
 
       <div className="row mb-5">
         <div className="col-8">
-          <CouponPlanAdminModal
+          <VoucherPlanAdminModal
             renderTrigger={({ setVisible }) => (
               <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(CouponPlanCollectionAdminPageMessages['*'].createCouponPlan)}
+                {formatMessage(VoucherPlanCollectionAdminPageMessages['*'].create)}
               </Button>
             )}
             icon={<FileAddOutlined />}
-            title={formatMessage(CouponPlanCollectionAdminPageMessages['*'].createCouponPlan)}
+            title={formatMessage(VoucherPlanCollectionAdminPageMessages['*'].createVoucherPlan)}
             onRefetch={() => setStateCode(Math.random())}
           />
         </div>
@@ -82,13 +81,13 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
         </div>
       </div>
 
-      <Tabs defaultActiveKey="available">
+      <Tabs defaultActiveKey="activeKey">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={`${tabContent.key}_${stateCode}`} tab={tabContent.tab}>
-            <CouponPlanCollectionBlock
+            <VoucherPlanCollectionBlock
               key={stateCode}
+              available={tabContent.key === 'available'}
               condition={tabContent.condition}
-              isAvailable={tabContent.key === 'available'}
             />
           </Tabs.TabPane>
         ))}
@@ -97,4 +96,4 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
   )
 }
 
-export default CouponPlanCollectionAdminPage
+export default VoucherPlanCollectionAdminPage

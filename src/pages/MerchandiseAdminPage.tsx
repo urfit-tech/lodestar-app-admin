@@ -50,7 +50,14 @@ const MerchandiseAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
-  const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
+  const {
+    loadingMerchandiseSpecs,
+    errorMerchandiseSpecs,
+    merchandiseSpecs,
+    loadingInventoryStatus,
+    errorInventoryStatus,
+    refetchInventoryStatus,
+  } = useMerchandiseSpecCollection({
     isLimited: true,
     merchandiseId,
   })
@@ -167,8 +174,12 @@ const MerchandiseAdminPage: React.FC = () => {
             <Tabs.TabPane key="inventory" tab={formatMessage(messages.inventoryAdmin)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.inventoryAdmin)}</AdminPaneTitle>
-                {loadingMerchandiseSpecs ? (
+                {loadingMerchandiseSpecs || loadingInventoryStatus ? (
                   <Skeleton active />
+                ) : errorMerchandiseSpecs ? (
+                  <>fetch merchandise specs error</>
+                ) : errorInventoryStatus ? (
+                  <>fetch inventory status error</>
                 ) : (
                   merchandiseSpecs.map(merchandiseSpec => (
                     <MerchandiseInventoryCard
@@ -181,7 +192,8 @@ const MerchandiseAdminPage: React.FC = () => {
                       isCustomized={merchandise.isCustomized}
                       merchandiseTitle={merchandiseSpec.merchandiseTitle}
                       memberShop={merchandiseSpec.memberShop}
-                      onRefetch={refetchMerchandiseSpecs}
+                      loadingInventoryStatus={loadingInventoryStatus}
+                      onRefetch={refetchInventoryStatus}
                     />
                   ))
                 )}

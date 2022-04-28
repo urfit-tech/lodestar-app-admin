@@ -44,6 +44,7 @@ export type MerchandiseInventoryCardProps = CardProps &
     MerchandiseSpec,
     'id' | 'title' | 'coverUrl' | 'inventoryStatus' | 'isPhysical' | 'isCustomized' | 'merchandiseTitle' | 'memberShop'
   > & {
+    loadingInventoryStatus?: boolean
     onRefetch?: () => void
   }
 
@@ -56,6 +57,7 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
   isCustomized,
   merchandiseTitle,
   memberShop,
+  loadingInventoryStatus,
   onRefetch,
   ...cardProps
 }) => {
@@ -107,6 +109,7 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
         memberShop={memberShop}
         visible={visible}
         onCancel={() => setVisible(false)}
+        loadingInventoryStatus={loadingInventoryStatus}
         onRefetch={onRefetch}
       />
     </>
