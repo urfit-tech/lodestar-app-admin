@@ -9,7 +9,8 @@ import { flatten, range, sum, uniqBy } from 'ramda'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
-import { ContractInfo, ContractItem, FieldProps, paymentMethods } from '.'
+import { ContractInfo, ContractItem, FieldProps } from '.'
+import { paymentMethods } from '../../constants'
 import hasura from '../../hasura'
 
 const StyledOrder = styled.div`

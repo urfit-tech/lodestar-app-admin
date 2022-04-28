@@ -6,7 +6,8 @@ import moment from 'moment'
 import { keys, last } from 'ramda'
 import React, { memo, useState } from 'react'
 import styled from 'styled-components'
-import { ContractInfo, FieldProps, installmentPlans, paymentMethods } from '.'
+import { ContractInfo, FieldProps } from '.'
+import { installmentPlans, paymentMethods } from '../../constants'
 import CertificationUploader from './CertificationUploader'
 import ReferralMemberSelector from './ReferralMemberSelector'
 
@@ -265,11 +266,13 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item label="付款方式">
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
               <Select<string> style={{ width: 120 }}>
-                {paymentMethods.map(paymentMethod => (
-                  <Select.Option key={paymentMethod.method} value={paymentMethod.method}>
-                    {paymentMethod.method}
-                  </Select.Option>
-                ))}
+                {paymentMethods
+                  .filter(paymentMethod => !paymentMethod.hidden)
+                  .map(paymentMethod => (
+                    <Select.Option key={paymentMethod.method} value={paymentMethod.method}>
+                      {paymentMethod.method}
+                    </Select.Option>
+                  ))}
               </Select>
             </Form.Item>
           </Descriptions.Item>

@@ -15,10 +15,10 @@ import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
+import { installmentPlans, paymentMethods } from '../../constants'
 import { memberContractMessages } from '../../helpers/translation'
 import { useMutateMemberContract, useXuemiSales } from '../../hooks'
 import { ReactComponent as PlusIcon } from '../../images/icons/plus.svg'
-import { paymentMethods } from '../MemberContractCreationPage'
 
 const StyledAreaTitle = styled.h3`
   font-size: 16px;
@@ -132,7 +132,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     paymentMethod: string
     recognizePerformance?: number
     paymentNumber: number
-    installmentPlan: string
+    installmentPlan: typeof installmentPlans[number]
     note: string
     orderExecutors: {
       memberId: string
@@ -148,6 +148,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     loanCanceledAt: false,
     refundAppliedAt: false,
   })
+
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
   const updateMemberContract = useMutateMemberContract()
@@ -228,10 +229,10 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           variables: {
             memberContractId,
             values: {
-              ...(recognizePerformance
+              ...(Number(recognizePerformance) >= 0
                 ? {
                     orderOptions: {
-                      recognizePerformance,
+                      recognizePerformance: Number(recognizePerformance),
                     },
                   }
                 : {}),
@@ -270,6 +271,25 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     return downloadFile(fileName, {
       url: link,
     })
+  }
+
+  const calculateRecognizePerformance = () => {
+    if (!purchasedItem.price) {
+      return null
+    }
+    const { paymentMethod, installmentPlan } = form.getFieldsValue()
+
+    return (
+      purchasedItem.price -
+      Math.round(
+        purchasedItem.price *
+          (paymentMethods
+            .find(payment => payment.method === paymentMethod)
+            ?.feeWithInstallmentPlans.find(
+              feeWithInstallmentPlan => feeWithInstallmentPlan.installmentPlan === installmentPlan,
+            )?.fee || 0),
+      )
+    )
   }
 
   let sheet
@@ -397,7 +417,13 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 rules={[{ required: true, message: '請選擇付款方式' }]}
                 initialValue={paymentOptions?.paymentMethod || null}
               >
-                <StyledSelect disabled={!permissions.CONTRACT_PAYMENT_METHOD_EDIT}>
+                <StyledSelect
+                  disabled={!permissions.CONTRACT_PAYMENT_METHOD_EDIT}
+                  onSelect={() => {
+                    const calculatedRecognize = calculateRecognizePerformance()
+                    calculatedRecognize && form.setFieldsValue({ recognizePerformance: calculatedRecognize })
+                  }}
+                >
                   {paymentMethods.map(paymentMethod => (
                     <Select.Option key={paymentMethod.method} value={paymentMethod.method}>
                       {paymentMethod.method}
@@ -409,8 +435,14 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <Col span={5} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.installmentPlan)}</span>
               <Form.Item name="installmentPlan" initialValue={paymentOptions?.installmentPlan}>
-                <StyledSelect disabled={!permissions.CONTRACT_INSTALLMENT_PLAN_EDIT}>
-                  {[1, 3, 6, 8, 9, 12, 18, 24, 30, 36].map((installmentPlan: number) => (
+                <StyledSelect
+                  disabled={!permissions.CONTRACT_INSTALLMENT_PLAN_EDIT}
+                  onSelect={() => {
+                    const calculatedRecognize = calculateRecognizePerformance()
+                    calculatedRecognize && form.setFieldsValue({ recognizePerformance: calculatedRecognize })
+                  }}
+                >
+                  {installmentPlans.map((installmentPlan: number) => (
                     <Select.Option key={installmentPlan} value={installmentPlan}>
                       {installmentPlan}
                     </Select.Option>
