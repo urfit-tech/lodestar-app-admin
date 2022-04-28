@@ -151,9 +151,11 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
                     { totalGainedPoints: 0, updatedAt: null },
                   )
                 const exerciseStatus =
-                  hightestScore.totalGainedPoints > pc.metadata?.passingScore
-                    ? formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassed)
-                    : formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseFailed)
+                  programContentType === 'exercise'
+                    ? hightestScore.totalGainedPoints > pc.metadata?.passingScore
+                      ? formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassed)
+                      : formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exerciseFailed)
+                    : ''
                 const exercisePassedAt =
                   exerciseStatus === formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exercisePassed)
                     ? hightestScore.updatedAt
