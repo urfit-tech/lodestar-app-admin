@@ -12,6 +12,7 @@ export const usePost = (postId: string) => {
         post_by_pk(id: $id) {
           id
           title
+          source
           video_url
           description
           is_deleted
@@ -56,6 +57,7 @@ export const usePost = (postId: string) => {
       : {
           id: data.post_by_pk.id,
           title: data.post_by_pk.title,
+          source: data.post_by_pk.source,
           videoUrl: data.post_by_pk.video_url,
           description: data.post_by_pk.description,
           isDeleted: data.post_by_pk.is_deleted,

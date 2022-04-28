@@ -25,6 +25,7 @@ const StyledText = styled.div`
 
 type FieldProps = {
   title: string
+  source: string
   categoryIds: string[]
   tags: string[]
   codeName: string
@@ -57,6 +58,7 @@ const BlogPostBasicForm: React.FC<{
       variables: {
         postId: post.id,
         title: values.title,
+        source: values.source,
         categories: values.categoryIds.map((categoryId: string, index: number) => ({
           post_id: post.id,
           category_id: categoryId,
@@ -92,6 +94,7 @@ const BlogPostBasicForm: React.FC<{
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
         title: post.title,
+        source: post.source,
         categoryIds: post.categories.map(category => category.id),
         tags: post.tagNames,
         codeName: post.codeName,
@@ -99,6 +102,9 @@ const BlogPostBasicForm: React.FC<{
       onFinish={handleSubmit}
     >
       <Form.Item label={formatMessage(blogMessages.label.title)} name="title">
+        <Input />
+      </Form.Item>
+      <Form.Item label={formatMessage(blogMessages.label.source)} name="source">
         <Input />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
@@ -140,13 +146,14 @@ const UPDATE_POST_BASIC = gql`
   mutation UPDATE_POST_BASIC(
     $postId: uuid!
     $title: String
+    $source: String
     $codeName: String
     $categories: [post_category_insert_input!]!
     $tags: [tag_insert_input!]!
     $postTags: [post_tag_insert_input!]!
   ) {
     # update post
-    update_post(where: { id: { _eq: $postId } }, _set: { title: $title, code_name: $codeName }) {
+    update_post(where: { id: { _eq: $postId } }, _set: { title: $title, source: $source, code_name: $codeName }) {
       affected_rows
     }
 

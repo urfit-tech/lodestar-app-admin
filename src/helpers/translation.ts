@@ -1029,6 +1029,7 @@ export const blogMessages = {
   }),
   label: defineMessages({
     title: { id: 'blog.label.title', defaultMessage: '標題' },
+    source: {id: 'blog.label.source', defaultMessage: '說明備註'},
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
     codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
