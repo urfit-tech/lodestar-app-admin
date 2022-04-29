@@ -822,7 +822,7 @@ export interface GET_APPOINTMENT_PLAN_COUNTS {
 }
 
 export interface GET_APPOINTMENT_PLAN_COUNTSVariables {
-  condition?: appointment_plan_bool_exp | null;
+  condition: appointment_plan_bool_exp;
 }
 
 /* tslint:disable */
@@ -14225,7 +14225,7 @@ export interface GET_REFERRAL_MEMBER {
 }
 
 export interface GET_REFERRAL_MEMBERVariables {
-  condition?: member_bool_exp | null;
+  condition: member_bool_exp;
 }
 
 /* tslint:disable */
