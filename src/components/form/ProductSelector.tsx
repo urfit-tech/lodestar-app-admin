@@ -108,10 +108,8 @@ const useProductSelections = () => {
     gql`
       query GET_PRODUCT_SELECTION_COLLECTION {
         program_plan(
-          where: {
-            is_deleted: { _eq: false }
-            program: { is_deleted: { _eq: false }, published_at: { _is_null: false } }
-          }
+          where: { is_deleted: { _eq: false }, program: { is_deleted: { _eq: false } } }
+          order_by: { published_at: desc_nulls_last }
         ) {
           id
           title
@@ -124,7 +122,7 @@ const useProductSelections = () => {
             title
           }
         }
-        program_package_plan {
+        program_package_plan(order_by: { published_at: desc_nulls_last }) {
           id
           title
           published_at
@@ -133,7 +131,7 @@ const useProductSelections = () => {
             title
           }
         }
-        activity_ticket {
+        activity_ticket(where: { ended_at: { _gt: "now()" }, activity: { deleted_at: { _is_null: true } } }) {
           id
           title
           started_at
