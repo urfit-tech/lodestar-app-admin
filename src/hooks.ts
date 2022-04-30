@@ -294,7 +294,7 @@ export const useMemberContractPriceAmount = ({
   endedAt: Date | null
 }) => {
   const GET_MEMBER_CONTRACT_PRICE_AMOUNT = gql`
-    query GET_MEMBER_CONTRACT_PRICE_AMOUNT($dateRangeCondition: xuemi_member_private_teach_contract_bool_exp) {
+    query GET_MEMBER_CONTRACT_PRICE_AMOUNT($dateRangeCondition: xuemi_member_private_teach_contract_bool_exp!) {
       private_teach_pending_contract: xuemi_member_private_teach_contract_aggregate(
         where: { _and: [{ status: { _eq: "pending" } }, $dateRangeCondition] }
       ) {
@@ -342,12 +342,13 @@ export const useMemberContractPriceAmount = ({
       }
     }
   `
-  const dateRangeCondition: hasura.GET_MEMBER_CONTRACT_PRICE_AMOUNTVariables['dateRangeCondition'] = {
-    [dateRangeType]: {
-      _gt: startedAt,
-      _lt: endedAt,
-    },
-  }
+  const dateRangeCondition: hasura.GET_MEMBER_CONTRACT_PRICE_AMOUNTVariables['dateRangeCondition'] =
+    {
+      [dateRangeType]: {
+        _gt: startedAt,
+        _lt: endedAt,
+      },
+    } || {}
   const { loading, data, error, refetch } = useQuery<
     hasura.GET_MEMBER_CONTRACT_PRICE_AMOUNT,
     hasura.GET_MEMBER_CONTRACT_PRICE_AMOUNTVariables
