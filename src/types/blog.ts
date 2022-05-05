@@ -1,6 +1,7 @@
 export type PostProps = {
   id: string
   title: string
+  source: string | null
   videoUrl: string | null
   description: string | null
   categories: {
