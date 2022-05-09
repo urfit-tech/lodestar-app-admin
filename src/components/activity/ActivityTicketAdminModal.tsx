@@ -173,8 +173,8 @@ const ActivityTicketAdminModal: React.FC<
                 ))}
 
                 <Form.Item>
-                  <Button type="link" icon={<PlusIcon className="mr-2" />} className="p-0" onClick={() => add()}>
-                    {formatMessage(activityMessages.ui.addTicketSession)}
+                  <Button type="link" icon={<PlusIcon className="m-auto" />} className="p-0" onClick={() => add()}>
+                    <span className="ml-2">{formatMessage(activityMessages.ui.addTicketSession)}</span>
                   </Button>
                 </Form.Item>
               </>
