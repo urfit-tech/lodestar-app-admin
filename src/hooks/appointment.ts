@@ -42,11 +42,11 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
             booked
             available
           }
-          appointment_enrollments_aggregate {
-            aggregate {
-              count
-            }
-          }
+          # appointment_enrollments_aggregate {
+          #   aggregate {
+          #     count
+          #   }
+          # }
         }
       }
     `,
@@ -87,9 +87,9 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
         isEnrolled: !!period.booked,
         isExcluded: !period.available,
       })),
-      enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
-        ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
-        : 0,
+      // enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
+      //   ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
+      //   : 0,
       isPublished: !!data.appointment_plan_by_pk.published_at,
       supportLocales: data?.appointment_plan_by_pk.support_locales || [],
       currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',

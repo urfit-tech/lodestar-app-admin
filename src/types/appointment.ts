@@ -11,7 +11,7 @@ export type AppointmentPlanAdminProps = {
   listPrice: number
   schedules: AppointmentScheduleProps[]
   periods: AppointmentPeriodProps[]
-  enrollments: number
+  // enrollments: number
   isPublished: boolean | null
   supportLocales: string[]
   currencyId: string
