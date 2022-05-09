@@ -61,6 +61,7 @@ const ProgramIntroForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 10 } }}
       initialValues={{
+        coverVideoUrl: program.coverVideoUrl,
         abstract: program.abstract,
         description: BraftEditor.createEditorState(program.description),
       }}
