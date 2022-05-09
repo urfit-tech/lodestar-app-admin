@@ -23,11 +23,7 @@ export type AppointmentPlanAdminProps = {
 
 export type AppointmentPeriodProps = {
   id: string
-  schedule: {
-    id: string
-    periodAmount: number | null
-    periodType: PeriodType | null
-  }
+  scheduleId: string
   startedAt: Date
   endedAt: Date
   isEnrolled?: boolean

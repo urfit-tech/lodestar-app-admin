@@ -36,11 +36,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
             excludes
           }
           appointment_periods(where: { started_at: { _gt: $now } }, order_by: [{ started_at: asc }]) {
-            appointment_schedule {
-              id
-              interval_amount
-              interval_type
-            }
+            appointment_schedule_id
             started_at
             ended_at
             booked
@@ -84,12 +80,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
         excludes: s.excludes.map((e: string) => new Date(e)),
       })),
       periods: data.appointment_plan_by_pk.appointment_periods.map(period => ({
-        id: `${period.appointment_schedule?.id || ''}-${period.started_at}`,
-        schedule: {
-          id: period.appointment_schedule?.id || '',
-          periodAmount: period.appointment_schedule?.interval_amount || null,
-          periodType: (period.appointment_schedule?.interval_type as PeriodType) || null,
-        },
+        id: `${period.appointment_schedule_id || ''}-${period.started_at}`,
+        scheduleId: period.appointment_schedule_id,
         startedAt: new Date(period.started_at),
         endedAt: new Date(period.ended_at),
         isEnrolled: !!period.booked,
