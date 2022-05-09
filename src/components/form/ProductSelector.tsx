@@ -140,6 +140,12 @@ const useProductSelections = () => {
             id
             title
           }
+          activity_session_tickets(order_by: { activity_session: { ended_at: asc_nulls_first } }) {
+            activity_session {
+              id
+              ended_at
+            }
+          }
         }
         podcast_program(order_by: { published_at: desc_nulls_last, updated_at: desc_nulls_last }) {
           id
@@ -194,12 +200,16 @@ const useProductSelections = () => {
     {
       productType: 'ActivityTicket',
       products:
-        data?.activity_ticket.map(v => ({
-          id: `ActivityTicket_${v.id}`,
-          title: `${v.activity.title} - ${v.title}`,
-          publishedAt:
-            v.started_at && v.ended_at && Date.now() < new Date(v.ended_at).getTime() ? new Date(v.started_at) : null,
-        })) || [],
+        data?.activity_ticket
+          .filter(v =>
+            v.activity_session_tickets.find(w => new Date(w.activity_session.ended_at).getTime() > Date.now()),
+          )
+          .map(v => ({
+            id: `ActivityTicket_${v.id}`,
+            title: `${v.activity.title} - ${v.title}`,
+            publishedAt:
+              v.started_at && v.ended_at && Date.now() < new Date(v.ended_at).getTime() ? new Date(v.started_at) : null,
+          })) || [],
     },
     {
       productType: 'PodcastProgram',
