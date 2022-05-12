@@ -1029,7 +1029,14 @@ export const useAllBriefProductCollection = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
     gql`
       query GET_ALL_BRIEF_PRODUCT_COLLECTION {
-        program_plan(where: { program: { published_at: { _is_null: false }, is_deleted: { _eq: false } } }) {
+        program_plan(
+          where: {
+            published_at: { _is_null: false }
+            is_deleted: { _eq: false }
+            program: { is_deleted: { _eq: false } }
+          }
+          order_by: { published_at: desc_nulls_last }
+        ) {
           id
           title
           auto_renewed
@@ -1045,7 +1052,7 @@ export const useAllBriefProductCollection = () => {
           where: {
             is_published: { _eq: true }
             ended_at: { _gt: "now()" }
-            activity: { published_at: { _is_null: false } }
+            activity: { published_at: { _is_null: false }, deleted_at: { _is_null: true } }
           }
         ) {
           id
@@ -1057,12 +1064,12 @@ export const useAllBriefProductCollection = () => {
             title
           }
         }
-        podcast_program(where: { published_at: { _is_null: false } }) {
+        podcast_program(where: { published_at: { _is_null: false } }, order_by: { published_at: desc_nulls_last }) {
           id
           title
           published_at
         }
-        podcast_plan(where: { published_at: { _is_null: false } }) {
+        podcast_plan(where: { published_at: { _is_null: false } }, order_by: { published_at: desc_nulls_last }) {
           id
           title
           published_at
@@ -1072,7 +1079,7 @@ export const useAllBriefProductCollection = () => {
             username
           }
         }
-        appointment_plan(where: { published_at: { _is_null: false } }) {
+        appointment_plan(where: { published_at: { _is_null: false } }, order_by: { published_at: desc_nulls_last }) {
           id
           title
           published_at
@@ -1095,6 +1102,7 @@ export const useAllBriefProductCollection = () => {
             project: { published_at: { _is_null: false }, expired_at: { _gt: "now()" }, type: { _neq: "modular" } }
             published_at: { _is_null: false }
           }
+          order_by: { published_at: desc_nulls_last }
         ) {
           id
           title
@@ -1106,6 +1114,7 @@ export const useAllBriefProductCollection = () => {
         }
         program_package_plan(
           where: { published_at: { _is_null: false }, program_package: { published_at: { _is_null: false } } }
+          order_by: { published_at: desc_nulls_last }
         ) {
           id
           title

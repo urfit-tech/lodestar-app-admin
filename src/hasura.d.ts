@@ -2267,6 +2267,20 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity {
   title: string;
 }
 
+export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_session_tickets_activity_session {
+  __typename: "activity_session";
+  id: any;
+  ended_at: any;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_session_tickets {
+  __typename: "activity_session_ticket";
+  /**
+   * An object relationship
+   */
+  activity_session: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_session_tickets_activity_session;
+}
+
 export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket {
   __typename: "activity_ticket";
   id: any;
@@ -2277,6 +2291,10 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket {
    * An object relationship
    */
   activity: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity;
+  /**
+   * An array relationship
+   */
+  activity_session_tickets: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_session_tickets[];
 }
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program_creator {

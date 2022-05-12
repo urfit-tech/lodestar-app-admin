@@ -108,10 +108,8 @@ const useProductSelections = () => {
     gql`
       query GET_PRODUCT_SELECTION_COLLECTION {
         program_plan(
-          where: {
-            is_deleted: { _eq: false }
-            program: { is_deleted: { _eq: false }, published_at: { _is_null: false } }
-          }
+          where: { is_deleted: { _eq: false }, program: { is_deleted: { _eq: false } } }
+          order_by: { published_at: desc_nulls_last }
         ) {
           id
           title
@@ -124,7 +122,7 @@ const useProductSelections = () => {
             title
           }
         }
-        program_package_plan {
+        program_package_plan(order_by: { published_at: desc_nulls_last }) {
           id
           title
           published_at
@@ -133,7 +131,7 @@ const useProductSelections = () => {
             title
           }
         }
-        activity_ticket {
+        activity_ticket(where: { ended_at: { _gt: "now()" }, activity: { deleted_at: { _is_null: true } } }) {
           id
           title
           started_at
@@ -141,6 +139,12 @@ const useProductSelections = () => {
           activity {
             id
             title
+          }
+          activity_session_tickets(order_by: { activity_session: { ended_at: asc_nulls_first } }) {
+            activity_session {
+              id
+              ended_at
+            }
           }
         }
         podcast_program(order_by: { published_at: desc_nulls_last, updated_at: desc_nulls_last }) {
@@ -196,12 +200,16 @@ const useProductSelections = () => {
     {
       productType: 'ActivityTicket',
       products:
-        data?.activity_ticket.map(v => ({
-          id: `ActivityTicket_${v.id}`,
-          title: `${v.activity.title} - ${v.title}`,
-          publishedAt:
-            v.started_at && v.ended_at && Date.now() < new Date(v.ended_at).getTime() ? new Date(v.started_at) : null,
-        })) || [],
+        data?.activity_ticket
+          .filter(v =>
+            v.activity_session_tickets.find(w => new Date(w.activity_session.ended_at).getTime() > Date.now()),
+          )
+          .map(v => ({
+            id: `ActivityTicket_${v.id}`,
+            title: `${v.activity.title} - ${v.title}`,
+            publishedAt:
+              v.started_at && v.ended_at && Date.now() < new Date(v.ended_at).getTime() ? new Date(v.started_at) : null,
+          })) || [],
     },
     {
       productType: 'PodcastProgram',
