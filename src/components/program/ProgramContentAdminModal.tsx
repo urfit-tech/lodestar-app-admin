@@ -330,7 +330,14 @@ const ProgramContentAdminModal: React.FC<{
               </div>
 
               <div className="d-flex align-items-center">
-                <Button disabled={loading} onClick={() => setVisible(false)} className="mr-2">
+                <Button
+                  disabled={loading}
+                  onClick={() => {
+                    setVisible(false)
+                    form.resetFields()
+                  }}
+                  className="mr-2"
+                >
                   {formatMessage(commonMessages.ui.cancel)}
                 </Button>
                 <Button type="primary" htmlType="submit" loading={loading} className="mr-2">
