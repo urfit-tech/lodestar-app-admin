@@ -1,6 +1,6 @@
 import { EditOutlined, MoreOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Tooltip } from 'antd'
+import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
@@ -11,7 +11,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
-import { useMutateProgramContent } from '../../hooks/program'
+import { useMutateProgramContent, useProgramContentBody } from '../../hooks/program'
 import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
@@ -51,10 +51,12 @@ type FieldProps = {
 
 const PracticeAdminModal: React.FC<{
   programContent: ProgramContentProps
-  programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
-}> = ({ programContent, programContentBody, onRefetch }) => {
+}> = ({ programContent, onRefetch }) => {
   const [visible, setVisible] = useState(false)
+  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
+
+  if (loadingProgramContentBody) return <Skeleton active />
 
   return (
     <>
