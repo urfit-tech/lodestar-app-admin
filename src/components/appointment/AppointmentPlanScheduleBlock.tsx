@@ -77,7 +77,8 @@ const AppointmentPlanScheduleBlock: React.FC<{
           key={moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}
           periods={periods.map(period => ({
             id: period.id,
-            schedule: period.schedule,
+            schedule: appointmentPlanAdmin.schedules.find(schedule => schedule.id === period.scheduleId) || null,
+            scheduleId: period.scheduleId,
             startedAt: period.startedAt,
             endedAt: period.endedAt,
             isEnrolled: period.isEnrolled,

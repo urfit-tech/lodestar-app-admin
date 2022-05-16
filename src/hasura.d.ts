@@ -7640,36 +7640,13 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_s
   excludes: any;
 }
 
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule {
-  __typename: "appointment_schedule";
-  id: any;
-  interval_amount: number | null;
-  /**
-   * Y / M / W / D
-   */
-  interval_type: string | null;
-}
-
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods {
   __typename: "appointment_period";
-  /**
-   * An object relationship
-   */
-  appointment_schedule: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule | null;
+  appointment_schedule_id: any | null;
   started_at: any | null;
   ended_at: any | null;
   booked: boolean | null;
   available: boolean | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate | null;
 }
 
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
@@ -7701,10 +7678,6 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
    * An array relationship
    */
   appointment_periods: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods[];
-  /**
-   * An aggregate relationship
-   */
-  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate;
 }
 
 export interface GET_APPOINTMENT_PLAN_ADMIN {

@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
-import { AppointmentPeriodProps } from '../../types/appointment'
+import { AppointmentPeriodProps, AppointmentScheduleProps } from '../../types/appointment'
 import AdminModal from '../admin/AdminModal'
 import AppointmentPeriodItem from './AppointmentPeriodItem'
 
@@ -42,14 +42,16 @@ const messages = defineMessages({
   close: { id: 'appointment.ui.close', defaultMessage: '關閉' },
 })
 
-const AppointmentPeriodCollection: React.FC<{
-  periods: AppointmentPeriodProps[]
+type AppointmentPeriodCollectionProps = {
+  periods: (AppointmentPeriodProps & { schedule: AppointmentScheduleProps | null })[]
   onDelete?: (scheduleId: string) => Promise<any>
   onClose?: (scheduleId: string, startedAt: Date) => Promise<any> | undefined
-}> = ({ periods, onDelete, onClose }) => {
+}
+
+const AppointmentPeriodCollection: React.FC<AppointmentPeriodCollectionProps> = ({ periods, onDelete, onClose }) => {
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
-  const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodProps | null>(null)
+  const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodCollectionProps['periods'][number] | null>(null)
 
   return (
     <>
@@ -84,14 +86,14 @@ const AppointmentPeriodCollection: React.FC<{
                   danger
                   block
                   onClick={() =>
-                    onDelete?.(selectedPeriod.schedule.id).then(() => {
+                    onDelete?.(selectedPeriod.scheduleId).then(() => {
                       setVisible(false)
                       setSelectedPeriod(null)
                     })
                   }
                 >
                   {formatMessage(commonMessages.ui.delete)}
-                  {selectedPeriod.schedule.periodType !== null
+                  {selectedPeriod.schedule?.intervalType !== null
                     ? formatMessage(messages.seriesPeriod)
                     : formatMessage(messages.singlePeriod)}
                 </Button>
@@ -103,14 +105,14 @@ const AppointmentPeriodCollection: React.FC<{
                   block
                   onClick={() =>
                     onClose &&
-                    onClose(selectedPeriod.schedule.id, selectedPeriod.startedAt)?.then(() => {
+                    onClose(selectedPeriod.scheduleId, selectedPeriod.startedAt)?.then(() => {
                       setVisible(false)
                       setSelectedPeriod(null)
                     })
                   }
                 >
                   {selectedPeriod.isExcluded ? formatMessage(messages.open) : formatMessage(messages.close)}
-                  {selectedPeriod.schedule.periodType !== null && formatMessage(messages.single)}
+                  {selectedPeriod.schedule?.intervalType !== null && formatMessage(messages.single)}
                   {formatMessage(appointmentMessages.label.period)}
                 </Button>
               )}
@@ -123,16 +125,16 @@ const AppointmentPeriodCollection: React.FC<{
             {moment(selectedPeriod.startedAt).format('YYYY-MM-DD(dd) HH:mm')}
           </StyledModalDescription>
         )}
-        {selectedPeriod?.schedule.periodType && selectedPeriod.schedule.periodAmount && (
+        {selectedPeriod?.schedule?.intervalType && selectedPeriod.schedule.intervalAmount && (
           <StyledModalMeta className="mb-2">
             {formatMessage(messages.repetitiveMeta)}
-            {selectedPeriod.schedule.periodType === 'Y'
+            {selectedPeriod.schedule.intervalType === 'Y'
               ? formatMessage(commonMessages.label.perYear)
-              : selectedPeriod.schedule.periodType === 'M'
+              : selectedPeriod.schedule.intervalType === 'M'
               ? formatMessage(commonMessages.label.perMonth)
-              : selectedPeriod.schedule.periodType === 'W'
+              : selectedPeriod.schedule.intervalType === 'W'
               ? formatMessage(commonMessages.label.perWeek)
-              : selectedPeriod.schedule.periodType === 'D'
+              : selectedPeriod.schedule.intervalType === 'D'
               ? formatMessage(commonMessages.label.perDay)
               : ''}
           </StyledModalMeta>
