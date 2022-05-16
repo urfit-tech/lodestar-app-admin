@@ -212,12 +212,28 @@ const SaleCollectionAdminCard: React.VFC<{
           value: 'UNPAID',
         },
         {
+          text: formatMessage(commonMessages.status.orderPartialPaid),
+          value: 'PARTIAL_PAID',
+        },
+        {
+          text: formatMessage(commonMessages.status.orderFailed),
+          value: 'FAILED',
+        },
+        {
+          text: formatMessage(commonMessages.status.orderPartialRefund),
+          value: 'PARTIAL_REFUND',
+        },
+        {
           text: formatMessage(commonMessages.status.orderRefund),
           value: 'REFUND',
         },
         {
           text: formatMessage(commonMessages.status.orderExpired),
           value: 'EXPIRED',
+        },
+        {
+          text: formatMessage(commonMessages.status.deleted),
+          value: 'DELETED',
         },
       ],
     },

@@ -25,10 +25,21 @@ const messages = defineMessages({
   invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
 })
 
+const fieldOrderStatuses = [
+  'UNPAID',
+  'SUCCESS',
+  'FAILED',
+  'REFUND',
+  'EXPIRED',
+  'DELETED',
+  'PARTIAL_REFUND',
+  'PARTIAL_PAID',
+] as const
+
 type FieldProps = {
   selectedField: 'createdAt' | 'lastPaidAt'
   timeRange: [Moment, Moment]
-  orderStatuses: ('UNPAID' | 'SUCCESS' | 'FAILED' | 'REFUND')[]
+  orderStatuses: typeof fieldOrderStatuses[number][]
 }
 
 const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
@@ -372,7 +383,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           ? [
               ...values.orderStatuses,
               ...(allOrderStatuses.filter(
-                status => !(status === 'REFUND' || status === 'UNPAID' || status === 'SUCCESS' || status === 'FAILED'),
+                status => !fieldOrderStatuses.some(fieldOrderStatus => status === fieldOrderStatus),
               ) || []),
             ]
           : values.orderStatuses
@@ -519,11 +530,17 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             <Select.Option value="UNPAID" disabled={selectedField === 'lastPaidAt'}>
               {formatMessage(commonMessages.status.orderUnpaid)}
             </Select.Option>
+            <Select.Option value="PARTIAL_PAID">{formatMessage(commonMessages.status.orderPartialPaid)}</Select.Option>
             <Select.Option value="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
             <Select.Option value="FAILED" disabled={selectedField === 'lastPaidAt'}>
               {formatMessage(commonMessages.status.orderFailed)}
             </Select.Option>
+            <Select.Option value="PARTIAL_REFUND">
+              {formatMessage(commonMessages.status.orderPartialRefund)}
+            </Select.Option>
             <Select.Option value="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
+            <Select.Option value="DELETED">{formatMessage(commonMessages.status.orderDeleted)}</Select.Option>
+            <Select.Option value="EXPIRED">{formatMessage(commonMessages.status.orderExpired)}</Select.Option>
           </Select>
         </Form.Item>
       </Form>
