@@ -30,13 +30,13 @@ const pageMessages = {
     allPrograms: { id: 'page.ProgramProgressCollectionAdminPage.allPrograms', defaultMessage: '全部課程' },
     selectedProgram: { id: 'page.ProgramProgressCollectionAdminPage.selectedProgram', defaultMessage: '指定課程' },
     member: { id: 'page.ProgramProgressCollectionAdminPage.member', defaultMessage: '會員' },
+    date: { id: 'page.ProgramProgressCollectionAdminPage.date', defaultMessage: '日期' },
     chooseMember: { id: 'page.ProgramProgressCollectionAdminPage.chooseMember', defaultMessage: '選擇會員' },
     allMembers: { id: 'page.ProgramProgressCollectionAdminPage.allMembers', defaultMessage: '全部會員' },
     selectedMember: { id: 'page.ProgramProgressCollectionAdminPage.selectedMember', defaultMessage: '指定會員' },
     property: { id: 'page.ProgramProgressCollectionAdminPage.property', defaultMessage: '自訂欄位' },
     chooseProperty: { id: 'page.ProgramProgressCollectionAdminPage.chooseProperty', defaultMessage: '選擇欄位' },
     containKeyword: { id: 'page.ProgramProgressCollectionAdminPage.containKeyword', defaultMessage: '關鍵字包含' },
-
     categories: { id: 'page.ProgramProgressCollectionAdminPage.categories', defaultMessage: '課程分類' },
     programTitle: { id: 'page.ProgramProgressCollectionAdminPage.programTitle', defaultMessage: '課程名稱' },
     programContentSectionTitle: {
@@ -74,6 +74,16 @@ const pageMessages = {
       defaultMessage: '測驗通過時間',
     },
     practices: { id: 'page.ProgramProgressCollectionAdminPage.practices', defaultMessage: '作業' },
+    learningDuration: { id: 'page.ProgramProgressCollectionAdminPage.learningDuration', defaultMessage: '學習時數' },
+    learningProgress: { id: 'page.ProgramProgressCollectionAdminPage.learningProgress', defaultMessage: '學習進度' },
+    exportProgramProgress: {
+      id: 'page.ProgramProgressCollectionAdminPage.exportProgramProgress',
+      defaultMessage: '匯出學習進度',
+    },
+    progressUpdatedAtText: {
+      id: 'page.ProgramProgressCollectionAdminPage.progressUpdatedAtText',
+      defaultMessage: '計算累計到此日期的進度',
+    },
   }),
 }
 
