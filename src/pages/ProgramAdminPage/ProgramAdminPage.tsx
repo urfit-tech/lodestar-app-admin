@@ -52,7 +52,7 @@ const ProgramAdminPage: React.FC = () => {
           placement="bottomRight"
           overlay={
             <Menu onClick={({ key }) => window.open(`//${host}${key}`, '_blank')}>
-              <Menu.Item className="py-2 px-3" key={`/programs/${programId}`}>
+              <Menu.Item className="py-2 px-3" key={`/programs/${programId}?visitIntro=1`}>
                 {formatMessage(ProgramAdminPageMessages['*'].previewIntroduction)}
               </Menu.Item>
               <Menu.Item className="py-2 px-3" key={`/programs/${programId}/contents`}>
