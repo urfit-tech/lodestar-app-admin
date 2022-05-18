@@ -15696,7 +15696,7 @@ export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS {
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESSVariables {
   memberCondition?: member_bool_exp | null;
   programCondition?: program_bool_exp | null;
-  progressUpdatedAt?: any | null;
+  lastUpdatedAt?: any | null;
 }
 
 /* tslint:disable */

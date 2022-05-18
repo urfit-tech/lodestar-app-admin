@@ -80,8 +80,8 @@ const pageMessages = {
       id: 'page.ProgramProgressCollectionAdminPage.exportProgramProgress',
       defaultMessage: '匯出學習進度',
     },
-    progressUpdatedAtText: {
-      id: 'page.ProgramProgressCollectionAdminPage.progressUpdatedAtText',
+    lastUpdatedAtText: {
+      id: 'page.ProgramProgressCollectionAdminPage.lastUpdatedAtText',
       defaultMessage: '計算累計到此日期的進度',
     },
   }),

@@ -37,7 +37,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
   const { currentMemberId, permissions } = useAuth()
   const apolloClient = useApolloClient()
   const { enabledModules, loading } = useApp()
-  const [progressUpdatedAt, setProgressUpdatedAt] = useState<Moment | null>(null)
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Moment | null>(null)
   const [programFilter, setProgramFilter] = useState<ProgramFilter>({ type: 'all' })
   const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'selectedMember', memberIds: [] })
 
@@ -68,7 +68,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
               : {
                   id: { _in: programFilter.programIds },
                 },
-          progressUpdatedAt: progressUpdatedAt?.toDate(),
+          lastUpdatedAt: lastUpdatedAt?.toDate(),
         },
       })
       .then(({ data }) => {
@@ -343,11 +343,11 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
           label={formatMessage(pageMessages.ProgramProgressCollectionAdminPage.date)}
           extra={
             <span style={{ fontSize: '14px' }}>
-              {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.progressUpdatedAtText)}
+              {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.lastUpdatedAtText)}
             </span>
           }
         >
-          <DatePicker onChange={setProgressUpdatedAt} showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
+          <DatePicker onChange={setLastUpdatedAt} showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 2 }}>
           <Button
@@ -369,7 +369,7 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
   query GET_ADVANCED_PROGRAM_CONTENT_PROGRESS(
     $memberCondition: member_bool_exp
     $programCondition: program_bool_exp
-    $progressUpdatedAt: timestamptz
+    $lastUpdatedAt: timestamptz
   ) {
     property(where: { type: { _eq: "member" } }) {
       id
@@ -397,16 +397,16 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
           title
           duration
           metadata
-          practices {
+          practices(where: { updated_at: { _lte: $lastUpdatedAt } }) {
             member_id
           }
-          exercises {
+          exercises(where: { updated_at: { _lte: $lastUpdatedAt } }) {
             id
             member_id
             answer
             updated_at
           }
-          program_content_progress(where: { updated_at: { _lte: $progressUpdatedAt } }) {
+          program_content_progress(where: { updated_at: { _lte: $lastUpdatedAt } }) {
             member_id
             progress
             created_at
