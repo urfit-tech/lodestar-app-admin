@@ -33,21 +33,21 @@ const StyledFormItemWrapper = styled.div<{ currentTemplate: string }>`
     margin: 2px;
     border-radius: 4px;
   }
-  .ant-row:nth-child(1) {
+  .ant-row:nth-child(2) {
     .ant-card {
       background-image: url(${templateAImage});
       background-size: cover;
       border: ${props => (props.currentTemplate === 'A' ? `2px ${props.theme['@primary-color']} solid` : null)};
     }
   }
-  .ant-row:nth-child(2) {
+  .ant-row:nth-child(3) {
     .ant-card {
       background-image: url(${templateBImage});
       background-size: cover;
       border: ${props => (props.currentTemplate === 'B' ? `2px ${props.theme['@primary-color']} solid` : null)};
     }
   }
-  .ant-row:nth-child(3) {
+  .ant-row:nth-child(4) {
     .ant-card {
       background-image: url(${templateCImage});
       background-size: cover;
@@ -95,10 +95,12 @@ type FieldProps = {
 
 const CraftPageCreationModal: React.VFC<
   AdminModalProps & {
+    defaultPageInfo?: { pageName: string; path: string }
+    defaultStep?: 'page' | 'template'
     setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
     onRefetch?: () => Promise<any>
   }
-> = ({ setModalVisible, onRefetch, ...props }) => {
+> = ({ setModalVisible, onRefetch, defaultPageInfo, defaultStep, ...props }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const client = useApolloClient()
@@ -109,8 +111,10 @@ const CraftPageCreationModal: React.VFC<
   const [loading, setLoading] = useState(false)
   const [currentTemplate, setCurrentTemplate] = useState<'A' | 'B' | 'C' | 'empty'>('empty')
 
-  const [pageInfo, setPageInfo] = useState<{ pageName: string; path: string }>({ pageName: '', path: '' })
-  const [createStep, setCreateStep] = useState<'page' | 'template'>('page')
+  const [pageInfo, setPageInfo] = useState<{ pageName: string; path: string }>(
+    defaultPageInfo || { pageName: '', path: '' },
+  )
+  const [createStep, setCreateStep] = useState<'page' | 'template'>(defaultStep || 'page')
 
   const handleResetModal = () => {
     stepOneForm.resetFields()
@@ -178,35 +182,6 @@ const CraftPageCreationModal: React.VFC<
       {createStep === 'template' ? (
         <Form form={stepTwoForm} layout="vertical" colon={false} onFinish={handleStepTwoSubmit}>
           <StyledFormItemWrapper currentTemplate={currentTemplate}>
-            {/* TODO: enable template when needs */}
-            {/* <StyledFormItem>
-                <AdminCard
-                  hoverable
-                  cover={''}
-                  onClick={() => {
-                    setCurrentTemplate('A')
-                  }}
-                />
-              </StyledFormItem>
-              <StyledFormItem>
-                <AdminCard
-                  hoverable
-                  cover={''}
-                  onClick={() => {
-                    setCurrentTemplate('B')
-                  }}
-                />
-              </StyledFormItem>
-              <StyledFormItem>
-                <AdminCard
-                  hoverable
-                  cover={''}
-                  onClick={() => {
-                    setCurrentTemplate('C')
-                  }}
-                />
-              </StyledFormItem>
-               */}
             <StyledFormItem>
               <AdminCard
                 hoverable
@@ -220,6 +195,33 @@ const CraftPageCreationModal: React.VFC<
                   <div>{formatMessage(craftPageCollectionPageMessages['*'].emptyPage)}</div>
                 </div>
               </AdminCard>
+            </StyledFormItem>
+            <StyledFormItem>
+              <AdminCard
+                hoverable
+                cover={''}
+                onClick={() => {
+                  setCurrentTemplate('A')
+                }}
+              />
+            </StyledFormItem>
+            <StyledFormItem>
+              <AdminCard
+                hoverable
+                cover={''}
+                onClick={() => {
+                  setCurrentTemplate('B')
+                }}
+              />
+            </StyledFormItem>
+            <StyledFormItem>
+              <AdminCard
+                hoverable
+                cover={''}
+                onClick={() => {
+                  setCurrentTemplate('C')
+                }}
+              />
             </StyledFormItem>
           </StyledFormItemWrapper>
           <div className="text-right">

@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
       <StyledWrapper>
         <div className="container">
           <StyledLogoBlock>
-            <img src={`https://static.kolable.com/images/${appId}/logo.png`} alt="logo" />
+            <img src={`https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/logo.png`} alt="logo" />
           </StyledLogoBlock>
           <StyledTitle>{formatMessage(messages.adminBackstage)}</StyledTitle>
           <div className="row justify-content-center">
