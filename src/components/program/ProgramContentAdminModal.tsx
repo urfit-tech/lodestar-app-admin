@@ -12,6 +12,7 @@ import {
   Modal,
   Radio,
   Select,
+  Skeleton,
 } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
@@ -26,9 +27,9 @@ import { v4 as uuidV4 } from 'uuid'
 import { contentTypeFormat, generateUrlWithID, getVideoIDByURL, handleError, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment } from '../../hooks/data'
-import { useMutateProgramContent, useProgramContentActions } from '../../hooks/program'
+import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import { ProgramContentBodyProps, ProgramContentProps, ProgramProps } from '../../types/program'
+import { ProgramContentProps, ProgramProps } from '../../types/program'
 import AttachmentSelector, { AttachmentSelectorValue } from '../common/AttachmentSelector'
 import FileUploader from '../common/FileUploader'
 import { BREAK_POINT } from '../common/Responsive'
@@ -107,19 +108,20 @@ type VideoPipeline = 'attachment' | 'externalLink'
 const ProgramContentAdminModal: React.FC<{
   program: ProgramProps
   programContent: ProgramContentProps
-  programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
-}> = ({ program, programContent, programContentBody, onRefetch }) => {
+}> = ({ program, programContent, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
   const { authToken, currentMemberId } = useAuth()
 
+  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
   const { updateProgramContent, updateProgramContentBody, deleteProgramContent } = useMutateProgramContent()
   const { updatePlans, updateMaterials, updateVideos } = useProgramContentActions(programContent.id)
 
   const { insertAttachment } = useMutateAttachment()
 
+  const uploadCanceler = useRef<Canceler>()
   const [visible, setVisible] = useState(false)
   const [isTrial, setIsTrial] = useState(programContent?.listPrice === 0)
   const [isPublished, setIsPublished] = useState(!!programContent?.publishedAt)
@@ -134,8 +136,6 @@ const ProgramContentAdminModal: React.FC<{
   }>({ status: 'idle', source: 'youtube' })
 
   const [loading, setLoading] = useState(false)
-  const uploadCanceler = useRef<Canceler>()
-
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
   const [isUploadFailed, setIsUploadFailed] = useState<{
     video?: boolean
@@ -246,15 +246,14 @@ const ProgramContentAdminModal: React.FC<{
       } else {
         message.success(formatMessage(commonMessages.event.successfullySaved))
         setUploadProgress({})
-        setVisible(false)
       }
-      onRefetch?.()
     } catch (error) {
       message.error(formatMessage(commonMessages.event.failedSave))
     }
 
     //init and reset form
-    form.resetFields()
+    onRefetch?.()
+    setVisible(false)
     setVideoPipeline('attachment')
     setExternalVideoInfo({ status: 'idle' })
     setLoading(false)
@@ -267,6 +266,8 @@ const ProgramContentAdminModal: React.FC<{
   useEffect(() => {
     programContent?.videos?.length && form.setFieldsValue({ videoAttachment: programContent.videos.pop() })
   }, [form, programContent?.videos])
+
+  if (loadingProgramContentBody) return <Skeleton active />
 
   return (
     <>
@@ -329,7 +330,14 @@ const ProgramContentAdminModal: React.FC<{
               </div>
 
               <div className="d-flex align-items-center">
-                <Button disabled={loading} onClick={() => setVisible(false)} className="mr-2">
+                <Button
+                  disabled={loading}
+                  onClick={() => {
+                    setVisible(false)
+                    form.resetFields()
+                  }}
+                  className="mr-2"
+                >
                   {formatMessage(commonMessages.ui.cancel)}
                 </Button>
                 <Button type="primary" htmlType="submit" loading={loading} className="mr-2">

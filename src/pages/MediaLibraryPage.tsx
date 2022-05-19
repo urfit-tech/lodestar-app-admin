@@ -61,7 +61,7 @@ const MediaLibrary: React.FC = () => {
           },
         })
         .on('complete', () => {
-          refetchAttachments()
+          refetchAttachments?.()
         }),
     )
   }, [authToken, refetchAttachments])
@@ -71,8 +71,8 @@ const MediaLibrary: React.FC = () => {
   }, [defaultVisibleModal, handleVideoAdd])
 
   useEffect(() => {
-    refetchAttachments()
-  }, [refetchAttachments])
+    authToken && refetchAttachments?.()
+  }, [authToken, refetchAttachments])
 
   const videoAttachmentColumns: ColumnProps<typeof attachments[number]>[] = [
     {
@@ -91,7 +91,7 @@ const MediaLibrary: React.FC = () => {
             <ReUploadButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
-              onFinish={() => refetchAttachments()}
+              onFinish={() => refetchAttachments?.()}
             />
           </div>
           <div className="d-flex">
@@ -99,7 +99,7 @@ const MediaLibrary: React.FC = () => {
             <DeleteButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
-              onDelete={() => refetchAttachments()}
+              onDelete={() => refetchAttachments?.()}
             />
           </div>
         </div>
@@ -182,7 +182,7 @@ const MediaLibrary: React.FC = () => {
                 <span className="mr-2">+</span>
                 {formatMessage(commonMessages.ui.add)}
               </Button>
-              <Button onClick={() => refetchAttachments()}>
+              <Button onClick={() => refetchAttachments?.()}>
                 <RedoOutlined />
               </Button>
             </div>

@@ -1,13 +1,13 @@
 import { DownloadOutlined, FileTextFilled } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
-import { Button, Col, Form, Input, message, Row, Select } from 'antd'
+import { Button, Col, DatePicker, Form, Input, message, Row, Select } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../components/admin'
 import { AllMemberSelector } from '../components/form/MemberSelector'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -20,12 +20,6 @@ import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 import LoadingPage from './LoadingPage'
 import pageMessages from './translation'
-
-const messages = defineMessages({
-  learningDuration: { id: 'common.label.learningDuration', defaultMessage: '學習時數' },
-  learningProgress: { id: 'common.label.learningProgress', defaultMessage: '學習進度' },
-  exportProgramProgress: { id: 'common.ui.exportProgramProgress', defaultMessage: '匯出學習進度' },
-})
 
 type MemberFilter =
   | { type: 'all' }
@@ -43,6 +37,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
   const { currentMemberId, permissions } = useAuth()
   const apolloClient = useApolloClient()
   const { enabledModules, loading } = useApp()
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Moment | null>(null)
   const [programFilter, setProgramFilter] = useState<ProgramFilter>({ type: 'all' })
   const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'selectedMember', memberIds: [] })
 
@@ -73,6 +68,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
               : {
                   id: { _in: programFilter.programIds },
                 },
+          lastUpdatedAt: lastUpdatedAt?.toDate(),
         },
       })
       .then(({ data }) => {
@@ -343,6 +339,16 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
             </Row>
           </Input.Group>
         </Form.Item>
+        <Form.Item
+          label={formatMessage(pageMessages.ProgramProgressCollectionAdminPage.date)}
+          extra={
+            <span style={{ fontSize: '14px' }}>
+              {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.lastUpdatedAtText)}
+            </span>
+          }
+        >
+          <DatePicker onChange={setLastUpdatedAt} showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
+        </Form.Item>
         <Form.Item wrapperCol={{ offset: 2 }}>
           <Button
             loading={exporting}
@@ -351,7 +357,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
             className="mb-4"
             onClick={handleExport}
           >
-            {formatMessage(messages.exportProgramProgress)}
+            {formatMessage(pageMessages.ProgramProgressCollectionAdminPage.exportProgramProgress)}
           </Button>
         </Form.Item>
       </Form>
@@ -360,7 +366,11 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
 }
 
 const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
-  query GET_ADVANCED_PROGRAM_CONTENT_PROGRESS($memberCondition: member_bool_exp, $programCondition: program_bool_exp) {
+  query GET_ADVANCED_PROGRAM_CONTENT_PROGRESS(
+    $memberCondition: member_bool_exp
+    $programCondition: program_bool_exp
+    $lastUpdatedAt: timestamptz
+  ) {
     property(where: { type: { _eq: "member" } }) {
       id
       name
@@ -387,16 +397,16 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
           title
           duration
           metadata
-          practices {
+          practices(where: { updated_at: { _lte: $lastUpdatedAt } }) {
             member_id
           }
-          exercises {
+          exercises(where: { updated_at: { _lte: $lastUpdatedAt } }) {
             id
             member_id
             answer
             updated_at
           }
-          program_content_progress {
+          program_content_progress(where: { updated_at: { _lte: $lastUpdatedAt } }) {
             member_id
             progress
             created_at

@@ -1,6 +1,19 @@
 import Icon, { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Alert, Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
+import {
+  Alert,
+  Button,
+  Checkbox,
+  Divider,
+  Dropdown,
+  Form,
+  Input,
+  InputNumber,
+  Menu,
+  message,
+  Modal,
+  Skeleton,
+} from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -12,7 +25,7 @@ import { v4 as uuidV4 } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import { useMutateProgramContent } from '../../hooks/program'
+import { useMutateProgramContent, useProgramContentBody } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
 import QuestionInput from '../form/QuestionInput'
@@ -57,10 +70,12 @@ const StyledModal = styled(Modal)<{ isFullWidth?: boolean }>`
 
 const ExerciseAdminModal: React.FC<{
   programContent: ProgramContentProps
-  programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
-}> = ({ programContent, programContentBody, onRefetch }) => {
+}> = ({ programContent, onRefetch }) => {
   const [visible, setVisible] = useState(false)
+  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
+
+  if (loadingProgramContentBody) return <Skeleton active />
 
   return (
     <>

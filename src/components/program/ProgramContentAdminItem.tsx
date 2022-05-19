@@ -8,7 +8,6 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useProgramContentBody } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
@@ -58,9 +57,6 @@ const ProgramContentAdminItem: React.FC<{
   const { formatMessage } = useIntl()
   const [updateProgramContent] = useMutation<hasura.PUBLISH_PROGRAM_CONTENT, hasura.PUBLISH_PROGRAM_CONTENTVariables>(
     PUBLISH_PROGRAM_CONTENT,
-  )
-  const { loadingProgramContentBody, programContentBody, refetchProgramContentBody } = useProgramContentBody(
-    programContent.id,
   )
 
   return (
@@ -139,34 +135,12 @@ const ProgramContentAdminItem: React.FC<{
             }
           />
         )}
-        {loadingProgramContentBody ? null : programContent.programContentType === 'practice' ? (
-          <PracticeAdminModal
-            programContent={programContent}
-            programContentBody={programContentBody}
-            onRefetch={() => {
-              refetchProgramContentBody()
-              onRefetch?.()
-            }}
-          />
+        {programContent.programContentType === 'practice' ? (
+          <PracticeAdminModal programContent={programContent} onRefetch={onRefetch} />
         ) : programContent.programContentType === 'exercise' ? (
-          <ExerciseAdminModal
-            programContent={programContent}
-            programContentBody={programContentBody}
-            onRefetch={() => {
-              refetchProgramContentBody()
-              onRefetch?.()
-            }}
-          />
+          <ExerciseAdminModal programContent={programContent} onRefetch={onRefetch} />
         ) : (
-          <ProgramContentAdminModal
-            program={program}
-            programContent={programContent}
-            programContentBody={programContentBody}
-            onRefetch={() => {
-              refetchProgramContentBody()
-              onRefetch?.()
-            }}
-          />
+          <ProgramContentAdminModal program={program} programContent={programContent} onRefetch={onRefetch} />
         )}
       </div>
     </div>
