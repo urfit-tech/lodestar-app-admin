@@ -52,7 +52,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
   const [loading, setLoading] = useState(false)
 
-  const ableToExport = permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_CREATOR
+  const ableToExport = permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_NORMAL
 
   const getOrderLogContent: (startedAt: Date, endedAt: Date, orderStatuses: string[]) => Promise<string[][]> =
     useCallback(
