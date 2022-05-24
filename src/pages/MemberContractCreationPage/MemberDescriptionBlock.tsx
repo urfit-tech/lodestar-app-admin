@@ -32,14 +32,6 @@ const MemberDescriptionBlock: React.FC<{
               <Alert type="error" message="未設定" />
             )}
           </Descriptions.Item>
-          {properties.map(property => (
-            <Descriptions.Item label={property.name} key={property.id}>
-              <div className="d-flex align-items-center">
-                {member.properties.find(v => v.propertyId === property.id)?.value ||
-                  (property.placeholder ? <Alert type="error" message="未設定" /> : null)}
-              </div>
-            </Descriptions.Item>
-          ))}
         </Descriptions>
       </div>
     )

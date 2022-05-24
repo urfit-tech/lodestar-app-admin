@@ -63,12 +63,6 @@ const MemberContractCreationBlock: React.FC<{
   const fieldValue = form.getFieldsValue()
 
   const handleMemberContractCreate = async () => {
-    const alert = document.getElementsByClassName('ant-alert')[0]
-
-    if (memberBlockRef.current?.contains(alert)) {
-      message.warning('學員資料請填寫完整')
-      return
-    }
     if (fieldValue.identity === 'student' && !fieldValue?.certification?.file.name) {
       message.warn('需上傳證明')
       return
