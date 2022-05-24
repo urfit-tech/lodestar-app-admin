@@ -1,4 +1,12 @@
-import { DeleteOutlined, SearchOutlined, StarOutlined, StopOutlined, SyncOutlined } from '@ant-design/icons'
+import {
+  CheckSquareOutlined,
+  DeleteOutlined,
+  FileAddOutlined,
+  SearchOutlined,
+  StarOutlined,
+  StopOutlined,
+  SyncOutlined,
+} from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
@@ -119,51 +127,51 @@ const SalesLeadTable: React.VFC<{
   })
 
   const columns: ColumnsType<LeadProps> = [
-    // {
-    //   key: 'memberId',
-    //   dataIndex: 'id',
-    //   title: '',
-    //   render: (memberId, record) => (
-    //     <div className="d-flex flex-row justify-content-end">
-    //       <Button
-    //         icon={<Icon component={() => <UserOutlinedIcon />} />}
-    //         className="mr-2"
-    //         onClick={() => {
-    //           setSelectedMember({
-    //             id: record.id,
-    //             name: record.name,
-    //             categoryNames: record.categoryNames,
-    //           })
-    //           setPropertyModalVisible(true)
-    //         }}
-    //       />
-    //       <Button
-    //         icon={<CheckSquareOutlined />}
-    //         className="mr-2"
-    //         onClick={() => {
-    //           setSelectedMember({
-    //             id: record.id,
-    //             name: record.name,
-    //             categoryNames: record.categoryNames,
-    //           })
-    //           setTaskModalVisible(true)
-    //         }}
-    //       />
-    //       <Button
-    //         className="mr-2"
-    //         icon={<FileAddOutlined />}
-    //         onClick={() => {
-    //           setSelectedMember({
-    //             id: record.id,
-    //             name: record.name,
-    //             categoryNames: record.categoryNames,
-    //           })
-    //           setMemberNoteModalVisible(true)
-    //         }}
-    //       />
-    //     </div>
-    //   ),
-    // },
+    {
+      key: 'memberId',
+      dataIndex: 'id',
+      title: '',
+      render: (memberId, record) => (
+        <div className="d-flex flex-row justify-content-end">
+          {/* <Button
+            icon={<Icon component={() => <UserOutlinedIcon />} />}
+            className="mr-2"
+            onClick={() => {
+              setSelectedMember({
+                id: record.id,
+                name: record.name,
+                categoryNames: record.categoryNames,
+              })
+              setPropertyModalVisible(true)
+            }}
+          /> */}
+          <Button
+            icon={<CheckSquareOutlined />}
+            className="mr-2"
+            onClick={() => {
+              setSelectedMember({
+                id: record.id,
+                name: record.name,
+                categoryNames: record.categoryNames,
+              })
+              setTaskModalVisible(true)
+            }}
+          />
+          <Button
+            className="mr-2"
+            icon={<FileAddOutlined />}
+            onClick={() => {
+              setSelectedMember({
+                id: record.id,
+                name: record.name,
+                categoryNames: record.categoryNames,
+              })
+              setMemberNoteModalVisible(true)
+            }}
+          />
+        </div>
+      ),
+    },
     {
       key: 'nameAndEmail',
       dataIndex: 'nameAndEmail',
@@ -247,6 +255,7 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
+      defaultSortOrder: 'descend',
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
     // {
