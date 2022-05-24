@@ -6621,10 +6621,10 @@ export interface GET_PRODUCT_OWNER_ORDERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CLOSE_LEAD
+// GraphQL mutation operation: UPDATE_LEADS
 // ====================================================
 
-export interface CLOSE_LEAD_update_member {
+export interface UPDATE_LEADS_update_member {
   __typename: "member_mutation_response";
   /**
    * number of rows affected by the mutation
@@ -6632,15 +6632,17 @@ export interface CLOSE_LEAD_update_member {
   affected_rows: number;
 }
 
-export interface CLOSE_LEAD {
+export interface UPDATE_LEADS {
   /**
    * update data of the table: "member"
    */
-  update_member: CLOSE_LEAD_update_member | null;
+  update_member: UPDATE_LEADS_update_member | null;
 }
 
-export interface CLOSE_LEADVariables {
-  memberId: string;
+export interface UPDATE_LEADSVariables {
+  memberIds: string[];
+  newMemberId?: string | null;
+  newStar?: any | null;
 }
 
 /* tslint:disable */
@@ -13179,6 +13181,21 @@ export interface GET_SALESVariables {
 // GraphQL query operation: GET_SALES_LEADS
 // ====================================================
 
+export interface GET_SALES_LEADS_lead_status_new_member_member_properties_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_SALES_LEADS_lead_status_new_member_member_properties {
+  __typename: "member_property";
+  /**
+   * An object relationship
+   */
+  property: GET_SALES_LEADS_lead_status_new_member_member_properties_property;
+  value: string;
+}
+
 export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
   __typename: "member_phone";
   phone: string;
@@ -13205,6 +13222,10 @@ export interface GET_SALES_LEADS_lead_status_new_member {
   star: any | null;
   created_at: any | null;
   assigned_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_SALES_LEADS_lead_status_new_member_member_properties[];
   /**
    * An array relationship
    */
@@ -16236,6 +16257,7 @@ export enum activity_ticket_update_column {
 export enum activity_update_column {
   app_id = "app_id",
   cover_url = "cover_url",
+  created_at = "created_at",
   deleted_at = "deleted_at",
   description = "description",
   id = "id",
@@ -16245,6 +16267,7 @@ export enum activity_update_column {
   published_at = "published_at",
   support_locales = "support_locales",
   title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -16286,24 +16309,6 @@ export enum app_host_update_column {
   app_id = "app_id",
   host = "host",
   priority = "priority",
-}
-
-/**
- * unique or primary key constraints on table "app_module"
- */
-export enum app_module_constraint {
-  app_module_app_id_module_id_key = "app_module_app_id_module_id_key",
-  app_module_pkey = "app_module_pkey",
-}
-
-/**
- * update columns of table "app_module"
- */
-export enum app_module_update_column {
-  app_id = "app_id",
-  created_at = "created_at",
-  id = "id",
-  module_id = "module_id",
 }
 
 /**
@@ -16415,13 +16420,16 @@ export enum app_setting_update_column {
  * update columns of table "app"
  */
 export enum app_update_column {
+  app_plan_id = "app_plan_id",
   created_at = "created_at",
   description = "description",
+  ended_at = "ended_at",
   id = "id",
   name = "name",
   point_discount_ratio = "point_discount_ratio",
   point_exchange_rate = "point_exchange_rate",
   point_validity_period = "point_validity_period",
+  started_at = "started_at",
   symbol = "symbol",
   title = "title",
   updated_at = "updated_at",
@@ -17302,6 +17310,7 @@ export enum member_tag_update_column {
   created_at = "created_at",
   id = "id",
   member_id = "member_id",
+  position = "position",
   tag_name = "tag_name",
   updated_at = "updated_at",
 }
@@ -19433,6 +19442,7 @@ export interface activity_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -19445,6 +19455,7 @@ export interface activity_bool_exp {
   session_ticket_enrollment_count?: activity_session_ticket_enrollment_count_bool_exp | null;
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -19547,6 +19558,7 @@ export interface activity_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   cover_url?: string | null;
+  created_at?: any | null;
   deleted_at?: any | null;
   description?: string | null;
   id?: any | null;
@@ -19559,6 +19571,7 @@ export interface activity_insert_input {
   session_ticket_enrollment_count?: activity_session_ticket_enrollment_count_arr_rel_insert_input | null;
   support_locales?: any | null;
   title?: string | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -19567,6 +19580,7 @@ export interface activity_insert_input {
 export interface activity_max_order_by {
   app_id?: order_by | null;
   cover_url?: order_by | null;
+  created_at?: order_by | null;
   deleted_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
@@ -19574,6 +19588,7 @@ export interface activity_max_order_by {
   position?: order_by | null;
   published_at?: order_by | null;
   title?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -19582,6 +19597,7 @@ export interface activity_max_order_by {
 export interface activity_min_order_by {
   app_id?: order_by | null;
   cover_url?: order_by | null;
+  created_at?: order_by | null;
   deleted_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
@@ -19589,6 +19605,7 @@ export interface activity_min_order_by {
   position?: order_by | null;
   published_at?: order_by | null;
   title?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -20107,6 +20124,7 @@ export interface app_bool_exp {
   app_hosts?: app_host_bool_exp | null;
   app_modules?: app_module_bool_exp | null;
   app_navs?: app_nav_bool_exp | null;
+  app_plan_id?: String_comparison_exp | null;
   app_secrets?: app_secret_bool_exp | null;
   app_settings?: app_setting_bool_exp | null;
   cards?: card_bool_exp | null;
@@ -20114,6 +20132,7 @@ export interface app_bool_exp {
   comments?: comment_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   issues?: issue_bool_exp | null;
   members?: member_bool_exp | null;
@@ -20129,6 +20148,7 @@ export interface app_bool_exp {
   programs?: program_bool_exp | null;
   properties?: property_bool_exp | null;
   sharing_codes?: sharing_code_bool_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
   symbol?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -20276,6 +20296,7 @@ export interface app_insert_input {
   app_hosts?: app_host_arr_rel_insert_input | null;
   app_modules?: app_module_arr_rel_insert_input | null;
   app_navs?: app_nav_arr_rel_insert_input | null;
+  app_plan_id?: string | null;
   app_secrets?: app_secret_arr_rel_insert_input | null;
   app_settings?: app_setting_arr_rel_insert_input | null;
   cards?: card_arr_rel_insert_input | null;
@@ -20283,6 +20304,7 @@ export interface app_insert_input {
   comments?: comment_arr_rel_insert_input | null;
   created_at?: any | null;
   description?: string | null;
+  ended_at?: any | null;
   id?: string | null;
   issues?: issue_arr_rel_insert_input | null;
   members?: member_arr_rel_insert_input | null;
@@ -20298,6 +20320,7 @@ export interface app_insert_input {
   programs?: program_arr_rel_insert_input | null;
   properties?: property_arr_rel_insert_input | null;
   sharing_codes?: sharing_code_arr_rel_insert_input | null;
+  started_at?: any | null;
   symbol?: string | null;
   title?: string | null;
   updated_at?: any | null;
@@ -20319,7 +20342,6 @@ export interface app_module_aggregate_order_by {
  */
 export interface app_module_arr_rel_insert_input {
   data: app_module_insert_input[];
-  on_conflict?: app_module_on_conflict | null;
 }
 
 /**
@@ -20329,11 +20351,8 @@ export interface app_module_bool_exp {
   _and?: app_module_bool_exp[] | null;
   _not?: app_module_bool_exp | null;
   _or?: app_module_bool_exp[] | null;
-  app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
-  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  module?: module_bool_exp | null;
   module_id?: String_comparison_exp | null;
 }
 
@@ -20341,11 +20360,8 @@ export interface app_module_bool_exp {
  * input type for inserting data into table "app_module"
  */
 export interface app_module_insert_input {
-  app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
-  created_at?: any | null;
   id?: any | null;
-  module?: module_obj_rel_insert_input | null;
   module_id?: string | null;
 }
 
@@ -20354,7 +20370,6 @@ export interface app_module_insert_input {
  */
 export interface app_module_max_order_by {
   app_id?: order_by | null;
-  created_at?: order_by | null;
   id?: order_by | null;
   module_id?: order_by | null;
 }
@@ -20364,18 +20379,8 @@ export interface app_module_max_order_by {
  */
 export interface app_module_min_order_by {
   app_id?: order_by | null;
-  created_at?: order_by | null;
   id?: order_by | null;
   module_id?: order_by | null;
-}
-
-/**
- * on_conflict condition type for table "app_module"
- */
-export interface app_module_on_conflict {
-  constraint: app_module_constraint;
-  update_columns: app_module_update_column[];
-  where?: app_module_bool_exp | null;
 }
 
 /**
@@ -20569,6 +20574,7 @@ export interface app_order_by {
   app_hosts_aggregate?: app_host_aggregate_order_by | null;
   app_modules_aggregate?: app_module_aggregate_order_by | null;
   app_navs_aggregate?: app_nav_aggregate_order_by | null;
+  app_plan_id?: order_by | null;
   app_secrets_aggregate?: app_secret_aggregate_order_by | null;
   app_settings_aggregate?: app_setting_aggregate_order_by | null;
   cards_aggregate?: card_aggregate_order_by | null;
@@ -20576,6 +20582,7 @@ export interface app_order_by {
   comments_aggregate?: comment_aggregate_order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
+  ended_at?: order_by | null;
   id?: order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
   members_aggregate?: member_aggregate_order_by | null;
@@ -20591,6 +20598,7 @@ export interface app_order_by {
   programs_aggregate?: program_aggregate_order_by | null;
   properties_aggregate?: property_aggregate_order_by | null;
   sharing_codes_aggregate?: sharing_code_aggregate_order_by | null;
+  started_at?: order_by | null;
   symbol?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
@@ -24641,6 +24649,7 @@ export interface member_bool_exp {
   podcasts?: podcast_bool_exp | null;
   point_logs?: point_log_bool_exp | null;
   point_status?: point_status_bool_exp | null;
+  post_roles?: post_role_bool_exp | null;
   practices?: practice_bool_exp | null;
   program_content_enrollments?: program_content_enrollment_bool_exp | null;
   program_content_progresses?: program_content_progress_bool_exp | null;
@@ -25172,6 +25181,7 @@ export interface member_insert_input {
   podcasts?: podcast_arr_rel_insert_input | null;
   point_logs?: point_log_arr_rel_insert_input | null;
   point_status?: point_status_obj_rel_insert_input | null;
+  post_roles?: post_role_arr_rel_insert_input | null;
   practices?: practice_arr_rel_insert_input | null;
   program_content_enrollments?: program_content_enrollment_arr_rel_insert_input | null;
   program_content_progresses?: program_content_progress_arr_rel_insert_input | null;
@@ -25718,6 +25728,7 @@ export interface member_order_by {
   podcasts_aggregate?: podcast_aggregate_order_by | null;
   point_logs_aggregate?: point_log_aggregate_order_by | null;
   point_status?: point_status_order_by | null;
+  post_roles_aggregate?: post_role_aggregate_order_by | null;
   practices_aggregate?: practice_aggregate_order_by | null;
   program_content_enrollments_aggregate?: program_content_enrollment_aggregate_order_by | null;
   program_content_progresses_aggregate?: program_content_progress_aggregate_order_by | null;
@@ -26479,9 +26490,17 @@ export interface member_sum_order_by {
  * order by aggregate values of table "member_tag"
  */
 export interface member_tag_aggregate_order_by {
+  avg?: member_tag_avg_order_by | null;
   count?: order_by | null;
   max?: member_tag_max_order_by | null;
   min?: member_tag_min_order_by | null;
+  stddev?: member_tag_stddev_order_by | null;
+  stddev_pop?: member_tag_stddev_pop_order_by | null;
+  stddev_samp?: member_tag_stddev_samp_order_by | null;
+  sum?: member_tag_sum_order_by | null;
+  var_pop?: member_tag_var_pop_order_by | null;
+  var_samp?: member_tag_var_samp_order_by | null;
+  variance?: member_tag_variance_order_by | null;
 }
 
 /**
@@ -26490,6 +26509,13 @@ export interface member_tag_aggregate_order_by {
 export interface member_tag_arr_rel_insert_input {
   data: member_tag_insert_input[];
   on_conflict?: member_tag_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "member_tag"
+ */
+export interface member_tag_avg_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -26503,6 +26529,7 @@ export interface member_tag_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
   tag?: tag_bool_exp | null;
   tag_name?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -26516,6 +26543,7 @@ export interface member_tag_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  position?: number | null;
   tag?: tag_obj_rel_insert_input | null;
   tag_name?: string | null;
   updated_at?: any | null;
@@ -26528,6 +26556,7 @@ export interface member_tag_max_order_by {
   created_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  position?: order_by | null;
   tag_name?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -26539,6 +26568,7 @@ export interface member_tag_min_order_by {
   created_at?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  position?: order_by | null;
   tag_name?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -26550,6 +26580,55 @@ export interface member_tag_on_conflict {
   constraint: member_tag_constraint;
   update_columns: member_tag_update_column[];
   where?: member_tag_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "member_tag"
+ */
+export interface member_tag_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "member_tag"
+ */
+export interface member_tag_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "member_tag"
+ */
+export interface member_tag_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "member_tag"
+ */
+export interface member_tag_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "member_tag"
+ */
+export interface member_tag_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "member_tag"
+ */
+export interface member_tag_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "member_tag"
+ */
+export interface member_tag_variance_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -30839,11 +30918,35 @@ export interface post_on_conflict {
 }
 
 /**
+ * order by aggregate values of table "post_role"
+ */
+export interface post_role_aggregate_order_by {
+  avg?: post_role_avg_order_by | null;
+  count?: order_by | null;
+  max?: post_role_max_order_by | null;
+  min?: post_role_min_order_by | null;
+  stddev?: post_role_stddev_order_by | null;
+  stddev_pop?: post_role_stddev_pop_order_by | null;
+  stddev_samp?: post_role_stddev_samp_order_by | null;
+  sum?: post_role_sum_order_by | null;
+  var_pop?: post_role_var_pop_order_by | null;
+  var_samp?: post_role_var_samp_order_by | null;
+  variance?: post_role_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "post_role"
  */
 export interface post_role_arr_rel_insert_input {
   data: post_role_insert_input[];
   on_conflict?: post_role_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "post_role"
+ */
+export interface post_role_avg_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -30876,12 +30979,83 @@ export interface post_role_insert_input {
 }
 
 /**
+ * order by max() on columns of table "post_role"
+ */
+export interface post_role_max_order_by {
+  id?: order_by | null;
+  member_id?: order_by | null;
+  name?: order_by | null;
+  position?: order_by | null;
+  post_id?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "post_role"
+ */
+export interface post_role_min_order_by {
+  id?: order_by | null;
+  member_id?: order_by | null;
+  name?: order_by | null;
+  position?: order_by | null;
+  post_id?: order_by | null;
+}
+
+/**
  * on_conflict condition type for table "post_role"
  */
 export interface post_role_on_conflict {
   constraint: post_role_constraint;
   update_columns: post_role_update_column[];
   where?: post_role_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "post_role"
+ */
+export interface post_role_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "post_role"
+ */
+export interface post_role_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "post_role"
+ */
+export interface post_role_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "post_role"
+ */
+export interface post_role_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "post_role"
+ */
+export interface post_role_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "post_role"
+ */
+export interface post_role_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "post_role"
+ */
+export interface post_role_variance_order_by {
+  position?: order_by | null;
 }
 
 /**

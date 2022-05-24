@@ -16,11 +16,12 @@ import { routesProps } from '../../components/common/AdminRouter'
 import { CustomRatioImage } from '../../components/common/Image'
 import SingleUploader from '../../components/form/SingleUploader'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import JitsiDemoModal from '../../components/sale/JitsiDemoModal'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
 import hasura from '../../hasura'
 import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import { useMutateMember } from '../../hooks/member'
+import { useMutateMember, useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
@@ -131,14 +132,16 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.member_admin.path)
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole, permissions, currentMember } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
+  const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
   const [avatarFile, setAvatarFile] = useState<UploadFile | undefined>(undefined)
   const { renderMemberAdminLayout } = useCustomRenderer()
   const avatarId = uuid()
 
+  const { insertMemberNote } = useMutateMemberNote()
   const [insertMemberNoteRejectedAt] = useMutation<
     hasura.INSERT_MEMBER_NOTE_REJECTED_AT,
     hasura.INSERT_MEMBER_NOTE_REJECTED_ATVariables
@@ -275,6 +278,46 @@ const MemberAdminLayout: React.FC<{
             </StyledDescription>
           </StyledSiderContent>
           <Divider className="my-4" />
+          <StyledSiderContent>
+            {currentMember && jitsiModalVisible && (
+              <JitsiDemoModal
+                member={member}
+                salesMember={{
+                  id: currentMember.id,
+                  name: currentMember.name,
+                  email: currentMember.email,
+                }}
+                visible
+                onCancel={() => setJitsiModalVisible(false)}
+                onFinishCall={(duration: number) => {
+                  insertMemberNote({
+                    variables: {
+                      memberId: member.id,
+                      authorId: currentMember.id,
+                      type: 'demo',
+                      status: 'answered',
+                      duration: duration,
+                      description: '',
+                      note: 'jitsi demo',
+                    },
+                  })
+                    .then(() => {
+                      message.success(formatMessage(commonMessages.event.successfullySaved))
+                      setJitsiModalVisible(false)
+                    })
+                    .catch(handleError)
+                }}
+              />
+            )}
+            <Button
+              block
+              onClick={() => {
+                setJitsiModalVisible(true)
+              }}
+            >
+              {formatMessage(memberMessages.status.demo)}
+            </Button>
+          </StyledSiderContent>
         </Layout.Sider>
 
         <StyledLayoutContent variant="gray">
