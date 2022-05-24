@@ -96,13 +96,7 @@ export const useSalesLeads = (managerId: string) => {
   const { id: appId } = useApp()
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
-    {
-      variables: { appId, managerId },
-      context: {
-        important: true,
-      },
-      pollInterval: 5 * 60 * 1000,
-    },
+    { variables: { appId, managerId } },
   )
   const convertToLead = (v: hasura.GET_SALES_LEADS_lead_status_new): LeadProps | null => {
     const notified =

@@ -205,7 +205,6 @@ const useMemberContractNotification = () => {
       }
     `,
     {
-      pollInterval: 30000,
       variables: { today: moment().startOf('day') },
     },
   )
