@@ -7725,16 +7725,6 @@ export interface GET_APPOINTMENT_ENROLLMENT_CREATOR {
 // GraphQL query operation: GET_APPOINTMENT_ENROLLMENTS
 // ====================================================
 
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate | null;
-}
-
 export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_appointment_plan_creator {
   __typename: "member_public";
   id: string | null;
@@ -7805,20 +7795,31 @@ export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment {
   result: string | null;
 }
 
+export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate | null;
+}
+
 export interface GET_APPOINTMENT_ENROLLMENTS {
-  /**
-   * fetch aggregated fields from the table: "appointment_enrollment"
-   */
-  appointment_enrollment_aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate;
   /**
    * fetch data from the table: "appointment_enrollment"
    */
   appointment_enrollment: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment[];
+  /**
+   * fetch aggregated fields from the table: "appointment_enrollment"
+   */
+  appointment_enrollment_aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENTSVariables {
   condition?: appointment_enrollment_bool_exp | null;
   sort?: appointment_enrollment_order_by[] | null;
+  limit: number;
 }
 
 /* tslint:disable */

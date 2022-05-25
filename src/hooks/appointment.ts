@@ -42,11 +42,6 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
             booked
             available
           }
-          # appointment_enrollments_aggregate {
-          #   aggregate {
-          #     count
-          #   }
-          # }
         }
       }
     `,
@@ -87,9 +82,6 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
         isEnrolled: !!period.booked,
         isExcluded: !period.available,
       })),
-      // enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
-      //   ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
-      //   : 0,
       isPublished: !!data.appointment_plan_by_pk.published_at,
       supportLocales: data?.appointment_plan_by_pk.support_locales || [],
       currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
@@ -137,40 +129,59 @@ export const useAppointmentEnrollmentCreator = () => {
 }
 
 export const useAppointmentEnrollmentCollection = (
+  tabKey: 'scheduled' | 'canceled' | 'finished',
   selectedCreatorId: string,
   startedAt: Date | null,
   endedAt: Date | null,
-  isCanceled: boolean,
-  isFinished?: boolean,
 ) => {
-  const condition: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
-    appointment_plan: {
-      creator_id: { _eq: selectedCreatorId || undefined },
-    },
-    started_at: { _gte: startedAt },
-    canceled_at: { _is_null: !isCanceled },
-    ended_at: isCanceled
+  const limit = 10
+  const condition: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] =
+    tabKey === 'scheduled'
       ? {
-          _lte: endedAt,
+          appointment_plan: {
+            creator_id: { _eq: selectedCreatorId || undefined },
+          },
+          started_at: { _gte: startedAt },
+          canceled_at: { _is_null: true },
+          ended_at: {
+            _lte: endedAt,
+            _gte: moment().startOf('minute').toDate(),
+          },
         }
-      : isFinished
+      : tabKey === 'canceled'
       ? {
-          _lte: endedAt || moment().startOf('minute').toDate(),
+          appointment_plan: {
+            creator_id: { _eq: selectedCreatorId || undefined },
+          },
+          started_at: { _gte: startedAt },
+          canceled_at: { _is_null: false },
+          ended_at: { _lte: endedAt },
         }
-      : {
-          _lte: endedAt,
-          _gte: moment().startOf('minute').toDate(),
-        },
-  }
+      : tabKey === 'finished'
+      ? {
+          appointment_plan: {
+            creator_id: { _eq: selectedCreatorId || undefined },
+          },
+          started_at: { _gte: startedAt },
+          canceled_at: { _is_null: true },
+          ended_at: {
+            _lte: endedAt || moment().startOf('minute').toDate(),
+          },
+        }
+      : {}
 
   const sort: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
-    !isCanceled && !isFinished
+    tabKey === 'scheduled'
       ? {
           started_at: 'asc' as hasura.order_by,
         }
-      : {
+      : tabKey === 'canceled'
+      ? {
           ended_at: 'desc' as hasura.order_by,
-        },
+        }
+      : tabKey === 'finished'
+      ? { ended_at: 'desc' as hasura.order_by }
+      : {},
   ]
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
@@ -181,13 +192,9 @@ export const useAppointmentEnrollmentCollection = (
       query GET_APPOINTMENT_ENROLLMENTS(
         $condition: appointment_enrollment_bool_exp
         $sort: [appointment_enrollment_order_by!]
+        $limit: Int!
       ) {
-        appointment_enrollment_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-        appointment_enrollment(where: $condition, limit: 10, order_by: $sort) {
+        appointment_enrollment(where: $condition, limit: $limit, order_by: $sort) {
           id
           appointment_plan {
             id
@@ -222,82 +229,89 @@ export const useAppointmentEnrollmentCollection = (
           issue
           result
         }
+        appointment_enrollment_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
       }
     `,
     {
       variables: {
         condition,
         sort,
+        limit,
       },
     },
   )
-
-  const cursor =
-    !isFinished && !isCanceled
-      ? {
-          started_at: {
-            _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at,
-          } as hasura.timestamptz_comparison_exp,
-        }
-      : {
-          ended_at: {
-            _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at,
-          } as hasura.timestamptz_comparison_exp,
-        }
+  const appointmentEnrollments: AppointmentPeriodCardProps[] =
+    data?.appointment_enrollment.map(v => ({
+      id: v.id,
+      avatarUrl: v.member?.picture_url || null,
+      member: {
+        name: v.member_name || '',
+        email: v.member_email,
+        phone: v.member_phone,
+      },
+      appointmentPlanTitle: v.appointment_plan?.title || '',
+      startedAt: new Date(v.started_at),
+      endedAt: new Date(v.ended_at),
+      canceledAt: v.canceled_at ? new Date(v.canceled_at) : null,
+      creator: {
+        id: v.appointment_plan?.creator?.id || '',
+        name: v.appointment_plan?.creator?.name || '',
+      },
+      orderProduct: {
+        id: v.order_product_id || '',
+        options: v.order_product?.options,
+        orderLog: {
+          createdAt: v.order_product?.order_log.created_at,
+          updatedAt: v.order_product?.order_log.updated_at,
+        },
+      },
+      appointmentIssue: v.issue,
+      appointmentResult: v.result,
+    })) || []
 
   const loadMoreAppointmentEnrollments =
-    (data?.appointment_enrollment_aggregate.aggregate?.count || 0) > 10
+    (data?.appointment_enrollment.length || 0) < (data?.appointment_enrollment_aggregate.aggregate?.count || 0)
       ? () =>
           fetchMore({
             variables: {
               condition: {
                 ...condition,
-                ...cursor,
+                ...(tabKey === 'scheduled'
+                  ? {
+                      started_at: {
+                        _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at,
+                      },
+                    }
+                  : tabKey === 'canceled'
+                  ? {
+                      ended_at: {
+                        _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at,
+                      },
+                    }
+                  : tabKey === 'finished'
+                  ? {
+                      ended_at: {
+                        _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at,
+                      },
+                    }
+                  : {}),
               },
-              sort,
+              limit,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
                 return prev
               }
               return Object.assign({}, prev, {
-                appointment_enrollment_aggregate: fetchMoreResult.appointment_enrollment_aggregate,
                 appointment_enrollment: [...prev.appointment_enrollment, ...fetchMoreResult.appointment_enrollment],
               })
             },
           })
       : undefined
-
-  const appointmentEnrollments: AppointmentPeriodCardProps[] =
-    loading || error || !data
-      ? []
-      : data.appointment_enrollment.map(enrollment => ({
-          id: enrollment.id,
-          avatarUrl: enrollment.member?.picture_url || null,
-          member: {
-            name: enrollment.member_name || '',
-            email: enrollment.member_email,
-            phone: enrollment.member_phone,
-          },
-          appointmentPlanTitle: enrollment.appointment_plan?.title || '',
-          startedAt: new Date(enrollment.started_at),
-          endedAt: new Date(enrollment.ended_at),
-          canceledAt: enrollment.canceled_at ? new Date(enrollment.canceled_at) : null,
-          creator: {
-            id: enrollment.appointment_plan?.creator?.id || '',
-            name: enrollment.appointment_plan?.creator?.name || '',
-          },
-          orderProduct: {
-            id: enrollment.order_product_id || '',
-            options: enrollment.order_product?.options,
-            orderLog: {
-              createdAt: enrollment.order_product?.order_log.created_at,
-              updatedAt: enrollment.order_product?.order_log.updated_at,
-            },
-          },
-          appointmentIssue: enrollment.issue,
-          appointmentResult: enrollment.result,
-        }))
 
   return {
     loadingAppointmentEnrollments: loading,
