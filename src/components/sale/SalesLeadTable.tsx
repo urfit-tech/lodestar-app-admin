@@ -88,11 +88,11 @@ const SalesLeadTable: React.VFC<{
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
-          value={(selectedKeys[0] as string)?.toLowerCase()}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value.toLowerCase()] : [])}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => {
             confirm()
-            onSetFilter((selectedKeys[0] as string).toLowerCase())
+            onSetFilter(selectedKeys[0] as string)
           }}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
         />
@@ -101,7 +101,7 @@ const SalesLeadTable: React.VFC<{
             type="primary"
             onClick={() => {
               confirm()
-              onSetFilter((selectedKeys[0] as string).toLowerCase())
+              onSetFilter(selectedKeys[0] as string)
             }}
             icon={<SearchOutlined />}
             size="small"
@@ -288,7 +288,9 @@ const SalesLeadTable: React.VFC<{
           v.email.toLowerCase().includes(filters.nameAndEmail.toLowerCase())) &&
         (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))) &&
         (!filters.categoryName ||
-          v.categoryNames.find(categoryName => categoryName.includes(filters.categoryName || ''))),
+          v.categoryNames.find(categoryName =>
+            categoryName.toLowerCase().includes(filters.categoryName?.toLowerCase() || ''),
+          )),
     )
     .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
