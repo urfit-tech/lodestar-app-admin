@@ -11680,9 +11680,9 @@ lodash.xorby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-lodestar-app-admin@urfit-tech/lodestar-app-admin.git#37a88da51b09bfd2b02840c27c7671f4c097f4bc:
+lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/37a88da51b09bfd2b02840c27c7671f4c097f4bc"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/7ddf93fb3f34ec5fe06f2a816e14ce58b527fd54"
   dependencies:
     "@ant-design/charts" "1.2.14"
     "@ant-design/compatible" "^1.0.8"
@@ -11746,7 +11746,7 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#37a88da51b09bfd2b02840c27c7
     less-loader "^7.1.0"
     lint-staged "^10.5.4"
     lodash "^4.17.21"
-    lodestar-app-element urfit-tech/lodestar-app-element#master
+    lodestar-app-element urfit-tech/lodestar-app-element#v1.7.8
     md5 "^2.3.0"
     moment "^2.29.1"
     moment-range "^4.0.2"
@@ -11790,7 +11790,7 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#37a88da51b09bfd2b02840c27c7
     uuid "8.3.2"
     wavesurfer.js "^4.1.1"
 
-lodestar-app-element@urfit-tech/lodestar-app-element#master:
+lodestar-app-element@urfit-tech/lodestar-app-element#v1.7.8:
   version "0.1.0"
   resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/cf8128d20c40cbf8382f4eed1354271bc9146d19"
   dependencies:
