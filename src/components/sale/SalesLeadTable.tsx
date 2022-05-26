@@ -1,9 +1,11 @@
-import Icon, {
+import {
   CheckSquareOutlined,
+  DeleteOutlined,
   FileAddOutlined,
   SearchOutlined,
+  StarOutlined,
   StopOutlined,
-  SwapOutlined,
+  SyncOutlined,
 } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Table } from 'antd'
@@ -20,8 +22,6 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
-import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
-import { ReactComponent as UserOutlinedIcon } from '../../images/icon/user-o.svg'
 import { LeadProps, SalesProps } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
@@ -29,13 +29,6 @@ import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import JitsiDemoModal from './JitsiDemoModal'
 import MemberPropertyModal from './MemberPropertyModal'
 
-const StyledButton = styled(Button)`
-  display: flex;
-  justify-content: center;
-  border-radius: 4px;
-  width: 56px;
-  height: 36px;
-`
 const StyledAdminCard = styled(AdminCard)`
   position: relative;
 `
@@ -55,29 +48,31 @@ const TableWrapper = styled.div`
   }
 `
 
-const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefetch?: () => void }> = ({
-  sales,
-  leads,
-  onRefetch,
-}) => {
+const SalesLeadTable: React.VFC<{
+  variant?: 'starred'
+  sales: SalesProps
+  leads: LeadProps[]
+  onRefetch?: () => void
+}> = ({ variant, sales, leads, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken } = useAuth()
 
   const { insertMemberNote } = useMutateMemberNote()
-  const [closeLead] = useMutation<hasura.CLOSE_LEAD, hasura.CLOSE_LEADVariables>(CLOSE_LEAD)
+  const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const [transferLead] = useMutation<hasura.TRANSFER_LEAD, hasura.TRANSFER_LEADVariables>(TRANSFER_LEAD)
 
   const uploadAttachments = useUploadAttachments()
 
   const [filters, setFilters] = useState<{
-    studentName?: string
-    email?: string
+    nameAndEmail?: string
     phone?: string
     lastTaskCategoryName?: string
     categoryName?: string
+    materialName?: string
     status?: string
   }>({})
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [propertyModalVisible, setPropertyModalVisible] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
   const [taskModalVisible, setTaskModalVisible] = useState(false)
@@ -85,6 +80,9 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
     null,
   )
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys)
+  }
 
   const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<LeadProps> = onSetFilter => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -135,7 +133,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
       title: '',
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
-          <StyledButton
+          {/* <Button
             icon={<Icon component={() => <UserOutlinedIcon />} />}
             className="mr-2"
             onClick={() => {
@@ -146,8 +144,8 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
               })
               setPropertyModalVisible(true)
             }}
-          />
-          <StyledButton
+          /> */}
+          <Button
             icon={<CheckSquareOutlined />}
             className="mr-2"
             onClick={() => {
@@ -159,7 +157,7 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
               setTaskModalVisible(true)
             }}
           />
-          <StyledButton
+          <Button
             className="mr-2"
             icon={<FileAddOutlined />}
             onClick={() => {
@@ -175,38 +173,21 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
       ),
     },
     {
-      key: 'star',
-      dataIndex: 'star',
-      title: formatMessage(salesMessages.star),
-      sorter: (a, b) => a.star - b.star,
-    },
-    {
-      key: 'categoryNames',
-      dataIndex: 'categoryNames',
-      title: formatMessage(commonMessages.label.category),
-      ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
-          categoryName: value,
-        }),
-      ),
-      render: (categoryNames: string[]) =>
-        categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
-    },
-    {
-      key: 'studentName',
-      dataIndex: 'name',
+      key: 'nameAndEmail',
+      dataIndex: 'nameAndEmail',
       title: formatMessage(salesMessages.studentName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
-          studentName: value,
+          nameAndEmail: value,
         }),
       ),
-      render: (name, lead) => {
+
+      render: (nameAndEmail, lead) => {
         return (
-          <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer">
-            {name}
+          <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
+            {lead.name}
+            <small>{lead.email}</small>
           </a>
         )
       },
@@ -241,92 +222,77 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
       ),
     },
     {
-      key: 'email',
-      dataIndex: 'email',
-      title: 'Email',
+      key: 'categoryNames',
+      dataIndex: 'categoryNames',
+      title: formatMessage(commonMessages.label.category),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
-          email: value,
+          categoryName: value,
         }),
       ),
+      render: (categoryNames: string[]) =>
+        categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
+    },
+    {
+      key: 'materialNames',
+      dataIndex: 'properties',
+      title: formatMessage(commonMessages.label.adMaterial),
+      ...getColumnSearchProps((value?: string) =>
+        setFilters({
+          ...filters,
+          categoryName: value,
+        }),
+      ),
+      render: (properties: { id: string; name: string; value: string }[]) =>
+        properties
+          .find(property => property.name === '廣告素材')
+          ?.value.split(',')
+          .map((v, idx) => <div key={idx}>{v}</div>),
     },
     {
       key: 'createdAt',
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
-      defaultSortOrder: 'descend',
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
+      defaultSortOrder: 'descend',
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
-    {
-      key: 'paid',
-      dataIndex: 'paid',
-      title: formatMessage(salesMessages.paidPrice),
-      sorter: (a, b) => a.paid - b.paid,
-    },
-    {
-      key: 'action',
-      dataIndex: 'id',
-      title: '',
-      render: (memberId, record) => (
-        <div className="d-flex flex-row justify-content-end">
-          <StyledButton
-            icon={<Icon component={() => <DemoIcon />} />}
-            className="mr-2"
-            onClick={() => {
-              setSelectedMember({
-                id: record.id,
-                name: record.name,
-                categoryNames: record.categoryNames,
-              })
-              setJitsiModalVisible(true)
-            }}
-          />
-          <StyledButton
-            icon={<SwapOutlined />}
-            className="mr-2"
-            onClick={() => {
-              const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')
-              if (managerId) {
-                transferLead({ variables: { memberId, managerId } }).then(({ data }) => {
-                  if (data?.update_member?.affected_rows) {
-                    window.alert('已成功轉移此名單！')
-                    onRefetch?.()
-                  } else {
-                    window.alert('轉移失敗ＱＱ')
-                  }
-                })
-              }
-            }}
-          />
-          <StyledButton
-            icon={<StopOutlined style={{ color: 'red' }} />}
-            onClick={() => {
-              if (window.confirm('你確定要放棄此筆名單？')) {
-                closeLead({ variables: { memberId } }).then(({ data }) => {
-                  if (data?.update_member?.affected_rows) {
-                    window.alert('已成功放棄此名單！')
-                    onRefetch?.()
-                  } else {
-                    window.alert('系統錯誤ＱＱ')
-                  }
-                })
-              }
-            }}
-          />
-        </div>
-      ),
-    },
+    // {
+    //   key: 'recentContactedAt',
+    //   dataIndex: 'recentContactedAt',
+    //   title: formatMessage(salesMessages.recentContactedAt),
+    //   defaultSortOrder: 'descend',
+    //   sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
+    //   render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
+    // },
+    // {
+    //   key: 'recentTaskedAt',
+    //   dataIndex: 'recentTaskedAt',
+    //   title: formatMessage(salesMessages.recentTaskedAt),
+    //   sorter: (a, b) => (a.recentTaskedAt?.getTime() || 0) - (b.recentTaskedAt?.getTime() || 0),
+    //   render: recentTaskedAt => <time>{recentTaskedAt && moment(recentTaskedAt).fromNow()}</time>,
+    // },
+    // {
+    //   key: 'paid',
+    //   dataIndex: 'paid',
+    //   title: formatMessage(salesMessages.paidPrice),
+    //   sorter: (a, b) => a.paid - b.paid,
+    // },
   ]
-  const dataSource = leads.filter(
-    v =>
-      (!filters.studentName || v.name.toLowerCase().includes(filters.studentName.toLowerCase())) &&
-      (!filters.email || v.email.toLowerCase().includes(filters.email.toLowerCase())) &&
-      (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))) &&
-      (!filters.categoryName ||
-        v.categoryNames.find(categoryName => categoryName.includes(filters.categoryName || ''))),
-  )
+  const dataSource = leads
+    .filter(
+      v =>
+        (!filters.nameAndEmail ||
+          v.name.toLowerCase().includes(filters.nameAndEmail.toLowerCase()) ||
+          v.email.toLowerCase().includes(filters.nameAndEmail.toLowerCase())) &&
+        (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))) &&
+        (!filters.categoryName ||
+          v.categoryNames.find(categoryName =>
+            categoryName.toLowerCase().includes(filters.categoryName?.toLowerCase() || ''),
+          )),
+    )
+    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   return (
     <StyledAdminCard>
@@ -390,9 +356,155 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
         />
       )}
       <TableWrapper>
+        {selectedRowKeys.length > 0 && (
+          <div className="d-flex flex-row justify-content-end mb-3">
+            {/* <Button
+            icon={<SwapOutlined />}
+            className="mr-2"
+            onClick={() => {
+              const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')
+              if (managerId) {
+                transferLead({ variables: { memberId, managerId } }).then(({ data }) => {
+                  if (data?.update_member?.affected_rows) {
+                    window.alert('已成功轉移此名單！')
+                    onRefetch?.()
+                  } else {
+                    window.alert('轉移失敗ＱＱ')
+                  }
+                })
+              }
+            }}
+          /> */}
+            {variant !== 'starred' && (
+              <Button
+                icon={<StarOutlined />}
+                className="mr-2"
+                onClick={() => {
+                  if (window.confirm('確定收錄這些名單？')) {
+                    updateLeads({
+                      variables: {
+                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                        newMemberId: sales.id,
+                        newStar: Number(sales.telephone),
+                      },
+                    }).then(({ data }) => {
+                      if (data?.update_member?.affected_rows) {
+                        message.success('已成功收錄！')
+                        onRefetch?.()
+                      } else {
+                        message.error('系統錯誤ＱＱ')
+                      }
+                    })
+                  }
+                }}
+              >
+                收藏
+              </Button>
+            )}
+            {variant === 'starred' && (
+              <Button
+                className="mr-2"
+                onClick={() => {
+                  if (window.confirm('確定取消收藏這些名單？')) {
+                    updateLeads({
+                      variables: {
+                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                        newMemberId: sales.id,
+                        newStar: 0,
+                      },
+                    }).then(({ data }) => {
+                      if (data?.update_member?.affected_rows) {
+                        message.success('已成功取消收藏！')
+                        onRefetch?.()
+                      } else {
+                        message.error('系統錯誤ＱＱ')
+                      }
+                    })
+                  }
+                }}
+              >
+                取消收藏
+              </Button>
+            )}
+            <Button
+              icon={<SyncOutlined />}
+              className="mr-2"
+              onClick={() => {
+                if (window.confirm('確定回收這些名單？')) {
+                  updateLeads({
+                    variables: {
+                      memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                      newMemberId: null,
+                      newStar: -Number(sales.telephone),
+                    },
+                  }).then(({ data }) => {
+                    if (data?.update_member?.affected_rows) {
+                      message.success('已成功回收此名單！')
+                      onRefetch?.()
+                    } else {
+                      message.error('系統錯誤ＱＱ')
+                    }
+                  })
+                }
+              }}
+            >
+              回收
+            </Button>
+            <Button
+              icon={<StopOutlined />}
+              className="mr-2"
+              onClick={() => {
+                if (window.confirm('確定拒絕這些名單？')) {
+                  updateLeads({
+                    variables: {
+                      memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                      newMemberId: null,
+                      newStar: -999,
+                    },
+                  }).then(({ data }) => {
+                    if (data?.update_member?.affected_rows) {
+                      message.success('已成功拒絕此名單！')
+                      onRefetch?.()
+                    } else {
+                      message.error('系統錯誤ＱＱ')
+                    }
+                  })
+                }
+              }}
+            >
+              拒絕
+            </Button>
+            <Button
+              icon={<DeleteOutlined />}
+              onClick={() => {
+                if (window.confirm('確定永久刪除這些名單？此動作無法復原！')) {
+                  updateLeads({
+                    variables: {
+                      memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                      newMemberId: null,
+                      newStar: -9999,
+                    },
+                  }).then(({ data }) => {
+                    if (data?.update_member?.affected_rows) {
+                      message.success('已成功刪除此名單！')
+                      onRefetch?.()
+                    } else {
+                      message.error('系統錯誤ＱＱ')
+                    }
+                  })
+                }
+              }}
+            >
+              刪除
+            </Button>
+          </div>
+        )}
         <Table<LeadProps>
-          rowClassName={row => (row.notified ? 'notified' : '')}
-          rowKey="memberId"
+          rowKey="id"
+          rowSelection={{
+            selectedRowKeys,
+            onChange: onSelectChange,
+          }}
           columns={columns}
           dataSource={dataSource}
           className="mb-3"
@@ -436,9 +548,9 @@ const SalesLeadTable: React.VFC<{ sales: SalesProps; leads: LeadProps[]; onRefet
   )
 }
 
-const CLOSE_LEAD = gql`
-  mutation CLOSE_LEAD($memberId: String!) {
-    update_member(_set: { manager_id: null, star: -999 }, where: { id: { _eq: $memberId } }) {
+const UPDATE_LEADS = gql`
+  mutation UPDATE_LEADS($memberIds: [String!]!, $newMemberId: String, $newStar: numeric) {
+    update_member(_set: { manager_id: $newMemberId, star: $newStar }, where: { id: { _in: $memberIds } }) {
       affected_rows
     }
   }

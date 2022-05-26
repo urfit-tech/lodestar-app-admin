@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { sum ,prop,sortBy} from 'ramda'
+import { sum, prop, sortBy } from 'ramda'
 import hasura from '../hasura'
-import { SalesProps,LeadProps } from '../types/sales'
+import { SalesProps, LeadProps } from '../types/sales'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { notEmpty } from '../helpers'
 
@@ -96,13 +96,7 @@ export const useSalesLeads = (managerId: string) => {
   const { id: appId } = useApp()
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
-    {
-      variables: { appId, managerId },
-      context: {
-        important: true,
-      },
-      pollInterval: 5 * 60 * 1000,
-    },
+    { variables: { appId, managerId } },
   )
   const convertToLead = (v: hasura.GET_SALES_LEADS_lead_status_new): LeadProps | null => {
     const notified =
@@ -121,9 +115,16 @@ export const useSalesLeads = (managerId: string) => {
           createdAt: moment(v.member.created_at).toDate(),
           phones: v.member.member_phones.map(_v => _v.phone),
           categoryNames: v.member.member_categories.map(_v => _v.category.name),
+          properties: v.member.member_properties.map(v => ({
+            id: v.property.id,
+            name: v.property.name,
+            value: v.value,
+          })),
           paid: v.paid,
           status: v.status as LeadProps['status'],
           notified,
+          recentTaskedAt: v.recent_tasked_at ? new Date(v.recent_tasked_at) : null,
+          recentContactedAt: v.recent_tasked_at ? new Date(v.recent_tasked_at) : null,
         }
       : null
   }
@@ -133,6 +134,7 @@ export const useSalesLeads = (managerId: string) => {
     loading,
     error,
     refetch,
+    totalLeads: leads,
     idledLeads: leads.filter(lead => lead.status === 'IDLED'),
     contactedLeads: leads.filter(lead => lead.status === 'CONTACTED'),
     invitedLeads: leads.filter(lead => lead?.status === 'INVITED'),
@@ -152,6 +154,13 @@ const GET_SALES_LEADS = gql`
         star
         created_at
         assigned_at
+        member_properties {
+          property {
+            id
+            name
+          }
+          value
+        }
         member_phones {
           phone
         }

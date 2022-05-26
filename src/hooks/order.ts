@@ -37,7 +37,7 @@ export const useOrderLog = (filters?: {
   const apolloClient = useApolloClient()
   const authStatus: 'Admin' | 'Creator' | 'None' = permissions.SALES_RECORDS_ADMIN
     ? 'Admin'
-    : permissions.SALES_RECORDS_CREATOR
+    : permissions.SALES_RECORDS_NORMAL
     ? 'Creator'
     : 'None'
 

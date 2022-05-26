@@ -1,0 +1,123 @@
+import Icon from '@ant-design/icons'
+import { DatePicker, Input, message, Select, Tabs } from 'antd'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import moment from 'moment'
+import { RangeValue } from 'rc-picker/lib/interface'
+import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import { AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
+import { appointmentMessages, commonMessages } from '../../helpers/translation'
+import { useAppointmentEnrollmentCreator } from '../../hooks/appointment'
+import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
+import ForbiddenPage from '../ForbiddenPage'
+import pageMessages from '../translation'
+import AppointmentPlanPeriodTabContent from './AppointmentPlanPeriodTabContent'
+
+type tabKey = 'scheduled' | 'canceled' | 'finished'
+
+const StyledFilterBlock = styled.div`
+  margin-bottom: 2rem;
+`
+
+const AppointmentPeriodCollectionAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
+  const { permissions } = useAuth()
+  const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('minute').subtract(90, 'days').toDate())
+  const [endedAt, setEndedAt] = useState<Date | null>(moment().startOf('minute').toDate())
+  const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
+  const { appointmentCreators } = useAppointmentEnrollmentCreator()
+
+  const { RangePicker } = DatePicker
+
+  const tabConditions = [
+    {
+      key: 'scheduled',
+      tab: formatMessage(appointmentMessages.status.aboutToStart),
+    },
+    {
+      key: 'canceled',
+      tab: formatMessage(appointmentMessages.status.canceled),
+    },
+    {
+      key: 'finished',
+      tab: formatMessage(appointmentMessages.status.finished),
+    },
+  ]
+
+  const handleRangePickerChange = (v: RangeValue<moment.Moment>) => {
+    const pickStartedAt = moment(v?.[0])
+    const pickEndedAt = moment(v?.[1])
+    const diffDate = pickEndedAt?.diff(pickStartedAt, 'days')
+
+    v && v[0] && setStartedAt(v?.[0].startOf('minute').toDate())
+    v && v[1] && setEndedAt(v[1].startOf('minute').toDate())
+
+    if (diffDate > 90) {
+      message.warning(formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.dateRangeWarning))
+    }
+  }
+
+  if (
+    !enabledModules.appointment ||
+    (!permissions.APPOINTMENT_PERIOD_ADMIN && !permissions.APPOINTMENT_PERIOD_NORMAL)
+  ) {
+    return <ForbiddenPage />
+  }
+
+  return (
+    <AdminLayout>
+      <AdminPageTitle className="mb-4">
+        <Icon component={() => <CalendarAltOIcon />} className="mr-3" />
+        <span>{formatMessage(commonMessages.menu.appointments)}</span>
+      </AdminPageTitle>
+
+      <StyledFilterBlock className="d-flex">
+        {permissions.APPOINTMENT_PERIOD_ADMIN && (
+          <Select<string>
+            value={selectedCreatorId}
+            onChange={(value: string) => setSelectedCreatorId?.(value)}
+            className="mr-3"
+            style={{ width: '100%', maxWidth: '15rem' }}
+          >
+            <Select.Option value="">
+              {formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.allInstructors)}
+            </Select.Option>
+            {appointmentCreators.map(v => (
+              <Select.Option value={v.id}>{v.name}</Select.Option>
+            ))}
+          </Select>
+        )}
+
+        <Input.Group compact>
+          <RangePicker
+            format="YYYY-MM-DD HH:mm"
+            showTime
+            value={[moment(startedAt), moment(endedAt)]}
+            onChange={v => handleRangePickerChange(v)}
+          />
+        </Input.Group>
+      </StyledFilterBlock>
+
+      <Tabs>
+        {tabConditions.map(v => (
+          <Tabs.TabPane key={v.key} tab={v.tab}>
+            <div className="py-4">
+              <AppointmentPlanPeriodTabContent
+                tabKey={v.key as tabKey}
+                selectedCreatorId={selectedCreatorId}
+                startedAt={startedAt}
+                endedAt={endedAt}
+              />
+            </div>
+          </Tabs.TabPane>
+        ))}
+      </Tabs>
+    </AdminLayout>
+  )
+}
+
+export default AppointmentPeriodCollectionAdminPage

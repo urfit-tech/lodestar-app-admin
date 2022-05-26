@@ -3,6 +3,10 @@ import { defineMessages } from 'react-intl'
 const pageMessages = {
   '*': defineMessages({
     edit: { id: 'page.*.edit', defaultMessage: '編輯' },
+    showMore: {
+      id: 'page.*.showMore',
+      defaultMessage: '顯示更多',
+    },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'project.*.settings', defaultMessage: '專案設定' },
@@ -83,6 +87,17 @@ const pageMessages = {
     lastUpdatedAtText: {
       id: 'page.ProgramProgressCollectionAdminPage.lastUpdatedAtText',
       defaultMessage: '計算累計到此日期的進度',
+    },
+  }),
+  AppointmentPeriodCollectionAdminPage: defineMessages({
+    allInstructors: { id: 'page.AppointmentPeriodCollectionAdminPage.allInstructors', defaultMessage: '全部老師' },
+    emptyAppointment: {
+      id: 'page.AppointmentPeriodCollectionAdminPage.emptyAppointment',
+      defaultMessage: '目前還沒有任何預約',
+    },
+    dateRangeWarning: {
+      id: 'page.AppointmentPeriodCollectionAdminPage.dateRangeWarning',
+      defaultMessage: '請選擇時間區間三個月以內',
     },
   }),
 }

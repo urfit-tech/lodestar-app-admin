@@ -1,6 +1,6 @@
 import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Badge, Button, notification, Skeleton, Tabs } from 'antd'
+import { Button, notification, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -69,12 +69,24 @@ const SalesLeadTabs: React.VFC<{
 }> = ({ activeKey, managerId, onActiveKeyChanged }) => {
   const { formatMessage } = useIntl()
   const { sales } = useSales(managerId)
-  const { loading, refetch, idledLeads, contactedLeads, invitedLeads, presentedLeads, paidLeads, closedLeads } =
-    useSalesLeads(managerId)
+  const {
+    loading,
+    refetch,
+    totalLeads,
+    idledLeads,
+    contactedLeads,
+    invitedLeads,
+    presentedLeads,
+    paidLeads,
+    closedLeads,
+  } = useSalesLeads(managerId)
 
   if (loading || !sales) {
     return <Skeleton active />
   }
+
+  const starredLeads = totalLeads.filter(lead => lead.star === Number(sales.telephone))
+
   return (
     <Tabs
       activeKey={activeKey}
@@ -86,17 +98,23 @@ const SalesLeadTabs: React.VFC<{
       }
     >
       <Tabs.TabPane
+        key="starred"
+        tab={
+          <div>
+            {formatMessage(salesMessages.starredLead)}
+            <span>({starredLeads.length})</span>
+          </div>
+        }
+      >
+        {<SalesLeadTable variant="starred" sales={sales} leads={starredLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+      <Tabs.TabPane
         key="idled"
         tab={
-          <Badge
-            size="small"
-            offset={[10, -10]}
-            count={idledLeads.filter(lead => lead?.notified).length}
-            overflowCount={999}
-          >
+          <div>
             {formatMessage(salesMessages.idledLead)}
             <span>({idledLeads.length})</span>
-          </Badge>
+          </div>
         }
       >
         {<SalesLeadTable sales={sales} leads={idledLeads} onRefetch={refetch} />}
@@ -105,15 +123,10 @@ const SalesLeadTabs: React.VFC<{
       <Tabs.TabPane
         key="contacted"
         tab={
-          <Badge
-            size="small"
-            offset={[10, -10]}
-            count={contactedLeads.filter(lead => lead.notified).length}
-            overflowCount={999}
-          >
+          <div>
             {formatMessage(salesMessages.contactedLead)}
             <span>({contactedLeads.length})</span>
-          </Badge>
+          </div>
         }
       >
         {<SalesLeadTable sales={sales} leads={contactedLeads} onRefetch={refetch} />}
@@ -122,15 +135,10 @@ const SalesLeadTabs: React.VFC<{
       <Tabs.TabPane
         key="invited"
         tab={
-          <Badge
-            size="small"
-            offset={[10, -10]}
-            count={invitedLeads.filter(lead => lead.notified).length}
-            overflowCount={999}
-          >
+          <div>
             {formatMessage(salesMessages.invitedLead)}
             <span>({invitedLeads.length})</span>
-          </Badge>
+          </div>
         }
       >
         {<SalesLeadTable sales={sales} leads={invitedLeads} onRefetch={refetch} />}
@@ -139,15 +147,10 @@ const SalesLeadTabs: React.VFC<{
       <Tabs.TabPane
         key="presented"
         tab={
-          <Badge
-            size="small"
-            offset={[10, -10]}
-            count={presentedLeads.filter(lead => lead.notified).length}
-            overflowCount={999}
-          >
+          <div>
             {formatMessage(salesMessages.presentedLead)}
             <span>({presentedLeads.length})</span>
-          </Badge>
+          </div>
         }
       >
         {<SalesLeadTable sales={sales} leads={presentedLeads} onRefetch={refetch} />}
@@ -156,15 +159,10 @@ const SalesLeadTabs: React.VFC<{
       <Tabs.TabPane
         key="paid"
         tab={
-          <Badge
-            size="small"
-            offset={[10, -10]}
-            count={paidLeads.filter(lead => lead.notified).length}
-            overflowCount={999}
-          >
+          <div>
             {formatMessage(salesMessages.paidLead)}
             <span>({paidLeads.length})</span>
-          </Badge>
+          </div>
         }
       >
         {<SalesLeadTable sales={sales} leads={paidLeads} onRefetch={refetch} />}
@@ -174,15 +172,10 @@ const SalesLeadTabs: React.VFC<{
         <Tabs.TabPane
           key="closed"
           tab={
-            <Badge
-              size="small"
-              offset={[10, -10]}
-              count={closedLeads.filter(lead => lead.notified).length}
-              overflowCount={999}
-            >
+            <div>
               {formatMessage(salesMessages.closedLead)}
               <span>({closedLeads.length})</span>
-            </Badge>
+            </div>
           }
         >
           {<SalesLeadTable sales={sales} leads={closedLeads} onRefetch={refetch} />}
@@ -212,7 +205,6 @@ const useMemberContractNotification = () => {
       }
     `,
     {
-      pollInterval: 30000,
       variables: { today: moment().startOf('day') },
     },
   )
