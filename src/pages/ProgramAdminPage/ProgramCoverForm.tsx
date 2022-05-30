@@ -97,13 +97,13 @@ const ProgramCoverForm: React.VFC<{
       variables: {
         programId: programId,
         coverDefaultUrl: coverImage
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${defaultCoverId}/400`
+          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${defaultCoverId}/1080`
           : coverDefaultUrl,
         coverMobileUrl: coverMobileImage
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${mobileCoverId}/400`
+          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${mobileCoverId}/1080`
           : coverMobileUrl,
         coverThumbnailUrl: coverThumbnailImage
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${thumbnailCoverId}/400`
+          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${thumbnailCoverId}/1080`
           : coverThumbnailUrl,
       },
     })
