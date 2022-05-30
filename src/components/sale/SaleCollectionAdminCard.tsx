@@ -8,7 +8,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin, handleError } from '../../helpers'
@@ -22,28 +22,7 @@ import ShippingMethodLabel from '../common/ShippingMethodLabel'
 import ModifyOrderStatusModal from './ModifyOrderStatusModal'
 import OrderStatusTag from './OrderStatusTag'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
-
-const messages = defineMessages({
-  openEquity: { id: 'sale.SaleCollectionAdminCard.openEquity', defaultMessage: '開通權益' },
-  removeEquity: { id: 'sale.SaleCollectionAdminCard.removeEquity', defaultMessage: '移除權益' },
-  remove: { id: 'sale.SaleCollectionAdminCard.remove', defaultMessage: '移除' },
-  open: { id: 'sale.SaleCollectionAdminCard.open', defaultMessage: '開通' },
-  cancel: { id: 'sale.SaleCollectionAdminCard.cancel', defaultMessage: '取消' },
-  updateEquitySuccessfully: {
-    id: 'sale.SaleCollectionAdminCard.updateEquitySuccessfully',
-    defaultMessage: '權益異動成功',
-  },
-  equity: { id: 'sale.SaleCollectionAdminCard.equity', defaultMessage: '權益' },
-
-  removeEquityWarning: {
-    id: 'sale.SaleCollectionAdminCard.removeEquityWarning',
-    defaultMessage: '此操作將移除 {productName} 的使用權益，確定要移除嗎？',
-  },
-  openEquityWarning: {
-    id: 'sale.SaleCollectionAdminCard.openEquityWarning',
-    defaultMessage: '此操作將開通 {productName} 的使用權益，確定要開通嗎？',
-  },
-})
+import saleMessages from './translation'
 
 const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
   color: ${props => !props.isDelivered && '#CDCDCD'};
@@ -294,10 +273,14 @@ const SaleCollectionAdminCard: React.VFC<{
               <div>
                 {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
                   <AdminModal
-                    title={v.deliveredAt ? formatMessage(messages.removeEquity) : formatMessage(messages.openEquity)}
+                    title={
+                      v.deliveredAt
+                        ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
+                        : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
+                    }
                     renderTrigger={({ setVisible }) => (
                       <div className="d-flex align-items-center">
-                        <span className="mr-2">{formatMessage(messages.equity)}</span>
+                        <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.equity)}</span>
                         <Switch checked={!!v.deliveredAt} onChange={() => setVisible(true)} />
                       </div>
                     )}
@@ -318,20 +301,28 @@ const SaleCollectionAdminCard: React.VFC<{
                               .then(() => {
                                 setVisible(false)
                                 refetchOrderLogs?.()
-                                message.success(formatMessage(messages.updateEquitySuccessfully))
+                                message.success(
+                                  formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
+                                )
                               })
                               .catch(handleError)
                           }
                         >
-                          {v.deliveredAt ? formatMessage(messages.remove) : formatMessage(messages.open)}
+                          {v.deliveredAt
+                            ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
+                            : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
                         </Button>
                       </div>
                     )}
                   >
                     <div>
                       {v.deliveredAt
-                        ? formatMessage(messages.removeEquityWarning, { productName: v.name })
-                        : formatMessage(messages.openEquityWarning, { productName: v.name })}
+                        ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
+                            productName: v.name,
+                          })
+                        : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
+                            productName: v.name,
+                          })}
                     </div>
                   </AdminModal>
                 )}
