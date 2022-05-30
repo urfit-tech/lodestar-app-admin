@@ -11363,56 +11363,26 @@ export interface GET_ORDER_LOG_STATUS {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_ORDER_LOG
+// GraphQL query operation: GET_ORDER_LOGS
 // ====================================================
 
-export interface GET_ALL_ORDER_LOG_order_log_aggregate_aggregate {
+export interface GET_ORDER_LOGS_order_log_aggregate_aggregate {
   __typename: "order_log_aggregate_fields";
   count: number;
 }
 
-export interface GET_ALL_ORDER_LOG_order_log_aggregate {
+export interface GET_ORDER_LOGS_order_log_aggregate {
   __typename: "order_log_aggregate";
-  aggregate: GET_ALL_ORDER_LOG_order_log_aggregate_aggregate | null;
+  aggregate: GET_ORDER_LOGS_order_log_aggregate_aggregate | null;
 }
 
-export interface GET_ALL_ORDER_LOG {
-  /**
-   * fetch aggregated fields from the table: "order_log"
-   */
-  order_log_aggregate: GET_ALL_ORDER_LOG_order_log_aggregate;
-}
-
-export interface GET_ALL_ORDER_LOGVariables {
-  allcondition?: order_log_bool_exp | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDERS
-// ====================================================
-
-export interface GET_ORDERS_order_log_aggregate_aggregate {
-  __typename: "order_log_aggregate_fields";
-  count: number;
-}
-
-export interface GET_ORDERS_order_log_aggregate {
-  __typename: "order_log_aggregate";
-  aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
-}
-
-export interface GET_ORDERS_order_log_member {
+export interface GET_ORDER_LOGS_order_log_member {
   __typename: "member";
   name: string;
   email: string;
 }
 
-export interface GET_ORDERS_order_log_payment_logs {
+export interface GET_ORDER_LOGS_order_log_payment_logs {
   __typename: "payment_log";
   /**
    * spgateway, tappay, ezfund,paypal
@@ -11420,7 +11390,7 @@ export interface GET_ORDERS_order_log_payment_logs {
   gateway: string | null;
 }
 
-export interface GET_ORDERS_order_log_order_products_product {
+export interface GET_ORDER_LOGS_order_log_order_products_product {
   __typename: "product";
   /**
    * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
@@ -11432,7 +11402,7 @@ export interface GET_ORDERS_order_log_order_products_product {
   type: string;
 }
 
-export interface GET_ORDERS_order_log_order_products {
+export interface GET_ORDER_LOGS_order_log_order_products {
   __typename: "order_product";
   id: any;
   name: string;
@@ -11443,11 +11413,11 @@ export interface GET_ORDERS_order_log_order_products {
   /**
    * An object relationship
    */
-  product: GET_ORDERS_order_log_order_products_product;
+  product: GET_ORDER_LOGS_order_log_order_products_product;
   options: any | null;
 }
 
-export interface GET_ORDERS_order_log_order_discounts {
+export interface GET_ORDER_LOGS_order_log_order_discounts {
   __typename: "order_discount";
   id: any;
   name: string;
@@ -11460,20 +11430,20 @@ export interface GET_ORDERS_order_log_order_discounts {
   target: string;
 }
 
-export interface GET_ORDERS_order_log_order_executors_member {
+export interface GET_ORDER_LOGS_order_log_order_executors_member {
   __typename: "member";
   name: string;
 }
 
-export interface GET_ORDERS_order_log_order_executors {
+export interface GET_ORDER_LOGS_order_log_order_executors {
   __typename: "order_executor";
   /**
    * An object relationship
    */
-  member: GET_ORDERS_order_log_order_executors_member;
+  member: GET_ORDER_LOGS_order_log_order_executors_member;
 }
 
-export interface GET_ORDERS_order_log {
+export interface GET_ORDER_LOGS_order_log {
   __typename: "order_log";
   id: string;
   created_at: any;
@@ -11489,37 +11459,37 @@ export interface GET_ORDERS_order_log {
   /**
    * An object relationship
    */
-  member: GET_ORDERS_order_log_member;
+  member: GET_ORDER_LOGS_order_log_member;
   /**
    * An array relationship
    */
-  payment_logs: GET_ORDERS_order_log_payment_logs[];
+  payment_logs: GET_ORDER_LOGS_order_log_payment_logs[];
   /**
    * An array relationship
    */
-  order_products: GET_ORDERS_order_log_order_products[];
+  order_products: GET_ORDER_LOGS_order_log_order_products[];
   /**
    * An array relationship
    */
-  order_discounts: GET_ORDERS_order_log_order_discounts[];
+  order_discounts: GET_ORDER_LOGS_order_log_order_discounts[];
   /**
    * An array relationship
    */
-  order_executors: GET_ORDERS_order_log_order_executors[];
+  order_executors: GET_ORDER_LOGS_order_log_order_executors[];
 }
 
-export interface GET_ORDERS {
+export interface GET_ORDER_LOGS {
   /**
    * fetch aggregated fields from the table: "order_log"
    */
-  order_log_aggregate: GET_ORDERS_order_log_aggregate;
+  order_log_aggregate: GET_ORDER_LOGS_order_log_aggregate;
   /**
    * fetch data from the table: "order_log"
    */
-  order_log: GET_ORDERS_order_log[];
+  order_log: GET_ORDER_LOGS_order_log[];
 }
 
-export interface GET_ORDERSVariables {
+export interface GET_ORDER_LOGSVariables {
   condition?: order_log_bool_exp | null;
   limit?: number | null;
 }
@@ -18673,6 +18643,7 @@ export enum post_update_column {
   app_id = "app_id",
   code_name = "code_name",
   cover_url = "cover_url",
+  cover_url_backup = "cover_url_backup",
   created_at = "created_at",
   description = "description",
   id = "id",
@@ -19194,6 +19165,7 @@ export enum program_update_column {
   cover_mobile_url = "cover_mobile_url",
   cover_thumbnail_url = "cover_thumbnail_url",
   cover_url = "cover_url",
+  cover_url_backup = "cover_url_backup",
   cover_video_url = "cover_video_url",
   created_at = "created_at",
   description = "description",
@@ -31201,6 +31173,7 @@ export interface post_bool_exp {
   app_id?: String_comparison_exp | null;
   code_name?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
+  cover_url_backup?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -31274,6 +31247,7 @@ export interface post_insert_input {
   app_id?: string | null;
   code_name?: string | null;
   cover_url?: string | null;
+  cover_url_backup?: string | null;
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
@@ -31332,6 +31306,7 @@ export interface post_max_order_by {
   app_id?: order_by | null;
   code_name?: order_by | null;
   cover_url?: order_by | null;
+  cover_url_backup?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
@@ -31396,6 +31371,7 @@ export interface post_min_order_by {
   app_id?: order_by | null;
   code_name?: order_by | null;
   cover_url?: order_by | null;
+  cover_url_backup?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
@@ -32585,6 +32561,7 @@ export interface program_bool_exp {
   cover_mobile_url?: String_comparison_exp | null;
   cover_thumbnail_url?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
+  cover_url_backup?: String_comparison_exp | null;
   cover_video_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -33869,6 +33846,7 @@ export interface program_insert_input {
   cover_mobile_url?: string | null;
   cover_thumbnail_url?: string | null;
   cover_url?: string | null;
+  cover_url_backup?: string | null;
   cover_video_url?: string | null;
   created_at?: any | null;
   description?: string | null;
@@ -33920,6 +33898,7 @@ export interface program_max_order_by {
   cover_mobile_url?: order_by | null;
   cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
+  cover_url_backup?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -33942,6 +33921,7 @@ export interface program_min_order_by {
   cover_mobile_url?: order_by | null;
   cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
+  cover_url_backup?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -33982,6 +33962,7 @@ export interface program_order_by {
   cover_mobile_url?: order_by | null;
   cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
+  cover_url_backup?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;

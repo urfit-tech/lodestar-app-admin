@@ -13,8 +13,8 @@ import styled, { css } from 'styled-components'
 import hasura from '../../hasura'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useOrderLog } from '../../hooks/order'
-import { OrderLogProps } from '../../types/general'
+import { useOrderLogs } from '../../hooks/order'
+import { OrderLog } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
@@ -78,14 +78,13 @@ const StyledCell = styled.div`
     }
   `)}
 `
-
 const SaleCollectionAdminCard: React.VFC<{
   memberId?: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
 
   const { settings } = useApp()
-  const { currentUserRole, permissions } = useAuth()
+  const { currentUserRole, currentMemberId, permissions } = useAuth()
 
   const [isLoading, setIsLoading] = useState(false)
   const [statuses, setStatuses] = useState<string[] | null>(null)
@@ -93,12 +92,20 @@ const SaleCollectionAdminCard: React.VFC<{
   const [memberNameAndEmail, setMemberNameAndEmail] = useState<string | null>(null)
   const [tmpOrderLogStatus, setTmpOrderLogStatus] = useState<{ [OrderId in string]?: string }>({})
 
-  const { loadingOrderLogs, errorOrderLogs, orderLogs, totalCount, refetchOrderLogs, loadMoreOrderLogs } = useOrderLog({
-    statuses,
-    orderId,
-    memberNameAndEmail,
-    memberId,
-  })
+  const {
+    totalCount,
+    loading: loadingOrderLogs,
+    error: errorOrderLogs,
+    orderLogs,
+    refetch: refetchOrderLogs,
+    loadMoreOrderLogs,
+  } = useOrderLogs(
+    currentMemberId || '',
+    permissions.SALES_RECORDS_ADMIN ? 'Admin' : permissions.SALES_RECORDS_NORMAL ? 'Personal' : 'None',
+    { statuses, orderId, memberNameAndEmail, memberId },
+  )
+
+  // const {} = useOrderLogExpanded
 
   const [updateOrderProductDeliver] = useMutation<
     hasura.UPDATE_ORDER_PRODUCT_DELIVERED_AT,
@@ -137,7 +144,7 @@ const SaleCollectionAdminCard: React.VFC<{
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
-  const columns: ColumnProps<OrderLogProps>[] = [
+  const columns: ColumnProps<OrderLog>[] = [
     {
       title: formatMessage(commonMessages.label.orderLogId),
       dataIndex: 'id',
@@ -255,7 +262,7 @@ const SaleCollectionAdminCard: React.VFC<{
     expiredAt,
     shipping,
     totalPrice,
-  }: OrderLogProps) => (
+  }: OrderLog) => (
     <div>
       {orderProducts.map(v => (
         <StyledRowWrapper key={v.id} isDelivered={!!v.deliveredAt}>
@@ -422,7 +429,7 @@ const SaleCollectionAdminCard: React.VFC<{
           </Typography.Text>
         </div>
 
-        <Table<OrderLogProps>
+        <Table<OrderLog>
           rowKey="id"
           loading={!!(loadingOrderLogs || errorOrderLogs)}
           dataSource={orderLogs}
