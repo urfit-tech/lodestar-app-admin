@@ -35,7 +35,7 @@ const VoucherPlanCollectionAdminPageMessages = {
       defaultMessage: '兌換項目數量',
     },
     errorExchangeItemsAmount: {
-      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.exchangeItemsAmount',
+      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.errorExchangeItemsAmount',
       defaultMessage: '數量至少為 1',
     },
     exchangeItems: {
