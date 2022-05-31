@@ -43,7 +43,7 @@ const VoucherPlanCollectionAdminPageMessages = {
       defaultMessage: '兌換項目',
     },
     errorExchangeItems: {
-      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.exchangeItems',
+      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.errorExchangeItems',
       defaultMessage: '至少選一個兌換項目',
     },
     isTransferable: {
