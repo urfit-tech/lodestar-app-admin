@@ -666,6 +666,52 @@ export interface DELETE_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_DETAIL
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product_order_log {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  updated_at: any | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product {
+  __typename: "order_product";
+  id: any;
+  options: any | null;
+  /**
+   * An object relationship
+   */
+  order_log: GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product_order_log;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment {
+  __typename: "appointment_enrollment";
+  id: any | null;
+  /**
+   * An object relationship
+   */
+  order_product: GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL {
+  /**
+   * fetch data from the table: "appointment_enrollment"
+   */
+  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment[];
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAILVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
 // ====================================================
 
@@ -687,6 +733,43 @@ export interface UPDATE_APPOINTMENT_RESULT {
 export interface UPDATE_APPOINTMENT_RESULTVariables {
   orderProductId: any;
   data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment_order_product {
+  __typename: "order_product";
+  id: any;
+  options: any | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment {
+  __typename: "appointment_enrollment";
+  id: any | null;
+  issue: string | null;
+  result: string | null;
+  /**
+   * An object relationship
+   */
+  order_product: GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment_order_product | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT {
+  /**
+   * fetch data from the table: "appointment_enrollment"
+   */
+  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment[];
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULTVariables {
+  id: any;
 }
 
 /* tslint:disable */
@@ -7751,23 +7834,6 @@ export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_member {
   picture_url: string | null;
 }
 
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product_order_log {
-  __typename: "order_log";
-  id: string;
-  created_at: any;
-  updated_at: any | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product {
-  __typename: "order_product";
-  id: any;
-  options: any | null;
-  /**
-   * An object relationship
-   */
-  order_log: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product_order_log;
-}
-
 export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment {
   __typename: "appointment_enrollment";
   id: any | null;
@@ -7787,22 +7853,6 @@ export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment {
   member_email: string | null;
   member_phone: string | null;
   order_product_id: any | null;
-  /**
-   * An object relationship
-   */
-  order_product: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product | null;
-  issue: string | null;
-  result: string | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate | null;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENTS {
@@ -7810,16 +7860,42 @@ export interface GET_APPOINTMENT_ENROLLMENTS {
    * fetch data from the table: "appointment_enrollment"
    */
   appointment_enrollment: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment[];
-  /**
-   * fetch aggregated fields from the table: "appointment_enrollment"
-   */
-  appointment_enrollment_aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENTSVariables {
   condition?: appointment_enrollment_bool_exp | null;
   sort?: appointment_enrollment_order_by[] | null;
   limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_AGGREGATE
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATE {
+  /**
+   * fetch aggregated fields from the table: "appointment_enrollment"
+   */
+  appointment_enrollment_aggregate: GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATEVariables {
+  condition?: appointment_enrollment_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -18218,6 +18294,23 @@ export enum post_merchandise_update_column {
   id = "id",
   merchandise_id = "merchandise_id",
   position = "position",
+  post_id = "post_id",
+}
+
+/**
+ * unique or primary key constraints on table "post_reaction"
+ */
+export enum post_reaction_constraint {
+  post_reaction_pkey = "post_reaction_pkey",
+}
+
+/**
+ * update columns of table "post_reaction"
+ */
+export enum post_reaction_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
   post_id = "post_id",
 }
 
@@ -30736,6 +30829,7 @@ export interface post_bool_exp {
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
   post_merchandises?: post_merchandise_bool_exp | null;
+  post_reaction?: post_reaction_bool_exp | null;
   post_roles?: post_role_bool_exp | null;
   post_tags?: post_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -30807,6 +30901,7 @@ export interface post_insert_input {
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
   post_merchandises?: post_merchandise_arr_rel_insert_input | null;
+  post_reaction?: post_reaction_arr_rel_insert_input | null;
   post_roles?: post_role_arr_rel_insert_input | null;
   post_tags?: post_tag_arr_rel_insert_input | null;
   published_at?: any | null;
@@ -30916,6 +31011,50 @@ export interface post_on_conflict {
   constraint: post_constraint;
   update_columns: post_update_column[];
   where?: post_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "post_reaction"
+ */
+export interface post_reaction_arr_rel_insert_input {
+  data: post_reaction_insert_input[];
+  on_conflict?: post_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "post_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface post_reaction_bool_exp {
+  _and?: post_reaction_bool_exp[] | null;
+  _not?: post_reaction_bool_exp | null;
+  _or?: post_reaction_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  post?: post_bool_exp | null;
+  post_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "post_reaction"
+ */
+export interface post_reaction_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  post?: post_obj_rel_insert_input | null;
+  post_id?: any | null;
+}
+
+/**
+ * on_conflict condition type for table "post_reaction"
+ */
+export interface post_reaction_on_conflict {
+  constraint: post_reaction_constraint;
+  update_columns: post_reaction_update_column[];
+  where?: post_reaction_bool_exp | null;
 }
 
 /**

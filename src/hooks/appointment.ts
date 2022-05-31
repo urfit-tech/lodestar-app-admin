@@ -135,6 +135,7 @@ export const useAppointmentEnrollmentCollection = (
   endedAt: Date | null,
 ) => {
   const limit = 10
+
   const condition: hasura.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] =
     tabKey === 'scheduled'
       ? {
@@ -217,22 +218,6 @@ export const useAppointmentEnrollmentCollection = (
           member_email
           member_phone
           order_product_id
-          order_product {
-            id
-            options
-            order_log {
-              id
-              created_at
-              updated_at
-            }
-          }
-          issue
-          result
-        }
-        appointment_enrollment_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
         }
       }
     `,
@@ -244,6 +229,23 @@ export const useAppointmentEnrollmentCollection = (
       },
     },
   )
+
+  const { data: enrollmentData } = useQuery<
+    hasura.GET_APPOINTMENT_ENROLLMENT_AGGREGATE,
+    hasura.GET_APPOINTMENT_ENROLLMENT_AGGREGATEVariables
+  >(
+    gql`
+      query GET_APPOINTMENT_ENROLLMENT_AGGREGATE($condition: appointment_enrollment_bool_exp) {
+        appointment_enrollment_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    { variables: { condition } },
+  )
+
   const appointmentEnrollments: AppointmentPeriodCardProps[] =
     data?.appointment_enrollment.map(v => ({
       id: v.id,
@@ -261,20 +263,12 @@ export const useAppointmentEnrollmentCollection = (
         id: v.appointment_plan?.creator?.id || '',
         name: v.appointment_plan?.creator?.name || '',
       },
-      orderProduct: {
-        id: v.order_product_id || '',
-        options: v.order_product?.options,
-        orderLog: {
-          createdAt: v.order_product?.order_log.created_at,
-          updatedAt: v.order_product?.order_log.updated_at,
-        },
-      },
-      appointmentIssue: v.issue,
-      appointmentResult: v.result,
+      orderProductId: v.order_product_id,
     })) || []
 
   const loadMoreAppointmentEnrollments =
-    (data?.appointment_enrollment.length || 0) < (data?.appointment_enrollment_aggregate.aggregate?.count || 0)
+    (data?.appointment_enrollment.length || 0) <
+    (enrollmentData?.appointment_enrollment_aggregate.aggregate?.count || 0)
       ? () =>
           fetchMore({
             variables: {
@@ -314,10 +308,10 @@ export const useAppointmentEnrollmentCollection = (
       : undefined
 
   return {
-    loadingAppointmentEnrollments: loading,
-    errorAppointmentEnrollments: error,
+    loading,
+    error,
     appointmentEnrollments,
-    refetchAppointmentEnrollments: refetch,
+    refetch,
     loadMoreAppointmentEnrollments,
   }
 }

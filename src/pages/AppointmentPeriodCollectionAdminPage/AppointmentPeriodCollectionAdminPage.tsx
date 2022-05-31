@@ -26,8 +26,8 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { permissions } = useAuth()
-  const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('minute').subtract(90, 'days').toDate())
-  const [endedAt, setEndedAt] = useState<Date | null>(moment().startOf('minute').toDate())
+  const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('month').startOf('minute').toDate())
+  const [endedAt, setEndedAt] = useState<Date | null>(moment().endOf('month').startOf('minute').toDate())
   const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
   const { appointmentCreators } = useAppointmentEnrollmentCreator()
 
@@ -56,7 +56,7 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
     v && v[0] && setStartedAt(v?.[0].startOf('minute').toDate())
     v && v[1] && setEndedAt(v[1].startOf('minute').toDate())
 
-    if (diffDate > 90) {
+    if (diffDate > 31) {
       message.warning(formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.dateRangeWarning))
     }
   }
