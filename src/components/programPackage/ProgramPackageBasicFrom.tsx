@@ -100,6 +100,7 @@ const ProgramPackageBasicForm: React.FC<{
       initialValues={{
         title: programPackage.title,
         categoryIds: programPackage.categories.map(category => category.id),
+        tags: programPackage.tags,
       }}
       onFinish={handleSubmit}
     >

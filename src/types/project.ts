@@ -4,6 +4,7 @@ export type ProjectDataType = 'funding' | 'pre-order' | 'on-sale' | 'modular'
 export type ProjectPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
 export type ProjectAdminProps = ProjectPreviewProps & {
   categories: CategoryProps[]
+  tags: string[]
   introduction: string | null
   introductionDesktop: string | null
   description: string | null

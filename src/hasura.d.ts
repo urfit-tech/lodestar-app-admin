@@ -13170,6 +13170,21 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_categ
   category: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_categories_category;
 }
 
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags {
+  __typename: "program_package_tag";
+  id: any;
+  tag_name: string;
+  /**
+   * An object relationship
+   */
+  tag: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags_tag | null;
+}
+
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
   __typename: "program_package";
   title: string;
@@ -13188,6 +13203,10 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
    * An array relationship
    */
   program_package_categories: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_categories[];
+  /**
+   * An array relationship
+   */
+  program_package_tags: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags[];
 }
 
 export interface GET_PROGRAM_PACKAGE {
@@ -15954,6 +15973,21 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_categories {
   category: GET_PROJECT_ADMIN_project_by_pk_project_categories_category;
 }
 
+export interface GET_PROJECT_ADMIN_project_by_pk_project_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_tags {
+  __typename: "project_tag";
+  id: any;
+  tag_name: string;
+  /**
+   * An object relationship
+   */
+  tag: GET_PROJECT_ADMIN_project_by_pk_project_tags_tag | null;
+}
+
 export interface GET_PROJECT_ADMIN_project_by_pk {
   __typename: "project";
   id: any;
@@ -15997,6 +16031,10 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
    * An array relationship
    */
   project_categories: GET_PROJECT_ADMIN_project_by_pk_project_categories[];
+  /**
+   * An array relationship
+   */
+  project_tags: GET_PROJECT_ADMIN_project_by_pk_project_tags[];
 }
 
 export interface GET_PROJECT_ADMIN {

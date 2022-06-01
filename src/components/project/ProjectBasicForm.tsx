@@ -121,6 +121,7 @@ const ProjectBasicForm: React.FC<{
       initialValues={{
         title: project.title,
         categoryIds: project.categories.map(category => category.id),
+        tags: project.tags,
         targetUnit: project.targetUnit,
         targetAmount: project.targetAmount,
         expiredAt: project?.expiredAt ? moment(project.expiredAt) : null,
