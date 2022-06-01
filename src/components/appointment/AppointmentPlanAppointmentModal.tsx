@@ -19,7 +19,7 @@ import { ReactComponent as StatusSuccessIcon } from '../../images/default/status
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import DiscountSelectionCard from '../checkout/DiscountSelectionCard'
 import { CustomRatioImage } from '../common/Image'
-import PriceLabel from '../common/PriceLabel'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { AllMemberSelector } from '../form/MemberSelector'
 import AppointmentPeriodItem from './AppointmentPeriodItem'
 

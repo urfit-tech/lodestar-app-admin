@@ -17,7 +17,7 @@ import PositionAdminLayout, {
   OverlayListItem,
   OverlayWrapper,
 } from '../admin/PositionAdminLayout'
-import PriceLabel from '../common/PriceLabel'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import ProductSkuModal from '../common/ProductSkuModal'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
