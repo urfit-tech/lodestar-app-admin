@@ -7,7 +7,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { permissionGroupsMessages, permissionMessages } from '../../helpers/translation'
+import formMessages from './translation'
 
 const messages = defineMessages({
   all: { id: 'permission.label.all', defaultMessage: '所有權限' },
@@ -34,25 +34,26 @@ const PermissionInput: React.FC<{
 
   const permissionGroups = groupBy(permission => permission.group, allPermissions)
   const enabledGroups: {
-    [groupId in keyof typeof permissionGroupsMessages]: boolean
+    [groupId in keyof typeof formMessages.PermissionInput]: boolean
   } = {
     backstage: true,
     sales: true,
     program: true,
+    coupon: true,
+    memberAdmin: true,
+    appAdmin: true,
+    mediaLibrary: true,
     programPackage: !!enabledModules.program_package,
     programProgress: !!enabledModules.learning_statistics,
     appointment: !!enabledModules.appointment,
     activity: !!enabledModules.activity,
     blog: !!enabledModules.blog,
-    coupon: true,
+    merchandise: !!enabledModules.merchandise,
     voucher: !!enabledModules.voucher,
     bonus: !!enabledModules.coin,
-    memberAdmin: true,
     task: !!enabledModules.member_task,
-    appAdmin: true,
     project: !!enabledModules.project,
     contract: !!enabledModules.contract,
-    mediaLibrary: true,
     analysis: !!enabledModules.analysis,
     salesLead: settings['custom.permission_group.salesLead'] === '1',
     salesManagement: settings['custom.permission_group.salesManagement'] === '1',
@@ -79,8 +80,8 @@ const PermissionInput: React.FC<{
           <div key={groupId} className="col-md-4 col-12 mb-3">
             <PermissionGroup
               label={
-                permissionGroupsMessages[groupId as keyof typeof permissionGroupsMessages]
-                  ? formatMessage(permissionGroupsMessages[groupId as keyof typeof permissionGroupsMessages])
+                formMessages.PermissionInput[groupId as keyof typeof formMessages.PermissionInput]
+                  ? formatMessage(formMessages.PermissionInput[groupId as keyof typeof formMessages.PermissionInput])
                   : groupId
               }
               options={sortBy(prop('id'))(permissionGroups[groupId]).map(permission => permission.id)}
@@ -133,8 +134,8 @@ const PermissionGroup: React.FC<{
             .map(option => (
               <div key={option}>
                 <Checkbox value={option} disabled={fixedOptions?.includes(option)}>
-                  {permissionMessages[option as keyof typeof permissionMessages]
-                    ? formatMessage(permissionMessages[option as keyof typeof permissionMessages])
+                  {formMessages.PermissionGroup[option as keyof typeof formMessages.PermissionGroup]
+                    ? formatMessage(formMessages.PermissionGroup[option as keyof typeof formMessages.PermissionGroup])
                     : option}
                 </Checkbox>
               </div>
