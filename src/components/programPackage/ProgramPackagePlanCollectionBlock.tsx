@@ -2,6 +2,7 @@ import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Popover, Tag } from 'antd'
 import gql from 'graphql-tag'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -17,7 +18,6 @@ import PositionAdminLayout, {
   OverlayListItem,
   OverlayWrapper,
 } from '../admin/PositionAdminLayout'
-import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import ProductSkuModal from '../common/ProductSkuModal'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
@@ -226,6 +226,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
         downPrice={discountDownPrice || undefined}
         periodType={isSubscription ? periodType : undefined}
         periodAmount={periodAmount}
+        variant="full-detail"
       />
       <Divider className="my-3" />
 
