@@ -1,6 +1,7 @@
 import { Button, Divider, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -19,7 +20,6 @@ import { ReactComponent as StatusSuccessIcon } from '../../images/default/status
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import DiscountSelectionCard from '../checkout/DiscountSelectionCard'
 import { CustomRatioImage } from '../common/Image'
-import PriceLabel from '../common/PriceLabel'
 import { AllMemberSelector } from '../form/MemberSelector'
 import AppointmentPeriodItem from './AppointmentPeriodItem'
 

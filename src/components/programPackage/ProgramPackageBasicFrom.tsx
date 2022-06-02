@@ -6,16 +6,19 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
+import TagSelector from '../../components/form/TagSelector'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ProgramPackageProps } from '../../types/programPackage'
 import CategorySelector from '../form/CategorySelector'
 import ImageInput from '../form/ImageInput'
+import programPackageMessages from './translation'
 
 type FieldProps = {
   title: string
   categoryIds: string[]
+  tags: string[]
 }
 
 const ProgramPackageBasicForm: React.FC<{
@@ -45,7 +48,7 @@ const ProgramPackageBasicForm: React.FC<{
     updateProgramPackageCover({
       variables: {
         programPackageId: programPackage.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}/${coverId}/400`,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}/${coverId}/1080`,
       },
     })
       .then(() => {
@@ -65,6 +68,15 @@ const ProgramPackageBasicForm: React.FC<{
         programPackageCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           program_package_id: programPackage.id,
           category_id: categoryId,
+          position: index,
+        })),
+        tags: values.tags.map(tag => ({
+          name: tag,
+          type: '',
+        })),
+        programPackageTags: values.tags.map((programPackageTag, index) => ({
+          program_package_id: programPackage.id,
+          tag_name: programPackageTag,
           position: index,
         })),
       },
@@ -88,6 +100,7 @@ const ProgramPackageBasicForm: React.FC<{
       initialValues={{
         title: programPackage.title,
         categoryIds: programPackage.categories.map(category => category.id),
+        tags: programPackage.tags,
       }}
       onFinish={handleSubmit}
     >
@@ -109,7 +122,9 @@ const ProgramPackageBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="programPackage" />
       </Form.Item>
-
+      <Form.Item label={formatMessage(programPackageMessages.ProgramPackageBasicFrom.tag)} name="tags">
+        <TagSelector />
+      </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.cover)}>
         <ImageInput
           path={`program_package_covers/${appId}/${programPackage.id}/${coverId}`}
@@ -140,6 +155,8 @@ const UPDATE_PROGRAM_PACKAGE_BASIC = gql`
     $programPackageId: uuid!
     $title: String
     $programPackageCategories: [program_package_category_insert_input!]!
+    $tags: [tag_insert_input!]!
+    $programPackageTags: [program_package_tag_insert_input!]!
   ) {
     update_program_package(where: { id: { _eq: $programPackageId } }, _set: { title: $title }) {
       affected_rows
@@ -148,6 +165,16 @@ const UPDATE_PROGRAM_PACKAGE_BASIC = gql`
       affected_rows
     }
     insert_program_package_category(objects: $programPackageCategories) {
+      affected_rows
+    }
+    # update tags
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    delete_program_package_tag(where: { program_package_id: { _eq: $programPackageId } }) {
+      affected_rows
+    }
+    insert_program_package_tag(objects: $programPackageTags) {
       affected_rows
     }
   }

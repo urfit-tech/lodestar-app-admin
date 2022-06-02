@@ -23,8 +23,12 @@ const AppointmentPlanPeriodTabContent: React.FC<{
 }> = ({ tabKey, selectedCreatorId, startedAt, endedAt }) => {
   const { formatMessage } = useIntl()
 
-  const { loadingAppointmentEnrollments, appointmentEnrollments, loadMoreAppointmentEnrollments } =
-    useAppointmentEnrollmentCollection(tabKey, selectedCreatorId, startedAt, endedAt)
+  const {
+    loading: loadingAppointmentEnrollments,
+    error: errorAppointmentEnrollments,
+    appointmentEnrollments,
+    loadMoreAppointmentEnrollments,
+  } = useAppointmentEnrollmentCollection(tabKey, selectedCreatorId, startedAt, endedAt)
   const [isLoading, setIsLoading] = useState(false)
 
   if (moment(endedAt).diff(moment(startedAt), 'days') > 90) {
@@ -32,6 +36,14 @@ const AppointmentPlanPeriodTabContent: React.FC<{
       <StyledDateRangeWarning>
         {formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.dateRangeWarning)}
       </StyledDateRangeWarning>
+    )
+  }
+
+  if (errorAppointmentEnrollments) {
+    return (
+      <div className="d-flex justify-content-center algin-items-center">
+        {formatMessage(pageMessages['*'].fetchDataError)}
+      </div>
     )
   }
 
@@ -47,7 +59,7 @@ const AppointmentPlanPeriodTabContent: React.FC<{
     <>
       {appointmentEnrollments.map(v => (
         <AppointmentPeriodCard
-          key={v.orderProduct.id}
+          key={v.id}
           id={v.id}
           avatarUrl={v.avatarUrl}
           member={v.member}
@@ -56,9 +68,7 @@ const AppointmentPlanPeriodTabContent: React.FC<{
           endedAt={v.endedAt}
           canceledAt={v.canceledAt}
           creator={v.creator}
-          orderProduct={v.orderProduct}
-          appointmentIssue={v.appointmentIssue}
-          appointmentResult={v.appointmentResult}
+          orderProductId={v.orderProductId}
         />
       ))}
 

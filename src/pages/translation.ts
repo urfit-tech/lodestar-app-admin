@@ -7,6 +7,10 @@ const pageMessages = {
       id: 'page.*.showMore',
       defaultMessage: '顯示更多',
     },
+    fetchDataError: {
+      id: 'page.*.fetchDataError',
+      defaultMessage: '讀取錯誤',
+    },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'project.*.settings', defaultMessage: '專案設定' },
@@ -97,7 +101,7 @@ const pageMessages = {
     },
     dateRangeWarning: {
       id: 'page.AppointmentPeriodCollectionAdminPage.dateRangeWarning',
-      defaultMessage: '請選擇時間區間三個月以內',
+      defaultMessage: '請選擇時間區間一個月以內',
     },
   }),
 }

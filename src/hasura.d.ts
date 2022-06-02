@@ -666,6 +666,52 @@ export interface DELETE_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_DETAIL
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product_order_log {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  updated_at: any | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product {
+  __typename: "order_product";
+  id: any;
+  options: any | null;
+  /**
+   * An object relationship
+   */
+  order_log: GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product_order_log;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment {
+  __typename: "appointment_enrollment";
+  id: any | null;
+  /**
+   * An object relationship
+   */
+  order_product: GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment_order_product | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAIL {
+  /**
+   * fetch data from the table: "appointment_enrollment"
+   */
+  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_DETAIL_appointment_enrollment[];
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_DETAILVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
 // ====================================================
 
@@ -687,6 +733,43 @@ export interface UPDATE_APPOINTMENT_RESULT {
 export interface UPDATE_APPOINTMENT_RESULTVariables {
   orderProductId: any;
   data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment_order_product {
+  __typename: "order_product";
+  id: any;
+  options: any | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment {
+  __typename: "appointment_enrollment";
+  id: any | null;
+  issue: string | null;
+  result: string | null;
+  /**
+   * An object relationship
+   */
+  order_product: GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment_order_product | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT {
+  /**
+   * fetch data from the table: "appointment_enrollment"
+   */
+  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULT_appointment_enrollment[];
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULTVariables {
+  id: any;
 }
 
 /* tslint:disable */
@@ -5469,6 +5552,30 @@ export interface UPDATE_PROGRAM_PACKAGE_BASIC_insert_program_package_category {
   affected_rows: number;
 }
 
+export interface UPDATE_PROGRAM_PACKAGE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_BASIC_delete_program_package_tag {
+  __typename: "program_package_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_BASIC_insert_program_package_tag {
+  __typename: "program_package_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_PROGRAM_PACKAGE_BASIC {
   /**
    * update data of the table: "program_package"
@@ -5482,12 +5589,26 @@ export interface UPDATE_PROGRAM_PACKAGE_BASIC {
    * insert data into the table: "program_package_category"
    */
   insert_program_package_category: UPDATE_PROGRAM_PACKAGE_BASIC_insert_program_package_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PROGRAM_PACKAGE_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "program_package_tag"
+   */
+  delete_program_package_tag: UPDATE_PROGRAM_PACKAGE_BASIC_delete_program_package_tag | null;
+  /**
+   * insert data into the table: "program_package_tag"
+   */
+  insert_program_package_tag: UPDATE_PROGRAM_PACKAGE_BASIC_insert_program_package_tag | null;
 }
 
 export interface UPDATE_PROGRAM_PACKAGE_BASICVariables {
   programPackageId: any;
   title?: string | null;
   programPackageCategories: program_package_category_insert_input[];
+  tags: tag_insert_input[];
+  programPackageTags: program_package_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -5748,6 +5869,30 @@ export interface UPDATE_PROJECT_BASIC_insert_project_category {
   affected_rows: number;
 }
 
+export interface UPDATE_PROJECT_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC_delete_project_tag {
+  __typename: "project_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC_insert_project_tag {
+  __typename: "project_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_PROJECT_BASIC {
   /**
    * update data of the table: "project"
@@ -5761,6 +5906,18 @@ export interface UPDATE_PROJECT_BASIC {
    * insert data into the table: "project_category"
    */
   insert_project_category: UPDATE_PROJECT_BASIC_insert_project_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PROJECT_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "project_tag"
+   */
+  delete_project_tag: UPDATE_PROJECT_BASIC_delete_project_tag | null;
+  /**
+   * insert data into the table: "project_tag"
+   */
+  insert_project_tag: UPDATE_PROJECT_BASIC_insert_project_tag | null;
 }
 
 export interface UPDATE_PROJECT_BASICVariables {
@@ -5772,6 +5929,8 @@ export interface UPDATE_PROJECT_BASICVariables {
   expiredAt?: any | null;
   isParticipantsVisible: boolean;
   isCountdownTimerVisible: boolean;
+  tags: tag_insert_input[];
+  projectTags: project_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -7751,23 +7910,6 @@ export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_member {
   picture_url: string | null;
 }
 
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product_order_log {
-  __typename: "order_log";
-  id: string;
-  created_at: any;
-  updated_at: any | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product {
-  __typename: "order_product";
-  id: any;
-  options: any | null;
-  /**
-   * An object relationship
-   */
-  order_log: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product_order_log;
-}
-
 export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment {
   __typename: "appointment_enrollment";
   id: any | null;
@@ -7787,22 +7929,6 @@ export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment {
   member_email: string | null;
   member_phone: string | null;
   order_product_id: any | null;
-  /**
-   * An object relationship
-   */
-  order_product: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_order_product | null;
-  issue: string | null;
-  result: string | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate_aggregate | null;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENTS {
@@ -7810,16 +7936,42 @@ export interface GET_APPOINTMENT_ENROLLMENTS {
    * fetch data from the table: "appointment_enrollment"
    */
   appointment_enrollment: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment[];
-  /**
-   * fetch aggregated fields from the table: "appointment_enrollment"
-   */
-  appointment_enrollment_aggregate: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_aggregate;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENTSVariables {
   condition?: appointment_enrollment_bool_exp | null;
   sort?: appointment_enrollment_order_by[] | null;
   limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_AGGREGATE
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATE {
+  /**
+   * fetch aggregated fields from the table: "appointment_enrollment"
+   */
+  appointment_enrollment_aggregate: GET_APPOINTMENT_ENROLLMENT_AGGREGATE_appointment_enrollment_aggregate;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_AGGREGATEVariables {
+  condition?: appointment_enrollment_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -13018,6 +13170,21 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_categ
   category: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_categories_category;
 }
 
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags {
+  __typename: "program_package_tag";
+  id: any;
+  tag_name: string;
+  /**
+   * An object relationship
+   */
+  tag: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags_tag | null;
+}
+
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
   __typename: "program_package";
   title: string;
@@ -13036,6 +13203,10 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
    * An array relationship
    */
   program_package_categories: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_categories[];
+  /**
+   * An array relationship
+   */
+  program_package_tags: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags[];
 }
 
 export interface GET_PROGRAM_PACKAGE {
@@ -15802,6 +15973,21 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_categories {
   category: GET_PROJECT_ADMIN_project_by_pk_project_categories_category;
 }
 
+export interface GET_PROJECT_ADMIN_project_by_pk_project_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_tags {
+  __typename: "project_tag";
+  id: any;
+  tag_name: string;
+  /**
+   * An object relationship
+   */
+  tag: GET_PROJECT_ADMIN_project_by_pk_project_tags_tag | null;
+}
+
 export interface GET_PROJECT_ADMIN_project_by_pk {
   __typename: "project";
   id: any;
@@ -15845,6 +16031,10 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
    * An array relationship
    */
   project_categories: GET_PROJECT_ADMIN_project_by_pk_project_categories[];
+  /**
+   * An array relationship
+   */
+  project_tags: GET_PROJECT_ADMIN_project_by_pk_project_tags[];
 }
 
 export interface GET_PROJECT_ADMIN {
@@ -18222,6 +18412,23 @@ export enum post_merchandise_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "post_reaction"
+ */
+export enum post_reaction_constraint {
+  post_reaction_pkey = "post_reaction_pkey",
+}
+
+/**
+ * update columns of table "post_reaction"
+ */
+export enum post_reaction_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  post_id = "post_id",
+}
+
+/**
  * unique or primary key constraints on table "post_role"
  */
 export enum post_role_constraint {
@@ -18633,6 +18840,24 @@ export enum program_package_program_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "program_package_tag"
+ */
+export enum program_package_tag_constraint {
+  program_package_tag_pkey = "program_package_tag_pkey",
+  program_package_tag_program_package_id_tag_name_key = "program_package_tag_program_package_id_tag_name_key",
+}
+
+/**
+ * update columns of table "program_package_tag"
+ */
+export enum program_package_tag_update_column {
+  id = "id",
+  position = "position",
+  program_package_id = "program_package_id",
+  tag_name = "tag_name",
+}
+
+/**
  * update columns of table "program_package"
  */
 export enum program_package_update_column {
@@ -18888,6 +19113,24 @@ export enum project_section_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "project_tag"
+ */
+export enum project_tag_constraint {
+  project_tag_pkey = "project_tag_pkey",
+  project_tag_project_id_tag_name_key = "project_tag_project_id_tag_name_key",
+}
+
+/**
+ * update columns of table "project_tag"
+ */
+export enum project_tag_update_column {
+  id = "id",
+  position = "position",
+  project_id = "project_id",
+  tag_name = "tag_name",
+}
+
+/**
  * update columns of table "project"
  */
 export enum project_update_column {
@@ -19031,6 +19274,26 @@ export enum role_update_column {
   created_at = "created_at",
   id = "id",
   name = "name",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "search_tag"
+ */
+export enum search_tag_constraint {
+  search_tag_pkey = "search_tag_pkey",
+  search_tag_tag_name_app_id_key = "search_tag_tag_name_app_id_key",
+}
+
+/**
+ * update columns of table "search_tag"
+ */
+export enum search_tag_update_column {
+  app_id = "app_id",
+  created_at = "created_at",
+  id = "id",
+  position = "position",
+  tag_name = "tag_name",
   updated_at = "updated_at",
 }
 
@@ -30736,6 +30999,7 @@ export interface post_bool_exp {
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
   post_merchandises?: post_merchandise_bool_exp | null;
+  post_reaction?: post_reaction_bool_exp | null;
   post_roles?: post_role_bool_exp | null;
   post_tags?: post_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -30807,6 +31071,7 @@ export interface post_insert_input {
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
   post_merchandises?: post_merchandise_arr_rel_insert_input | null;
+  post_reaction?: post_reaction_arr_rel_insert_input | null;
   post_roles?: post_role_arr_rel_insert_input | null;
   post_tags?: post_tag_arr_rel_insert_input | null;
   published_at?: any | null;
@@ -30916,6 +31181,50 @@ export interface post_on_conflict {
   constraint: post_constraint;
   update_columns: post_update_column[];
   where?: post_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "post_reaction"
+ */
+export interface post_reaction_arr_rel_insert_input {
+  data: post_reaction_insert_input[];
+  on_conflict?: post_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "post_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface post_reaction_bool_exp {
+  _and?: post_reaction_bool_exp[] | null;
+  _not?: post_reaction_bool_exp | null;
+  _or?: post_reaction_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  post?: post_bool_exp | null;
+  post_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "post_reaction"
+ */
+export interface post_reaction_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  post?: post_obj_rel_insert_input | null;
+  post_id?: any | null;
+}
+
+/**
+ * on_conflict condition type for table "post_reaction"
+ */
+export interface post_reaction_on_conflict {
+  constraint: post_reaction_constraint;
+  update_columns: post_reaction_update_column[];
+  where?: post_reaction_bool_exp | null;
 }
 
 /**
@@ -33509,6 +33818,7 @@ export interface program_package_bool_exp {
   program_package_categories?: program_package_category_bool_exp | null;
   program_package_plans?: program_package_plan_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;
+  program_package_tags?: program_package_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
 }
@@ -33573,6 +33883,7 @@ export interface program_package_insert_input {
   program_package_categories?: program_package_category_arr_rel_insert_input | null;
   program_package_plans?: program_package_plan_arr_rel_insert_input | null;
   program_package_programs?: program_package_program_arr_rel_insert_input | null;
+  program_package_tags?: program_package_tag_arr_rel_insert_input | null;
   published_at?: any | null;
   title?: string | null;
 }
@@ -33873,6 +34184,50 @@ export interface program_package_program_var_samp_order_by {
  */
 export interface program_package_program_variance_order_by {
   position?: order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_package_tag"
+ */
+export interface program_package_tag_arr_rel_insert_input {
+  data: program_package_tag_insert_input[];
+  on_conflict?: program_package_tag_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_package_tag". All fields are combined with a logical 'AND'.
+ */
+export interface program_package_tag_bool_exp {
+  _and?: program_package_tag_bool_exp[] | null;
+  _not?: program_package_tag_bool_exp | null;
+  _or?: program_package_tag_bool_exp[] | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  program_package?: program_package_bool_exp | null;
+  program_package_id?: uuid_comparison_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_package_tag"
+ */
+export interface program_package_tag_insert_input {
+  id?: any | null;
+  position?: number | null;
+  program_package?: program_package_obj_rel_insert_input | null;
+  program_package_id?: any | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
+}
+
+/**
+ * on_conflict condition type for table "program_package_tag"
+ */
+export interface program_package_tag_on_conflict {
+  constraint: program_package_tag_constraint;
+  update_columns: program_package_tag_update_column[];
+  where?: program_package_tag_bool_exp | null;
 }
 
 /**
@@ -34735,6 +35090,7 @@ export interface project_bool_exp {
   project_plans?: project_plan_bool_exp | null;
   project_sales?: project_sales_bool_exp | null;
   project_sections?: project_section_bool_exp | null;
+  project_tags?: project_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   target_amount?: numeric_comparison_exp | null;
   target_unit?: String_comparison_exp | null;
@@ -34907,6 +35263,7 @@ export interface project_insert_input {
   project_plans?: project_plan_arr_rel_insert_input | null;
   project_sales?: project_sales_obj_rel_insert_input | null;
   project_sections?: project_section_arr_rel_insert_input | null;
+  project_tags?: project_tag_arr_rel_insert_input | null;
   published_at?: any | null;
   target_amount?: any | null;
   target_unit?: string | null;
@@ -34959,6 +35316,7 @@ export interface project_order_by {
   project_plans_aggregate?: project_plan_aggregate_order_by | null;
   project_sales?: project_sales_order_by | null;
   project_sections_aggregate?: project_section_aggregate_order_by | null;
+  project_tags_aggregate?: project_tag_aggregate_order_by | null;
   published_at?: order_by | null;
   target_amount?: order_by | null;
   target_unit?: order_by | null;
@@ -35496,6 +35854,143 @@ export interface project_section_variance_order_by {
 }
 
 /**
+ * order by aggregate values of table "project_tag"
+ */
+export interface project_tag_aggregate_order_by {
+  avg?: project_tag_avg_order_by | null;
+  count?: order_by | null;
+  max?: project_tag_max_order_by | null;
+  min?: project_tag_min_order_by | null;
+  stddev?: project_tag_stddev_order_by | null;
+  stddev_pop?: project_tag_stddev_pop_order_by | null;
+  stddev_samp?: project_tag_stddev_samp_order_by | null;
+  sum?: project_tag_sum_order_by | null;
+  var_pop?: project_tag_var_pop_order_by | null;
+  var_samp?: project_tag_var_samp_order_by | null;
+  variance?: project_tag_variance_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "project_tag"
+ */
+export interface project_tag_arr_rel_insert_input {
+  data: project_tag_insert_input[];
+  on_conflict?: project_tag_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "project_tag"
+ */
+export interface project_tag_avg_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_tag". All fields are combined with a logical 'AND'.
+ */
+export interface project_tag_bool_exp {
+  _and?: project_tag_bool_exp[] | null;
+  _not?: project_tag_bool_exp | null;
+  _or?: project_tag_bool_exp[] | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  project?: project_bool_exp | null;
+  project_id?: uuid_comparison_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project_tag"
+ */
+export interface project_tag_insert_input {
+  id?: any | null;
+  position?: number | null;
+  project?: project_obj_rel_insert_input | null;
+  project_id?: any | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
+}
+
+/**
+ * order by max() on columns of table "project_tag"
+ */
+export interface project_tag_max_order_by {
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  tag_name?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_tag"
+ */
+export interface project_tag_min_order_by {
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  tag_name?: order_by | null;
+}
+
+/**
+ * on_conflict condition type for table "project_tag"
+ */
+export interface project_tag_on_conflict {
+  constraint: project_tag_constraint;
+  update_columns: project_tag_update_column[];
+  where?: project_tag_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "project_tag"
+ */
+export interface project_tag_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "project_tag"
+ */
+export interface project_tag_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "project_tag"
+ */
+export interface project_tag_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "project_tag"
+ */
+export interface project_tag_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "project_tag"
+ */
+export interface project_tag_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "project_tag"
+ */
+export interface project_tag_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "project_tag"
+ */
+export interface project_tag_variance_order_by {
+  position?: order_by | null;
+}
+
+/**
  * order by aggregate values of table "property"
  */
 export interface property_aggregate_order_by {
@@ -36008,6 +36503,52 @@ export interface role_permission_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "search_tag"
+ */
+export interface search_tag_arr_rel_insert_input {
+  data: search_tag_insert_input[];
+  on_conflict?: search_tag_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "search_tag". All fields are combined with a logical 'AND'.
+ */
+export interface search_tag_bool_exp {
+  _and?: search_tag_bool_exp[] | null;
+  _not?: search_tag_bool_exp | null;
+  _or?: search_tag_bool_exp[] | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "search_tag"
+ */
+export interface search_tag_insert_input {
+  app_id?: string | null;
+  created_at?: any | null;
+  id?: any | null;
+  position?: number | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on_conflict condition type for table "search_tag"
+ */
+export interface search_tag_on_conflict {
+  constraint: search_tag_constraint;
+  update_columns: search_tag_update_column[];
+  where?: search_tag_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "setting"
  */
 export interface setting_arr_rel_insert_input {
@@ -36273,6 +36814,7 @@ export interface tag_bool_exp {
   podcast_program_tags?: podcast_program_tag_bool_exp | null;
   post_tags?: post_tag_bool_exp | null;
   program_tags?: program_tag_bool_exp | null;
+  search_tags?: search_tag_bool_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -36291,6 +36833,7 @@ export interface tag_insert_input {
   podcast_program_tags?: podcast_program_tag_arr_rel_insert_input | null;
   post_tags?: post_tag_arr_rel_insert_input | null;
   program_tags?: program_tag_arr_rel_insert_input | null;
+  search_tags?: search_tag_arr_rel_insert_input | null;
   type?: string | null;
   updated_at?: any | null;
 }

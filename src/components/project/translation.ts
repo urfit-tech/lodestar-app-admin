@@ -34,6 +34,9 @@ const projectMessages = {
     recognizePrice: { id: 'project.ProjectPlanProductSelector.recognizePrice', defaultMessage: '認列金額' },
     addDeliverables: { id: 'project.ProjectPlanProductSelector.addDeliverables', defaultMessage: '新增項目' },
   }),
+  ProjectBasicForm: defineMessages({
+    tag: { id: 'project.ProjectBasicForm.tag', defaultMessage: '標籤' },
+  }),
 }
 
 export default projectMessages

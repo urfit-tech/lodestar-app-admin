@@ -2,6 +2,7 @@ import { EditOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Tag } from 'antd'
 import gql from 'graphql-tag'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -11,7 +12,6 @@ import { commonMessages } from '../../helpers/translation'
 import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
-import PriceLabel from '../common/PriceLabel'
 import ProductSkuModal from '../common/ProductSkuModal'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
@@ -82,6 +82,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         periodAmount={periodAmount || 1}
         periodType={periodType as ProgramPlanPeriodType}
         currencyId={currencyId}
+        variant="full-detail"
       />
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>

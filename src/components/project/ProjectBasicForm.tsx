@@ -6,6 +6,7 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import TagSelector from '../../components/form/TagSelector'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -17,6 +18,7 @@ import projectMessages from './translation'
 type FieldProps = {
   title: string
   categoryIds: string[]
+  tags: string[]
   targetUnit: string
   targetAmount: number
   expiredAt: Date
@@ -85,6 +87,15 @@ const ProjectBasicForm: React.FC<{
           category_id: categoryId,
           position: index,
         })),
+        tags: values.tags.map(tag => ({
+          name: tag,
+          type: '',
+        })),
+        projectTags: values.tags.map((projectTag, index) => ({
+          project_id: project.id,
+          tag_name: projectTag,
+          position: index,
+        })),
         targetUnit: values.targetUnit || 'funds',
         targetAmount: values.targetAmount,
         expiredAt: values.expiredAt,
@@ -110,6 +121,7 @@ const ProjectBasicForm: React.FC<{
       initialValues={{
         title: project.title,
         categoryIds: project.categories.map(category => category.id),
+        tags: project.tags,
         targetUnit: project.targetUnit,
         targetAmount: project.targetAmount,
         expiredAt: project?.expiredAt ? moment(project.expiredAt) : null,
@@ -127,6 +139,9 @@ const ProjectBasicForm: React.FC<{
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.category)} name="categoryIds">
         <CategorySelector classType="project" />
+      </Form.Item>
+      <Form.Item label={formatMessage(projectMessages.ProjectBasicForm.tag)} name="tags">
+        <TagSelector />
       </Form.Item>
       {project.projectType === 'funding' && (
         <Form.Item label={formatMessage(projectMessages['*'].fundingTerm)}>
@@ -226,6 +241,8 @@ const UPDATE_PROJECT_BASIC = gql`
     $expiredAt: timestamptz
     $isParticipantsVisible: Boolean!
     $isCountdownTimerVisible: Boolean!
+    $tags: [tag_insert_input!]!
+    $projectTags: [project_tag_insert_input!]!
   ) {
     update_project(
       where: { id: { _eq: $projectId } }
@@ -246,6 +263,17 @@ const UPDATE_PROJECT_BASIC = gql`
       affected_rows
     }
     insert_project_category(objects: $projectCategories) {
+      affected_rows
+    }
+
+    # update tags
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    delete_project_tag(where: { project_id: { _eq: $projectId } }) {
+      affected_rows
+    }
+    insert_project_tag(objects: $projectTags) {
       affected_rows
     }
   }

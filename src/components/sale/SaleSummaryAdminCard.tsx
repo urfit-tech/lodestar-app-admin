@@ -25,7 +25,7 @@ const SaleSummaryAdminCard: React.FC = () => {
 
   const grossSalesPermission: SalesStatus = permissions.GROSS_SALES_ADMIN
     ? 'Admin'
-    : permissions.GROSS_SALES_CREATOR
+    : permissions.GROSS_SALES_NORMAL
     ? 'Creator'
     : 'None'
 

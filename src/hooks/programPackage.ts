@@ -348,6 +348,13 @@ export const useProgramPackage = (id: string) => {
               name
             }
           }
+          program_package_tags(order_by: { position: asc }) {
+            id
+            tag_name
+            tag {
+              name
+            }
+          }
         }
       }
     `,
@@ -399,6 +406,9 @@ export const useProgramPackage = (id: string) => {
             id: v.category.id,
             name: v.category.name,
           })),
+          tags: data.program_package_by_pk.program_package_tags.map(
+            programPackageTag => programPackageTag.tag?.name || programPackageTag.tag_name,
+          ),
         }
 
   return {

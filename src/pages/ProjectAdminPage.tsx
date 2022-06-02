@@ -171,6 +171,13 @@ const useProjectAdmin = (projectId: string) => {
               name
             }
           }
+          project_tags(order_by: { position: asc }) {
+            id
+            tag_name
+            tag {
+              name
+            }
+          }
         }
       }
     `,
@@ -227,6 +234,7 @@ const useProjectAdmin = (projectId: string) => {
             products: v.project_plan_products.map(u => ({ id: u.product_id, options: u.options })),
           })),
           categories: data.project_by_pk.project_categories.map(v => ({ id: v.category.id, name: v.category.name })),
+          tags: data.project_by_pk.project_tags.map(projectTag => projectTag.tag?.name || projectTag.tag_name),
         }
 
   return {

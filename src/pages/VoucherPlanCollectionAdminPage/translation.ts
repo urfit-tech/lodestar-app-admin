@@ -35,7 +35,7 @@ const VoucherPlanCollectionAdminPageMessages = {
       defaultMessage: '兌換項目數量',
     },
     errorExchangeItemsAmount: {
-      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.exchangeItemsAmount',
+      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.errorExchangeItemsAmount',
       defaultMessage: '數量至少為 1',
     },
     exchangeItems: {
@@ -43,7 +43,7 @@ const VoucherPlanCollectionAdminPageMessages = {
       defaultMessage: '兌換項目',
     },
     errorExchangeItems: {
-      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.exchangeItems',
+      id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.errorExchangeItems',
       defaultMessage: '至少選一個兌換項目',
     },
     isTransferable: {

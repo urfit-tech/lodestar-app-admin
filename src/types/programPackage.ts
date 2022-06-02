@@ -9,6 +9,7 @@ export type ProgramPackageProps = {
   programs: ProgramPackageProgramProps[]
   plans: ProgramPackagePlanProps[]
   categories: CategoryProps[]
+  tags: string[]
 }
 
 export type ProgramPackageProgramProps = {

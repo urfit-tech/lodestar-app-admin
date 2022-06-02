@@ -1,6 +1,7 @@
 import EditOutlined from '@ant-design/icons/lib/icons/EditOutlined'
 import { Button, Divider, Tag, Typography } from 'antd'
 import Card, { CardProps } from 'antd/lib/card'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -9,7 +10,6 @@ import { commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ProjectPlan, ProjectPlanPeriodType } from '../../types/project'
 import AdminCard from '../admin/AdminCard'
-import PriceLabel from '../common/PriceLabel'
 import ProductSkuModal from '../common/ProductSkuModal'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProjectPlanAdminModal from './ProjectPlanAdminModal'
@@ -104,6 +104,7 @@ const ProjectPlanCard: React.FC<
                 downPrice={projectPlan.discountDownPrice || undefined}
                 periodAmount={1}
                 periodType={projectPlan.periodType as ProjectPlanPeriodType}
+                variant="full-detail"
               />
               <Divider />
               <Typography.Paragraph ellipsis={{ rows: 2 }} className="mt-4 mb-5 pb-2">

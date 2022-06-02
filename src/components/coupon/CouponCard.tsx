@@ -1,10 +1,10 @@
 import { Card } from 'antd'
 import { CardProps } from 'antd/lib/card'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { dateFormatter } from '../../helpers'
 import { CouponProps } from '../../types/checkout'
-import PriceLabel from '../common/PriceLabel'
 import couponMessages from './translation'
 
 const CouponCard: React.FC<

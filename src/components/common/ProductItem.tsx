@@ -1,4 +1,5 @@
 import { Spin, Typography } from 'antd'
+import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import moment from 'moment'
 import React from 'react'
@@ -10,7 +11,6 @@ import { commonMessages } from '../../helpers/translation'
 import { useSimpleProduct } from '../../hooks/data'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { CustomRatioImage } from './Image'
-import PriceLabel from './PriceLabel'
 
 const StyledCoverImage = styled.img`
   width: 64px;

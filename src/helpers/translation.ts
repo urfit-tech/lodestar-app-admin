@@ -1362,7 +1362,7 @@ export const permissionMessages = defineMessages({
   SALES_READ: { id: 'permission.SALES_READ', defaultMessage: '查看所有訂單' },
   SALES_EXPORT: { id: 'permission.SALES_EXPORT', defaultMessage: '匯出所有訂單' },
   SALES_RECORDS_ADMIN: { id: 'permission.SALES_RECORDS_ADMIN', defaultMessage: '查看所有銷售紀錄' },
-  GROSS_SALES_CREATOR: { id: 'permission.GROSS_SALES_CREATOR', defaultMessage: '查看創作者銷售總額' },
+  GROSS_SALES_NORMAL: { id: 'permission.GROSS_SALES_NORMAL', defaultMessage: '查看個人銷售總額' },
   SALES_RECORDS_NORMAL: { id: 'permission.SALES_RECORDS_NORMAL', defaultMessage: '查看個人銷售紀錄' },
   GROSS_SALES_ADMIN: { id: 'permission.GROSS_SALES_ADMIN', defaultMessage: '查看所有銷售總額' },
   SALES_RECORDS_DETAILS: { id: 'permission.SALES_RECORDS_DETAILS', defaultMessage: '查看消費者細項' },
