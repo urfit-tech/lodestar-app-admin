@@ -284,8 +284,8 @@ const formMessages = {
       defaultMessage: '所有電商分類功能',
     },
     MERCHANDISE_NORMAL: { id: 'form.PermissionGroup.MERCHANDISE_NORMAL', defaultMessage: '個人電商管理' },
-    SHIPPING_ADMIN: { id: 'form.PermissionGroup.SHIPPING_ADMIN', defaultMessage: '所有物流管理' },
-    SHIPPING_NORMAL: { id: 'form.PermissionGroup.SHIPPING_NORMAL', defaultMessage: '個人物流管理' },
+    SHIPPING_ADMIN: { id: 'form.PermissionGroup.SHIPPING_ADMIN', defaultMessage: '所有出貨管理' },
+    SHIPPING_NORMAL: { id: 'form.PermissionGroup.SHIPPING_NORMAL', defaultMessage: '個人出貨管理' },
 
     // permissionGroup
     PERMISSION_GROUP_ADMIN: {
