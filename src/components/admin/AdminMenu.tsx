@@ -134,22 +134,40 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: !!enabledModules.project && Boolean(permissions.PROJECT_ADMIN),
+      permissionIsAllowed:
+        !!enabledModules.project &&
+        (Boolean(permissions.PROJECT_ADMIN) ||
+          Boolean(permissions.PROJECT_FUNDING_ADMIN) ||
+          Boolean(permissions.PROJECT_PRE_ORDER_ADMIN) ||
+          Boolean(permissions.PROJECT_NORMAL) ||
+          Boolean(permissions.PROJECT_FUNDING_NORMAL) ||
+          Boolean(permissions.PROJECT_PRE_ORDER_NORMAL)),
       key: 'project_admin',
       icon: () => <ProjectIcon />,
       name: formatMessage(adminMessages.AdminMenu.projectAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: true,
+          permissionIsAllowed:
+            !!enabledModules.project &&
+            (Boolean(permissions.PROJECT_ADMIN) ||
+              Boolean(permissions.PROJECT_FUNDING_ADMIN) ||
+              Boolean(permissions.PROJECT_NORMAL) ||
+              Boolean(permissions.PROJECT_FUNDING_NORMAL)),
           key: 'project_funding_collection',
           name: formatMessage(adminMessages.AdminMenu.projectFunding),
         },
         {
-          permissionIsAllowed: true,
+          permissionIsAllowed:
+            !!enabledModules.project &&
+            (Boolean(permissions.PROJECT_ADMIN) ||
+              Boolean(permissions.PROJECT_PRE_ORDER_ADMIN) ||
+              Boolean(permissions.PROJECT_NORMAL) ||
+              Boolean(permissions.PROJECT_PRE_ORDER_NORMAL)),
           key: 'project_pre_order_collection',
           name: formatMessage(adminMessages.AdminMenu.projectPreOrder),
         },
         {
+          // Not yet applied
           permissionIsAllowed: false,
           key: 'project_on_sale_collection',
           name: formatMessage(adminMessages.AdminMenu.projectOnSale),
