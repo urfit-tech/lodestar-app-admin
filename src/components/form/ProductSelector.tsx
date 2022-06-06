@@ -58,14 +58,14 @@ const ProductSelector: React.FC<{
       children: productSelection.products.map(product => ({
         key: product.id,
         title: (
-          <div className="d-flex align-items-center flex-wrap">
+          <div className="d-flex align-items-center" title={product.title}>
             {product.publishedAt === null
               ? `(${formatMessage(commonMessages.label.unPublished)}) `
               : product.publishedAt && product.publishedAt.getTime() > Date.now()
               ? `(${formatMessage(commonMessages.status.notSold)}) `
               : ''}
             {product.tag && <Tag className="mr-2">{product.tag}</Tag>}
-            {product.title}
+            {<span>{product.title}</span>}
           </div>
         ),
         name: product.title,
