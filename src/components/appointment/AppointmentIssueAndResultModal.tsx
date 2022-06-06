@@ -11,7 +11,7 @@ import { dateRangeFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { StyledModalTitle } from '../common'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import appointmentMessages from './translation'
 

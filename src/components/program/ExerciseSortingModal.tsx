@@ -12,7 +12,7 @@ import DraggableItemCollectionBlock, {
   ItemProps,
   StyledReactSortableWrapper,
 } from '../common/DraggableItemCollectionBlock'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { QuestionBlock, StyledAction } from '../form/QuestionInput'
 
 const StyledQuestionBlock = styled.div`

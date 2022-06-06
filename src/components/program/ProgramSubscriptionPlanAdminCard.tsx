@@ -13,7 +13,7 @@ import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import ProductSkuModal from '../common/ProductSkuModal'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 
 const messages = defineMessages({

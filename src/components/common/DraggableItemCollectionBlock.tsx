@@ -7,7 +7,7 @@ import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import DraggableItem from './DraggableItem'
-import { BraftContent } from './StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 
 const StyledSelect = styled(Select)`
   display: inline-flex;

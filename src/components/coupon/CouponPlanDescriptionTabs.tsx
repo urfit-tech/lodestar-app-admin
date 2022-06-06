@@ -11,7 +11,7 @@ import hasura from '../../hasura'
 import { downloadCSV, toCSV } from '../../helpers'
 import { useCouponCodeCollection } from '../../hooks/checkout'
 import { CouponPlanType } from '../../types/checkout'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import CouponPlanDescriptionScopeBlock from './CouponPlanDescriptionScopeBlock'
 import couponMessages from './translation'
 

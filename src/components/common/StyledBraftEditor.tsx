@@ -6,17 +6,43 @@ import QuotationRight from '../../images/default/quotation-right.png'
 
 const OutputMixin = css`
   h1 {
-    margin-bottom: 1.5rem;
+    padding: 4px 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  h2 {
     padding: 4px 20px;
     font-size: 20px;
     font-weight: bold;
-    border-left: 4px solid ${props => props.theme['@primary-color']};
+  }
+  h3 {
+    padding: 4px 16px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  h4 {
+    padding: 4px 16px;
+    font-size: 16px;
+    font-weight: normal;
   }
   h5 {
-    margin-bottom: 1.5rem;
-    color: #9b9b9b;
+    padding: 4px 14px;
     font-size: 14px;
-    letter-spacing: 0.4px;
+    font-weight: bold;
+  }
+  h6 {
+    padding: 4px 14px;
+    font-size: 14px;
+    font-weight: normal;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-bottom: 1.5rem;
+    border-left: 4px solid ${props => props.theme['@primary-color']};
   }
   p {
     margin: 0;
@@ -149,12 +175,6 @@ const StyledBraftEditor = styled(BraftEditor)`
         height: 41px;
         color: #fff;
       }
-    }
-    li.menu-item:nth-child(2),
-    li.menu-item:nth-child(3),
-    li.menu-item:nth-child(4),
-    li.menu-item:nth-child(6) {
-      display: none;
     }
   }
 
