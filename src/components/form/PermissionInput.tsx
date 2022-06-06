@@ -49,6 +49,7 @@ const PermissionInput: React.FC<{
     activity: !!enabledModules.activity,
     blog: !!enabledModules.blog,
     merchandise: !!enabledModules.merchandise,
+    craft: !!enabledModules.craft_page,
     voucher: !!enabledModules.voucher,
     bonus: !!enabledModules.coin,
     task: !!enabledModules.member_task,

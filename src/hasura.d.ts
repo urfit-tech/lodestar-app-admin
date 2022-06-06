@@ -8106,7 +8106,7 @@ export interface GET_APP_PAGE_COLLECTION {
 }
 
 export interface GET_APP_PAGE_COLLECTIONVariables {
-  appId: string;
+  condition: app_page_bool_exp;
 }
 
 /* tslint:disable */
@@ -18643,7 +18643,6 @@ export enum post_update_column {
   app_id = "app_id",
   code_name = "code_name",
   cover_url = "cover_url",
-  cover_url_backup = "cover_url_backup",
   created_at = "created_at",
   description = "description",
   id = "id",
@@ -19165,7 +19164,6 @@ export enum program_update_column {
   cover_mobile_url = "cover_mobile_url",
   cover_thumbnail_url = "cover_thumbnail_url",
   cover_url = "cover_url",
-  cover_url_backup = "cover_url_backup",
   cover_video_url = "cover_video_url",
   created_at = "created_at",
   description = "description",
@@ -31173,7 +31171,6 @@ export interface post_bool_exp {
   app_id?: String_comparison_exp | null;
   code_name?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
-  cover_url_backup?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -31247,7 +31244,6 @@ export interface post_insert_input {
   app_id?: string | null;
   code_name?: string | null;
   cover_url?: string | null;
-  cover_url_backup?: string | null;
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
@@ -31306,7 +31302,6 @@ export interface post_max_order_by {
   app_id?: order_by | null;
   code_name?: order_by | null;
   cover_url?: order_by | null;
-  cover_url_backup?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
@@ -31371,7 +31366,6 @@ export interface post_min_order_by {
   app_id?: order_by | null;
   code_name?: order_by | null;
   cover_url?: order_by | null;
-  cover_url_backup?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
@@ -32561,7 +32555,6 @@ export interface program_bool_exp {
   cover_mobile_url?: String_comparison_exp | null;
   cover_thumbnail_url?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
-  cover_url_backup?: String_comparison_exp | null;
   cover_video_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -33846,7 +33839,6 @@ export interface program_insert_input {
   cover_mobile_url?: string | null;
   cover_thumbnail_url?: string | null;
   cover_url?: string | null;
-  cover_url_backup?: string | null;
   cover_video_url?: string | null;
   created_at?: any | null;
   description?: string | null;
@@ -33898,7 +33890,6 @@ export interface program_max_order_by {
   cover_mobile_url?: order_by | null;
   cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
-  cover_url_backup?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -33921,7 +33912,6 @@ export interface program_min_order_by {
   cover_mobile_url?: order_by | null;
   cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
-  cover_url_backup?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -33962,7 +33952,6 @@ export interface program_order_by {
   cover_mobile_url?: order_by | null;
   cover_thumbnail_url?: order_by | null;
   cover_url?: order_by | null;
-  cover_url_backup?: order_by | null;
   cover_video_url?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;

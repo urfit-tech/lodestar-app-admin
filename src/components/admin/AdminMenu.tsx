@@ -423,13 +423,16 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        !!enabledModules.craft_page && (Boolean(permissions.CRAFT_PAGE_ADMIN) || Boolean(permissions.CRAFT_MENU_ADMIN)),
+        !!enabledModules.craft_page &&
+        (Boolean(permissions.CRAFT_PAGE_ADMIN) ||
+          Boolean(permissions.CRAFT_PAGE_NORMAL) ||
+          Boolean(permissions.CRAFT_MENU_ADMIN)),
       key: 'craft_page_admin',
       icon: () => <PageIcon />,
       name: formatMessage(adminMessages.AdminMenu.pageAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: Boolean(permissions.CRAFT_PAGE_ADMIN),
+          permissionIsAllowed: Boolean(permissions.CRAFT_PAGE_ADMIN) || Boolean(permissions.CRAFT_PAGE_NORMAL),
           key: 'craft_page_collection',
           name: formatMessage(adminMessages.AdminMenu.pageSetup),
         },

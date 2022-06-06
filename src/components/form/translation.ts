@@ -16,6 +16,7 @@ const formMessages = {
     activity: { id: 'form.PermissionInput.activity', defaultMessage: '活動' },
     blog: { id: 'form.PermissionInput.post', defaultMessage: '媒體文章' },
     merchandise: { id: 'form.PermissionInput.merchandise', defaultMessage: '電商管理' },
+    craft: { id: 'form.PermissionInput.craftPage', defaultMessage: '頁面管理' },
     voucher: { id: 'form.PermissionInput.voucher', defaultMessage: '兌換方案' },
     bonus: { id: 'form.PermissionInput.bonus', defaultMessage: '紅利折抵' },
     task: { id: 'form.PermissionInput.task', defaultMessage: '待辦管理' },
@@ -259,6 +260,7 @@ const formMessages = {
 
     // craft
     CRAFT_PAGE_ADMIN: { id: 'form.PermissionGroup.CRAFT_PAGE_ADMIN', defaultMessage: '所有頁面模組功能' },
+    CRAFT_PAGE_NORMAL: { id: 'form.PermissionGroup.CRAFT_PAGE_NORMAL', defaultMessage: '個人頁面模組功能' },
     CRAFT_MENU_ADMIN: { id: 'form.PermissionGroup.CRAFT_MENU_ADMIN', defaultMessage: '頁面模組選單' },
 
     // media_library
