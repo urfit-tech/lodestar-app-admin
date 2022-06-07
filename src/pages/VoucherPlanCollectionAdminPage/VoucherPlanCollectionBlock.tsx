@@ -27,7 +27,7 @@ const VoucherPlanCollectionBlock: React.VFC<{
   }
 
   if (error) {
-    return <div>{formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanCollectionBlock.fetch)}</div>
+    return <div>{formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanCollectionBlock.fetchDataError)}</div>
   }
 
   return (

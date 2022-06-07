@@ -13,7 +13,10 @@ const VoucherPlanCollectionAdminPageMessages = {
   }),
   VoucherPlanCollectionBlock: defineMessages({
     edit: { id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.edit', defaultMessage: '編輯' },
-    fetch: { id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.fetch', defaultMessage: '讀取錯誤' },
+    fetchDataError: {
+      id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.fetchDataError',
+      defaultMessage: '讀取錯誤',
+    },
     showMore: { id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.showMore', defaultMessage: '顯示更多' },
     editVoucherPlan: {
       id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.ditVoucherPlan',
