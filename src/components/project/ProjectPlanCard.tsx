@@ -11,7 +11,7 @@ import EmptyCover from '../../images/default/empty-cover.png'
 import { ProjectPlan, ProjectPlanPeriodType } from '../../types/project'
 import AdminCard from '../admin/AdminCard'
 import ProductSkuModal from '../common/ProductSkuModal'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import ProjectPlanAdminModal from './ProjectPlanAdminModal'
 import projectMessages from './translation'
 

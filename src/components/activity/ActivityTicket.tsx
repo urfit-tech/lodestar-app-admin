@@ -9,7 +9,7 @@ import { activityMessages, commonMessages } from '../../helpers/translation'
 import { useCurrency } from '../../hooks/currency'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { ActivityTicketProps, ActivityTicketSessionProps } from '../../types/activity'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 
 const StyledWrapper = styled.div`
   padding: 1.5rem;

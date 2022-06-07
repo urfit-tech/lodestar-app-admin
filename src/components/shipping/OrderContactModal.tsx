@@ -15,7 +15,7 @@ import hasura from '../../hasura'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ReactComponent as IconMail } from '../../images/icon/email-o.svg'
 import { AvatarImage } from '../common/Image'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { createUploadFn } from '../form/AdminBraftEditor'
 
 const messages = defineMessages({

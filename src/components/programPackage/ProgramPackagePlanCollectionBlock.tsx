@@ -19,7 +19,7 @@ import PositionAdminLayout, {
   OverlayWrapper,
 } from '../admin/PositionAdminLayout'
 import ProductSkuModal from '../common/ProductSkuModal'
-import { BraftContent } from '../common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 
 const messages = defineMessages({

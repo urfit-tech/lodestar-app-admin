@@ -2,7 +2,7 @@ import { Bar } from '@ant-design/charts'
 import BraftEditor from 'braft-editor'
 import React from 'react'
 import styled from 'styled-components'
-import { BraftContent } from '../../components/common/StyledBraftEditor'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { QuestionProps } from '../../types/program'
 import { ExerciseDisplayProps } from './ExerciseDisplayTable'
 
