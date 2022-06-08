@@ -2,6 +2,7 @@ import { EditOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Tag } from 'antd'
 import gql from 'graphql-tag'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
@@ -13,7 +14,6 @@ import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import ProductSkuModal from '../common/ProductSkuModal'
-import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 
 const messages = defineMessages({
@@ -46,7 +46,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   return (
     <AdminBlock>
       <AdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center" style={{ width: '90%' }}>
           <Tag className="mr-2">
             {programPlanType === 'subscription'
               ? formatMessage(commonMessages.ui.subscriptionPlan)
@@ -61,17 +61,19 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           programId={programId}
           programPlan={programPlan}
           renderTrigger={({ onOpen }) => (
-            <EditOutlined
-              onClick={() =>
-                onOpen?.(
-                  programPlan.periodAmount && programPlan.periodType
-                    ? programPlan.autoRenewed
-                      ? 'subscription'
-                      : 'period'
-                    : 'perpetual',
-                )
-              }
-            />
+            <div className="d-flex align-items-center">
+              <EditOutlined
+                onClick={() =>
+                  onOpen?.(
+                    programPlan.periodAmount && programPlan.periodType
+                      ? programPlan.autoRenewed
+                        ? 'subscription'
+                        : 'period'
+                      : 'perpetual',
+                  )
+                }
+              />
+            </div>
           )}
         />
       </AdminBlockTitle>

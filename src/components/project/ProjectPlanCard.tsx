@@ -1,6 +1,7 @@
 import EditOutlined from '@ant-design/icons/lib/icons/EditOutlined'
 import { Button, Divider, Tag, Typography } from 'antd'
 import Card, { CardProps } from 'antd/lib/card'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
@@ -11,7 +12,6 @@ import EmptyCover from '../../images/default/empty-cover.png'
 import { ProjectPlan, ProjectPlanPeriodType } from '../../types/project'
 import AdminCard from '../admin/AdminCard'
 import ProductSkuModal from '../common/ProductSkuModal'
-import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import ProjectPlanAdminModal from './ProjectPlanAdminModal'
 import projectMessages from './translation'
 
@@ -33,7 +33,6 @@ const StyledTitle = styled.div`
   width: 80%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 `
 const ExtraContentBlock = styled.div`
   position: absolute;
@@ -78,7 +77,7 @@ const ProjectPlanCard: React.FC<
         <Card.Meta
           title={
             <StyledTitleContainer className="mb-2">
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center" style={{ width: '90%' }}>
                 <Tag className="mr-2">
                   {projectPlanType === 'subscription'
                     ? formatMessage(commonMessages.ui.subscriptionPlan)
@@ -91,7 +90,11 @@ const ProjectPlanCard: React.FC<
               <ProjectPlanAdminModal
                 projectId={projectId}
                 projectPlan={projectPlan}
-                renderTrigger={({ onOpen }) => <EditOutlined onClick={() => onOpen?.(projectPlanType)} />}
+                renderTrigger={({ onOpen }) => (
+                  <div className="d-flex align-items-center">
+                    <EditOutlined onClick={() => onOpen?.(projectPlanType)} />
+                  </div>
+                )}
                 onRefetch={onRefetch}
               />
             </StyledTitleContainer>
