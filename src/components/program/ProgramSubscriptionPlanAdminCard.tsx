@@ -46,7 +46,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   return (
     <AdminBlock>
       <AdminBlockTitle className="mb-3 d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center" style={{ width: '90%' }}>
           <Tag className="mr-2">
             {programPlanType === 'subscription'
               ? formatMessage(commonMessages.ui.subscriptionPlan)
@@ -61,17 +61,19 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           programId={programId}
           programPlan={programPlan}
           renderTrigger={({ onOpen }) => (
-            <EditOutlined
-              onClick={() =>
-                onOpen?.(
-                  programPlan.periodAmount && programPlan.periodType
-                    ? programPlan.autoRenewed
-                      ? 'subscription'
-                      : 'period'
-                    : 'perpetual',
-                )
-              }
-            />
+            <div className="d-flex align-items-center">
+              <EditOutlined
+                onClick={() =>
+                  onOpen?.(
+                    programPlan.periodAmount && programPlan.periodType
+                      ? programPlan.autoRenewed
+                        ? 'subscription'
+                        : 'period'
+                      : 'perpetual',
+                  )
+                }
+              />
+            </div>
           )}
         />
       </AdminBlockTitle>

@@ -33,7 +33,6 @@ const StyledTitle = styled.div`
   width: 80%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 `
 const ExtraContentBlock = styled.div`
   position: absolute;
@@ -78,7 +77,7 @@ const ProjectPlanCard: React.FC<
         <Card.Meta
           title={
             <StyledTitleContainer className="mb-2">
-              <div className="d-flex align-items-center">
+              <div className="d-flex align-items-center" style={{ width: '90%' }}>
                 <Tag className="mr-2">
                   {projectPlanType === 'subscription'
                     ? formatMessage(commonMessages.ui.subscriptionPlan)
@@ -91,7 +90,11 @@ const ProjectPlanCard: React.FC<
               <ProjectPlanAdminModal
                 projectId={projectId}
                 projectPlan={projectPlan}
-                renderTrigger={({ onOpen }) => <EditOutlined onClick={() => onOpen?.(projectPlanType)} />}
+                renderTrigger={({ onOpen }) => (
+                  <div className="d-flex align-items-center">
+                    <EditOutlined onClick={() => onOpen?.(projectPlanType)} />
+                  </div>
+                )}
                 onRefetch={onRefetch}
               />
             </StyledTitleContainer>
