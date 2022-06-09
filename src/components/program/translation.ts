@@ -18,6 +18,9 @@ const programMessages = {
     dataDisplay: { id: 'program.ProgramCollectionSelector.dataDisplay', defaultMessage: '資料顯示' },
     addItem: { id: 'program.ProgramCollectionSelector.addItem', defaultMessage: '新增項目' },
   }),
+  ProgramPackageSelector: defineMessages({
+    allProgramPackage: { id: 'program.ProgramPackageSelector.allProgramPackage', defaultMessage: '全部課程組合' },
+  }),
 }
 
 export default programMessages

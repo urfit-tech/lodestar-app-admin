@@ -5314,50 +5314,6 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGE_CATEGORIES
-// ====================================================
-
-export interface GET_PROGRAM_PACKAGE_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_PROGRAM_PACKAGE_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_PROGRAM_PACKAGE_CATEGORIES_category[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGE_ID_LIST
-// ====================================================
-
-export interface GET_PROGRAM_PACKAGE_ID_LIST_program_package {
-  __typename: "program_package";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAM_PACKAGE_ID_LIST {
-  /**
-   * fetch data from the table: "program_package"
-   */
-  program_package: GET_PROGRAM_PACKAGE_ID_LIST_program_package[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PERPETUAL_PLAN
 // ====================================================
 
@@ -5645,6 +5601,50 @@ export interface UPDATE_PROGRAM_PACKAGE_COVERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_CATEGORIES
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_PROGRAM_PACKAGE_CATEGORIES_category[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_ID_LIST
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_ID_LIST_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_ID_LIST {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PROGRAM_PACKAGE_ID_LIST_program_package[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_DESCRIPTION
 // ====================================================
 
@@ -5833,6 +5833,32 @@ export interface PUBLISH_PROGRAM_PACKAGE {
 export interface PUBLISH_PROGRAM_PACKAGEVariables {
   programPackageId: any;
   publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PUBLISHED_PROGRAM_PACKAGE
+// ====================================================
+
+export interface GET_PUBLISHED_PROGRAM_PACKAGE_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PUBLISHED_PROGRAM_PACKAGE {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PUBLISHED_PROGRAM_PACKAGE_program_package[];
+}
+
+export interface GET_PUBLISHED_PROGRAM_PACKAGEVariables {
+  condition: program_package_bool_exp;
 }
 
 /* tslint:disable */
@@ -15749,6 +15775,213 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_EDITORS
+// ====================================================
+
+export interface GET_EDITORS_member {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_EDITORS {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_EDITORS_member[];
+}
+
+export interface GET_EDITORSVariables {
+  memberIds?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS
+// ====================================================
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member_member_properties {
+  __typename: "member_property";
+  property_id: any;
+  value: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member_member_properties[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member_member_properties {
+  __typename: "member_property";
+  property_id: any;
+  value: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member_member_properties[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories {
+  __typename: "program_package_category";
+  /**
+   * An object relationship
+   */
+  category: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories_category;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_editors {
+  __typename: "program_editor";
+  member_id: string | null;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_progress {
+  __typename: "program_content_progress";
+  member_id: string;
+  progress: any;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_body {
+  __typename: "program_content_body";
+  type: string | null;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents {
+  __typename: "program_content";
+  title: string;
+  /**
+   * sec
+   */
+  duration: any | null;
+  metadata: any | null;
+  /**
+   * An array relationship
+   */
+  program_content_progress: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_progress[];
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_body;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections {
+  __typename: "program_content_section";
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_contents: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program {
+  __typename: "program";
+  title: string;
+  /**
+   * An array relationship
+   */
+  editors: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_editors[];
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs {
+  __typename: "program_package_program";
+  /**
+   * An object relationship
+   */
+  program: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package {
+  __typename: "program_package";
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_package_categories: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories[];
+  /**
+   * An array relationship
+   */
+  program_package_programs: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan {
+  __typename: "program_package_plan";
+  /**
+   * An object relationship
+   */
+  program_package: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment {
+  __typename: "program_package_plan_enrollment";
+  /**
+   * An object relationship
+   */
+  member: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member | null;
+  /**
+   * An object relationship
+   */
+  program_package_plan: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan | null;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_property[];
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member[];
+  /**
+   * fetch data from the table: "program_package_plan_enrollment"
+   */
+  program_package_plan_enrollment: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESSVariables {
+  programPackageCondition?: program_package_bool_exp | null;
+  memberCondition?: member_bool_exp | null;
+  startedAt?: any | null;
+  endedAt?: any | null;
 }
 
 /* tslint:disable */
