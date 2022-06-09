@@ -1,10 +1,10 @@
 import { ControlType, EditorState } from 'braft-editor'
+import StyledBraftEditor from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { v4 as uuid } from 'uuid'
 import { uploadFile } from '../../helpers'
-import StyledBraftEditor from '../common/StyledBraftEditor'
 
 const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
   if (context === 'braft-editor') {

@@ -1,10 +1,10 @@
 import Icon from '@ant-design/icons'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MembershipCard from './MembershipCard'
-import { BraftContent } from './StyledBraftEditor'
 
 const messages = defineMessages({
   noPeriod: { id: 'common.period.no', defaultMessage: '無使用期限' },

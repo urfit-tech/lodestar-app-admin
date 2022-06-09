@@ -1,5 +1,6 @@
 import { DeleteOutlined } from '@ant-design/icons'
 import { Select } from 'antd'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { move } from 'ramda'
 import React, { useRef } from 'react'
 import { useIntl } from 'react-intl'
@@ -7,7 +8,6 @@ import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import DraggableItem from './DraggableItem'
-import { BraftContent } from './StyledBraftEditor'
 
 const StyledSelect = styled(Select)`
   display: inline-flex;

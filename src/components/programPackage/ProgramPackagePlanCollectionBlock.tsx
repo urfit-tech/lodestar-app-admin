@@ -2,6 +2,7 @@ import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Popover, Tag } from 'antd'
 import gql from 'graphql-tag'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
@@ -19,7 +20,6 @@ import PositionAdminLayout, {
   OverlayWrapper,
 } from '../admin/PositionAdminLayout'
 import ProductSkuModal from '../common/ProductSkuModal'
-import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 
 const messages = defineMessages({

@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Divider, Tag } from 'antd'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -9,7 +10,6 @@ import { activityMessages, commonMessages } from '../../helpers/translation'
 import { useCurrency } from '../../hooks/currency'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { ActivityTicketProps, ActivityTicketSessionProps } from '../../types/activity'
-import { BraftContent } from '../common/StyledBraftEditor'
 
 const StyledWrapper = styled.div`
   padding: 1.5rem;

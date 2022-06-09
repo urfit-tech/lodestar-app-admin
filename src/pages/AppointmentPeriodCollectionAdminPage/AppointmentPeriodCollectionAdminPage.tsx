@@ -78,10 +78,16 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
       <StyledFilterBlock className="d-flex">
         {permissions.APPOINTMENT_PERIOD_ADMIN && (
           <Select<string>
+            showSearch
             value={selectedCreatorId}
             onChange={(value: string) => setSelectedCreatorId?.(value)}
             className="mr-3"
             style={{ width: '100%', maxWidth: '15rem' }}
+            filterOption={(input, option) =>
+              option?.props?.children
+                ? (option.props.children as string).toLowerCase().indexOf(input.toLowerCase()) >= 0
+                : true
+            }
           >
             <Select.Option value="">
               {formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.allInstructors)}
