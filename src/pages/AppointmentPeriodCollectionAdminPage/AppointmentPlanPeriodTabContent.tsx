@@ -31,7 +31,7 @@ const AppointmentPlanPeriodTabContent: React.FC<{
   } = useAppointmentEnrollmentCollection(tabKey, selectedCreatorId, startedAt, endedAt)
   const [isLoading, setIsLoading] = useState(false)
 
-  if (moment(endedAt).diff(moment(startedAt), 'days') > 90) {
+  if (moment(endedAt).diff(moment(startedAt), 'months') >= 1) {
     return (
       <StyledDateRangeWarning>
         {formatMessage(pageMessages.AppointmentPeriodCollectionAdminPage.dateRangeWarning)}
