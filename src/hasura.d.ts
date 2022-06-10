@@ -8007,6 +8007,35 @@ export interface INSERT_APPOINTMENT_SCHEDULESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: CANCEL_APPOINTMENT
+// ====================================================
+
+export interface CANCEL_APPOINTMENT_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CANCEL_APPOINTMENT {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: CANCEL_APPOINTMENT_update_order_product | null;
+}
+
+export interface CANCEL_APPOINTMENTVariables {
+  orderProductId: any;
+  data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APP_PAGE
 // ====================================================
 
