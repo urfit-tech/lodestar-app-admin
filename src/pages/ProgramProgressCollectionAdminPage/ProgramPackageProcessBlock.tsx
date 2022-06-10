@@ -29,17 +29,12 @@ const ProgramPackageProcessBlock: React.VFC = () => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
-  const [startedAt, setStartedAt] = useState<Date | null>(
-    moment().startOf('month').startOf('minute').subtract(3, 'months').toDate(),
-  )
+  const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('month').startOf('minute').toDate())
   const [endedAt, setEndedAt] = useState<Date | null>(moment().endOf('month').startOf('minute').toDate())
   const [programPackageFilter, setProgramPackageFilter] = useState<ProgramPackageFilter>({ type: 'all' })
   const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'enrolledMember' })
 
   const handleExport = () => {
-    if (moment(endedAt).diff(moment(startedAt), 'months') > 3) {
-      return message.warning(formatMessage(pageMessages.ProgramPackageProcessBlock.dateRangeWarning))
-    }
     setLoading(true)
 
     apolloClient
@@ -169,16 +164,8 @@ const ProgramPackageProcessBlock: React.VFC = () => {
   }
 
   const handleRangePickerChange = (v: RangeValue<moment.Moment>) => {
-    const pickStartedAt = moment(v?.[0])
-    const pickEndedAt = moment(v?.[1])
-    const diffMonths = pickEndedAt?.diff(pickStartedAt, 'months')
-
     v && v[0] && setStartedAt(v?.[0].startOf('minute').toDate())
     v && v[1] && setEndedAt(v[1].startOf('minute').toDate())
-
-    if (diffMonths > 3) {
-      message.warning(formatMessage(pageMessages.ProgramPackageProcessBlock.dateRangeWarning))
-    }
   }
 
   return (

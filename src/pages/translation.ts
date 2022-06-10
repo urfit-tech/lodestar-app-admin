@@ -118,10 +118,6 @@ const pageMessages = {
       id: 'page.ProgramPackageProcessBlock.chooseProgramPackageCategory',
       defaultMessage: '選擇課程組合分類',
     },
-    dateRangeWarning: {
-      id: 'page.ProgramPackageProcessBlock.dateRangeWarning',
-      defaultMessage: '請選擇時間區間三個月以內',
-    },
     selectedPackageCategory: {
       id: 'page.ProgramPackageProcessBlock.selectedPackageCategory',
       defaultMessage: '指定組合分類',
