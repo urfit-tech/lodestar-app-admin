@@ -15818,23 +15818,6 @@ export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_property {
   name: string;
 }
 
-export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member_member_properties {
-  __typename: "member_property";
-  property_id: any;
-  value: string;
-}
-
-export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-  /**
-   * An array relationship
-   */
-  member_properties: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member_member_properties[];
-}
-
 export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member_member_properties {
   __typename: "member_property";
   property_id: any;
@@ -15876,11 +15859,6 @@ export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_p
   progress: any;
 }
 
-export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_body {
-  __typename: "program_content_body";
-  type: string | null;
-}
-
 export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents {
   __typename: "program_content";
   title: string;
@@ -15888,15 +15866,10 @@ export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_p
    * sec
    */
   duration: any | null;
-  metadata: any | null;
   /**
    * An array relationship
    */
   program_content_progress: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_progress[];
-  /**
-   * An object relationship
-   */
-  program_content_body: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_body;
 }
 
 export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections {
@@ -15967,10 +15940,6 @@ export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS {
    * fetch data from the table: "property"
    */
   property: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_property[];
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_member[];
   /**
    * fetch data from the table: "program_package_plan_enrollment"
    */

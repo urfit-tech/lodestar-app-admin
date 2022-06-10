@@ -12,7 +12,7 @@ import MemberPropertySelector from '../../components/member/MemberPropertySelect
 import ProgramPackageCategorySelect from '../../components/programPackage/ProgramPackageCategorySelect'
 import { OwnedProgramPackageSelector } from '../../components/programPackage/ProgramPackageSelector'
 import hasura from '../../hasura'
-import { downloadCSV, stableSort, toCSV } from '../../helpers'
+import { downloadCSV, toCSV } from '../../helpers'
 import pageMessages from '../translation'
 
 type ProgramPackageFilter =
@@ -51,7 +51,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
         variables: {
           programPackageCondition:
             programPackageFilter.type === 'all'
-              ? undefined
+              ? {}
               : programPackageFilter.type === 'selectedProgramPackage'
               ? {
                   id: { _in: programPackageFilter.programPackageIds },
@@ -60,10 +60,10 @@ const ProgramPackageProcessBlock: React.VFC = () => {
               ? {
                   program_package_categories: { category_id: { _in: programPackageFilter.categoryIds } },
                 }
-              : undefined,
+              : {},
           memberCondition:
             memberFilter.type === 'enrolledMember'
-              ? undefined
+              ? {}
               : memberFilter.type === 'selectedMember'
               ? {
                   id: { _in: memberFilter.memberIds },
@@ -75,8 +75,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
                     value: { _ilike: `%${memberFilter.valueLike}%` },
                   },
                 }
-              : undefined,
-
+              : {},
           startedAt,
           endedAt,
         },
@@ -106,19 +105,18 @@ const ProgramPackageProcessBlock: React.VFC = () => {
             ),
           ),
         )
-        let editorNames: any
+        let editorNames: { [key: string]: string } = {}
         await apolloClient
           .query<hasura.GET_EDITORS, hasura.GET_EDITORSVariables>({
             query: GET_EDITORS,
             variables: { memberIds: editors },
           })
           .then(({ data }) => {
-            editorNames = data.member.map(v => ({
-              [v.id]: v.name,
-            }))
+            editorNames = data.member.reduce((accumulator, value) => {
+              return { ...accumulator, [value.id]: value.name }
+            }, {})
           })
           .catch(error => message.error(error))
-
         data.program_package_plan_enrollment.forEach(pe => {
           const programPackageTitle = pe.program_package_plan?.program_package.title || ''
           const categories =
@@ -127,16 +125,20 @@ const ProgramPackageProcessBlock: React.VFC = () => {
               .join(',') || ''
           pe.program_package_plan?.program_package.program_package_programs.forEach(ppp => {
             const programTitle = ppp.program.title
-            const editors = ppp.program.editors.map(e => editorNames[e?.member_id || '']).join(',')
+            const editors = uniq(ppp.program.editors)
+              .map(e => editorNames[e?.member_id || ''])
+              .join(',')
             ppp.program.program_content_sections.forEach(pcs => {
               const programContentSectionTitle = pcs.title
               pcs.program_contents.forEach(pc => {
                 const programContentTitle = pc.title
                 const programContentDuration = pc.duration
-                data.member.forEach(m => {
-                  const memberName = m.name
-                  const memberEmail = m.email
-                  const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
+                data.program_package_plan_enrollment.forEach(pe => {
+                  const memberName = pe.member?.name || ''
+                  const memberEmail = pe.member?.email || ''
+                  const memberProgramContentProgress = pc.program_content_progress.find(
+                    pcp => pcp.member_id === pe.member?.id,
+                  )
                   const watchedProgress = memberProgramContentProgress?.progress || 0
                   const watchedDuration = programContentDuration * watchedProgress
                   rows.push([
@@ -148,7 +150,9 @@ const ProgramPackageProcessBlock: React.VFC = () => {
                     editors,
                     memberName,
                     memberEmail,
-                    ...data.property.map(v => m.member_properties.find(mp => mp.property_id === v.id)?.value || ''),
+                    ...data.property.map(
+                      v => pe.member?.member_properties.find(mp => mp.property_id === v.id)?.value || '',
+                    ),
                     Math.ceil(Number(watchedDuration) / 60).toString(),
                   ])
                 })
@@ -156,12 +160,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
             })
           })
         })
-        const memberBaseRows = stableSort(rows, (a, b) => {
-          if (a[7] > b[7]) return 1
-          else if (a[7] < b[7]) return -1
-          else return 0
-        })
-        downloadCSV('learning_program_package_' + moment().format('MMDDSSS'), toCSV(memberBaseRows))
+        downloadCSV('learning_program_package_' + moment().format('MMDDSSS'), toCSV(rows))
       })
       .catch(error => {
         message.error(error)
@@ -313,7 +312,9 @@ const ProgramPackageProcessBlock: React.VFC = () => {
       <Form.Item
         label={formatMessage(pageMessages['*'].date)}
         extra={
-          <span style={{ fontSize: '14px' }}>{formatMessage(pageMessages.ProgramProcessBlock.lastUpdatedAtText)}</span>
+          <span style={{ fontSize: '14px' }}>
+            {formatMessage(pageMessages.ProgramPackageProcessBlock.rangePickText)}
+          </span>
         }
       >
         <DatePicker.RangePicker
@@ -331,6 +332,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
     </Form>
   )
 }
+
 const GET_EDITORS = gql`
   query GET_EDITORS($memberIds: [String!]) {
     member(where: { id: { _in: $memberIds } }) {
@@ -349,15 +351,6 @@ const GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = gql`
     property(where: { type: { _eq: "member" } }) {
       id
       name
-    }
-    member(where: $memberCondition) {
-      id
-      name
-      email
-      member_properties {
-        property_id
-        value
-      }
     }
     program_package_plan_enrollment(
       where: { program_package_plan: { program_package: $programPackageCondition }, member: $memberCondition }
@@ -390,24 +383,9 @@ const GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = gql`
                 program_contents(order_by: { position: asc }) {
                   title
                   duration
-                  metadata
-                  #   practices(where: { updated_at: { _lte: $endedAt, _gte: $startedAt } }) {
-                  #     member_id
-                  #   }
-                  #   exercises(where: { updated_at: { _lte: $endedAt, _gte: $startedAt } }) {
-                  #     id
-                  #     member_id
-                  #     answer
-                  #     updated_at
-                  #   }
                   program_content_progress(where: { updated_at: { _lte: $endedAt, _gte: $startedAt } }) {
                     member_id
                     progress
-                    # created_at
-                    # updated_at
-                  }
-                  program_content_body {
-                    type
                   }
                 }
               }

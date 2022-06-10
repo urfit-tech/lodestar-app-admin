@@ -147,6 +147,10 @@ const pageMessages = {
       id: 'page.ProgramPackageProcessBlock.programPackageCategories',
       defaultMessage: '課程組合分類',
     },
+    rangePickText: {
+      id: 'page.ProgramPackageProcessBlock.rangePickText',
+      defaultMessage: '計算此日期區間的學習狀況',
+    },
   }),
 }
 
