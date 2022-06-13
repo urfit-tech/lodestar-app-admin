@@ -15,7 +15,7 @@ import VoucherPlanCollectionBlock from './VoucherPlanCollectionBlock'
 const VoucherPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { permissions } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
   const [searchText, setSearchText] = useState('')
   const [stateCode, setStateCode] = useState(Math.random())
 
@@ -32,6 +32,11 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
         ],
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
         voucher_codes: { remaining: { _nin: [0] } },
+        editor_id: permissions.VOUCHER_PLAN_ADMIN
+          ? undefined
+          : permissions.VOUCHER_PLAN_NORMAL
+          ? { _eq: currentMemberId }
+          : { _eq: '' },
       },
     },
     {
@@ -40,6 +45,11 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
       condition: {
         _or: [{ voucher_codes: { remaining: { _eq: 0 } } }, { ended_at: { _lt: 'now()' } }],
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        editor_id: permissions.VOUCHER_PLAN_ADMIN
+          ? undefined
+          : permissions.VOUCHER_PLAN_NORMAL
+          ? { _eq: currentMemberId }
+          : { _eq: '' },
       },
     },
   ]
@@ -48,7 +58,7 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
     return <Skeleton active />
   }
 
-  if (!enabledModules.voucher || !permissions.VOUCHER_PLAN_ADMIN) {
+  if (!enabledModules.voucher || (!permissions.VOUCHER_PLAN_ADMIN && !permissions.VOUCHER_PLAN_NORMAL)) {
     return <ForbiddenPage />
   }
 

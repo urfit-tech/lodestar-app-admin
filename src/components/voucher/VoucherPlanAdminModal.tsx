@@ -22,6 +22,7 @@ export type VoucherPlanFields = {
   description: string
   isTransferable: boolean
   sale?: { amount: number; price: number }
+  editorId: string
 }
 
 const VoucherPlanAdminModal: React.FC<

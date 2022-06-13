@@ -329,18 +329,24 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       name: formatMessage(adminMessages.AdminMenu.shipping),
     },
     {
-      permissionIsAllowed: Boolean(permissions.COUPON_PLAN_ADMIN) || Boolean(permissions.VOUCHER_PLAN_ADMIN),
+      permissionIsAllowed:
+        Boolean(permissions.COUPON_PLAN_ADMIN) ||
+        Boolean(permissions.COUPON_PLAN_NORMAL) ||
+        Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
+        Boolean(permissions.VOUCHER_PLAN_NORMAL),
       key: 'promotion_admin',
       icon: () => <DiscountIcon />,
       name: formatMessage(adminMessages.AdminMenu.promotionAdmin),
       subMenuItems: [
         {
-          permissionIsAllowed: Boolean(permissions.COUPON_PLAN_ADMIN),
+          permissionIsAllowed: Boolean(permissions.COUPON_PLAN_ADMIN) || Boolean(permissions.COUPON_PLAN_NORMAL),
           key: 'coupon_plans',
           name: formatMessage(adminMessages.AdminMenu.coupons),
         },
         {
-          permissionIsAllowed: !!enabledModules.voucher && Boolean(permissions.VOUCHER_PLAN_ADMIN),
+          permissionIsAllowed:
+            !!enabledModules.voucher &&
+            (Boolean(permissions.VOUCHER_PLAN_ADMIN) || Boolean(permissions.VOUCHER_PLAN_NORMAL)),
           key: 'voucher_plans',
           name: formatMessage(adminMessages.AdminMenu.vouchers),
         },

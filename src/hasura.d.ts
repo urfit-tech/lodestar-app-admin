@@ -2357,6 +2357,7 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_sessi
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_session_tickets {
   __typename: "activity_session_ticket";
+  id: any;
   /**
    * An object relationship
    */
@@ -8743,6 +8744,7 @@ export interface INSERT_VOUCHER_PLANVariables {
   isTransferable?: boolean | null;
   saleAmount?: number | null;
   salePrice?: any | null;
+  editorId?: string | null;
 }
 
 /* tslint:disable */

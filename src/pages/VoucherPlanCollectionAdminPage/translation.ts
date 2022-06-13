@@ -22,6 +22,10 @@ const VoucherPlanCollectionAdminPageMessages = {
       id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.ditVoucherPlan',
       defaultMessage: '編輯兌換方案',
     },
+    emptyVoucherPlan: {
+      id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.emptyVoucherPlan',
+      defaultMessage: '無任何兌換方案',
+    },
   }),
   VoucherPlanAdminModal: defineMessages({
     voucherCodes: { id: 'VoucherPlanCollectionAdminPage.VoucherPlanAdminModal.voucherCodes', defaultMessage: '兌換碼' },

@@ -141,12 +141,14 @@ const formMessages = {
 
     // coupon
     COUPON_PLAN_ADMIN: { id: 'form.PermissionGroup.COUPON_PLAN_ADMIN', defaultMessage: '所有折價方案功能' },
+    COUPON_PLAN_NORMAL: { id: 'form.PermissionGroup.COUPON_PLAN_NORMAL', defaultMessage: '個人折價方案功能' },
     COUPON_PLAN_READ: { id: 'form.PermissionGroup.COUPON_PLAN_READ', defaultMessage: '查看折價方案' },
     COUPON_PLAN_WRITE: { id: 'form.PermissionGroup.COUPON_PLAN_WRITE', defaultMessage: '編寫折價方案' },
     COUPON_CODE_EXPORT: { id: 'form.PermissionGroup.COUPON_CODE_EXPORT', defaultMessage: '匯出折扣碼' },
 
     // voucher
     VOUCHER_PLAN_ADMIN: { id: 'form.PermissionGroup.VOUCHER_PLAN_ADMIN', defaultMessage: '所有兌換方案功能' },
+    VOUCHER_PLAN_NORMAL: { id: 'form.PermissionGroup.VOUCHER_PLAN_NORMAL', defaultMessage: '個人兌換方案功能' },
     VOUCHER_PLAN_READ: { id: 'form.PermissionGroup.VOUCHER_PLAN_READ', defaultMessage: '查看兌換方案' },
     VOUCHER_PLAN_WRITE: { id: 'form.PermissionGroup.VOUCHER_PLAN_WRITE', defaultMessage: '編寫兌換方案' },
     VOUCHER_CODE_EXPORT: { id: 'form.PermissionGroup.VOUCHER_CODE_EXPORT', defaultMessage: '匯出兌換碼' },
