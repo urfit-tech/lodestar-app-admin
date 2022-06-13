@@ -6,7 +6,7 @@ import VoucherPlanAdminModal from '../../components/voucher/VoucherPlanAdminModa
 import VoucherPlanCard from '../../components/voucher/VoucherPlanCard'
 import hasura from '../../hasura'
 import { useVoucherPlanCollection } from '../../hooks/checkout'
-import VoucherPlanCollectionAdminPageMessages from './translation'
+import pageMessages from '../translation'
 
 const VoucherPlanCollectionBlock: React.VFC<{
   available: boolean
@@ -27,14 +27,14 @@ const VoucherPlanCollectionBlock: React.VFC<{
   }
 
   if (error) {
-    return <div>{formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanCollectionBlock.fetchDataError)}</div>
+    return <div>{formatMessage(pageMessages.VoucherPlanCollectionBlock.fetchDataError)}</div>
   }
 
   return (
     <>
       {voucherPlans.length === 0 ? (
         <div className="d-flex justify-content-center algin-item-center">
-          {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}
+          {formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}
         </div>
       ) : (
         <div className="row">
@@ -61,15 +61,11 @@ const VoucherPlanCollectionBlock: React.VFC<{
                             <VoucherPlanAdminModal
                               renderTrigger={({ setVisible }) => (
                                 <span onClick={() => setVisible(true)}>
-                                  {formatMessage(
-                                    VoucherPlanCollectionAdminPageMessages.VoucherPlanCollectionBlock.edit,
-                                  )}
+                                  {formatMessage(pageMessages.VoucherPlanCollectionBlock.edit)}
                                 </span>
                               )}
                               icon={<EditOutlined />}
-                              title={formatMessage(
-                                VoucherPlanCollectionAdminPageMessages.VoucherPlanCollectionBlock.editVoucherPlan,
-                              )}
+                              title={formatMessage(pageMessages.VoucherPlanCollectionBlock.editVoucherPlan)}
                               voucherPlan={voucherPlan}
                               onRefetch={refetch}
                             />
@@ -94,7 +90,7 @@ const VoucherPlanCollectionBlock: React.VFC<{
                   loadMoreVoucherPlans()?.finally(() => setLoadingMoreVoucherPlans(false))
                 }}
               >
-                {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanCollectionBlock.showMore)}
+                {formatMessage(pageMessages.VoucherPlanCollectionBlock.showMore)}
               </Button>
             </div>
           )}
