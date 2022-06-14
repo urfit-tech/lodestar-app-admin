@@ -2,6 +2,7 @@ import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Skeleton } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { EmptyBlock } from '../../components/admin'
 import VoucherPlanAdminModal from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanCard from '../../components/voucher/VoucherPlanCard'
 import hasura from '../../hasura'
@@ -33,9 +34,7 @@ const VoucherPlanCollectionBlock: React.VFC<{
   return (
     <>
       {voucherPlans.length === 0 ? (
-        <div className="d-flex justify-content-center algin-item-center">
-          {formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}
-        </div>
+        <EmptyBlock>{formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}</EmptyBlock>
       ) : (
         <div className="row">
           {voucherPlans

@@ -13,6 +13,10 @@ const CouponPlanCollectionAdminPageMessages = {
   }),
   CouponCollectionBlock: defineMessages({
     showMore: { id: 'CouponPlanCollectionAdminPage.CouponCollectionBlock.showMore', defaultMessage: '顯示更多' },
+    emptyCouponPlan: {
+      id: 'CouponPlanCollectionAdminPage.CouponCollectionBlock.emptyCouponPlan',
+      defaultMessage: '無任何折價方案',
+    },
   }),
 }
 export default CouponPlanCollectionAdminPageMessages

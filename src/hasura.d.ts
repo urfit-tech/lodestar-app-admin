@@ -2017,6 +2017,7 @@ export interface INSERT_COUPON_PLANVariables {
   type?: number | null;
   amount?: any | null;
   couponPlanProduct: coupon_plan_product_insert_input[];
+  editorId?: string | null;
 }
 
 /* tslint:disable */
