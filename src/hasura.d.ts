@@ -1655,7 +1655,6 @@ export interface GET_CATEGORY_LIST {
 }
 
 export interface GET_CATEGORY_LISTVariables {
-  appId: string;
   class: string;
 }
 
@@ -16152,7 +16151,6 @@ export interface GET_ASSIGNED_LEADS {
 }
 
 export interface GET_ASSIGNED_LEADSVariables {
-  appId: string;
   memberIds?: string[] | null;
   assignedAtCondition?: timestamptz_comparison_exp | null;
 }
@@ -16182,7 +16180,6 @@ export interface UPDATE_LEAD_MANAGER {
 }
 
 export interface UPDATE_LEAD_MANAGERVariables {
-  appId: string;
   memberIds?: string[] | null;
   managerId?: string | null;
 }
@@ -17003,6 +17000,7 @@ export enum coupon_plan_update_column {
   constraint = "constraint",
   created_at = "created_at",
   description = "description",
+  editor_id = "editor_id",
   ended_at = "ended_at",
   id = "id",
   scope = "scope",
@@ -23547,6 +23545,7 @@ export interface coupon_plan_bool_exp {
   coupon_plan_products?: coupon_plan_product_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
+  editor_id?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   scope?: jsonb_comparison_exp | null;
@@ -23566,6 +23565,7 @@ export interface coupon_plan_insert_input {
   coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
   created_at?: any | null;
   description?: string | null;
+  editor_id?: string | null;
   ended_at?: any | null;
   id?: any | null;
   scope?: any | null;
@@ -23602,6 +23602,7 @@ export interface coupon_plan_order_by {
   coupon_plan_products_aggregate?: coupon_plan_product_aggregate_order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
+  editor_id?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   scope?: order_by | null;
