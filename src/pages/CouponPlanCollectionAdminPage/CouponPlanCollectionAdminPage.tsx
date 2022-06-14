@@ -9,8 +9,8 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import { DiscountIcon } from '../../images/icon'
 import ForbiddenPage from '../ForbiddenPage'
 import LoadingPage from '../LoadingPage'
+import pageMessages from '../translation'
 import CouponPlanCollectionBlock from './CouponPlanCollectionBlock'
-import CouponPlanCollectionAdminPageMessages from './translation'
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -21,7 +21,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
   const tabContents = [
     {
       key: 'available',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].available),
+      tab: formatMessage(pageMessages['*'].available),
       condition: {
         _or: [
           { started_at: { _lte: 'now()' }, ended_at: { _gte: 'now()' } },
@@ -39,7 +39,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
     },
     {
       key: 'notYet',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].notYet),
+      tab: formatMessage(pageMessages['*'].notYet),
       condition: {
         started_at: { _gt: 'now()' },
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
@@ -52,7 +52,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
     },
     {
       key: 'unavailable',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].unavailable),
+      tab: formatMessage(pageMessages['*'].unavailable),
       condition: {
         ended_at: { _lt: 'now()' },
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
@@ -77,7 +77,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <DiscountIcon className="mr-3" />
-        <span>{formatMessage(CouponPlanCollectionAdminPageMessages['*'].coupons)}</span>
+        <span>{formatMessage(pageMessages['*'].coupons)}</span>
       </AdminPageTitle>
 
       <div className="row mb-5">
@@ -85,11 +85,11 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
           <CouponPlanAdminModal
             renderTrigger={({ setVisible }) => (
               <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(CouponPlanCollectionAdminPageMessages['*'].createCouponPlan)}
+                {formatMessage(pageMessages['*'].createCouponPlan)}
               </Button>
             )}
             icon={<FileAddOutlined />}
-            title={formatMessage(CouponPlanCollectionAdminPageMessages['*'].createCouponPlan)}
+            title={formatMessage(pageMessages['*'].createCouponPlan)}
             onRefetch={() => setStateCode(Math.random())}
           />
         </div>

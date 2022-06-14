@@ -2,6 +2,10 @@ import { defineMessages } from 'react-intl'
 
 const pageMessages = {
   '*': defineMessages({
+    coupons: { id: 'page.*.couponPlans', defaultMessage: '折價方案' },
+    createCouponPlan: { id: 'page.*.createCouponPlan', defaultMessage: '建立折價方案' },
+    editCouponPlan: { id: 'page.*.editCouponPlan', defaultMessage: '編輯折價方案' },
+    notYet: { id: 'page.*.notYet', defaultMessage: '未啟用' },
     edit: { id: 'page.*.edit', defaultMessage: '編輯' },
     showMore: {
       id: 'page.*.showMore',
@@ -42,18 +46,18 @@ const pageMessages = {
     createVoucherPlan: { id: 'page.*.createVoucherPlan', defaultMessage: '建立兌換方案' },
   }),
   ProjectAdminPage: defineMessages({
-    settings: { id: 'page.*.settings', defaultMessage: '專案設定' },
-    projectIntroduction: { id: 'project.*.projectIntroduction', defaultMessage: '專案介紹' },
+    settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
+    projectIntroduction: { id: 'project.ProjectAdminPage.projectIntroduction', defaultMessage: '專案介紹' },
   }),
   ProjectFundingPage: defineMessages({
-    projectTitle: { id: 'page.*.projectTitle', defaultMessage: '專案名稱' },
-    sponsor: { id: 'page.*.sponsor', defaultMessage: '發起者' },
-    unnamedProject: { id: 'page.*.unnamedProject', defaultMessage: '未命名專案' },
+    projectTitle: { id: 'page.ProjectFundingPage.projectTitle', defaultMessage: '專案名稱' },
+    sponsor: { id: 'page.ProjectFundingPage.sponsor', defaultMessage: '發起者' },
+    unnamedProject: { id: 'page.ProjectFundingPage.unnamedProject', defaultMessage: '未命名專案' },
   }),
   ProjectPreOrderPage: defineMessages({
-    projectTitle: { id: 'page.*.projectTitle', defaultMessage: '專案名稱' },
-    sponsor: { id: 'page.*.sponsor', defaultMessage: '發起者' },
-    unnamedProject: { id: 'page.*.unnamedProject', defaultMessage: '未命名專案' },
+    projectTitle: { id: 'page.ProjectPreOrderPage.projectTitle', defaultMessage: '專案名稱' },
+    sponsor: { id: 'page.ProjectPreOrderPage.sponsor', defaultMessage: '發起者' },
+    unnamedProject: { id: 'page.ProjectPreOrderPage.unnamedProject', defaultMessage: '未命名專案' },
   }),
   ProgramProgressCollectionAdminPage: defineMessages({
     programProgress: { id: 'page.ProgramProgressCollectionAdminPage.programProgress', defaultMessage: '學習進度' },
@@ -118,7 +122,10 @@ const pageMessages = {
     },
   }),
   ProgramPackageProcessBlock: defineMessages({
-    selectedProgramPackage: { id: 'page.selectedProgramPackage', defaultMessage: '指定課程組合' },
+    selectedProgramPackage: {
+      id: 'page.ProgramPackageProcessBlock.selectedProgramPackage',
+      defaultMessage: '指定課程組合',
+    },
     chooseProgramPackageCategory: {
       id: 'page.ProgramPackageProcessBlock.chooseProgramPackageCategory',
       defaultMessage: '選擇課程組合分類',
@@ -131,13 +138,13 @@ const pageMessages = {
       id: 'page.ProgramPackageProcessBlock.allProgramPackage',
       defaultMessage: '全部課程組合',
     },
-    chooseProgramPackage: { id: 'page.ProgramProcessBlock.chooseProgramPackage', defaultMessage: '選擇課程' },
+    chooseProgramPackage: { id: 'page.ProgramPackageProcessBlock.chooseProgramPackage', defaultMessage: '選擇課程' },
     instructorName: {
-      id: 'page.ProgramProcessBlock.instructorName',
+      id: 'page.ProgramPackageProcessBlock.instructorName',
       defaultMessage: '講師名稱',
     },
     minutes: {
-      id: 'page.ProgramProcessBlock.minutes',
+      id: 'page.ProgramPackageProcessBlock.minutes',
       defaultMessage: '分鐘數',
     },
     programPackageTitle: {
@@ -154,22 +161,28 @@ const pageMessages = {
     },
   }),
   VoucherPlanCollectionBlock: defineMessages({
-    edit: { id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.edit', defaultMessage: '編輯' },
+    edit: { id: 'page.VoucherPlanCollectionBlock.edit', defaultMessage: '編輯' },
     fetchDataError: {
-      id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.fetchDataError',
+      id: 'page.VoucherPlanCollectionBlock.fetchDataError',
       defaultMessage: '讀取錯誤',
     },
-    showMore: { id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.showMore', defaultMessage: '顯示更多' },
+    showMore: { id: 'page.VoucherPlanCollectionBlock.showMore', defaultMessage: '顯示更多' },
     editVoucherPlan: {
-      id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.ditVoucherPlan',
+      id: 'page.VoucherPlanCollectionBlock.ditVoucherPlan',
       defaultMessage: '編輯兌換方案',
     },
     emptyVoucherPlan: {
-      id: 'VoucherPlanCollectionAdminPage.VoucherPlanCollectionBlock.emptyVoucherPlan',
+      id: 'page.VoucherPlanCollectionBlock.emptyVoucherPlan',
       defaultMessage: '無任何兌換方案',
     },
   }),
-  VoucherPlanAdminModal: defineMessages({}),
+  CouponCollectionBlock: defineMessages({
+    showMore: { id: 'page.CouponCollectionBlock.showMore', defaultMessage: '顯示更多' },
+    emptyCouponPlan: {
+      id: 'page.CouponCollectionBlock.emptyCouponPlan',
+      defaultMessage: '無任何折價方案',
+    },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },

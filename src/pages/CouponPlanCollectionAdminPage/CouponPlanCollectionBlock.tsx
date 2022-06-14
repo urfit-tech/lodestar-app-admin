@@ -10,7 +10,7 @@ import CouponPlanAdminModal from '../../components/coupon/CouponPlanAdminModal'
 import CouponPlanDescriptionTabs from '../../components/coupon/CouponPlanDescriptionTabs'
 import hasura from '../../hasura'
 import { CouponPlanProps } from '../../types/checkout'
-import CouponPlanCollectionAdminPageMessages from './translation'
+import pageMessages from '../translation'
 
 const CouponCollectionBlock: React.VFC<{
   condition: hasura.GET_PREVIEW_COUPON_PLAN_COLLECTIONVariables['condition']
@@ -24,15 +24,13 @@ const CouponCollectionBlock: React.VFC<{
   if (loadingCouponPlans) return <Skeleton active />
 
   if (errorCouponPlans) {
-    return <div>{formatMessage(CouponPlanCollectionAdminPageMessages['*'].fetchDataError)}</div>
+    return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
   }
 
   return (
     <>
       {couponPlanPreviews.length === 0 ? (
-        <EmptyBlock>
-          {formatMessage(CouponPlanCollectionAdminPageMessages.CouponCollectionBlock.emptyCouponPlan)}
-        </EmptyBlock>
+        <EmptyBlock>{formatMessage(pageMessages.CouponCollectionBlock.emptyCouponPlan)}</EmptyBlock>
       ) : (
         <>
           <div className="row">
@@ -62,12 +60,10 @@ const CouponCollectionBlock: React.VFC<{
                           <Menu.Item>
                             <CouponPlanAdminModal
                               renderTrigger={({ setVisible }) => (
-                                <span onClick={() => setVisible(true)}>
-                                  {formatMessage(CouponPlanCollectionAdminPageMessages['*'].edit)}
-                                </span>
+                                <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
                               )}
                               icon={<EditOutlined />}
-                              title={formatMessage(CouponPlanCollectionAdminPageMessages['*'].editCouponPlan)}
+                              title={formatMessage(pageMessages['*'].editCouponPlan)}
                               couponPlan={couponPlan}
                               onRefetch={refetchCouponPlans}
                             />
@@ -91,7 +87,7 @@ const CouponCollectionBlock: React.VFC<{
                     loadMoreCouponPlans()?.finally(() => setLoading(false))
                   }}
                 >
-                  {formatMessage(CouponPlanCollectionAdminPageMessages.CouponCollectionBlock.showMore)}
+                  {formatMessage(pageMessages.CouponCollectionBlock.showMore)}
                 </Button>
               </div>
             )}
