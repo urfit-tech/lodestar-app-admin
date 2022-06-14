@@ -6564,7 +6564,7 @@ export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
   __typename: "order_log";
   id: string;
   /**
-   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
    */
   invoice: any;
 }
@@ -9122,7 +9122,7 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
   deliver_message: string | null;
   shipping: any | null;
   /**
-   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
    */
   invoice: any;
   /**
@@ -16246,36 +16246,38 @@ export interface GET_TODAY_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_CONTRACT_SALES
+// GraphQL query operation: GET_MEMBER_CONTRACT_LIST
 // ====================================================
 
-export interface GET_MEMBER_CONTRACT_SALES_order_executor_member {
+export interface GET_MEMBER_CONTRACT_LIST_order_executor_member {
   __typename: "member";
   id: string;
   name: string;
+  email: string;
+  app_id: string;
 }
 
-export interface GET_MEMBER_CONTRACT_SALES_order_executor {
+export interface GET_MEMBER_CONTRACT_LIST_order_executor {
   __typename: "order_executor";
   /**
    * An object relationship
    */
-  member: GET_MEMBER_CONTRACT_SALES_order_executor_member;
+  member: GET_MEMBER_CONTRACT_LIST_order_executor_member;
 }
 
-export interface GET_MEMBER_CONTRACT_SALES_member_contract_member {
+export interface GET_MEMBER_CONTRACT_LIST_member_contract_member {
   __typename: "member";
   id: string;
   name: string;
 }
 
-export interface GET_MEMBER_CONTRACT_SALES_member_contract_author {
+export interface GET_MEMBER_CONTRACT_LIST_member_contract_author {
   __typename: "member";
   id: string;
   name: string;
 }
 
-export interface GET_MEMBER_CONTRACT_SALES_member_contract {
+export interface GET_MEMBER_CONTRACT_LIST_member_contract {
   __typename: "member_contract";
   id: any;
   agreed_at: any | null;
@@ -16283,28 +16285,27 @@ export interface GET_MEMBER_CONTRACT_SALES_member_contract {
   /**
    * An object relationship
    */
-  member: GET_MEMBER_CONTRACT_SALES_member_contract_member;
+  member: GET_MEMBER_CONTRACT_LIST_member_contract_member;
   /**
    * An object relationship
    */
-  author: GET_MEMBER_CONTRACT_SALES_member_contract_author | null;
+  author: GET_MEMBER_CONTRACT_LIST_member_contract_author | null;
   options: any | null;
   values: any | null;
 }
 
-export interface GET_MEMBER_CONTRACT_SALES {
+export interface GET_MEMBER_CONTRACT_LIST {
   /**
    * fetch data from the table: "order_executor"
    */
-  order_executor: GET_MEMBER_CONTRACT_SALES_order_executor[];
+  order_executor: GET_MEMBER_CONTRACT_LIST_order_executor[];
   /**
    * fetch data from the table: "member_contract"
    */
-  member_contract: GET_MEMBER_CONTRACT_SALES_member_contract[];
+  member_contract: GET_MEMBER_CONTRACT_LIST_member_contract[];
 }
 
-export interface GET_MEMBER_CONTRACT_SALESVariables {
-  appId: string;
+export interface GET_MEMBER_CONTRACT_LISTVariables {
   startedAt: any;
   endedAt: any;
 }
@@ -17138,7 +17139,6 @@ export enum issue_constraint {
  * unique or primary key constraints on table "issue_reaction"
  */
 export enum issue_reaction_constraint {
-  issue_reaction_issue_id_member_id_key = "issue_reaction_issue_id_member_id_key",
   issue_reaction_pkey = "issue_reaction_pkey",
 }
 
@@ -17195,6 +17195,7 @@ export enum issue_update_column {
   created_at = "created_at",
   description = "description",
   id = "id",
+  is_public = "is_public",
   member_id = "member_id",
   solved_at = "solved_at",
   thread_id = "thread_id",
@@ -17998,6 +17999,7 @@ export enum payment_log_update_column {
   created_at = "created_at",
   custom_no = "custom_no",
   gateway = "gateway",
+  invoice = "invoice",
   invoice_issued_at = "invoice_issued_at",
   method = "method",
   no = "no",
@@ -19452,6 +19454,7 @@ export enum voucher_plan_update_column {
   app_id = "app_id",
   created_at = "created_at",
   description = "description",
+  editor_id = "editor_id",
   ended_at = "ended_at",
   id = "id",
   is_transferable = "is_transferable",
@@ -24279,6 +24282,7 @@ export interface issue_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_public?: Boolean_comparison_exp | null;
   issue_enrollment?: issue_enrollment_bool_exp | null;
   issue_reactions?: issue_reaction_bool_exp | null;
   issue_replies?: issue_reply_bool_exp | null;
@@ -24334,6 +24338,7 @@ export interface issue_insert_input {
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
+  is_public?: boolean | null;
   issue_enrollment?: issue_enrollment_obj_rel_insert_input | null;
   issue_reactions?: issue_reaction_arr_rel_insert_input | null;
   issue_replies?: issue_reply_arr_rel_insert_input | null;
@@ -29223,6 +29228,7 @@ export interface payment_log_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
+  invoice?: jsonb_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
   method?: String_comparison_exp | null;
   no?: String_comparison_exp | null;
@@ -29267,6 +29273,7 @@ export interface payment_log_insert_input {
   created_at?: any | null;
   custom_no?: string | null;
   gateway?: string | null;
+  invoice?: any | null;
   invoice_issued_at?: any | null;
   method?: string | null;
   no?: string | null;
@@ -30998,6 +31005,7 @@ export interface post_bool_exp {
   meta_tag?: jsonb_comparison_exp | null;
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
+  post_issue?: post_issue_bool_exp | null;
   post_merchandises?: post_merchandise_bool_exp | null;
   post_reaction?: post_reaction_bool_exp | null;
   post_roles?: post_role_bool_exp | null;
@@ -31070,6 +31078,7 @@ export interface post_insert_input {
   meta_tag?: any | null;
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
+  post_issue?: post_issue_arr_rel_insert_input | null;
   post_merchandises?: post_merchandise_arr_rel_insert_input | null;
   post_reaction?: post_reaction_arr_rel_insert_input | null;
   post_roles?: post_role_arr_rel_insert_input | null;
@@ -31080,6 +31089,36 @@ export interface post_insert_input {
   updated_at?: any | null;
   video_url?: string | null;
   views?: number | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "post_issue"
+ */
+export interface post_issue_arr_rel_insert_input {
+  data: post_issue_insert_input[];
+}
+
+/**
+ * Boolean expression to filter rows from the table "post_issue". All fields are combined with a logical 'AND'.
+ */
+export interface post_issue_bool_exp {
+  _and?: post_issue_bool_exp[] | null;
+  _not?: post_issue_bool_exp | null;
+  _or?: post_issue_bool_exp[] | null;
+  issue?: issue_bool_exp | null;
+  issue_id?: uuid_comparison_exp | null;
+  post?: post_bool_exp | null;
+  post_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "post_issue"
+ */
+export interface post_issue_insert_input {
+  issue?: issue_obj_rel_insert_input | null;
+  issue_id?: any | null;
+  post?: post_obj_rel_insert_input | null;
+  post_id?: any | null;
 }
 
 /**
@@ -37086,6 +37125,7 @@ export interface voucher_plan_bool_exp {
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
+  editor_id?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_transferable?: Boolean_comparison_exp | null;
@@ -37107,6 +37147,7 @@ export interface voucher_plan_insert_input {
   app_id?: string | null;
   created_at?: any | null;
   description?: string | null;
+  editor_id?: string | null;
   ended_at?: any | null;
   id?: any | null;
   is_transferable?: boolean | null;
@@ -37127,6 +37168,7 @@ export interface voucher_plan_max_order_by {
   app_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
+  editor_id?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;
@@ -37144,6 +37186,7 @@ export interface voucher_plan_min_order_by {
   app_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
+  editor_id?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
   product_quantity_limit?: order_by | null;

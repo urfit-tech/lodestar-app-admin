@@ -92,7 +92,7 @@ export const useSales = (salesId: string) => {
   }
 }
 
-export const useSalesLeads = (managerId: string) => {
+export const useSalesLeads = (managerId: string, leadFilter?: (lead: LeadProps) => boolean) => {
   const { id: appId } = useApp()
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
@@ -129,18 +129,19 @@ export const useSalesLeads = (managerId: string) => {
       : null
   }
 
-  const leads: LeadProps[] = sortBy(prop('id'))(data?.lead_status_new.map(convertToLead).filter(notEmpty) || [])
+  const totalLeads: LeadProps[] = sortBy(prop('id'))(data?.lead_status_new.map(convertToLead).filter(notEmpty) || [])
+  const filteredLeads = totalLeads.filter(lead => (leadFilter ? leadFilter(lead) : true))
   return {
     loading,
     error,
     refetch,
-    totalLeads: leads,
-    idledLeads: leads.filter(lead => lead.status === 'IDLED'),
-    contactedLeads: leads.filter(lead => lead.status === 'CONTACTED'),
-    invitedLeads: leads.filter(lead => lead?.status === 'INVITED'),
-    presentedLeads: leads.filter(lead => lead?.status === 'PRESENTED'),
-    paidLeads: leads.filter(lead => lead?.status === 'SIGNED'),
-    closedLeads: leads.filter(lead => lead?.status === 'CLOSED'),
+    totalLeads,
+    idledLeads: filteredLeads.filter(lead => lead.status === 'IDLED'),
+    contactedLeads: filteredLeads.filter(lead => lead.status === 'CONTACTED'),
+    invitedLeads: filteredLeads.filter(lead => lead?.status === 'INVITED'),
+    presentedLeads: filteredLeads.filter(lead => lead?.status === 'PRESENTED'),
+    paidLeads: filteredLeads.filter(lead => lead?.status === 'SIGNED'),
+    closedLeads: filteredLeads.filter(lead => lead?.status === 'CLOSED'),
   }
 }
 
