@@ -358,7 +358,7 @@ export const useMemberNotesAdmin = (
             ]
           : undefined,
     },
-    description: { _like: `%${keyword}%` },
+    description: keyword ? { _like: `%${keyword}%` } : undefined,
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_NOTES_ADMIN,
