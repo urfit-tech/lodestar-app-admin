@@ -2017,6 +2017,7 @@ export interface INSERT_COUPON_PLANVariables {
   type?: number | null;
   amount?: any | null;
   couponPlanProduct: coupon_plan_product_insert_input[];
+  editorId?: string | null;
 }
 
 /* tslint:disable */
@@ -2357,6 +2358,7 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_sessi
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_session_tickets {
   __typename: "activity_session_ticket";
+  id: any;
   /**
    * An object relationship
    */
@@ -8106,7 +8108,7 @@ export interface GET_APP_PAGE_COLLECTION {
 }
 
 export interface GET_APP_PAGE_COLLECTIONVariables {
-  appId: string;
+  condition: app_page_bool_exp;
 }
 
 /* tslint:disable */
@@ -8743,6 +8745,7 @@ export interface INSERT_VOUCHER_PLANVariables {
   isTransferable?: boolean | null;
   saleAmount?: number | null;
   salePrice?: any | null;
+  editorId?: string | null;
 }
 
 /* tslint:disable */
@@ -11363,56 +11366,26 @@ export interface GET_ORDER_LOG_STATUS {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_ORDER_LOG
+// GraphQL query operation: GET_ORDER_LOGS
 // ====================================================
 
-export interface GET_ALL_ORDER_LOG_order_log_aggregate_aggregate {
+export interface GET_ORDER_LOGS_order_log_aggregate_aggregate {
   __typename: "order_log_aggregate_fields";
   count: number;
 }
 
-export interface GET_ALL_ORDER_LOG_order_log_aggregate {
+export interface GET_ORDER_LOGS_order_log_aggregate {
   __typename: "order_log_aggregate";
-  aggregate: GET_ALL_ORDER_LOG_order_log_aggregate_aggregate | null;
+  aggregate: GET_ORDER_LOGS_order_log_aggregate_aggregate | null;
 }
 
-export interface GET_ALL_ORDER_LOG {
-  /**
-   * fetch aggregated fields from the table: "order_log"
-   */
-  order_log_aggregate: GET_ALL_ORDER_LOG_order_log_aggregate;
-}
-
-export interface GET_ALL_ORDER_LOGVariables {
-  allcondition?: order_log_bool_exp | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDERS
-// ====================================================
-
-export interface GET_ORDERS_order_log_aggregate_aggregate {
-  __typename: "order_log_aggregate_fields";
-  count: number;
-}
-
-export interface GET_ORDERS_order_log_aggregate {
-  __typename: "order_log_aggregate";
-  aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
-}
-
-export interface GET_ORDERS_order_log_member {
+export interface GET_ORDER_LOGS_order_log_member {
   __typename: "member";
   name: string;
   email: string;
 }
 
-export interface GET_ORDERS_order_log_payment_logs {
+export interface GET_ORDER_LOGS_order_log_payment_logs {
   __typename: "payment_log";
   /**
    * spgateway, tappay, ezfund,paypal
@@ -11420,7 +11393,7 @@ export interface GET_ORDERS_order_log_payment_logs {
   gateway: string | null;
 }
 
-export interface GET_ORDERS_order_log_order_products_product {
+export interface GET_ORDER_LOGS_order_log_order_products_product {
   __typename: "product";
   /**
    * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
@@ -11432,7 +11405,7 @@ export interface GET_ORDERS_order_log_order_products_product {
   type: string;
 }
 
-export interface GET_ORDERS_order_log_order_products {
+export interface GET_ORDER_LOGS_order_log_order_products {
   __typename: "order_product";
   id: any;
   name: string;
@@ -11443,11 +11416,11 @@ export interface GET_ORDERS_order_log_order_products {
   /**
    * An object relationship
    */
-  product: GET_ORDERS_order_log_order_products_product;
+  product: GET_ORDER_LOGS_order_log_order_products_product;
   options: any | null;
 }
 
-export interface GET_ORDERS_order_log_order_discounts {
+export interface GET_ORDER_LOGS_order_log_order_discounts {
   __typename: "order_discount";
   id: any;
   name: string;
@@ -11460,20 +11433,20 @@ export interface GET_ORDERS_order_log_order_discounts {
   target: string;
 }
 
-export interface GET_ORDERS_order_log_order_executors_member {
+export interface GET_ORDER_LOGS_order_log_order_executors_member {
   __typename: "member";
   name: string;
 }
 
-export interface GET_ORDERS_order_log_order_executors {
+export interface GET_ORDER_LOGS_order_log_order_executors {
   __typename: "order_executor";
   /**
    * An object relationship
    */
-  member: GET_ORDERS_order_log_order_executors_member;
+  member: GET_ORDER_LOGS_order_log_order_executors_member;
 }
 
-export interface GET_ORDERS_order_log {
+export interface GET_ORDER_LOGS_order_log {
   __typename: "order_log";
   id: string;
   created_at: any;
@@ -11489,37 +11462,37 @@ export interface GET_ORDERS_order_log {
   /**
    * An object relationship
    */
-  member: GET_ORDERS_order_log_member;
+  member: GET_ORDER_LOGS_order_log_member;
   /**
    * An array relationship
    */
-  payment_logs: GET_ORDERS_order_log_payment_logs[];
+  payment_logs: GET_ORDER_LOGS_order_log_payment_logs[];
   /**
    * An array relationship
    */
-  order_products: GET_ORDERS_order_log_order_products[];
+  order_products: GET_ORDER_LOGS_order_log_order_products[];
   /**
    * An array relationship
    */
-  order_discounts: GET_ORDERS_order_log_order_discounts[];
+  order_discounts: GET_ORDER_LOGS_order_log_order_discounts[];
   /**
    * An array relationship
    */
-  order_executors: GET_ORDERS_order_log_order_executors[];
+  order_executors: GET_ORDER_LOGS_order_log_order_executors[];
 }
 
-export interface GET_ORDERS {
+export interface GET_ORDER_LOGS {
   /**
    * fetch aggregated fields from the table: "order_log"
    */
-  order_log_aggregate: GET_ORDERS_order_log_aggregate;
+  order_log_aggregate: GET_ORDER_LOGS_order_log_aggregate;
   /**
    * fetch data from the table: "order_log"
    */
-  order_log: GET_ORDERS_order_log[];
+  order_log: GET_ORDER_LOGS_order_log[];
 }
 
-export interface GET_ORDERSVariables {
+export interface GET_ORDER_LOGSVariables {
   condition?: order_log_bool_exp | null;
   limit?: number | null;
 }

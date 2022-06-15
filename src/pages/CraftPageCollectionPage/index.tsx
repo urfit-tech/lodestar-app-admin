@@ -1,6 +1,7 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Tabs } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -25,11 +26,13 @@ const CraftPageCollectionPage: React.VFC = () => {
   const { loadingAppPages, appPages, refetchAppPages } = useAppPageCollection()
   const [isModalVisible, setIsModalVisible] = useState(query.action === 'create')
   const { isAuthenticating, permissions } = useAuth()
+  const { enabledModules } = useApp()
 
   const tabContents = [
     {
       key: 'published',
       tab: formatMessage(commonMessages.status.published),
+      condition: {},
       pages: appPages
         .filter(appPage => appPage.publishedAt)
         .map(appPage => ({
@@ -61,7 +64,7 @@ const CraftPageCollectionPage: React.VFC = () => {
     return <LoadingPage />
   }
 
-  if (!permissions.CRAFT_PAGE_ADMIN) {
+  if (!enabledModules.craft_page || (!permissions.CRAFT_PAGE_ADMIN && !permissions.CRAFT_PAGE_NORMAL)) {
     return <ForbiddenPage />
   }
 

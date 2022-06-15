@@ -78,7 +78,7 @@ const couponMessages = {
     used: { id: 'coupon.CouponPlanDescriptionTabs.used', defaultMessage: '已使用' },
     exportCodes: { id: 'coupon.CouponPlanDescriptionTabs.exportCodes', defaultMessage: '匯出代碼' },
     loading: { id: 'coupon.CouponPlanDescriptionTabs.loading', defaultMessage: '載入中' },
-    loadingError: { id: 'coupon.CouponPlanDescriptionTabs.loadingError', defaultMessage: '讀取錯誤' },
+    fetchDataError: { id: 'coupon.CouponPlanDescriptionTabs.fetchDataError', defaultMessage: '讀取錯誤' },
     unit: { id: 'coupon.CouponPlanDescriptionTabs.unit', defaultMessage: '張' },
     description: { id: 'coupon.CouponPlanDescriptionTabs.description', defaultMessage: '使用限制與描述' },
     couponCode: { id: 'coupon.CouponPlanDescriptionTabs.couponCode', defaultMessage: '折扣代碼' },

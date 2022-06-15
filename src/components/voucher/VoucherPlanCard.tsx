@@ -5,9 +5,9 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { rgba } from '../../helpers'
 import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
-import VoucherPlanCollectionAdminPageMessages from '../../pages/VoucherPlanCollectionAdminPage/translation'
 import { VoucherPlanBriefProps } from '../../types/checkout'
 import { BREAK_POINT } from '../common/Responsive'
+import voucherMessages from './translation'
 import VoucherPlanDetailModal from './VoucherPlanDetailModal'
 
 const StyledWrapper = styled.div`
@@ -111,16 +111,14 @@ const VoucherPlanCard: React.FC<VoucherPlanBriefProps & { renderEditDropdown?: R
           <div>
             {startedAt
               ? moment(startedAt).format('YYYY/MM/DD')
-              : formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.fromNow)}
+              : formatMessage(voucherMessages.VoucherPlanCard.fromNow)}
             {' ~ '}
-            {endedAt
-              ? moment(endedAt).format('YYYY/MM/DD')
-              : formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.forever)}
+            {endedAt ? moment(endedAt).format('YYYY/MM/DD') : formatMessage(voucherMessages.VoucherPlanCard.forever)}
           </div>
 
           <StyledExtra className="d-flex align-items-center justify-content-between mt-4">
             <div>
-              {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.exchangeItemsNumber, {
+              {formatMessage(voucherMessages.VoucherPlanCard.exchangeItemsNumber, {
                 number: productQuantityLimit,
               })}
             </div>
@@ -133,7 +131,7 @@ const VoucherPlanCard: React.FC<VoucherPlanBriefProps & { renderEditDropdown?: R
         <VoucherPlanDetailModal id={id} title={title} />
 
         <div className="flex-grow-1">
-          {formatMessage(VoucherPlanCollectionAdminPageMessages.VoucherPlanAdminModal.exchangedCount, {
+          {formatMessage(voucherMessages.VoucherPlanCard.exchangedCount, {
             exchanged: count - remaining,
             total: count,
           })}

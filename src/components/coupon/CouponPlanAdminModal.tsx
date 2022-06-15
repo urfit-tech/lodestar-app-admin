@@ -4,6 +4,7 @@ import { useForm } from 'antd/lib/form/Form'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { times } from 'ramda'
 import React, { useState } from 'react'
@@ -37,6 +38,7 @@ const CouponPlanAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
+  const { currentMemberId } = useAuth()
 
   const [createCouponPlan] = useMutation<hasura.INSERT_COUPON_PLAN, hasura.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,
@@ -114,6 +116,7 @@ const CouponPlanAdminModal: React.FC<
                 values.scope?.productIds.map((productId: string) => ({
                   product_id: productId,
                 })) || [],
+              editorId: currentMemberId,
             },
           })
             .then(() => {
@@ -260,6 +263,7 @@ const INSERT_COUPON_PLAN = gql`
     $type: Int
     $amount: numeric
     $couponPlanProduct: [coupon_plan_product_insert_input!]!
+    $editorId: String
   ) {
     insert_coupon_plan(
       objects: {
@@ -273,6 +277,7 @@ const INSERT_COUPON_PLAN = gql`
         type: $type
         amount: $amount
         coupon_plan_products: { data: $couponPlanProduct }
+        editor_id: $editorId
       }
     ) {
       affected_rows
