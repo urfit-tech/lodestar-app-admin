@@ -9,7 +9,7 @@ import {
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
 import LayoutInput from '../../common/LayoutInput'
-import ProgramPackageCollectionSelector from '../../program/ProgramPackageCollectionSelector'
+import ProgramPackageCollectionSelector from '../../programPackage/ProgramPackageCollectionSelector'
 import craftMessages from '../translation'
 import CarouselSettingGroup from './CarouselSettingGroup'
 

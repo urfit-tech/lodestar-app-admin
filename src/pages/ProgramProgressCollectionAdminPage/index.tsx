@@ -1,0 +1,3 @@
+import ProgramProgressCollectionAdminPage from './ProgramProgressCollectionAdminPage'
+
+export default ProgramProgressCollectionAdminPage
