@@ -1113,6 +1113,7 @@ export const memberMessages = {
     startedAt: { id: 'member.text.startedAt', defaultMessage: '開始時間：{time}' },
     endedAt: { id: 'member.text.endedAt', defaultMessage: '結束時間：{time}' },
     unavailableContract: { id: 'member.text.unavailableContract', defaultMessage: '此合約已失效' },
+    searchNoteRecord: { id: 'member.text.searchNoteRecord', defaultMessage: '搜尋聯絡紀錄' },
   },
 }
 
