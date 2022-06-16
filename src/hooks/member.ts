@@ -298,6 +298,7 @@ export const useMemberNotesAdmin = (
     categories?: string[]
     tags?: string[]
   },
+  keyword?: string,
 ) => {
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
@@ -357,6 +358,7 @@ export const useMemberNotesAdmin = (
             ]
           : undefined,
     },
+    description: keyword ? { _like: `%${keyword}%` } : undefined,
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_NOTES_ADMIN,

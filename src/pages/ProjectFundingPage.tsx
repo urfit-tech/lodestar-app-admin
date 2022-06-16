@@ -21,7 +21,13 @@ const ProjectFundingPage: React.FC<{}> = () => {
   const { id: appId, enabledModules } = useApp()
   const { insertProject } = useProject()
 
-  if (!enabledModules.project || !permissions.PROJECT_ADMIN) {
+  if (
+    !enabledModules.project ||
+    (Boolean(permissions.PROJECT_ADMIN) &&
+      Boolean(permissions.PROJECT_FUNDING_ADMIN) &&
+      Boolean(permissions.PROJECT_NORMAL) &&
+      Boolean(permissions.PROJECT_FUNDING_NORMAL))
+  ) {
     return <ForbiddenPage />
   }
 

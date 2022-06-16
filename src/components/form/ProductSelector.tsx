@@ -141,6 +141,7 @@ const useProductSelections = () => {
             title
           }
           activity_session_tickets(order_by: { activity_session: { ended_at: asc_nulls_first } }) {
+            id
             activity_session {
               id
               ended_at

@@ -1,8 +1,9 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { Button, message, Skeleton } from 'antd'
+import { Button, Input, message, Skeleton } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
@@ -13,26 +14,51 @@ import { EmptyAdminBlock } from '../admin/AdminBlock'
 import MemberNoteAdminItem from '../member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 
+const SearchBlock = styled.div`
+  position: absolute;
+  right: 3rem;
+  width: 100%;
+  max-width: 33.3333%;
+`
+
 const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
+  const { formatMessage } = useIntl()
+  const [searchText, setSearchText] = useState('')
+
+  return (
+    <div className="p-5 position-relative">
+      <SearchBlock>
+        <Input.Search
+          placeholder={formatMessage(memberMessages.text.searchNoteRecord)}
+          onChange={e => !e.target.value.trim() && setSearchText('')}
+          onSearch={value => setSearchText(value.trim())}
+        />
+      </SearchBlock>
+      <MemberNoteColleactionBlock memberId={memberId} searchText={searchText} />
+    </div>
+  )
+}
+
+const MemberNoteColleactionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
-  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
     { created_at: 'desc' as hasura.order_by, id: 'asc' as hasura.order_by },
     { member: memberId },
+    searchText,
   )
-  const { insertMemberNote } = useMutateMemberNote()
-  const uploadAttachments = useUploadAttachments()
-
+  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const [loading, setLoading] = useState(false)
 
+  const { insertMemberNote } = useMutateMemberNote()
+  const uploadAttachments = useUploadAttachments()
   if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
   }
 
   return (
-    <div className="p-5">
+    <>
       <MemberNoteAdminModal
         title={formatMessage(memberMessages.label.createMemberNote)}
         renderTrigger={({ setVisible }) => (
@@ -94,7 +120,7 @@ const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
           </Button>
         )}
       </AdminBlock>
-    </div>
+    </>
   )
 }
 

@@ -13,25 +13,16 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
   const { currentMemberId, permissions } = useAuth()
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
   const { id: appId } = useApp()
-  const adminPermissionOfProjectType =
-    projectType === 'funding'
-      ? 'PROJECT_FUNDING_ADMIN'
-      : projectType === 'pre-order'
-      ? 'PROJECT_PRE_ORDER_ADMIN'
-      : 'null'
-  const permissionOfProjectType =
-    projectType === 'funding'
-      ? 'PROJECT_FUNDING_NORMAL'
-      : projectType === 'pre-order'
-      ? 'PROJECT_PRE_ORDER_NORMAL'
-      : 'null'
 
   const creatorId = {
-    _eq: permissions[adminPermissionOfProjectType]
-      ? undefined
-      : permissions[permissionOfProjectType]
-      ? currentMemberId
-      : '',
+    _eq:
+      (projectType === 'funding' && permissions.PROJECT_FUNDING_ADMIN) ||
+      (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_ADMIN)
+        ? undefined
+        : (projectType === 'funding' && permissions.PROJECT_FUNDING_NORMAL) ||
+          (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_NORMAL)
+        ? currentMemberId
+        : '',
   }
 
   const tabContents: {

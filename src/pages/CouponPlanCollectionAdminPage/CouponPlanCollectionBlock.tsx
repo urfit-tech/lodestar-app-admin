@@ -4,12 +4,13 @@ import { Button, Dropdown, Menu, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { EmptyBlock } from '../../components/admin'
 import CouponPlanAdminCard from '../../components/coupon/CouponPlanAdminCard'
 import CouponPlanAdminModal from '../../components/coupon/CouponPlanAdminModal'
 import CouponPlanDescriptionTabs from '../../components/coupon/CouponPlanDescriptionTabs'
 import hasura from '../../hasura'
 import { CouponPlanProps } from '../../types/checkout'
-import CouponPlanCollectionAdminPageMessages from './translation'
+import pageMessages from '../translation'
 
 const CouponCollectionBlock: React.VFC<{
   condition: hasura.GET_PREVIEW_COUPON_PLAN_COLLECTIONVariables['condition']
@@ -23,71 +24,77 @@ const CouponCollectionBlock: React.VFC<{
   if (loadingCouponPlans) return <Skeleton active />
 
   if (errorCouponPlans) {
-    return <div>{formatMessage(CouponPlanCollectionAdminPageMessages['*'].fetchDataError)}</div>
+    return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
   }
 
   return (
-    <div className="row">
-      {couponPlanPreviews.map(couponPlan => (
-        <div key={couponPlan.id} className="col-12 col-md-6 mb-3">
-          <CouponPlanAdminCard
-            couponPlan={couponPlan}
-            isAvailable={isAvailable}
-            renderDescription={({ productIds }) => (
-              <CouponPlanDescriptionTabs
-                couponPlanId={couponPlan.id}
-                title={couponPlan.title}
-                description={couponPlan.description}
-                constraint={couponPlan.constraint}
-                type={couponPlan.type}
-                amount={couponPlan.amount}
-                scope={couponPlan.scope}
-                productIds={productIds}
-              />
-            )}
-            renderEditDropdown={
-              <Dropdown
-                placement="bottomRight"
-                trigger={['click']}
-                overlay={
-                  <Menu>
-                    <Menu.Item>
-                      <CouponPlanAdminModal
-                        renderTrigger={({ setVisible }) => (
-                          <span onClick={() => setVisible(true)}>
-                            {formatMessage(CouponPlanCollectionAdminPageMessages['*'].edit)}
-                          </span>
-                        )}
-                        icon={<EditOutlined />}
-                        title={formatMessage(CouponPlanCollectionAdminPageMessages['*'].editCouponPlan)}
-                        couponPlan={couponPlan}
-                        onRefetch={refetchCouponPlans}
-                      />
-                    </Menu.Item>
-                  </Menu>
-                }
-              >
-                <MoreOutlined />
-              </Dropdown>
-            }
-          />
-        </div>
-      ))}
+    <>
+      {couponPlanPreviews.length === 0 ? (
+        <EmptyBlock>{formatMessage(pageMessages.CouponCollectionBlock.emptyCouponPlan)}</EmptyBlock>
+      ) : (
+        <>
+          <div className="row">
+            {couponPlanPreviews.map(couponPlan => (
+              <div key={couponPlan.id} className="col-12 col-md-6 mb-3">
+                <CouponPlanAdminCard
+                  couponPlan={couponPlan}
+                  isAvailable={isAvailable}
+                  renderDescription={({ productIds }) => (
+                    <CouponPlanDescriptionTabs
+                      couponPlanId={couponPlan.id}
+                      title={couponPlan.title}
+                      description={couponPlan.description}
+                      constraint={couponPlan.constraint}
+                      type={couponPlan.type}
+                      amount={couponPlan.amount}
+                      scope={couponPlan.scope}
+                      productIds={productIds}
+                    />
+                  )}
+                  renderEditDropdown={
+                    <Dropdown
+                      placement="bottomRight"
+                      trigger={['click']}
+                      overlay={
+                        <Menu>
+                          <Menu.Item>
+                            <CouponPlanAdminModal
+                              renderTrigger={({ setVisible }) => (
+                                <span onClick={() => setVisible(true)}>{formatMessage(pageMessages['*'].edit)}</span>
+                              )}
+                              icon={<EditOutlined />}
+                              title={formatMessage(pageMessages['*'].editCouponPlan)}
+                              couponPlan={couponPlan}
+                              onRefetch={refetchCouponPlans}
+                            />
+                          </Menu.Item>
+                        </Menu>
+                      }
+                    >
+                      <MoreOutlined />
+                    </Dropdown>
+                  }
+                />
+              </div>
+            ))}
 
-      {loadMoreCouponPlans && (
-        <div className="text-center" style={{ width: '100%' }}>
-          <Button
-            loading={loading}
-            onClick={() => {
-              setLoading(true)
-              loadMoreCouponPlans()?.finally(() => setLoading(false))
-            }}
-          >
-            {formatMessage(CouponPlanCollectionAdminPageMessages.CouponCollectionBlock.showMore)}
-          </Button>
-        </div>
+            {loadMoreCouponPlans && (
+              <div className="text-center" style={{ width: '100%' }}>
+                <Button
+                  loading={loading}
+                  onClick={() => {
+                    setLoading(true)
+                    loadMoreCouponPlans()?.finally(() => setLoading(false))
+                  }}
+                >
+                  {formatMessage(pageMessages.CouponCollectionBlock.showMore)}
+                </Button>
+              </div>
+            )}
+          </div>
+        </>
       )}
-    </div>
+    </>
   )
 }
 

@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
 
 export type AppPageProps = {
@@ -65,13 +66,21 @@ export const useAppPage = (pageId: string) => {
 
 export const useAppPageCollection = () => {
   const { id: appId } = useApp()
+  const { currentMemberId, permissions } = useAuth()
+  const condition: hasura.GET_APP_PAGE_COLLECTIONVariables['condition'] = {
+    app_id: { _eq: appId },
+    is_deleted: { _eq: false },
+    editor_id: {
+      _eq: permissions.CRAFT_PAGE_ADMIN ? undefined : permissions.CRAFT_PAGE_NORMAL ? currentMemberId : '',
+    },
+  }
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_APP_PAGE_COLLECTION,
     hasura.GET_APP_PAGE_COLLECTIONVariables
   >(
     gql`
-      query GET_APP_PAGE_COLLECTION($appId: String!) {
-        app_page(where: { app_id: { _eq: $appId }, is_deleted: { _eq: false } }, order_by: { created_at: desc }) {
+      query GET_APP_PAGE_COLLECTION($condition: app_page_bool_exp!) {
+        app_page(where: $condition, order_by: { created_at: desc }) {
           id
           path
           title
@@ -88,7 +97,7 @@ export const useAppPageCollection = () => {
     `,
     {
       variables: {
-        appId,
+        condition: condition,
       },
     },
   )
