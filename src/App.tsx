@@ -16,10 +16,8 @@ import MemberContractCreationPage from './pages/MemberContractCreationPage'
 import NoteCollectionPage from './pages/NoteCollectionPage'
 import SalesActivenessPage from './pages/SalesActivenessPage'
 import SalesCallPage from './pages/SalesCallPage'
-import SalesLeadDeliveryPage from './pages/SalesLeadDeliveryPage/SalesLeadDeliveryPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
-import SalesPerformancePage from './pages/SalesPerformancePage'
 import SalesStatusPage from './pages/SalesStatusPage'
 import TermsPtPage from './pages/TermsPtPage'
 
@@ -41,37 +39,17 @@ const App: React.FC = () => {
               permissionIsAllowed: !!permissions.SALES_CALL_ADMIN,
               key: 'sales_call_admin',
               icon: () => <PhoneIcon />,
-              name: '業務專區',
+              name: '業務查詢',
               subMenuItems: [
-                {
-                  permissionIsAllowed: permissions.SALES_PERFORMANCE_ADMIN,
-                  key: 'sales_performance',
-                  name: '業績總表',
-                },
-                {
-                  permissionIsAllowed: permissions.SALES_LEAD_ADMIN,
-                  key: 'sales_lead',
-                  name: '名單撥打',
-                },
-                {
-                  permissionIsAllowed: role === 'app-owner',
-                  key: 'sales_lead_delivery',
-                  name: '名單派發',
-                },
-                // {
-                //   permissionIsAllowed: true,
-                //   key: 'sales_call',
-                //   name: '業務撥打',
-                // },
                 {
                   permissionIsAllowed: true,
                   key: 'sales_status',
-                  name: '即時戰況',
+                  name: '即時戰況查詢',
                 },
                 {
                   permissionIsAllowed: true,
                   key: 'chailease_lookup',
-                  name: '報名查詢',
+                  name: '學米報名表查詢',
                 },
               ],
             },
@@ -158,17 +136,6 @@ const App: React.FC = () => {
         note_collection: {
           path: '/notes',
           pageName: <NoteCollectionPage />,
-          authenticated: true,
-        },
-        sales_lead_delivery: {
-          path: '/sales-lead-delivery',
-          pageName: <SalesLeadDeliveryPage />,
-          allowedUserRole: 'app-owner',
-          authenticated: true,
-        },
-        sales_performance: {
-          path: '/sales-performance',
-          pageName: <SalesPerformancePage />,
           authenticated: true,
         },
         sales_call: {

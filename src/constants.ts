@@ -71,12 +71,12 @@ export const paymentMethods: {
   {
     method: '遠信',
     feeWithInstallmentPlans: [
-      { installmentPlan: 6, fee: 0.045 },
-      { installmentPlan: 12, fee: 0.045 },
-      { installmentPlan: 18, fee: 0.065 },
-      { installmentPlan: 24, fee: 0.085 },
-      { installmentPlan: 30, fee: 0.1 },
-      { installmentPlan: 36, fee: 0.14 },
+      { installmentPlan: 6, fee: 0.035 },
+      { installmentPlan: 12, fee: 0.043 },
+      { installmentPlan: 18, fee: 0.06 },
+      { installmentPlan: 24, fee: 0.075 },
+      { installmentPlan: 30, fee: 0.09 },
+      { installmentPlan: 36, fee: 0.12 },
     ],
   },
   {
@@ -89,6 +89,18 @@ export const paymentMethods: {
     ],
   },
   // old used
+  {
+    method: '舊遠信',
+    hidden: true,
+    feeWithInstallmentPlans: [
+      { installmentPlan: 6, fee: 0.045 },
+      { installmentPlan: 12, fee: 0.045 },
+      { installmentPlan: 18, fee: 0.065 },
+      { installmentPlan: 24, fee: 0.085 },
+      { installmentPlan: 30, fee: 0.1 },
+      { installmentPlan: 36, fee: 0.14 },
+    ],
+  },
   {
     method: '新仲信',
     hidden: true,
