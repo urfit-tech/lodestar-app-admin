@@ -4,8 +4,8 @@ import { Button, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
+import messages from 'lodestar-app-admin/src/components/form/translation'
 import { downloadCSV, toCSV } from 'lodestar-app-admin/src/helpers'
-import { permissionMessages } from 'lodestar-app-admin/src/helpers/translation'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -19,6 +19,7 @@ type MemberProps = {
 
 const ExtraPermissionsMembersBlock: React.VFC = () => {
   const { formatMessage } = useIntl()
+  const permissionMessages = messages.PermissionGroup
   const { loadingMembers, errorMembers, members } = useExtraPermissionsMembers()
 
   if (loadingMembers) {
