@@ -1,5 +1,6 @@
-import Icon from '@ant-design/icons'
-import { Button, Divider } from 'antd'
+import Icon, { MoreOutlined } from '@ant-design/icons'
+import { Button, Divider, Dropdown, Menu } from 'antd'
+import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -8,19 +9,30 @@ import { dateRangeFormatter } from '../../helpers'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AvatarImage } from '../common/Image'
+import AppointmentCancelModal from './AppointmentCancelModal'
 import AppointMentDetailModal from './AppointMentDetailModal'
 import AppointmentIssueAndResultModal from './AppointmentIssueAndResultModal'
 import appointmentMessages from './translation'
 
-const StyledWrapper = styled.div`
+const StyledCard = styled.div`
   margin-bottom: 0.75rem;
   padding: 2rem;
   border-radius: 4px;
   background-color: white;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+
+  @media (min-width: ${DESKTOP_BREAK_POINT}px) {
+    display: flex;
+    justify-content: space-between;
+  }
 `
 const StyledInfo = styled.div<{ withMask?: boolean }>`
+  margin-bottom: 32px;
   ${props => (props.withMask ? 'opacity: 0.2;' : '')}
+
+  @media (min-width: ${DESKTOP_BREAK_POINT}px) {
+    margin-bottom: 0px;
+  }
 `
 const StyledTitle = styled.div`
   margin-bottom: 0.75rem;
@@ -83,10 +95,11 @@ const AppointmentPeriodCard: React.FC<
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
+  const isCanceled = !!canceledAt
 
   return (
-    <StyledWrapper className="d-flex align-items-center justify-content-between">
-      <StyledInfo className="d-flex align-items-center justify-content-start" withMask={!!canceledAt}>
+    <StyledCard>
+      <StyledInfo className="d-flex align-items-center" withMask={isCanceled}>
         <AvatarImage size="48px" src={avatarUrl} className="mr-4" />
         <div>
           <StyledTitle>
@@ -108,7 +121,7 @@ const AppointmentPeriodCard: React.FC<
         </div>
       </StyledInfo>
 
-      <div>
+      <div className="d-flex align-items-center justify-content-end">
         <AppointmentIssueAndResultModal
           renderTrigger={({ setVisible }) => (
             <Button type="link" size="small" onClick={() => setVisible(true)}>
@@ -135,7 +148,7 @@ const AppointmentPeriodCard: React.FC<
         />
         <Divider type="vertical" />
 
-        {canceledAt ? (
+        {isCanceled ? (
           <StyledCanceledText className="ml-2">
             {formatMessage(appointmentMessages.AppointmentPeriodCard.appointmentCanceledAt, {
               time: moment(canceledAt).format('MM/DD(dd) HH:mm'),
@@ -165,10 +178,28 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
               </StyledButton>
             </a>
+            <AppointmentCancelModal
+              orderProductId={orderProductId}
+              onRefetch={onRefetch}
+              renderTrigger={({ setVisible }) => (
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item onClick={() => setVisible(true)}>
+                        {formatMessage(appointmentMessages.AppointmentPeriodCard.cancelAppointment)}
+                      </Menu.Item>
+                    </Menu>
+                  }
+                  trigger={['click']}
+                >
+                  <MoreOutlined className="ml-3" />
+                </Dropdown>
+              )}
+            />
           </>
         )}
       </div>
-    </StyledWrapper>
+    </StyledCard>
   )
 }
 

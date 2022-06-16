@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { useMemo } from 'react'
@@ -323,3 +323,24 @@ export const INSERT_APPOINTMENT_SCHEDULES = gql`
     }
   }
 `
+
+export const useCancelAppointment = (orderProductId: string) => {
+  const [cancelAppointment] = useMutation<hasura.CANCEL_APPOINTMENT, hasura.CANCEL_APPOINTMENTVariables>(gql`
+    mutation CANCEL_APPOINTMENT($orderProductId: uuid!, $data: jsonb) {
+      update_order_product(where: { id: { _eq: $orderProductId } }, _append: { options: $data }) {
+        affected_rows
+      }
+    }
+  `)
+
+  return (reason: string) =>
+    cancelAppointment({
+      variables: {
+        orderProductId,
+        data: {
+          appointmentCanceledAt: new Date(),
+          appointmentCanceledReason: reason,
+        },
+      },
+    })
+}
