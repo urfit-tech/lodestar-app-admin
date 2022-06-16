@@ -79,7 +79,7 @@ const SalesLeadTabs: React.VFC<{
     presentedLeads,
     paidLeads,
     closedLeads,
-  } = useSalesLeads(managerId)
+  } = useSalesLeads(managerId, lead => (sales ? lead.star !== Number(sales.telephone) : false))
 
   if (loading || !sales) {
     return <Skeleton active />

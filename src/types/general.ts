@@ -1,3 +1,5 @@
+import { MemberBriefProps } from './member'
+
 export type Device = 'desktop' | 'tablet' | 'mobile'
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
 export type ClassType =
@@ -49,7 +51,7 @@ export type ProductInventoryLogProps = {
   comment: string | null
 }
 
-type OrderProductProps = {
+export type OrderProduct = {
   id: string
   name: string
   price: number
@@ -64,7 +66,7 @@ type OrderProductProps = {
   options: any
 }
 
-type OrderDiscountProps = {
+export type OrderDiscount = {
   id: string
   name: string
   description: string | null
@@ -73,7 +75,7 @@ type OrderDiscountProps = {
   target: string
 }
 
-export type OrderLogProps = {
+export type OrderLog = {
   id: string
   createdAt: Date
   status: string
@@ -83,9 +85,8 @@ export type OrderLogProps = {
   totalPrice: number
   expiredAt: Date
   paymentMethod: string | null
-
-  orderProducts: OrderProductProps[]
-  orderDiscounts: OrderDiscountProps[]
+  orderProducts: OrderProduct[]
+  orderDiscounts: OrderDiscount[]
   orderExecutors: string[]
 }
 

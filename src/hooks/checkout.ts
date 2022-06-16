@@ -291,7 +291,7 @@ export const useVoucherCode = (voucherPlanId: string) => {
 
 export const useMutateVoucherPlan = () => {
   const { id: appId } = useApp()
-
+  const { currentMemberId } = useAuth()
   const [insertVoucherPlanHandler] = useMutation<hasura.INSERT_VOUCHER_PLAN, hasura.INSERT_VOUCHER_PLANVariables>(
     gql`
       mutation INSERT_VOUCHER_PLAN(
@@ -306,6 +306,7 @@ export const useMutateVoucherPlan = () => {
         $isTransferable: Boolean
         $saleAmount: Int
         $salePrice: numeric
+        $editorId: String
       ) {
         insert_voucher_plan(
           objects: {
@@ -320,6 +321,7 @@ export const useMutateVoucherPlan = () => {
             is_transferable: $isTransferable
             sale_amount: $saleAmount
             sale_price: $salePrice
+            editor_id: $editorId
           }
         ) {
           affected_rows
@@ -355,6 +357,7 @@ export const useMutateVoucherPlan = () => {
         voucherPlanProducts: values.voucherPlanProducts.flatMap(productId => ({
           product_id: productId,
         })),
+        editorId: currentMemberId,
       },
     })
   }

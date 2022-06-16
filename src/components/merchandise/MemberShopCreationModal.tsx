@@ -5,6 +5,7 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input } from 'antd'
 import gql from 'graphql-tag'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -16,6 +17,7 @@ import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
 const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
+  const { permissions, currentMemberId } = useAuth()
   const history = useHistory()
   const [insertMemberShop] = useMutation<hasura.INSERT_MEMBER_SHOP, hasura.INSERT_MEMBER_SHOPVariables>(
     INSERT_MEMBER_SHOP,
@@ -41,7 +43,7 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
           setLoading(true)
           insertMemberShop({
             variables: {
-              memberId: values.creatorId,
+              memberId: values?.creatorId || currentMemberId,
               title: values.title,
             },
           })
@@ -56,18 +58,21 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
       }}
     >
       <Form layout="vertical" hideRequiredMark colon={false}>
-        <Form.Item label={formatMessage(merchandiseMessages.label.selectContentCreator)}>
-          {form.getFieldDecorator('creatorId', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(merchandiseMessages.label.selectContentCreator),
-                }),
-              },
-            ],
-          })(<ContentCreatorSelector />)}
-        </Form.Item>
+        {permissions.MERCHANDISE_ADMIN ? (
+          <Form.Item label={formatMessage(merchandiseMessages.label.selectContentCreator)}>
+            {form.getFieldDecorator('creatorId', {
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(merchandiseMessages.label.selectContentCreator),
+                  }),
+                },
+              ],
+            })(<ContentCreatorSelector />)}
+          </Form.Item>
+        ) : null}
+
         <Form.Item label={formatMessage(merchandiseMessages.label.memberShopTitle)}>
           {form.getFieldDecorator('title', {
             rules: [

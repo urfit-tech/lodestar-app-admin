@@ -9,20 +9,20 @@ import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import VoucherPlanAdminModal from '../../components/voucher/VoucherPlanAdminModal'
 import ForbiddenPage from '../ForbiddenPage'
-import VoucherPlanCollectionAdminPageMessages from './translation'
+import pageMessages from '../translation'
 import VoucherPlanCollectionBlock from './VoucherPlanCollectionBlock'
 
 const VoucherPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { permissions } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
   const [searchText, setSearchText] = useState('')
   const [stateCode, setStateCode] = useState(Math.random())
 
   const tabContents = [
     {
       key: 'available',
-      tab: formatMessage(VoucherPlanCollectionAdminPageMessages['*'].available),
+      tab: formatMessage(pageMessages['*'].available),
       condition: {
         _or: [
           { ended_at: { _gte: 'now()' } },
@@ -32,14 +32,24 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
         ],
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
         voucher_codes: { remaining: { _nin: [0] } },
+        editor_id: permissions.VOUCHER_PLAN_ADMIN
+          ? undefined
+          : permissions.VOUCHER_PLAN_NORMAL
+          ? { _eq: currentMemberId }
+          : { _eq: '' },
       },
     },
     {
       key: 'unavailable',
-      tab: formatMessage(VoucherPlanCollectionAdminPageMessages['*'].unavailable),
+      tab: formatMessage(pageMessages['*'].unavailable),
       condition: {
         _or: [{ voucher_codes: { remaining: { _eq: 0 } } }, { ended_at: { _lt: 'now()' } }],
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        editor_id: permissions.VOUCHER_PLAN_ADMIN
+          ? undefined
+          : permissions.VOUCHER_PLAN_NORMAL
+          ? { _eq: currentMemberId }
+          : { _eq: '' },
       },
     },
   ]
@@ -48,7 +58,7 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
     return <Skeleton active />
   }
 
-  if (!enabledModules.voucher || !permissions.VOUCHER_PLAN_ADMIN) {
+  if (!enabledModules.voucher || (!permissions.VOUCHER_PLAN_ADMIN && !permissions.VOUCHER_PLAN_NORMAL)) {
     return <ForbiddenPage />
   }
 
@@ -56,7 +66,7 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-3" />
-        <span>{formatMessage(VoucherPlanCollectionAdminPageMessages['*'].vouchers)}</span>
+        <span>{formatMessage(pageMessages['*'].vouchers)}</span>
       </AdminPageTitle>
 
       <div className="row mb-5">
@@ -64,11 +74,11 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
           <VoucherPlanAdminModal
             renderTrigger={({ setVisible }) => (
               <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(VoucherPlanCollectionAdminPageMessages['*'].create)}
+                {formatMessage(pageMessages['*'].create)}
               </Button>
             )}
             icon={<FileAddOutlined />}
-            title={formatMessage(VoucherPlanCollectionAdminPageMessages['*'].createVoucherPlan)}
+            title={formatMessage(pageMessages['*'].createVoucherPlan)}
             onRefetch={() => setStateCode(Math.random())}
           />
         </div>
