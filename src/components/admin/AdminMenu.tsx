@@ -337,7 +337,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       subMenuItems: [
         {
           permissionIsAllowed: true,
-          key: 'certificateSetting',
+          key: 'certificate_collection',
           name: formatMessage(adminMessages.AdminMenu.certificateSetting),
         },
         {
