@@ -340,11 +340,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           key: 'certificate_collection',
           name: formatMessage(adminMessages.AdminMenu.certificateSetting),
         },
-        {
-          permissionIsAllowed: true,
-          key: 'certificateTemplate',
-          name: formatMessage(adminMessages.AdminMenu.certificateTemplate),
-        },
+        // {
+        //   permissionIsAllowed: true,
+        //   key: 'certificateTemplate',
+        //   name: formatMessage(adminMessages.AdminMenu.certificateTemplate),
+        // },
       ],
     },
     {
