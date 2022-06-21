@@ -13833,6 +13833,128 @@ export interface INSERT_POSTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_CERTIFICATE
+// ====================================================
+
+export interface INSERT_CERTIFICATE_insert_certificate_returning {
+  __typename: "certificate";
+  id: any;
+}
+
+export interface INSERT_CERTIFICATE_insert_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_CERTIFICATE_insert_certificate_returning[];
+}
+
+export interface INSERT_CERTIFICATE {
+  /**
+   * insert data into the table: "certificate"
+   */
+  insert_certificate: INSERT_CERTIFICATE_insert_certificate | null;
+}
+
+export interface INSERT_CERTIFICATEVariables {
+  title: string;
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CERTIFICATE_QUANTITY
+// ====================================================
+
+export interface GET_CERTIFICATE_QUANTITY_certificate {
+  __typename: "certificate";
+  id: any;
+  published_at: any | null;
+}
+
+export interface GET_CERTIFICATE_QUANTITY {
+  /**
+   * fetch data from the table: "certificate"
+   */
+  certificate: GET_CERTIFICATE_QUANTITY_certificate[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CERTIFICATE
+// ====================================================
+
+export interface GET_CERTIFICATE_certificate_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_CERTIFICATE_certificate_certificate_template_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_CERTIFICATE_certificate_certificate_template {
+  __typename: "certificate_template";
+  id: any;
+  title: string;
+  template: string;
+  background_image: string;
+  /**
+   * An object relationship
+   */
+  author: GET_CERTIFICATE_certificate_certificate_template_author | null;
+}
+
+export interface GET_CERTIFICATE_certificate {
+  __typename: "certificate";
+  id: any;
+  title: string;
+  description: string | null;
+  qualification: string | null;
+  period_type: string | null;
+  period_amount: any | null;
+  /**
+   * An object relationship
+   */
+  author: GET_CERTIFICATE_certificate_author | null;
+  /**
+   * An object relationship
+   */
+  certificate_template: GET_CERTIFICATE_certificate_certificate_template | null;
+}
+
+export interface GET_CERTIFICATE {
+  /**
+   * fetch data from the table: "certificate"
+   */
+  certificate: GET_CERTIFICATE_certificate[];
+}
+
+export interface GET_CERTIFICATEVariables {
+  condition: certificate_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACT
 // ====================================================
 
@@ -22766,6 +22888,51 @@ export interface category_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "certificate". All fields are combined with a logical 'AND'.
+ */
+export interface certificate_bool_exp {
+  _and?: certificate_bool_exp[] | null;
+  _not?: certificate_bool_exp | null;
+  _or?: certificate_bool_exp[] | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  certificate_template?: certificate_template_bool_exp | null;
+  certificate_template_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  period_amount?: numeric_comparison_exp | null;
+  period_type?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  qualification?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "certificate_template". All fields are combined with a logical 'AND'.
+ */
+export interface certificate_template_bool_exp {
+  _and?: certificate_template_bool_exp[] | null;
+  _not?: certificate_template_bool_exp | null;
+  _or?: certificate_template_bool_exp[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  background_image?: String_comparison_exp | null;
+  certificates?: certificate_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_certificates?: member_certificate_bool_exp | null;
+  template?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * order by aggregate values of table "coin_log"
  */
 export interface coin_log_aggregate_order_by {
@@ -25423,6 +25590,24 @@ export interface member_category_var_samp_order_by {
  */
 export interface member_category_variance_order_by {
   position?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_certificate". All fields are combined with a logical 'AND'.
+ */
+export interface member_certificate_bool_exp {
+  _and?: member_certificate_bool_exp[] | null;
+  _not?: member_certificate_bool_exp | null;
+  _or?: member_certificate_bool_exp[] | null;
+  certificate?: certificate_bool_exp | null;
+  certificate_id?: uuid_comparison_exp | null;
+  delivered_at?: timestamptz_comparison_exp | null;
+  expired_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: uuid_comparison_exp | null;
+  number?: String_comparison_exp | null;
+  values?: jsonb_comparison_exp | null;
 }
 
 /**

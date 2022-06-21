@@ -2,6 +2,9 @@ import { defineMessages } from 'react-intl'
 
 const pageMessages = {
   '*': defineMessages({
+    title: { id: 'page.*.title', defaultMessage: '名稱' },
+    published: { id: 'page.*.published', defaultMessage: '已發佈' },
+    unpublished: { id: 'page.*.unpublished', defaultMessage: '尚未發佈' },
     coupons: { id: 'page.*.couponPlans', defaultMessage: '折價方案' },
     createCouponPlan: { id: 'page.*.createCouponPlan', defaultMessage: '建立折價方案' },
     editCouponPlan: { id: 'page.*.editCouponPlan', defaultMessage: '編輯折價方案' },
@@ -182,6 +185,13 @@ const pageMessages = {
       id: 'page.CouponCollectionBlock.emptyCouponPlan',
       defaultMessage: '無任何折價方案',
     },
+  }),
+  CertificateCollectionPage: defineMessages({
+    createCertificate: { id: 'page.CertificateCollectionPage.createCertificate', defaultMessage: '新增證書' },
+    certificateSetting: { id: 'page.CertificateCollectionPage.certificateSetting', defaultMessage: '證書設定' },
+  }),
+  CertificateCollectionTable: defineMessages({
+    eligibilityList: { id: 'page.CertificateCollectionTable.eligibilityList', defaultMessage: '資格名單' },
   }),
 }
 
