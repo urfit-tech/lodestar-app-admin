@@ -13893,59 +13893,34 @@ export interface GET_CERTIFICATE_QUANTITY {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CERTIFICATE
+// GraphQL query operation: GET_CERTIFICATE_PREVIEW
 // ====================================================
 
-export interface GET_CERTIFICATE_certificate_author {
-  __typename: "member";
-  id: string;
-  name: string;
-}
-
-export interface GET_CERTIFICATE_certificate_certificate_template_author {
-  __typename: "member";
-  id: string;
-  name: string;
-}
-
-export interface GET_CERTIFICATE_certificate_certificate_template {
+export interface GET_CERTIFICATE_PREVIEW_certificate_certificate_template {
   __typename: "certificate_template";
   id: any;
-  title: string;
   template: string;
   background_image: string;
-  /**
-   * An object relationship
-   */
-  author: GET_CERTIFICATE_certificate_certificate_template_author | null;
 }
 
-export interface GET_CERTIFICATE_certificate {
+export interface GET_CERTIFICATE_PREVIEW_certificate {
   __typename: "certificate";
   id: any;
   title: string;
-  description: string | null;
-  qualification: string | null;
-  period_type: string | null;
-  period_amount: any | null;
   /**
    * An object relationship
    */
-  author: GET_CERTIFICATE_certificate_author | null;
-  /**
-   * An object relationship
-   */
-  certificate_template: GET_CERTIFICATE_certificate_certificate_template | null;
+  certificate_template: GET_CERTIFICATE_PREVIEW_certificate_certificate_template | null;
 }
 
-export interface GET_CERTIFICATE {
+export interface GET_CERTIFICATE_PREVIEW {
   /**
    * fetch data from the table: "certificate"
    */
-  certificate: GET_CERTIFICATE_certificate[];
+  certificate: GET_CERTIFICATE_PREVIEW_certificate[];
 }
 
-export interface GET_CERTIFICATEVariables {
+export interface GET_CERTIFICATE_PREVIEWVariables {
   condition: certificate_bool_exp;
 }
 

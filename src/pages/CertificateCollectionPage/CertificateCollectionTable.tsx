@@ -10,7 +10,6 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { Certificate } from '../../types/certificate'
 import pageMessages from '../translation'
 
 const StyledTitle = styled.div`
@@ -28,10 +27,18 @@ const StyledLink = styled(Link)`
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-type CertificateColumn = Pick<Certificate, 'id' | 'title' | 'certificateTemplate'>
+type CertificateColumn = {
+  id: string
+  title: string
+  certificateTemplate: {
+    id: string
+    template: string
+    backgroundImage: string
+  }
+}
 
 const CertificateCollectionTable: React.VFC<{
-  condition: hasura.GET_CERTIFICATEVariables['condition']
+  condition: hasura.GET_CERTIFICATE_PREVIEWVariables['condition']
 }> = ({ condition }) => {
   const { formatMessage } = useIntl()
   const [searchName, setSearchName] = useState<string>('')
@@ -98,34 +105,24 @@ const CertificateCollectionTable: React.VFC<{
   return <Table<CertificateColumn> loading={loading} rowKey="id" columns={columns} dataSource={certificates} />
 }
 
-const useCertificate = (condition: hasura.GET_CERTIFICATEVariables['condition']) => {
-  const { loading, error, data } = useQuery<hasura.GET_CERTIFICATE, hasura.GET_CERTIFICATEVariables>(GET_CERTIFICATE, {
-    variables: {
-      condition,
+const useCertificate = (condition: hasura.GET_CERTIFICATE_PREVIEWVariables['condition']) => {
+  const { loading, error, data } = useQuery<hasura.GET_CERTIFICATE_PREVIEW, hasura.GET_CERTIFICATE_PREVIEWVariables>(
+    GET_CERTIFICATE_PREVIEW,
+    {
+      variables: {
+        condition,
+      },
     },
-  })
+  )
 
-  const certificates: Certificate[] =
+  const certificates: CertificateColumn[] =
     data?.certificate.map(v => ({
       id: v.id,
       title: v.title,
-      description: v.description,
-      qualification: v.qualification,
-      periodType: v.period_type as 'D' | 'W' | 'M' | 'Y',
-      periodAmount: v.period_amount,
-      author: {
-        id: v.certificate_template?.author?.id || '',
-        name: v.certificate_template?.author?.name || '',
-      },
       certificateTemplate: {
         id: v.certificate_template?.id,
-        title: v.certificate_template?.title || '',
         template: v.certificate_template?.template || '',
         backgroundImage: v.certificate_template?.background_image || '',
-        author: {
-          id: v.certificate_template?.author?.id || '',
-          name: v.certificate_template?.author?.name || '',
-        },
       },
     })) || []
 
@@ -136,28 +133,15 @@ const useCertificate = (condition: hasura.GET_CERTIFICATEVariables['condition'])
   }
 }
 
-const GET_CERTIFICATE = gql`
-  query GET_CERTIFICATE($condition: certificate_bool_exp!) {
+const GET_CERTIFICATE_PREVIEW = gql`
+  query GET_CERTIFICATE_PREVIEW($condition: certificate_bool_exp!) {
     certificate(where: $condition) {
       id
       title
-      description
-      qualification
-      period_type
-      period_amount
-      author {
-        id
-        name
-      }
       certificate_template {
         id
-        title
         template
         background_image
-        author {
-          id
-          name
-        }
       }
     }
   }
