@@ -322,7 +322,7 @@ export const routesProps = {
   },
   certificate: {
     path: '/certificate/:certificateId',
-    pageName: 'CertificateAdminpage',
+    pageName: 'CertificateAdminPage',
     authenticated: true,
   },
   // member
