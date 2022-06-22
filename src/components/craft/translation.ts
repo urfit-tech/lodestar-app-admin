@@ -139,12 +139,6 @@ const craftMessages = {
   BorderStyleInput: defineMessages({
     radius: { id: 'craft.BorderStyleInput.radius', defaultMessage: '弧度' },
   }),
-  TypographyStyleInput: defineMessages({
-    boxModelInputWarning: {
-      id: 'craft.text.boxModelInputWarning',
-      defaultMessage: '請填入以下格式，5;3;5;3',
-    },
-  }),
   PositionStyleInput: defineMessages({
     none: { id: 'craft.PositionStyleInput.none', defaultMessage: '無框線' },
     solid: { id: 'craft.PositionStyleInput.solid', defaultMessage: '實線' },
@@ -157,6 +151,15 @@ const craftMessages = {
     none: { id: 'craft.BackgroundStyleInput.none', defaultMessage: '無' },
     solid: { id: 'craft.BackgroundStyleInput.solid', defaultMessage: '純色' },
     image: { id: 'craft.BackgroundStyleInput.image', defaultMessage: '圖片' },
+  }),
+  SpaceStyleInput: defineMessages({
+    spacing: { id: 'craft.inputs.spacing', defaultMessage: 'spacing' },
+    margin: { id: 'craft.inputs.margin', defaultMessage: 'margin' },
+    padding: { id: 'craft.inputs.padding', defaultMessage: 'padding' },
+    top: { id: 'craft.label.top', defaultMessage: 'top' },
+    right: { id: 'craft.label.right', defaultMessage: 'right' },
+    bottom: { id: 'craft.label.bottom', defaultMessage: 'bottom' },
+    left: { id: 'craft.label.left', defaultMessage: 'left' },
   }),
 }
 

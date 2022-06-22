@@ -1151,7 +1151,6 @@
   "craft.settings.responsiveSelector.desktop": " Máy tính để bàn ",
   "craft.settings.responsiveSelector.mobile": " Di động ",
   "craft.settings.responsiveSelector.tablet": " Máy tính bảng ",
-  "craft.text.boxModelInputWarning": " Vui lòng điền vào định dạng sau, 5; 3; 5; 3",
   "craft.text.chooseCategories": " Chọn danh mục ",
   "craft.text.chooseTags": " Chọn thẻ ",
   "craft.text.deletePageConfirmation": " Khi một trang bị xóa, nó sẽ không thể khôi phục được. Bạn có chắc chắn muốn xóa nó không? ",

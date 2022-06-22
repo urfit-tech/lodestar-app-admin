@@ -1,10 +1,11 @@
 import { Form, Input, InputNumber, Radio } from 'antd'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled, { CSSObject } from 'styled-components'
 import SampleMargin from '../../../images/icon/sample-margin.svg'
 import SamplePadding from '../../../images/icon/sample-padding.svg'
 import { CraftSettingLabel } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
+import craftMessages from '../translation'
 
 const StyledLabel = styled(CraftSettingLabel)`
   width: 25%;
@@ -32,15 +33,7 @@ const pxFormatter = (value?: string | number) => {
 }
 
 export type SpaceStyle = Pick<CSSObject, 'margin' | 'padding'>
-const messages = defineMessages({
-  spacing: { id: 'craft.inputs.spacing', defaultMessage: '間距' },
-  margin: { id: 'craft.inputs.margin', defaultMessage: '外距' },
-  padding: { id: 'craft.inputs.padding', defaultMessage: '內距' },
-  top: { id: 'craft.label.top', defaultMessage: '上' },
-  right: { id: 'craft.label.right', defaultMessage: '右' },
-  bottom: { id: 'craft.label.bottom', defaultMessage: '下' },
-  left: { id: 'craft.label.left', defaultMessage: '左' },
-})
+
 const SpaceStyleInput: React.VFC<{
   value?: SpaceStyle
   onChange?: (value: SpaceStyle) => void
@@ -77,7 +70,7 @@ const SpaceStyleInput: React.VFC<{
   const { formatMessage } = useIntl()
   return (
     <>
-      <Form.Item label={<CraftSettingLabel>{formatMessage(messages.spacing)}</CraftSettingLabel>}>
+      <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages.SpaceStyleInput.spacing)}</CraftSettingLabel>}>
         <div className="d-flex justify-content-between align-items-center">
           <Radio.Group
             defaultValue="padding"
@@ -86,17 +79,17 @@ const SpaceStyleInput: React.VFC<{
               setSpaceTab(e.target.value)
             }}
           >
-            <Radio.Button value="padding">{formatMessage(messages.padding)}</Radio.Button>
-            <Radio.Button value="margin">{formatMessage(messages.margin)}</Radio.Button>
+            <Radio.Button value="padding">{formatMessage(craftMessages.SpaceStyleInput.padding)}</Radio.Button>
+            <Radio.Button value="margin">{formatMessage(craftMessages.SpaceStyleInput.margin)}</Radio.Button>
           </Radio.Group>
           <img src={spaceTab === 'margin' ? SampleMargin : SamplePadding} alt="sample-margin" />
         </div>
         <div className="mt-3">
           <div className="d-flex align-items-center">
-            <StyledLabel>{formatMessage(messages.top)}</StyledLabel>
-            <StyledLabel>{formatMessage(messages.right)}</StyledLabel>
-            <StyledLabel>{formatMessage(messages.bottom)}</StyledLabel>
-            <StyledLabel>{formatMessage(messages.left)}</StyledLabel>
+            <StyledLabel>{formatMessage(craftMessages.SpaceStyleInput.top)}</StyledLabel>
+            <StyledLabel>{formatMessage(craftMessages.SpaceStyleInput.right)}</StyledLabel>
+            <StyledLabel>{formatMessage(craftMessages.SpaceStyleInput.bottom)}</StyledLabel>
+            <StyledLabel>{formatMessage(craftMessages.SpaceStyleInput.left)}</StyledLabel>
           </div>
           <Input.Group>
             <StyledInputNumber

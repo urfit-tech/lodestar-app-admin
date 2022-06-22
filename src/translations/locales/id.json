@@ -1151,7 +1151,6 @@
   "craft.settings.responsiveSelector.desktop": "Desktop",
   "craft.settings.responsiveSelector.mobile": "Seluler",
   "craft.settings.responsiveSelector.tablet": "Tablet",
-  "craft.text.boxModelInputWarning": "Silahkan isi format berikut, 5;3;5;3",
   "craft.text.chooseCategories": "Pilih Kategori",
   "craft.text.chooseTags": "Pilih Tag",
   "craft.text.deletePageConfirmation": "Setelah halaman dihapus, halaman tersebut tidak dapat dipulihkan. Apakah Anda yakin ingin menghapusnya?",

@@ -1151,7 +1151,6 @@
   "craft.settings.responsiveSelector.desktop": "桌面",
   "craft.settings.responsiveSelector.mobile": "手机",
   "craft.settings.responsiveSelector.tablet": "平板",
-  "craft.text.boxModelInputWarning": "请填入以下格式， 5;3;5;3",
   "craft.text.chooseCategories": "选择分类",
   "craft.text.chooseTags": "选择标签",
   "craft.text.deletePageConfirmation": "页面一经删除即不可恢复，确定要删除吗？ ",
