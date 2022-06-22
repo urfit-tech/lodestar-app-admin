@@ -71,10 +71,7 @@ const SpaceStyleInput: React.VFC<{
   }
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>, order: number) => {
-    if (e.target instanceof Element) {
-      let value = e.target.getAttribute('value')
-      onSpacingChange(value, order)
-    }
+    onSpacingChange(e.currentTarget.value, order)
   }
 
   const { formatMessage } = useIntl()
