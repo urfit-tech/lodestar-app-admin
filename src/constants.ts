@@ -76,7 +76,7 @@ export const paymentMethods: {
       { installmentPlan: 18, fee: 0.06 },
       { installmentPlan: 24, fee: 0.075 },
       { installmentPlan: 30, fee: 0.09 },
-      { installmentPlan: 36, fee: 0.12 },
+      { installmentPlan: 36, fee: 0.1 },
     ],
   },
   {
