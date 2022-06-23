@@ -2,13 +2,14 @@ import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Popover, Tag } from 'antd'
 import gql from 'graphql-tag'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { commonMessages, programPackageMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import PositionAdminLayout, {
@@ -19,8 +20,8 @@ import PositionAdminLayout, {
   OverlayWrapper,
 } from '../admin/PositionAdminLayout'
 import ProductSkuModal from '../common/ProductSkuModal'
-import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
+import programPackageMessages from './translation'
 
 const messages = defineMessages({
   people: { id: 'programPackage.label.people', defaultMessage: '人' },
@@ -105,10 +106,10 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                     programPackageId={programPackageId}
                     onRefetch={onRefetch}
                     plan={plan}
-                    title={formatMessage(programPackageMessages.ui.editPlan)}
+                    title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
                     renderTrigger={({ setVisible }) => (
                       <StyledButton block icon={<EditOutlined />} onClick={() => setVisible?.(true)}>
-                        {formatMessage(programPackageMessages.ui.editPlan)}
+                        {formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
                       </StyledButton>
                     )}
                   />
@@ -149,10 +150,16 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                         <StyledButton block className="mt-4" onClick={() => onOpen?.()}>
                           <Icon component={() => <BarcodeOutlined />} />
                           {sku
-                            ? `${formatMessage(commonMessages.label.sku)}: ${sku}`
-                            : formatMessage(commonMessages.label.skuSetting)}
+                            ? `${formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}: ${sku}`
+                            : formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)}
                         </StyledButton>
                       )}
+                      renderTitle={() =>
+                        formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)
+                      }
+                      renderInputLabel={() =>
+                        formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)
+                      }
                     />
                   )}
                 </div>
