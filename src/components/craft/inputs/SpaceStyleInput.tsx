@@ -40,6 +40,10 @@ const SpaceStyleInput: React.VFC<{
 }> = ({ value, onChange }) => {
   const [spaceTab, setSpaceTab] = useState('padding')
 
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>, order: number) => {
+    onSpacingChange(e.currentTarget.value, order)
+  }
+
   const paddingArr: string[] | null =
     typeof value?.padding === 'string' && value.padding.split(' ').length === 4
       ? value?.padding.split(' ')
@@ -61,10 +65,6 @@ const SpaceStyleInput: React.VFC<{
       let padding = paddingArr.join(' ')
       onChange?.({ ...value, padding })
     }
-  }
-
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>, order: number) => {
-    onSpacingChange(e.currentTarget.value, order)
   }
 
   const { formatMessage } = useIntl()
