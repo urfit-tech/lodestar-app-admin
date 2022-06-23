@@ -13833,6 +13833,123 @@ export interface INSERT_POSTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CERTIFICATE
+// ====================================================
+
+export interface GET_CERTIFICATE_certificate_by_pk_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_CERTIFICATE_certificate_by_pk_certificate_template_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_CERTIFICATE_certificate_by_pk_certificate_template {
+  __typename: "certificate_template";
+  id: any;
+  title: string;
+  template: string;
+  background_image: string;
+  /**
+   * An object relationship
+   */
+  author: GET_CERTIFICATE_certificate_by_pk_certificate_template_author | null;
+}
+
+export interface GET_CERTIFICATE_certificate_by_pk {
+  __typename: "certificate";
+  id: any;
+  title: string;
+  description: string | null;
+  qualification: string | null;
+  code: string | null;
+  period_type: string | null;
+  period_amount: any | null;
+  /**
+   * An object relationship
+   */
+  author: GET_CERTIFICATE_certificate_by_pk_author | null;
+  /**
+   * An object relationship
+   */
+  certificate_template: GET_CERTIFICATE_certificate_by_pk_certificate_template | null;
+}
+
+export interface GET_CERTIFICATE {
+  /**
+   * fetch data from the table: "certificate" using primary key columns
+   */
+  certificate_by_pk: GET_CERTIFICATE_certificate_by_pk | null;
+}
+
+export interface GET_CERTIFICATEVariables {
+  certificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CERTIFICATE_BASIC
+// ====================================================
+
+export interface UPDATE_CERTIFICATE_BASIC_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CERTIFICATE_BASIC {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: UPDATE_CERTIFICATE_BASIC_update_certificate | null;
+}
+
+export interface UPDATE_CERTIFICATE_BASICVariables {
+  certificateId: any;
+  title?: string | null;
+  certificateTemplateId: any;
+  qualification?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CERTIFICATE_TEMPLATE
+// ====================================================
+
+export interface GET_CERTIFICATE_TEMPLATE_certificate_template {
+  __typename: "certificate_template";
+  id: any;
+  title: string;
+  background_image: string;
+}
+
+export interface GET_CERTIFICATE_TEMPLATE {
+  /**
+   * fetch data from the table: "certificate_template"
+   */
+  certificate_template: GET_CERTIFICATE_TEMPLATE_certificate_template[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_CERTIFICATE
 // ====================================================
 
@@ -22873,6 +22990,7 @@ export interface certificate_bool_exp {
   author_id?: String_comparison_exp | null;
   certificate_template?: certificate_template_bool_exp | null;
   certificate_template_id?: uuid_comparison_exp | null;
+  code?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;

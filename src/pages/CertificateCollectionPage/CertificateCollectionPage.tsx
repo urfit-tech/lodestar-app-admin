@@ -59,7 +59,7 @@ const CertificateCollectionPage: React.VFC = () => {
       <div className="mb-3 d-flex justify-content-between align-items-center">
         <AdminPageTitle className="d-flex align-items-center mb-0">
           <CertificateIcon className="mr-3" />
-          <span>{formatMessage(pageMessages.CertificateCollectionPage.certificateSetting)}</span>
+          <span>{formatMessage(pageMessages['*'].certificateSetting)}</span>
         </AdminPageTitle>
       </div>
 

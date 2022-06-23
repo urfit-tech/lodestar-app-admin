@@ -2,6 +2,17 @@ import { defineMessages } from 'react-intl'
 
 const pageMessages = {
   '*': defineMessages({
+    save: { id: 'page.*.save', defaultMessage: '儲存' },
+    cancel: { id: 'page.*.cancel', defaultMessage: '取消' },
+    hasExpirationDate: { id: 'page.*.hasExpirationDate', defaultMessage: 'has expiration date' },
+    noExpirationDate: { id: 'page.*.noExpirationDate', defaultMessage: 'no expiration date' },
+    basicSettings: { id: 'page.*.basicSettings', defaultMessage: '基本設定' },
+    preview: { id: 'page.*.preview', defaultMessage: '預覽' },
+    year: { id: 'page.*.year', defaultMessage: 'year' },
+    month: { id: 'page.*.year', defaultMessage: 'month' },
+    week: { id: 'page.*.week', defaultMessage: 'week' },
+    day: { id: 'page.*.year', defaultMessage: 'day' },
+    hour: { id: 'page.*.year', defaultMessage: 'hour' },
     title: { id: 'page.*.title', defaultMessage: '名稱' },
     published: { id: 'page.*.published', defaultMessage: '已發佈' },
     unpublished: { id: 'page.*.unpublished', defaultMessage: '尚未發佈' },
@@ -47,6 +58,10 @@ const pageMessages = {
     unavailable: { id: 'page.*.unavailable', defaultMessage: '已失效' },
     vouchers: { id: 'page.*.voucherPlans', defaultMessage: '兌換方案' },
     createVoucherPlan: { id: 'page.*.createVoucherPlan', defaultMessage: '建立兌換方案' },
+    eligibilityList: { id: 'page.*.eligibilityList', defaultMessage: '資格名單' },
+    certificateSetting: { id: 'page.*.certificateSetting', defaultMessage: '證書設定' },
+    publishSettings: { id: 'page.*.publishSettings', defaultMessage: '發佈設定' },
+    successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: '儲存成功' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -188,10 +203,22 @@ const pageMessages = {
   }),
   CertificateCollectionPage: defineMessages({
     createCertificate: { id: 'page.CertificateCollectionPage.createCertificate', defaultMessage: '新增證書' },
-    certificateSetting: { id: 'page.CertificateCollectionPage.certificateSetting', defaultMessage: '證書設定' },
   }),
-  CertificateCollectionTable: defineMessages({
-    eligibilityList: { id: 'page.CertificateCollectionTable.eligibilityList', defaultMessage: '資格名單' },
+  CertificateAdminPage: defineMessages({
+    certificateIntro: { id: 'page.CertificateAdminPage.certificateIntro', defaultMessage: '證書介紹' },
+  }),
+  CertificateBasicForm: defineMessages({
+    certificateTitle: { id: 'page.CertificateBasicForm.certificateTitle', defaultMessage: '證書名稱' },
+    certificateTemplate: { id: 'page.CertificateBasicForm.CertificateCollectionTable', defaultMessage: '證書樣板' },
+    qualification: { id: 'page.CertificateBasicForm.qualification', defaultMessage: '學習時數' },
+    expirationDate: { id: 'page.CertificateBasicForm.expirationDate', defaultMessage: '證書效期' },
+    certificateTemplateIsRequired: {
+      id: 'page.CertificateBasicForm.certificateTemplateIsRequired',
+      defaultMessage: 'Please select a template.',
+    },
+  }),
+  CertificateSelector: defineMessages({
+    selectTemplate: { id: 'page.CertificateSelector.selectTemplate', defaultMessage: 'select template' },
   }),
 }
 

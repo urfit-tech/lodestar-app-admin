@@ -92,7 +92,7 @@ const CertificateCollectionTable: React.VFC<{
           className="text-center"
           to={`${process.env.PUBLIC_URL}/certificates/${record.id}?tab=eligibilityList`}
         >
-          {formatMessage(pageMessages.CertificateCollectionTable.eligibilityList)}
+          {formatMessage(pageMessages['*'].eligibilityList)}
         </StyledLink>
       ),
     },
