@@ -153,13 +153,13 @@ const craftMessages = {
     image: { id: 'craft.BackgroundStyleInput.image', defaultMessage: '圖片' },
   }),
   SpaceStyleInput: defineMessages({
-    spacing: { id: 'craft.inputs.spacing', defaultMessage: 'spacing' },
-    margin: { id: 'craft.inputs.margin', defaultMessage: 'margin' },
-    padding: { id: 'craft.inputs.padding', defaultMessage: 'padding' },
-    top: { id: 'craft.label.top', defaultMessage: 'top' },
-    right: { id: 'craft.label.right', defaultMessage: 'right' },
-    bottom: { id: 'craft.label.bottom', defaultMessage: 'bottom' },
-    left: { id: 'craft.label.left', defaultMessage: 'left' },
+    spacing: { id: 'craft.SpaceStyleInput.spacing', defaultMessage: 'spacing' },
+    margin: { id: 'craft.SpaceStyleInput.margin', defaultMessage: 'margin' },
+    padding: { id: 'craft.SpaceStyleInput.padding', defaultMessage: 'padding' },
+    top: { id: 'craft.SpaceStyleInput.top', defaultMessage: 'top' },
+    right: { id: 'craft.SpaceStyleInput.right', defaultMessage: 'right' },
+    bottom: { id: 'craft.SpaceStyleInput.bottom', defaultMessage: 'bottom' },
+    left: { id: 'craft.SpaceStyleInput.left', defaultMessage: 'left' },
   }),
 }
 
