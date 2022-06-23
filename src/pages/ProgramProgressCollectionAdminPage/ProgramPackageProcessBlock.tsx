@@ -155,7 +155,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
             })
           })
         })
-        downloadCSV('learning_program_package_' + moment().format('MMDDSSS'), toCSV(rows))
+        downloadCSV('learning_program_package_' + moment().format('MMDDSSS'), toCSV(uniq(rows)))
       })
       .catch(error => {
         message.error(error)

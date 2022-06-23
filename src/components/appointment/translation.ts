@@ -21,6 +21,7 @@ const appointmentMessages = {
       id: 'appointment.AppointmentPeriodCard.appointmentCanceledAt',
       defaultMessage: '已於 {time} 取消預約',
     },
+    cancelAppointment: { id: 'appointment.AppointmentPeriodCard.cancelAppointment', defaultMessage: '取消預約' },
   }),
   AppointmentDetailModal: defineMessages({
     email: { id: 'appointmentMessages.AppointmentDetailModal.email', defaultMessage: '信箱' },
@@ -48,6 +49,21 @@ const appointmentMessages = {
     appointmentResultNotation: {
       id: 'appointmentMessages.AppointmentIssueAndResultModal.appointmentResultNotation',
       defaultMessage: '※此紀錄不會公開給學員看到',
+    },
+  }),
+
+  AppointmentCancelModal: defineMessages({
+    confirmCancelAlert: {
+      id: 'appointmentMessages.AppointmentCancelModal.confirmCancelAlert',
+      defaultMessage: '確定要取消預約嗎？',
+    },
+    confirmCancelNotation: {
+      id: 'appointmentMessages.AppointmentCancelModal.confirmCancelNotation',
+      defaultMessage: '取消預約後將會寄送通知給諮詢老師，並重新開放此時段，若需退費請主動聯繫平台。',
+    },
+    canceledReason: {
+      id: 'appointmentMessages.AppointmentCancelModal.canceledReason',
+      defaultMessage: '取消原因',
     },
   }),
 }
