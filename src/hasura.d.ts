@@ -13927,6 +13927,35 @@ export interface UPDATE_CERTIFICATE_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_CERTIFICATE_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_CERTIFICATE_DESCRIPTION_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CERTIFICATE_DESCRIPTION {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: UPDATE_CERTIFICATE_DESCRIPTION_update_certificate | null;
+}
+
+export interface UPDATE_CERTIFICATE_DESCRIPTIONVariables {
+  description?: string | null;
+  certificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_CERTIFICATE_TEMPLATE
 // ====================================================
 

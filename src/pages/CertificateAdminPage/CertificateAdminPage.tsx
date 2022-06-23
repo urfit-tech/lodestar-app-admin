@@ -21,6 +21,7 @@ import { Certificate } from '../../types/certificate'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import CertificateBasicForm from './CertificateBasicForm'
+import CertificateDescriptionForm from './CertificateDescriptionForm'
 
 const CertificateAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -75,7 +76,7 @@ const CertificateAdminPage: React.VFC = () => {
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
-                {/* <CertificateBasicForm certificate={certificate} onRefetch={refetch} /> */}
+                <CertificateDescriptionForm certificate={certificate} onRefetch={refetch} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
