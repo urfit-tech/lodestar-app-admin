@@ -3,6 +3,7 @@ export type Certificate = {
   title: string
   description: string | null
   qualification: string | null
+  code: string | null
   periodType: 'D' | 'W' | 'M' | 'Y'
   periodAmount: number
   author: {
