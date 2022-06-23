@@ -321,7 +321,7 @@ export const routesProps = {
     authenticated: true,
   },
   certificate: {
-    path: '/certificate/:certificateId',
+    path: '/certificates/:certificateId',
     pageName: 'CertificateAdminPage',
     authenticated: true,
   },
