@@ -15,7 +15,7 @@ type FieldProps = {
   description: EditorState
 }
 
-const CertificateDescriptionForm: React.FC<{
+const CertificateIntroForm: React.FC<{
   certificate: Pick<Certificate, 'id' | 'description'> | null
   onRefetch?: () => void
 }> = ({ certificate, onRefetch }) => {
@@ -51,17 +51,24 @@ const CertificateDescriptionForm: React.FC<{
     <>
       <Form
         form={form}
-        layout="vertical"
+        colon={false}
+        labelAlign="left"
+        labelCol={{ md: { span: 4 } }}
+        wrapperCol={{ md: { span: 10 } }}
         initialValues={{
           description: BraftEditor.createEditorState(certificate.description),
         }}
         onFinish={handleSubmit}
       >
-        <Form.Item name="description">
+        <Form.Item
+          name="description"
+          label={formatMessage(pageMessages.CertificateIntroForm.certificateDescription)}
+          wrapperCol={{ md: { span: 20 } }}
+        >
           <AdminBraftEditor />
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(pageMessages['*'].cancel)}
           </Button>
@@ -82,4 +89,4 @@ const UPDATE_CERTIFICATE_DESCRIPTION = gql`
   }
 `
 
-export default CertificateDescriptionForm
+export default CertificateIntroForm

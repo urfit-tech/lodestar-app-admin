@@ -220,6 +220,9 @@ const pageMessages = {
   CertificateSelector: defineMessages({
     selectTemplate: { id: 'page.CertificateSelector.selectTemplate', defaultMessage: 'select template' },
   }),
+  CertificateIntroForm: defineMessages({
+    certificateDescription: { id: 'page.CertificateIntroForm.certificateDescription', defaultMessage: 'Description' },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },
