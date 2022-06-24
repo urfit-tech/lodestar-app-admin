@@ -62,6 +62,7 @@ const pageMessages = {
     certificateSetting: { id: 'page.*.certificateSetting', defaultMessage: '證書設定' },
     publishSettings: { id: 'page.*.publishSettings', defaultMessage: '發佈設定' },
     successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: '儲存成功' },
+    deleteProductDanger: { id: 'page.*.deleteProductDanger', defaultMessage: '*已購買者在刪除後仍可觀看。' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -206,6 +207,10 @@ const pageMessages = {
   }),
   CertificateAdminPage: defineMessages({
     certificateIntro: { id: 'page.CertificateAdminPage.certificateIntro', defaultMessage: '證書介紹' },
+    deleteCertificateDangerText: {
+      id: 'page.CertificateAdminPage.deleteCertificateDangerText',
+      defaultMessage: '*已收到證書在刪除後仍可觀看。',
+    },
   }),
   CertificateBasicForm: defineMessages({
     certificateTitle: { id: 'page.CertificateBasicForm.certificateTitle', defaultMessage: '證書名稱' },

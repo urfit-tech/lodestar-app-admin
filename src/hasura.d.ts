@@ -1805,6 +1805,34 @@ export interface ARCHIVE_MERCHANDISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: ARCHIVE_CERTIFICATE
+// ====================================================
+
+export interface ARCHIVE_CERTIFICATE_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_CERTIFICATE {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: ARCHIVE_CERTIFICATE_update_certificate | null;
+}
+
+export interface ARCHIVE_CERTIFICATEVariables {
+  certificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -25727,7 +25755,7 @@ export interface member_certificate_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
-  member_id?: uuid_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
   number?: String_comparison_exp | null;
   values?: jsonb_comparison_exp | null;
 }

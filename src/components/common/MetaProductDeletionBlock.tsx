@@ -1,46 +1,17 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
 import { useTransformProductToString } from '../../hooks/data'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import AdminModal from '../admin/AdminModal'
-
-// TODO: import from element, after package.json element version update
-export type MetaProductType =
-  | 'Program'
-  | 'ProgramPackage'
-  | 'Project'
-  | 'Activity'
-  | 'Merchandise'
-  | 'PodcastProgram'
-  | 'PodcastAlbum'
-  | 'Post'
-
-const messages = defineMessages({
-  deleteProduct: {
-    id: 'common.ui.deleteProduct',
-    defaultMessage: '刪除{metaProduct}',
-  },
-  deleteConfirmation: {
-    id: 'common.text.deleteConfirmation',
-    defaultMessage: '{metaProduct}一經刪除即不可恢復，確定要刪除嗎？',
-  },
-  deleteProductWarning: {
-    id: 'program.text.deleteProductWarning',
-    defaultMessage: '請仔細確認是否真的要刪除{metaProduct}，因為一旦刪除就無法恢復。',
-  },
-  deleteProductDanger: {
-    id: 'program.text.deleteProductDanger',
-    defaultMessage: '*已購買者在刪除後仍可觀看。',
-  },
-})
+import commonMessages from './translation'
 
 const StyledText = styled.div`
   color: ${props => props.theme['@primary-color']};
@@ -50,12 +21,14 @@ const StyledText = styled.div`
 const MetaProductDeletionBlock: React.FC<{
   metaProductType: MetaProductType
   targetId: string
+  renderDeleteDangerText?: string
   options?: { memberShopId: string }
-}> = ({ metaProductType, targetId, options }) => {
+}> = ({ metaProductType, targetId, renderDeleteDangerText, options }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const history = useHistory()
-  const { archiveActivity, archiveProgram, archivePost, archiveMerchandise } = useArchiveMetaProduct()
+  const { archiveActivity, archiveProgram, archivePost, archiveMerchandise, archiveCertificate } =
+    useArchiveMetaProduct()
 
   let metaProduct = ''
   metaProduct = useTransformProductToString(metaProductType)
@@ -68,7 +41,7 @@ const MetaProductDeletionBlock: React.FC<{
           variables: { programId: targetId },
         })
           .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullyDeleted))
+            message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
             history.push(`/programs`)
           })
           .catch(handleError)
@@ -76,7 +49,7 @@ const MetaProductDeletionBlock: React.FC<{
       case 'Activity':
         archiveActivity({ variables: { activityId: targetId } })
           .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullyDeleted))
+            message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
             history.push(`/activities`)
           })
           .catch(handleError)
@@ -85,7 +58,7 @@ const MetaProductDeletionBlock: React.FC<{
       case 'Post':
         archivePost({ variables: { postId: targetId } })
           .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullyDeleted))
+            message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
             history.push(`/blog`)
           })
           .catch(handleError)
@@ -94,8 +67,17 @@ const MetaProductDeletionBlock: React.FC<{
       case 'Merchandise':
         archiveMerchandise({ variables: { merchandiseId: targetId } })
           .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullyDeleted))
+            message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
             history.push(`/member-shops/${options?.memberShopId}`)
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+        break
+      case 'Certificate':
+        archiveCertificate({ variables: { certificateId: targetId } })
+          .then(() => {
+            message.success(formatMessage(commonMessages.MetaProductDeletionBlock.successfullyDeleted))
+            history.push(`/certificates`)
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -109,35 +91,36 @@ const MetaProductDeletionBlock: React.FC<{
 
   return (
     <AdminBlock>
-      <AdminBlockTitle>{formatMessage(messages.deleteProduct, { metaProduct })}</AdminBlockTitle>
+      <AdminBlockTitle>
+        {formatMessage(commonMessages.MetaProductDeletionBlock.deleteProduct, { metaProduct })}
+      </AdminBlockTitle>
       <div className="d-flex align-items-center justify-content-between">
         <div>
-          <div className="mb-2">{formatMessage(messages.deleteProductWarning, { metaProduct })}</div>
-          {metaProductType === ('Program' || 'ProgramPackage') ? (
-            <StyledText>{formatMessage(messages.deleteProductDanger)}</StyledText>
-          ) : null}
+          <div className="mb-2">
+            {formatMessage(commonMessages.MetaProductDeletionBlock.deleteProductWarning, { metaProduct })}
+          </div>
+          {renderDeleteDangerText ? <StyledText>{renderDeleteDangerText}</StyledText> : null}
         </div>
 
         <AdminModal
-          title={formatMessage(messages.deleteProduct, { metaProduct })}
+          title={formatMessage(commonMessages.MetaProductDeletionBlock.deleteProduct, { metaProduct })}
           renderTrigger={({ setVisible }) => (
             <Button type="primary" danger onClick={() => setVisible(true)}>
-              {formatMessage(messages.deleteProduct, { metaProduct })}
+              {formatMessage(commonMessages.MetaProductDeletionBlock.deleteProduct, { metaProduct })}
             </Button>
           )}
-          okText={formatMessage(commonMessages.ui.delete)}
+          okText={formatMessage(commonMessages.MetaProductDeletionBlock.delete)}
           okButtonProps={{ danger: true, loading }}
-          cancelText={formatMessage(commonMessages.ui.back)}
+          cancelText={formatMessage(commonMessages.MetaProductDeletionBlock.back)}
           onOk={() => handleArchive(metaProductType, targetId)}
         >
-          <div>{formatMessage(messages.deleteConfirmation, { metaProduct })}</div>
+          <div>{formatMessage(commonMessages.MetaProductDeletionBlock.deleteConfirmation, { metaProduct })}</div>
         </AdminModal>
       </div>
     </AdminBlock>
   )
 }
 
-// program, activity, program_package, blog, merchandise
 const useArchiveMetaProduct = () => {
   const [archiveActivity] = useMutation<hasura.ARCHIVE_ACTIVITY, hasura.ARCHIVE_ACTIVITYVariables>(gql`
     mutation ARCHIVE_ACTIVITY($activityId: uuid) {
@@ -170,7 +153,15 @@ const useArchiveMetaProduct = () => {
       }
     }
   `)
-  return { archiveActivity, archiveProgram, archivePost, archiveMerchandise }
+
+  const [archiveCertificate] = useMutation<hasura.ARCHIVE_CERTIFICATE, hasura.ARCHIVE_CERTIFICATEVariables>(gql`
+    mutation ARCHIVE_CERTIFICATE($certificateId: uuid!) {
+      update_certificate(where: { id: { _eq: $certificateId } }, _set: { deleted_at: "now()" }) {
+        affected_rows
+      }
+    }
+  `)
+  return { archiveActivity, archiveProgram, archivePost, archiveMerchandise, archiveCertificate }
 }
 
 export default MetaProductDeletionBlock

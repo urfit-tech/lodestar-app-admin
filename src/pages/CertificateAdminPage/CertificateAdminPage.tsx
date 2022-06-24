@@ -15,6 +15,7 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../components/admin'
+import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
 import { Certificate } from '../../types/certificate'
@@ -78,6 +79,11 @@ const CertificateAdminPage: React.VFC = () => {
                 <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
                 <CertificateIntroForm certificate={certificate} onRefetch={refetch} />
               </AdminBlock>
+              <MetaProductDeletionBlock
+                metaProductType="Certificate"
+                targetId={certificateId}
+                renderDeleteDangerText={formatMessage(pageMessages.CertificateAdminPage.deleteCertificateDangerText)}
+              />
             </div>
           </Tabs.TabPane>
 
