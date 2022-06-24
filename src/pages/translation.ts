@@ -237,6 +237,14 @@ const pageMessages = {
       id: 'page.CertificatePublishAdminBlock.noCertificateTemplate',
       defaultMessage: '尚未選擇證書樣板',
     },
+    unPublishedCertificateText: {
+      id: 'page.CertificatePublishAdminBlock.unPublishedCertificateText',
+      defaultMessage: '你的證書未發佈，此證書並不會顯示在前台。',
+    },
+    publishedCertificateText: {
+      id: 'page.CertificatePublishAdminBlock.publishedCertificateText',
+      defaultMessage: '現在你的證書已公開發佈，此證書可公開挑戰。',
+    },
   }),
 }
 

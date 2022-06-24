@@ -48,9 +48,15 @@ const CertificatePublishAdminBlock: React.VFC<{
     publishStatus === 'alert'
       ? [formatMessage(commonMessages.status.notComplete), formatMessage(craftPageMessages.text.notCompleteNotation)]
       : publishStatus === 'ordinary'
-      ? [formatMessage(commonMessages.status.unpublished), formatMessage(craftPageMessages.text.unpublishedNotation)]
+      ? [
+          formatMessage(commonMessages.status.unpublished),
+          formatMessage(pageMessages.CertificatePublishAdminBlock.unPublishedCertificateText),
+        ]
       : publishStatus === 'success'
-      ? [formatMessage(commonMessages.status.published), formatMessage(craftPageMessages.text.publishedNotation)]
+      ? [
+          formatMessage(commonMessages.status.published),
+          formatMessage(pageMessages.CertificatePublishAdminBlock.publishedCertificateText),
+        ]
       : ['', '']
 
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
