@@ -88,10 +88,7 @@ const CertificateCollectionTable: React.VFC<{
       title: '',
       width: '20%',
       render: (_, record) => (
-        <StyledLink
-          className="text-center"
-          to={`${process.env.PUBLIC_URL}/certificates/${record.id}?tab=eligibilityList`}
-        >
+        <StyledLink className="text-center" to={`/certificates/${record.id}?tab=eligibilityList`}>
           {formatMessage(pageMessages['*'].eligibilityList)}
         </StyledLink>
       ),
