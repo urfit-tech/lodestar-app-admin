@@ -13905,6 +13905,7 @@ export interface GET_CERTIFICATE_certificate_by_pk {
    * An object relationship
    */
   certificate_template: GET_CERTIFICATE_certificate_by_pk_certificate_template | null;
+  published_at: any | null;
 }
 
 export interface GET_CERTIFICATE {
@@ -13976,6 +13977,35 @@ export interface UPDATE_CERTIFICATE_DESCRIPTION {
 export interface UPDATE_CERTIFICATE_DESCRIPTIONVariables {
   description?: string | null;
   certificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_CERTIFICATE
+// ====================================================
+
+export interface PUBLISH_CERTIFICATE_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_CERTIFICATE {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: PUBLISH_CERTIFICATE_update_certificate | null;
+}
+
+export interface PUBLISH_CERTIFICATEVariables {
+  id: any;
+  publishedAt?: any | null;
 }
 
 /* tslint:disable */

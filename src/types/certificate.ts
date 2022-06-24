@@ -11,6 +11,7 @@ export type Certificate = {
     name: string
   }
   certificateTemplate: CertificateTemplate
+  publishedAt: Date | null
 }
 
 export type CertificateTemplate = {

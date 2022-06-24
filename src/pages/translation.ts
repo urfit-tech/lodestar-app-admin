@@ -228,6 +228,16 @@ const pageMessages = {
   CertificateIntroForm: defineMessages({
     certificateDescription: { id: 'page.CertificateIntroForm.certificateDescription', defaultMessage: 'Description' },
   }),
+  CertificatePublishAdminBlock: defineMessages({
+    noCertificateTitle: {
+      id: 'page.CertificatePublishAdminBlock.noCertificateTitle',
+      defaultMessage: '尚未填寫證書名稱',
+    },
+    noCertificateTemplate: {
+      id: 'page.CertificatePublishAdminBlock.noCertificateTemplate',
+      defaultMessage: '尚未選擇證書樣板',
+    },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },

@@ -23,6 +23,7 @@ import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import CertificateBasicForm from './CertificateBasicForm'
 import CertificateIntroForm from './CertificateIntroForm'
+import CertificatePublishAdminBlock from './CertificatePublishAdminBlock'
 
 const CertificateAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -96,12 +97,10 @@ const CertificateAdminPage: React.VFC = () => {
 
           <Tabs.TabPane key="publish" tab={formatMessage(pageMessages['*'].publishSettings)}>
             <div className="container py-5">
-              {/* <AdminPaneTitle>{formatMessage(ProgramAdminPageMessages['*'].publishSettings)}</AdminPaneTitle>
-              <ProgramPublishBlock program={program} onRefetch={refetchProgram} />
+              <AdminPaneTitle>{formatMessage(pageMessages['*'].publishSettings)}</AdminPaneTitle>
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].approvalHistory)}</AdminBlockTitle>
-                <ProgramApprovalHistoryBlock program={program} />
-              </AdminBlock> */}
+                <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} />
+              </AdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>
@@ -137,6 +136,7 @@ const useCertificate = (certificateId: string) => {
               name
             }
           }
+          published_at
         }
       }
     `,
@@ -170,6 +170,7 @@ const useCertificate = (certificateId: string) => {
             name: data?.certificate_by_pk?.certificate_template?.author?.name || '',
           },
         },
+        publishedAt: data?.certificate_by_pk?.published_at ? new Date(data.certificate_by_pk.published_at) : null,
       }
     : null
 
