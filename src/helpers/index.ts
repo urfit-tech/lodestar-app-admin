@@ -83,6 +83,16 @@ export const downloadFile = async (fileName: string, config: AxiosRequestConfig)
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
+export const merchandiseCurrencyFormatter = (value?: number | null, currencyId?: string, coinUnit?: string) => {
+  if (value === null || value === undefined) {
+    return
+  } else if (currencyId === 'LSC') {
+    return `${value} ${coinUnit || 'Coins'}`
+  } else {
+    return `NT$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+}
+
 export const currencyFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `NT$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 

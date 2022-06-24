@@ -1,7 +1,8 @@
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { currencyFormatter } from '../../helpers'
+import { merchandiseCurrencyFormatter } from '../../helpers'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { MerchandisePreviewProps } from '../../types/merchandise'
 import { CustomRatioImage } from '../common/Image'
@@ -41,8 +42,11 @@ const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
   title,
   minPrice,
   maxPrice,
+  currencyId,
   // soldQuantity,
 }) => {
+  const { settings } = useApp()
+  const coinUnit = settings['coin.unit']
   return (
     <Link to={`/merchandises/${id}`}>
       <StyledWrapper className="d-flex align-items-center justify-content-between p-3">
@@ -51,7 +55,8 @@ const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
           <StyledTitle>{title}</StyledTitle>
         </div>
         <StyledPriceLabel className="flex-shrink-0">
-          {currencyFormatter(minPrice)} ~ {currencyFormatter(maxPrice)}
+          {merchandiseCurrencyFormatter(minPrice, currencyId, coinUnit)} ~{' '}
+          {merchandiseCurrencyFormatter(maxPrice, currencyId, coinUnit)}
         </StyledPriceLabel>
         {/* {<StyledQuantityLabel className="flex-shrink-0">{soldQuantity}</StyledQuantityLabel>} */}
       </StyledWrapper>

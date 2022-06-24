@@ -974,6 +974,10 @@ export const merchandiseMessages = {
     specTitle: { id: 'merchandise.label.specTitle', defaultMessage: '規格名稱' },
     specSalePrice: { id: 'merchandise.label.specSalePrice', defaultMessage: '優惠價 (若無請留空)' },
     inventory: { id: 'merchandise.label.inventory', defaultMessage: '庫存' },
+    setSalePrice: { id: 'merchandise.label.setSalePrice', defaultMessage: '設定優惠價' },
+    setSellingTime: { id: 'merchandise.label.setSellingTime', defaultMessage: '限定販售時間' },
+    withSalePrice: { id: 'merchandise.label.withSalePrice', defaultMessage: '開啟優惠價' },
+    showCountdownTimer: { id: 'merchandise.label.showCountdownTimer', defaultMessage: '顯示倒數計時' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
