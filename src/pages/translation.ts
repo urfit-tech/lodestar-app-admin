@@ -256,6 +256,10 @@ const pageMessages = {
   CertificateEligibilityListBlock: defineMessages({
     permanent: { id: 'page.CertificateEligibilityListBlock.Permanent', defaultMessage: '永久有效' },
     revoke: { id: 'page.CertificateEligibilityListBlock.revoke', defaultMessage: '撤銷' },
+    deleteMemberCertificateWarning: {
+      id: 'page.CertificateEligibilityListBlock.deleteMemberCertificateWarning',
+      defaultMessage: '你確定要刪除此會員的證書？此動作無法還原',
+    },
   }),
 }
 

@@ -83,13 +83,14 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
   }
 
   const handleRevoke = (memberCertificateId: string) => {
-    deleteMemberCertificate({
-      variables: {
-        memberCertificateId: memberCertificateId,
-      },
-    })
-      .then(() => onRefetch?.())
-      .catch(handleError)
+    window.confirm(formatMessage(pageMessages.CertificateEligibilityListBlock.deleteMemberCertificateWarning)) &&
+      deleteMemberCertificate({
+        variables: {
+          memberCertificateId: memberCertificateId,
+        },
+      })
+        .then(() => onRefetch?.())
+        .catch(handleError)
   }
 
   const getColumnSearchProps: (
