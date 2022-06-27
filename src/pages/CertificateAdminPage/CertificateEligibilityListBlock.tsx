@@ -1,8 +1,9 @@
-import { SearchOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
-import { Button, Input, Table } from 'antd'
+import Icon, { SearchOutlined } from '@ant-design/icons'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Button, Dropdown, Input, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
+import { handleError } from 'lodestar-app-element/src/helpers'
 import moment from 'moment'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -10,7 +11,9 @@ import styled from 'styled-components'
 import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
 import hasura from '../../hasura'
+import { ReactComponent as MoreIcon } from '../../images/icon/more.svg'
 import pageMessages from '../translation'
+import MemberCertificateInputModal from './MemberCertificateInputModal'
 
 const TableWrapper = styled.div`
   overflow-x: auto;
@@ -38,7 +41,10 @@ type MemberCertificate = {
   expiredAt: Date | null
 }
 
-const CertificateEligibilityListBlock: React.FC = () => {
+const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefetch?: () => void }> = ({
+  certificateId,
+  onRefetch,
+}) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
@@ -59,6 +65,10 @@ const CertificateEligibilityListBlock: React.FC = () => {
   } = useMemberTemplate({
     ...fieldFilter,
   })
+  const [deleteMemberCertificate] = useMutation<
+    hasura.DELETE_MEMBER_CERTIFICATE,
+    hasura.DELETE_MEMBER_CERTIFICATEVariables
+  >(DELETE_MEMBER_CERTIFICATE)
 
   const searchInputRef = useRef<Input | null>(null)
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
@@ -70,6 +80,16 @@ const CertificateEligibilityListBlock: React.FC = () => {
         [columnId]: value ?? undefined,
       }))
     }
+  }
+
+  const handleRevoke = (memberCertificateId: string) => {
+    deleteMemberCertificate({
+      variables: {
+        memberCertificateId: memberCertificateId,
+      },
+    })
+      .then(() => onRefetch?.())
+      .catch(handleError)
   }
 
   const getColumnSearchProps: (
@@ -155,8 +175,28 @@ const CertificateEligibilityListBlock: React.FC = () => {
       title: formatMessage(pageMessages['*'].expiryDate),
       dataIndex: 'expiredAt',
       key: 'expiredAt',
-      render: (text, record, index) => (record.expiredAt ? moment(record.expiredAt).format('YYYY-MM-DD') : '永久有效'),
+      render: (text, record, index) =>
+        record.expiredAt
+          ? moment(record.expiredAt).format('YYYY-MM-DD')
+          : formatMessage(pageMessages.CertificateEligibilityListBlock.permanent),
       sorter: (a, b) => (a.expiredAt ? a.expiredAt.getTime() : 0) - (b.expiredAt ? b.expiredAt.getTime() : 0),
+    },
+    {
+      key: 'revoke',
+      render: (text, record, index) => (
+        <Dropdown
+          trigger={['click']}
+          overlay={
+            <Menu>
+              <Menu.Item className="cursor-pointer" onClick={() => handleRevoke(record.id)}>
+                {formatMessage(pageMessages.CertificateEligibilityListBlock.revoke)}
+              </Menu.Item>
+            </Menu>
+          }
+        >
+          <Icon component={() => <MoreIcon />} />
+        </Dropdown>
+      ),
     },
   ]
 
@@ -168,8 +208,7 @@ const CertificateEligibilityListBlock: React.FC = () => {
   return (
     <>
       <div className="d-flex justify-content-end mb-4">
-        {/* //TODO: not finish yet*/}
-        {/* <MemberCertificateInputModal /> */}
+        <MemberCertificateInputModal certificateId={certificateId} onRefetch={refetch} />
       </div>
 
       <AdminCard className="mb-5">
@@ -289,5 +328,13 @@ const useMemberTemplate = (filter?: { name?: string; email?: string; number?: st
     loadMoreMemberCertificates: (data?.member_certificate_aggregate.aggregate?.count || 0) > 10 ? loadMore : undefined,
   }
 }
+
+const DELETE_MEMBER_CERTIFICATE = gql`
+  mutation DELETE_MEMBER_CERTIFICATE($memberCertificateId: uuid!) {
+    delete_member_certificate(where: { id: { _eq: $memberCertificateId } }) {
+      affected_rows
+    }
+  }
+`
 
 export default CertificateEligibilityListBlock

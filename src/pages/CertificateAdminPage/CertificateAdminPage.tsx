@@ -92,7 +92,7 @@ const CertificateAdminPage: React.VFC = () => {
           <Tabs.TabPane key="eligibilityList" tab={formatMessage(pageMessages['*'].eligibilityList)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(pageMessages['*'].eligibilityList)}</AdminPaneTitle>
-              <CertificateEligibilityListBlock />
+              <CertificateEligibilityListBlock certificateId={certificateId} />
             </div>
           </Tabs.TabPane>
 

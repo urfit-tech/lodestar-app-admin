@@ -14011,6 +14011,34 @@ export interface GET_MEMBER_CERTIFICATEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: DELETE_MEMBER_CERTIFICATE
+// ====================================================
+
+export interface DELETE_MEMBER_CERTIFICATE_delete_member_certificate {
+  __typename: "member_certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_MEMBER_CERTIFICATE {
+  /**
+   * delete data from the table: "member_certificate"
+   */
+  delete_member_certificate: DELETE_MEMBER_CERTIFICATE_delete_member_certificate | null;
+}
+
+export interface DELETE_MEMBER_CERTIFICATEVariables {
+  memberCertificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_CERTIFICATE_DESCRIPTION
 // ====================================================
 

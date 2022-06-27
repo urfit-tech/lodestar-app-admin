@@ -69,6 +69,7 @@ const pageMessages = {
     certificateNumber: { id: 'page.*.certificateNumber', defaultMessage: '證書編號' },
     deliveryDate: { id: 'page.*.deliveryDate', defaultMessage: '發送日' },
     expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
+    upload: { id: 'page.*.upload', defaultMessage: '上傳' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -251,6 +252,10 @@ const pageMessages = {
       id: 'page.CertificatePublishAdminBlock.publishedCertificateText',
       defaultMessage: '現在你的證書已公開發佈，此證書可公開挑戰。',
     },
+  }),
+  CertificateEligibilityListBlock: defineMessages({
+    permanent: { id: 'page.CertificateEligibilityListBlock.Permanent', defaultMessage: '永久有效' },
+    revoke: { id: 'page.CertificateEligibilityListBlock.revoke', defaultMessage: '撤銷' },
   }),
 }
 
