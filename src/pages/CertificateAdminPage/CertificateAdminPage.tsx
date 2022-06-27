@@ -22,8 +22,8 @@ import { Certificate } from '../../types/certificate'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import CertificateBasicForm from './CertificateBasicForm'
+import CertificateEligibilityListBlock from './CertificateEligibilityListBlock'
 import CertificateIntroForm from './CertificateIntroForm'
-import CertificatePublishAdminBlock from './CertificatePublishAdminBlock'
 
 const CertificateAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -91,7 +91,7 @@ const CertificateAdminPage: React.VFC = () => {
           <Tabs.TabPane key="eligibilityList" tab={formatMessage(pageMessages['*'].eligibilityList)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(pageMessages['*'].eligibilityList)}</AdminPaneTitle>
-              {/* <ProgramPlanAdminBlock program={program} onRefetch={refetchProgram} /> */}
+              <CertificateEligibilityListBlock />
             </div>
           </Tabs.TabPane>
 
@@ -99,7 +99,8 @@ const CertificateAdminPage: React.VFC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(pageMessages['*'].publishSettings)}</AdminPaneTitle>
               <AdminBlock>
-                <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} />
+                {/* //TODO: not finish yet*/}
+                {/* <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} /> */}
               </AdminBlock>
             </div>
           </Tabs.TabPane>

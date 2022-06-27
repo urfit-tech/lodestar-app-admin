@@ -13956,6 +13956,61 @@ export interface UPDATE_CERTIFICATE_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_CERTIFICATE
+// ====================================================
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate_aggregate_aggregate {
+  __typename: "member_certificate_aggregate_fields";
+  count: number;
+}
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate_aggregate {
+  __typename: "member_certificate_aggregate";
+  aggregate: GET_MEMBER_CERTIFICATE_member_certificate_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate_member {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  picture_url: string | null;
+}
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate {
+  __typename: "member_certificate";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_CERTIFICATE_member_certificate_member | null;
+  number: string;
+  delivered_at: any;
+  expired_at: any | null;
+}
+
+export interface GET_MEMBER_CERTIFICATE {
+  /**
+   * fetch aggregated fields from the table: "member_certificate"
+   */
+  member_certificate_aggregate: GET_MEMBER_CERTIFICATE_member_certificate_aggregate;
+  /**
+   * fetch data from the table: "member_certificate"
+   */
+  member_certificate: GET_MEMBER_CERTIFICATE_member_certificate[];
+}
+
+export interface GET_MEMBER_CERTIFICATEVariables {
+  condition?: member_certificate_bool_exp | null;
+  limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_CERTIFICATE_DESCRIPTION
 // ====================================================
 

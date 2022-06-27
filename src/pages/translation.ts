@@ -63,6 +63,9 @@ const pageMessages = {
     publishSettings: { id: 'page.*.publishSettings', defaultMessage: '發佈設定' },
     successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: '儲存成功' },
     deleteProductDanger: { id: 'page.*.deleteProductDanger', defaultMessage: '*已購買者在刪除後仍可觀看。' },
+    search: { id: 'page.*.search', defaultMessage: '查詢' },
+    reset: { id: 'page.*.reset', defaultMessage: '重置' },
+    import: { id: 'page.*.import', defaultMessage: '匯入' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
