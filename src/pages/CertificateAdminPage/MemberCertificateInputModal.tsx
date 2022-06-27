@@ -20,11 +20,9 @@ const MemberCertificateImportModal: React.FC<{
       message: string
       result: {
         total: number
-        success: number
-        failed: {
-          index: number
-          error: any
-        }[]
+        existed: number
+        merged: number
+        new: number
       } | null
     }[]
   >([])
@@ -74,8 +72,9 @@ const MemberCertificateImportModal: React.FC<{
                 description={
                   <div>
                     <div>Total: {response.result?.total}</div>
-                    <div>Success: {response.result?.success}</div>
-                    <div>Failed: {response.result?.failed}</div>
+                    <div>Existed: {response.result?.existed}</div>
+                    <div>Merged: {response.result?.merged}</div>
+                    <div>New: {response.result?.new}</div>
                   </div>
                 }
               />
