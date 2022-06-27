@@ -24,6 +24,7 @@ import pageMessages from '../translation'
 import CertificateBasicForm from './CertificateBasicForm'
 import CertificateEligibilityListBlock from './CertificateEligibilityListBlock'
 import CertificateIntroForm from './CertificateIntroForm'
+import CertificatePublishAdminBlock from './CertificatePublishAdminBlock'
 
 const CertificateAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -99,8 +100,7 @@ const CertificateAdminPage: React.VFC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(pageMessages['*'].publishSettings)}</AdminPaneTitle>
               <AdminBlock>
-                {/* //TODO: not finish yet*/}
-                {/* <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} /> */}
+                <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

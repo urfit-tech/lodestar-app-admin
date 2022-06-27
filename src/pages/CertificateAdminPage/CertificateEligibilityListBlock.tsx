@@ -9,7 +9,6 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
-import MemberImportModal from '../../components/member/MemberImportModal'
 import hasura from '../../hasura'
 import pageMessages from '../translation'
 
@@ -169,7 +168,8 @@ const CertificateEligibilityListBlock: React.FC = () => {
   return (
     <>
       <div className="d-flex justify-content-end mb-4">
-        <MemberImportModal />
+        {/* //TODO: not finish yet*/}
+        {/* <MemberCertificateInputModal /> */}
       </div>
 
       <AdminCard className="mb-5">
