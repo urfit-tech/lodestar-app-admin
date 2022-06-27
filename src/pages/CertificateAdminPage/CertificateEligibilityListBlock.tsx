@@ -122,7 +122,7 @@ const CertificateEligibilityListBlock: React.FC = () => {
 
   const columns: ColumnProps<MemberCertificate>[] = [
     {
-      title: '姓名',
+      title: formatMessage(pageMessages['*'].memberName),
       dataIndex: 'name',
       key: 'name',
       render: (text, record, index) => (
@@ -134,26 +134,26 @@ const CertificateEligibilityListBlock: React.FC = () => {
       ...getColumnSearchProps('name'),
     },
     {
-      title: 'Email',
+      title: formatMessage(pageMessages['*'].memberEmail),
       dataIndex: 'email',
       key: 'email',
       ...getColumnSearchProps('email'),
     },
     {
-      title: '證書編號',
+      title: formatMessage(pageMessages['*'].certificateNumber),
       dataIndex: 'number',
       key: 'number',
       ...getColumnSearchProps('number'),
     },
     {
-      title: 'deliveredAt',
+      title: formatMessage(pageMessages['*'].deliveryDate),
       dataIndex: 'deliveredAt',
       key: 'deliveredAt',
       render: (text, record, index) => (record.deliveredAt ? moment(record.deliveredAt).format('YYYY-MM-DD') : ''),
       sorter: (a, b) => (a.deliveredAt ? a.deliveredAt.getTime() : 0) - (b.deliveredAt ? b.deliveredAt.getTime() : 0),
     },
     {
-      title: 'expiredAt',
+      title: formatMessage(pageMessages['*'].expiryDate),
       dataIndex: 'expiredAt',
       key: 'expiredAt',
       render: (text, record, index) => (record.expiredAt ? moment(record.expiredAt).format('YYYY-MM-DD') : '永久有效'),

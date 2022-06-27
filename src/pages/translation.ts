@@ -4,15 +4,15 @@ const pageMessages = {
   '*': defineMessages({
     save: { id: 'page.*.save', defaultMessage: '儲存' },
     cancel: { id: 'page.*.cancel', defaultMessage: '取消' },
-    hasExpirationDate: { id: 'page.*.hasExpirationDate', defaultMessage: 'has expiration date' },
-    noExpirationDate: { id: 'page.*.noExpirationDate', defaultMessage: 'no expiration date' },
+    hasExpirationDate: { id: 'page.*.hasExpirationDate', defaultMessage: '有效期' },
+    noExpirationDate: { id: 'page.*.noExpirationDate', defaultMessage: '無效期' },
     basicSettings: { id: 'page.*.basicSettings', defaultMessage: '基本設定' },
     preview: { id: 'page.*.preview', defaultMessage: '預覽' },
-    year: { id: 'page.*.year', defaultMessage: 'year' },
-    month: { id: 'page.*.year', defaultMessage: 'month' },
-    week: { id: 'page.*.week', defaultMessage: 'week' },
-    day: { id: 'page.*.year', defaultMessage: 'day' },
-    hour: { id: 'page.*.year', defaultMessage: 'hour' },
+    year: { id: 'page.*.year', defaultMessage: '年' },
+    month: { id: 'page.*.year', defaultMessage: '月' },
+    week: { id: 'page.*.week', defaultMessage: '週' },
+    day: { id: 'page.*.year', defaultMessage: '日' },
+    hour: { id: 'page.*.year', defaultMessage: '小時' },
     title: { id: 'page.*.title', defaultMessage: '名稱' },
     published: { id: 'page.*.published', defaultMessage: '已發佈' },
     unpublished: { id: 'page.*.unpublished', defaultMessage: '尚未發佈' },
@@ -66,6 +66,9 @@ const pageMessages = {
     search: { id: 'page.*.search', defaultMessage: '查詢' },
     reset: { id: 'page.*.reset', defaultMessage: '重置' },
     import: { id: 'page.*.import', defaultMessage: '匯入' },
+    certificateNumber: { id: 'page.*.certificateNumber', defaultMessage: '證書編號' },
+    deliveryDate: { id: 'page.*.deliveryDate', defaultMessage: '發送日' },
+    expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -229,7 +232,7 @@ const pageMessages = {
     selectTemplate: { id: 'page.CertificateSelector.selectTemplate', defaultMessage: 'select template' },
   }),
   CertificateIntroForm: defineMessages({
-    certificateDescription: { id: 'page.CertificateIntroForm.certificateDescription', defaultMessage: 'Description' },
+    certificateDescription: { id: 'page.CertificateIntroForm.certificateDescription', defaultMessage: '證書描述' },
   }),
   CertificatePublishAdminBlock: defineMessages({
     noCertificateTitle: {
