@@ -20,6 +20,7 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
+import { last } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -264,7 +265,13 @@ const ProgramContentAdminModal: React.FC<{
   }, [programContent?.publishedAt])
 
   useEffect(() => {
-    programContent?.videos?.length && form.setFieldsValue({ videoAttachment: programContent.videos.pop() })
+    if (!loadingProgramContentBody && programContentBody.materials.length) {
+      setMaterialFiles(programContentBody.materials.map(v => v.data))
+    }
+  }, [programContentBody, loadingProgramContentBody])
+
+  useEffect(() => {
+    programContent?.videos?.length && form.setFieldsValue({ videoAttachment: last(programContent.videos) })
   }, [form, programContent?.videos])
 
   if (loadingProgramContentBody) return <Skeleton active />
@@ -286,7 +293,7 @@ const ProgramContentAdminModal: React.FC<{
             form={form}
             layout="vertical"
             initialValues={{
-              videoAttachment: programContent.videos[0],
+              videoAttachment: last(programContent.videos),
               publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
               isNotifyUpdate: programContent.isNotifyUpdate,
               title: programContent.title,
