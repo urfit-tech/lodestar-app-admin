@@ -8,28 +8,49 @@ export const extractNumber = (string?: string) =>
 
 export const extractSizeUnit = (string?: string) => string?.match(/px|%|rem|em/g)?.[0]
 
-export type SizeStyle = Pick<CSSObject, 'width' | 'height'>
+export type SizeStyle = Pick<CSSObject, 'width' | 'height' | 'backgroundImage'>
+type imgProps = {
+  width: number
+  height: number
+  aspectRatio: number
+  gcd: number
+  widthAspect: number
+  heightAspect: number
+}
 type SizeStyleInputProps = {
   value?: SizeStyle
+  imgProps: imgProps
+  isImgAutoHeight: boolean
   onChange?: (value: SizeStyle) => void
 }
-const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, onChange }) => {
+
+const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, imgProps, isImgAutoHeight, onChange }) => {
   const { formatMessage } = useIntl()
 
   return (
     <>
       <Form.Item label={formatMessage(craftMessages['*'].width)}>
         <InputNumber
-          value={extractNumber(value?.width?.toString())}
+          value={value?.width !== undefined ? extractNumber(value?.width?.toString()) : imgProps.width}
           min={0}
-          onChange={v =>
+          onChange={v => {
+            let newHeight = 0
+            if (typeof v === 'number') {
+              let newGcd = v / imgProps.widthAspect
+              newHeight = imgProps.heightAspect * newGcd
+            }
+            let originalHeight = value?.height === undefined ? imgProps.height : value?.height
             onChange?.({
               ...value,
               width: Number(v) + (extractSizeUnit(value?.width?.toString()) || 'px'),
+              height: isImgAutoHeight
+                ? Number(newHeight) + (extractSizeUnit(newHeight.toString()) || 'px')
+                : originalHeight,
             })
-          }
+          }}
         />
         <Select
+          defaultValue="px"
           value={extractSizeUnit(value?.width?.toString())}
           onChange={v => onChange?.({ ...value, width: extractNumber(value?.width?.toString()) + v })}
           style={{ width: '70px' }}
@@ -42,8 +63,9 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, onChange }) => 
       </Form.Item>
       <Form.Item label={formatMessage(craftMessages.SizeStyleInput.height)}>
         <InputNumber
-          value={extractNumber(value?.height?.toString())}
+          value={value?.width !== undefined ? extractNumber(value?.height?.toString()) : imgProps.height}
           min={0}
+          disabled={isImgAutoHeight}
           onChange={v =>
             onChange?.({
               ...value,
@@ -52,7 +74,9 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, onChange }) => 
           }
         />
         <Select
+          defaultValue="px"
           value={extractSizeUnit(value?.height?.toString())}
+          disabled={isImgAutoHeight}
           onChange={v => onChange?.({ ...value, height: extractNumber(value?.height?.toString()) + v })}
           style={{ width: '70px' }}
         >
