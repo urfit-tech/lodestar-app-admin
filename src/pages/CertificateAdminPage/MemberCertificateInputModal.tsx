@@ -21,7 +21,6 @@ const MemberCertificateImportModal: React.FC<{
       result: {
         total: number
         existed: number
-        merged: number
         new: number
       } | null
     }[]
@@ -73,7 +72,6 @@ const MemberCertificateImportModal: React.FC<{
                   <div>
                     <div>Total: {response.result?.total}</div>
                     <div>Existed: {response.result?.existed}</div>
-                    <div>Merged: {response.result?.merged}</div>
                     <div>New: {response.result?.new}</div>
                   </div>
                 }
