@@ -41,8 +41,11 @@ const CertificateCollectionTable: React.VFC<{
   condition: hasura.GET_CERTIFICATE_PREVIEWVariables['condition']
 }> = ({ condition }) => {
   const { formatMessage } = useIntl()
-  const [searchName, setSearchName] = useState<string>('')
-  const { loading, error, certificates } = useCertificate(condition)
+  const [searchName, setSearchName] = useState<string | null>(null)
+  const { loading, error, certificates } = useCertificate({
+    ...condition,
+    title: searchName ? { _like: `%${searchName}%` } : undefined,
+  })
 
   const columns: ColumnProps<CertificateColumn>[] = [
     {
