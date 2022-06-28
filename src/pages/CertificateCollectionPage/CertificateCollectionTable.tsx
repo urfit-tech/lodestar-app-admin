@@ -44,7 +44,7 @@ const CertificateCollectionTable: React.VFC<{
   const [searchName, setSearchName] = useState<string | null>(null)
   const { loading, error, certificates } = useCertificate({
     ...condition,
-    title: searchName ? { _like: `%${searchName}%` } : undefined,
+    title: searchName ? { _ilike: `%${searchName}%` } : undefined,
   })
 
   const columns: ColumnProps<CertificateColumn>[] = [
