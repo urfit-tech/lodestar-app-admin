@@ -93,10 +93,10 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
         .catch(handleError)
   }
 
-  const getColumnSearchProps: (
-    field: keyof typeof fieldFilter,
-    isProperty?: boolean,
-  ) => ColumnProps<MemberCertificate> = (columnId, isProperty) => ({
+  const getColumnSearch: (field: keyof typeof fieldFilter, isProperty?: boolean) => ColumnProps<MemberCertificate> = (
+    columnId,
+    isProperty,
+  ) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -151,19 +151,19 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
           <StyledMemberName>{record.name}</StyledMemberName>
         </div>
       ),
-      ...getColumnSearchProps('name'),
+      ...getColumnSearch('name'),
     },
     {
       title: formatMessage(pageMessages['*'].memberEmail),
       dataIndex: 'email',
       key: 'email',
-      ...getColumnSearchProps('email'),
+      ...getColumnSearch('email'),
     },
     {
       title: formatMessage(pageMessages['*'].certificateNumber),
       dataIndex: 'number',
       key: 'number',
-      ...getColumnSearchProps('number'),
+      ...getColumnSearch('number'),
     },
     {
       title: formatMessage(pageMessages['*'].deliveryDate),
