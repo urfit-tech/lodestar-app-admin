@@ -59,52 +59,58 @@ const CertificateAdminPage: React.VFC = () => {
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
-        <Tabs
-          activeKey={activeKey || 'setting'}
-          onChange={key => setActiveKey(key)}
-          renderTabBar={(props, DefaultTabBar) => (
-            <AdminTabBarWrapper>
-              <DefaultTabBar {...props} className="mb-0" />
-            </AdminTabBarWrapper>
-          )}
-        >
-          <Tabs.TabPane key="setting" tab={formatMessage(pageMessages['*'].certificateSetting)}>
-            <div className="container py-5">
-              <AdminPaneTitle className="d-flex align-items-center justify-content-between">
-                {formatMessage(pageMessages['*'].certificateSetting)}
-              </AdminPaneTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(pageMessages['*'].basicSettings)}</AdminBlockTitle>
-                <CertificateBasicForm certificate={certificate} onRefetch={refetch} />
-              </AdminBlock>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
-                <CertificateIntroForm certificate={certificate} onRefetch={refetch} />
-              </AdminBlock>
-              <MetaProductDeletionBlock
-                metaProductType="Certificate"
-                targetId={certificateId}
-                renderDeleteDangerText={formatMessage(pageMessages.CertificateAdminPage.deleteCertificateDangerText)}
-              />
-            </div>
-          </Tabs.TabPane>
+        {(!loading && error) || certificate === null ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ height: '80%' }}>
+            {formatMessage(pageMessages['*'].fetchDataError)}
+          </div>
+        ) : (
+          <Tabs
+            activeKey={activeKey || 'setting'}
+            onChange={key => setActiveKey(key)}
+            renderTabBar={(props, DefaultTabBar) => (
+              <AdminTabBarWrapper>
+                <DefaultTabBar {...props} className="mb-0" />
+              </AdminTabBarWrapper>
+            )}
+          >
+            <Tabs.TabPane key="setting" tab={formatMessage(pageMessages['*'].certificateSetting)}>
+              <div className="container py-5">
+                <AdminPaneTitle className="d-flex align-items-center justify-content-between">
+                  {formatMessage(pageMessages['*'].certificateSetting)}
+                </AdminPaneTitle>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(pageMessages['*'].basicSettings)}</AdminBlockTitle>
+                  <CertificateBasicForm certificate={certificate} onRefetch={refetch} />
+                </AdminBlock>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(pageMessages.CertificateAdminPage.certificateIntro)}</AdminBlockTitle>
+                  <CertificateIntroForm certificate={certificate} onRefetch={refetch} />
+                </AdminBlock>
+                <MetaProductDeletionBlock
+                  metaProductType="Certificate"
+                  targetId={certificateId}
+                  renderDeleteDangerText={formatMessage(pageMessages.CertificateAdminPage.deleteCertificateDangerText)}
+                />
+              </div>
+            </Tabs.TabPane>
 
-          <Tabs.TabPane key="eligibilityList" tab={formatMessage(pageMessages['*'].eligibilityList)}>
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(pageMessages['*'].eligibilityList)}</AdminPaneTitle>
-              <CertificateEligibilityListBlock certificateId={certificateId} />
-            </div>
-          </Tabs.TabPane>
+            <Tabs.TabPane key="eligibilityList" tab={formatMessage(pageMessages['*'].eligibilityList)}>
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(pageMessages['*'].eligibilityList)}</AdminPaneTitle>
+                <CertificateEligibilityListBlock certificateId={certificateId} />
+              </div>
+            </Tabs.TabPane>
 
-          <Tabs.TabPane key="publish" tab={formatMessage(pageMessages['*'].publishSettings)}>
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(pageMessages['*'].publishSettings)}</AdminPaneTitle>
-              <AdminBlock>
-                <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} />
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
-        </Tabs>
+            <Tabs.TabPane key="publish" tab={formatMessage(pageMessages['*'].publishSettings)}>
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(pageMessages['*'].publishSettings)}</AdminPaneTitle>
+                <AdminBlock>
+                  <CertificatePublishAdminBlock certificate={certificate} onRefetch={refetch} />
+                </AdminBlock>
+              </div>
+            </Tabs.TabPane>
+          </Tabs>
+        )}
       </StyledLayoutContent>
     </>
   )
