@@ -14150,6 +14150,7 @@ export interface INSERT_CERTIFICATE {
 export interface INSERT_CERTIFICATEVariables {
   title: string;
   memberId: string;
+  appId: string;
 }
 
 /* tslint:disable */
@@ -23156,6 +23157,7 @@ export interface certificate_bool_exp {
   _and?: certificate_bool_exp[] | null;
   _not?: certificate_bool_exp | null;
   _or?: certificate_bool_exp[] | null;
+  app_id?: String_comparison_exp | null;
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   certificate_template?: certificate_template_bool_exp | null;
