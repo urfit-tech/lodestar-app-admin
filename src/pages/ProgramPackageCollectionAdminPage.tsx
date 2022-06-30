@@ -22,7 +22,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { id: appId, enabledModules } = useApp()
-  const { permissions } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
   const { programPackages, refetch } = useProgramPackageCollection()
   const [createProgramPackage] = useMutation<hasura.INSERT_PROGRAM_PACKAGE, hasura.INSERT_PROGRAM_PACKAGEVariables>(
     INSERT_PROGRAM_PACKAGE,
@@ -54,29 +54,32 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="mb-5">
-        <ProductCreationModal
-          categoryClassType="programPackage"
-          renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-              {formatMessage(programPackageMessages.ui.createProgramPackage)}
-            </Button>
-          )}
-          onCreate={({ title }) =>
-            createProgramPackage({
-              variables: {
-                appId,
-                title,
-              },
-            })
-              .then(({ data }) => {
-                refetch().then(() => {
-                  const programPackageId = data?.insert_program_package?.returning[0].id
-                  programPackageId && history.push(`/program-packages/${programPackageId}`)
-                })
+        {currentMemberId && (
+          <ProductCreationModal
+            categoryClassType="programPackage"
+            renderTrigger={({ setVisible }) => (
+              <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+                {formatMessage(programPackageMessages.ui.createProgramPackage)}
+              </Button>
+            )}
+            onCreate={({ title }) =>
+              createProgramPackage({
+                variables: {
+                  appId,
+                  title,
+                  creatorId: currentMemberId,
+                },
               })
-              .catch(handleError)
-          }
-        />
+                .then(({ data }) => {
+                  refetch().then(() => {
+                    const programPackageId = data?.insert_program_package?.returning[0].id
+                    programPackageId && history.push(`/program-packages/${programPackageId}`)
+                  })
+                })
+                .catch(handleError)
+            }
+          />
+        )}
       </div>
 
       <Tabs>
@@ -104,8 +107,8 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
 }
 
 const INSERT_PROGRAM_PACKAGE = gql`
-  mutation INSERT_PROGRAM_PACKAGE($title: String!, $appId: String!) {
-    insert_program_package(objects: { app_id: $appId, title: $title }) {
+  mutation INSERT_PROGRAM_PACKAGE($title: String!, $appId: String!, $creatorId: String!) {
+    insert_program_package(objects: { app_id: $appId, title: $title, creator_id: $creatorId }) {
       affected_rows
       returning {
         id

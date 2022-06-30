@@ -266,26 +266,27 @@ export const useProgramContentBody = (programContentId: string) => {
     `,
     { variables: { programContentId } },
   )
-
-  const programContentBody: ProgramContentBodyProps =
-    loading || error || !data || !data.program_content_by_pk
-      ? {
-          id: '',
-          type: '',
-          description: '',
-          data: {},
-          materials: [],
-        }
-      : {
-          id: data.program_content_by_pk.program_content_body.id,
-          type: data.program_content_by_pk.program_content_body.type,
-          description: data.program_content_by_pk.program_content_body.description,
-          data: data.program_content_by_pk.program_content_body.data,
-          materials: data.program_content_by_pk.program_content_materials.map(v => ({
-            id: v.id,
-            data: v.data,
-          })),
-        }
+  const programContentBody: ProgramContentBodyProps = useMemo(() => {
+    if (loading || error || !data || !data.program_content_by_pk) {
+      return {
+        id: '',
+        type: '',
+        description: '',
+        data: {},
+        materials: [],
+      }
+    }
+    return {
+      id: data.program_content_by_pk.program_content_body.id,
+      type: data.program_content_by_pk.program_content_body.type,
+      description: data.program_content_by_pk.program_content_body.description,
+      data: data.program_content_by_pk.program_content_body.data,
+      materials: data.program_content_by_pk.program_content_materials.map(v => ({
+        id: v.id,
+        data: v.data,
+      })),
+    }
+  }, [data, error, loading])
 
   return {
     loadingProgramContentBody: loading,

@@ -9,7 +9,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { commonMessages, programPackageMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import PositionAdminLayout, {
@@ -21,6 +21,7 @@ import PositionAdminLayout, {
 } from '../admin/PositionAdminLayout'
 import ProductSkuModal from '../common/ProductSkuModal'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
+import programPackageMessages from './translation'
 
 const messages = defineMessages({
   people: { id: 'programPackage.label.people', defaultMessage: '人' },
@@ -105,10 +106,10 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                     programPackageId={programPackageId}
                     onRefetch={onRefetch}
                     plan={plan}
-                    title={formatMessage(programPackageMessages.ui.editPlan)}
+                    title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
                     renderTrigger={({ setVisible }) => (
                       <StyledButton block icon={<EditOutlined />} onClick={() => setVisible?.(true)}>
-                        {formatMessage(programPackageMessages.ui.editPlan)}
+                        {formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
                       </StyledButton>
                     )}
                   />
@@ -149,10 +150,16 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                         <StyledButton block className="mt-4" onClick={() => onOpen?.()}>
                           <Icon component={() => <BarcodeOutlined />} />
                           {sku
-                            ? `${formatMessage(commonMessages.label.sku)}: ${sku}`
-                            : formatMessage(commonMessages.label.skuSetting)}
+                            ? `${formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}: ${sku}`
+                            : formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)}
                         </StyledButton>
                       )}
+                      renderTitle={() =>
+                        formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)
+                      }
+                      renderInputLabel={() =>
+                        formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)
+                      }
                     />
                   )}
                 </div>

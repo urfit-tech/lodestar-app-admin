@@ -1655,6 +1655,7 @@ export interface GET_CATEGORY_LIST {
 }
 
 export interface GET_CATEGORY_LISTVariables {
+  appId: string;
   class: string;
 }
 
@@ -15777,6 +15778,7 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
+  creatorId: string;
 }
 
 /* tslint:disable */
@@ -17889,6 +17891,7 @@ export enum merchandise_update_column {
   abstract = "abstract",
   app_id = "app_id",
   created_at = "created_at",
+  currency_id = "currency_id",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -23749,6 +23752,7 @@ export interface coupon_plan_bool_exp {
   coupon_plan_products?: coupon_plan_product_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
+  editor?: member_bool_exp | null;
   editor_id?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -23769,6 +23773,7 @@ export interface coupon_plan_insert_input {
   coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
   created_at?: any | null;
   description?: string | null;
+  editor?: member_obj_rel_insert_input | null;
   editor_id?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -23806,6 +23811,7 @@ export interface coupon_plan_order_by {
   coupon_plan_products_aggregate?: coupon_plan_product_aggregate_order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
+  editor?: member_order_by | null;
   editor_id?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -27280,6 +27286,7 @@ export interface merchandise_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  currency_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -27451,6 +27458,7 @@ export interface merchandise_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   created_at?: any | null;
+  currency_id?: string | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
@@ -27523,6 +27531,7 @@ export interface merchandise_max_order_by {
   abstract?: order_by | null;
   app_id?: order_by | null;
   created_at?: order_by | null;
+  currency_id?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -27547,6 +27556,7 @@ export interface merchandise_min_order_by {
   abstract?: order_by | null;
   app_id?: order_by | null;
   created_at?: order_by | null;
+  currency_id?: order_by | null;
   description?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
