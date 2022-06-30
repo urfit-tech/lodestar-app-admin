@@ -33,7 +33,7 @@ const CertificateAdminPage: React.VFC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { loading, error, certificate, refetch } = useCertificate(certificateId)
 
-  if (Object.keys(enabledModules).length === 0) {
+  if (Object.keys(enabledModules).length === 0 || loading) {
     return <LoadingPage />
   }
 
@@ -59,7 +59,7 @@ const CertificateAdminPage: React.VFC = () => {
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
-        {(!loading && error) || certificate === null ? (
+        {!loading && error ? (
           <div className="d-flex justify-content-center align-items-center" style={{ height: '80%' }}>
             {formatMessage(pageMessages['*'].fetchDataError)}
           </div>
