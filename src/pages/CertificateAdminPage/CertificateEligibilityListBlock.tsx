@@ -221,9 +221,9 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
             dataSource={memberCertificates}
             pagination={false}
             rowClassName={() => 'cursor-pointer'}
-            onRow={record => ({
-              onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.memberId}`, '_blank'),
-            })}
+            // onRow={record => ({
+            //   onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.memberId}`, '_blank'),
+            // })}
           />
         </TableWrapper>
 
