@@ -314,13 +314,28 @@ const ProgramContentAdminModal: React.FC<{
           >
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center">
-                <Checkbox checked={isTrial} onChange={e => setIsTrial(e.target.checked)}>
+                {/* <Checkbox checked={isTrial} onChange={e => setIsTrial(e.target.checked)}>
                   {formatMessage(commonMessages.ui.trial)}
                 </Checkbox>
 
                 <Checkbox checked={isPublished} onChange={e => setIsPublished(e.target.checked)}>
                   {formatMessage(programMessages.label.show)}
-                </Checkbox>
+                </Checkbox> */}
+
+                <Select>
+                  <Select.Option key="conceal" value="conceal">
+                    隱藏
+                  </Select.Option>
+                  <Select.Option key="trial" value="trial">
+                    試看
+                  </Select.Option>
+                  <Select.Option key="" value="">
+                    登入試看
+                  </Select.Option>
+                  <Select.Option key="" value="">
+                    付費觀看
+                  </Select.Option>
+                </Select>
 
                 {isPublished && (
                   <Form.Item name="publishedAt" className="mb-0 mr-2">
