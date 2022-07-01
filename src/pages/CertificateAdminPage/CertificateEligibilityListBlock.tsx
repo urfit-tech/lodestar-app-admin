@@ -13,7 +13,7 @@ import { AvatarImage } from '../../components/common/Image'
 import hasura from '../../hasura'
 import { ReactComponent as MoreIcon } from '../../images/icon/more.svg'
 import pageMessages from '../translation'
-import MemberCertificateInputModal from './MemberCertificateInputModal'
+import MemberCertificateImportModal from './MemberCertificateImportModal'
 
 const TableWrapper = styled.div`
   overflow-x: auto;
@@ -209,7 +209,7 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
   return (
     <>
       <div className="d-flex justify-content-end mb-4">
-        <MemberCertificateInputModal certificateId={certificateId} onRefetch={refetch} />
+        <MemberCertificateImportModal certificateId={certificateId} onRefetch={refetch} />
       </div>
 
       <AdminCard className="mb-5">
