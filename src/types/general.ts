@@ -73,6 +73,7 @@ export type OrderDiscount = {
   price: number
   type: string
   target: string
+  options: any
 }
 
 export type OrderLog = {

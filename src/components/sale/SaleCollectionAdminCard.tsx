@@ -228,7 +228,7 @@ const SaleCollectionAdminCard: React.VFC<{
       dataIndex: 'totalPrice',
       key: 'totalPrice',
       align: 'right',
-      render: currencyFormatter,
+      render: (_, record) => currencyFormatter(record.totalPrice),
     },
   ]
 
@@ -336,7 +336,15 @@ const SaleCollectionAdminCard: React.VFC<{
                     </AdminModal>
                   )}
                 </div>
-                <div>{currencyFormatter(v.price)}</div>
+                <div>
+                  {currencyFormatter(
+                    v.product.type === 'MerchandiseSpec' && v.options.currencyId === 'LSC'
+                      ? v.options.currencyPrice
+                      : v.price,
+                    v.options.currencyId,
+                    settings['coin.unit'],
+                  )}
+                </div>
               </div>
             </div>
             <Divider />
@@ -364,7 +372,7 @@ const SaleCollectionAdminCard: React.VFC<{
               <div className="col-3">{currencyFormatter(shipping.fee || 0)}</div>
             </div>
           )}
-
+          {console.log(orderDiscounts)}
           {orderDiscounts.map(orderDiscount => (
             <div className="row text-right">
               <div className="col-9">
@@ -373,7 +381,22 @@ const SaleCollectionAdminCard: React.VFC<{
                   <DiscountCode type={orderDiscount.type} target={orderDiscount.target} />
                 )}
               </div>
-              <div className="col-3">- {currencyFormatter(orderDiscount.price)}</div>
+              <div className="col-3">
+                -{' '}
+                {currencyFormatter(
+                  orderProducts.length === 1 &&
+                    orderProducts[0].product.type === 'MerchandiseSpec' &&
+                    orderProducts[0].options.currencyId === 'LSC'
+                    ? orderDiscount.options.coins
+                    : orderDiscount.price,
+                  orderProducts.length === 1 &&
+                    orderProducts[0].product.type === 'MerchandiseSpec' &&
+                    orderDiscount.type === 'Coin'
+                    ? 'LSC'
+                    : orderDiscount.type,
+                  settings['coin.unit'],
+                )}
+              </div>
             </div>
           ))}
 

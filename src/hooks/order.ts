@@ -112,6 +112,7 @@ export const useOrderLogs = (
             price
             type
             target
+            options
           }
           order_executors {
             member {
@@ -197,6 +198,7 @@ export const useOrderLogs = (
         price: w.price,
         type: w.type,
         target: w.target,
+        options: w.options,
       })),
 
       totalPrice: Math.max(

@@ -93,8 +93,15 @@ export const merchandiseCurrencyFormatter = (value?: number | null, currencyId?:
   }
 }
 
-export const currencyFormatter = (value?: number | string | null) =>
-  value !== null && value !== undefined && `NT$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+export const currencyFormatter = (value?: number | string | null, currencyId?: string, coinUnit?: string) => {
+  if (value === null || value === undefined) {
+    return
+  } else if (currencyId === 'LSC') {
+    return `${value} ${coinUnit || currencyId}`
+  } else {
+    return `NT$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+}
 
 export const dateFormatter = (value: Date | string, format?: string) =>
   moment(value).format(format || `YYYY/MM/DD HH:mm`)
