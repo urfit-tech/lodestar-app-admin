@@ -314,25 +314,17 @@ const ProgramContentAdminModal: React.FC<{
           >
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center">
-                {/* <Checkbox checked={isTrial} onChange={e => setIsTrial(e.target.checked)}>
-                  {formatMessage(commonMessages.ui.trial)}
-                </Checkbox>
-
-                <Checkbox checked={isPublished} onChange={e => setIsPublished(e.target.checked)}>
-                  {formatMessage(programMessages.label.show)}
-                </Checkbox> */}
-
-                <Select>
+                <Select style={{ width: '120px' }} defaultValue="conceal">
                   <Select.Option key="conceal" value="conceal">
                     隱藏
                   </Select.Option>
                   <Select.Option key="trial" value="trial">
                     試看
                   </Select.Option>
-                  <Select.Option key="" value="">
+                  <Select.Option key="loginToTrial" value="loginToTrial">
                     登入試看
                   </Select.Option>
-                  <Select.Option key="" value="">
+                  <Select.Option key="payToWatch" value="payToWatch">
                     付費觀看
                   </Select.Option>
                 </Select>
