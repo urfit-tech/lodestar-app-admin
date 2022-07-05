@@ -44,7 +44,7 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, imgProps, isImg
               ...value,
               width: Number(v) + (extractSizeUnit(value?.width?.toString()) || 'px'),
               height: isImgAutoHeight
-                ? Number(newHeight) + (extractSizeUnit(newHeight.toString()) || 'px')
+                ? Number(newHeight) + (extractSizeUnit(value?.width?.toString()) || 'px')
                 : originalHeight,
             })
           }}
