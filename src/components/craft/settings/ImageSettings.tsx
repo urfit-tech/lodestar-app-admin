@@ -35,9 +35,28 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
   const [aspectRatio, setAspectRatio] = useState(0)
   const [imgGcd, setImgGcd] = useState(0)
   const [widthAspect, setWidthAspect] = useState(0)
-  const [heightAspect, setImgHeightAspect] = useState(0)
+  const [heightAspect, setHeightAspect] = useState(0)
 
-  if (props.customStyle?.backgroundImage !== undefined && imgSrc !== props.customStyle?.backgroundImage) {
+  if (
+    imgSrc === '' &&
+    props.customStyle?.backgroundImage !== undefined &&
+    props.customStyle?.width !== undefined &&
+    props.customStyle?.height !== undefined
+  ) {
+    let dbImgWidth = typeof props.customStyle?.width === 'string' ? extractNumber(props.customStyle?.width) || 0 : 0
+    let dbImgHeight = typeof props.customStyle?.height === 'string' ? extractNumber(props.customStyle?.height) || 0 : 0
+    let dbAspectRatio = dbImgHeight / dbImgWidth
+    let dbImgGcd = gcd(dbImgWidth, dbImgHeight)
+    let widthAspect = dbImgWidth / dbImgGcd
+    let heightAspect = dbImgHeight / dbImgGcd
+    setImgWidth(dbImgWidth)
+    setImgHeight(dbImgHeight)
+    setAspectRatio(dbAspectRatio)
+    setImgGcd(dbImgGcd)
+    setWidthAspect(widthAspect)
+    setHeightAspect(heightAspect)
+    setImgSrc(props.customStyle.backgroundImage)
+  } else if (props.customStyle?.backgroundImage !== undefined && imgSrc !== props.customStyle?.backgroundImage) {
     let urlImg = new Image()
     let regex = /(https?|http|ftp|file):\/\/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]/gi
     let matchImgUrlArr = props?.customStyle?.backgroundImage?.match(regex)
@@ -56,12 +75,16 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
       let urlImgGcd = gcd(urlImgWidth, urlImgHeight)
       setImgGcd(urlImgGcd)
       // Aspect
-      setWidthAspect(urlImgWidth / urlImgGcd)
-      setImgHeightAspect(urlImgHeight / urlImgGcd)
+      let widthAspect = urlImgWidth / urlImgGcd
+      let heightAspect = urlImgHeight / urlImgGcd
+      setWidthAspect(widthAspect)
+      setHeightAspect(heightAspect)
       onPropsChange?.({
         ...props,
         width: urlImgWidth,
         height: urlImgHeight,
+        widthAspect: widthAspect,
+        heightAspect: heightAspect,
         ratio: urlImgAspectRatio,
         customStyle: {
           ...props.customStyle,
@@ -99,12 +122,13 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           checked={isImgAutoHeight}
           onChange={e => {
             setIsImgAutoHeight(!isImgAutoHeight)
-            let newHeight = ''
             if (typeof props.customStyle?.width === 'string') {
               let width =
                 extractNumber(props?.customStyle?.width) !== undefined ? parseInt(props?.customStyle?.width) : 0
               let newGcd = width / widthAspect
-              newHeight = `${heightAspect * newGcd}${extractSizeUnit(props.customStyle.width.toString() || 'px')}`
+              let newHeight = isImgAutoHeight
+                ? props?.customStyle?.height
+                : `${heightAspect * newGcd}${extractSizeUnit(props.customStyle.width.toString() || 'px')}`
               onPropsChange?.({
                 ...props,
                 ratio: aspectRatio,

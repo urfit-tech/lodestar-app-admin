@@ -52,7 +52,12 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, imgProps, isImg
         <Select
           defaultValue="px"
           value={extractSizeUnit(value?.width?.toString())}
-          onChange={v => onChange?.({ ...value, width: extractNumber(value?.width?.toString()) + v })}
+          onChange={v =>
+            onChange?.({
+              ...value,
+              width: extractNumber(value?.width?.toString()) + v,
+            })
+          }
           style={{ width: '70px' }}
         >
           <Select.Option value="px">px</Select.Option>
