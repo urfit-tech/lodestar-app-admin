@@ -2,6 +2,20 @@ import { defineMessages } from 'react-intl'
 
 const pageMessages = {
   '*': defineMessages({
+    save: { id: 'page.*.save', defaultMessage: '儲存' },
+    cancel: { id: 'page.*.cancel', defaultMessage: '取消' },
+    hasExpirationDate: { id: 'page.*.hasExpirationDate', defaultMessage: '有效期' },
+    noExpirationDate: { id: 'page.*.noExpirationDate', defaultMessage: '無效期' },
+    basicSettings: { id: 'page.*.basicSettings', defaultMessage: '基本設定' },
+    preview: { id: 'page.*.preview', defaultMessage: '預覽' },
+    year: { id: 'page.*.year', defaultMessage: '年' },
+    month: { id: 'page.*.year', defaultMessage: '月' },
+    week: { id: 'page.*.week', defaultMessage: '週' },
+    day: { id: 'page.*.year', defaultMessage: '日' },
+    hour: { id: 'page.*.year', defaultMessage: '小時' },
+    title: { id: 'page.*.title', defaultMessage: '名稱' },
+    published: { id: 'page.*.published', defaultMessage: '已發佈' },
+    unpublished: { id: 'page.*.unpublished', defaultMessage: '尚未發佈' },
     coupons: { id: 'page.*.couponPlans', defaultMessage: '折價方案' },
     createCouponPlan: { id: 'page.*.createCouponPlan', defaultMessage: '建立折價方案' },
     editCouponPlan: { id: 'page.*.editCouponPlan', defaultMessage: '編輯折價方案' },
@@ -44,6 +58,18 @@ const pageMessages = {
     unavailable: { id: 'page.*.unavailable', defaultMessage: '已失效' },
     vouchers: { id: 'page.*.voucherPlans', defaultMessage: '兌換方案' },
     createVoucherPlan: { id: 'page.*.createVoucherPlan', defaultMessage: '建立兌換方案' },
+    eligibilityList: { id: 'page.*.eligibilityList', defaultMessage: '資格名單' },
+    certificateSetting: { id: 'page.*.certificateSetting', defaultMessage: '證書設定' },
+    publishSettings: { id: 'page.*.publishSettings', defaultMessage: '發佈設定' },
+    successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: '儲存成功' },
+    deleteProductDanger: { id: 'page.*.deleteProductDanger', defaultMessage: '*已購買者在刪除後仍可觀看。' },
+    search: { id: 'page.*.search', defaultMessage: '查詢' },
+    reset: { id: 'page.*.reset', defaultMessage: '重置' },
+    import: { id: 'page.*.import', defaultMessage: '匯入' },
+    certificateNumber: { id: 'page.*.certificateNumber', defaultMessage: '證書編號' },
+    deliveryDate: { id: 'page.*.deliveryDate', defaultMessage: '發送日' },
+    expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
+    upload: { id: 'page.*.upload', defaultMessage: '上傳' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -181,6 +207,58 @@ const pageMessages = {
     emptyCouponPlan: {
       id: 'page.CouponCollectionBlock.emptyCouponPlan',
       defaultMessage: '無任何折價方案',
+    },
+  }),
+  CertificateCollectionPage: defineMessages({
+    createCertificate: { id: 'page.CertificateCollectionPage.createCertificate', defaultMessage: '新增證書' },
+  }),
+  CertificateAdminPage: defineMessages({
+    certificateIntro: { id: 'page.CertificateAdminPage.certificateIntro', defaultMessage: '證書介紹' },
+    deleteCertificateDangerText: {
+      id: 'page.CertificateAdminPage.deleteCertificateDangerText',
+      defaultMessage: '*已收到證書在刪除後仍可觀看。',
+    },
+  }),
+  CertificateBasicForm: defineMessages({
+    certificateTitle: { id: 'page.CertificateBasicForm.certificateTitle', defaultMessage: '證書名稱' },
+    certificateTemplate: { id: 'page.CertificateBasicForm.CertificateCollectionTable', defaultMessage: '證書樣板' },
+    qualification: { id: 'page.CertificateBasicForm.qualification', defaultMessage: '學習時數' },
+    expirationDate: { id: 'page.CertificateBasicForm.expirationDate', defaultMessage: '證書效期' },
+    certificateTemplateIsRequired: {
+      id: 'page.CertificateBasicForm.certificateTemplateIsRequired',
+      defaultMessage: 'Please select a template.',
+    },
+  }),
+  CertificateSelector: defineMessages({
+    selectTemplate: { id: 'page.CertificateSelector.selectTemplate', defaultMessage: 'select template' },
+  }),
+  CertificateIntroForm: defineMessages({
+    certificateDescription: { id: 'page.CertificateIntroForm.certificateDescription', defaultMessage: '證書描述' },
+  }),
+  CertificatePublishAdminBlock: defineMessages({
+    noCertificateTitle: {
+      id: 'page.CertificatePublishAdminBlock.noCertificateTitle',
+      defaultMessage: '尚未填寫證書名稱',
+    },
+    noCertificateTemplate: {
+      id: 'page.CertificatePublishAdminBlock.noCertificateTemplate',
+      defaultMessage: '尚未選擇證書樣板',
+    },
+    unPublishedCertificateText: {
+      id: 'page.CertificatePublishAdminBlock.unPublishedCertificateText',
+      defaultMessage: '你的證書未發佈，此證書並不會顯示在前台。',
+    },
+    publishedCertificateText: {
+      id: 'page.CertificatePublishAdminBlock.publishedCertificateText',
+      defaultMessage: '現在你的證書已公開發佈，此證書可公開挑戰。',
+    },
+  }),
+  CertificateEligibilityListBlock: defineMessages({
+    permanent: { id: 'page.CertificateEligibilityListBlock.Permanent', defaultMessage: '永久有效' },
+    revoke: { id: 'page.CertificateEligibilityListBlock.revoke', defaultMessage: '撤銷' },
+    deleteMemberCertificateWarning: {
+      id: 'page.CertificateEligibilityListBlock.deleteMemberCertificateWarning',
+      defaultMessage: '你確定要刪除此會員的證書？此動作無法還原',
     },
   }),
 }

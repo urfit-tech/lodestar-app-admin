@@ -314,6 +314,17 @@ export const routesProps = {
     pageName: 'TaskCategoryCollectionPage',
     authenticated: true,
   },
+  // certificate_collection
+  certificate_collection: {
+    path: '/certificates',
+    pageName: 'CertificateCollectionPage',
+    authenticated: true,
+  },
+  certificate: {
+    path: '/certificates/:certificateId',
+    pageName: 'CertificateAdminPage',
+    authenticated: true,
+  },
   // member
   member_admin: {
     path: '/members/:memberId',
