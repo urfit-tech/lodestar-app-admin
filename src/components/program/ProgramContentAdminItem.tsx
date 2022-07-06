@@ -1,11 +1,8 @@
 import Icon, { EyeInvisibleOutlined, EyeOutlined, FileTextOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
 import { Tag, Typography } from 'antd'
-import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
@@ -55,9 +52,6 @@ const ProgramContentAdminItem: React.FC<{
   onRefetch?: () => void
 }> = ({ showPlans, programContent, program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [updateProgramContent] = useMutation<hasura.PUBLISH_PROGRAM_CONTENT, hasura.PUBLISH_PROGRAM_CONTENTVariables>(
-    PUBLISH_PROGRAM_CONTENT,
-  )
 
   return (
     <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
@@ -146,13 +140,5 @@ const ProgramContentAdminItem: React.FC<{
     </div>
   )
 }
-
-const PUBLISH_PROGRAM_CONTENT = gql`
-  mutation PUBLISH_PROGRAM_CONTENT($programContentId: uuid!, $publishedAt: timestamptz) {
-    update_program_content(where: { id: { _eq: $programContentId } }, _set: { published_at: $publishedAt }) {
-      affected_rows
-    }
-  }
-`
 
 export default ProgramContentAdminItem
