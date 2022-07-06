@@ -372,7 +372,6 @@ const SaleCollectionAdminCard: React.VFC<{
               <div className="col-3">{currencyFormatter(shipping.fee || 0)}</div>
             </div>
           )}
-          {console.log(orderDiscounts)}
           {orderDiscounts.map(orderDiscount => (
             <div className="row text-right">
               <div className="col-9">
