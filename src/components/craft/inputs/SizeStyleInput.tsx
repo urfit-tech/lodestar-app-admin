@@ -31,7 +31,7 @@ const SizeStyleInput: React.VFC<SizeStyleInputProps> = ({ value, imgProps, isImg
     <>
       <Form.Item label={formatMessage(craftMessages['*'].width)}>
         <InputNumber
-          value={value?.width !== undefined ? extractNumber(value?.width?.toString()) : imgProps.width}
+          value={value?.width === undefined ? imgProps.width : extractNumber(value?.width?.toString())}
           min={0}
           onChange={v => {
             let newHeight = 0
