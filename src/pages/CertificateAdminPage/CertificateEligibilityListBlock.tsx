@@ -62,9 +62,7 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
     error,
     refetch,
     loadMoreMemberCertificates,
-  } = useMemberTemplate({
-    ...fieldFilter,
-  })
+  } = useMemberTemplate(certificateId, { ...fieldFilter })
   const [deleteMemberCertificate] = useMutation<
     hasura.DELETE_MEMBER_CERTIFICATE,
     hasura.DELETE_MEMBER_CERTIFICATEVariables
@@ -245,8 +243,9 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
   )
 }
 
-const useMemberTemplate = (filter?: { name?: string; email?: string; number?: string }) => {
+const useMemberTemplate = (certificateId: string, filter?: { name?: string; email?: string; number?: string }) => {
   const condition: hasura.GET_MEMBER_CERTIFICATEVariables['condition'] = {
+    certificate_id: { _eq: certificateId },
     member:
       filter?.name || filter?.email
         ? {

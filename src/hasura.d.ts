@@ -19329,6 +19329,7 @@ export enum program_content_update_column {
   content_section_id = "content_section_id",
   content_type = "content_type",
   created_at = "created_at",
+  display_mode = "display_mode",
   duration = "duration",
   id = "id",
   is_notify_update = "is_notify_update",
@@ -33338,6 +33339,7 @@ export interface program_content_bool_exp {
   content_section_id?: uuid_comparison_exp | null;
   content_type?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  display_mode?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   enrollments?: program_content_enrollment_bool_exp | null;
   exercises?: exercise_bool_exp | null;
@@ -33433,6 +33435,7 @@ export interface program_content_insert_input {
   content_section_id?: any | null;
   content_type?: string | null;
   created_at?: any | null;
+  display_mode?: string | null;
   duration?: any | null;
   enrollments?: program_content_enrollment_arr_rel_insert_input | null;
   exercises?: exercise_arr_rel_insert_input | null;
@@ -34075,6 +34078,7 @@ export interface program_content_set_input {
   content_section_id?: any | null;
   content_type?: string | null;
   created_at?: any | null;
+  display_mode?: string | null;
   duration?: any | null;
   id?: any | null;
   is_notify_update?: boolean | null;
