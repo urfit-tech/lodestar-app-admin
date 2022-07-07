@@ -123,10 +123,10 @@ const ImageSettings: CraftElementSettings<ImageProps> = ({ props, onPropsChange 
           onChange={e => {
             setIsImgAutoHeight(!isImgAutoHeight)
             if (typeof props.customStyle?.width === 'string') {
-              let width =
+              const width =
                 extractNumber(props?.customStyle?.width) !== undefined ? parseInt(props?.customStyle?.width) : 0
-              let newGcd = width / widthAspect
-              let newHeight = isImgAutoHeight
+              const newGcd = width / widthAspect
+              const newHeight = isImgAutoHeight
                 ? props?.customStyle?.height
                 : `${heightAspect * newGcd}${extractSizeUnit(props.customStyle.width.toString() || 'px')}`
               onPropsChange?.({
