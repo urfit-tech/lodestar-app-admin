@@ -1,0 +1,2 @@
+import CertificateCollectionPage from './CertificateCollectionPage'
+export default CertificateCollectionPage

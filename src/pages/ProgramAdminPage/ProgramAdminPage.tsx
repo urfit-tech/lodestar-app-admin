@@ -18,6 +18,7 @@ import {
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import { useProgram } from '../../hooks/program'
+import pageMessages from '../translation'
 import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
 import ProgramBasicForm from './ProgramBasicForm'
 import ProgramCoverForm from './ProgramCoverForm'
@@ -117,7 +118,11 @@ const ProgramAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].programIntroduction)}</AdminBlockTitle>
                 <ProgramIntroForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
-              <MetaProductDeletionBlock metaProductType="Program" targetId={programId} />
+              <MetaProductDeletionBlock
+                metaProductType="Program"
+                targetId={programId}
+                renderDeleteDangerText={formatMessage(pageMessages['*'].deleteProductDanger)}
+              />
             </div>
           </Tabs.TabPane>
 

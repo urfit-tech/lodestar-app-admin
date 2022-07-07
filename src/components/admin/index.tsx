@@ -71,7 +71,7 @@ export const AdminBlock = styled.div`
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 export const AdminBlockTitle = styled.h2`
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   color: var(--gray-darker);
   font-size: 18px;
   font-weight: bold;

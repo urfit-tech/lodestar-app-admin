@@ -12,6 +12,7 @@ import { useCustomRenderer } from '../../contexts/CustomRendererContext'
 import {
   BookIcon,
   CalendarAltIcon,
+  CertificateIcon,
   DiscountIcon,
   MicrophoneIcon,
   MoneyCircleIcon,
@@ -327,6 +328,24 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       key: 'shipping',
       icon: () => <GoldenFilled className="mr-0" />,
       name: formatMessage(adminMessages.AdminMenu.shipping),
+    },
+    {
+      permissionIsAllowed: !!enabledModules.certificate,
+      key: 'certificate',
+      icon: () => <CertificateIcon className="mr-0" />,
+      name: formatMessage(adminMessages.AdminMenu.certificateAdmin),
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'certificate_collection',
+          name: formatMessage(adminMessages.AdminMenu.certificateSetting),
+        },
+        // {
+        //   permissionIsAllowed: true,
+        //   key: 'certificateTemplate',
+        //   name: formatMessage(adminMessages.AdminMenu.certificateTemplate),
+        // },
+      ],
     },
     {
       permissionIsAllowed:
