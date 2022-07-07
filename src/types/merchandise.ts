@@ -10,7 +10,7 @@ export type MerchandisePreviewProps = {
   publishedAt: Date | null
   isPhysical: boolean
   isCustomized: boolean
-
+  currencyId: string
   soldQuantity?: number
 }
 
@@ -38,6 +38,7 @@ export type MerchandiseProps = {
   isCustomized: boolean
   isLimited: boolean
   isCountdownTimerVisible: boolean
+  currencyId: string
   specs: MerchandiseSpecProps[]
 }
 

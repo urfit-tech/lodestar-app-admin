@@ -26,6 +26,7 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           published_at
           is_physical
           is_customized
+          currency_id
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
             id
             url
@@ -45,6 +46,7 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           soldAt: merchandise.sold_at ? new Date(merchandise.sold_at) : null,
           minPrice: 0,
           maxPrice: 0,
+          currencyId: merchandise.currency_id,
           publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
           isPhysical: merchandise.is_physical,
           isCustomized: merchandise.is_customized,
@@ -85,6 +87,7 @@ export const useMerchandise = (id: string) => {
           is_customized
           is_limited
           is_countdown_timer_visible
+          currency_id
           merchandise_categories(order_by: { position: asc }) {
             id
             category {
@@ -179,6 +182,7 @@ export const useMerchandise = (id: string) => {
           isCustomized: merchandiseData.merchandise_by_pk.is_customized,
           isLimited: merchandiseData.merchandise_by_pk.is_limited,
           isCountdownTimerVisible: merchandiseData.merchandise_by_pk.is_countdown_timer_visible,
+          currencyId: merchandiseData.merchandise_by_pk.currency_id,
           specs: merchandiseData.merchandise_by_pk.merchandise_specs.map(v => ({
             id: v.id,
             title: v.title,
@@ -281,6 +285,7 @@ export const useMemberShop = (shopId: string) => {
             published_at
             is_physical
             is_customized
+            currency_id
             merchandise_imgs(where: { type: { _eq: "cover" } }) {
               id
               url
@@ -334,6 +339,7 @@ export const useMemberShop = (shopId: string) => {
                 v.sold_at && typeof spec.sale_price === 'number' ? spec.sale_price : spec.list_price || 0,
               ),
             ),
+            currencyId: v.currency_id,
             isPhysical: v.is_physical,
             isCustomized: v.is_customized,
             publishedAt: v.published_at ? new Date(v.published_at) : null,

@@ -3760,6 +3760,7 @@ export interface UPDATE_MERCHANDISE_SALESVariables {
   startedAt?: any | null;
   endedAt?: any | null;
   isCountdownTimerVisible?: boolean | null;
+  currencyId: string;
 }
 
 /* tslint:disable */
@@ -11022,6 +11023,7 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   published_at: any | null;
   is_physical: boolean;
   is_customized: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11114,6 +11116,7 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   is_customized: boolean;
   is_limited: boolean;
   is_countdown_timer_visible: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11270,6 +11273,7 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   published_at: any | null;
   is_physical: boolean;
   is_customized: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11489,6 +11493,7 @@ export interface GET_ORDER_LOGS_order_log_order_discounts {
    */
   type: string;
   target: string;
+  options: any | null;
 }
 
 export interface GET_ORDER_LOGS_order_log_order_executors_member {
