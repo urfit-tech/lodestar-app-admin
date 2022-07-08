@@ -29,6 +29,7 @@ import { useMutateProgramContent, useProgramContentBody } from '../../hooks/prog
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
 import QuestionInput from '../form/QuestionInput'
+import DisplayModeSelector from './DisplayModeSelector'
 import ExerciseSortingModal from './ExerciseSortingModal'
 
 const StyledTitle = styled.div`
@@ -192,20 +193,15 @@ const ExerciseAdminForm: React.FC<{
       onFinish={handleSubmit}
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <div>
-          <Form.Item name="isTrial" valuePropName="checked" noStyle>
-            <Checkbox className="mr-2">{formatMessage(commonMessages.ui.trial)}</Checkbox>
-          </Form.Item>
-          <Form.Item name="isVisible" valuePropName="checked" noStyle>
-            <Checkbox className="mr-2">{formatMessage(programMessages.label.show)}</Checkbox>
-          </Form.Item>
-          <Form.Item name="isAvailableToGoBack" valuePropName="checked" noStyle>
+        <div className="d-flex align-items-center">
+          {programContent.displayMode && <DisplayModeSelector displayMode={programContent.displayMode} />}
+          <Form.Item name="isAvailableToGoBack" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToGoBack)}</Checkbox>
           </Form.Item>
-          <Form.Item name="isAvailableToRetry" valuePropName="checked" noStyle>
+          <Form.Item name="isAvailableToRetry" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToRetry)}</Checkbox>
           </Form.Item>
-          <Form.Item name="isNotifyUpdate" valuePropName="checked" noStyle>
+          <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
           </Form.Item>
         </div>

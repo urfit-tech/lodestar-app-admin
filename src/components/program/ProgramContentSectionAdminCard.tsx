@@ -114,6 +114,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                     position: programContentSection.programContents.length,
                     publishedAt: program && program.publishedAt ? undefined : new Date(),
                     programContentType: 'text',
+                    displayMode: program && program.publishedAt ? 'payToWatch' : 'conceal',
                   },
                 })
                   .then(() => onRefetch?.())
@@ -132,6 +133,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                       position: programContentSection.programContents.length,
                       publishedAt: program?.publishedAt ? null : new Date(),
                       programContentType: 'practice',
+                      displayMode: program && program.publishedAt ? 'payToWatch' : 'conceal',
                     },
                   })
                     .then(() => onRefetch?.())
@@ -155,6 +157,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                         isAvailableToGoBack: true,
                         isAvailableToRetry: true,
                       },
+                      displayMode: program && program.publishedAt ? 'payToWatch' : 'conceal',
                     },
                   })
                     .then(() => onRefetch?.())
@@ -184,6 +187,7 @@ const INSERT_PROGRAM_CONTENT = gql`
     $publishedAt: timestamptz
     $programContentType: String!
     $metadata: jsonb
+    $displayMode: String!
   ) {
     insert_program_content(
       objects: {
@@ -193,6 +197,7 @@ const INSERT_PROGRAM_CONTENT = gql`
         program_content_body: { data: { type: $programContentType, data: {} } }
         published_at: $publishedAt
         metadata: $metadata
+        display_mode: $displayMode
       }
     ) {
       returning {

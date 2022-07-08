@@ -53,6 +53,7 @@ export const useProgram = (programId: string) => {
               is_notify_update
               notified_at
               metadata
+              display_mode
               program_content_body {
                 data
               }
@@ -167,6 +168,7 @@ export const useProgram = (programId: string) => {
           id: pc.id,
           title: pc.title,
           publishedAt: pc.published_at && new Date(pc.published_at),
+          displayMode: pc.display_mode || 'conceal',
           listPrice: pc.list_price,
           duration: pc.duration,
           programContentType: pc.program_content_videos.length > 0 ? 'video' : pc.program_content_type?.type || null,
@@ -560,6 +562,7 @@ export const useMutateProgramContent = () => {
         $isNotifyUpdate: Boolean
         $notifiedAt: timestamptz
         $programContentBodyId: uuid!
+        $displayMode: String
       ) {
         update_program_content(
           where: { id: { _eq: $programContentId } }
@@ -572,6 +575,7 @@ export const useMutateProgramContent = () => {
             is_notify_update: $isNotifyUpdate
             notified_at: $notifiedAt
             content_body_id: $programContentBodyId
+            display_mode: $displayMode
           }
         ) {
           affected_rows
@@ -710,6 +714,7 @@ export const useProgramContent = (programContentId: string) => {
     : null
   return { programContent, loading, refetch }
 }
+
 export const useProgramContentActions = (programContentId: string) => {
   const apolloClient = useApolloClient()
   return {

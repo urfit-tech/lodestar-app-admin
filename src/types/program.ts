@@ -107,6 +107,7 @@ export type ProgramContentProps = {
   }[]
   videos: AttachmentSelectorValue[]
   programContentBodyData: any
+  displayMode: string | null
 }
 
 export type ProgramContentBodyProps = {

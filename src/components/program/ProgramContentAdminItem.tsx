@@ -1,9 +1,9 @@
-import Icon, { EyeInvisibleOutlined, EyeOutlined, FileTextOutlined } from '@ant-design/icons'
+import Icon, { FileTextOutlined } from '@ant-design/icons'
 import { Tag, Typography } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { dateFormatter, handleError } from '../../helpers'
+import { dateFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
@@ -13,6 +13,7 @@ import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
 import PracticeAdminModal from './PracticeAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
+import programMessages from './translation'
 
 const StyledIcon = styled(Icon)`
   color: #9b9b9b;
@@ -33,7 +34,7 @@ const StyledTag = styled(Tag)`
     font-weight: 500;
   }
 `
-const StyledTrialTag = styled(StyledTag)`
+const StyledDisplayModeTag = styled(StyledTag)`
   &&& {
     background: #ffbe1e;
   }
@@ -89,46 +90,39 @@ const ProgramContentAdminItem: React.FC<{
           <Icon className="mr-3" component={() => <ExclamationCircleIcon />} />
         )}
         {programContent.listPrice === 0 && (
-          <StyledTrialTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledTrialTag>
+          <StyledDisplayModeTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledDisplayModeTag>
         )}
+
+        {programContent.displayMode === 'conceal' ? (
+          <StyledDisplayModeTag className="mr-3">
+            {formatMessage(programMessages.DisplayModeSelector.conceal)}
+          </StyledDisplayModeTag>
+        ) : programContent.displayMode === 'trial' ? (
+          <StyledDisplayModeTag className="mr-3">
+            {formatMessage(programMessages.DisplayModeSelector.trial)}
+          </StyledDisplayModeTag>
+        ) : programContent.displayMode === 'loginToTrial' ? (
+          <StyledDisplayModeTag className="mr-3">
+            {formatMessage(programMessages.DisplayModeSelector.loginToTrial)}
+          </StyledDisplayModeTag>
+        ) : programContent.displayMode === 'payToWatch' ? (
+          <StyledDisplayModeTag className="mr-3">
+            {formatMessage(programMessages.DisplayModeSelector.payToWatch)}
+          </StyledDisplayModeTag>
+        ) : null}
+
         {programContent.metadata?.private && (
           <StyledPrivateTag className="mr-3">{formatMessage(commonMessages.ui.private)}</StyledPrivateTag>
         )}
-        {program ? (
-          programContent.publishedAt && (
-            <StyledDescriptions type="secondary" className="mr-3">
-              {dateFormatter(programContent.publishedAt)}
-            </StyledDescriptions>
-          )
-        ) : programContent.publishedAt ? (
-          <EyeOutlined
-            className="mr-3"
-            onClick={() =>
-              updateProgramContent({
-                variables: {
-                  programContentId: programContent.id,
-                  publishedAt: null,
-                },
-              })
-                .then(() => onRefetch?.())
-                .catch(handleError)
-            }
-          />
-        ) : (
-          <EyeInvisibleOutlined
-            className="mr-3"
-            onClick={() =>
-              updateProgramContent({
-                variables: {
-                  programContentId: programContent.id,
-                  publishedAt: new Date(),
-                },
-              })
-                .then(() => onRefetch?.())
-                .catch(handleError)
-            }
-          />
-        )}
+
+        {program
+          ? programContent.publishedAt && (
+              <StyledDescriptions type="secondary" className="mr-3">
+                {dateFormatter(programContent.publishedAt)}
+              </StyledDescriptions>
+            )
+          : null}
+
         {programContent.programContentType === 'practice' ? (
           <PracticeAdminModal programContent={programContent} onRefetch={onRefetch} />
         ) : programContent.programContentType === 'exercise' ? (

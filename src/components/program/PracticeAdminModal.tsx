@@ -17,6 +17,7 @@ import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
 import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
+import DisplayModeSelector from './DisplayModeSelector'
 
 const messages = defineMessages({
   displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
@@ -183,23 +184,22 @@ const PracticeForm: React.FC<{
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
-          <Form.Item name="publishedAt" valuePropName="checked" className="mr-3">
-            <Checkbox>{formatMessage(programMessages.label.show)}</Checkbox>
-          </Form.Item>
+          {programContent.displayMode && <DisplayModeSelector displayMode={programContent.displayMode} />}
 
-          <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3">
+          <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3 mb-0">
             <Checkbox>
               {formatMessage(messages.displayPrivate)}
               <Tooltip
-                placement="bottom"
+                style={{ position: 'relative' }}
+                placement="rightTop"
                 title={<StyledTips>{formatMessage(programMessages.text.practicePrivateTips)}</StyledTips>}
               >
-                <QuestionCircleFilled className="ml-1" />
+                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute' }} />
               </Tooltip>
             </Checkbox>
           </Form.Item>
 
-          <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3">
+          <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3 mb-0">
             <Checkbox>
               {formatMessage(messages.coverRequired)}
               <Tooltip placement="bottom" title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}>
@@ -208,7 +208,7 @@ const PracticeForm: React.FC<{
             </Checkbox>
           </Form.Item>
 
-          <Form.Item name="isNotifyUpdate" valuePropName="checked">
+          <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
             <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
           </Form.Item>
         </div>
