@@ -21,6 +21,12 @@ const programMessages = {
   ProgramPackageSelector: defineMessages({
     allProgramPackage: { id: 'program.ProgramPackageSelector.allProgramPackage', defaultMessage: '全部課程組合' },
   }),
+  DisplayModeSelector: defineMessages({
+    conceal: { id: 'program.DisplayModeSelector.conceal', defaultMessage: '隱藏' },
+    trial: { id: 'program.DisplayModeSelector.trial', defaultMessage: '試看' },
+    loginToTrial: { id: 'program.DisplayModeSelector.loginToTrial', defaultMessage: '登入試看' },
+    payToWatch: { id: 'program.DisplayModeSelector.payToWatch', defaultMessage: '付費觀看' },
+  }),
 }
 
 export default programMessages
