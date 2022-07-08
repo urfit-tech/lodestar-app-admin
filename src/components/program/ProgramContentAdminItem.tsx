@@ -30,14 +30,21 @@ const StyledTag = styled(Tag)`
     border: none;
     color: #fff;
     border-radius: 4px;
-    letter-spacing: 0.58px;
+    letter-spacing: 0.6px;
     font-weight: 500;
   }
 `
-const StyledDisplayModeTag = styled(StyledTag)`
-  &&& {
+const StyledDisplayModeTag = styled(StyledTag)<{ variant?: string }>`
+  ${props =>
+    props.variant === 'conceal'
+      ? `&&&{
+        background: transparent;
+        color: var(--gray-dark);
+        border: solid 1px var(--gray);
+      }`
+      : `&&&{
     background: #ffbe1e;
-  }
+  }`}
 `
 const StyledPrivateTag = styled(StyledTag)`
   background: var(--gray-darker);
@@ -94,7 +101,7 @@ const ProgramContentAdminItem: React.FC<{
         )}
 
         {programContent.displayMode === 'conceal' ? (
-          <StyledDisplayModeTag className="mr-3">
+          <StyledDisplayModeTag className="mr-3" variant="conceal">
             {formatMessage(programMessages.DisplayModeSelector.conceal)}
           </StyledDisplayModeTag>
         ) : programContent.displayMode === 'trial' ? (
@@ -105,14 +112,12 @@ const ProgramContentAdminItem: React.FC<{
           <StyledDisplayModeTag className="mr-3">
             {formatMessage(programMessages.DisplayModeSelector.loginToTrial)}
           </StyledDisplayModeTag>
-        ) : programContent.displayMode === 'payToWatch' ? (
-          <StyledDisplayModeTag className="mr-3">
-            {formatMessage(programMessages.DisplayModeSelector.payToWatch)}
-          </StyledDisplayModeTag>
         ) : null}
 
         {programContent.metadata?.private && (
-          <StyledPrivateTag className="mr-3">{formatMessage(commonMessages.ui.private)}</StyledPrivateTag>
+          <StyledPrivateTag className="mr-3">
+            {formatMessage(programMessages.ProgramContentAdminItem.privatePractice)}
+          </StyledPrivateTag>
         )}
 
         {program

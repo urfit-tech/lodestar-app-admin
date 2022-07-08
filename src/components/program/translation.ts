@@ -27,6 +27,9 @@ const programMessages = {
     loginToTrial: { id: 'program.DisplayModeSelector.loginToTrial', defaultMessage: '登入試看' },
     payToWatch: { id: 'program.DisplayModeSelector.payToWatch', defaultMessage: '付費觀看' },
   }),
+  ProgramContentAdminItem: defineMessages({
+    privatePractice: { id: 'program.ProgramContentAdminItem.privatePractice', defaultMessage: '私密作業' },
+  }),
 }
 
 export default programMessages
