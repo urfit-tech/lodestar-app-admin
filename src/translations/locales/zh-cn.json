@@ -229,6 +229,8 @@
   "admin.AdminMenu.blogAdmin": "媒体文章",
   "admin.AdminMenu.blogCategory": "文章分类",
   "admin.AdminMenu.blogPosts": "文章管理",
+  "admin.AdminMenu.certificate": "证书管理",
+  "admin.AdminMenu.certificateSetting": "证书设定",
   "admin.AdminMenu.coinHistory": "代币纪录",
   "admin.AdminMenu.couponPlans": "折价方案",
   "admin.AdminMenu.creatorDisplayAdmin": "讲师墙",

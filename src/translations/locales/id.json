@@ -229,6 +229,8 @@
   "admin.AdminMenu.blogAdmin": "Artikel Media",
   "admin.AdminMenu.blogCategory": "Kategori Artikel",
   "admin.AdminMenu.blogPosts": "Pengelolaan pos",
+  "admin.AdminMenu.certificate": "Sertifikat",
+  "admin.AdminMenu.certificateSetting": "Pengaturan Sertifikat",
   "admin.AdminMenu.coinHistory": "Riwayat Token",
   "admin.AdminMenu.couponPlans": "Paket diskon",
   "admin.AdminMenu.creatorDisplayAdmin": "Dinding Dosen",

@@ -231,6 +231,8 @@
   "admin.AdminMenu.blogPosts": "Blog Posts",
   "admin.AdminMenu.coinHistory": "Coin History",
   "admin.AdminMenu.couponPlans": "Coupon Plans",
+  "admin.AdminMenu.certificate": "Certificate",
+  "admin.AdminMenu.certificateSetting": "Certificate Setting",
   "admin.AdminMenu.creatorDisplayAdmin": "Instructor Wall",
   "admin.AdminMenu.creatorDisplayCategory": "Category",
   "admin.AdminMenu.creatorDisplayManagement": "Instructor Wall",
