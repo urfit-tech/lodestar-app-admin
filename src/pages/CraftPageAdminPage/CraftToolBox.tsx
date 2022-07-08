@@ -142,35 +142,41 @@ const ProductToolbox: React.FC = () => {
         coverUrl="https://static.kolable.com/images/default/craft/activity.png"
         variant="card"
         source={{ from: 'publishedAt', limit: 4 }}
+        customStyle={{ width: '100%' }}
       />
       <CraftTool
         as={CraftElement.CraftProgramCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
         variant="primary"
         source={{ from: 'publishedAt', limit: 4 }}
+        customStyle={{ width: '100%' }}
       />
       {/* <CraftTool
         as={CraftElement.CraftProgramContentCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
         variant="card"
         source={{ from: 'recentWatched', limit: 3 }}
+        customStyle={{ width: '100%' }}
       /> */}
       <CraftTool
         as={CraftElement.CraftProgramPackageCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
         variant="card"
         source={{ from: 'publishedAt', limit: 4 }}
+        customStyle={{ width: '100%' }}
       />
       <CraftTool
         as={CraftElement.CraftProjectCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
         variant="card"
         source={{ from: 'publishedAt', limit: 4 }}
+        customStyle={{ width: '100%' }}
       />
       <CraftTool
         as={CraftElement.CraftMemberCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"
         source={{ from: 'role', role: 'content-creator', limit: 4 }}
+        customStyle={{ width: '100%' }}
       />
     </div>
   )
