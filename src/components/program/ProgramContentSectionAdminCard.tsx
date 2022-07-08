@@ -112,9 +112,9 @@ const ProgramContentSectionAdminCard: React.FC<{
                     programContentSectionId: programContentSection.id,
                     title: 'untitled',
                     position: programContentSection.programContents.length,
-                    publishedAt: program && program.publishedAt ? undefined : new Date(),
                     programContentType: 'text',
-                    displayMode: program && program.publishedAt ? 'payToWatch' : 'conceal',
+                    publishedAt: program?.publishedAt ? new Date() : null,
+                    displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
                   },
                 })
                   .then(() => onRefetch?.())
@@ -131,9 +131,9 @@ const ProgramContentSectionAdminCard: React.FC<{
                       programContentSectionId: programContentSection.id,
                       title: 'untitled',
                       position: programContentSection.programContents.length,
-                      publishedAt: program?.publishedAt ? null : new Date(),
                       programContentType: 'practice',
-                      displayMode: program && program.publishedAt ? 'payToWatch' : 'conceal',
+                      publishedAt: program?.publishedAt ? new Date() : null,
+                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
                     },
                   })
                     .then(() => onRefetch?.())
@@ -151,13 +151,13 @@ const ProgramContentSectionAdminCard: React.FC<{
                       programContentSectionId: programContentSection.id,
                       title: 'untitled',
                       position: programContentSection.programContents.length,
-                      publishedAt: program?.publishedAt ? null : new Date(),
                       programContentType: 'exercise',
+                      publishedAt: program?.publishedAt ? new Date() : null,
+                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
                       metadata: {
                         isAvailableToGoBack: true,
                         isAvailableToRetry: true,
                       },
-                      displayMode: program && program.publishedAt ? 'payToWatch' : 'conceal',
                     },
                   })
                     .then(() => onRefetch?.())

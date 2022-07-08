@@ -5071,6 +5071,7 @@ export interface UPDATE_PRACTICEVariables {
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
   metadata?: any | null;
+  displayMode?: string | null;
 }
 
 /* tslint:disable */

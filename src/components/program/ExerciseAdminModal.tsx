@@ -17,6 +17,7 @@ import {
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
+import moment, { Moment } from 'moment'
 import { clone, find, propEq, sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -40,13 +41,14 @@ const StyledTitle = styled.div`
 `
 
 type FieldProps = {
-  isTrial: boolean
   isVisible: boolean
   isAvailableToGoBack: boolean
   isAvailableToRetry: boolean
   isNotifyUpdate: boolean
   title: string
   passingScore: number
+  displayMode: string
+  publishedAt: Moment | null
 }
 
 const StyledModal = styled(Modal)<{ isFullWidth?: boolean }>`
@@ -143,8 +145,8 @@ const ExerciseAdminForm: React.FC<{
         programContentId: programContent.id,
         programContentBodyId: programContentBody.id,
         content: {
-          list_price: values.isTrial ? 0 : null,
-          published_at: values.isVisible ? new Date() : null,
+          display_mode: values.displayMode,
+          published_at: values.publishedAt ? values.publishedAt.toDate() : null,
           is_notify_update: values.isNotifyUpdate,
           title: values.title,
           metadata: {
@@ -173,17 +175,13 @@ const ExerciseAdminForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => {
-    form.setFieldsValue({ isVisible: !!programContent.publishedAt })
-  }, [form, programContent.publishedAt])
-
   return (
     <Form
       form={form}
       layout="vertical"
       initialValues={{
-        isTrial: programContent.listPrice === 0,
-        isVisible: !!programContent.publishedAt,
+        publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
+        displayMode: programContent.displayMode,
         isAvailableToGoBack: !!programContent.metadata?.isAvailableToGoBack,
         isAvailableToRetry: !!programContent.metadata?.isAvailableToRetry,
         isNotifyUpdate: programContent.isNotifyUpdate,

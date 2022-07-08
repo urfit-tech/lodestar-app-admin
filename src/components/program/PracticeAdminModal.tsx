@@ -4,7 +4,8 @@ import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Mo
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import moment, { Moment } from 'moment'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -40,7 +41,8 @@ const StyledPracticeFileSizeTips = styled(StyledTips)`
 `
 
 type FieldProps = {
-  publishedAt: boolean
+  publishedAt: Moment | null
+  displayMode: string
   isNotifyUpdate: boolean
   title: string
   estimatedTime: number
@@ -104,7 +106,8 @@ const PracticeForm: React.FC<{
       updatePractice({
         variables: {
           programContentId: programContent.id,
-          publishedAt: values.publishedAt ? new Date() : null,
+          displayMode: values.displayMode,
+          publishedAt: values.publishedAt ? values.publishedAt.toDate() : null,
           title: values.title,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration: values.estimatedTime,
@@ -162,16 +165,13 @@ const PracticeForm: React.FC<{
       .finally(() => setIsSubmitting(false))
   }
 
-  useEffect(() => {
-    form.setFieldsValue({ publishedAt: !!programContent.publishedAt })
-  }, [form, programContent.publishedAt])
-
   return (
     <Form
       form={form}
       layout="vertical"
       initialValues={{
-        publishedAt: !!programContent.publishedAt,
+        publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
+        displayMode: programContent.displayMode,
         isPracticePrivate: !!programContent.metadata?.private,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
@@ -190,11 +190,11 @@ const PracticeForm: React.FC<{
             <Checkbox>
               {formatMessage(messages.displayPrivate)}
               <Tooltip
-                style={{ position: 'relative' }}
-                placement="rightTop"
+                placement="right"
                 title={<StyledTips>{formatMessage(programMessages.text.practicePrivateTips)}</StyledTips>}
+                style={{ position: 'relative' }}
               >
-                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute' }} />
+                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
               </Tooltip>
             </Checkbox>
           </Form.Item>
@@ -202,8 +202,12 @@ const PracticeForm: React.FC<{
           <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3 mb-0">
             <Checkbox>
               {formatMessage(messages.coverRequired)}
-              <Tooltip placement="bottom" title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}>
-                <QuestionCircleFilled className="ml-1" />
+              <Tooltip
+                placement="right"
+                title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}
+                style={{ position: 'relative' }}
+              >
+                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
               </Tooltip>
             </Checkbox>
           </Form.Item>
@@ -299,6 +303,7 @@ const UPDATE_PRACTICE = gql`
     $isNotifyUpdate: Boolean
     $notifiedAt: timestamptz
     $metadata: jsonb
+    $displayMode: String
   ) {
     update_program_content(
       where: { id: { _eq: $programContentId } }
@@ -309,6 +314,7 @@ const UPDATE_PRACTICE = gql`
         is_notify_update: $isNotifyUpdate
         notified_at: $notifiedAt
         metadata: $metadata
+        display_mode: $displayMode
       }
     ) {
       affected_rows
