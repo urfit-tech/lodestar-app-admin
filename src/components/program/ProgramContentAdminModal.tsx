@@ -197,7 +197,11 @@ const ProgramContentAdminModal: React.FC<{
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
           programContentBodyId: updatedProgramContentBodyId,
           displayMode: values.displayMode,
-          publishedAt: values.publishedAt ? values.publishedAt.toDate() : null,
+          publishedAt: values.publishedAt
+            ? values.publishedAt.toDate()
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
         },
       })
       if (videoPipeline === 'attachment') {

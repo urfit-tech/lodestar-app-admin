@@ -107,7 +107,11 @@ const PracticeForm: React.FC<{
         variables: {
           programContentId: programContent.id,
           displayMode: values.displayMode,
-          publishedAt: values.publishedAt ? values.publishedAt.toDate() : null,
+          publishedAt: values.publishedAt
+            ? values.publishedAt.toDate()
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
           title: values.title,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration: values.estimatedTime,

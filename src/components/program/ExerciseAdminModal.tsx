@@ -146,7 +146,11 @@ const ExerciseAdminForm: React.FC<{
         programContentBodyId: programContentBody.id,
         content: {
           display_mode: values.displayMode,
-          published_at: values.publishedAt ? values.publishedAt.toDate() : null,
+          published_at: values.publishedAt
+            ? values.publishedAt.toDate()
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
           is_notify_update: values.isNotifyUpdate,
           title: values.title,
           metadata: {
