@@ -67,6 +67,7 @@ const MemberExportModal: React.FC<{
       const condition: hasura.GET_MEMBER_EXPORT_COLLECTIONVariables['condition'] = {
         role: filter?.role ? { _eq: filter?.role } : undefined,
         name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+        username: filter?.username ? { _ilike: `%${filter.username}%` } : undefined,
         email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
         phones: filter?.phone ? { _ilike: `%${filter.phone}%` } : undefined,
         categories: filter?.category ? { _ilike: `%${filter.category}%` } : undefined,
@@ -128,7 +129,8 @@ const MemberExportModal: React.FC<{
           }
           return {
             id: v.id || '',
-            name: v.name || v.username || '',
+            name: v.name || '',
+            username: v.username || '',
             email: v.email || '',
             role: v.role as UserRole,
             createdAt: v.created_at ? new Date(v.created_at) : null,
