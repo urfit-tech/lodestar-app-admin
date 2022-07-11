@@ -4,19 +4,19 @@ import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import programMessages from './translation'
 
-export type SelectOptions = 'conceal' | 'trial' | 'loginToTrail' | 'payToWatch'
+export type DisplayMode = 'conceal' | 'trial' | 'loginToTrial' | 'payToWatch'
 
 const DisplayModeSelector: React.VFC<{
   contentType: 'program' | 'exercise' | 'practice'
-  displayMode: string
+  displayMode: DisplayMode
 }> = ({ contentType, displayMode }) => {
   const { formatMessage } = useIntl()
-  const [currentOption, setCurrentOption] = useState<string>(displayMode)
+  const [currentOption, setCurrentOption] = useState<DisplayMode>(displayMode)
 
   return (
     <>
       <Form.Item name="displayMode" className="mb-0 mr-2">
-        <Select style={{ width: '120px' }} onChange={(v: SelectOptions) => setCurrentOption(v)}>
+        <Select style={{ width: '120px' }} onChange={(v: DisplayMode) => setCurrentOption(v)}>
           <Select.Option key="conceal" value="conceal">
             {formatMessage(programMessages.DisplayModeSelector.conceal)}
           </Select.Option>

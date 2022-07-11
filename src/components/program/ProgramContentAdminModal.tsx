@@ -34,7 +34,7 @@ import AttachmentSelector, { AttachmentSelectorValue } from '../common/Attachmen
 import FileUploader from '../common/FileUploader'
 import { BREAK_POINT } from '../common/Responsive'
 import AdminBraftEditor from '../form/AdminBraftEditor'
-import DisplayModeSelector, { SelectOptions } from './DisplayModeSelector'
+import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({
@@ -102,7 +102,7 @@ type FieldProps = {
   texttrack: any
   videoAttachment: AttachmentSelectorValue | null
   externalLink?: string
-  displayMode: SelectOptions
+  displayMode: DisplayMode
 }
 
 type VideoPipeline = 'attachment' | 'externalLink'

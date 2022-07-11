@@ -12,6 +12,7 @@ import {
   ProgramRoleName,
 } from '../types/program'
 import { DeepPick } from 'ts-deep-pick'
+import { DisplayMode } from '../components/program/DisplayModeSelector'
 
 export const useProgram = (programId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_PROGRAM_BY_ID, hasura.GET_PROGRAM_BY_IDVariables>(
@@ -168,7 +169,7 @@ export const useProgram = (programId: string) => {
           id: pc.id,
           title: pc.title,
           publishedAt: pc.published_at && new Date(pc.published_at),
-          displayMode: pc.display_mode || 'conceal',
+          displayMode: pc.display_mode as DisplayMode,
           listPrice: pc.list_price,
           duration: pc.duration,
           programContentType: pc.program_content_videos.length > 0 ? 'video' : pc.program_content_type?.type || null,

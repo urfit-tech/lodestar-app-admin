@@ -1,4 +1,5 @@
 import { AttachmentSelectorValue } from '../components/common/AttachmentSelector'
+import { DisplayMode } from '../components/program/DisplayModeSelector'
 import { Attachment, CategoryProps } from './general'
 
 export type ProgramPlanType = 'subscribeFromNow' | 'subscribeAll' | 'unknown'
@@ -107,7 +108,7 @@ export type ProgramContentProps = {
   }[]
   videos: AttachmentSelectorValue[]
   programContentBodyData: any
-  displayMode: string | null
+  displayMode: DisplayMode
 }
 
 export type ProgramContentBodyProps = {
