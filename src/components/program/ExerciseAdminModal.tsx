@@ -196,7 +196,9 @@ const ExerciseAdminForm: React.FC<{
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
-          {programContent.displayMode && <DisplayModeSelector displayMode={programContent.displayMode} />}
+          {programContent.displayMode && (
+            <DisplayModeSelector contentType="exercise" displayMode={programContent.displayMode} />
+          )}
           <Form.Item name="isAvailableToGoBack" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToGoBack)}</Checkbox>
           </Form.Item>

@@ -7,8 +7,9 @@ import programMessages from './translation'
 export type SelectOptions = 'conceal' | 'trial' | 'loginToTrail' | 'payToWatch'
 
 const DisplayModeSelector: React.VFC<{
+  contentType: 'program' | 'exercise' | 'practice'
   displayMode: string
-}> = ({ displayMode }) => {
+}> = ({ contentType, displayMode }) => {
   const { formatMessage } = useIntl()
   const [currentOption, setCurrentOption] = useState<string>(displayMode)
 
@@ -22,12 +23,16 @@ const DisplayModeSelector: React.VFC<{
           <Select.Option key="trial" value="trial">
             {formatMessage(programMessages.DisplayModeSelector.trial)}
           </Select.Option>
-          <Select.Option key="loginToTrial" value="loginToTrial">
-            {formatMessage(programMessages.DisplayModeSelector.loginToTrial)}
-          </Select.Option>
-          <Select.Option key="payToWatch" value="payToWatch">
-            {formatMessage(programMessages.DisplayModeSelector.payToWatch)}
-          </Select.Option>
+          {contentType === 'program' ? (
+            <>
+              <Select.Option key="loginToTrial" value="loginToTrial">
+                {formatMessage(programMessages.DisplayModeSelector.loginToTrial)}
+              </Select.Option>
+              <Select.Option key="payToWatch" value="payToWatch">
+                {formatMessage(programMessages.DisplayModeSelector.payToWatch)}
+              </Select.Option>
+            </>
+          ) : null}
         </Select>
       </Form.Item>
       {currentOption === 'payToWatch' && (

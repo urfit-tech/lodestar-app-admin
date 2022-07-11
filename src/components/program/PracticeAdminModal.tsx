@@ -188,7 +188,9 @@ const PracticeForm: React.FC<{
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
-          {programContent.displayMode && <DisplayModeSelector displayMode={programContent.displayMode} />}
+          {programContent.displayMode && (
+            <DisplayModeSelector contentType="practice" displayMode={programContent.displayMode} />
+          )}
 
           <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3 mb-0">
             <Checkbox>

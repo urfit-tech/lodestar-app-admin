@@ -315,7 +315,9 @@ const ProgramContentAdminModal: React.FC<{
           >
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center">
-                {programContent.displayMode && <DisplayModeSelector displayMode={programContent.displayMode} />}
+                {programContent.displayMode && (
+                  <DisplayModeSelector contentType="program" displayMode={programContent.displayMode} />
+                )}
 
                 <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
                   <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
