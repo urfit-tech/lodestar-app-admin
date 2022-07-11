@@ -54,8 +54,6 @@ const CertificateAdminPage: React.VFC = () => {
         ) : (
           <AdminHeaderTitle>{certificate?.title}</AdminHeaderTitle>
         )}
-
-        <Button>{formatMessage(pageMessages['*'].preview)}</Button>
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
