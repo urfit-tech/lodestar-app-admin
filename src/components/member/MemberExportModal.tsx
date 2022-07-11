@@ -16,6 +16,7 @@ import { MemberInfoProps, UserRole } from '../../types/member'
 type ExportMemberProps = {
   id: string
   name: string
+  username: string
   email: string
   role: UserRole
   createdAt: Date | null
@@ -39,6 +40,7 @@ const MemberExportModal: React.FC<{
     name?: string
     email?: string
     phone?: string
+    username?: string
     category?: string
     managerName?: string
     managerId?: string
@@ -180,6 +182,8 @@ const MemberExportModal: React.FC<{
           switch (column.key) {
             case 'email':
               return member.email
+            case 'username':
+              return member.username
             case 'phone':
               return [...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length)]
             case 'categories':
