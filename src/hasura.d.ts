@@ -13992,6 +13992,7 @@ export interface GET_MEMBER_CERTIFICATE_member_certificate {
   number: string;
   delivered_at: any;
   expired_at: any | null;
+  values: any;
 }
 
 export interface GET_MEMBER_CERTIFICATE {

@@ -278,6 +278,7 @@ const useMemberTemplate = (certificateId: string, filter?: { name?: string; emai
           number
           delivered_at
           expired_at
+          values
         }
       }
     `,
@@ -292,12 +293,12 @@ const useMemberTemplate = (certificateId: string, filter?: { name?: string; emai
     data?.member_certificate.map(v => ({
       id: v.id,
       memberId: v.member?.id || '',
-      name: v.member?.name || '',
+      name: v.values?.name ? v.values.name : v.member?.name || '',
       email: v.member?.email || '',
       avatarUrl: v.member?.picture_url || null,
-      number: v.number,
-      deliveredAt: new Date(v.delivered_at),
-      expiredAt: v.expired_at ? new Date(v.expired_at) : null,
+      number: v.values?.number ? v.values.number : v.number,
+      deliveredAt: v.values?.deliveredAt ? v.values.deliveredAt : new Date(v.delivered_at),
+      expiredAt: v.values?.expired_at ? v.values.expired_at : v.expired_at ? new Date(v.expired_at) : null,
     })) || []
 
   const loadMore = () =>
