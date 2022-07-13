@@ -5071,6 +5071,7 @@ export interface UPDATE_PRACTICEVariables {
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
   metadata?: any | null;
+  displayMode?: string | null;
 }
 
 /* tslint:disable */
@@ -5115,35 +5116,6 @@ export interface GET_PROGRAM_ID_LIST {
    * fetch data from the table: "program"
    */
   program: GET_PROGRAM_ID_LIST_program[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
-// ====================================================
-
-export interface PUBLISH_PROGRAM_CONTENT_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: PUBLISH_PROGRAM_CONTENT_update_program_content | null;
-}
-
-export interface PUBLISH_PROGRAM_CONTENTVariables {
-  programContentId: any;
-  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -5204,6 +5176,7 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   publishedAt?: any | null;
   programContentType: string;
   metadata?: any | null;
+  displayMode: string;
 }
 
 /* tslint:disable */
@@ -12133,6 +12106,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   is_notify_update: boolean;
   notified_at: any | null;
   metadata: any | null;
+  display_mode: string | null;
   /**
    * An object relationship
    */
@@ -12588,6 +12562,7 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
   programContentBodyId: any;
+  displayMode?: string | null;
 }
 
 /* tslint:disable */

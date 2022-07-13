@@ -112,8 +112,9 @@ const ProgramContentSectionAdminCard: React.FC<{
                     programContentSectionId: programContentSection.id,
                     title: 'untitled',
                     position: programContentSection.programContents.length,
-                    publishedAt: program && program.publishedAt ? undefined : new Date(),
                     programContentType: 'text',
+                    publishedAt: program?.publishedAt ? new Date() : null,
+                    displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
                   },
                 })
                   .then(() => onRefetch?.())
@@ -130,8 +131,9 @@ const ProgramContentSectionAdminCard: React.FC<{
                       programContentSectionId: programContentSection.id,
                       title: 'untitled',
                       position: programContentSection.programContents.length,
-                      publishedAt: program?.publishedAt ? null : new Date(),
                       programContentType: 'practice',
+                      publishedAt: program?.publishedAt ? new Date() : null,
+                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
                     },
                   })
                     .then(() => onRefetch?.())
@@ -149,8 +151,9 @@ const ProgramContentSectionAdminCard: React.FC<{
                       programContentSectionId: programContentSection.id,
                       title: 'untitled',
                       position: programContentSection.programContents.length,
-                      publishedAt: program?.publishedAt ? null : new Date(),
                       programContentType: 'exercise',
+                      publishedAt: program?.publishedAt ? new Date() : null,
+                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
                       metadata: {
                         isAvailableToGoBack: true,
                         isAvailableToRetry: true,
@@ -184,6 +187,7 @@ const INSERT_PROGRAM_CONTENT = gql`
     $publishedAt: timestamptz
     $programContentType: String!
     $metadata: jsonb
+    $displayMode: String!
   ) {
     insert_program_content(
       objects: {
@@ -193,6 +197,7 @@ const INSERT_PROGRAM_CONTENT = gql`
         program_content_body: { data: { type: $programContentType, data: {} } }
         published_at: $publishedAt
         metadata: $metadata
+        display_mode: $displayMode
       }
     ) {
       returning {
