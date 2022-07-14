@@ -1,5 +1,6 @@
-import Icon, { DragOutlined } from '@ant-design/icons'
+import { DragOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
+import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { adjust } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -12,7 +13,6 @@ import DraggableItemCollectionBlock, {
   ItemProps,
   StyledReactSortableWrapper,
 } from '../common/DraggableItemCollectionBlock'
-import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { QuestionBlock, StyledAction } from '../form/QuestionInput'
 
 const StyledQuestionBlock = styled.div`
@@ -33,7 +33,7 @@ const ExerciseSortingModal: React.FC<{
   useEffect(() => {
     setSortedQuestions(questions)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(questions)])
+  }, [questions])
 
   return (
     <AdminModal
@@ -73,7 +73,12 @@ const ExerciseSortingModal: React.FC<{
       )}
     >
       <StyledReactSortableWrapper>
-        <ReactSortable handle=".item" list={sortedQuestions} setList={setSortedQuestions} ghostClass="hover-background">
+        <ReactSortable
+          handle=".item"
+          list={sortedQuestions}
+          setList={newState => setSortedQuestions(newState)}
+          ghostClass="hover-background"
+        >
           {sortedQuestions.map((v, i) => (
             <QuestionSortingBlock
               key={v.id}
@@ -102,9 +107,9 @@ const QuestionSortingBlock: React.FC<{
   return (
     <QuestionBlock variant={isCollapsed ? 'collapsed' : undefined}>
       <StyledQuestionBlock>
-        <div className="d-flex justify-content-between align-items-center">
-          <span className="d-flex align-items-center mr-4">
-            <Icon component={() => <DragOutlined />} className={`item mr-2 cursor-pointer`} />
+        <div className=" d-flex justify-content-between align-items-center">
+          <span className="item d-flex align-items-center mr-4">
+            <DragOutlined className="mr-2 cursor-pointer" />
             <BraftContent>{description}</BraftContent>
           </span>
           <StyledAction
