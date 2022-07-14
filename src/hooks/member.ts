@@ -796,6 +796,7 @@ export const useMemberRoleCount = (
 export const useMemberCollection = (filter?: {
   role?: UserRole
   name?: string
+  username?: string
   email?: string
   phone?: string
   category?: string
@@ -811,6 +812,7 @@ export const useMemberCollection = (filter?: {
   const condition: hasura.GET_PAGE_MEMBER_COLLECTIONVariables['condition'] = {
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+    username: filter?.username ? { _ilike: `%${filter.username}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
     manager: filter?.managerName
       ? {
@@ -937,7 +939,8 @@ export const useMemberCollection = (filter?: {
       : data.member.map(v => ({
           id: v.id,
           avatarUrl: v.picture_url,
-          name: v.name || v.username,
+          name: v.name,
+          username: v.username,
           email: v.email,
           role: v.role as UserRole,
           createdAt: v.created_at ? new Date(v.created_at) : null,
