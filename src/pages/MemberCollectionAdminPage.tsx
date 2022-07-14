@@ -332,7 +332,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       dataIndex: 'consumption',
       key: 'consumption',
       align: 'right',
-      render: currencyFormatter,
+      render: text => currencyFormatter(text),
       sorter: (a, b) => a.consumption - b.consumption,
     },
     {
