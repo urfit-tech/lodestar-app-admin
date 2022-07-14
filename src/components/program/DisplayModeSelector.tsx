@@ -20,19 +20,19 @@ const DisplayModeSelector: React.VFC<{
           <Select.Option key="conceal" value="conceal">
             {formatMessage(programMessages.DisplayModeSelector.conceal)}
           </Select.Option>
-          <Select.Option key="trial" value="trial">
-            {formatMessage(programMessages.DisplayModeSelector.trial)}
-          </Select.Option>
           {contentType === 'program' ? (
             <>
+              <Select.Option key="trial" value="trial">
+                {formatMessage(programMessages.DisplayModeSelector.trial)}
+              </Select.Option>
               <Select.Option key="loginToTrial" value="loginToTrial">
                 {formatMessage(programMessages.DisplayModeSelector.loginToTrial)}
               </Select.Option>
-              <Select.Option key="payToWatch" value="payToWatch">
-                {formatMessage(programMessages.DisplayModeSelector.payToWatch)}
-              </Select.Option>
             </>
           ) : null}
+          <Select.Option key="payToWatch" value="payToWatch">
+            {formatMessage(programMessages.DisplayModeSelector.payToWatch)}
+          </Select.Option>
         </Select>
       </Form.Item>
       {currentOption === 'payToWatch' && (
