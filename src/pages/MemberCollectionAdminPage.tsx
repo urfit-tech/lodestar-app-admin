@@ -95,6 +95,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   } | null)[] = [
     { id: 'email', title: 'Email' },
     permissions['MEMBER_PHONE_ADMIN'] ? { id: 'phone', title: formatMessage(commonMessages.label.phone) } : null,
+    { id: 'username', title: formatMessage(commonMessages.label.account) },
     { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
     { id: 'loginedAt', title: formatMessage(commonMessages.label.lastLogin) },
     { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
@@ -116,6 +117,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     name?: string
     email?: string
     phone?: string
+    username?: string
     category?: string
     managerName?: string
     tag?: string
@@ -312,6 +314,12 @@ const MemberCollectionAdminPage: React.FC = () => {
       ...getColumnSearchProps('phone'),
     },
     {
+      title: formatMessage(commonMessages.label.account),
+      dataIndex: 'username',
+      key: 'username',
+      ...getColumnSearchProps('username'),
+    },
+    {
       title: formatMessage(commonMessages.label.createdDate),
       dataIndex: 'createdAt',
       key: 'createdAt',
@@ -330,7 +338,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       dataIndex: 'consumption',
       key: 'consumption',
       align: 'right',
-      render: currencyFormatter,
+      render: (_, record) => currencyFormatter(record.consumption),
       sorter: (a, b) => a.consumption - b.consumption,
     },
     {

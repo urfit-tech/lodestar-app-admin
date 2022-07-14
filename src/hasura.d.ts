@@ -3760,6 +3760,7 @@ export interface UPDATE_MERCHANDISE_SALESVariables {
   startedAt?: any | null;
   endedAt?: any | null;
   isCountdownTimerVisible?: boolean | null;
+  currencyId: string;
 }
 
 /* tslint:disable */
@@ -5070,6 +5071,7 @@ export interface UPDATE_PRACTICEVariables {
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
   metadata?: any | null;
+  displayMode?: string | null;
 }
 
 /* tslint:disable */
@@ -5114,35 +5116,6 @@ export interface GET_PROGRAM_ID_LIST {
    * fetch data from the table: "program"
    */
   program: GET_PROGRAM_ID_LIST_program[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
-// ====================================================
-
-export interface PUBLISH_PROGRAM_CONTENT_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: PUBLISH_PROGRAM_CONTENT_update_program_content | null;
-}
-
-export interface PUBLISH_PROGRAM_CONTENTVariables {
-  programContentId: any;
-  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -5203,6 +5176,7 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   publishedAt?: any | null;
   programContentType: string;
   metadata?: any | null;
+  displayMode: string;
 }
 
 /* tslint:disable */
@@ -11022,6 +10996,7 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   published_at: any | null;
   is_physical: boolean;
   is_customized: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11114,6 +11089,7 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   is_customized: boolean;
   is_limited: boolean;
   is_countdown_timer_visible: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11270,6 +11246,7 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   published_at: any | null;
   is_physical: boolean;
   is_customized: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11489,6 +11466,7 @@ export interface GET_ORDER_LOGS_order_log_order_discounts {
    */
   type: string;
   target: string;
+  options: any | null;
 }
 
 export interface GET_ORDER_LOGS_order_log_order_executors_member {
@@ -12128,6 +12106,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   is_notify_update: boolean;
   notified_at: any | null;
   metadata: any | null;
+  display_mode: string | null;
   /**
    * An object relationship
    */
@@ -12583,6 +12562,7 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
   programContentBodyId: any;
+  displayMode?: string | null;
 }
 
 /* tslint:disable */
@@ -13987,6 +13967,7 @@ export interface GET_MEMBER_CERTIFICATE_member_certificate {
   number: string;
   delivered_at: any;
   expired_at: any | null;
+  values: any;
 }
 
 export interface GET_MEMBER_CERTIFICATE {
@@ -19329,6 +19310,7 @@ export enum program_content_update_column {
   content_section_id = "content_section_id",
   content_type = "content_type",
   created_at = "created_at",
+  display_mode = "display_mode",
   duration = "duration",
   id = "id",
   is_notify_update = "is_notify_update",
@@ -33338,6 +33320,7 @@ export interface program_content_bool_exp {
   content_section_id?: uuid_comparison_exp | null;
   content_type?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  display_mode?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   enrollments?: program_content_enrollment_bool_exp | null;
   exercises?: exercise_bool_exp | null;
@@ -33433,6 +33416,7 @@ export interface program_content_insert_input {
   content_section_id?: any | null;
   content_type?: string | null;
   created_at?: any | null;
+  display_mode?: string | null;
   duration?: any | null;
   enrollments?: program_content_enrollment_arr_rel_insert_input | null;
   exercises?: exercise_arr_rel_insert_input | null;
@@ -34075,6 +34059,7 @@ export interface program_content_set_input {
   content_section_id?: any | null;
   content_type?: string | null;
   created_at?: any | null;
+  display_mode?: string | null;
   duration?: any | null;
   id?: any | null;
   is_notify_update?: boolean | null;

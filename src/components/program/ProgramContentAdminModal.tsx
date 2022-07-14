@@ -2,7 +2,6 @@ import Icon, { EditOutlined, MoreOutlined, UploadOutlined } from '@ant-design/ic
 import {
   Button,
   Checkbox,
-  DatePicker,
   Dropdown,
   Form,
   Input,
@@ -35,6 +34,7 @@ import AttachmentSelector, { AttachmentSelectorValue } from '../common/Attachmen
 import FileUploader from '../common/FileUploader'
 import { BREAK_POINT } from '../common/Responsive'
 import AdminBraftEditor from '../form/AdminBraftEditor'
+import DisplayModeSelector, { DisplayMode } from './DisplayModeSelector'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({
@@ -102,6 +102,7 @@ type FieldProps = {
   texttrack: any
   videoAttachment: AttachmentSelectorValue | null
   externalLink?: string
+  displayMode: DisplayMode
 }
 
 type VideoPipeline = 'attachment' | 'externalLink'
@@ -124,8 +125,6 @@ const ProgramContentAdminModal: React.FC<{
 
   const uploadCanceler = useRef<Canceler>()
   const [visible, setVisible] = useState(false)
-  const [isTrial, setIsTrial] = useState(programContent?.listPrice === 0)
-  const [isPublished, setIsPublished] = useState(!!programContent?.publishedAt)
   const [videoPipeline, setVideoPipeline] = useState<VideoPipeline>('attachment')
   const [externalVideoInfo, setExternalVideoInfo] = useState<{
     status: 'idle' | 'success' | 'error'
@@ -191,13 +190,18 @@ const ProgramContentAdminModal: React.FC<{
       await updateProgramContent({
         variables: {
           programContentId: programContent.id,
-          price: isTrial ? 0 : null,
-          publishedAt: values.publishedAt ? values.publishedAt.toDate() : null,
+          price: null,
           title: values.title,
           duration: values.duration,
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
           programContentBodyId: updatedProgramContentBodyId,
+          displayMode: values.displayMode,
+          publishedAt: values.publishedAt
+            ? values.publishedAt.toDate()
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
         },
       })
       if (videoPipeline === 'attachment') {
@@ -261,10 +265,6 @@ const ProgramContentAdminModal: React.FC<{
   }
 
   useEffect(() => {
-    setIsPublished(!!programContent?.publishedAt)
-  }, [programContent?.publishedAt])
-
-  useEffect(() => {
     if (!loadingProgramContentBody && programContentBody.materials.length) {
       setMaterialFiles(programContentBody.materials.map(v => v.data))
     }
@@ -304,6 +304,7 @@ const ProgramContentAdminModal: React.FC<{
               description: BraftEditor.createEditorState(programContentBody.description),
               videoPipeline: 'attachment',
               selectedSource: 'youtube',
+              displayMode: programContent.displayMode,
             }}
             onValuesChange={(values: Partial<FieldProps>) => {
               form.setFieldsValue({
@@ -314,21 +315,8 @@ const ProgramContentAdminModal: React.FC<{
           >
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center">
-                <Checkbox checked={isTrial} onChange={e => setIsTrial(e.target.checked)}>
-                  {formatMessage(commonMessages.ui.trial)}
-                </Checkbox>
-
-                <Checkbox checked={isPublished} onChange={e => setIsPublished(e.target.checked)}>
-                  {formatMessage(programMessages.label.show)}
-                </Checkbox>
-
-                {isPublished && (
-                  <Form.Item name="publishedAt" className="mb-0 mr-2">
-                    <DatePicker
-                      format="YYYY-MM-DD HH:mm"
-                      showTime={{ format: 'HH:mm', defaultValue: moment('00:00', 'HH:mm') }}
-                    />
-                  </Form.Item>
+                {programContent.displayMode && (
+                  <DisplayModeSelector contentType="program" displayMode={programContent.displayMode} />
                 )}
 
                 <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">

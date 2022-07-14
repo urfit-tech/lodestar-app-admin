@@ -11,7 +11,7 @@ const hooksMessages = {
     project: { id: 'hooks.data.project', defaultMessage: '專案' },
     podcastProgram: { id: 'hooks.data.podcastProgram', defaultMessage: '廣播' },
     podcastAlbum: { id: 'hooks.data.podcastAlbum', defaultMessage: '專輯' },
-    certificate: { id: 'hooks.data.certificate', defaultMessage: '證照' },
+    certificate: { id: 'hooks.data.certificate', defaultMessage: '證書' },
   }),
 }
 export default hooksMessages
