@@ -1,6 +1,7 @@
 import { DownloadOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Col, DatePicker, Form, Input, message, Row, Select } from 'antd'
+import dayjs from 'dayjs'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
@@ -160,8 +161,8 @@ const ProgramProcessBlock: React.VFC = () => {
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
                   Math.ceil(Number(watchedDuration) / 60).toString(),
                   (watchedProgress * 100).toFixed(0) + '%',
-                  firstWatchedAt,
-                  lastWatchedAt,
+                  firstWatchedAt && dayjs(firstWatchedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  lastWatchedAt && dayjs(lastWatchedAt).format('YYYY-MM-DD HH:mm:ss'),
                   ((memberWatchedDuration / (programDuration || 1)) * 100).toFixed(0) + '%',
                   exerciseStatus,
                   exercisePoint,
