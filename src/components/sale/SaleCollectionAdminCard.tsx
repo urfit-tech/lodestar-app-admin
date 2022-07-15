@@ -341,7 +341,7 @@ const SaleCollectionAdminCard: React.VFC<{
                     v.product.type === 'MerchandiseSpec' && v.options.currencyId === 'LSC'
                       ? v.options.currencyPrice
                       : v.price,
-                    v.options.currencyId,
+                    v.options?.currencyId,
                     settings['coin.unit'],
                   )}
                 </div>
