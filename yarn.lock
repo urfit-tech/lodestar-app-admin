@@ -7746,9 +7746,9 @@ ejs@^3.1.5:
     jake "^10.8.5"
 
 electron-to-chromium@^1.3.564, electron-to-chromium@^1.4.188:
-  version "1.4.191"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.191.tgz#01dd4bf32502a48ce24bf3890b5553a1c5f93539"
-  integrity sha512-MeEaiuoSFh4G+rrN+Ilm1KJr8pTTZloeLurcZ+PRcthvdK1gWThje+E6baL7/7LoNctrzCncavAG/j/vpES9jg==
+  version "1.4.192"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.192.tgz#fac050058b3e0713b401a1088cc579e14c2ab165"
+  integrity sha512-8nCXyIQY9An88NXAp+PuPy5h3/w5ZY7Iu2lag65Q0XREprcat5F8gKhoHsBUnQcFuCRnmevpR8yEBYRU3d2HDw==
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -11686,7 +11686,7 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/5921884d5b12b4768f50f157558fba671acedbcb"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/03284917ad7bc5f251b236d2b4d6a8068d040129"
   dependencies:
     "@ant-design/charts" "1.2.14"
     "@ant-design/compatible" "^1.0.8"
