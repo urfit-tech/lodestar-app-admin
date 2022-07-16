@@ -2,26 +2,22 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Form, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import { MerchandiseProps } from '../../types/merchandise'
+import CurrencySelector from '../form/CurrencySelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
-
-const messages = defineMessages({
-  setSalePrice: { id: 'merchandise.label.setSalePrice', defaultMessage: '設定優惠價' },
-  setSellingTime: { id: 'merchandise.label.setSellingTime', defaultMessage: '限定販售時間' },
-  withSalePrice: { id: 'merchandise.label.withSalePrice', defaultMessage: '開啟優惠價' },
-  showCountdownTimer: { id: 'merchandise.label.showCountdownTimer', defaultMessage: '顯示倒數計時' },
-})
 
 type FieldProps = {
   startedAt: Moment
   endedAt: Moment
   sale: SaleProps
+  currencyId: string
 }
 
 const MerchandiseSalesForm: React.FC<{
@@ -30,6 +26,7 @@ const MerchandiseSalesForm: React.FC<{
   onRefetch?: () => void
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [form] = useForm<FieldProps>()
   const [updateMerchandiseSales] = useMutation<
     hasura.UPDATE_MERCHANDISE_SALES,
@@ -37,6 +34,8 @@ const MerchandiseSalesForm: React.FC<{
   >(UPDATE_MERCHANDISE_SALES)
   const [loading, setLoading] = useState(false)
   const [withSellingTime, setWithSellingTime] = useState(!!merchandise.startedAt || !!merchandise.endedAt)
+
+  const merchandiseCurrentCurrencyId = merchandise.currencyId
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
@@ -47,6 +46,7 @@ const MerchandiseSalesForm: React.FC<{
         endedAt: withSellingTime ? values.endedAt?.toDate() || null : null,
         soldAt: values.sale?.soldAt || null,
         isCountdownTimerVisible: values.sale?.isTimerVisible ?? false,
+        currencyId: values?.currencyId,
       },
     })
       .then(() => {
@@ -76,8 +76,25 @@ const MerchandiseSalesForm: React.FC<{
       onFinish={handleSubmit}
     >
       <div className="mb-4">
+        {enabledModules?.currency && (
+          <Form.Item
+            label={formatMessage(commonMessages.label.currency)}
+            name="currencyId"
+            initialValue={merchandiseCurrentCurrencyId}
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.currency),
+                }),
+              },
+            ]}
+          >
+            <CurrencySelector value={merchandiseCurrentCurrencyId} />
+          </Form.Item>
+        )}
         <Checkbox checked={withSellingTime} onChange={e => setWithSellingTime(e.target.checked)}>
-          {formatMessage(messages.setSellingTime)}
+          {formatMessage(merchandiseMessages.label.setSellingTime)}
         </Checkbox>
         <div className={`mt-2 pl-3 ${withSellingTime ? '' : 'd-none'}`}>
           <Form.Item name="startedAt" noStyle>
@@ -120,6 +137,7 @@ const UPDATE_MERCHANDISE_SALES = gql`
     $startedAt: timestamptz
     $endedAt: timestamptz
     $isCountdownTimerVisible: Boolean
+    $currencyId: String!
   ) {
     update_merchandise(
       where: { id: { _eq: $merchandiseId } }
@@ -128,6 +146,7 @@ const UPDATE_MERCHANDISE_SALES = gql`
         started_at: $startedAt
         ended_at: $endedAt
         is_countdown_timer_visible: $isCountdownTimerVisible
+        currency_id: $currencyId
       }
     ) {
       affected_rows

@@ -1805,6 +1805,34 @@ export interface ARCHIVE_MERCHANDISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: ARCHIVE_CERTIFICATE
+// ====================================================
+
+export interface ARCHIVE_CERTIFICATE_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_CERTIFICATE {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: ARCHIVE_CERTIFICATE_update_certificate | null;
+}
+
+export interface ARCHIVE_CERTIFICATEVariables {
+  certificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -2018,6 +2046,7 @@ export interface INSERT_COUPON_PLANVariables {
   type?: number | null;
   amount?: any | null;
   couponPlanProduct: coupon_plan_product_insert_input[];
+  editorId?: string | null;
 }
 
 /* tslint:disable */
@@ -2358,6 +2387,7 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_sessi
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity_session_tickets {
   __typename: "activity_session_ticket";
+  id: any;
   /**
    * An object relationship
    */
@@ -3730,6 +3760,7 @@ export interface UPDATE_MERCHANDISE_SALESVariables {
   startedAt?: any | null;
   endedAt?: any | null;
   isCountdownTimerVisible?: boolean | null;
+  currencyId: string;
 }
 
 /* tslint:disable */
@@ -5040,6 +5071,7 @@ export interface UPDATE_PRACTICEVariables {
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
   metadata?: any | null;
+  displayMode?: string | null;
 }
 
 /* tslint:disable */
@@ -5084,35 +5116,6 @@ export interface GET_PROGRAM_ID_LIST {
    * fetch data from the table: "program"
    */
   program: GET_PROGRAM_ID_LIST_program[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
-// ====================================================
-
-export interface PUBLISH_PROGRAM_CONTENT_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: PUBLISH_PROGRAM_CONTENT_update_program_content | null;
-}
-
-export interface PUBLISH_PROGRAM_CONTENTVariables {
-  programContentId: any;
-  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -5173,6 +5176,7 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   publishedAt?: any | null;
   programContentType: string;
   metadata?: any | null;
+  displayMode: string;
 }
 
 /* tslint:disable */
@@ -5307,50 +5311,6 @@ export interface UPSERT_PROGRAM_GROUP_BUYING_PLAN {
 export interface UPSERT_PROGRAM_GROUP_BUYING_PLANVariables {
   programPlans: program_plan_insert_input[];
   archivedProgramPlanIds: any[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGE_CATEGORIES
-// ====================================================
-
-export interface GET_PROGRAM_PACKAGE_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_PROGRAM_PACKAGE_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_PROGRAM_PACKAGE_CATEGORIES_category[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGE_ID_LIST
-// ====================================================
-
-export interface GET_PROGRAM_PACKAGE_ID_LIST_program_package {
-  __typename: "program_package";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAM_PACKAGE_ID_LIST {
-  /**
-   * fetch data from the table: "program_package"
-   */
-  program_package: GET_PROGRAM_PACKAGE_ID_LIST_program_package[];
 }
 
 /* tslint:disable */
@@ -5646,6 +5606,50 @@ export interface UPDATE_PROGRAM_PACKAGE_COVERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_CATEGORIES
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_PROGRAM_PACKAGE_CATEGORIES_category[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_ID_LIST
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_ID_LIST_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_ID_LIST {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PROGRAM_PACKAGE_ID_LIST_program_package[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_DESCRIPTION
 // ====================================================
 
@@ -5834,6 +5838,32 @@ export interface PUBLISH_PROGRAM_PACKAGE {
 export interface PUBLISH_PROGRAM_PACKAGEVariables {
   programPackageId: any;
   publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PUBLISHED_PROGRAM_PACKAGE
+// ====================================================
+
+export interface GET_PUBLISHED_PROGRAM_PACKAGE_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PUBLISHED_PROGRAM_PACKAGE {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PUBLISHED_PROGRAM_PACKAGE_program_package[];
+}
+
+export interface GET_PUBLISHED_PROGRAM_PACKAGEVariables {
+  condition: program_package_bool_exp;
 }
 
 /* tslint:disable */
@@ -8008,6 +8038,35 @@ export interface INSERT_APPOINTMENT_SCHEDULESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: CANCEL_APPOINTMENT
+// ====================================================
+
+export interface CANCEL_APPOINTMENT_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CANCEL_APPOINTMENT {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: CANCEL_APPOINTMENT_update_order_product | null;
+}
+
+export interface CANCEL_APPOINTMENTVariables {
+  orderProductId: any;
+  data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APP_PAGE
 // ====================================================
 
@@ -8081,7 +8140,7 @@ export interface GET_APP_PAGE_COLLECTION {
 }
 
 export interface GET_APP_PAGE_COLLECTIONVariables {
-  appId: string;
+  condition: app_page_bool_exp;
 }
 
 /* tslint:disable */
@@ -8718,6 +8777,7 @@ export interface INSERT_VOUCHER_PLANVariables {
   isTransferable?: boolean | null;
   saleAmount?: number | null;
   salePrice?: any | null;
+  editorId?: string | null;
 }
 
 /* tslint:disable */
@@ -10936,6 +10996,7 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   published_at: any | null;
   is_physical: boolean;
   is_customized: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11028,6 +11089,7 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   is_customized: boolean;
   is_limited: boolean;
   is_countdown_timer_visible: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11184,6 +11246,7 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   published_at: any | null;
   is_physical: boolean;
   is_customized: boolean;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -11338,56 +11401,26 @@ export interface GET_ORDER_LOG_STATUS {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_ORDER_LOG
+// GraphQL query operation: GET_ORDER_LOGS
 // ====================================================
 
-export interface GET_ALL_ORDER_LOG_order_log_aggregate_aggregate {
+export interface GET_ORDER_LOGS_order_log_aggregate_aggregate {
   __typename: "order_log_aggregate_fields";
   count: number;
 }
 
-export interface GET_ALL_ORDER_LOG_order_log_aggregate {
+export interface GET_ORDER_LOGS_order_log_aggregate {
   __typename: "order_log_aggregate";
-  aggregate: GET_ALL_ORDER_LOG_order_log_aggregate_aggregate | null;
+  aggregate: GET_ORDER_LOGS_order_log_aggregate_aggregate | null;
 }
 
-export interface GET_ALL_ORDER_LOG {
-  /**
-   * fetch aggregated fields from the table: "order_log"
-   */
-  order_log_aggregate: GET_ALL_ORDER_LOG_order_log_aggregate;
-}
-
-export interface GET_ALL_ORDER_LOGVariables {
-  allcondition?: order_log_bool_exp | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDERS
-// ====================================================
-
-export interface GET_ORDERS_order_log_aggregate_aggregate {
-  __typename: "order_log_aggregate_fields";
-  count: number;
-}
-
-export interface GET_ORDERS_order_log_aggregate {
-  __typename: "order_log_aggregate";
-  aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
-}
-
-export interface GET_ORDERS_order_log_member {
+export interface GET_ORDER_LOGS_order_log_member {
   __typename: "member";
   name: string;
   email: string;
 }
 
-export interface GET_ORDERS_order_log_payment_logs {
+export interface GET_ORDER_LOGS_order_log_payment_logs {
   __typename: "payment_log";
   /**
    * spgateway, tappay, ezfund,paypal
@@ -11395,7 +11428,7 @@ export interface GET_ORDERS_order_log_payment_logs {
   gateway: string | null;
 }
 
-export interface GET_ORDERS_order_log_order_products_product {
+export interface GET_ORDER_LOGS_order_log_order_products_product {
   __typename: "product";
   /**
    * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
@@ -11407,7 +11440,7 @@ export interface GET_ORDERS_order_log_order_products_product {
   type: string;
 }
 
-export interface GET_ORDERS_order_log_order_products {
+export interface GET_ORDER_LOGS_order_log_order_products {
   __typename: "order_product";
   id: any;
   name: string;
@@ -11418,11 +11451,11 @@ export interface GET_ORDERS_order_log_order_products {
   /**
    * An object relationship
    */
-  product: GET_ORDERS_order_log_order_products_product;
+  product: GET_ORDER_LOGS_order_log_order_products_product;
   options: any | null;
 }
 
-export interface GET_ORDERS_order_log_order_discounts {
+export interface GET_ORDER_LOGS_order_log_order_discounts {
   __typename: "order_discount";
   id: any;
   name: string;
@@ -11433,22 +11466,23 @@ export interface GET_ORDERS_order_log_order_discounts {
    */
   type: string;
   target: string;
+  options: any | null;
 }
 
-export interface GET_ORDERS_order_log_order_executors_member {
+export interface GET_ORDER_LOGS_order_log_order_executors_member {
   __typename: "member";
   name: string;
 }
 
-export interface GET_ORDERS_order_log_order_executors {
+export interface GET_ORDER_LOGS_order_log_order_executors {
   __typename: "order_executor";
   /**
    * An object relationship
    */
-  member: GET_ORDERS_order_log_order_executors_member;
+  member: GET_ORDER_LOGS_order_log_order_executors_member;
 }
 
-export interface GET_ORDERS_order_log {
+export interface GET_ORDER_LOGS_order_log {
   __typename: "order_log";
   id: string;
   created_at: any;
@@ -11464,37 +11498,37 @@ export interface GET_ORDERS_order_log {
   /**
    * An object relationship
    */
-  member: GET_ORDERS_order_log_member;
+  member: GET_ORDER_LOGS_order_log_member;
   /**
    * An array relationship
    */
-  payment_logs: GET_ORDERS_order_log_payment_logs[];
+  payment_logs: GET_ORDER_LOGS_order_log_payment_logs[];
   /**
    * An array relationship
    */
-  order_products: GET_ORDERS_order_log_order_products[];
+  order_products: GET_ORDER_LOGS_order_log_order_products[];
   /**
    * An array relationship
    */
-  order_discounts: GET_ORDERS_order_log_order_discounts[];
+  order_discounts: GET_ORDER_LOGS_order_log_order_discounts[];
   /**
    * An array relationship
    */
-  order_executors: GET_ORDERS_order_log_order_executors[];
+  order_executors: GET_ORDER_LOGS_order_log_order_executors[];
 }
 
-export interface GET_ORDERS {
+export interface GET_ORDER_LOGS {
   /**
    * fetch aggregated fields from the table: "order_log"
    */
-  order_log_aggregate: GET_ORDERS_order_log_aggregate;
+  order_log_aggregate: GET_ORDER_LOGS_order_log_aggregate;
   /**
    * fetch data from the table: "order_log"
    */
-  order_log: GET_ORDERS_order_log[];
+  order_log: GET_ORDER_LOGS_order_log[];
 }
 
-export interface GET_ORDERSVariables {
+export interface GET_ORDER_LOGSVariables {
   condition?: order_log_bool_exp | null;
   limit?: number | null;
 }
@@ -12072,6 +12106,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   is_notify_update: boolean;
   notified_at: any | null;
   metadata: any | null;
+  display_mode: string | null;
   /**
    * An object relationship
    */
@@ -12527,6 +12562,7 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
   isNotifyUpdate?: boolean | null;
   notifiedAt?: any | null;
   programContentBodyId: any;
+  displayMode?: string | null;
 }
 
 /* tslint:disable */
@@ -13797,6 +13833,364 @@ export interface INSERT_POSTVariables {
   title: string;
   postCategories: post_category_insert_input[];
   postRoles: post_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CERTIFICATE
+// ====================================================
+
+export interface GET_CERTIFICATE_certificate_by_pk_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_CERTIFICATE_certificate_by_pk_certificate_template_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_CERTIFICATE_certificate_by_pk_certificate_template {
+  __typename: "certificate_template";
+  id: any;
+  title: string;
+  template: string;
+  background_image: string;
+  /**
+   * An object relationship
+   */
+  author: GET_CERTIFICATE_certificate_by_pk_certificate_template_author | null;
+}
+
+export interface GET_CERTIFICATE_certificate_by_pk {
+  __typename: "certificate";
+  id: any;
+  title: string;
+  description: string | null;
+  qualification: string | null;
+  code: string | null;
+  period_type: string | null;
+  period_amount: any | null;
+  /**
+   * An object relationship
+   */
+  author: GET_CERTIFICATE_certificate_by_pk_author | null;
+  /**
+   * An object relationship
+   */
+  certificate_template: GET_CERTIFICATE_certificate_by_pk_certificate_template | null;
+  published_at: any | null;
+}
+
+export interface GET_CERTIFICATE {
+  /**
+   * fetch data from the table: "certificate" using primary key columns
+   */
+  certificate_by_pk: GET_CERTIFICATE_certificate_by_pk | null;
+}
+
+export interface GET_CERTIFICATEVariables {
+  certificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CERTIFICATE_BASIC
+// ====================================================
+
+export interface UPDATE_CERTIFICATE_BASIC_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CERTIFICATE_BASIC {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: UPDATE_CERTIFICATE_BASIC_update_certificate | null;
+}
+
+export interface UPDATE_CERTIFICATE_BASICVariables {
+  certificateId: any;
+  title?: string | null;
+  certificateTemplateId: any;
+  qualification?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_CERTIFICATE
+// ====================================================
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate_aggregate_aggregate {
+  __typename: "member_certificate_aggregate_fields";
+  count: number;
+}
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate_aggregate {
+  __typename: "member_certificate_aggregate";
+  aggregate: GET_MEMBER_CERTIFICATE_member_certificate_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate_member {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  picture_url: string | null;
+}
+
+export interface GET_MEMBER_CERTIFICATE_member_certificate {
+  __typename: "member_certificate";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_CERTIFICATE_member_certificate_member | null;
+  number: string;
+  delivered_at: any;
+  expired_at: any | null;
+  values: any;
+}
+
+export interface GET_MEMBER_CERTIFICATE {
+  /**
+   * fetch aggregated fields from the table: "member_certificate"
+   */
+  member_certificate_aggregate: GET_MEMBER_CERTIFICATE_member_certificate_aggregate;
+  /**
+   * fetch data from the table: "member_certificate"
+   */
+  member_certificate: GET_MEMBER_CERTIFICATE_member_certificate[];
+}
+
+export interface GET_MEMBER_CERTIFICATEVariables {
+  condition?: member_certificate_bool_exp | null;
+  limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_MEMBER_CERTIFICATE
+// ====================================================
+
+export interface DELETE_MEMBER_CERTIFICATE_delete_member_certificate {
+  __typename: "member_certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_MEMBER_CERTIFICATE {
+  /**
+   * delete data from the table: "member_certificate"
+   */
+  delete_member_certificate: DELETE_MEMBER_CERTIFICATE_delete_member_certificate | null;
+}
+
+export interface DELETE_MEMBER_CERTIFICATEVariables {
+  memberCertificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CERTIFICATE_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_CERTIFICATE_DESCRIPTION_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CERTIFICATE_DESCRIPTION {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: UPDATE_CERTIFICATE_DESCRIPTION_update_certificate | null;
+}
+
+export interface UPDATE_CERTIFICATE_DESCRIPTIONVariables {
+  description?: string | null;
+  certificateId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_CERTIFICATE
+// ====================================================
+
+export interface PUBLISH_CERTIFICATE_update_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_CERTIFICATE {
+  /**
+   * update data of the table: "certificate"
+   */
+  update_certificate: PUBLISH_CERTIFICATE_update_certificate | null;
+}
+
+export interface PUBLISH_CERTIFICATEVariables {
+  id: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CERTIFICATE_TEMPLATE
+// ====================================================
+
+export interface GET_CERTIFICATE_TEMPLATE_certificate_template {
+  __typename: "certificate_template";
+  id: any;
+  title: string;
+  background_image: string;
+}
+
+export interface GET_CERTIFICATE_TEMPLATE {
+  /**
+   * fetch data from the table: "certificate_template"
+   */
+  certificate_template: GET_CERTIFICATE_TEMPLATE_certificate_template[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_CERTIFICATE
+// ====================================================
+
+export interface INSERT_CERTIFICATE_insert_certificate_returning {
+  __typename: "certificate";
+  id: any;
+}
+
+export interface INSERT_CERTIFICATE_insert_certificate {
+  __typename: "certificate_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_CERTIFICATE_insert_certificate_returning[];
+}
+
+export interface INSERT_CERTIFICATE {
+  /**
+   * insert data into the table: "certificate"
+   */
+  insert_certificate: INSERT_CERTIFICATE_insert_certificate | null;
+}
+
+export interface INSERT_CERTIFICATEVariables {
+  title: string;
+  memberId: string;
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CERTIFICATE_QUANTITY
+// ====================================================
+
+export interface GET_CERTIFICATE_QUANTITY_certificate {
+  __typename: "certificate";
+  id: any;
+  published_at: any | null;
+}
+
+export interface GET_CERTIFICATE_QUANTITY {
+  /**
+   * fetch data from the table: "certificate"
+   */
+  certificate: GET_CERTIFICATE_QUANTITY_certificate[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CERTIFICATE_PREVIEW
+// ====================================================
+
+export interface GET_CERTIFICATE_PREVIEW_certificate_certificate_template {
+  __typename: "certificate_template";
+  id: any;
+  template: string;
+  background_image: string;
+}
+
+export interface GET_CERTIFICATE_PREVIEW_certificate {
+  __typename: "certificate";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  certificate_template: GET_CERTIFICATE_PREVIEW_certificate_certificate_template | null;
+}
+
+export interface GET_CERTIFICATE_PREVIEW {
+  /**
+   * fetch data from the table: "certificate"
+   */
+  certificate: GET_CERTIFICATE_PREVIEW_certificate[];
+}
+
+export interface GET_CERTIFICATE_PREVIEWVariables {
+  condition: certificate_bool_exp;
 }
 
 /* tslint:disable */
@@ -15750,6 +16144,183 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_EDITORS
+// ====================================================
+
+export interface GET_EDITORS_member {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_EDITORS {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_EDITORS_member[];
+}
+
+export interface GET_EDITORSVariables {
+  memberIds?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS
+// ====================================================
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member_member_properties {
+  __typename: "member_property";
+  property_id: any;
+  value: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member_member_properties[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories {
+  __typename: "program_package_category";
+  /**
+   * An object relationship
+   */
+  category: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories_category;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_editors {
+  __typename: "program_editor";
+  member_id: string | null;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_progress {
+  __typename: "program_content_progress";
+  member_id: string;
+  progress: any;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents {
+  __typename: "program_content";
+  title: string;
+  /**
+   * sec
+   */
+  duration: any | null;
+  /**
+   * An array relationship
+   */
+  program_content_progress: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents_program_content_progress[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections {
+  __typename: "program_content_section";
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_contents: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections_program_contents[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program {
+  __typename: "program";
+  title: string;
+  /**
+   * An array relationship
+   */
+  editors: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_editors[];
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program_program_content_sections[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs {
+  __typename: "program_package_program";
+  /**
+   * An object relationship
+   */
+  program: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs_program;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package {
+  __typename: "program_package";
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_package_categories: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_categories[];
+  /**
+   * An array relationship
+   */
+  program_package_programs: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package_program_package_programs[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan {
+  __typename: "program_package_plan";
+  /**
+   * An object relationship
+   */
+  program_package: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan_program_package;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment {
+  __typename: "program_package_plan_enrollment";
+  /**
+   * An object relationship
+   */
+  member: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_member | null;
+  /**
+   * An object relationship
+   */
+  program_package_plan: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment_program_package_plan | null;
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_property[];
+  /**
+   * fetch data from the table: "program_package_plan_enrollment"
+   */
+  program_package_plan_enrollment: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS_program_package_plan_enrollment[];
+}
+
+export interface GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESSVariables {
+  programPackageCondition?: program_package_bool_exp | null;
+  memberCondition?: member_bool_exp | null;
+  startedAt?: any | null;
+  endedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -22562,6 +23133,53 @@ export interface category_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "certificate". All fields are combined with a logical 'AND'.
+ */
+export interface certificate_bool_exp {
+  _and?: certificate_bool_exp[] | null;
+  _not?: certificate_bool_exp | null;
+  _or?: certificate_bool_exp[] | null;
+  app_id?: String_comparison_exp | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  certificate_template?: certificate_template_bool_exp | null;
+  certificate_template_id?: uuid_comparison_exp | null;
+  code?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  period_amount?: numeric_comparison_exp | null;
+  period_type?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  qualification?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "certificate_template". All fields are combined with a logical 'AND'.
+ */
+export interface certificate_template_bool_exp {
+  _and?: certificate_template_bool_exp[] | null;
+  _not?: certificate_template_bool_exp | null;
+  _or?: certificate_template_bool_exp[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  background_image?: String_comparison_exp | null;
+  certificates?: certificate_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_certificates?: member_certificate_bool_exp | null;
+  template?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * order by aggregate values of table "coin_log"
  */
 export interface coin_log_aggregate_order_by {
@@ -25219,6 +25837,24 @@ export interface member_category_var_samp_order_by {
  */
 export interface member_category_variance_order_by {
   position?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_certificate". All fields are combined with a logical 'AND'.
+ */
+export interface member_certificate_bool_exp {
+  _and?: member_certificate_bool_exp[] | null;
+  _not?: member_certificate_bool_exp | null;
+  _or?: member_certificate_bool_exp[] | null;
+  certificate?: certificate_bool_exp | null;
+  certificate_id?: uuid_comparison_exp | null;
+  delivered_at?: timestamptz_comparison_exp | null;
+  expired_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  number?: String_comparison_exp | null;
+  values?: jsonb_comparison_exp | null;
 }
 
 /**

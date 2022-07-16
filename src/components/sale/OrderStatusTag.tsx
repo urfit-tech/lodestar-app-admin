@@ -22,7 +22,15 @@ const OrderStatusTag: React.FC<{
     case 'REFUND':
       return <Tag color="#9b9b9b">{formatMessage(commonMessages.status.orderRefund)}</Tag>
     case 'DELETED':
-      return <Tag color="#72a7c1">{formatMessage(commonMessages.status.deleted)}</Tag>
+      return <Tag color="#72a7c1">{formatMessage(commonMessages.status.orderDeleted)}</Tag>
+    case 'PAYING':
+      return <Tag color="#ffbe1e">{formatMessage(commonMessages.status.orderPaying)}</Tag>
+    case 'REFUNDING':
+      return <Tag color="#cdcdcd">{formatMessage(commonMessages.status.orderRefunding)}</Tag>
+    case 'PARTIAL_EXPIRED':
+      return <Tag color="#cdcdcd">{formatMessage(commonMessages.status.orderPartialExpired)}</Tag>
+    case 'UNKNOWN':
+      return <Tag color="#cdcdcd">{formatMessage(commonMessages.status.unknown)}</Tag>
     default:
       return <Tag color="#ff7d62">{formatMessage(commonMessages.status.orderFailed)}</Tag>
   }

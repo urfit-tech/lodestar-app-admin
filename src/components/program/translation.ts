@@ -18,6 +18,18 @@ const programMessages = {
     dataDisplay: { id: 'program.ProgramCollectionSelector.dataDisplay', defaultMessage: '資料顯示' },
     addItem: { id: 'program.ProgramCollectionSelector.addItem', defaultMessage: '新增項目' },
   }),
+  ProgramPackageSelector: defineMessages({
+    allProgramPackage: { id: 'program.ProgramPackageSelector.allProgramPackage', defaultMessage: '全部課程組合' },
+  }),
+  DisplayModeSelector: defineMessages({
+    conceal: { id: 'program.DisplayModeSelector.conceal', defaultMessage: '隱藏' },
+    trial: { id: 'program.DisplayModeSelector.trial', defaultMessage: '試看' },
+    loginToTrial: { id: 'program.DisplayModeSelector.loginToTrial', defaultMessage: '登入試看' },
+    payToWatch: { id: 'program.DisplayModeSelector.payToWatch', defaultMessage: '付費觀看' },
+  }),
+  ProgramContentAdminItem: defineMessages({
+    privatePractice: { id: 'program.ProgramContentAdminItem.privatePractice', defaultMessage: '私密作業' },
+  }),
 }
 
 export default programMessages

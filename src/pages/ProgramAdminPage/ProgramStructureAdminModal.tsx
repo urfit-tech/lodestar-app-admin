@@ -65,6 +65,7 @@ const ProgramStructureAdminModal: React.FC<{
               title: content.title,
               position: idx,
               content_section_id: section.id,
+              display_mode: content.displayMode,
             })),
           ),
         },

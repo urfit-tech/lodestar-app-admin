@@ -1,10 +1,8 @@
-import { useApolloClient, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import hasura from '../hasura'
 import { prop, sum } from 'ramda'
-import { OrderLogProps } from '../types/general'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useEffect, useState } from 'react'
+import { OrderLog } from '../types/general'
 
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
@@ -27,23 +25,18 @@ export const useOrderStatuses = () => {
   }
 }
 
-export const useOrderLog = (filters?: {
-  statuses?: string[] | null
-  orderId?: string | null
-  memberNameAndEmail?: string | null
-  memberId?: string
-}) => {
-  const { permissions, currentMemberId } = useAuth()
-  const apolloClient = useApolloClient()
-  const authStatus: 'Admin' | 'Creator' | 'None' = permissions.SALES_RECORDS_ADMIN
-    ? 'Admin'
-    : permissions.SALES_RECORDS_NORMAL
-    ? 'Creator'
-    : 'None'
-
-  const [totalOrderLogCounts, setTotalOrderLogCounts] = useState<number>(0)
-
-  const condition: hasura.GET_ORDERSVariables['condition'] = {
+export const useOrderLogs = (
+  currentMemberId: string,
+  authStatus: 'Admin' | 'Personal' | 'None',
+  filters?: {
+    statuses?: string[] | null
+    orderId?: string | null
+    memberNameAndEmail?: string | null
+    memberId?: string
+  },
+) => {
+  const limit = 20
+  const condition: hasura.GET_ORDER_LOGSVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
     status: filters?.statuses ? { _in: filters.statuses } : undefined,
     member:
@@ -64,7 +57,7 @@ export const useOrderLog = (filters?: {
             id: { _eq: currentMemberId },
           },
     order_products:
-      authStatus === 'Creator'
+      authStatus === 'Personal'
         ? {
             product: {
               product_owner: {
@@ -75,49 +68,73 @@ export const useOrderLog = (filters?: {
         : undefined,
   }
 
-  useEffect(() => {
-    if (currentMemberId) {
-      apolloClient
-        .query<hasura.GET_ALL_ORDER_LOG, hasura.GET_ALL_ORDER_LOGVariables>({
-          query: GET_ALL_ORDER_LOG,
-          variables: {
-            allcondition: {
-              member_id: authStatus === 'None' ? { _eq: currentMemberId } : undefined,
-              order_products:
-                authStatus === 'Creator'
-                  ? {
-                      product: {
-                        product_owner: {
-                          member_id: { _eq: currentMemberId },
-                        },
-                      },
-                    }
-                  : undefined,
-            },
-          },
-        })
-        .then(({ data }) => {
-          const totalCount = data?.order_log_aggregate.aggregate?.count || 0
-          setTotalOrderLogCounts(totalCount)
-        })
-        .catch(error => console.error(error.stack))
-    }
-  }, [currentMemberId, authStatus])
+  const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDER_LOGS, hasura.GET_ORDER_LOGSVariables>(
+    gql`
+      query GET_ORDER_LOGS($condition: order_log_bool_exp, $limit: Int) {
+        order_log_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+        order_log(where: $condition, order_by: { created_at: desc }, limit: $limit) {
+          id
+          created_at
+          status
+          shipping
+          expired_at
 
-  const { loading, error, data, refetch, fetchMore } = useQuery<hasura.GET_ORDERS, hasura.GET_ORDERSVariables>(
-    GET_ORDERS,
+          member {
+            name
+            email
+          }
+
+          payment_logs(order_by: { created_at: desc }, limit: 1) {
+            gateway
+          }
+          order_products {
+            id
+            name
+            price
+            started_at
+            ended_at
+            delivered_at
+            product {
+              id
+              type
+            }
+            options
+          }
+
+          order_discounts {
+            id
+            name
+            description
+            price
+            type
+            target
+            options
+          }
+          order_executors {
+            member {
+              name
+            }
+          }
+        }
+      }
+    `,
     {
       variables: {
         condition,
-        limit: 20,
+        limit,
       },
       context: {
         important: true,
       },
     },
   )
+
   const loadMoreOrderLogs =
-    (data?.order_log_aggregate.aggregate?.count || 0) > 20
+    (data?.order_log_aggregate.aggregate?.count || 0) > limit
       ? () => {
           const lastOrderLog = data?.order_log[data.order_log.length - 1]
           return fetchMore({
@@ -135,7 +152,7 @@ export const useOrderLog = (filters?: {
                   },
                 ],
               },
-              limit: 20,
+              limit,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
@@ -150,14 +167,17 @@ export const useOrderLog = (filters?: {
         }
       : undefined
 
-  const orderLogs: OrderLogProps[] =
+  const orderLogs: OrderLog[] =
     data?.order_log.map(v => ({
       id: v.id,
       createdAt: v.created_at,
       status: v.status || '',
       shipping: v.shipping,
+      expiredAt: v.expired_at,
       name: v.member.name,
       email: v.member.email,
+      paymentMethod: v.payment_logs[0]?.gateway,
+      orderExecutors: v.order_executors.map(w => w.member.name),
 
       orderProducts: v.order_products.map(w => ({
         id: w.id,
@@ -178,89 +198,21 @@ export const useOrderLog = (filters?: {
         price: w.price,
         type: w.type,
         target: w.target,
+        options: w.options,
       })),
 
       totalPrice: Math.max(
         sum(v.order_products.map(prop('price'))) - sum(v.order_discounts.map(prop('price'))) + (v.shipping?.fee || 0),
         0,
       ),
-
-      expiredAt: v.expired_at,
-      paymentMethod: v.payment_logs[0]?.gateway,
-      orderExecutors: v.order_executors.map(w => w.member.name),
     })) || []
 
   return {
-    totalCount: totalOrderLogCounts,
-    loadingOrderLogs: loading,
-    errorOrderLogs: error,
+    totalCount: data?.order_log_aggregate.aggregate?.count,
+    loading,
+    error,
     orderLogs,
-    refetchOrderLogs: refetch,
+    refetch,
     loadMoreOrderLogs,
   }
 }
-
-const GET_ALL_ORDER_LOG = gql`
-  query GET_ALL_ORDER_LOG($allcondition: order_log_bool_exp) {
-    order_log_aggregate(where: $allcondition) {
-      aggregate {
-        count
-      }
-    }
-  }
-`
-
-const GET_ORDERS = gql`
-  query GET_ORDERS($condition: order_log_bool_exp, $limit: Int) {
-    order_log_aggregate(where: $condition) {
-      aggregate {
-        count
-      }
-    }
-
-    order_log(where: $condition, order_by: { created_at: desc }, limit: $limit) {
-      id
-      created_at
-      status
-      shipping
-      expired_at
-      member {
-        name
-        email
-      }
-
-      payment_logs(order_by: { created_at: desc }, limit: 1) {
-        gateway
-      }
-
-      order_products {
-        id
-        name
-        price
-        started_at
-        ended_at
-        delivered_at
-        product {
-          id
-          type
-        }
-        options
-      }
-
-      order_discounts {
-        id
-        name
-        description
-        price
-        type
-        target
-      }
-
-      order_executors {
-        member {
-          name
-        }
-      }
-    }
-  }
-`

@@ -16,8 +16,9 @@ import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
 import { Uppy } from '@uppy/core'
 import XHRUpload from '@uppy/xhr-upload'
-import { MetaProductType } from '../components/common/MetaProductDeletionBlock'
+import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import { ProductType } from 'lodestar-app-element/src/types/product'
+import hooksMessages from './translation'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
@@ -1229,28 +1230,31 @@ export const useTransformProductToString = (productType: MetaProductType) => {
   let res = ''
   switch (productType) {
     case 'Program':
-      res = formatMessage(commonMessages.label.program)
+      res = formatMessage(hooksMessages.data.program)
       break
     case 'ProgramPackage':
-      res = formatMessage(commonMessages.label.programPackage)
+      res = formatMessage(hooksMessages.data.programPackage)
       break
     case 'Activity':
-      res = formatMessage(commonMessages.label.activity)
+      res = formatMessage(hooksMessages.data.activity)
       break
     case 'Post':
-      res = formatMessage(commonMessages.label.post)
+      res = formatMessage(hooksMessages.data.post)
       break
     case 'Merchandise':
-      res = formatMessage(commonMessages.label.merchandise)
+      res = formatMessage(hooksMessages.data.merchandise)
       break
     case 'Project':
-      res = formatMessage(commonMessages.label.project)
+      res = formatMessage(hooksMessages.data.project)
       break
     case 'PodcastProgram':
-      res = formatMessage(commonMessages.label.podcastProgram)
+      res = formatMessage(hooksMessages.data.podcastProgram)
       break
     case 'PodcastAlbum':
-      res = formatMessage(commonMessages.label.podcastAlbum)
+      res = formatMessage(hooksMessages.data.podcastAlbum)
+      break
+    case 'Certificate':
+      res = formatMessage(hooksMessages.data.certificate)
       break
     default:
       break

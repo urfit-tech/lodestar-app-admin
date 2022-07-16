@@ -12,6 +12,7 @@ import {
   ProgramRoleName,
 } from '../types/program'
 import { DeepPick } from 'ts-deep-pick'
+import { DisplayMode } from '../components/program/DisplayModeSelector'
 
 export const useProgram = (programId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_PROGRAM_BY_ID, hasura.GET_PROGRAM_BY_IDVariables>(
@@ -53,6 +54,7 @@ export const useProgram = (programId: string) => {
               is_notify_update
               notified_at
               metadata
+              display_mode
               program_content_body {
                 data
               }
@@ -167,6 +169,7 @@ export const useProgram = (programId: string) => {
           id: pc.id,
           title: pc.title,
           publishedAt: pc.published_at && new Date(pc.published_at),
+          displayMode: pc.display_mode as DisplayMode,
           listPrice: pc.list_price,
           duration: pc.duration,
           programContentType: pc.program_content_videos.length > 0 ? 'video' : pc.program_content_type?.type || null,
@@ -266,26 +269,27 @@ export const useProgramContentBody = (programContentId: string) => {
     `,
     { variables: { programContentId } },
   )
-
-  const programContentBody: ProgramContentBodyProps =
-    loading || error || !data || !data.program_content_by_pk
-      ? {
-          id: '',
-          type: '',
-          description: '',
-          data: {},
-          materials: [],
-        }
-      : {
-          id: data.program_content_by_pk.program_content_body.id,
-          type: data.program_content_by_pk.program_content_body.type,
-          description: data.program_content_by_pk.program_content_body.description,
-          data: data.program_content_by_pk.program_content_body.data,
-          materials: data.program_content_by_pk.program_content_materials.map(v => ({
-            id: v.id,
-            data: v.data,
-          })),
-        }
+  const programContentBody: ProgramContentBodyProps = useMemo(() => {
+    if (loading || error || !data || !data.program_content_by_pk) {
+      return {
+        id: '',
+        type: '',
+        description: '',
+        data: {},
+        materials: [],
+      }
+    }
+    return {
+      id: data.program_content_by_pk.program_content_body.id,
+      type: data.program_content_by_pk.program_content_body.type,
+      description: data.program_content_by_pk.program_content_body.description,
+      data: data.program_content_by_pk.program_content_body.data,
+      materials: data.program_content_by_pk.program_content_materials.map(v => ({
+        id: v.id,
+        data: v.data,
+      })),
+    }
+  }, [data, error, loading])
 
   return {
     loadingProgramContentBody: loading,
@@ -559,6 +563,7 @@ export const useMutateProgramContent = () => {
         $isNotifyUpdate: Boolean
         $notifiedAt: timestamptz
         $programContentBodyId: uuid!
+        $displayMode: String
       ) {
         update_program_content(
           where: { id: { _eq: $programContentId } }
@@ -571,6 +576,7 @@ export const useMutateProgramContent = () => {
             is_notify_update: $isNotifyUpdate
             notified_at: $notifiedAt
             content_body_id: $programContentBodyId
+            display_mode: $displayMode
           }
         ) {
           affected_rows
@@ -709,6 +715,7 @@ export const useProgramContent = (programContentId: string) => {
     : null
   return { programContent, loading, refetch }
 }
+
 export const useProgramContentActions = (programContentId: string) => {
   const apolloClient = useApolloClient()
   return {

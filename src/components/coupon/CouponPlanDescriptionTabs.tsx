@@ -116,7 +116,7 @@ const CouponPlanDescriptionTabs: React.FC<{
         {loadingCouponCodes ? (
           <div>{formatMessage(couponMessages.CouponPlanDescriptionTabs.loading)}</div>
         ) : errorCouponCodes ? (
-          <div>{formatMessage(couponMessages.CouponPlanDescriptionTabs.loadingError)}</div>
+          <div>{formatMessage(couponMessages.CouponPlanDescriptionTabs.fetchDataError)}</div>
         ) : (
           couponCodes.map(couponPlanCode => (
             <div key={couponPlanCode.id}>

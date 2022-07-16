@@ -4,7 +4,8 @@ import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Mo
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import moment, { Moment } from 'moment'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -17,6 +18,7 @@ import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
 import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
+import DisplayModeSelector from './DisplayModeSelector'
 
 const messages = defineMessages({
   displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
@@ -39,7 +41,8 @@ const StyledPracticeFileSizeTips = styled(StyledTips)`
 `
 
 type FieldProps = {
-  publishedAt: boolean
+  publishedAt: Moment | null
+  displayMode: string
   isNotifyUpdate: boolean
   title: string
   estimatedTime: number
@@ -103,7 +106,12 @@ const PracticeForm: React.FC<{
       updatePractice({
         variables: {
           programContentId: programContent.id,
-          publishedAt: values.publishedAt ? new Date() : null,
+          displayMode: values.displayMode,
+          publishedAt: values.publishedAt
+            ? values.publishedAt.toDate()
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
           title: values.title,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration: values.estimatedTime,
@@ -161,16 +169,13 @@ const PracticeForm: React.FC<{
       .finally(() => setIsSubmitting(false))
   }
 
-  useEffect(() => {
-    form.setFieldsValue({ publishedAt: !!programContent.publishedAt })
-  }, [form, programContent.publishedAt])
-
   return (
     <Form
       form={form}
       layout="vertical"
       initialValues={{
-        publishedAt: !!programContent.publishedAt,
+        publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
+        displayMode: programContent.displayMode,
         isPracticePrivate: !!programContent.metadata?.private,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
@@ -183,32 +188,37 @@ const PracticeForm: React.FC<{
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
-          <Form.Item name="publishedAt" valuePropName="checked" className="mr-3">
-            <Checkbox>{formatMessage(programMessages.label.show)}</Checkbox>
-          </Form.Item>
+          {programContent.displayMode && (
+            <DisplayModeSelector contentType="practice" displayMode={programContent.displayMode} />
+          )}
 
-          <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3">
+          <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3 mb-0">
             <Checkbox>
               {formatMessage(messages.displayPrivate)}
               <Tooltip
-                placement="bottom"
+                placement="right"
                 title={<StyledTips>{formatMessage(programMessages.text.practicePrivateTips)}</StyledTips>}
+                style={{ position: 'relative' }}
               >
-                <QuestionCircleFilled className="ml-1" />
+                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
               </Tooltip>
             </Checkbox>
           </Form.Item>
 
-          <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3">
+          <Form.Item name="isCoverRequired" valuePropName="checked" className="mr-3 mb-0">
             <Checkbox>
               {formatMessage(messages.coverRequired)}
-              <Tooltip placement="bottom" title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}>
-                <QuestionCircleFilled className="ml-1" />
+              <Tooltip
+                placement="right"
+                title={<StyledTips>{formatMessage(messages.coverRequiredTips)}</StyledTips>}
+                style={{ position: 'relative' }}
+              >
+                <QuestionCircleFilled className="ml-1" style={{ position: 'absolute', top: '30%' }} />
               </Tooltip>
             </Checkbox>
           </Form.Item>
 
-          <Form.Item name="isNotifyUpdate" valuePropName="checked">
+          <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
             <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
           </Form.Item>
         </div>
@@ -299,6 +309,7 @@ const UPDATE_PRACTICE = gql`
     $isNotifyUpdate: Boolean
     $notifiedAt: timestamptz
     $metadata: jsonb
+    $displayMode: String
   ) {
     update_program_content(
       where: { id: { _eq: $programContentId } }
@@ -309,6 +320,7 @@ const UPDATE_PRACTICE = gql`
         is_notify_update: $isNotifyUpdate
         notified_at: $notifiedAt
         metadata: $metadata
+        display_mode: $displayMode
       }
     ) {
       affected_rows

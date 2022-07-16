@@ -71,6 +71,9 @@ const adminMessages = {
     appSettingAdmin: { id: 'admin.AdminMenu.appSettingAdmin', defaultMessage: '參數設定' },
     appSecretAdmin: { id: 'admin.AdminMenu.appSecretAdmin', defaultMessage: '金鑰設定' },
     notFound: { id: 'admin.AdminMenu.notFound', defaultMessage: '無此路徑' },
+    certificateAdmin: { id: 'admin.AdminMenu.certificate', defaultMessage: '證書管理' },
+    certificateSetting: { id: 'admin.AdminMenu.certificateSetting', defaultMessage: '證書設定' },
+    certificateTemplate: { id: 'admin.AdminMenu.certificateTemplate', defaultMessage: '證書模板' },
   }),
 }
 export default adminMessages

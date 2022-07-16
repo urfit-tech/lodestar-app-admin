@@ -17,6 +17,7 @@ import {
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
+import moment, { Moment } from 'moment'
 import { clone, find, propEq, sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -29,6 +30,7 @@ import { useMutateProgramContent, useProgramContentBody } from '../../hooks/prog
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
 import QuestionInput from '../form/QuestionInput'
+import DisplayModeSelector from './DisplayModeSelector'
 import ExerciseSortingModal from './ExerciseSortingModal'
 
 const StyledTitle = styled.div`
@@ -39,13 +41,14 @@ const StyledTitle = styled.div`
 `
 
 type FieldProps = {
-  isTrial: boolean
   isVisible: boolean
   isAvailableToGoBack: boolean
   isAvailableToRetry: boolean
   isNotifyUpdate: boolean
   title: string
   passingScore: number
+  displayMode: string
+  publishedAt: Moment | null
 }
 
 const StyledModal = styled(Modal)<{ isFullWidth?: boolean }>`
@@ -73,7 +76,9 @@ const ExerciseAdminModal: React.FC<{
   onRefetch?: () => void
 }> = ({ programContent, onRefetch }) => {
   const [visible, setVisible] = useState(false)
-  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
+  const { loadingProgramContentBody, programContentBody, refetchProgramContentBody } = useProgramContentBody(
+    programContent.id,
+  )
 
   if (loadingProgramContentBody) return <Skeleton active />
 
@@ -94,7 +99,10 @@ const ExerciseAdminModal: React.FC<{
           programContent={programContent}
           programContentBody={programContentBody}
           onCancel={() => setVisible(false)}
-          onRefetch={() => onRefetch?.()}
+          onRefetch={() => {
+            refetchProgramContentBody()
+            onRefetch?.()
+          }}
         />
       </StyledModal>
     </>
@@ -142,8 +150,12 @@ const ExerciseAdminForm: React.FC<{
         programContentId: programContent.id,
         programContentBodyId: programContentBody.id,
         content: {
-          list_price: values.isTrial ? 0 : null,
-          published_at: values.isVisible ? new Date() : null,
+          display_mode: values.displayMode,
+          published_at: values.publishedAt
+            ? values.publishedAt.toDate()
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
           is_notify_update: values.isNotifyUpdate,
           title: values.title,
           metadata: {
@@ -172,17 +184,13 @@ const ExerciseAdminForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => {
-    form.setFieldsValue({ isVisible: !!programContent.publishedAt })
-  }, [form, programContent.publishedAt])
-
   return (
     <Form
       form={form}
       layout="vertical"
       initialValues={{
-        isTrial: programContent.listPrice === 0,
-        isVisible: !!programContent.publishedAt,
+        publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
+        displayMode: programContent.displayMode,
         isAvailableToGoBack: !!programContent.metadata?.isAvailableToGoBack,
         isAvailableToRetry: !!programContent.metadata?.isAvailableToRetry,
         isNotifyUpdate: programContent.isNotifyUpdate,
@@ -192,20 +200,17 @@ const ExerciseAdminForm: React.FC<{
       onFinish={handleSubmit}
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <div>
-          <Form.Item name="isTrial" valuePropName="checked" noStyle>
-            <Checkbox className="mr-2">{formatMessage(commonMessages.ui.trial)}</Checkbox>
-          </Form.Item>
-          <Form.Item name="isVisible" valuePropName="checked" noStyle>
-            <Checkbox className="mr-2">{formatMessage(programMessages.label.show)}</Checkbox>
-          </Form.Item>
-          <Form.Item name="isAvailableToGoBack" valuePropName="checked" noStyle>
+        <div className="d-flex align-items-center">
+          {programContent.displayMode && (
+            <DisplayModeSelector contentType="exercise" displayMode={programContent.displayMode} />
+          )}
+          <Form.Item name="isAvailableToGoBack" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToGoBack)}</Checkbox>
           </Form.Item>
-          <Form.Item name="isAvailableToRetry" valuePropName="checked" noStyle>
+          <Form.Item name="isAvailableToRetry" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToRetry)}</Checkbox>
           </Form.Item>
-          <Form.Item name="isNotifyUpdate" valuePropName="checked" noStyle>
+          <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
             <Checkbox className="mr-2">{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
           </Form.Item>
         </div>

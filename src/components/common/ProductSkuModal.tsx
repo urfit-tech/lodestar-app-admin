@@ -23,8 +23,10 @@ const ProductSkuModal: React.FC<
       onOpen?: () => void
       onClose?: () => void
     }>
+    renderTitle?: () => React.ReactNode
+    renderInputLabel?: () => React.ReactNode
   }
-> = ({ productId, onRefetch, renderTrigger, ...modalProps }) => {
+> = ({ productId, onRefetch, renderTrigger, renderTitle, renderInputLabel, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
@@ -62,7 +64,7 @@ const ProductSkuModal: React.FC<
 
   return (
     <AdminModal
-      title={formatMessage(commonMessages.label.skuSetting)}
+      title={renderTitle?.() || formatMessage(commonMessages.label.skuSetting)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
@@ -105,7 +107,7 @@ const ProductSkuModal: React.FC<
           sku: product?.sku,
         }}
       >
-        <Form.Item label={formatMessage(commonMessages.label.sku)} name="sku">
+        <Form.Item label={renderInputLabel?.() || formatMessage(commonMessages.label.sku)} name="sku">
           <Input />
         </Form.Item>
       </Form>

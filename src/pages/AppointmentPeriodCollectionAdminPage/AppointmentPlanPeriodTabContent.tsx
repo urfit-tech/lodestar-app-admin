@@ -27,6 +27,7 @@ const AppointmentPlanPeriodTabContent: React.FC<{
     loading: loadingAppointmentEnrollments,
     error: errorAppointmentEnrollments,
     appointmentEnrollments,
+    refetch: refetchEnrolledAppointments,
     loadMoreAppointmentEnrollments,
   } = useAppointmentEnrollmentCollection(tabKey, selectedCreatorId, startedAt, endedAt)
   const [isLoading, setIsLoading] = useState(false)
@@ -69,6 +70,7 @@ const AppointmentPlanPeriodTabContent: React.FC<{
           canceledAt={v.canceledAt}
           creator={v.creator}
           orderProductId={v.orderProductId}
+          onRefetch={refetchEnrolledAppointments}
         />
       ))}
 

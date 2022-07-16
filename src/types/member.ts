@@ -24,6 +24,7 @@ export type MemberInfoProps = {
   id: string
   avatarUrl: string | null
   name: string
+  username: string
   email: string
   role: UserRole
   createdAt: Date | null

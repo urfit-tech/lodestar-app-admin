@@ -8,19 +8,20 @@ import CouponPlanAdminModal from '../../components/coupon/CouponPlanAdminModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { DiscountIcon } from '../../images/icon'
 import ForbiddenPage from '../ForbiddenPage'
+import LoadingPage from '../LoadingPage'
+import pageMessages from '../translation'
 import CouponPlanCollectionBlock from './CouponPlanCollectionBlock'
-import CouponPlanCollectionAdminPageMessages from './translation'
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { permissions } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
   const [searchText, setSearchText] = useState('')
   const [stateCode, setStateCode] = useState(Math.random())
 
   const tabContents = [
     {
       key: 'available',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].available),
+      tab: formatMessage(pageMessages['*'].available),
       condition: {
         _or: [
           { started_at: { _lte: 'now()' }, ended_at: { _gte: 'now()' } },
@@ -29,27 +30,46 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
           { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
         ],
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        editor_id: permissions.COUPON_PLAN_ADMIN
+          ? undefined
+          : permissions.COUPON_PLAN_NORMAL
+          ? { _eq: currentMemberId }
+          : { _eq: '' },
       },
     },
     {
       key: 'notYet',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].notYet),
+      tab: formatMessage(pageMessages['*'].notYet),
       condition: {
         started_at: { _gt: 'now()' },
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
       },
+      editor_id: permissions.COUPON_PLAN_ADMIN
+        ? undefined
+        : permissions.COUPON_PLAN_NORMAL
+        ? { _eq: currentMemberId }
+        : { _eq: '' },
     },
     {
       key: 'unavailable',
-      tab: formatMessage(CouponPlanCollectionAdminPageMessages['*'].unavailable),
+      tab: formatMessage(pageMessages['*'].unavailable),
       condition: {
         ended_at: { _lt: 'now()' },
         title: searchText ? { _ilike: `%${searchText}%` } : undefined,
       },
+      editor_id: permissions.COUPON_PLAN_ADMIN
+        ? undefined
+        : permissions.COUPON_PLAN_NORMAL
+        ? { _eq: currentMemberId }
+        : { _eq: '' },
     },
   ]
 
-  if (!permissions.COUPON_PLAN_ADMIN) {
+  if (Object.keys(permissions).length === 0) {
+    return <LoadingPage />
+  }
+
+  if (!permissions.COUPON_PLAN_ADMIN && !permissions.COUPON_PLAN_NORMAL) {
     return <ForbiddenPage />
   }
 
@@ -57,7 +77,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <DiscountIcon className="mr-3" />
-        <span>{formatMessage(CouponPlanCollectionAdminPageMessages['*'].coupons)}</span>
+        <span>{formatMessage(pageMessages['*'].coupons)}</span>
       </AdminPageTitle>
 
       <div className="row mb-5">
@@ -65,11 +85,11 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
           <CouponPlanAdminModal
             renderTrigger={({ setVisible }) => (
               <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(CouponPlanCollectionAdminPageMessages['*'].createCouponPlan)}
+                {formatMessage(pageMessages['*'].createCouponPlan)}
               </Button>
             )}
             icon={<FileAddOutlined />}
-            title={formatMessage(CouponPlanCollectionAdminPageMessages['*'].createCouponPlan)}
+            title={formatMessage(pageMessages['*'].createCouponPlan)}
             onRefetch={() => setStateCode(Math.random())}
           />
         </div>
