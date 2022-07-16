@@ -242,7 +242,7 @@ const SalesLeadTable: React.VFC<{
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
-          categoryName: value,
+          materialName: value,
         }),
       ),
       render: (properties: { id: string; name: string; value: string }[]) =>
@@ -285,12 +285,18 @@ const SalesLeadTable: React.VFC<{
     .filter(
       v =>
         (!filters.nameAndEmail ||
-          v.name.toLowerCase().includes(filters.nameAndEmail.toLowerCase()) ||
-          v.email.toLowerCase().includes(filters.nameAndEmail.toLowerCase())) &&
-        (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))) &&
+          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
+          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
+        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
         (!filters.categoryName ||
           v.categoryNames.find(categoryName =>
-            categoryName.toLowerCase().includes(filters.categoryName?.toLowerCase() || ''),
+            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
+          )) &&
+        (!filters.materialName ||
+          v.properties.find(
+            property =>
+              property.name === '廣告素材' &&
+              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
           )),
     )
     .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
