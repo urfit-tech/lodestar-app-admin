@@ -5,6 +5,7 @@ import {
   SearchOutlined,
   StarOutlined,
   StopOutlined,
+  SwapOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
@@ -60,7 +61,7 @@ const SalesLeadTable: React.VFC<{
 
   const { insertMemberNote } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
-  const [transferLead] = useMutation<hasura.TRANSFER_LEAD, hasura.TRANSFER_LEADVariables>(TRANSFER_LEAD)
+  const [transferLeads] = useMutation<hasura.TRANSFER_LEADS, hasura.TRANSFER_LEADSVariables>(TRANSFER_LEADS)
 
   const uploadAttachments = useUploadAttachments()
 
@@ -358,23 +359,6 @@ const SalesLeadTable: React.VFC<{
       <TableWrapper>
         {selectedRowKeys.length > 0 && (
           <div className="d-flex flex-row justify-content-end mb-3">
-            {/* <Button
-            icon={<SwapOutlined />}
-            className="mr-2"
-            onClick={() => {
-              const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')
-              if (managerId) {
-                transferLead({ variables: { memberId, managerId } }).then(({ data }) => {
-                  if (data?.update_member?.affected_rows) {
-                    window.alert('已成功轉移此名單！')
-                    onRefetch?.()
-                  } else {
-                    window.alert('轉移失敗ＱＱ')
-                  }
-                })
-              }
-            }}
-          /> */}
             {variant !== 'starred' && (
               <Button
                 icon={<StarOutlined />}
@@ -476,6 +460,7 @@ const SalesLeadTable: React.VFC<{
             </Button>
             <Button
               icon={<DeleteOutlined />}
+              className="mr-2"
               onClick={() => {
                 if (window.confirm('確定永久刪除這些名單？此動作無法復原！')) {
                   updateLeads({
@@ -496,6 +481,31 @@ const SalesLeadTable: React.VFC<{
               }}
             >
               刪除
+            </Button>
+            <Button
+              icon={<SwapOutlined />}
+              className="mr-2"
+              onClick={() => {
+                const managerId = window.prompt('你要轉移此名單給哪個承辦編號？')?.trim()
+                if (managerId) {
+                  transferLeads({
+                    variables: { memberIds: selectedRowKeys.map(rowKey => rowKey.toString()), managerId },
+                  })
+                    .then(({ data, errors }) => {
+                      if (data?.update_member?.affected_rows) {
+                        window.alert('已成功轉移此名單！')
+                        onRefetch?.()
+                      } else {
+                        window.alert(`轉移失敗：${errors?.join(', ')}`)
+                      }
+                    })
+                    .catch(error => {
+                      window.alert(`轉移失敗：${error}`)
+                    })
+                }
+              }}
+            >
+              轉移
             </Button>
           </div>
         )}
@@ -556,9 +566,9 @@ const UPDATE_LEADS = gql`
   }
 `
 
-const TRANSFER_LEAD = gql`
-  mutation TRANSFER_LEAD($memberId: String!, $managerId: String!) {
-    update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: $managerId }) {
+const TRANSFER_LEADS = gql`
+  mutation TRANSFER_LEADS($memberIds: [String!]!, $managerId: String!) {
+    update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
       affected_rows
     }
   }

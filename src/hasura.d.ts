@@ -6840,10 +6840,10 @@ export interface UPDATE_LEADSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: TRANSFER_LEAD
+// GraphQL mutation operation: TRANSFER_LEADS
 // ====================================================
 
-export interface TRANSFER_LEAD_update_member {
+export interface TRANSFER_LEADS_update_member {
   __typename: "member_mutation_response";
   /**
    * number of rows affected by the mutation
@@ -6851,15 +6851,15 @@ export interface TRANSFER_LEAD_update_member {
   affected_rows: number;
 }
 
-export interface TRANSFER_LEAD {
+export interface TRANSFER_LEADS {
   /**
    * update data of the table: "member"
    */
-  update_member: TRANSFER_LEAD_update_member | null;
+  update_member: TRANSFER_LEADS_update_member | null;
 }
 
-export interface TRANSFER_LEADVariables {
-  memberId: string;
+export interface TRANSFER_LEADSVariables {
+  memberIds: string[];
   managerId: string;
 }
 
