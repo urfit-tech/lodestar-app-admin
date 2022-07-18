@@ -24,8 +24,8 @@ import OrderStatusTag from './OrderStatusTag'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
 import saleMessages from './translation'
 
-const StyledRowWrapper = styled.div<{ hasEquity: boolean }>`
-  color: ${props => !props.hasEquity && '#CDCDCD'};
+const StyledRowWrapper = styled.div<{ isDelivered: boolean }>`
+  color: ${props => !props.isDelivered && '#CDCDCD'};
 `
 
 const StyledContainer = styled.div`
@@ -244,14 +244,9 @@ const SaleCollectionAdminCard: React.VFC<{
   }: OrderLog) => (
     <div>
       {orderProducts.map(v => {
-        const now = moment()
-        const hasEquity: boolean =
-          !!v.deliveredAt &&
-          moment(v.deliveredAt).isBefore(now) &&
-          (v.endedAt === null || moment(v.endedAt).isAfter(now)) &&
-          (v.startedAt === null || moment(v.startedAt).isBefore(now))
+        const isDelivered: boolean = !!v.deliveredAt
         return (
-          <StyledRowWrapper key={v.id} hasEquity={hasEquity}>
+          <StyledRowWrapper key={v.id} isDelivered={isDelivered}>
             <div className="row">
               <div className="col-2">
                 <ProductTypeLabel productType={v.product.type} />
@@ -289,8 +284,8 @@ const SaleCollectionAdminCard: React.VFC<{
                       }
                       renderTrigger={({ setVisible }) => (
                         <div className="d-flex align-items-center">
-                          <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.equity)}</span>
-                          <Switch checked={hasEquity} onChange={() => setVisible(true)} />
+                          <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}</span>
+                          <Switch checked={isDelivered} onChange={() => setVisible(true)} />
                         </div>
                       )}
                       footer={null}
@@ -301,7 +296,7 @@ const SaleCollectionAdminCard: React.VFC<{
                           </Button>
                           <Button
                             type="primary"
-                            danger={!!v.deliveredAt}
+                            danger={isDelivered}
                             loading={loadingOrderLogs}
                             onClick={async () =>
                               await updateOrderProductDeliver({
@@ -341,7 +336,7 @@ const SaleCollectionAdminCard: React.VFC<{
                     v.product.type === 'MerchandiseSpec' && v.options.currencyId === 'LSC'
                       ? v.options.currencyPrice
                       : v.price,
-                    v.options.currencyId,
+                    v.options?.currencyId,
                     settings['coin.unit'],
                   )}
                 </div>

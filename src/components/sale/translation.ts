@@ -12,8 +12,7 @@ const saleMessages = {
       id: 'sale.SaleCollectionAdminCard.updateEquitySuccessfully',
       defaultMessage: '權益異動成功',
     },
-    equity: { id: 'sale.SaleCollectionAdminCard.equity', defaultMessage: '權益' },
-
+    deliver: { id: 'sale.SaleCollectionAdminCard.deliver', defaultMessage: '交付' },
     removeEquityWarning: {
       id: 'sale.SaleCollectionAdminCard.removeEquityWarning',
       defaultMessage: '此操作將移除 {productName} 的使用權益，確定要移除嗎？',

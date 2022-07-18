@@ -76,7 +76,9 @@ const ExerciseAdminModal: React.FC<{
   onRefetch?: () => void
 }> = ({ programContent, onRefetch }) => {
   const [visible, setVisible] = useState(false)
-  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
+  const { loadingProgramContentBody, programContentBody, refetchProgramContentBody } = useProgramContentBody(
+    programContent.id,
+  )
 
   if (loadingProgramContentBody) return <Skeleton active />
 
@@ -97,7 +99,10 @@ const ExerciseAdminModal: React.FC<{
           programContent={programContent}
           programContentBody={programContentBody}
           onCancel={() => setVisible(false)}
-          onRefetch={() => onRefetch?.()}
+          onRefetch={() => {
+            refetchProgramContentBody()
+            onRefetch?.()
+          }}
         />
       </StyledModal>
     </>
