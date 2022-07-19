@@ -102,7 +102,14 @@ const MembersWithoutNavigatorBlock: React.VFC = () => {
 const useMemberWithoutNavigator = () => {
   const { loading, error, data } = useQuery<hasura.GET_VALID_MEMBER_CONTRACT>(gql`
     query GET_VALID_MEMBER_CONTRACT {
-      member_contract(where: { agreed_at: { _is_null: false }, member: { app_id: { _eq: "xuemi" } } }) {
+      member_contract(
+        where: {
+          agreed_at: { _is_null: false }
+          revoked_at: { _is_null: true }
+          ended_at: { _gte: "now()" }
+          member: { app_id: { _eq: "xuemi" } }
+        }
+      ) {
         id
         values
         member {
