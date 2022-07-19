@@ -761,15 +761,18 @@ export interface GET_VALID_MEMBER_CONTRACT_member_contract_member {
   id: string;
   name: string;
   email: string;
+  picture_url: string | null;
 }
 
 export interface GET_VALID_MEMBER_CONTRACT_member_contract {
   __typename: "member_contract";
   id: any;
+  values: any | null;
   /**
    * An object relationship
    */
   member: GET_VALID_MEMBER_CONTRACT_member_contract_member;
+  agreed_at: any | null;
 }
 
 export interface GET_VALID_MEMBER_CONTRACT {
@@ -777,6 +780,41 @@ export interface GET_VALID_MEMBER_CONTRACT {
    * fetch data from the table: "member_contract"
    */
   member_contract: GET_VALID_MEMBER_CONTRACT_member_contract[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY
+// ====================================================
+
+export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY_member_property_property {
+  __typename: "property";
+  name: string;
+}
+
+export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY_member_property {
+  __typename: "member_property";
+  member_id: string;
+  value: string;
+  /**
+   * An object relationship
+   */
+  property: GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY_member_property_property;
+}
+
+export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY {
+  /**
+   * fetch data from the table: "member_property"
+   */
+  member_property: GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY_member_property[];
+}
+
+export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITYVariables {
+  memberIds: string[];
 }
 
 /* tslint:disable */
