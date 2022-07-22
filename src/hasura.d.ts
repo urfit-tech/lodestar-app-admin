@@ -779,7 +779,27 @@ export interface GET_VALID_MEMBER_CONTRACT {
   /**
    * fetch data from the table: "member_contract"
    */
-  member_contract: GET_VALID_MEMBER_CONTRACT_member_contract[];
+  member_contract: GET_VALID_MEMBER_CONTRACT_member_contract[]; 
+}
+// GraphQL query operation: GET_MEMBER_CONTRACTS_EXPIRATION_DATE
+// ====================================================
+
+export interface GET_MEMBER_CONTRACTS_EXPIRATION_DATE_member_contract {
+  __typename: "member_contract";
+  id: any;
+  values: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_MEMBER_CONTRACTS_EXPIRATION_DATE {
+  /**
+   * fetch data from the table: "member_contract"
+   */
+  member_contract: GET_MEMBER_CONTRACTS_EXPIRATION_DATE_member_contract[];
+}
+
+export interface GET_MEMBER_CONTRACTS_EXPIRATION_DATEVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -815,6 +835,29 @@ export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY {
 
 export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITYVariables {
   memberIds: string[];
+}
+// GraphQL query operation: GET_CONTRACT_ORDER_PRODUCTS
+// ====================================================
+
+export interface GET_CONTRACT_ORDER_PRODUCTS_order_product {
+  __typename: "order_product";
+  id: any;
+  product_id: string;
+  name: string;
+  price: any;
+  started_at: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_CONTRACT_ORDER_PRODUCTS {
+  /**
+   * fetch data from the table: "order_product"
+   */
+  order_product: GET_CONTRACT_ORDER_PRODUCTS_order_product[];
+}
+
+export interface GET_CONTRACT_ORDER_PRODUCTSVariables {
+  orderId: string;
 }
 
 /* tslint:disable */
