@@ -288,12 +288,7 @@ const GET_SALES_MATERIALS = gql`
         value: { _neq: "" }
         member: {
           manager_id: $sales
-          member_notes: {
-            author_id: $sales
-            created_at: { _gt: $startedAt, _lt: $endedAt }
-            type: { _eq: "outbound" }
-            duration: { _gt: 90 }
-          }
+          member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" } }
           member_contracts: { agreed_at: { _gt: $startedAt, _lt: $endedAt }, revoked_at: { _is_null: true } }
         }
       }
