@@ -866,6 +866,96 @@ export interface GET_CONTRACT_ORDER_PRODUCTSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCTS
+// ====================================================
+
+export interface UPDATE_ORDER_PRODUCTS_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCTS {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_ORDER_PRODUCTS_update_order_product | null;
+}
+
+export interface UPDATE_ORDER_PRODUCTSVariables {
+  orderProductIds: any[];
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_COIN_LOGS
+// ====================================================
+
+export interface UPDATE_COIN_LOGS_update_coin_log {
+  __typename: "coin_log_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COIN_LOGS {
+  /**
+   * update data of the table: "coin_log"
+   */
+  update_coin_log: UPDATE_COIN_LOGS_update_coin_log | null;
+}
+
+export interface UPDATE_COIN_LOGSVariables {
+  coinLogIds: any[];
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_COUPON_PLANS
+// ====================================================
+
+export interface UPDATE_COUPON_PLANS_update_coupon_plan {
+  __typename: "coupon_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COUPON_PLANS {
+  /**
+   * update data of the table: "coupon_plan"
+   */
+  update_coupon_plan: UPDATE_COUPON_PLANS_update_coupon_plan | null;
+}
+
+export interface UPDATE_COUPON_PLANSVariables {
+  couponPlanIds: any[];
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_NAMES
 // ====================================================
 

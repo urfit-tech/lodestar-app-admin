@@ -1,5 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Form, Select } from 'antd'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Button, Checkbox, DatePicker, Form, notification, Select } from 'antd'
 import gql from 'graphql-tag'
 import { AllMemberSelector } from 'lodestar-app-admin/src/components/form/MemberSelector'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
@@ -7,6 +7,7 @@ import pageMessages from 'lodestar-app-admin/src/pages/translation'
 import moment, { Moment } from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 
@@ -16,11 +17,21 @@ const StyledCheckboxGroup = styled(Checkbox.Group)`
   }
 `
 
+const SelectMember = styled(Form.Item)`
+  .ant-form-item-control-input-content {
+    display: flex;
+    align-items: center;
+    a {
+      margin-left: 16px;
+    }
+  }
+`
+
 type MemberContract = {
   id: string
   orderId: string
-  coinLogs: Array<object>
-  couponPlans: Array<object>
+  coinLogs: Array<CoinLog>
+  couponPlans: Array<string>
   expireDate: string
 }
 
@@ -33,10 +44,17 @@ type OrderProduct = {
   endedAt: string
 }
 
+type CoinLog = Object & {
+  id: string
+  orderId: string
+  coinLogs: Array<object>
+  couponPlans: Array<string>
+  expireDate: string
+}
+
 type Coupon = {
   coupon_code: {
     data: {
-      coupon_plan_id: string
       coupon_plan: {
         data: {
           id: string
@@ -46,26 +64,129 @@ type Coupon = {
   }
 }
 
+const errorNotification = (msg: string) => {
+  notification.error({
+    message: `${msg}`,
+    placement: 'topRight',
+    duration: 3,
+  })
+}
+
+const successNotification = (msg: string) => {
+  notification.success({
+    message: `${msg}`,
+    placement: 'topRight',
+    duration: 3,
+  })
+}
+
 const TraineesDayOffBlock: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [memberId, setMemberId] = useState('')
-  const [contract, setContract] = useState({})
+  const [contract, setContract] = useState<MemberContract>()
   const [orderId, setOrderId] = useState('')
+  const [memberCardProductId, setMemberCardProductId] = useState('')
   const [checkedOrderProductIds, setCheckedOrderProductIds] = useState<string[]>([])
   const [startedAt, setStartedAt] = useState<Moment | null>()
   const [endedAt, setEndedAt] = useState<Moment | null>()
   const [isLoading, setIsLoading] = useState(false)
 
+  const [updateOrderProducts] = useMutation<hasura.UPDATE_ORDER_PRODUCTS, hasura.UPDATE_ORDER_PRODUCTSVariables>(
+    UPDATE_ORDER_PRODUCTS,
+  )
+  const [updateCoinLogs] = useMutation<hasura.UPDATE_COIN_LOGS, hasura.UPDATE_COIN_LOGSVariables>(UPDATE_COIN_LOGS)
+  const [updateCouponPlans] = useMutation<hasura.UPDATE_COUPON_PLANS, hasura.UPDATE_COUPON_PLANSVariables>(
+    UPDATE_COUPON_PLANS,
+  )
+
   const handleSubmit = (setLoading: (isLoading: boolean) => void) => {
-    setLoading(false)
+    setLoading(true)
+
+    const updatedStartedAt = moment(startedAt?.format('YYYY-MM-DD')).toISOString()
+    const updatedEndedAt = moment(endedAt?.format('YYYY-MM-DD')).toISOString()
+    const coinLogIds = contract?.coinLogs.map((v: CoinLog) => v.id) || null
+
+    if (memberId === '') {
+      errorNotification('請選擇學員')
+      setLoading(false)
+      return
+    }
+
+    if (contract === undefined) {
+      errorNotification('請選擇一個合約')
+      setLoading(false)
+      return
+    }
+
+    if (coinLogIds === null) {
+      errorNotification('請檢查此合約是否有coin_log')
+      setLoading(false)
+      return
+    }
+
+    if (contract?.couponPlans === undefined) {
+      errorNotification('請檢查此合約是否有coupon_plan')
+      setLoading(false)
+      return
+    }
+
+    if (!checkedOrderProductIds.includes(memberCardProductId)) {
+      errorNotification('請勾選學米 VIP 會員卡')
+      setLoading(false)
+      return
+    }
+
+    if (checkedOrderProductIds.length === 0) {
+      errorNotification('請勾選至少一項')
+      setLoading(false)
+      return
+    }
+
+    if (!startedAt || !endedAt) {
+      errorNotification('開始/結束時間為必填')
+      setLoading(false)
+      return
+    }
+
+    const orderProductsInput: hasura.UPDATE_ORDER_PRODUCTSVariables = {
+      orderProductIds: checkedOrderProductIds,
+      startedAt: updatedStartedAt,
+      endedAt: updatedEndedAt,
+    }
+
+    const coinLogsInput: hasura.UPDATE_COIN_LOGSVariables = {
+      coinLogIds: coinLogIds,
+      startedAt: updatedStartedAt,
+      endedAt: updatedEndedAt,
+    }
+
+    const couponPlansInput: hasura.UPDATE_COUPON_PLANSVariables = {
+      couponPlanIds: contract.couponPlans,
+      startedAt: updatedStartedAt,
+      endedAt: updatedEndedAt,
+    }
+
+    Promise.all([
+      updateOrderProducts({ variables: orderProductsInput }),
+      updateCoinLogs({ variables: coinLogsInput }),
+      updateCouponPlans({ variables: couponPlansInput }),
+    ])
+      .then(() => {
+        successNotification('更新成功')
+        setLoading(false)
+      })
+      .catch(e => {
+        errorNotification('更新學員資訊錯誤，請查看console')
+        console.log(e)
+      })
   }
 
   return (
     <>
       <Form layout="horizontal">
-        <Form.Item label="選擇學員">
+        <SelectMember label="選擇學員">
           <AllMemberSelector
-            style={{ width: '100%' }}
+            className="col-6"
             placeholder={formatMessage(pageMessages['*'].chooseMember)}
             onChange={memberId => {
               if (typeof memberId === 'string') {
@@ -73,7 +194,12 @@ const TraineesDayOffBlock: React.VFC = () => {
               }
             }}
           ></AllMemberSelector>
-        </Form.Item>
+          {memberId && (
+            <Link to={location => ({ ...location, pathname: `/members/${memberId}` })} target="_blank" rel="noopener">
+              查看學員
+            </Link>
+          )}
+        </SelectMember>
         <Form.Item label="選擇合約">
           <ContractSelect memberId={memberId} setContract={setContract} setOrderId={setOrderId} />
         </Form.Item>
@@ -82,6 +208,7 @@ const TraineesDayOffBlock: React.VFC = () => {
             orderId={orderId}
             startedAt={startedAt}
             endedAt={endedAt}
+            setMemberCardProductId={setMemberCardProductId}
             setCheckedOrderProductIds={setCheckedOrderProductIds}
             setStartedAt={setStartedAt}
             setEndedAt={setEndedAt}
@@ -132,10 +259,11 @@ const OrderProductCheckBoxes: React.VFC<{
   orderId: string
   startedAt?: Moment | null
   endedAt?: Moment | null
+  setMemberCardProductId: (memberCardProductId: string) => void
   setCheckedOrderProductIds: (checkedOrderProductIds: Array<string>) => void
   setStartedAt: (startDate: Moment) => void
   setEndedAt: (endDate: Moment) => void
-}> = ({ orderId, startedAt, endedAt, setCheckedOrderProductIds, setStartedAt, setEndedAt }) => {
+}> = ({ orderId, startedAt, endedAt, setMemberCardProductId, setCheckedOrderProductIds, setStartedAt, setEndedAt }) => {
   const { orderProductsLoading, orderProductsError, orderProducts } = useContractOrderProduct(orderId)
   if (orderProductsError) {
     console.log(orderProductsError)
@@ -145,6 +273,7 @@ const OrderProductCheckBoxes: React.VFC<{
   if (!orderProductsLoading) {
     orderProductOptions = orderProducts.map(product => {
       if (!startedAt && !endedAt && product.productId.includes('Card_')) {
+        setMemberCardProductId(product.id)
         setStartedAt(moment(product.startedAt).tz('Asia/Taipei'))
         setEndedAt(moment(product.endedAt).tz('Asia/Taipei'))
       }
@@ -158,7 +287,7 @@ const OrderProductCheckBoxes: React.VFC<{
         const checkedOrderProducts = orderProducts.filter(product => {
           let checkedId = ''
           v.forEach(productName => {
-            if (product.name === productName) {
+            if (typeof productName === 'string' && productName.includes(product.name)) {
               checkedId = product.id
             }
           })
@@ -192,19 +321,15 @@ const useMemberContractExpirationDate = (memberId: string) => {
   )
   const memberContracts: MemberContract[] =
     data?.member_contract.map(v => {
-      const couponPlans = v.values.coupons.map((coupon: Coupon) => {
-        if (coupon.coupon_code.data.coupon_plan_id !== undefined) {
-          return coupon.coupon_code.data.coupon_plan_id
-        } else if (coupon.coupon_code.data.coupon_plan.data.id !== undefined) {
-          return coupon.coupon_code.data.coupon_plan.data.id
-        }
+      const couponPlans = v.values.coupons.filter((coupon: Coupon) => {
+        return coupon.coupon_code.data.coupon_plan?.data.id !== undefined
       })
       return {
         id: v.id,
         orderId: v.values.orderId,
         coinLogs: v.values.coinLogs,
-        couponPlans: couponPlans.filter((couponPlan: string, idx: number, arr: Array<string>) => {
-          return arr.indexOf(couponPlan) === idx
+        couponPlans: couponPlans.map((couponPlan: Coupon) => {
+          return couponPlan.coupon_code.data.coupon_plan.data.id
         }),
         expireDate: moment(v.ended_at).tz('Asia/Taipei').format('YYYY-MM-DD'),
       }
@@ -252,5 +377,32 @@ const useContractOrderProduct = (orderId: string) => {
     }) || []
   return { orderProductsLoading: loading, orderProductsError: error, orderProducts }
 }
+
+const UPDATE_ORDER_PRODUCTS = gql`
+  mutation UPDATE_ORDER_PRODUCTS($orderProductIds: [uuid!]!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+    update_order_product(
+      where: { id: { _in: $orderProductIds } }
+      _set: { started_at: $startedAt, ended_at: $endedAt }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_COIN_LOGS = gql`
+  mutation UPDATE_COIN_LOGS($coinLogIds: [uuid!]!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+    update_coin_log(where: { id: { _in: $coinLogIds } }, _set: { started_at: $startedAt, ended_at: $endedAt }) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_COUPON_PLANS = gql`
+  mutation UPDATE_COUPON_PLANS($couponPlanIds: [uuid!]!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+    update_coupon_plan(where: { id: { _in: $couponPlanIds } }, _set: { started_at: $startedAt, ended_at: $endedAt }) {
+      affected_rows
+    }
+  }
+`
 
 export default TraineesDayOffBlock
