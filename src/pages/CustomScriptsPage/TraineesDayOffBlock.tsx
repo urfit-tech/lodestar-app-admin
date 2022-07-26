@@ -102,10 +102,6 @@ const TraineesDayOffBlock: React.VFC = () => {
   const handleSubmit = (setLoading: (isLoading: boolean) => void) => {
     setLoading(true)
 
-    const updatedStartedAt = moment(startedAt?.format('YYYY-MM-DD')).toISOString()
-    const updatedEndedAt = moment(endedAt?.format('YYYY-MM-DD')).toISOString()
-    const coinLogIds = contract?.coinLogs.map((v: CoinLog) => v.id) || null
-
     if (memberId === '') {
       errorNotification('請選擇學員')
       setLoading(false)
@@ -118,13 +114,15 @@ const TraineesDayOffBlock: React.VFC = () => {
       return
     }
 
+    const coinLogIds = contract.coinLogs.map((v: CoinLog) => v.id) || null
+
     if (coinLogIds === null) {
       errorNotification('請檢查此合約是否有coin_log')
       setLoading(false)
       return
     }
 
-    if (contract?.couponPlans === undefined) {
+    if (contract.couponPlans === undefined) {
       errorNotification('請檢查此合約是否有coupon_plan')
       setLoading(false)
       return
@@ -147,6 +145,9 @@ const TraineesDayOffBlock: React.VFC = () => {
       setLoading(false)
       return
     }
+
+    const updatedStartedAt = moment(startedAt.format('YYYY-MM-DD')).toISOString()
+    const updatedEndedAt = moment(endedAt.format('YYYY-MM-DD')).toISOString()
 
     const orderProductsInput: hasura.UPDATE_ORDER_PRODUCTSVariables = {
       orderProductIds: checkedOrderProductIds,
@@ -178,6 +179,7 @@ const TraineesDayOffBlock: React.VFC = () => {
       .catch(e => {
         errorNotification('更新學員資訊錯誤，請查看console')
         console.log(e)
+        setLoading(false)
       })
   }
 
