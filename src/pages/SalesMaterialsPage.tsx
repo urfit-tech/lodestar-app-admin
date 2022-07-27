@@ -221,6 +221,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
+          app_id: { _eq: "xuemi" }
           manager_id: $sales
           member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" } }
         }
@@ -233,6 +234,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
+          app_id: { _eq: "xuemi" }
           manager_id: $sales
           member_notes: {
             author_id: $sales
@@ -251,6 +253,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
+          app_id: { _eq: "xuemi" }
           manager_id: $sales
           member_notes: {
             author_id: $sales
@@ -270,6 +273,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
+          app_id: { _eq: "xuemi" }
           manager_id: $sales
           member_notes: {
             author_id: $sales
@@ -287,6 +291,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
+          app_id: { _eq: "xuemi" }
           manager_id: $sales
           member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" } }
           member_contracts: { agreed_at: { _gt: $startedAt, _lt: $endedAt }, revoked_at: { _is_null: true } }
@@ -301,6 +306,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
+          app_id: { _eq: "xuemi" }
           manager_id: $sales
           member_notes: {
             author_id: $sales
