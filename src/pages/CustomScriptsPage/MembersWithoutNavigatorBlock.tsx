@@ -169,7 +169,7 @@ const useMemberWithoutNavigator = () => {
     data?.member_contract
       .filter(v => !memberWithNavigatorList?.some(w => w === v.member.id))
       .map(y => ({
-        id: y.id,
+        id: y.member.id,
         name: y.member.name,
         email: y.member.email,
         pictureUrl: y.member.picture_url,
