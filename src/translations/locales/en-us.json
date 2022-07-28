@@ -1588,6 +1588,7 @@
   "order.label.invoiceTarget": "Invoice Object",
   "order.label.invoiceUniformNumber": "Invoice UniformNumber",
   "order.label.invoiceUniformTitle": "Invoice Header",
+  "order.label.invoiceIssuedAt": "Invoice Issued At",
   "order.label.memberEmail": "Member Email",
   "order.label.memberName": "Member Name",
   "order.label.orderCreatedAt": "Order created time",

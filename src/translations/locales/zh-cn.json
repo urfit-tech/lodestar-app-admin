@@ -1588,6 +1588,7 @@
   "order.label.invoiceTarget": "发票对象",
   "order.label.invoiceUniformNumber": "发票统编",
   "order.label.invoiceUniformTitle": "发票抬头",
+  "order.label.invoiceIssuedAt": "发票开立时间",
   "order.label.memberEmail": "会员信箱",
   "order.label.memberName": "会员姓名",
   "order.label.orderCreatedAt": "订单建立时间",
