@@ -6515,6 +6515,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   created_at: any | null;
   updated_at: any | null;
   invoice: any | null;
+  invoice_issued_at: string | null;
   app_id: string | null;
   member_id: string | null;
   member_name: string | null;
@@ -6643,6 +6644,7 @@ export interface GET_PAYMENT_LOG_EXPORT_payment_log_export {
   order_log_id: string | null;
   status: string | null;
   invoice: any | null;
+  invoice_issued_at: any | null;
   app_id: string | null;
   member_name: string | null;
   email: string | null;
@@ -12106,7 +12108,10 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   is_notify_update: boolean;
   notified_at: any | null;
   metadata: any | null;
-  display_mode: string | null;
+  /**
+   * conceal, trial, loginToTrail, payToWatch
+   */
+  display_mode: string;
   /**
    * An object relationship
    */
@@ -28942,6 +28947,7 @@ export interface order_log_export_bool_exp {
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  invoice_issued_at?: String_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member_email?: String_comparison_exp | null;
   member_id?: String_comparison_exp | null;
@@ -28972,6 +28978,7 @@ export interface order_log_export_order_by {
   app_id?: order_by | null;
   created_at?: order_by | null;
   invoice?: order_by | null;
+  invoice_issued_at?: order_by | null;
   last_paid_at?: order_by | null;
   member_email?: order_by | null;
   member_id?: order_by | null;
@@ -29900,6 +29907,7 @@ export interface payment_log_export_bool_exp {
   app_id?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  invoice_issued_at?: timestamptz_comparison_exp | null;
   member_name?: String_comparison_exp | null;
   order_discount_total_price?: numeric_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
