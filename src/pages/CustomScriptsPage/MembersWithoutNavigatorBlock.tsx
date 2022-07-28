@@ -109,6 +109,7 @@ const useMemberWithoutNavigator = () => {
           ended_at: { _gte: "now()" }
           member: { app_id: { _eq: "xuemi" } }
         }
+        order_by: { agreed_at: desc }
       ) {
         id
         values
