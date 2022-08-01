@@ -194,6 +194,10 @@ const SaleCollectionAdminCard: React.VFC<{
           value: 'SUCCESS',
         },
         {
+          text: formatMessage(commonMessages.status.orderPaying),
+          value: 'PAYING',
+        },
+        {
           text: formatMessage(commonMessages.status.orderUnpaid),
           value: 'UNPAID',
         },
