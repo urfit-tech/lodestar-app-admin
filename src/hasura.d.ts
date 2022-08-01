@@ -606,52 +606,73 @@ export interface GET_IMPLEMENT_PRACTICESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CONTRACT_PROJECT_PLAN
+// ====================================================
+
+export interface GET_CONTRACT_PROJECT_PLAN_project_plan {
+  __typename: "project_plan";
+  id: any;
+}
+
+export interface GET_CONTRACT_PROJECT_PLAN {
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_CONTRACT_PROJECT_PLAN_project_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_EXPIRING_SOON_MEMBERS
 // ====================================================
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate_sum {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate_sum {
   __typename: "coin_status_sum_fields";
   remaining: any | null;
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate {
   __typename: "coin_status_aggregate_fields";
-  sum: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate_sum | null;
+  sum: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate_sum | null;
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate {
   __typename: "coin_status_aggregate";
-  aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate_aggregate | null;
+  aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate | null;
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate_aggregate {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate_aggregate {
   __typename: "coupon_aggregate_fields";
   count: number;
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate {
   __typename: "coupon_aggregate";
-  aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate_aggregate | null;
+  aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate_aggregate | null;
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes_author {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes_author {
   __typename: "member";
   id: string;
   name: string;
   email: string;
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes {
   __typename: "member_note";
   id: string;
   /**
    * An object relationship
    */
-  author: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes_author;
+  author: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes_author;
   created_at: any;
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member {
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member {
   __typename: "member";
   id: string;
   name: string;
@@ -661,35 +682,45 @@ export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member {
   /**
    * An aggregate relationship
    */
-  coin_statuses_aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coin_statuses_aggregate;
+  coin_statuses_aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate;
   /**
    * An aggregate relationship
    */
-  coupons_aggregate: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_coupons_aggregate;
+  coupons_aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate;
   /**
    * An array relationship
    */
-  member_notes: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member_member_notes[];
+  member_notes: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes[];
 }
 
-export interface GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment {
-  __typename: "project_plan_enrollment";
+export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log {
+  __typename: "order_log";
+  id: string;
   /**
    * An object relationship
    */
-  member: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment_member | null;
-  started_at: any | null;
+  member: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member;
+}
+
+export interface GET_EXPIRING_SOON_MEMBERS_order_product {
+  __typename: "order_product";
+  id: any;
   ended_at: any | null;
+  /**
+   * An object relationship
+   */
+  order_log: GET_EXPIRING_SOON_MEMBERS_order_product_order_log;
 }
 
 export interface GET_EXPIRING_SOON_MEMBERS {
   /**
-   * fetch data from the table: "project_plan_enrollment"
+   * fetch data from the table: "order_product"
    */
-  project_plan_enrollment: GET_EXPIRING_SOON_MEMBERS_project_plan_enrollment[];
+  order_product: GET_EXPIRING_SOON_MEMBERS_order_product[];
 }
 
 export interface GET_EXPIRING_SOON_MEMBERSVariables {
+  orderProducts: string[];
   expiredAt: any;
 }
 
