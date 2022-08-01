@@ -28,6 +28,7 @@ const messages = defineMessages({
 const fieldOrderStatuses = [
   'UNPAID',
   'SUCCESS',
+  'PAYING',
   'FAILED',
   'REFUND',
   'EXPIRED',
@@ -532,6 +533,9 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             </Select.Option>
             <Select.Option value="PARTIAL_PAID">{formatMessage(commonMessages.status.orderPartialPaid)}</Select.Option>
             <Select.Option value="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
+            <Select.Option value="PAYING" disabled={selectedField === 'lastPaidAt'}>
+              {formatMessage(commonMessages.status.orderPaying)}
+            </Select.Option>
             <Select.Option value="FAILED" disabled={selectedField === 'lastPaidAt'}>
               {formatMessage(commonMessages.status.orderFailed)}
             </Select.Option>
