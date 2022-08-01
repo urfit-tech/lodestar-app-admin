@@ -90,6 +90,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             formatMessage(orderMessages.label.paymentLogNo),
             formatMessage(orderMessages.label.orderLogStatus),
             formatMessage(orderMessages.label.paymentLogGateway),
+            formatMessage(orderMessages.label.paymentLogDetails),
             formatMessage(orderMessages.label.orderLogCreatedAt),
             formatMessage(orderMessages.label.paymentLogPaidAt),
             formatMessage(orderMessages.label.memberName),
@@ -100,7 +101,6 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             formatMessage(orderMessages.label.orderProductTotalPrice),
             formatMessage(orderMessages.label.orderDiscountTotalPrice),
             formatMessage(orderMessages.label.orderLogTotalPrice),
-            formatMessage(orderMessages.label.paymentLogDetails),
             enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
             enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingNote) : undefined,
             enabledModules.member_assignment ? formatMessage(orderMessages.label.orderLogExecutor) : undefined,
@@ -114,6 +114,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             formatMessage(orderMessages.label.invoiceUniformTitle),
             formatMessage(orderMessages.label.invoiceAddress),
             enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
+            enabledModules.invoice ? formatMessage(orderMessages.label.invoiceIssuedAt) : undefined,
             formatMessage(orderMessages.label.invoiceStatus),
           ].filter(v => typeof v !== 'undefined'),
           ...orderLogs.map(orderLog =>
@@ -122,6 +123,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               orderLog.payment_no?.split('\\n').join('\n') || '',
               orderLog.status,
               orderLog.payment_gateway,
+              orderLog.payment_options?.split('\\n').join('\n') || '',
               dateFormatter(orderLog.created_at),
               orderLog.paid_at
                 ?.split('\\n')
@@ -140,7 +142,6 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                   (orderLog.shipping?.fee || 0),
                 0,
               ),
-              orderLog.payment_options?.split('\\n').join('\n') || '',
               enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
@@ -153,7 +154,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               orderLog.invoice?.uniformNumber || '',
               orderLog.invoice?.uniformTitle || '',
               `${orderLog.invoice?.postCode || ''} ${orderLog.invoice?.address || ''}`,
-              enabledModules.invoice ? orderLog.invoice?.id || '' : undefined,
+              enabledModules.invoice
+                ? orderLog.invoice?.id || orderLog.invoice?.invoiceNumber || orderLog.invoice?.InvoiceNumber || ''
+                : undefined,
+              enabledModules.invoice
+                ? (orderLog.invoice_issued_at && dateFormatter(orderLog.invoice_issued_at)) || ''
+                : undefined,
               !orderLog.invoice?.status
                 ? formatMessage(messages.invoicePending)
                 : orderLog.invoice?.status === 'SUCCESS'
@@ -328,6 +334,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             formatMessage(orderMessages.label.orderLogId),
             formatMessage(orderMessages.label.paymentLogNo),
             enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
+            enabledModules.invoice ? formatMessage(orderMessages.label.invoiceIssuedAt) : undefined,
             formatMessage(orderMessages.label.orderLogStatus),
             formatMessage(orderMessages.label.orderProductName),
             formatMessage(orderMessages.label.memberName),
@@ -343,7 +350,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             [
               paymentLog.order_log_id,
               paymentLog.payment_log_no,
-              enabledModules.invoice ? paymentLog.invoice?.id || '' : undefined,
+              enabledModules.invoice
+                ? paymentLog.invoice?.id || paymentLog.invoice?.invoiceNumber || paymentLog.invoice?.InvoiceNumber || ''
+                : undefined,
+              enabledModules.invoice && paymentLog.invoice_issued_at != null
+                ? dateFormatter(paymentLog.invoice_issued_at)
+                : undefined,
               paymentLog.status,
               paymentLog.order_products?.split('\\n').join('\n'),
               paymentLog.member_name,
@@ -560,6 +572,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       created_at
       updated_at
       invoice
+      invoice_issued_at
       app_id
       member_id
       member_name
@@ -619,6 +632,7 @@ const GET_PAYMENT_LOG_EXPORT = gql`
       order_log_id
       status
       invoice
+      invoice_issued_at
       app_id
       member_name
       email

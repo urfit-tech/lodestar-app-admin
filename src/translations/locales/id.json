@@ -1588,6 +1588,7 @@
   "order.label.invoiceTarget": "Objek Faktur",
   "order.label.invoiceUniformNumber": "Invoice UniformNumber",
   "order.label.invoiceUniformTitle": "Tajuk Faktur",
+  "order.label.invoiceIssuedAt": "Waktu penerbitan faktur",
   "order.label.memberEmail": "Email Anggota",
   "order.label.memberName": "Nama Anggota",
   "order.label.orderCreatedAt": "Waktu pembuatan pesanan",

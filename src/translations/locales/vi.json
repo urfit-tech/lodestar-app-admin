@@ -1588,6 +1588,7 @@
   "order.label.invoiceTarget": " Đối tượng Hóa đơn ",
   "order.label.invoiceUniformNumber": " Invoice UniformNumber ",
   "order.label.invoiceUniformTitle": " Tiêu đề hóa đơn ",
+  "order.label.invoiceIssuedAt": "Thời gian phát hành hóa đơn",
   "order.label.memberEmail": " Email Thành viên ",
   "order.label.memberName": " Tên Thành viên ",
   "order.label.orderCreatedAt": "Thời gian thành lập đơn đặt hàng",
