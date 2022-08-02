@@ -41,10 +41,7 @@ type MemberCertificate = {
   expiredAt: Date | null
 }
 
-const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefetch?: () => void }> = ({
-  certificateId,
-  onRefetch,
-}) => {
+const CertificateEligibilityListBlock: React.FC<{ certificateId: string }> = ({ certificateId }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
@@ -63,6 +60,7 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
     refetch,
     loadMoreMemberCertificates,
   } = useMemberTemplate(certificateId, { ...fieldFilter })
+
   const [deleteMemberCertificate] = useMutation<
     hasura.DELETE_MEMBER_CERTIFICATE,
     hasura.DELETE_MEMBER_CERTIFICATEVariables
@@ -87,7 +85,7 @@ const CertificateEligibilityListBlock: React.FC<{ certificateId: string; onRefet
           memberCertificateId: memberCertificateId,
         },
       })
-        .then(() => onRefetch?.())
+        .then(() => refetch())
         .catch(handleError)
   }
 
