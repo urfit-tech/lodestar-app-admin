@@ -318,7 +318,7 @@ const OrderProductCheckBoxes: React.VFC<{
       }}
     >
       {orderProductOptions.map(option => (
-        <StyledCheckbox key={option} value={option} checked={true}>
+        <StyledCheckbox key={option} value={option}>
           {option}
         </StyledCheckbox>
       ))}
