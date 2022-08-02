@@ -82,14 +82,14 @@ const successNotification = (msg: string) => {
 
 const TraineesDayOffBlock: React.VFC = () => {
   const { formatMessage } = useIntl()
-  const [memberId, setMemberId] = useState('')
+  const [memberId, setMemberId] = useState<string>('')
   const [contract, setContract] = useState<MemberContract>()
-  const [orderId, setOrderId] = useState('')
-  const [memberCardProductId, setMemberCardProductId] = useState('')
+  const [orderId, setOrderId] = useState<string>('')
+  const [memberCardProductId, setMemberCardProductId] = useState<string>('')
   const [checkedOrderProductIds, setCheckedOrderProductIds] = useState<string[]>([])
   const [startedAt, setStartedAt] = useState<Moment | null>()
   const [endedAt, setEndedAt] = useState<Moment | null>()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const [updateOrderProducts] = useMutation<hasura.UPDATE_ORDER_PRODUCTS, hasura.UPDATE_ORDER_PRODUCTSVariables>(
     UPDATE_ORDER_PRODUCTS,
@@ -178,6 +178,7 @@ const TraineesDayOffBlock: React.VFC = () => {
       })
       .catch(e => {
         errorNotification('更新學員資訊錯誤，請查看console')
+        // 此console.log是給小狼看的
         console.log(e)
         setLoading(false)
       })
@@ -237,6 +238,7 @@ const ContractSelect: React.VFC<{
 }> = ({ memberId, setContract, setOrderId }) => {
   const { contractsLoading, contractsError, memberContracts } = useMemberContractExpirationDate(memberId)
   if (contractsError) {
+    // 此console.log是給小狼看的
     console.log(contractsError)
     return <h1>合約讀取錯誤，請查看console</h1>
   }
@@ -268,6 +270,7 @@ const OrderProductCheckBoxes: React.VFC<{
 }> = ({ orderId, startedAt, endedAt, setMemberCardProductId, setCheckedOrderProductIds, setStartedAt, setEndedAt }) => {
   const { orderProductsLoading, orderProductsError, orderProducts } = useContractOrderProduct(orderId)
   if (orderProductsError) {
+    // 此console.log是給小狼看的
     console.log(orderProductsError)
     return <h1>訂單產品讀取錯誤，請查看console</h1>
   }
