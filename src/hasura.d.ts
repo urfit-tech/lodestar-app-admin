@@ -779,7 +779,27 @@ export interface GET_VALID_MEMBER_CONTRACT {
   /**
    * fetch data from the table: "member_contract"
    */
-  member_contract: GET_VALID_MEMBER_CONTRACT_member_contract[];
+  member_contract: GET_VALID_MEMBER_CONTRACT_member_contract[]; 
+}
+// GraphQL query operation: GET_MEMBER_CONTRACTS_EXPIRATION_DATE
+// ====================================================
+
+export interface GET_MEMBER_CONTRACTS_EXPIRATION_DATE_member_contract {
+  __typename: "member_contract";
+  id: any;
+  values: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_MEMBER_CONTRACTS_EXPIRATION_DATE {
+  /**
+   * fetch data from the table: "member_contract"
+   */
+  member_contract: GET_MEMBER_CONTRACTS_EXPIRATION_DATE_member_contract[];
+}
+
+export interface GET_MEMBER_CONTRACTS_EXPIRATION_DATEVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -815,6 +835,119 @@ export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY {
 
 export interface GET_MEMBER_WITH_NAVIGATOR_OR_ABILITYVariables {
   memberIds: string[];
+}
+// GraphQL query operation: GET_CONTRACT_ORDER_PRODUCTS
+// ====================================================
+
+export interface GET_CONTRACT_ORDER_PRODUCTS_order_product {
+  __typename: "order_product";
+  id: any;
+  product_id: string;
+  name: string;
+  price: any;
+  started_at: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_CONTRACT_ORDER_PRODUCTS {
+  /**
+   * fetch data from the table: "order_product"
+   */
+  order_product: GET_CONTRACT_ORDER_PRODUCTS_order_product[];
+}
+
+export interface GET_CONTRACT_ORDER_PRODUCTSVariables {
+  orderId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCTS
+// ====================================================
+
+export interface UPDATE_ORDER_PRODUCTS_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCTS {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_ORDER_PRODUCTS_update_order_product | null;
+}
+
+export interface UPDATE_ORDER_PRODUCTSVariables {
+  orderProductIds: any[];
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_COIN_LOGS
+// ====================================================
+
+export interface UPDATE_COIN_LOGS_update_coin_log {
+  __typename: "coin_log_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COIN_LOGS {
+  /**
+   * update data of the table: "coin_log"
+   */
+  update_coin_log: UPDATE_COIN_LOGS_update_coin_log | null;
+}
+
+export interface UPDATE_COIN_LOGSVariables {
+  coinLogIds: any[];
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_COUPON_PLANS
+// ====================================================
+
+export interface UPDATE_COUPON_PLANS_update_coupon_plan {
+  __typename: "coupon_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COUPON_PLANS {
+  /**
+   * update data of the table: "coupon_plan"
+   */
+  update_coupon_plan: UPDATE_COUPON_PLANS_update_coupon_plan | null;
+}
+
+export interface UPDATE_COUPON_PLANSVariables {
+  couponPlanIds: any[];
+  startedAt: any;
+  endedAt: any;
 }
 
 /* tslint:disable */
