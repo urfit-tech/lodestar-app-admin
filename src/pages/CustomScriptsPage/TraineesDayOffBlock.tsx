@@ -175,9 +175,8 @@ const TraineesDayOffBlock: React.VFC = () => {
         setLoading(false)
       })
       .catch(e => {
-        errorNotification('更新學員資訊錯誤，請查看console')
-        // 此console.log是給小狼看的
-        console.log(e)
+        errorNotification('更新學員資訊錯誤，請聯繫工程師')
+        alert(e)
         setLoading(false)
       })
   }
@@ -213,6 +212,7 @@ const TraineesDayOffBlock: React.VFC = () => {
         <Form.Item label="勾選訂單產品">
           <OrderProductCheckBoxes
             orderId={orderId}
+            checkedOrderProductIds={checkedOrderProductIds}
             startedAt={startedAt}
             endedAt={endedAt}
             setMemberCardProductId={setMemberCardProductId}
@@ -244,9 +244,8 @@ const ContractSelect: React.VFC<{
 }> = ({ memberId, setContract, setOrderId, setMemberCardProductId, setCheckedOrderProductIds }) => {
   const { contractsLoading, contractsError, memberContracts } = useMemberContractExpirationDate(memberId)
   if (contractsError) {
-    // 此console.log是給小狼看的
-    console.log(contractsError)
-    return <h1>合約讀取錯誤，請查看console</h1>
+    alert(contractsError)
+    return <h1>合約讀取錯誤，請聯繫工程師</h1>
   }
   return (
     <Select
@@ -272,18 +271,27 @@ const ContractSelect: React.VFC<{
 
 const OrderProductCheckBoxes: React.VFC<{
   orderId: string
+  checkedOrderProductIds: Array<string>
   startedAt?: Moment | null
   endedAt?: Moment | null
   setMemberCardProductId: (memberCardProductId: string) => void
   setCheckedOrderProductIds: (checkedOrderProductIds: Array<string>) => void
   setStartedAt: (startDate: Moment) => void
   setEndedAt: (endDate: Moment) => void
-}> = ({ orderId, startedAt, endedAt, setMemberCardProductId, setCheckedOrderProductIds, setStartedAt, setEndedAt }) => {
+}> = ({
+  orderId,
+  checkedOrderProductIds,
+  startedAt,
+  endedAt,
+  setMemberCardProductId,
+  setCheckedOrderProductIds,
+  setStartedAt,
+  setEndedAt,
+}) => {
   const { orderProductsLoading, orderProductsError, orderProducts } = useContractOrderProduct(orderId)
   if (orderProductsError) {
-    // 此console.log是給小狼看的
-    console.log(orderProductsError)
-    return <h1>訂單產品讀取錯誤，請查看console</h1>
+    alert(orderProductsError)
+    return <h1>訂單產品讀取錯誤，請聯繫工程師</h1>
   }
 
   if (orderProductsLoading) {
@@ -291,24 +299,25 @@ const OrderProductCheckBoxes: React.VFC<{
   }
 
   const orderProductOptions = orderProducts.map(product => {
-    if (!startedAt && !endedAt && product.productId.includes('Card_')) {
-      setStartedAt(moment(product.startedAt).tz('Asia/Taipei'))
-      setEndedAt(moment(product.endedAt).tz('Asia/Taipei'))
-    }
     if (product.productId.includes('Card_')) {
+      if (!startedAt && !endedAt) {
+        setStartedAt(moment(product.startedAt).tz('Asia/Taipei'))
+        setEndedAt(moment(product.endedAt).tz('Asia/Taipei'))
+      }
       setMemberCardProductId(product.id)
-      return `${product.name} - ${product.id.split('-')?.[0]} (${product.price}元)`
+      return { id: product.id, name: `${product.name} (${product.price}元)` }
     }
-    return `${product.name} (${product.price}元)`
+    return { id: product.id, name: `${product.name} (${product.price}元)` }
   })
 
   return (
     <Checkbox.Group
+      value={checkedOrderProductIds}
       onChange={v => {
         const checkedOrderProducts = orderProducts.filter(product => {
           let checkedId = ''
-          v.forEach(productName => {
-            if (typeof productName === 'string' && productName.includes(product.name)) {
+          v.forEach(checkedOrderProductId => {
+            if (typeof checkedOrderProductId === 'string' && product.id === checkedOrderProductId) {
               checkedId = product.id
             }
           })
@@ -317,11 +326,13 @@ const OrderProductCheckBoxes: React.VFC<{
         setCheckedOrderProductIds(checkedOrderProducts.map(product => product.id))
       }}
     >
-      {orderProductOptions.map(option => (
-        <StyledCheckbox key={option} value={option}>
-          {option}
-        </StyledCheckbox>
-      ))}
+      {orderProductOptions.map(option => {
+        return (
+          <StyledCheckbox key={option.id} value={option.id}>
+            {option.name}
+          </StyledCheckbox>
+        )
+      })}
     </Checkbox.Group>
   )
 }
