@@ -1167,6 +1167,7 @@ export const orderMessages = {
     invoiceAddress: { id: 'order.label.invoiceAddress', defaultMessage: '發票地址' },
     invoiceId: { id: 'order.label.invoiceId', defaultMessage: '發票編號' },
     invoiceStatus: { id: 'order.label.invoiceStatus', defaultMessage: '發票狀態' },
+    invoiceIssuedAt: { id: 'order.label.invoiceIssuedAt', defaultMessage: '發票開立時間' },
   }),
 }
 
