@@ -96,9 +96,6 @@ const ProgramContentAdminItem: React.FC<{
         {programContent.metadata?.withInvalidQuestion && (
           <Icon className="mr-3" component={() => <ExclamationCircleIcon />} />
         )}
-        {programContent.listPrice === 0 && (
-          <StyledDisplayModeTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledDisplayModeTag>
-        )}
 
         {programContent.displayMode === 'conceal' ? (
           <StyledDisplayModeTag className="mr-3" variant="conceal">
