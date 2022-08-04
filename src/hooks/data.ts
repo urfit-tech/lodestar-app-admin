@@ -250,7 +250,7 @@ export const useOrderPhysicalProductLog = (memberId?: string) => {
           delivered_at
           deliver_message
           shipping
-          invoice
+          invoice_options
           order_products(
             where: {
               product_id: { _similar: "(ProjectPlan|MerchandiseSpec)%" }
@@ -311,14 +311,14 @@ export const useOrderPhysicalProductLog = (memberId?: string) => {
           .filter(orderLog => orderLog.order_products.length && orderLog.shipping?.address)
           .map(v => ({
             id: v.id,
-            member: v.member?.name || v.invoice?.name || '',
+            member: v.member?.name || v.invoice_options?.name || '',
             createdAt: v.created_at,
             updatedAt: v.updated_at,
             lastPaidAt: v.last_paid_at,
             deliveredAt: v.delivered_at,
             deliverMessage: v.deliver_message,
             shipping: v.shipping,
-            invoice: v.invoice,
+            invoice: v.invoice_options,
             orderPhysicalProducts: v.order_products.map(orderPhysicalProduct => ({
               key: `${v.id}_${orderPhysicalProduct.name}`,
               id: orderPhysicalProduct.id,

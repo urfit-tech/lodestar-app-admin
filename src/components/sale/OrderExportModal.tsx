@@ -145,26 +145,37 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
-              orderLog.invoice?.name || '',
-              orderLog.invoice?.email || '',
-              orderLog.invoice?.phone || orderLog.invoice?.buyerPhone || '',
-              orderLog.invoice?.donationCode ? '捐贈' : orderLog.invoice?.uniformNumber ? '公司' : '個人',
-              orderLog.invoice?.donationCode || '',
-              orderLog.invoice?.phoneBarCode ? '手機' : orderLog.invoice?.citizenCode ? '自然人憑證' : '',
-              orderLog.invoice?.uniformNumber || '',
-              orderLog.invoice?.uniformTitle || '',
-              `${orderLog.invoice?.postCode || ''} ${orderLog.invoice?.address || ''}`,
+              orderLog.invoice_options?.name || '',
+              orderLog.invoice_options?.email || '',
+              orderLog.invoice_options?.phone || orderLog.invoice_options?.buyerPhone || '',
+              orderLog.invoice_options?.donationCode
+                ? '捐贈'
+                : orderLog.invoice_options?.uniformNumber
+                ? '公司'
+                : '個人',
+              orderLog.invoice_options?.donationCode || '',
+              orderLog.invoice_options?.phoneBarCode
+                ? '手機'
+                : orderLog.invoice_options?.citizenCode
+                ? '自然人憑證'
+                : '',
+              orderLog.invoice_options?.uniformNumber || '',
+              orderLog.invoice_options?.uniformTitle || '',
+              `${orderLog.invoice_options?.postCode || ''} ${orderLog.invoice_options?.address || ''}`,
               enabledModules.invoice
-                ? orderLog.invoice?.id || orderLog.invoice?.invoiceNumber || orderLog.invoice?.InvoiceNumber || ''
+                ? orderLog.invoice_options?.id ||
+                  orderLog.invoice_options?.invoiceNumber ||
+                  orderLog.invoice_options?.InvoiceNumber ||
+                  ''
                 : undefined,
               enabledModules.invoice
                 ? (orderLog.invoice_issued_at && dateFormatter(orderLog.invoice_issued_at)) || ''
                 : undefined,
-              !orderLog.invoice?.status
+              !orderLog.invoice_options?.status
                 ? formatMessage(messages.invoicePending)
-                : orderLog.invoice?.status === 'SUCCESS'
+                : orderLog.invoice_options?.status === 'SUCCESS'
                 ? formatMessage(messages.invoiceSuccess)
-                : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice?.status }),
+                : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice_options?.status }),
             ].filter(v => typeof v !== 'undefined'),
           ),
         ]
@@ -351,7 +362,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               paymentLog.order_log_id,
               paymentLog.payment_log_no,
               enabledModules.invoice
-                ? paymentLog.invoice?.id || paymentLog.invoice?.invoiceNumber || paymentLog.invoice?.InvoiceNumber || ''
+                ? paymentLog.invoice_options?.id ||
+                  paymentLog.invoice_options?.invoiceNumber ||
+                  paymentLog.invoice_options?.InvoiceNumber ||
+                  ''
                 : undefined,
               enabledModules.invoice && paymentLog.invoice_issued_at != null
                 ? dateFormatter(paymentLog.invoice_issued_at)
@@ -370,11 +384,11 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                   (paymentLog.shipping?.fee || 0),
                 0,
               ),
-              !paymentLog.invoice?.status
+              !paymentLog.invoice_options?.status
                 ? formatMessage(messages.invoicePending)
-                : paymentLog.invoice?.status === 'SUCCESS'
+                : paymentLog.invoice_options?.status === 'SUCCESS'
                 ? formatMessage(messages.invoiceSuccess)
-                : formatMessage(messages.invoiceFailed, { errorCode: paymentLog.invoice?.status }),
+                : formatMessage(messages.invoiceFailed, { errorCode: paymentLog.invoice_options?.status }),
             ].filter(v => typeof v !== 'undefined'),
           ),
         ]
@@ -571,7 +585,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       status
       created_at
       updated_at
-      invoice
+      invoice_options
       invoice_issued_at
       app_id
       member_id
@@ -615,7 +629,7 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
       id
       order_log {
         id
-        invoice
+        invoice_options
       }
       type
       target
@@ -631,7 +645,7 @@ const GET_PAYMENT_LOG_EXPORT = gql`
       paid_at
       order_log_id
       status
-      invoice
+      invoice_options
       invoice_issued_at
       app_id
       member_name
