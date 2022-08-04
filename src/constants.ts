@@ -7,15 +7,15 @@ export const paymentMethods: {
   hidden?: boolean
 }[] = [
   {
-    method: '學米仲信',
+    method: '學米仲信202208',
     feeWithInstallmentPlans: [
       { installmentPlan: 3, fee: 0.03 },
-      { installmentPlan: 6, fee: 0.03 },
-      { installmentPlan: 12, fee: 0.05 },
-      { installmentPlan: 18, fee: 0.055 },
-      { installmentPlan: 24, fee: 0.07 },
-      { installmentPlan: 30, fee: 0.085 },
-      { installmentPlan: 36, fee: 0.11 },
+      { installmentPlan: 6, fee: 0.0225 },
+      { installmentPlan: 12, fee: 0.0405 },
+      { installmentPlan: 18, fee: 0.0455 },
+      { installmentPlan: 24, fee: 0.0575 },
+      { installmentPlan: 30, fee: 0.0675 },
+      { installmentPlan: 36, fee: 0.0975 },
     ],
   },
   {
@@ -43,18 +43,6 @@ export const paymentMethods: {
   },
 
   { method: '富比世', feeWithInstallmentPlans: [] },
-  {
-    method: '匠說仲信',
-    feeWithInstallmentPlans: [
-      { installmentPlan: 3, fee: 0.03 },
-      { installmentPlan: 6, fee: 0.03 },
-      { installmentPlan: 12, fee: 0.05 },
-      { installmentPlan: 18, fee: 0.07 },
-      { installmentPlan: 24, fee: 0.09 },
-      { installmentPlan: 30, fee: 0.1 },
-      { installmentPlan: 36, fee: 0.13 },
-    ],
-  },
   { method: '匯款', feeWithInstallmentPlans: [] },
   { method: '現金', feeWithInstallmentPlans: [] },
   {
