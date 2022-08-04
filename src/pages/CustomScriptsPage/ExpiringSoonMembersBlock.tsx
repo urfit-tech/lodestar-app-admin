@@ -2,11 +2,13 @@ import { ExportOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-tw'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import { dateFormatter, downloadCSV, toCSV } from 'lodestar-app-admin/src/helpers'
-import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -48,24 +50,25 @@ type EnrolledMemberProps = {
 }
 
 const ExpiringSoonMembersBlock: React.VFC = () => {
-  const [expiredAt, setExpiredAt] = useState(moment().add(1, 'weeks').endOf('day'))
+  const [expiredAt, setExpiredAt] = useState(dayjs().add(1, 'weeks').endOf('day'))
+  dayjs.extend(relativeTime)
 
   const handleChange = (value: string) => {
     switch (value) {
       case 'one-week':
-        setExpiredAt(moment().add(1, 'weeks').endOf('day'))
+        setExpiredAt(dayjs().add(1, 'day').endOf('day'))
         break
       case 'two-weeks':
-        setExpiredAt(moment().add(2, 'weeks').endOf('day'))
+        setExpiredAt(dayjs().add(2, 'weeks').endOf('day'))
         break
       case 'one-month':
-        setExpiredAt(moment().add(1, 'months').endOf('day'))
+        setExpiredAt(dayjs().add(1, 'months').endOf('day'))
         break
       case 'two-months':
-        setExpiredAt(moment().add(2, 'months').endOf('day'))
+        setExpiredAt(dayjs().add(2, 'months').endOf('day'))
         break
       case 'three-months':
-        setExpiredAt(moment().add(3, 'months').endOf('day'))
+        setExpiredAt(dayjs().add(3, 'months').endOf('day'))
         break
     }
   }
@@ -88,7 +91,7 @@ const ExpiringSoonMembersBlock: React.VFC = () => {
 }
 
 const ResultBlock: React.VFC<{
-  expiredAt: Moment
+  expiredAt: dayjs.Dayjs
 }> = ({ expiredAt }) => {
   const { loadingMembers, errorMembers, members } = useExpiringSoonMembers(expiredAt)
   if (loadingMembers) {
@@ -146,7 +149,7 @@ const ResultBlock: React.VFC<{
         <>
           <span>{dateFormatter(record.endedAt)}</span>
           <br />
-          <span>剩下約 {moment(record.endedAt).diff(moment(), 'days')} 天</span>
+          <span>剩下約 {dayjs(record.endedAt).diff(dayjs(), 'days')} 天</span>
         </>
       ),
     },
@@ -163,7 +166,7 @@ const ResultBlock: React.VFC<{
           <>
             <span>{dateFormatter(record.lastMemberNote.createdAt)}</span>
             <br />
-            <span>{moment(record.lastMemberNote.createdAt).fromNow()}</span>
+            <span>{dayjs(record.lastMemberNote.createdAt).locale('zh-tw').fromNow()}</span>
           </>
         ) : null,
     },
@@ -186,79 +189,92 @@ const ResultBlock: React.VFC<{
   )
 }
 
-const useExpiringSoonMembers = (expiredAt: Moment) => {
-  const { loading, error, data, refetch } = useQuery<
+const useExpiringSoonMembers = (expiredAt: dayjs.Dayjs) => {
+  const { data: contractProjectPlanData } = useQuery<hasura.GET_CONTRACT_PROJECT_PLAN>(gql`
+    query GET_CONTRACT_PROJECT_PLAN {
+      project_plan(where: { title: { _like: "%私塾方案%" } }) {
+        id
+      }
+    }
+  `)
+
+  const contractProjectPlanIDs = contractProjectPlanData?.project_plan.map(v => `ProjectPlan_${v.id}`) || []
+
+  const { loading, data, error, refetch } = useQuery<
     hasura.GET_EXPIRING_SOON_MEMBERS,
     hasura.GET_EXPIRING_SOON_MEMBERSVariables
   >(
     gql`
-      query GET_EXPIRING_SOON_MEMBERS($expiredAt: timestamptz!) {
-        project_plan_enrollment(
-          where: { project_plan: { title: { _like: "%私塾方案%" } }, ended_at: { _lte: $expiredAt } }
-          order_by: [{ ended_at: asc }]
+      query GET_EXPIRING_SOON_MEMBERS($orderProducts: [String!]!, $expiredAt: timestamptz!) {
+        order_product(
+          where: {
+            product_id: { _in: $orderProducts }
+            delivered_at: { _lte: "now()" }
+            ended_at: { _gte: "now()", _lte: $expiredAt }
+          }
+          order_by: { ended_at: asc }
         ) {
-          member {
+          id
+          ended_at
+          order_log {
             id
-            name
-            username
-            email
-            picture_url
-            coin_statuses_aggregate {
-              aggregate {
-                sum {
-                  remaining
+            member {
+              id
+              name
+              username
+              email
+              picture_url
+              coin_statuses_aggregate {
+                aggregate {
+                  sum {
+                    remaining
+                  }
                 }
               }
-            }
-            coupons_aggregate(
-              where: {
-                status: { outdated: { _eq: false }, used: { _eq: false } }
-                coupon_code: { coupon_plan: { title: { _eq: "學米諮詢券" } } }
+              coupons_aggregate(
+                where: {
+                  status: { outdated: { _eq: false }, used: { _eq: false } }
+                  coupon_code: { coupon_plan: { title: { _eq: "學米諮詢券" } } }
+                }
+              ) {
+                aggregate {
+                  count
+                }
               }
-            ) {
-              aggregate {
-                count
-              }
-            }
-            member_notes(order_by: [{ created_at: desc }], limit: 1) {
-              id
-              author {
+              member_notes(order_by: [{ created_at: desc }], limit: 1) {
                 id
-                name
-                email
+                author {
+                  id
+                  name
+                  email
+                }
+                created_at
               }
-              created_at
             }
           }
-          started_at
-          ended_at
         }
       }
     `,
-    {
-      variables: {
-        expiredAt,
-      },
-    },
+    { variables: { orderProducts: contractProjectPlanIDs, expiredAt } },
   )
 
   const members: EnrolledMemberProps[] =
-    data?.project_plan_enrollment.map(v => ({
-      id: v.member?.id || '',
-      name: v.member?.name || v.member?.username || '',
-      email: v.member?.email || '',
-      pictureUrl: v.member?.picture_url || null,
-      remainingCoins: v.member?.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
-      availableCouponsCount: v.member?.coupons_aggregate.aggregate?.count || 0,
-      lastMemberNote: v.member?.member_notes[0]
+    data?.order_product.map(v => ({
+      id: v.order_log.member?.id || '',
+      name: v.order_log.member?.name || v.order_log.member?.username || '',
+      email: v.order_log.member?.email || '',
+      pictureUrl: v.order_log.member?.picture_url || null,
+      remainingCoins: v.order_log.member?.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
+      availableCouponsCount: v.order_log.member?.coupons_aggregate.aggregate?.count || 0,
+      lastMemberNote: v.order_log.member?.member_notes[0]
         ? {
-            id: v.member.member_notes[0].id,
+            id: v.order_log.member.member_notes[0].id,
             author: {
-              id: v.member.member_notes[0].author.id,
-              name: v.member.member_notes[0].author.name,
-              email: v.member.member_notes[0].author.email,
+              id: v.order_log.member.member_notes[0].author.id,
+              name: v.order_log.member.member_notes[0].author.name,
+              email: v.order_log.member.member_notes[0].author.email,
             },
-            createdAt: new Date(v.member.member_notes[0].created_at),
+            createdAt: new Date(v.order_log.member.member_notes[0].created_at),
           }
         : null,
       endedAt: new Date(v.ended_at),

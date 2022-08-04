@@ -10,6 +10,7 @@ import DeadlinePracticesBlock from './DeadlinePracticesBlock'
 import ExpiringSoonMembersBlock from './ExpiringSoonMembersBlock'
 import ExtraPermissionsMembersBlock from './ExtraPermissionsMembersBlock'
 import MembersWithoutNavigatorBlock from './MembersWithoutNavigatorBlock'
+import TraineesDayOffBlock from './TraineesDayOffBlock'
 
 const CustomScriptsPage: React.VFC = () => {
   const { isAuthenticating, currentUserRole } = useAuth()
@@ -36,6 +37,7 @@ const CustomScriptsPage: React.VFC = () => {
           <Select.Option value="expiring-soon-members">即將到期的私塾學員</Select.Option>
           <Select.Option value="extra-permissions-members">擁有其他權限的會員</Select.Option>
           <Select.Option value="members-without-navigator">沒有領航員的學員</Select.Option>
+          <Select.Option value="trainees-day-off">學員請假</Select.Option>
         </Select>
       </Form.Item>
 
@@ -43,6 +45,7 @@ const CustomScriptsPage: React.VFC = () => {
       {selectedScript === 'expiring-soon-members' && <ExpiringSoonMembersBlock />}
       {selectedScript === 'extra-permissions-members' && <ExtraPermissionsMembersBlock />}
       {selectedScript === 'members-without-navigator' && <MembersWithoutNavigatorBlock />}
+      {selectedScript === 'trainees-day-off' && <TraineesDayOffBlock />}
     </AdminLayout>
   )
 }
