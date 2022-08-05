@@ -14,6 +14,8 @@ export const commonMessages = {
     edit: { id: 'common.ui.edit', defaultMessage: '編輯' },
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
     delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
+    duplicate: { id: 'common.ui.duplicate', defaultMessage: '複製' },
+    rename: { id: 'common.ui.rename', defaultMessage: '重新命名' },
     deleteProgram: { id: 'common.ui.deleteProgram', defaultMessage: '刪除課程' },
     deletePost: { id: 'common.ui.deletePost', defaultMessage: '刪除文章' },
     login: { id: 'common.ui.login', defaultMessage: '登入' },
@@ -1393,3 +1395,34 @@ export const codeMessages = defineMessages({
     defaultMessage: 'payment proceed is error',
   },
 })
+
+export const questionLibraryMessage = {
+  input: defineMessages({
+    untitledQuestionLibrary: {
+      id: 'questionLibrary.input.untitledQuestionLibrary',
+      defaultMessage: '未命名題庫',
+    },
+    addQuestionLibrary: {
+      id: 'questionLibrary.input.addQuestionLibrary',
+      defaultMessage: '建立題庫',
+    },
+    untitledQuestionGroup: {
+      id: 'questionLibrary.input.untitledQuestionGroup',
+      defaultMessage: '未命名題組',
+    },
+    addQuestionGroup: {
+      id: 'questionLibrary.input.addQuestionGroup',
+      defaultMessage: '新增題組',
+    },
+  }),
+  label: defineMessages({
+    noQuestionLibrary: { id: 'questionLibrary.label.noQuestionLibrary', defaultMessage: '尚未建立任何題庫' },
+    latestUpdatedAt: { id: 'questionLibrary.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
+    totalQuestions: { id: 'questionLibrary.label.totalQuestions', defaultMessage: '總題數' },
+    totalQuestionGroups: { id: 'questionLibrary.label.totalQuestionGroups', defaultMessage: '題組數' },
+    basicFormTitle: { id: 'questionLibrary.label.basicFormTitle', defaultMessage: '題庫名稱' },
+  }),
+  text: defineMessages({
+    successDeletedQuestionLibrary: { id: 'questionLibrary.label.successDeletedQuestionLibrary', defaultMessage: '刪除題庫成功' },
+  })
+}

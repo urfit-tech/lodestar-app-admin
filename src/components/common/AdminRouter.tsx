@@ -128,6 +128,28 @@ export const routesProps = {
     authenticated: true,
   },
 
+  // question_library
+  question_library_management: {
+    path: '/question-libraries',
+    pageName: 'QuestionLibraryCollectionPage',
+    authenticated: true,
+  },
+  question_library: {
+    path: '/question-libraries/:questionLibraryId',
+    pageName: 'QuestionLibraryAdminPage',
+    authenticated: true,
+  },
+  question_group_management: {
+    path: '/question-groups',
+    pageName: 'QuestionGroupsCollectionPage',
+    authenticated: true,
+  },
+  question_group: {
+    path: '/question-groups/:questionGroupId',
+    pageName: 'QuestionGroupsCollectionPage',
+    authenticated: true,
+  },
+
   //project
   project: {
     path: '/projects/:projectId',

@@ -210,6 +210,16 @@ const pageMessages = {
       defaultMessage: '無任何折價方案',
     },
   }),
+  QuestionLibraryCollectionPage: defineMessages({
+    questionLibraryCollection: { id: 'page.QuestionLibraryCollectionPage.questionLibraryCollection', defaultMessage: '題庫管理' },
+  }),
+  QuestionLibraryAdminPage: defineMessages({
+    questionGroupManagement: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
+    questionLibrarySettings: { id: 'page.QuestionLibraryAdminPage.questionLibrarySettings', defaultMessage: '題庫設定' },
+  }),
+  QuestionLibraryBasicForm: defineMessages({
+    title: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
+  }),
   CertificateCollectionPage: defineMessages({
     createCertificate: { id: 'page.CertificateCollectionPage.createCertificate', defaultMessage: '新增證書' },
   }),

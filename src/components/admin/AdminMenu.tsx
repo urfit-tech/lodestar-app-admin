@@ -20,6 +20,7 @@ import {
   PhoneIcon,
   PointIcon,
   ProjectIcon,
+  QuestionLibraryIcon,
   ShopIcon,
   UserIcon,
   UsersIcon,
@@ -131,6 +132,24 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           permissionIsAllowed: !!enabledModules.program_package && Boolean(permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN),
           key: 'program_package_category',
           name: formatMessage(adminMessages.AdminMenu.programPackageCategory),
+        },
+      ],
+    },
+    {
+      permissionIsAllowed: !!enabledModules.question_library,
+      key: 'question_library',
+      icon: () => <QuestionLibraryIcon className="mr-0" />,
+      name: formatMessage(adminMessages.AdminMenu.questionLibraryAdmin),
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'question_library_management',
+          name: formatMessage(adminMessages.AdminMenu.questionLibraryManagement),
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'question_group_management',
+          name: formatMessage(adminMessages.AdminMenu.questionGroupManagement),
         },
       ],
     },
