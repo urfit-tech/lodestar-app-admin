@@ -115,6 +115,32 @@ export const paymentMethods: {
       { installmentPlan: 36, fee: 0.15 },
     ],
   },
+  {
+    method: '舊學米仲信',
+    hidden: true,
+    feeWithInstallmentPlans: [
+      { installmentPlan: 3, fee: 0.03 },
+      { installmentPlan: 6, fee: 0.03 },
+      { installmentPlan: 12, fee: 0.05 },
+      { installmentPlan: 18, fee: 0.055 },
+      { installmentPlan: 24, fee: 0.07 },
+      { installmentPlan: 30, fee: 0.085 },
+      { installmentPlan: 36, fee: 0.11 },
+    ],
+  },
+  {
+    method: '舊匠說仲信',
+    hidden: true,
+    feeWithInstallmentPlans: [
+      { installmentPlan: 3, fee: 0.03 },
+      { installmentPlan: 6, fee: 0.03 },
+      { installmentPlan: 12, fee: 0.05 },
+      { installmentPlan: 18, fee: 0.07 },
+      { installmentPlan: 24, fee: 0.09 },
+      { installmentPlan: 30, fee: 0.1 },
+      { installmentPlan: 36, fee: 0.13 },
+    ],
+  },
 ]
 
 export const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30, 36] as const
