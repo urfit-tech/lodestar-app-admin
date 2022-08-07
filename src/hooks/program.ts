@@ -603,6 +603,15 @@ export const useMutateProgramContent = () => {
   const [deleteProgramContent] = useMutation<hasura.DELETE_PROGRAM_CONTENT, hasura.DELETE_PROGRAM_CONTENTVariables>(
     gql`
       mutation DELETE_PROGRAM_CONTENT($programContentId: uuid!) {
+        delete_program_content_plan(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_video(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_material(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
         delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
