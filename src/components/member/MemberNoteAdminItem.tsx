@@ -1,4 +1,4 @@
-import Icon, { MoreOutlined } from '@ant-design/icons'
+import Icon, { MessageOutlined, MoreOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, message } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -20,6 +20,8 @@ import { CustomRatioImage } from '../common/Image'
 import MemberNoteAdminModal from './MemberNoteAdminModal'
 
 const StyledStatus = styled.span`
+  display: flex;
+  align-items: center;
   margin-left: 12px;
   border-left: 1px solid #d8d8d8;
   padding: 0 12px;
@@ -66,7 +68,7 @@ const MemberNoteAdminItem: React.FC<{
           className="mr-5 flex-shrink-0"
         />
         <div>
-          <div>
+          <div className="d-flex align-items-center">
             <span>{moment(note.createdAt).format('YYYY-MM-DD HH:mm')}</span>
             {note.type && (
               <StyledStatus>
@@ -76,6 +78,7 @@ const MemberNoteAdminItem: React.FC<{
                     (note.type === 'outbound' && <CallOutIcon />) ||
                     (note.type === 'inbound' && <CallInIcon />) ||
                     (note.type === 'demo' && <DemoIcon />) ||
+                    (note.type === 'sms' && <MessageOutlined />) ||
                     null
                   }
                 />
