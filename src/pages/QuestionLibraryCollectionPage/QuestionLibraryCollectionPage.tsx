@@ -37,19 +37,17 @@ const QuestionLibraryCollectionPage: React.VFC = () => {
   )
 
   const handleSubmit = (modifierId: string) => {
-    form
-      .validateFields()
-      .then(() => {
-        const values = form.getFieldsValue()
-        createQuestionLibrary({ variables: { title: values.title, modifierId: modifierId, appId: appId } })
-          .then(({ data }) => {
-            const questionLibraryId = data?.insert_question_library?.returning[0]?.id
-            setLoading(false)
-            questionLibraryId && history.push(`/question-libraries/${questionLibraryId}`)
-          })
-          .catch(handleError)
-      })
-      .finally()
+    setLoading(true)
+    form.validateFields().then(() => {
+      const values = form.getFieldsValue()
+      createQuestionLibrary({ variables: { title: values.title, modifierId: modifierId, appId: appId } })
+        .then(({ data }) => {
+          const questionLibraryId = data?.insert_question_library?.returning[0]?.id
+          setLoading(false)
+          questionLibraryId && history.push(`/question-libraries/${questionLibraryId}`)
+        })
+        .catch(handleError)
+    })
   }
 
   if (isAuthenticating || Object.keys(enabledModules).length === 0) {
@@ -80,7 +78,6 @@ const QuestionLibraryCollectionPage: React.VFC = () => {
               title={formatMessage(questionLibraryMessage.input.addQuestionLibrary)}
               okText={formatMessage(commonMessages.ui.save)}
               onOk={e => {
-                setLoading(true)
                 handleSubmit(currentMemberId)
               }}
               okButtonProps={{ loading }}

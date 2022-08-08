@@ -58,7 +58,7 @@ const QuestionLibraryCollectionTable: React.VFC<{ appId: string; currentMemberId
   const { formatMessage } = useIntl()
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
-  const { loading, error, refetchQuestionLibrary, questionLibraries } = useQuestionLibrary({
+  const { loading, error, refetchQuestionLibrary, questionLibraries } = useQuestionLibraries({
     app_id: appId ? { _eq: appId } : undefined,
     title: searchTitle ? { _ilike: `%${searchTitle}%` } : undefined,
     deleted_at: { _is_null: true },
@@ -68,16 +68,12 @@ const QuestionLibraryCollectionTable: React.VFC<{ appId: string; currentMemberId
     hasura.ARCHIVE_QUESTION_LIBRARYVariables
   >(ARCHIVE_QUESTION_LIBRARY)
 
-  const handleDelete = (
-    id: string,
-    setDeleteLoading: (deleteLoading: boolean) => void,
-    setVisible: (visible: boolean) => void,
-  ) => {
+  const handleDelete = (id: string, setVisible: (visible: boolean) => void) => {
     setDeleteLoading(true)
     archiveQuestionLibrary({ variables: { questionLibraryId: id, modifierId: currentMemberId } })
       .then(() => {
         refetchQuestionLibrary()
-        message.success(formatMessage(questionLibraryMessage.text.successDeletedQuestionLibrary), 3)
+        message.success(formatMessage(questionLibraryMessage.message.successDeletedQuestionLibrary), 3)
       })
       .catch(handleError)
       .finally(() => {
@@ -141,7 +137,7 @@ const QuestionLibraryCollectionTable: React.VFC<{ appId: string; currentMemberId
                   renderTrigger={({ setVisible }) => (
                     <span onClick={() => setVisible(true)}>{formatMessage(commonMessages['ui'].delete)}</span>
                   )}
-                  title="確定刪除此題庫？"
+                  title={formatMessage(pageMessages['QuestionLibraryCollectionPage'].deleteQuestionLibraryMessage)}
                   footer={null}
                   renderFooter={({ setVisible }) => (
                     <div>
@@ -158,7 +154,7 @@ const QuestionLibraryCollectionTable: React.VFC<{ appId: string; currentMemberId
                         danger={true}
                         loading={deleteLoading}
                         onClick={() => {
-                          handleDelete(record.id, setDeleteLoading, setVisible)
+                          handleDelete(record.id, setVisible)
                         }}
                       >
                         {formatMessage(commonMessages['ui'].confirm)}
@@ -181,7 +177,7 @@ const QuestionLibraryCollectionTable: React.VFC<{ appId: string; currentMemberId
     return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
   }
 
-  return loading || questionLibraries.length > 0 || searchTitle !== '' ? (
+  return loading || questionLibraries.length > 0 || searchTitle !== null ? (
     <StyledDiv>
       <Table<QuestionLibraryColumn> loading={loading} rowKey="id" columns={columns} dataSource={questionLibraries} />
     </StyledDiv>
@@ -192,15 +188,15 @@ const QuestionLibraryCollectionTable: React.VFC<{ appId: string; currentMemberId
 
 export default QuestionLibraryCollectionTable
 
-const useQuestionLibrary = (condition: hasura.GET_QUESTION_LIBRARYVariables['condition']) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_QUESTION_LIBRARY, hasura.GET_QUESTION_LIBRARYVariables>(
-    GET_QUESTION_LIBRARY,
-    {
-      variables: {
-        condition,
-      },
+const useQuestionLibraries = (condition: hasura.GET_QUESTION_LIBRARIESVariables['condition']) => {
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_QUESTION_LIBRARIES,
+    hasura.GET_QUESTION_LIBRARIESVariables
+  >(GET_QUESTION_LIBRARIES, {
+    variables: {
+      condition,
     },
-  )
+  })
   const questionLibraries: QuestionLibraryColumn[] =
     data?.question_library.map(v => ({
       id: v.id,
@@ -219,9 +215,9 @@ const useQuestionLibrary = (condition: hasura.GET_QUESTION_LIBRARYVariables['con
   }
 }
 
-const GET_QUESTION_LIBRARY = gql`
-  query GET_QUESTION_LIBRARY($condition: question_library_bool_exp!) {
-    question_library(where: $condition) {
+const GET_QUESTION_LIBRARIES = gql`
+  query GET_QUESTION_LIBRARIES($condition: question_library_bool_exp!) {
+    question_library(where: $condition, order_by: { updated_at: desc }) {
       id
       title
       modifier_id
