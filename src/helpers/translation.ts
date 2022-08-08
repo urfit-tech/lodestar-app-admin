@@ -1417,12 +1417,17 @@ export const questionLibraryMessage = {
   }),
   label: defineMessages({
     noQuestionLibrary: { id: 'questionLibrary.label.noQuestionLibrary', defaultMessage: '尚未建立任何題庫' },
+    noQuestionGroup: { id: 'questionLibrary.label.noQuestionGroup', defaultMessage: '尚未建立任何題組' },
     latestUpdatedAt: { id: 'questionLibrary.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
     totalQuestions: { id: 'questionLibrary.label.totalQuestions', defaultMessage: '總題數' },
     totalQuestionGroups: { id: 'questionLibrary.label.totalQuestionGroups', defaultMessage: '題組數' },
     basicFormTitle: { id: 'questionLibrary.label.basicFormTitle', defaultMessage: '題庫名稱' },
+    basicFormAbstract: { id: 'questionLibrary.label.basicFormAbstract', defaultMessage: '題庫簡述' },
   }),
-  text: defineMessages({
-    successDeletedQuestionLibrary: { id: 'questionLibrary.label.successDeletedQuestionLibrary', defaultMessage: '刪除題庫成功' },
+  message: defineMessages({
+    successDeletedQuestionLibrary: { id: 'questionLibrary.message.successDeletedQuestionLibrary', defaultMessage: '刪除題庫成功' },
+    successDeletedQuestionGroup: { id: 'questionLibrary.message.successDeletedQuestionGroup', defaultMessage: '刪除題組成功' },
+    questionLibraryTitleCanNotNull: { id: 'questionLibrary.message.questionLibraryTitleCanNotNull', defaultMessage: '題庫名稱不可為空' },
+    questionGroupTitleCanNotNull: { id: 'questionLibrary.message.questionGroupTitleCanNotNull', defaultMessage: '題組名稱不可為空' },
   })
 }

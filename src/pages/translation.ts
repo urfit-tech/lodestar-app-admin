@@ -212,10 +212,13 @@ const pageMessages = {
   }),
   QuestionLibraryCollectionPage: defineMessages({
     questionLibraryCollection: { id: 'page.QuestionLibraryCollectionPage.questionLibraryCollection', defaultMessage: '題庫管理' },
+    deleteQuestionLibraryMessage: { id: 'page.QuestionLibraryAdminPage.deleteQuestionLibraryMessage', defaultMessage: '確定刪除此題庫？' },
   }),
   QuestionLibraryAdminPage: defineMessages({
     questionGroupManagement: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
     questionLibrarySettings: { id: 'page.QuestionLibraryAdminPage.questionLibrarySettings', defaultMessage: '題庫設定' },
+    noMemberId: { id: 'page.QuestionLibraryAdminPage.noMemberId', defaultMessage: '無使用者ID' },
+    deleteQuestionGroupMessage: { id: 'page.QuestionLibraryAdminPage.deleteQuestionGroupMessage', defaultMessage: '確定刪除此題組？' },
   }),
   QuestionLibraryBasicForm: defineMessages({
     title: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
