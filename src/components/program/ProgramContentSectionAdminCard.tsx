@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
+import { ProgramContentSectionProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
 
@@ -36,10 +36,11 @@ const StyledMenuItem = styled(Menu.Item)`
 `
 
 const ProgramContentSectionAdminCard: React.FC<{
-  program: ProgramAdminProps
+  programId: string
+  isProgramPublished: boolean
   programContentSection: ProgramContentSectionProps
   onRefetch?: () => void
-}> = ({ program, programContentSection, onRefetch }) => {
+}> = ({ programId, isProgramPublished, programContentSection, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId } = useApp()
   const [createProgramContent] = useMutation<hasura.INSERT_PROGRAM_CONTENT, hasura.INSERT_PROGRAM_CONTENTVariables>(
@@ -101,7 +102,13 @@ const ProgramContentSectionAdminCard: React.FC<{
 
       {programContentSection.programContents.map(programContent => (
         <div key={programContent.id} className="mb-2">
-          <ProgramContentAdminItem program={program} programContent={programContent} showPlans onRefetch={onRefetch} />
+          <ProgramContentAdminItem
+            programId={programId}
+            isProgramPublished={isProgramPublished}
+            programContent={programContent}
+            showPlans
+            onRefetch={onRefetch}
+          />
         </div>
       ))}
       <Dropdown
@@ -116,8 +123,8 @@ const ProgramContentSectionAdminCard: React.FC<{
                     title: 'untitled',
                     position: programContentSection.programContents.length,
                     programContentType: 'text',
-                    publishedAt: program?.publishedAt ? new Date() : null,
-                    displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
+                    publishedAt: isProgramPublished ? new Date() : null,
+                    displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
                   },
                 })
                   .then(() => onRefetch?.())
@@ -135,8 +142,8 @@ const ProgramContentSectionAdminCard: React.FC<{
                       title: 'untitled',
                       position: programContentSection.programContents.length,
                       programContentType: 'practice',
-                      publishedAt: program?.publishedAt ? new Date() : null,
-                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
+                      publishedAt: isProgramPublished ? new Date() : null,
+                      displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
                     },
                   })
                     .then(() => onRefetch?.())
@@ -158,8 +165,8 @@ const ProgramContentSectionAdminCard: React.FC<{
                       title: 'untitled',
                       position: programContentSection.programContents.length,
                       programContentType: 'exercise',
-                      publishedAt: program?.publishedAt ? new Date() : null,
-                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
+                      publishedAt: isProgramPublished ? new Date() : null,
+                      displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
                       metadata: {
                         examId: examId,
                       },

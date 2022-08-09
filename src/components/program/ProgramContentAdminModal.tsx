@@ -29,7 +29,7 @@ import { commonMessages, errorMessages, programMessages } from '../../helpers/tr
 import { useMutateAttachment } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import { ProgramContentProps, ProgramProps } from '../../types/program'
+import { ProgramContentProps } from '../../types/program'
 import AttachmentSelector, { AttachmentSelectorValue } from '../common/AttachmentSelector'
 import FileUploader from '../common/FileUploader'
 import { BREAK_POINT } from '../common/Responsive'
@@ -108,10 +108,10 @@ type FieldProps = {
 type VideoPipeline = 'attachment' | 'externalLink'
 
 const ProgramContentAdminModal: React.FC<{
-  program: ProgramProps
+  programId: string
   programContent: ProgramContentProps
   onRefetch?: () => void
-}> = ({ program, programContent, onRefetch }) => {
+}> = ({ programId, programContent, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
@@ -365,7 +365,7 @@ const ProgramContentAdminModal: React.FC<{
               <Input />
             </Form.Item>
             <Form.Item label={formatMessage(messages.contentPlan)} name="planIds">
-              <ProgramPlanSelector programId={program.id} placeholder={formatMessage(messages.contentPlan)} />
+              <ProgramPlanSelector programId={programId} placeholder={formatMessage(messages.contentPlan)} />
             </Form.Item>
 
             {enabledModules.program_content_external_file ? (

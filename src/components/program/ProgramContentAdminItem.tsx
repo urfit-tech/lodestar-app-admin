@@ -9,7 +9,7 @@ import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/excla
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
-import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
+import { ProgramContentProps } from '../../types/program'
 import ExerciseAdminModal from './ExerciseAdminModal'
 import PracticeAdminModal from './PracticeAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
@@ -54,11 +54,12 @@ const messages = defineMessages({
 })
 
 const ProgramContentAdminItem: React.FC<{
-  program: ProgramAdminProps
+  programId: string
+  isProgramPublished: boolean
   programContent: ProgramContentProps
   showPlans?: boolean | null
   onRefetch?: () => void
-}> = ({ showPlans, programContent, program, onRefetch }) => {
+}> = ({ programId, isProgramPublished, showPlans, programContent, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -117,7 +118,7 @@ const ProgramContentAdminItem: React.FC<{
           </StyledPrivateTag>
         )}
 
-        {program
+        {isProgramPublished
           ? programContent.publishedAt && (
               <StyledDescriptions type="secondary" className="mr-3">
                 {dateFormatter(programContent.publishedAt)}
@@ -130,7 +131,7 @@ const ProgramContentAdminItem: React.FC<{
         ) : programContent.programContentType === 'exercise' ? (
           <ExerciseAdminModal programContent={programContent} onRefetch={onRefetch} />
         ) : (
-          <ProgramContentAdminModal program={program} programContent={programContent} onRefetch={onRefetch} />
+          <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
         )}
       </div>
     </div>

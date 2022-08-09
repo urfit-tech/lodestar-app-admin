@@ -1,7 +1,35 @@
 import { defineMessages } from 'react-intl'
 
 const programMessages = {
-  '*': defineMessages({}),
+  '*': defineMessages({
+    save: { id: 'program.*.save', defaultMessage: '儲存' },
+    cancel: { id: 'program.*.cancel', defaultMessage: '取消' },
+    isRequired: { id: 'program.*.isRequired', defaultMessage: '*此欄位必填' },
+    unlimited: {
+      id: 'program.*.unlimited',
+      defaultMessage: '不限期間',
+    },
+    bought: {
+      id: 'program.*.bought',
+      defaultMessage: '購買後',
+    },
+    limited: {
+      id: 'program.*.limited',
+      defaultMessage: '指定時間',
+    },
+    day: {
+      id: 'program.*.day',
+      defaultMessage: '天',
+    },
+    hour: {
+      id: 'program.*.hour',
+      defaultMessage: '小時',
+    },
+    minute: {
+      id: 'program.*.minute',
+      defaultMessage: '分鐘',
+    },
+  }),
   ProgramCollectionSelector: defineMessages({
     recentWatched: { id: 'program.ProgramCollectionSelector.recentWatched', defaultMessage: '依最後觀看時間' },
     publishedAt: { id: 'program.ProgramCollectionSelector.publishedAt', defaultMessage: '依上架日期' },
@@ -29,6 +57,19 @@ const programMessages = {
   }),
   ProgramContentAdminItem: defineMessages({
     privatePractice: { id: 'program.ProgramContentAdminItem.privatePractice', defaultMessage: '私密作業' },
+  }),
+  ExerciseAdminModal: defineMessages({}),
+  IndividualExerciseTimeLimitModal: defineMessages({
+    extendedValidity: {
+      id: 'program.IndividualExerciseTimeLimitModal.extendedValidity',
+      defaultMessage: '將特定會員延長測驗期間',
+    },
+    expiredAt: { id: 'program.IndividualExerciseTimeLimitModal.expiredAt', defaultMessage: '截止日期' },
+    editIndividualTimeLimit: {
+      id: 'program.IndividualExerciseTimeLimitModal.editIndividualTimeLimit',
+      defaultMessage: '編輯個別效期',
+    },
+    addMember: { id: 'program.IndividualExerciseTimeLimitModal.addMember', defaultMessage: '添加會員' },
   }),
 }
 

@@ -697,7 +697,6 @@ export const programMessages = {
     availableToGoBack: { id: 'program.label.availableToGoBack', defaultMessage: '可返回前題' },
     availableToRetry: { id: 'program.label.availableToRetry', defaultMessage: '可重新測驗' },
     notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
-    exercise: { id: 'program.label.exercise', defaultMessage: '課後測驗' },
     passingScore: { id: 'program.label.passingScore', defaultMessage: '及格分數' },
     points: { id: 'program.label.points', defaultMessage: '單題分數' },
     question: { id: 'program.label.question', defaultMessage: '題目' },
