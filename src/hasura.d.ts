@@ -5146,27 +5146,71 @@ export interface GET_PROGRAM_CONTENT_ID_LIST {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_EXAM
+// ====================================================
+
+export interface INSERT_EXAM_insert_exam_one {
+  __typename: "exam";
+  id: any;
+}
+
+export interface INSERT_EXAM {
+  /**
+   * insert a single row into the table: "exam"
+   */
+  insert_exam_one: INSERT_EXAM_insert_exam_one | null;
+}
+
+export interface INSERT_EXAMVariables {
+  examId: any;
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_EXAM
+// ====================================================
+
+export interface INSERT_PROGRAM_CONTENT_EXAM_insert_program_content_exam_one {
+  __typename: "program_content_exam";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_CONTENT_EXAM {
+  /**
+   * insert a single row into the table: "program_content_exam"
+   */
+  insert_program_content_exam_one: INSERT_PROGRAM_CONTENT_EXAM_insert_program_content_exam_one | null;
+}
+
+export interface INSERT_PROGRAM_CONTENT_EXAMVariables {
+  programContentId: any;
+  examId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
 
-export interface INSERT_PROGRAM_CONTENT_insert_program_content_returning {
+export interface INSERT_PROGRAM_CONTENT_insert_program_content_one {
   __typename: "program_content";
   id: any;
 }
 
-export interface INSERT_PROGRAM_CONTENT_insert_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * data from the rows affected by the mutation
-   */
-  returning: INSERT_PROGRAM_CONTENT_insert_program_content_returning[];
-}
-
 export interface INSERT_PROGRAM_CONTENT {
   /**
-   * insert data into the table: "program_content"
+   * insert a single row into the table: "program_content"
    */
-  insert_program_content: INSERT_PROGRAM_CONTENT_insert_program_content | null;
+  insert_program_content_one: INSERT_PROGRAM_CONTENT_insert_program_content_one | null;
 }
 
 export interface INSERT_PROGRAM_CONTENTVariables {
@@ -17704,6 +17748,27 @@ export enum file_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "invoice"
+ */
+export enum invoice_constraint {
+  invoice_order_id_key = "invoice_order_id_key",
+  invoice_pkey = "invoice_pkey",
+}
+
+/**
+ * update columns of table "invoice"
+ */
+export enum invoice_update_column {
+  created_at = "created_at",
+  executor_id = "executor_id",
+  no = "no",
+  options = "options",
+  order_id = "order_id",
+  price = "price",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "issue"
  */
 export enum issue_constraint {
@@ -18421,8 +18486,8 @@ export enum order_log_update_column {
   discount_type = "discount_type",
   expired_at = "expired_at",
   id = "id",
-  invoice_options = "invoice_options",
   invoice_issued_at = "invoice_issued_at",
+  invoice_options = "invoice_options",
   is_deleted = "is_deleted",
   last_paid_at = "last_paid_at",
   member_id = "member_id",
@@ -18575,8 +18640,8 @@ export enum payment_log_update_column {
   created_at = "created_at",
   custom_no = "custom_no",
   gateway = "gateway",
-  invoice_options = "invoice_options",
   invoice_issued_at = "invoice_issued_at",
+  invoice_options = "invoice_options",
   method = "method",
   no = "no",
   options = "options",
@@ -24884,6 +24949,151 @@ export interface file_on_conflict {
 }
 
 /**
+ * order by aggregate values of table "invoice"
+ */
+export interface invoice_aggregate_order_by {
+  avg?: invoice_avg_order_by | null;
+  count?: order_by | null;
+  max?: invoice_max_order_by | null;
+  min?: invoice_min_order_by | null;
+  stddev?: invoice_stddev_order_by | null;
+  stddev_pop?: invoice_stddev_pop_order_by | null;
+  stddev_samp?: invoice_stddev_samp_order_by | null;
+  sum?: invoice_sum_order_by | null;
+  var_pop?: invoice_var_pop_order_by | null;
+  var_samp?: invoice_var_samp_order_by | null;
+  variance?: invoice_variance_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "invoice"
+ */
+export interface invoice_arr_rel_insert_input {
+  data: invoice_insert_input[];
+  on_conflict?: invoice_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "invoice"
+ */
+export interface invoice_avg_order_by {
+  price?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "invoice". All fields are combined with a logical 'AND'.
+ */
+export interface invoice_bool_exp {
+  _and?: invoice_bool_exp[] | null;
+  _not?: invoice_bool_exp | null;
+  _or?: invoice_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  executor_id?: uuid_comparison_exp | null;
+  no?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  price?: numeric_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "invoice"
+ */
+export interface invoice_insert_input {
+  created_at?: any | null;
+  executor_id?: any | null;
+  no?: string | null;
+  options?: any | null;
+  order_id?: string | null;
+  order_log?: order_log_obj_rel_insert_input | null;
+  price?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "invoice"
+ */
+export interface invoice_max_order_by {
+  created_at?: order_by | null;
+  executor_id?: order_by | null;
+  no?: order_by | null;
+  order_id?: order_by | null;
+  price?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "invoice"
+ */
+export interface invoice_min_order_by {
+  created_at?: order_by | null;
+  executor_id?: order_by | null;
+  no?: order_by | null;
+  order_id?: order_by | null;
+  price?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * on_conflict condition type for table "invoice"
+ */
+export interface invoice_on_conflict {
+  constraint: invoice_constraint;
+  update_columns: invoice_update_column[];
+  where?: invoice_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "invoice"
+ */
+export interface invoice_stddev_order_by {
+  price?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "invoice"
+ */
+export interface invoice_stddev_pop_order_by {
+  price?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "invoice"
+ */
+export interface invoice_stddev_samp_order_by {
+  price?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "invoice"
+ */
+export interface invoice_sum_order_by {
+  price?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "invoice"
+ */
+export interface invoice_var_pop_order_by {
+  price?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "invoice"
+ */
+export interface invoice_var_samp_order_by {
+  price?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "invoice"
+ */
+export interface invoice_variance_order_by {
+  price?: order_by | null;
+}
+
+/**
  * order by aggregate values of table "issue"
  */
 export interface issue_aggregate_order_by {
@@ -28913,8 +29123,9 @@ export interface order_log_bool_exp {
   discount_type?: Int_comparison_exp | null;
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
-  invoice_options?: jsonb_comparison_exp | null;
+  invoice?: invoice_bool_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -28946,8 +29157,8 @@ export interface order_log_export_bool_exp {
   _or?: order_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
-  invoice_options?: jsonb_comparison_exp | null;
   invoice_issued_at?: String_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member_email?: String_comparison_exp | null;
   member_id?: String_comparison_exp | null;
@@ -28977,8 +29188,8 @@ export interface order_log_export_bool_exp {
 export interface order_log_export_order_by {
   app_id?: order_by | null;
   created_at?: order_by | null;
-  invoice_options?: order_by | null;
   invoice_issued_at?: order_by | null;
+  invoice_options?: order_by | null;
   last_paid_at?: order_by | null;
   member_email?: order_by | null;
   member_id?: order_by | null;
@@ -29018,8 +29229,9 @@ export interface order_log_insert_input {
   discount_type?: number | null;
   expired_at?: any | null;
   id?: string | null;
-  invoice_options?: any | null;
+  invoice?: invoice_arr_rel_insert_input | null;
   invoice_issued_at?: any | null;
+  invoice_options?: any | null;
   is_deleted?: boolean | null;
   last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
@@ -29127,8 +29339,9 @@ export interface order_log_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
-  invoice_options?: order_by | null;
+  invoice_aggregate?: invoice_aggregate_order_by | null;
   invoice_issued_at?: order_by | null;
+  invoice_options?: order_by | null;
   is_deleted?: order_by | null;
   last_paid_at?: order_by | null;
   member?: member_order_by | null;
@@ -29882,8 +30095,8 @@ export interface payment_log_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
-  invoice_options?: jsonb_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   method?: String_comparison_exp | null;
   no?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
@@ -29906,8 +30119,8 @@ export interface payment_log_export_bool_exp {
   _or?: payment_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
-  invoice_options?: jsonb_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   member_name?: String_comparison_exp | null;
   order_discount_total_price?: numeric_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
@@ -29928,8 +30141,8 @@ export interface payment_log_insert_input {
   created_at?: any | null;
   custom_no?: string | null;
   gateway?: string | null;
-  invoice_options?: any | null;
   invoice_issued_at?: any | null;
+  invoice_options?: any | null;
   method?: string | null;
   no?: string | null;
   options?: any | null;
