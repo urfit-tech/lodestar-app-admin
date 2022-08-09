@@ -1,17 +1,19 @@
 import { CloseOutlined } from '@ant-design/icons'
-import { Grid, GridItem } from '@chakra-ui/react'
-import { Button, Checkbox, Collapse, Radio } from 'antd'
-import { RadioChangeEvent } from 'antd/lib/radio'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Button } from 'antd'
+import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
-import AdminBraftEditor from '../../components/form/AdminBraftEditor'
-import { BarsIcon, GridIcon, PlusIcon, TrashOIcon } from '../../images/icon'
+import hasura from '../../hasura'
+import { PlusIcon } from '../../images/icon'
+import { Question } from '../../types/questionLibrary'
+import LoadingPage from '../LoadingPage'
+import QuestionCollapse, { AddButton } from './QuestionCollapse'
 
 const StyledAdminHeader = styled(AdminHeader)`
   display: flex;
@@ -50,119 +52,6 @@ const QuestionGroupBlock = styled.div`
   }
   .ant-collapse > .ant-collapse-item.ant-collapse-item-active .ant-collapse-header {
     padding-bottom: 0;
-  }
-`
-
-const StyledCollapse = styled(Collapse)`
-  background-color: #fff;
-  margin-bottom: 20px;
-  .ant-collapse-content {
-    background-color: #fff;
-    border: none;
-  }
-  .ant-collapse-content-active {
-    height: auto;
-  }
-`
-
-const Question = styled(Collapse.Panel)`
-  .ant-collapse-content-box {
-    padding: 16px 24px;
-  }
-`
-
-const QuestionTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-
-const StyledP = styled.p`
-  font-size: 16px;
-  color: var(--gray-darker);
-  padding-bottom: 16px;
-`
-
-const LayoutOptionsBlock = styled.div`
-  display: flex;
-  align-items: center;
-  padding-bottom: 32px;
-`
-
-const LayoutOptionsButtonGroup = styled(Radio.Group)`
-  display: flex;
-  flex-direction: row;
-`
-
-const LayoutOptionButton = styled(Radio.Button)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-`
-
-const StyledCheckBox = styled(Checkbox)`
-  margin-left: 16px;
-`
-
-const QuestionSubject = styled.div`
-  padding-bottom: 20px;
-  .bf-content {
-    height: 200px;
-    border: 1px solid var(--gray);
-    border-top: none;
-    border-radius: 4px;
-  }
-`
-
-const QuestionOptionsBlock = styled.div`
-  padding: 0 0 32px 24px;
-  width: 100%;
-`
-
-const QuestionOption = styled.div`
-  padding: 24px;
-  margin-bottom: 20px;
-  background-color: #f7f8f8;
-  border-radius: 4px;
-  .bf-content {
-    background-color: #fff;
-    height: 100px;
-    border: 1px solid var(--gray);
-    border-top: none;
-    border-radius: 4px;
-  }
-`
-
-const OptionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 12px;
-  span {
-    font-size: 18px;
-    font-weight: bold;
-    letter-spacing: 0.8px;
-    color: var(--gray-darker);
-  }
-  svg {
-    cursor: pointer;
-  }
-`
-
-const AddButton = styled(Button)`
-  padding: 0;
-  span {
-    margin-left: 8px;
-  }
-`
-
-const ExplanationBlock = styled.div`
-  .bf-content {
-    height: 120px;
-    border: 1px solid var(--gray);
-    border-top: none;
-    border-radius: 4px;
   }
 `
 
@@ -261,18 +150,6 @@ const GridOption = styled.div<{ imgSrc: string }>`
   }
 `
 
-const StyledBarsIcon = styled(BarsIcon)<{ layoutOption: string }>`
-  path {
-    fill: ${props => (props.layoutOption === 'column' ? '#fff' : '#585858')};
-  }
-`
-
-const StyledGridIcon = styled(GridIcon)<{ layoutOption: string }>`
-  path {
-    fill: ${props => (props.layoutOption === 'grid' ? '#fff' : '#585858')};
-  }
-`
-
 const ExamName = styled.p`
   font-size: 18px;
   color: var(--gray-darker);
@@ -286,23 +163,52 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const { currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
-  const { questionLibraryId } = useParams<{ questionLibraryId: string }>()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const [questionGroupType, setQuestionGroupType] = useState<string>('new')
+  const { questionGroupId } = useParams<{ questionGroupId: string }>()
   const [savingLoading, setSavingLoading] = useState<boolean>(false)
-  const [layoutOption, setLayoutOption] = useState<string>('column')
+  const [questions, setQuestions] = useState<Array<Question>>()
+  const { insertQuestion, updateQuestion } = useQuestionMutation()
+  const { questionGroupLoading, questionGroupError, questionGroup, refetchQuestionGroup } =
+    useQuestionGroup(questionGroupId)
 
-  //   if (Object.keys(enabledModules).length === 0 || loading) {
-  //     return <LoadingPage />
-  //   }
-
-  const onLayoutOptionChange = (e: RadioChangeEvent) => {
-    setLayoutOption(e.target.value)
+  const handleSaveQuestion = () => {
+    // insertQuestion({
+    //   variables: {
+    //     subject: '超強題目456',
+    //     layout: 'column',
+    //     font: 'auto',
+    //     position: 1,
+    //     questionGroupId: questionGroupId,
+    //   },
+    // }).then(data => {
+    //   console.log(data)
+    //   refetchQuestionGroup()
+    // })
+    // updateQuestion({
+    //   variables: {
+    //     questionId: '5fd797e4-167e-4450-9121-5e0f2a422a67',
+    //     subject: '超強題目456',
+    //     layout: 'column',
+    //     font: 'auto',
+    //     position: 1,
+    //   },
+    // })
   }
 
   useEffect(() => {
     document.body.style.overflowY = 'hidden'
   }, [])
+
+  useEffect(() => {
+    if (!questions && questionGroup.length > 0) {
+      setQuestions(questionGroup)
+    } else if (!questions && !questionGroupLoading && questionGroup.length === 0) {
+      setQuestions([{ id: 'default', type: 'single', subject: '', layout: 'column', font: 'auto', position: 1 }])
+    }
+  }, [questionGroup, questionGroupLoading, questions])
+
+  if (Object.keys(enabledModules).length === 0 || questionGroupLoading) {
+    return <LoadingPage />
+  }
 
   return (
     <>
@@ -323,153 +229,34 @@ const QuestionGroupAdminPage: React.VFC = () => {
         </div>
         <div className="header-right">
           <Button className="ml-3">取消</Button>
-          <Button className="ml-3" type="primary">
+          <Button className="ml-3" type="primary" onClick={handleSaveQuestion}>
             儲存
           </Button>
         </div>
       </StyledAdminHeader>
       <StyledContent>
+        {questions?.length}
         <QuestionGroupBlock>
-          <StyledCollapse accordion>
-            <Question
-              header={
-                <QuestionTitle>
-                  題目 1
-                  <TrashOIcon
-                    style={{ zIndex: '2' }}
-                    onClick={() => {
-                      alert(345)
-                    }}
-                  />
-                </QuestionTitle>
-              }
-              key="1"
-              showArrow={false}
-            >
-              <StyledP>版型選項</StyledP>
-              <LayoutOptionsBlock>
-                <LayoutOptionsButtonGroup defaultValue="column" buttonStyle="solid" onChange={onLayoutOptionChange}>
-                  <LayoutOptionButton value="column">
-                    <StyledBarsIcon layoutOption={layoutOption} />
-                  </LayoutOptionButton>
-                  <LayoutOptionButton value="grid">
-                    <StyledGridIcon layoutOption={layoutOption} />
-                  </LayoutOptionButton>
-                </LayoutOptionsButtonGroup>
-                <StyledCheckBox>使用注音字型</StyledCheckBox>
-              </LayoutOptionsBlock>
-              <StyledP>題目</StyledP>
-              <QuestionSubject>
-                <AdminBraftEditor />
-              </QuestionSubject>
-              <QuestionOptionsBlock>
-                <QuestionOption>
-                  <OptionHeader>
-                    <span>選項 1</span>
-                    <TrashOIcon
-                      onClick={() => {
-                        alert(123)
-                      }}
-                    />
-                  </OptionHeader>
-                  <AdminBraftEditor />
-                </QuestionOption>
-                <QuestionOption>
-                  <OptionHeader>
-                    <span>選項 2</span>
-                    <TrashOIcon
-                      onClick={() => {
-                        alert(345)
-                      }}
-                    />
-                  </OptionHeader>
-                  <AdminBraftEditor />
-                </QuestionOption>
-                <AddButton
-                  type="link"
-                  icon={<PlusIcon />}
-                  className="align-items-center"
-                  onClick={() => alert('新增選項')}
-                >
-                  <span>新增選項</span>
-                </AddButton>
-              </QuestionOptionsBlock>
-              <ExplanationBlock>
-                <StyledP>解答說明</StyledP>
-                <AdminBraftEditor />
-              </ExplanationBlock>
-            </Question>
-            <Question
-              header={
-                <QuestionTitle>
-                  題目 2
-                  <TrashOIcon
-                    style={{ zIndex: '2' }}
-                    onClick={() => {
-                      alert(345)
-                    }}
-                  />
-                </QuestionTitle>
-              }
-              key="2"
-              showArrow={false}
-            >
-              <StyledP>版型選項</StyledP>
-              <LayoutOptionsBlock>
-                <LayoutOptionsButtonGroup defaultValue="column" buttonStyle="solid" onChange={onLayoutOptionChange}>
-                  <LayoutOptionButton value="column">
-                    <StyledBarsIcon layoutOption={layoutOption} />
-                  </LayoutOptionButton>
-                  <LayoutOptionButton value="grid">
-                    <StyledGridIcon layoutOption={layoutOption} />
-                  </LayoutOptionButton>
-                </LayoutOptionsButtonGroup>
-                <StyledCheckBox>使用注音字型</StyledCheckBox>
-              </LayoutOptionsBlock>
-              <StyledP>題目</StyledP>
-              <QuestionSubject>
-                <AdminBraftEditor />
-              </QuestionSubject>
-              <QuestionOptionsBlock>
-                <QuestionOption>
-                  <OptionHeader>
-                    <span>選項 1</span>
-                    <TrashOIcon
-                      onClick={() => {
-                        alert(123)
-                      }}
-                    />
-                  </OptionHeader>
-                  <AdminBraftEditor />
-                </QuestionOption>
-                <QuestionOption>
-                  <OptionHeader>
-                    <span>選項 2</span>
-                    <TrashOIcon
-                      onClick={() => {
-                        alert(345)
-                      }}
-                    />
-                  </OptionHeader>
-                  <AdminBraftEditor />
-                </QuestionOption>
-                <AddButton
-                  type="link"
-                  icon={<PlusIcon />}
-                  className="align-items-center"
-                  onClick={() => alert('新增選項')}
-                >
-                  <span>新增選項</span>
-                </AddButton>
-              </QuestionOptionsBlock>
-              <ExplanationBlock>
-                <StyledP>解答說明</StyledP>
-                <AdminBraftEditor />
-              </ExplanationBlock>
-            </Question>
-          </StyledCollapse>
+          <QuestionCollapse questions={questions} />
           <AddQuestionBlock>
-            <AddButton type="link" icon={<PlusIcon />} className="align-items-center" onClick={() => alert('新增題目')}>
+            <AddButton
+              type="link"
+              icon={<PlusIcon />}
+              className="align-items-center"
+              onClick={() => {
+                console.log(questions)
+                const copyQuestionsArr = questions
+                copyQuestionsArr?.push({
+                  id: 'default',
+                  type: 'single',
+                  subject: '',
+                  layout: 'column',
+                  font: 'auto',
+                  position: 1,
+                })
+                setQuestions(copyQuestionsArr)
+              }}
+            >
               <span>新增題目</span>
             </AddButton>
           </AddQuestionBlock>
@@ -485,7 +272,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
               <br />
               你認為付費搜尋廣告這種行銷方式如此有效的原因何在？
             </PreviewSubject>
-            <PreviewOptions layoutOption={layoutOption}>
+            {/* <PreviewOptions layoutOption={layoutOption}>
               {layoutOption === 'column' ? (
                 <>
                   <ColumnOption>選項一</ColumnOption>
@@ -525,11 +312,94 @@ const QuestionGroupAdminPage: React.VFC = () => {
                   </GridItem>
                 </Grid>
               )}
-            </PreviewOptions>
+            </PreviewOptions> */}
           </PreviewQuestion>
         </PreviewBlock>
       </StyledContent>
     </>
   )
 }
+
 export default QuestionGroupAdminPage
+
+const useQuestionMutation = () => {
+  const [insertQuestion] = useMutation<hasura.INSERT_QUESTION, hasura.INSERT_QUESTIONVariables>(gql`
+    mutation INSERT_QUESTION(
+      $subject: String!
+      $layout: String!
+      $font: String!
+      $position: Int!
+      $questionGroupId: uuid!
+    ) {
+      insert_question(
+        objects: {
+          subject: $subject
+          layout: $layout
+          font: $font
+          position: $position
+          question_group_id: $questionGroupId
+        }
+      ) {
+        affected_rows
+        returning {
+          id
+        }
+      }
+    }
+  `)
+  const [updateQuestion] = useMutation<hasura.UPDATE_QUESTION, hasura.UPDATE_QUESTIONVariables>(gql`
+    mutation UPDATE_QUESTION($questionId: uuid!, $subject: String!, $layout: String!, $font: String!, $position: Int!) {
+      update_question(
+        where: { id: { _eq: $questionId } }
+        _set: { subject: $subject, layout: $layout, font: $font, position: $position }
+      ) {
+        affected_rows
+      }
+    }
+  `)
+  return {
+    insertQuestion,
+    updateQuestion,
+  }
+}
+
+const useQuestionGroup = (questionGroupId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_QUESTIONS, hasura.GET_QUESTIONSVariables>(
+    GET_QUESTIONS,
+    {
+      variables: {
+        questionGroupId,
+      },
+    },
+  )
+
+  const questions: Question[] =
+    data?.question.map(v => ({
+      id: v.id,
+      type: v.type,
+      subject: v.subject,
+      layout: v.layout,
+      font: v.font,
+      position: v.position,
+    })) || []
+
+  return {
+    questionGroup: questions,
+    refetchQuestionGroup: refetch,
+    questionGroupLoading: loading,
+    questionGroupError: error,
+  }
+}
+
+const GET_QUESTIONS = gql`
+  query GET_QUESTIONS($questionGroupId: uuid!) {
+    question(where: { question_group_id: { _eq: $questionGroupId }, deleted_at: { _is_null: true } }) {
+      id
+      type
+      subject
+      layout
+      font
+      position
+    }
+  }
+`
