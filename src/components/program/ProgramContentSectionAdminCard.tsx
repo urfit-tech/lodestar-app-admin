@@ -6,6 +6,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuidv4 } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
@@ -40,10 +41,12 @@ const ProgramContentSectionAdminCard: React.FC<{
   onRefetch?: () => void
 }> = ({ program, programContentSection, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { enabledModules, id: appId } = useApp()
   const [createProgramContent] = useMutation<hasura.INSERT_PROGRAM_CONTENT, hasura.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
   )
+  const { insertExam, insertProgramContentExam } = useCreateExam()
+
   const [updateProgramContentSection] = useMutation<
     hasura.UPDATE_PROGRAM_CONTENT_SECTION,
     hasura.UPDATE_PROGRAM_CONTENT_SECTIONVariables
@@ -145,8 +148,11 @@ const ProgramContentSectionAdminCard: React.FC<{
             )}
             {enabledModules.exercise && (
               <StyledMenuItem
-                onClick={() =>
-                  createProgramContent({
+                onClick={async () => {
+                  let examId = uuidv4()
+                  let programContentId: string
+
+                  await createProgramContent({
                     variables: {
                       programContentSectionId: programContentSection.id,
                       title: 'untitled',
@@ -155,14 +161,23 @@ const ProgramContentSectionAdminCard: React.FC<{
                       publishedAt: program?.publishedAt ? new Date() : null,
                       displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
                       metadata: {
-                        isAvailableToGoBack: true,
-                        isAvailableToRetry: true,
+                        examId: examId,
                       },
                     },
                   })
-                    .then(() => onRefetch?.())
+                    .then(res => {
+                      programContentId = res.data?.insert_program_content_one?.id
+
+                      insertProgramContentExam({
+                        variables: { programContentId: programContentId, examId: examId },
+                      }).catch(handleError)
+                    })
                     .catch(handleError)
-                }
+
+                  await insertExam({ variables: { examId, appId } }).catch(handleError)
+
+                  onRefetch?.()
+                }}
               >
                 {formatMessage(messages.programExercise)}
               </StyledMenuItem>
@@ -179,6 +194,32 @@ const ProgramContentSectionAdminCard: React.FC<{
   )
 }
 
+const useCreateExam = () => {
+  const [insertExam] = useMutation<hasura.INSERT_EXAM, hasura.INSERT_EXAMVariables>(
+    gql`
+      mutation INSERT_EXAM($examId: uuid!, $appId: String!) {
+        insert_exam_one(object: { id: $examId, app_id: $appId, point: 0, passing_score: 0 }) {
+          id
+        }
+      }
+    `,
+  )
+  const [insertProgramContentExam] = useMutation<
+    hasura.INSERT_PROGRAM_CONTENT_EXAM,
+    hasura.INSERT_PROGRAM_CONTENT_EXAMVariables
+  >(gql`
+    mutation INSERT_PROGRAM_CONTENT_EXAM($programContentId: uuid!, $examId: uuid!) {
+      insert_program_content_exam_one(object: { program_content_id: $programContentId, exam_id: $examId }) {
+        id
+      }
+    }
+  `)
+  return {
+    insertExam,
+    insertProgramContentExam,
+  }
+}
+
 const INSERT_PROGRAM_CONTENT = gql`
   mutation INSERT_PROGRAM_CONTENT(
     $programContentSectionId: uuid!
@@ -189,8 +230,8 @@ const INSERT_PROGRAM_CONTENT = gql`
     $metadata: jsonb
     $displayMode: String!
   ) {
-    insert_program_content(
-      objects: {
+    insert_program_content_one(
+      object: {
         content_section_id: $programContentSectionId
         title: $title
         position: $position
@@ -200,9 +241,7 @@ const INSERT_PROGRAM_CONTENT = gql`
         display_mode: $displayMode
       }
     ) {
-      returning {
-        id
-      }
+      id
     }
   }
 `
