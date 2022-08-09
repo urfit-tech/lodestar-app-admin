@@ -141,12 +141,12 @@ export const routesProps = {
   },
   question_group_management: {
     path: '/question-groups',
-    pageName: 'QuestionGroupsCollectionPage',
+    pageName: 'QuestionGroupCollectionPage',
     authenticated: true,
   },
   question_group: {
     path: '/question-groups/:questionGroupId',
-    pageName: 'QuestionGroupsCollectionPage',
+    pageName: 'QuestionGroupAdminPage',
     authenticated: true,
   },
 
