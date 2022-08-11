@@ -28,6 +28,7 @@ import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { AppProps } from '../../types/app'
 import { CouponPlanProps } from '../../types/checkout'
 import { MemberAdminProps, UserRole } from '../../types/member'
+import MemberSmsModel from './MemberSmsModal'
 
 export type renderMemberAdminLayoutProps = {
   activeKey?: string
@@ -132,7 +133,7 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.member_admin.path)
-  const { currentUserRole, permissions, currentMember } = useAuth()
+  const { currentUserRole, permissions, currentMember, authToken } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -242,7 +243,8 @@ const MemberAdminLayout: React.FC<{
               member?.phones.map(phone => (
                 <StyledDescription key={phone}>
                   <Icon className="mr-2" component={() => <PhoneIcon />} />
-                  <span>{phone}</span>
+                  <span className="mr-2">{phone}</span>
+                  {enabledModules.sms && <MemberSmsModel memberId={member.id} phone={phone} />}
                 </StyledDescription>
               ))}
 

@@ -6514,7 +6514,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   status: string | null;
   created_at: any | null;
   updated_at: any | null;
-  invoice: any | null;
+  invoice_options: any | null;
   invoice_issued_at: string | null;
   app_id: string | null;
   member_id: string | null;
@@ -6597,7 +6597,7 @@ export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
   /**
    * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
    */
-  invoice: any;
+  invoice_options: any;
 }
 
 export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
@@ -6643,7 +6643,7 @@ export interface GET_PAYMENT_LOG_EXPORT_payment_log_export {
   paid_at: any | null;
   order_log_id: string | null;
   status: string | null;
-  invoice: any | null;
+  invoice_options: any | null;
   invoice_issued_at: any | null;
   app_id: string | null;
   member_name: string | null;
@@ -9186,7 +9186,7 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
   /**
    * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
    */
-  invoice: any;
+  invoice_options: any;
   /**
    * An array relationship
    */
@@ -18421,7 +18421,7 @@ export enum order_log_update_column {
   discount_type = "discount_type",
   expired_at = "expired_at",
   id = "id",
-  invoice = "invoice",
+  invoice_options = "invoice_options",
   invoice_issued_at = "invoice_issued_at",
   is_deleted = "is_deleted",
   last_paid_at = "last_paid_at",
@@ -18575,7 +18575,7 @@ export enum payment_log_update_column {
   created_at = "created_at",
   custom_no = "custom_no",
   gateway = "gateway",
-  invoice = "invoice",
+  invoice_options = "invoice_options",
   invoice_issued_at = "invoice_issued_at",
   method = "method",
   no = "no",
@@ -28913,7 +28913,7 @@ export interface order_log_bool_exp {
   discount_type?: Int_comparison_exp | null;
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
-  invoice?: jsonb_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
@@ -28946,7 +28946,7 @@ export interface order_log_export_bool_exp {
   _or?: order_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
-  invoice?: jsonb_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   invoice_issued_at?: String_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
   member_email?: String_comparison_exp | null;
@@ -28977,7 +28977,7 @@ export interface order_log_export_bool_exp {
 export interface order_log_export_order_by {
   app_id?: order_by | null;
   created_at?: order_by | null;
-  invoice?: order_by | null;
+  invoice_options?: order_by | null;
   invoice_issued_at?: order_by | null;
   last_paid_at?: order_by | null;
   member_email?: order_by | null;
@@ -29018,7 +29018,7 @@ export interface order_log_insert_input {
   discount_type?: number | null;
   expired_at?: any | null;
   id?: string | null;
-  invoice?: any | null;
+  invoice_options?: any | null;
   invoice_issued_at?: any | null;
   is_deleted?: boolean | null;
   last_paid_at?: any | null;
@@ -29127,7 +29127,7 @@ export interface order_log_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
-  invoice?: order_by | null;
+  invoice_options?: order_by | null;
   invoice_issued_at?: order_by | null;
   is_deleted?: order_by | null;
   last_paid_at?: order_by | null;
@@ -29882,7 +29882,7 @@ export interface payment_log_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   custom_no?: String_comparison_exp | null;
   gateway?: String_comparison_exp | null;
-  invoice?: jsonb_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
   method?: String_comparison_exp | null;
   no?: String_comparison_exp | null;
@@ -29906,7 +29906,7 @@ export interface payment_log_export_bool_exp {
   _or?: payment_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
-  invoice?: jsonb_comparison_exp | null;
+  invoice_options?: jsonb_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
   member_name?: String_comparison_exp | null;
   order_discount_total_price?: numeric_comparison_exp | null;
@@ -29928,7 +29928,7 @@ export interface payment_log_insert_input {
   created_at?: any | null;
   custom_no?: string | null;
   gateway?: string | null;
-  invoice?: any | null;
+  invoice_options?: any | null;
   invoice_issued_at?: any | null;
   method?: string | null;
   no?: string | null;
