@@ -1,13 +1,12 @@
 import { Checkbox, Radio } from 'antd'
 import { RadioChangeEvent } from 'antd/lib/radio'
 import BraftEditor from 'braft-editor'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AdminBraftEditor from '../../components/form/AdminBraftEditor'
-import { BarsIcon, GridIcon, PlusIcon } from '../../images/icon'
-import { Question } from '../../types/questionLibrary'
-import { AddButton } from './QuestionCollapse'
-import QuestionOptionBlock from './QuestionOptionBlock'
+import { BarsIcon, GridIcon } from '../../images/icon'
+import { Question, QuestionOption } from '../../types/questionLibrary'
+import QuestionOptionsBlock from './QuestionOptionsBlock'
 
 const StyledP = styled.p`
   font-size: 16px;
@@ -59,11 +58,6 @@ const QuestionSubject = styled.div`
   }
 `
 
-const QuestionOptionsBlock = styled.div`
-  padding: 0 0 32px 24px;
-  width: 100%;
-`
-
 const ExplanationBlock = styled.div`
   .bf-content {
     height: 120px;
@@ -73,19 +67,40 @@ const ExplanationBlock = styled.div`
   }
 `
 
-const QuestionBlock: React.VFC<{ question?: Question; idx: number }> = ({ question, idx }) => {
-  const [layoutOption, setLayoutOption] = useState<string>(question?.layout || 'column')
-  const [isUseZhuYin, setIsUseZhuYin] = useState<boolean>(question?.font === 'zhuyin')
-  const [questionOptions, setQuestionOptions] = useState<Array<string>>(['選項一', '選項二'])
+const QuestionBlock: React.VFC<{
+  question: Question
+  onQuestionChange?: (question: Question) => void
+}> = ({ question, onQuestionChange }) => {
+  const [layoutOption, setLayoutOption] = useState<string>(question.layout || 'column')
+  const [isUseZhuYin, setIsUseZhuYin] = useState<boolean>(question.font === 'zhuyin')
+  const [subjectValue, setSubjectValue] = useState<string>('')
+
   const onLayoutOptionChange = (e: RadioChangeEvent) => {
+    const newQuestion = { ...question, layout: e.target.value }
     setLayoutOption(e.target.value)
+    onQuestionChange?.(newQuestion)
   }
+
+  const handleOptionListChange = (newOptions: QuestionOption[]) => {
+    const newQuestion = { ...question, options: newOptions }
+    onQuestionChange?.(newQuestion)
+  }
+
+  const handleSubjectValueChange = (value: string) => {
+    const newQuestion = { ...question, subject: value }
+    onQuestionChange?.(newQuestion)
+  }
+
+  useEffect(() => {
+    setSubjectValue(BraftEditor.createEditorState(question.subject))
+  }, [question])
+
   return (
     <>
       <StyledP>版型選項</StyledP>
       <LayoutOptionsBlock>
         <LayoutOptionsButtonGroup
-          defaultValue={question?.layout}
+          defaultValue={layoutOption}
           value={layoutOption}
           buttonStyle="solid"
           onChange={onLayoutOptionChange}
@@ -103,16 +118,20 @@ const QuestionBlock: React.VFC<{ question?: Question; idx: number }> = ({ questi
       </LayoutOptionsBlock>
       <StyledP>題目</StyledP>
       <QuestionSubject>
-        <AdminBraftEditor variant="short" value={BraftEditor.createEditorState(question?.subject)} />
+        <AdminBraftEditor
+          variant="short"
+          value={subjectValue}
+          onChange={v => setSubjectValue(v.toHTML())}
+          onBlur={() => handleSubjectValueChange(subjectValue)}
+        />
       </QuestionSubject>
-      <QuestionOptionsBlock>
-        {questionOptions.map((option, idx) => (
-          <QuestionOptionBlock key={idx} option={option} idx={idx} />
-        ))}
-        <AddButton type="link" icon={<PlusIcon />} className="align-items-center" onClick={() => alert('新增選項')}>
-          <span>新增選項</span>
-        </AddButton>
-      </QuestionOptionsBlock>
+      {question.options && (
+        <QuestionOptionsBlock
+          key={question.id}
+          optionList={question.options}
+          onOptionListChange={handleOptionListChange}
+        />
+      )}
       <ExplanationBlock>
         <StyledP>解答說明</StyledP>
         <AdminBraftEditor variant="short" />

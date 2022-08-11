@@ -17,4 +17,13 @@ export type Question = {
   layout: string
   font: string
   position: number
+  explanation: string | null
+  options?: QuestionOption[]
+}
+
+export type QuestionOption = {
+  id: string
+  value: string
+  isAnswer: boolean
+  position: number
 }

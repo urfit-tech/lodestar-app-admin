@@ -1,6 +1,7 @@
 import { CloseOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button } from 'antd'
+import { Grid, GridItem, Spinner } from '@chakra-ui/react'
+import { Button, Collapse } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -8,12 +9,13 @@ import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import hasura from '../../hasura'
-import { PlusIcon } from '../../images/icon'
+import { PlusIcon, TrashOIcon } from '../../images/icon'
 import { Question } from '../../types/questionLibrary'
 import LoadingPage from '../LoadingPage'
-import QuestionCollapse, { AddButton } from './QuestionCollapse'
+import QuestionBlock from './QuestionBlock'
 
 const StyledAdminHeader = styled(AdminHeader)`
   display: flex;
@@ -47,11 +49,46 @@ const QuestionGroupBlock = styled.div`
     letter-spacing: 0.8px;
     color: var(--gray-darker);
   }
-  .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  .ant-collapse > .ant-collapse-item.ant-collapse-no-arrow > .ant-collapse-header,
+  .ant-collapse-content > .ant-collapse-content-box {
     padding: 16px 24px;
   }
   .ant-collapse > .ant-collapse-item.ant-collapse-item-active .ant-collapse-header {
     padding-bottom: 0;
+  }
+`
+
+const StyledCollapse = styled(Collapse)`
+  background-color: #fff;
+  margin-bottom: 20px;
+  .ant-collapse-header {
+    background-color: #fff;
+  }
+  .ant-collapse-content {
+    background-color: #fff;
+    border: none;
+  }
+  .ant-collapse-content-active {
+    height: auto;
+  }
+`
+
+const StyledPanel = styled(Collapse.Panel)`
+  .ant-collapse-content-box {
+    padding: 16px 24px;
+  }
+`
+
+const QuestionTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+export const AddButton = styled(Button)`
+  padding: 0;
+  span {
+    margin-left: 8px;
   }
 `
 
@@ -109,7 +146,7 @@ const PreviewSubject = styled.div`
   padding-bottom: 24px;
 `
 
-const PreviewOptions = styled.div<{ layoutOption: string }>``
+const PreviewOptions = styled.div<{ previewMode: string }>``
 
 const ColumnOption = styled.div`
   padding: 16px;
@@ -123,31 +160,10 @@ const ColumnOption = styled.div`
   border-radius: 4px;
 `
 
-const GridOption = styled.div<{ imgSrc: string }>`
-  position: relative;
+const GridOption = styled.div`
   border: 1px solid var(--gray);
   border-radius: 4px;
-  .image-container {
-    width: 100%;
-  }
-  .image-container:before {
-    content: '';
-    display: block;
-    width: 100%;
-    padding-top: 100%;
-  }
-  .image-container .option-image {
-    background-image: url(${props => (props.imgSrc ? props.imgSrc : '')});
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+  padding: 16px;
 `
 
 const ExamName = styled.p`
@@ -165,33 +181,53 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { questionGroupId } = useParams<{ questionGroupId: string }>()
   const [savingLoading, setSavingLoading] = useState<boolean>(false)
-  const [questions, setQuestions] = useState<Array<Question>>()
-  const { insertQuestion, updateQuestion } = useQuestionMutation()
-  const { questionGroupLoading, questionGroupError, questionGroup, refetchQuestionGroup } =
+  const [questionList, setQuestionList] = useState<Question[]>([])
+  const [preview, setPreview] = useState<object & { question: Question; idx: number; mode: string }>({
+    question: { id: '', type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
+    idx: 0,
+    mode: '',
+  })
+  const [currentExpandedQuestionId, setCurrentExpandedQuestionId] = useState<string>('')
+  const { insertQuestion, updateQuestion, insertQuestionOption } = useQuestionMutation()
+  const { questionGroupLoading, questionGroupError, questionGroupTitle, questionGroup, refetchQuestionGroup } =
     useQuestionGroup(questionGroupId)
 
-  const handleSaveQuestion = () => {
-    // insertQuestion({
-    //   variables: {
-    //     subject: '超強題目456',
-    //     layout: 'column',
-    //     font: 'auto',
-    //     position: 1,
-    //     questionGroupId: questionGroupId,
-    //   },
-    // }).then(data => {
-    //   console.log(data)
-    //   refetchQuestionGroup()
-    // })
-    // updateQuestion({
-    //   variables: {
-    //     questionId: '5fd797e4-167e-4450-9121-5e0f2a422a67',
-    //     subject: '超強題目456',
-    //     layout: 'column',
-    //     font: 'auto',
-    //     position: 1,
-    //   },
-    // })
+  const handleSaveQuestionList = () => {}
+
+  const handleAddQuestion = () => {
+    setQuestionList([
+      ...questionList,
+      { id: uuid(), type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
+    ])
+  }
+
+  const handleQuestionDelete = (questionId: string) => {
+    setQuestionList(questionList.filter(q => q.id !== questionId))
+  }
+
+  const handleQuestionChange = (newQuestion: Question) => {
+    const newQuestionList = questionList.map(question => (question.id === newQuestion.id ? newQuestion : question))
+    setPreview({ ...preview, question: newQuestion, mode: newQuestion.layout })
+    setQuestionList(newQuestionList)
+  }
+
+  const handleChangeQuestionPanel = (questionId: string) => {
+    if (questionId === undefined) {
+      setPreview({
+        question: { id: '', type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
+        idx: 0,
+        mode: '',
+      })
+      setCurrentExpandedQuestionId('')
+      return
+    }
+
+    questionList.forEach((question, idx) => {
+      if (question.id === questionId) {
+        setPreview({ question: question, idx: idx + 1, mode: question.layout })
+        setCurrentExpandedQuestionId(questionId)
+      }
+    })
   }
 
   useEffect(() => {
@@ -199,12 +235,14 @@ const QuestionGroupAdminPage: React.VFC = () => {
   }, [])
 
   useEffect(() => {
-    if (!questions && questionGroup.length > 0) {
-      setQuestions(questionGroup)
-    } else if (!questions && !questionGroupLoading && questionGroup.length === 0) {
-      setQuestions([{ id: 'default', type: 'single', subject: '', layout: 'column', font: 'auto', position: 1 }])
+    if (questionList.length === 0 && questionGroup.length > 0) {
+      setQuestionList(questionGroup)
+    } else if (questionList.length === 0 && !questionGroupLoading && questionGroup.length === 0) {
+      setQuestionList([
+        { id: uuid(), type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
+      ])
     }
-  }, [questionGroup, questionGroupLoading, questions])
+  }, [questionGroup, questionGroupLoading, questionList])
 
   if (Object.keys(enabledModules).length === 0 || questionGroupLoading) {
     return <LoadingPage />
@@ -217,103 +255,90 @@ const QuestionGroupAdminPage: React.VFC = () => {
           <Button type="link" className="mr-2" onClick={() => history.goBack()}>
             <CloseOutlined />
           </Button>
-
-          {/* {loading ? (
-          <>
-            <Spinner />
-            <span className="flex-grow-1" />
-          </>
-        ) : ( */}
-          <AdminHeaderTitle>超強題庫123</AdminHeaderTitle>
-          {/* )} */}
+          {questionGroupLoading ? (
+            <>
+              <Spinner />
+              <span className="flex-grow-1" />
+            </>
+          ) : (
+            <AdminHeaderTitle>{questionGroupTitle}</AdminHeaderTitle>
+          )}
         </div>
         <div className="header-right">
           <Button className="ml-3">取消</Button>
-          <Button className="ml-3" type="primary" onClick={handleSaveQuestion}>
+          <Button className="ml-3" type="primary" onClick={handleSaveQuestionList}>
             儲存
           </Button>
         </div>
       </StyledAdminHeader>
       <StyledContent>
-        {questions?.length}
-        <QuestionGroupBlock>
-          <QuestionCollapse questions={questions} />
-          <AddQuestionBlock>
-            <AddButton
-              type="link"
-              icon={<PlusIcon />}
-              className="align-items-center"
-              onClick={() => {
-                console.log(questions)
-                const copyQuestionsArr = questions
-                copyQuestionsArr?.push({
-                  id: 'default',
-                  type: 'single',
-                  subject: '',
-                  layout: 'column',
-                  font: 'auto',
-                  position: 1,
-                })
-                setQuestions(copyQuestionsArr)
+        {!questionGroupLoading && (
+          <QuestionGroupBlock>
+            <StyledCollapse
+              accordion={true}
+              onChange={v => {
+                if (typeof v === 'string' || v === undefined) {
+                  handleChangeQuestionPanel(v)
+                }
               }}
             >
-              <span>新增題目</span>
-            </AddButton>
-          </AddQuestionBlock>
-        </QuestionGroupBlock>
+              {questionList?.map((question, idx) => {
+                return (
+                  <StyledPanel
+                    header={
+                      <QuestionTitle>
+                        題目 {idx + 1}
+                        {questionList.length > 1 && (
+                          <TrashOIcon
+                            style={{ zIndex: 99999 }}
+                            onClick={e => {
+                              e.preventDefault()
+                              handleQuestionDelete(question.id)
+                            }}
+                          />
+                        )}
+                      </QuestionTitle>
+                    }
+                    key={question.id}
+                    showArrow={false}
+                  >
+                    <QuestionBlock question={question} onQuestionChange={handleQuestionChange} />
+                  </StyledPanel>
+                )
+              })}
+            </StyledCollapse>
+            <AddQuestionBlock>
+              <AddButton type="link" icon={<PlusIcon />} className="align-items-center" onClick={handleAddQuestion}>
+                <span>新增題目</span>
+              </AddButton>
+            </AddQuestionBlock>
+          </QuestionGroupBlock>
+        )}
         <PreviewBlock>
-          <PreviewQuestion>
-            <ExamName>課後測驗</ExamName>
-            <CurrentQuestionIndex>
-              <p>1 / 2</p>
-            </CurrentQuestionIndex>
-            <PreviewSubject>
-              小陳正在考慮使用付費搜尋廣告為自己的商家放送廣告。
-              <br />
-              你認為付費搜尋廣告這種行銷方式如此有效的原因何在？
-            </PreviewSubject>
-            {/* <PreviewOptions layoutOption={layoutOption}>
-              {layoutOption === 'column' ? (
-                <>
-                  <ColumnOption>選項一</ColumnOption>
-                  <ColumnOption>選項二</ColumnOption>
-                  <ColumnOption>選項三</ColumnOption>
-                  <ColumnOption>選項四</ColumnOption>
-                </>
-              ) : (
-                <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-                  <GridItem colSpan={1} w="100%">
-                    <GridOption imgSrc="https://i.ytimg.com/vi/_ranO9lNH7A/maxresdefault.jpg">
-                      <div className="image-container">
-                        <div className="option-image"></div>
-                      </div>
-                    </GridOption>
-                  </GridItem>
-                  <GridItem colSpan={1} w="100%">
-                    <GridOption imgSrc="https://i.ytimg.com/vi/_ranO9lNH7A/maxresdefault.jpg">
-                      <div className="image-container">
-                        <div className="option-image"></div>
-                      </div>
-                    </GridOption>
-                  </GridItem>
-                  <GridItem colSpan={1} w="100%">
-                    <GridOption imgSrc="https://i.ytimg.com/vi/_ranO9lNH7A/maxresdefault.jpg">
-                      <div className="image-container">
-                        <div className="option-image"></div>
-                      </div>
-                    </GridOption>
-                  </GridItem>
-                  <GridItem colSpan={1} w="100%">
-                    <GridOption imgSrc="https://i.ytimg.com/vi/_ranO9lNH7A/maxresdefault.jpg">
-                      <div className="image-container">
-                        <div className="option-image"></div>
-                      </div>
-                    </GridOption>
-                  </GridItem>
-                </Grid>
-              )}
-            </PreviewOptions> */}
-          </PreviewQuestion>
+          {preview.question.id !== '' && (
+            <PreviewQuestion>
+              <ExamName>課後測驗</ExamName>
+              <CurrentQuestionIndex>
+                <p>{`${preview.idx} / ${questionList.length}`}</p>
+              </CurrentQuestionIndex>
+              <PreviewSubject dangerouslySetInnerHTML={{ __html: preview.question.subject }} />
+              <PreviewOptions previewMode={preview.mode}>
+                {preview.mode === 'column' &&
+                  preview.question.options?.map(option => (
+                    <ColumnOption key={`preview_${option.id}`} dangerouslySetInnerHTML={{ __html: option.value }} />
+                  ))}
+                {preview.mode === 'grid' && (
+                  <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                    {preview.question.options?.map(option => (
+                      <GridItem key={`preview_${option.id}`} colSpan={1} w="100%">
+                        <GridOption dangerouslySetInnerHTML={{ __html: option.value }} />
+                      </GridItem>
+                    ))}
+                  </Grid>
+                )}
+              </PreviewOptions>
+            </PreviewQuestion>
+          )}
         </PreviewBlock>
       </StyledContent>
     </>
@@ -347,6 +372,18 @@ const useQuestionMutation = () => {
       }
     }
   `)
+  const [insertQuestionOption] = useMutation<hasura.INSERT_QUESTION_OPTION, hasura.INSERT_QUESTION_OPTIONVariables>(gql`
+    mutation INSERT_QUESTION_OPTION($value: String!, $isAnswer: Boolean!, $position: Int!, $questionId: uuid!) {
+      insert_question_option(
+        objects: { value: $value, is_answer: $isAnswer, position: $position, question_id: $questionId }
+      ) {
+        affected_rows
+        returning {
+          id
+        }
+      }
+    }
+  `)
   const [updateQuestion] = useMutation<hasura.UPDATE_QUESTION, hasura.UPDATE_QUESTIONVariables>(gql`
     mutation UPDATE_QUESTION($questionId: uuid!, $subject: String!, $layout: String!, $font: String!, $position: Int!) {
       update_question(
@@ -360,6 +397,7 @@ const useQuestionMutation = () => {
   return {
     insertQuestion,
     updateQuestion,
+    insertQuestionOption,
   }
 }
 
@@ -374,16 +412,26 @@ const useQuestionGroup = (questionGroupId: string) => {
   )
 
   const questions: Question[] =
-    data?.question.map(v => ({
+    data?.question_group_by_pk?.questions.map(v => ({
       id: v.id,
       type: v.type,
       subject: v.subject,
       layout: v.layout,
       font: v.font,
+      explanation: v.explanation,
       position: v.position,
+      options: v.question_options.map(w => {
+        return {
+          id: String(w.id),
+          value: w.value,
+          isAnswer: w.is_answer || false,
+          position: w.position,
+        }
+      }),
     })) || []
 
   return {
+    questionGroupTitle: data?.question_group_by_pk?.title,
     questionGroup: questions,
     refetchQuestionGroup: refetch,
     questionGroupLoading: loading,
@@ -393,13 +441,23 @@ const useQuestionGroup = (questionGroupId: string) => {
 
 const GET_QUESTIONS = gql`
   query GET_QUESTIONS($questionGroupId: uuid!) {
-    question(where: { question_group_id: { _eq: $questionGroupId }, deleted_at: { _is_null: true } }) {
-      id
-      type
-      subject
-      layout
-      font
-      position
+    question_group_by_pk(id: $questionGroupId) {
+      title
+      questions(order_by: { position: asc }) {
+        id
+        type
+        subject
+        layout
+        font
+        explanation
+        position
+        question_options(order_by: { position: asc }) {
+          id
+          value
+          is_answer
+          position
+        }
+      }
     }
   }
 `
