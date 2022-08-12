@@ -34,7 +34,7 @@ const LayoutOptionButton = styled(Radio.Button)`
 
 const StyledBarsIcon = styled(BarsIcon)<{ layoutOption: string }>`
   path {
-    fill: ${props => (props.layoutOption === 'column' ? '#fff' : '#585858')};
+    fill: ${props => (props.layoutOption === 'lists' ? '#fff' : '#585858')};
   }
 `
 
@@ -71,9 +71,10 @@ const QuestionBlock: React.VFC<{
   question: Question
   onQuestionChange?: (question: Question) => void
 }> = ({ question, onQuestionChange }) => {
-  const [layoutOption, setLayoutOption] = useState<string>(question.layout || 'column')
+  const [layoutOption, setLayoutOption] = useState<string>(question.layout || 'lists')
   const [isUseZhuYin, setIsUseZhuYin] = useState<boolean>(question.font === 'zhuyin')
   const [subjectValue, setSubjectValue] = useState<string>('')
+  const [explanationValue, setExplanationValue] = useState<string>('')
 
   const onLayoutOptionChange = (e: RadioChangeEvent) => {
     const newQuestion = { ...question, layout: e.target.value }
@@ -86,13 +87,25 @@ const QuestionBlock: React.VFC<{
     onQuestionChange?.(newQuestion)
   }
 
+  const handleFontChange = () => {
+    const newQuestion = { ...question, font: !isUseZhuYin ? 'zhuyin' : 'auto' }
+    setIsUseZhuYin(!isUseZhuYin)
+    onQuestionChange?.(newQuestion)
+  }
+
   const handleSubjectValueChange = (value: string) => {
     const newQuestion = { ...question, subject: value }
     onQuestionChange?.(newQuestion)
   }
 
+  const handleExplanationValueChange = (value: string) => {
+    const newQuestion = { ...question, explanation: value }
+    onQuestionChange?.(newQuestion)
+  }
+
   useEffect(() => {
     setSubjectValue(BraftEditor.createEditorState(question.subject))
+    setExplanationValue(BraftEditor.createEditorState(question.explanation))
   }, [question])
 
   return (
@@ -105,14 +118,14 @@ const QuestionBlock: React.VFC<{
           buttonStyle="solid"
           onChange={onLayoutOptionChange}
         >
-          <LayoutOptionButton value="column">
+          <LayoutOptionButton value="lists">
             <StyledBarsIcon layoutOption={layoutOption} />
           </LayoutOptionButton>
           <LayoutOptionButton value="grid">
             <StyledGridIcon layoutOption={layoutOption} />
           </LayoutOptionButton>
         </LayoutOptionsButtonGroup>
-        <StyledCheckBox checked={isUseZhuYin ? true : false} onClick={() => setIsUseZhuYin(!isUseZhuYin)}>
+        <StyledCheckBox checked={isUseZhuYin ? true : false} onClick={handleFontChange}>
           使用注音字型
         </StyledCheckBox>
       </LayoutOptionsBlock>
@@ -134,7 +147,12 @@ const QuestionBlock: React.VFC<{
       )}
       <ExplanationBlock>
         <StyledP>解答說明</StyledP>
-        <AdminBraftEditor variant="short" />
+        <AdminBraftEditor
+          variant="short"
+          value={explanationValue}
+          onChange={v => setExplanationValue(v.toHTML())}
+          onBlur={() => handleExplanationValueChange(explanationValue)}
+        />
       </ExplanationBlock>
     </>
   )

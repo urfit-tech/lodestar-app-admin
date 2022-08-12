@@ -1,7 +1,7 @@
 import { CloseOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Grid, GridItem, Spinner } from '@chakra-ui/react'
-import { Button, Collapse } from 'antd'
+import { Button, Collapse, message } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -148,7 +148,7 @@ const PreviewSubject = styled.div`
 
 const PreviewOptions = styled.div<{ previewMode: string }>``
 
-const ColumnOption = styled.div`
+const ListsOption = styled.div`
   padding: 16px;
   margin-bottom: 16px;
   font-size: 16px;
@@ -182,27 +182,99 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const { questionGroupId } = useParams<{ questionGroupId: string }>()
   const [savingLoading, setSavingLoading] = useState<boolean>(false)
   const [questionList, setQuestionList] = useState<Question[]>([])
+  const [deletedQuestionIdList, setDeletedQuestionIdList] = useState<string[]>([])
   const [preview, setPreview] = useState<object & { question: Question; idx: number; mode: string }>({
-    question: { id: '', type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
-    idx: 0,
+    question: { id: '', type: 'single', subject: '', layout: 'lists', font: 'auto', explanation: '', position: 1 },
+    idx: -1,
     mode: '',
   })
-  const [currentExpandedQuestionId, setCurrentExpandedQuestionId] = useState<string>('')
-  const { insertQuestion, updateQuestion, insertQuestionOption } = useQuestionMutation()
-  const { questionGroupLoading, questionGroupError, questionGroupTitle, questionGroup, refetchQuestionGroup } =
-    useQuestionGroup(questionGroupId)
+  const { upsertQuestion } = useQuestionMutation()
 
-  const handleSaveQuestionList = () => {}
+  const {
+    questionListLoading,
+    questionListError,
+    questionLibraryId,
+    questionGroupTitle,
+    originalQuestionList,
+    refetchQuestionGroup,
+  } = useQuestionGroup(questionGroupId)
+
+  const handleSaveQuestionList = () => {
+    setSavingLoading(true)
+    let questionOptionsData: Array<any> = []
+    questionList.forEach(question => {
+      question.options?.forEach(option => {
+        questionOptionsData.push({
+          id: option.id,
+          value: option.value,
+          is_answer: option.isAnswer,
+          position: option.position,
+          question_id: question.id,
+        })
+      })
+    })
+    upsertQuestion({
+      variables: {
+        questionListData: questionList.map(question => ({
+          id: question.id,
+          question_group_id: questionGroupId,
+          subject: question.subject,
+          layout: question.layout,
+          font: question.font,
+          explanation: question.explanation || '',
+          position: question.position,
+        })),
+        questionOptionsData: questionOptionsData,
+        archivedQuestionIds: originalQuestionList.length > 0 ? deletedQuestionIdList : [],
+        questionGroupIdForUpdatedAt: questionGroupId,
+        questionLibraryIdForUpdatedAt: questionLibraryId,
+      },
+    })
+      .then(data => {
+        refetchQuestionGroup()
+      })
+      .catch(err => {
+        message.error('儲存失敗', 3)
+      })
+      .finally(() => {
+        setSavingLoading(false)
+        message.success('儲存成功', 3)
+      })
+  }
 
   const handleAddQuestion = () => {
     setQuestionList([
       ...questionList,
-      { id: uuid(), type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
+      {
+        id: uuid(),
+        type: 'single',
+        subject: '',
+        layout: 'lists',
+        font: 'auto',
+        explanation: '',
+        position: questionList.length + 1,
+        options: [
+          {
+            id: uuid(),
+            value: '<p><strong>選項1</strong></p>',
+            isAnswer: true,
+            position: 1,
+          },
+          {
+            id: uuid(),
+            value: '<p><strong>選項2</strong></p>',
+            isAnswer: false,
+            position: 2,
+          },
+        ],
+      },
     ])
   }
 
   const handleQuestionDelete = (questionId: string) => {
     setQuestionList(questionList.filter(q => q.id !== questionId))
+    setDeletedQuestionIdList([...deletedQuestionIdList, questionId])
+    handleChangeQuestionPanel(undefined)
   }
 
   const handleQuestionChange = (newQuestion: Question) => {
@@ -211,21 +283,19 @@ const QuestionGroupAdminPage: React.VFC = () => {
     setQuestionList(newQuestionList)
   }
 
-  const handleChangeQuestionPanel = (questionId: string) => {
+  const handleChangeQuestionPanel = (questionId: string | undefined) => {
     if (questionId === undefined) {
       setPreview({
-        question: { id: '', type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
-        idx: 0,
+        question: { id: '', type: 'single', subject: '', layout: 'lists', font: 'auto', explanation: '', position: 1 },
+        idx: -1,
         mode: '',
       })
-      setCurrentExpandedQuestionId('')
       return
     }
 
     questionList.forEach((question, idx) => {
       if (question.id === questionId) {
         setPreview({ question: question, idx: idx + 1, mode: question.layout })
-        setCurrentExpandedQuestionId(questionId)
       }
     })
   }
@@ -235,16 +305,38 @@ const QuestionGroupAdminPage: React.VFC = () => {
   }, [])
 
   useEffect(() => {
-    if (questionList.length === 0 && questionGroup.length > 0) {
-      setQuestionList(questionGroup)
-    } else if (questionList.length === 0 && !questionGroupLoading && questionGroup.length === 0) {
+    if (questionList.length === 0 && originalQuestionList.length > 0) {
+      setQuestionList(originalQuestionList)
+    } else if (questionList.length === 0 && !questionListLoading && originalQuestionList.length === 0) {
       setQuestionList([
-        { id: uuid(), type: 'single', subject: '', layout: 'column', font: 'auto', explanation: '', position: 1 },
+        {
+          id: uuid(),
+          type: 'single',
+          subject: '',
+          layout: 'lists',
+          font: 'auto',
+          explanation: '',
+          position: 1,
+          options: [
+            {
+              id: uuid(),
+              value: '<p><strong>選項1</strong></p>',
+              isAnswer: true,
+              position: 1,
+            },
+            {
+              id: uuid(),
+              value: '<p><strong>選項2</strong></p>',
+              isAnswer: false,
+              position: 2,
+            },
+          ],
+        },
       ])
     }
-  }, [questionGroup, questionGroupLoading, questionList])
+  }, [originalQuestionList, questionListLoading, questionList])
 
-  if (Object.keys(enabledModules).length === 0 || questionGroupLoading) {
+  if (Object.keys(enabledModules).length === 0 || questionListLoading) {
     return <LoadingPage />
   }
 
@@ -255,7 +347,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
           <Button type="link" className="mr-2" onClick={() => history.goBack()}>
             <CloseOutlined />
           </Button>
-          {questionGroupLoading ? (
+          {questionListLoading ? (
             <>
               <Spinner />
               <span className="flex-grow-1" />
@@ -265,14 +357,16 @@ const QuestionGroupAdminPage: React.VFC = () => {
           )}
         </div>
         <div className="header-right">
-          <Button className="ml-3">取消</Button>
-          <Button className="ml-3" type="primary" onClick={handleSaveQuestionList}>
+          <Button className="ml-3" onClick={() => setQuestionList(originalQuestionList)}>
+            取消
+          </Button>
+          <Button className="ml-3" type="primary" onClick={handleSaveQuestionList} loading={savingLoading}>
             儲存
           </Button>
         </div>
       </StyledAdminHeader>
       <StyledContent>
-        {!questionGroupLoading && (
+        {!questionListLoading && (
           <QuestionGroupBlock>
             <StyledCollapse
               accordion={true}
@@ -291,9 +385,10 @@ const QuestionGroupAdminPage: React.VFC = () => {
                         {questionList.length > 1 && (
                           <TrashOIcon
                             style={{ zIndex: 99999 }}
-                            onClick={e => {
-                              e.preventDefault()
-                              handleQuestionDelete(question.id)
+                            onClick={() => {
+                              setTimeout(() => {
+                                handleQuestionDelete(question.id)
+                              }, 0)
                             }}
                           />
                         )}
@@ -315,17 +410,17 @@ const QuestionGroupAdminPage: React.VFC = () => {
           </QuestionGroupBlock>
         )}
         <PreviewBlock>
-          {preview.question.id !== '' && (
+          {preview.idx !== -1 && (
             <PreviewQuestion>
-              <ExamName>課後測驗</ExamName>
+              <ExamName>課後名稱</ExamName>
               <CurrentQuestionIndex>
                 <p>{`${preview.idx} / ${questionList.length}`}</p>
               </CurrentQuestionIndex>
               <PreviewSubject dangerouslySetInnerHTML={{ __html: preview.question.subject }} />
               <PreviewOptions previewMode={preview.mode}>
-                {preview.mode === 'column' &&
+                {preview.mode === 'lists' &&
                   preview.question.options?.map(option => (
-                    <ColumnOption key={`preview_${option.id}`} dangerouslySetInnerHTML={{ __html: option.value }} />
+                    <ListsOption key={`preview_${option.id}`} dangerouslySetInnerHTML={{ __html: option.value }} />
                   ))}
                 {preview.mode === 'grid' && (
                   <Grid templateColumns="repeat(2, 1fr)" gap={4}>
@@ -348,56 +443,45 @@ const QuestionGroupAdminPage: React.VFC = () => {
 export default QuestionGroupAdminPage
 
 const useQuestionMutation = () => {
-  const [insertQuestion] = useMutation<hasura.INSERT_QUESTION, hasura.INSERT_QUESTIONVariables>(gql`
-    mutation INSERT_QUESTION(
-      $subject: String!
-      $layout: String!
-      $font: String!
-      $position: Int!
-      $questionGroupId: uuid!
+  const [upsertQuestion] = useMutation<hasura.UPSERT_QUESTION, hasura.UPSERT_QUESTIONVariables>(gql`
+    mutation UPSERT_QUESTION(
+      $questionListData: [question_insert_input!]!
+      $questionOptionsData: [question_option_insert_input!]!
+      $archivedQuestionIds: [uuid!]!
+      $questionGroupIdForUpdatedAt: uuid!
+      $questionLibraryIdForUpdatedAt: uuid!
     ) {
       insert_question(
-        objects: {
-          subject: $subject
-          layout: $layout
-          font: $font
-          position: $position
-          question_group_id: $questionGroupId
-        }
+        objects: $questionListData
+        on_conflict: { constraint: question_pkey, update_columns: [subject, layout, font, explanation, position] }
       ) {
         affected_rows
         returning {
           id
         }
       }
-    }
-  `)
-  const [insertQuestionOption] = useMutation<hasura.INSERT_QUESTION_OPTION, hasura.INSERT_QUESTION_OPTIONVariables>(gql`
-    mutation INSERT_QUESTION_OPTION($value: String!, $isAnswer: Boolean!, $position: Int!, $questionId: uuid!) {
       insert_question_option(
-        objects: { value: $value, is_answer: $isAnswer, position: $position, question_id: $questionId }
+        objects: $questionOptionsData
+        on_conflict: { constraint: question_option_pkey, update_columns: [value, is_answer, position] }
       ) {
         affected_rows
         returning {
           id
         }
       }
-    }
-  `)
-  const [updateQuestion] = useMutation<hasura.UPDATE_QUESTION, hasura.UPDATE_QUESTIONVariables>(gql`
-    mutation UPDATE_QUESTION($questionId: uuid!, $subject: String!, $layout: String!, $font: String!, $position: Int!) {
-      update_question(
-        where: { id: { _eq: $questionId } }
-        _set: { subject: $subject, layout: $layout, font: $font, position: $position }
-      ) {
+      update_question(where: { id: { _in: $archivedQuestionIds } }, _set: { deleted_at: "now()" }) {
+        affected_rows
+      }
+      update_question_group(where: { id: { _eq: $questionGroupIdForUpdatedAt } }, _set: { updated_at: "now()" }) {
+        affected_rows
+      }
+      update_question_library(where: { id: { _eq: $questionLibraryIdForUpdatedAt } }, _set: { updated_at: "now()" }) {
         affected_rows
       }
     }
   `)
   return {
-    insertQuestion,
-    updateQuestion,
-    insertQuestionOption,
+    upsertQuestion,
   }
 }
 
@@ -431,11 +515,12 @@ const useQuestionGroup = (questionGroupId: string) => {
     })) || []
 
   return {
+    questionLibraryId: data?.question_group_by_pk?.question_library.id,
     questionGroupTitle: data?.question_group_by_pk?.title,
-    questionGroup: questions,
+    originalQuestionList: questions,
     refetchQuestionGroup: refetch,
-    questionGroupLoading: loading,
-    questionGroupError: error,
+    questionListLoading: loading,
+    questionListError: error,
   }
 }
 
@@ -457,6 +542,9 @@ const GET_QUESTIONS = gql`
           is_answer
           position
         }
+      }
+      question_library {
+        id
       }
     }
   }

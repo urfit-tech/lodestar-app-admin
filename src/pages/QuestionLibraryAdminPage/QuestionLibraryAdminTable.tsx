@@ -47,7 +47,7 @@ const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filter
 type QuestionGroupColumn = {
   id: string
   title: string
-  amount: number
+  count: number
   modifier: string
   lastModified: string
 }
@@ -78,7 +78,13 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
 
   const handleDelete = (questionGroupId: string, setVisible: (visible: boolean) => void) => {
     setDetailLoading(true)
-    archiveQuestionGroup({ variables: { questionGroupId: questionGroupId, modifierId: currentMemberId } })
+    archiveQuestionGroup({
+      variables: {
+        questionGroupId: questionGroupId,
+        modifierId: currentMemberId,
+        questionLibraryIdForArchive: questionLibraryId,
+      },
+    })
       .then(() => {
         refetchQuestionGroups()
         message.success(formatMessage(questionLibraryMessage.message.successDeletedQuestionGroup), 3)
@@ -89,6 +95,7 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
         setVisible(false)
       })
   }
+
   const handleRename = (questionGroupId: string, setVisible: (visible: boolean) => void) => {
     setDetailLoading(true)
     form
@@ -100,6 +107,7 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
             questionGroupId: questionGroupId,
             title: values.title,
             modifierId: currentMemberId,
+            questionLibraryIdForUpdate: questionLibraryId,
           },
         })
           .then(() => {
@@ -143,10 +151,10 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
       filterIcon,
     },
     {
-      key: 'amount',
+      key: 'count',
       title: formatMessage(questionLibraryMessage.label.totalQuestions),
       width: '15%',
-      render: (_, record) => <div>{record.amount}</div>,
+      render: (_, record) => <div>{record.count}</div>,
     },
     {
       key: 'latestUpdatedAt',
@@ -275,11 +283,12 @@ const useQuestionGroups = (condition: hasura.GET_QUESTION_GROUPSVariables['condi
       condition,
     },
   })
+
   const questionGroups: QuestionGroupColumn[] =
     data?.question_group.map(v => ({
       id: v.id,
       title: v.title,
-      amount: 0,
+      count: v?.questions_aggregate?.aggregate?.count || 0,
       modifierId: v.modifier_id,
       modifier: v.modifier.name,
       lastModified: moment(v.updated_at).format('YYYY-MM-DD HH:mm:ss'),
@@ -303,24 +312,40 @@ const GET_QUESTION_GROUPS = gql`
         name
       }
       updated_at
+      questions_aggregate {
+        aggregate {
+          count
+        }
+      }
     }
   }
 `
 
 const UPDATE_QUESTION_GROUP_TITLE = gql`
-  mutation UPDATE_QUESTION_GROUP_TITLE($questionGroupId: uuid!, $title: String!, $modifierId: String!) {
+  mutation UPDATE_QUESTION_GROUP_TITLE(
+    $questionGroupId: uuid!
+    $title: String!
+    $modifierId: String!
+    $questionLibraryIdForUpdate: uuid!
+  ) {
     update_question_group(_set: { title: $title, modifier_id: $modifierId }, where: { id: { _eq: $questionGroupId } }) {
+      affected_rows
+    }
+    update_question_library(where: { id: { _eq: $questionLibraryIdForUpdate } }, _set: { updated_at: "now()" }) {
       affected_rows
     }
   }
 `
 
 const ARCHIVE_QUESTION_GROUP = gql`
-  mutation ARCHIVE_QUESTION_GROUP($questionGroupId: uuid!, $modifierId: String!) {
+  mutation ARCHIVE_QUESTION_GROUP($questionGroupId: uuid!, $modifierId: String!, $questionLibraryIdForArchive: uuid!) {
     update_question_group(
       where: { id: { _eq: $questionGroupId } }
       _set: { modifier_id: $modifierId, deleted_at: "now()" }
     ) {
+      affected_rows
+    }
+    update_question_library(where: { id: { _eq: $questionLibraryIdForArchive } }, _set: { updated_at: "now()" }) {
       affected_rows
     }
   }

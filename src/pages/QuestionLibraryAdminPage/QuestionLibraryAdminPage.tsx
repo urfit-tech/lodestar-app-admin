@@ -6,7 +6,7 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -28,7 +28,6 @@ import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import QuestionLibraryAdminTable from './QuestionLibraryAdminTable'
 import QuestionLibraryBasicForm from './QuestionLibraryBasicForm'
-import QuestionLibraryTreeTransfer from './QuestionLibraryTreeTransfer'
 
 type FieldProps = {
   title: string
@@ -71,6 +70,10 @@ const QuestionLibraryAdminPage: React.VFC = () => {
         .catch(handleError)
     })
   }
+
+  useEffect(() => {
+    refetchQuestionLibrary()
+  }, [refetchQuestionLibrary])
 
   if (Object.keys(enabledModules).length === 0 || loading) {
     return <LoadingPage />
@@ -161,9 +164,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
                           <Select.Option value="random">題庫隨機抽題</Select.Option>
                         </Select>
                         {questionGroupType === 'import' && (
-                          <Form.Item name="importQuestion">
-                            <QuestionLibraryTreeTransfer />
-                          </Form.Item>
+                          <Form.Item name="importQuestion">{/* <QuestionLibraryTreeTransfer /> */}</Form.Item>
                         )}
                       </Form.Item>
                     </Form>
@@ -243,6 +244,9 @@ const INSERT_QUESTION_GROUP = gql`
       returning {
         id
       }
+    }
+    update_question_library(_set: { updated_at: "now()" }, where: { id: { _eq: $questionLibraryId } }) {
+      affected_rows
     }
   }
 `

@@ -46,7 +46,7 @@ const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filter
 type QuestionLibraryColumn = {
   id: string
   title: string
-  amount: number
+  count: number
   modifier: string
   lastModified: string
 }
@@ -107,10 +107,10 @@ const QuestionLibraryCollectionTable: React.VFC<{ appId: string; currentMemberId
       filterIcon,
     },
     {
-      key: 'amount',
+      key: 'count',
       title: formatMessage(questionLibraryMessage.label.totalQuestionGroups),
       width: '10%',
-      render: (_, record) => <div>{record.amount}</div>,
+      render: (_, record) => <div>{record.count}</div>,
     },
     {
       key: 'latestUpdatedAt',
@@ -201,7 +201,7 @@ const useQuestionLibraries = (condition: hasura.GET_QUESTION_LIBRARIESVariables[
     data?.question_library.map(v => ({
       id: v.id,
       title: v.title,
-      amount: 0,
+      count: v?.question_groups_aggregate?.aggregate?.count || 0,
       modifierId: v.modifier_id,
       modifier: v.modifier.name,
       lastModified: moment(v.updated_at).format('YYYY-MM-DD HH:mm:ss'),
@@ -225,6 +225,11 @@ const GET_QUESTION_LIBRARIES = gql`
         name
       }
       updated_at
+      question_groups_aggregate {
+        aggregate {
+          count
+        }
+      }
     }
   }
 `
