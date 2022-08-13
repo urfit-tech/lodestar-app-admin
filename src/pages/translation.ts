@@ -218,6 +218,7 @@ const pageMessages = {
       id: 'page.CertificateAdminPage.deleteCertificateDangerText',
       defaultMessage: '*已收到證書在刪除後仍可觀看。',
     },
+    preview: { id: 'page.CertificateAdminPage.preview', defaultMessage: '預覽' },
   }),
   CertificateBasicForm: defineMessages({
     certificateTitle: { id: 'page.CertificateBasicForm.certificateTitle', defaultMessage: '證書名稱' },
@@ -228,6 +229,9 @@ const pageMessages = {
       id: 'page.CertificateBasicForm.certificateTemplateIsRequired',
       defaultMessage: 'Please select a template.',
     },
+  }),
+  CertificatePreviewModal: defineMessages({
+    demoName: { id: 'page.CertificatePreviewModal.demoName', defaultMessage: '王大明' },
   }),
   CertificateSelector: defineMessages({
     selectTemplate: { id: 'page.CertificateSelector.selectTemplate', defaultMessage: 'select template' },
