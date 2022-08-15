@@ -98,7 +98,7 @@
     "lodash": "^4.17.21",
     "lodestar-app-element": "urfit-tech/lodestar-app-element#master",
     "md5": "^2.3.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.31",
     "mustache": "^4.1.0",
