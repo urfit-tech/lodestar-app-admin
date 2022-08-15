@@ -1674,6 +1674,7 @@
   "page.AppointmentPeriodCollectionAdminPage.emptyAppointment": "目前還沒有任何預約",
   "page.CertificateAdminPage.certificateIntro": "證書介紹",
   "page.CertificateAdminPage.deleteCertificateDangerText": "*已收到證書在刪除後仍可觀看。",
+  "page.CertificateAdminPage.preview": "預覽",
   "page.CertificateBasicForm.CertificateCollectionTable": "證書樣板",
   "page.CertificateBasicForm.certificateTemplateIsRequired": "Please select a template.",
   "page.CertificateBasicForm.certificateTitle": "證書名稱",
