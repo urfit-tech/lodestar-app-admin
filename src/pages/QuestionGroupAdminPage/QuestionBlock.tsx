@@ -94,7 +94,7 @@ const QuestionBlock: React.VFC<{
   }
 
   const handleSubjectValueChange = (value: string) => {
-    const newQuestion = { ...question, subject: value }
+    const newQuestion = { ...question, title: value.replace(/<[^>]+>/g, ''), subject: value }
     onQuestionChange?.(newQuestion)
   }
 

@@ -13,6 +13,7 @@ export type QuestionLibrary = {
 export type Question = {
   id: string
   type: string
+  title: string
   subject: string
   layout: string
   font: string

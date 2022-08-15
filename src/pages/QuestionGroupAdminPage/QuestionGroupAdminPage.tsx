@@ -5,12 +5,14 @@ import { Button, Collapse, message } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { handleError } from 'lodestar-app-element/src/helpers'
 import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
+import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import hasura from '../../hasura'
 import { PlusIcon, TrashOIcon } from '../../images/icon'
 import { Question } from '../../types/questionLibrary'
@@ -184,11 +186,20 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const [questionList, setQuestionList] = useState<Question[]>([])
   const [deletedQuestionIdList, setDeletedQuestionIdList] = useState<string[]>([])
   const [preview, setPreview] = useState<object & { question: Question; idx: number; mode: string }>({
-    question: { id: '', type: 'single', subject: '', layout: 'lists', font: 'auto', explanation: '', position: 1 },
+    question: {
+      id: '',
+      type: 'single',
+      title: '',
+      subject: '',
+      layout: 'lists',
+      font: 'auto',
+      explanation: '',
+      position: 1,
+    },
     idx: -1,
     mode: '',
   })
-  const { upsertQuestion } = useQuestionMutation()
+  const { upsertQuestion, updateQuestionPosition } = useQuestionMutation()
 
   const {
     questionListLoading,
@@ -248,7 +259,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
       {
         id: uuid(),
         type: 'single',
-        subject: '',
+        title: `題目 ${questionList.length + 1}`,
+        subject: `<p>題目 ${questionList.length + 1}</p>`,
         layout: 'lists',
         font: 'auto',
         explanation: '',
@@ -274,7 +286,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const handleQuestionDelete = (questionId: string) => {
     setQuestionList(questionList.filter(q => q.id !== questionId))
     setDeletedQuestionIdList([...deletedQuestionIdList, questionId])
-    handleChangeQuestionPanel(undefined)
+    handleQuestionPanelChange(undefined)
   }
 
   const handleQuestionChange = (newQuestion: Question) => {
@@ -283,10 +295,19 @@ const QuestionGroupAdminPage: React.VFC = () => {
     setQuestionList(newQuestionList)
   }
 
-  const handleChangeQuestionPanel = (questionId: string | undefined) => {
+  const handleQuestionPanelChange = (questionId: string | undefined) => {
     if (questionId === undefined) {
       setPreview({
-        question: { id: '', type: 'single', subject: '', layout: 'lists', font: 'auto', explanation: '', position: 1 },
+        question: {
+          id: '',
+          type: 'single',
+          title: '',
+          subject: '',
+          layout: 'lists',
+          font: 'auto',
+          explanation: '',
+          position: 1,
+        },
         idx: -1,
         mode: '',
       })
@@ -298,6 +319,33 @@ const QuestionGroupAdminPage: React.VFC = () => {
         setPreview({ question: question, idx: idx + 1, mode: question.layout })
       }
     })
+  }
+
+  const handleQuestionPositionChange = (values: Question[]) => {
+    return updateQuestionPosition({
+      variables: {
+        questionListData: values.map((value, index) => ({
+          id: value.id,
+          question_group_id: questionGroupId,
+          type: value.type,
+          subject: value.subject,
+          font: value.font,
+          layout: value.layout,
+          explanation: value.explanation,
+          position: index + 1,
+        })),
+        questionGroupIdForUpdatedAt: questionGroupId,
+        questionLibraryIdForUpdatedAt: questionLibraryId,
+      },
+    })
+      .then(() => {
+        refetchQuestionGroup()
+        refetchQuestionGroup().then(() => {
+          setQuestionList([])
+        })
+        message.success('排序題目成功', 3)
+      })
+      .catch(handleError)
   }
 
   useEffect(() => {
@@ -312,7 +360,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
         {
           id: uuid(),
           type: 'single',
-          subject: '',
+          title: `題目 1`,
+          subject: `<p>題目 1</p>`,
           layout: 'lists',
           font: 'auto',
           explanation: '',
@@ -368,11 +417,18 @@ const QuestionGroupAdminPage: React.VFC = () => {
       <StyledContent>
         {!questionListLoading && (
           <QuestionGroupBlock>
+            {originalQuestionList.length > 0 && (
+              <ItemsSortingModal
+                items={questionList}
+                triggerText="排序題目"
+                onSubmit={values => handleQuestionPositionChange(values)}
+              />
+            )}
             <StyledCollapse
               accordion={true}
               onChange={v => {
                 if (typeof v === 'string' || v === undefined) {
-                  handleChangeQuestionPanel(v)
+                  handleQuestionPanelChange(v)
                 }
               }}
             >
@@ -381,7 +437,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
                   <StyledPanel
                     header={
                       <QuestionTitle>
-                        題目 {idx + 1}
+                        {question.subject?.replace(/<[^>]+>/g, '')}
                         {questionList.length > 1 && (
                           <TrashOIcon
                             style={{ zIndex: 99999 }}
@@ -416,7 +472,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
               <CurrentQuestionIndex>
                 <p>{`${preview.idx} / ${questionList.length}`}</p>
               </CurrentQuestionIndex>
-              <PreviewSubject dangerouslySetInnerHTML={{ __html: preview.question.subject }} />
+              <PreviewSubject dangerouslySetInnerHTML={{ __html: preview.question.subject || '' }} />
               <PreviewOptions previewMode={preview.mode}>
                 {preview.mode === 'lists' &&
                   preview.question.options?.map(option => (
@@ -480,8 +536,35 @@ const useQuestionMutation = () => {
       }
     }
   `)
+  const [updateQuestionPosition] = useMutation<
+    hasura.UPDATE_QUESTION_POSITION,
+    hasura.UPDATE_QUESTION_POSITIONVariables
+  >(gql`
+    mutation UPDATE_QUESTION_POSITION(
+      $questionListData: [question_insert_input!]!
+      $questionGroupIdForUpdatedAt: uuid!
+      $questionLibraryIdForUpdatedAt: uuid!
+    ) {
+      insert_question(
+        objects: $questionListData
+        on_conflict: { constraint: question_pkey, update_columns: [position] }
+      ) {
+        affected_rows
+        returning {
+          id
+        }
+      }
+      update_question_group(where: { id: { _eq: $questionGroupIdForUpdatedAt } }, _set: { updated_at: "now()" }) {
+        affected_rows
+      }
+      update_question_library(where: { id: { _eq: $questionLibraryIdForUpdatedAt } }, _set: { updated_at: "now()" }) {
+        affected_rows
+      }
+    }
+  `)
   return {
     upsertQuestion,
+    updateQuestionPosition,
   }
 }
 
@@ -499,6 +582,7 @@ const useQuestionGroup = (questionGroupId: string) => {
     data?.question_group_by_pk?.questions.map(v => ({
       id: v.id,
       type: v.type,
+      title: v.subject.replace(/<[^>]+>/g, ''),
       subject: v.subject,
       layout: v.layout,
       font: v.font,
@@ -515,7 +599,7 @@ const useQuestionGroup = (questionGroupId: string) => {
     })) || []
 
   return {
-    questionLibraryId: data?.question_group_by_pk?.question_library.id,
+    questionLibraryId: data?.question_group_by_pk?.question_library?.id,
     questionGroupTitle: data?.question_group_by_pk?.title,
     originalQuestionList: questions,
     refetchQuestionGroup: refetch,
