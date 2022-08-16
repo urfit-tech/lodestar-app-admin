@@ -486,8 +486,8 @@ export const routesProps = {
   },
   // venue
   venue: {
-    path: '/venue',
-    pageName: 'VenueAdminPage',
+    path: '/venues',
+    pageName: 'VenueCollectionPage',
     authenticated: true,
   },
 }

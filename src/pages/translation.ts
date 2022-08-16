@@ -60,7 +60,7 @@ const pageMessages = {
     createVoucherPlan: { id: 'page.*.createVoucherPlan', defaultMessage: 'create voucher plan' },
     eligibilityList: { id: 'page.*.eligibilityList', defaultMessage: 'eligibility list' },
     certificateSetting: { id: 'page.*.certificateSetting', defaultMessage: 'certificate setting' },
-    venueManagement: { id: 'page.*.venueManagement', defaultMessage: 'venue management' },
+    venueManagement: { id: 'page.*.venueManagement', defaultMessage: '場地管理' },
     publishSettings: { id: 'page.*.publishSettings', defaultMessage: 'publish settings' },
     successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: 'saved successfully' },
     deleteProductDanger: { id: 'page.*.deleteProductDanger', defaultMessage: '*已購買者在刪除後仍可觀看。' },
@@ -265,6 +265,12 @@ const pageMessages = {
       id: 'page.CertificateEligibilityListBlock.deleteMemberCertificateWarning',
       defaultMessage: '你確定要刪除此會員的證書？此動作無法還原',
     },
+  }),
+  VenueCollectionPage: defineMessages({
+    createVenue: { id: 'page.VenueCollectionPage.createVenue', defaultMessage: '新增場地' },
+    cols: { id: 'page.VenueCollectionPage.cols', defaultMessage: '總列數' },
+    rows: { id: 'page.VenueCollectionPage.rows', defaultMessage: '總行數' },
+    seats: { id: 'page.VenueCollectionPage.seats', defaultMessage: '座位數' },
   }),
 }
 
