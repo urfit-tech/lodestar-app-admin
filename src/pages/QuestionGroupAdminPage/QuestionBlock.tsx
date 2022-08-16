@@ -2,10 +2,13 @@ import { Checkbox, Radio } from 'antd'
 import { RadioChangeEvent } from 'antd/lib/radio'
 import BraftEditor from 'braft-editor'
 import React, { useEffect, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import AdminBraftEditor from '../../components/form/AdminBraftEditor'
+import { questionLibraryMessage } from '../../helpers/translation'
 import { BarsIcon, GridIcon } from '../../images/icon'
 import { Question, QuestionOption } from '../../types/questionLibrary'
+import pageMessages from '../translation'
 import QuestionOptionsBlock from './QuestionOptionsBlock'
 
 const StyledP = styled.p`
@@ -71,6 +74,7 @@ const QuestionBlock: React.VFC<{
   question: Question
   onQuestionChange?: (question: Question) => void
 }> = ({ question, onQuestionChange }) => {
+  const { formatMessage } = useIntl()
   const [layoutOption, setLayoutOption] = useState<string>(question.layout || 'lists')
   const [isUseZhuYin, setIsUseZhuYin] = useState<boolean>(question.font === 'zhuyin')
   const [subjectValue, setSubjectValue] = useState<string>('')
@@ -110,7 +114,7 @@ const QuestionBlock: React.VFC<{
 
   return (
     <>
-      <StyledP>版型選項</StyledP>
+      <StyledP>{formatMessage(questionLibraryMessage.label.layout)}</StyledP>
       <LayoutOptionsBlock>
         <LayoutOptionsButtonGroup
           defaultValue={layoutOption}
@@ -126,10 +130,10 @@ const QuestionBlock: React.VFC<{
           </LayoutOptionButton>
         </LayoutOptionsButtonGroup>
         <StyledCheckBox checked={isUseZhuYin ? true : false} onClick={handleFontChange}>
-          使用注音字型
+          {formatMessage(questionLibraryMessage.ui.useZhuYinFont)}
         </StyledCheckBox>
       </LayoutOptionsBlock>
-      <StyledP>題目</StyledP>
+      <StyledP>{formatMessage(pageMessages.QuestionGroupAdminPage.question)}</StyledP>
       <QuestionSubject>
         <AdminBraftEditor
           variant="short"
@@ -146,7 +150,7 @@ const QuestionBlock: React.VFC<{
         />
       )}
       <ExplanationBlock>
-        <StyledP>解答說明</StyledP>
+        <StyledP>{formatMessage(questionLibraryMessage.label.explanation)}</StyledP>
         <AdminBraftEditor
           variant="short"
           value={explanationValue}

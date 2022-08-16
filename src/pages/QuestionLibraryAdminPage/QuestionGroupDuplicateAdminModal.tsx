@@ -6,7 +6,7 @@ import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
 import AdminModal from '../../components/admin/AdminModal'
 import hasura from '../../hasura'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, questionLibraryMessage } from '../../helpers/translation'
 import { Question } from '../../types/questionLibrary'
 
 type QuestionGroupData = Pick<Question, 'id' | 'title' | 'modifierId'>
@@ -62,13 +62,12 @@ const QuestionGroupDuplicateAdminModal: React.VFC<{
       },
     })
       .then(data => {
-        console.log(data)
         onRefetch?.()
         setVisible(false)
-        message.success('複製題庫成功')
+        message.success(formatMessage(questionLibraryMessage.message.successDuplicateQuestionGroup), 3)
       })
       .catch(err => {
-        message.error('複製題庫失敗')
+        message.error(formatMessage(questionLibraryMessage.message.failDuplicateQuestionGroup), 3)
       })
       .finally(() => {
         setLoading(false)
@@ -91,7 +90,7 @@ const QuestionGroupDuplicateAdminModal: React.VFC<{
       renderTrigger={({ setVisible }) => (
         <div onClick={() => setVisible(true)}>{formatMessage(commonMessages['ui'].duplicate)}</div>
       )}
-      title="確認複製此題組?"
+      title={formatMessage(questionLibraryMessage.label.confirmDuplicateQuestionGroup)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>

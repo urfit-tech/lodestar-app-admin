@@ -21,7 +21,6 @@ import {
 import AdminModal from '../../components/admin/AdminModal'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
 import { commonMessages, questionLibraryMessage } from '../../helpers/translation'
 import { QuestionLibrary } from '../../types/questionLibrary'
 import LoadingPage from '../LoadingPage'
@@ -67,7 +66,9 @@ const QuestionLibraryAdminPage: React.VFC = () => {
           setSavingLoading(false)
           questionGroupId && history.push(`/question-groups/${questionGroupId}`)
         })
-        .catch(handleError)
+        .catch(err => {
+          message.error(formatMessage(questionLibraryMessage.message.failAddQuestionGroup), 3)
+        })
     })
   }
 
@@ -159,9 +160,15 @@ const QuestionLibraryAdminPage: React.VFC = () => {
                           }}
                           onChange={v => setQuestionGroupType(v)}
                         >
-                          <Select.Option value="new">建立新題庫</Select.Option>
-                          <Select.Option value="import">從題庫匯入</Select.Option>
-                          <Select.Option value="random">題庫隨機抽題</Select.Option>
+                          <Select.Option value="new">
+                            {formatMessage(questionLibraryMessage.label.createNewQuestionGroup)}
+                          </Select.Option>
+                          <Select.Option value="import">
+                            {formatMessage(questionLibraryMessage.label.importFromQuestionLibrary)}
+                          </Select.Option>
+                          <Select.Option value="random">
+                            {formatMessage(questionLibraryMessage.label.randomlySelectFromQuestionLibrary)}
+                          </Select.Option>
                         </Select>
                         {questionGroupType === 'import' && (
                           <Form.Item name="importQuestion">{/* <QuestionLibraryTreeTransfer /> */}</Form.Item>
@@ -184,7 +191,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
                   {formatMessage(pageMessages['QuestionLibraryAdminPage'].questionLibrarySettings)}
                 </AdminPaneTitle>
                 <AdminBlock>
-                  <AdminBlockTitle>基本設定</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(questionLibraryMessage.label.basicSettings)}</AdminBlockTitle>
                   <QuestionLibraryBasicForm
                     questionLibrary={questionLibrary}
                     currentMemberId={currentMemberId}

@@ -64,7 +64,7 @@ const QuestionGroupRenameAdminModal: React.VFC<{
       renderTrigger={({ setVisible }) => (
         <div onClick={() => setVisible(true)}>{formatMessage(commonMessages['ui'].rename)}</div>
       )}
-      title="重新命名題組"
+      title={formatMessage(questionLibraryMessage.label.renameQuestionGroup)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>

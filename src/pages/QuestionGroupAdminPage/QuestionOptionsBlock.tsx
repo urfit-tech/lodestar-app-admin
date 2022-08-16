@@ -1,9 +1,12 @@
 import { Checkbox } from 'antd'
 import React, { useEffect, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
+import { questionLibraryMessage } from '../../helpers/translation'
 import { PlusIcon, TrashOIcon } from '../../images/icon'
 import { QuestionOption } from '../../types/questionLibrary'
+import pageMessages from '../translation'
 import OptionBraftEditor from './OptionBraftEditor'
 import { AddButton } from './QuestionGroupAdminPage'
 
@@ -56,8 +59,7 @@ const QuestionOptionsBlock: React.VFC<{
   optionList: QuestionOption[]
   onOptionListChange?: (options: QuestionOption[]) => void
 }> = ({ optionList, onOptionListChange }) => {
-  // const { questionOptionsLoading, questionOptionsError, questionOptions, refetchQuestionOptions } =
-  //   useQuestionOptions(questionId)
+  const { formatMessage } = useIntl()
   const [answerOptionId, setAnswerOptionId] = useState<string>('')
 
   const handleIsAnswerClick = (optionId: string) => {
@@ -101,7 +103,7 @@ const QuestionOptionsBlock: React.VFC<{
         return (
           <Option key={option.id}>
             <OptionHeader>
-              <span>選項 {(idx += 1)}</span>
+              <span>{`${formatMessage(pageMessages.QuestionGroupAdminPage.option)} ${(idx += 1)}`}</span>
               {optionList.length > 1 && (
                 <TrashOIcon
                   onClick={() => {
@@ -117,53 +119,16 @@ const QuestionOptionsBlock: React.VFC<{
                 handleIsAnswerClick(option.id)
               }}
             >
-              此為正確解答
+              {formatMessage(questionLibraryMessage.ui.isAnswer)}
             </StyledCheckbox>
           </Option>
         )
       })}
       <AddButton type="link" icon={<PlusIcon />} className="align-items-center" onClick={handleAddOption}>
-        <span>新增選項</span>
+        <span>{formatMessage(questionLibraryMessage.ui.addOption)}</span>
       </AddButton>
     </StyledBlock>
   )
 }
 
 export default QuestionOptionsBlock
-
-// const useQuestionOptions = (questionId: string) => {
-//   const { loading, error, data, refetch } = useQuery<hasura.GET_QUESTION_OPTIONS, hasura.GET_QUESTION_OPTIONSVariables>(
-//     GET_QUESTION_OPTIONS,
-//     {
-//       variables: {
-//         questionId,
-//       },
-//     },
-//   )
-
-//   const question_options: QuestionOption[] =
-//     data?.question_option.map(v => ({
-//       id: v.id,
-//       value: v.value,
-//       isAnswer: v.is_answer || false,
-//       position: v.position,
-//     })) || []
-
-//   return {
-//     questionOptions: question_options,
-//     refetchQuestionOptions: refetch,
-//     questionOptionsLoading: loading,
-//     questionOptionsError: error,
-//   }
-// }
-
-// const GET_QUESTION_OPTIONS = gql`
-//   query GET_QUESTION_OPTIONS($questionId: uuid!) {
-//     question_option(where: { question_id: { _eq: $questionId }, deleted_at: { _is_null: true } }) {
-//       id
-//       value
-//       is_answer
-//       position
-//     }
-//   }
-// `

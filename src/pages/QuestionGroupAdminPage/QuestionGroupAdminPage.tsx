@@ -5,7 +5,6 @@ import { Button, Collapse, message } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { handleError } from 'lodestar-app-element/src/helpers'
 import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -14,9 +13,11 @@ import { v4 as uuid } from 'uuid'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import hasura from '../../hasura'
+import { commonMessages, questionLibraryMessage } from '../../helpers/translation'
 import { PlusIcon, TrashOIcon } from '../../images/icon'
 import { Question } from '../../types/questionLibrary'
 import LoadingPage from '../LoadingPage'
+import pageMessages from '../translation'
 import QuestionBlock from './QuestionBlock'
 
 const StyledAdminHeader = styled(AdminHeader)`
@@ -245,11 +246,11 @@ const QuestionGroupAdminPage: React.VFC = () => {
         refetchQuestionGroup()
       })
       .catch(err => {
-        message.error('儲存失敗', 3)
+        message.error(formatMessage(commonMessages.event.failedSave), 3)
       })
       .finally(() => {
         setSavingLoading(false)
-        message.success('儲存成功', 3)
+        message.success(formatMessage(commonMessages.event.successfullySaved), 3)
       })
   }
 
@@ -259,8 +260,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
       {
         id: uuid(),
         type: 'single',
-        title: `題目 ${questionList.length + 1}`,
-        subject: `<p>題目 ${questionList.length + 1}</p>`,
+        title: `${formatMessage(pageMessages.QuestionGroupAdminPage.question)} ${questionList.length + 1}`,
+        subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} ${questionList.length + 1}</p>`,
         layout: 'lists',
         font: 'auto',
         explanation: '',
@@ -268,13 +269,13 @@ const QuestionGroupAdminPage: React.VFC = () => {
         options: [
           {
             id: uuid(),
-            value: '<p><strong>選項1</strong></p>',
+            value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</strong></p>`,
             isAnswer: true,
             position: 1,
           },
           {
             id: uuid(),
-            value: '<p><strong>選項2</strong></p>',
+            value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</strong></p>`,
             isAnswer: false,
             position: 2,
           },
@@ -342,9 +343,9 @@ const QuestionGroupAdminPage: React.VFC = () => {
         refetchQuestionGroup().then(() => {
           setQuestionList([])
         })
-        message.success('排序題目成功', 3)
+        message.success(formatMessage(questionLibraryMessage.message.successSortQuestionGroup), 3)
       })
-      .catch(handleError)
+      .catch(message.success(formatMessage(questionLibraryMessage.message.failSortQuestionGroup), 3))
   }
 
   useEffect(() => {
@@ -359,8 +360,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
         {
           id: uuid(),
           type: 'single',
-          title: `題目 1`,
-          subject: `<p>題目 1</p>`,
+          title: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
+          subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
           layout: 'lists',
           font: 'auto',
           explanation: '',
@@ -368,13 +369,13 @@ const QuestionGroupAdminPage: React.VFC = () => {
           options: [
             {
               id: uuid(),
-              value: '<p><strong>選項1</strong></p>',
+              value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</strong></p>`,
               isAnswer: true,
               position: 1,
             },
             {
               id: uuid(),
-              value: '<p><strong>選項2</strong></p>',
+              value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</strong></p>`,
               isAnswer: false,
               position: 2,
             },
@@ -382,7 +383,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
         },
       ])
     }
-  }, [originalQuestionList, questionListLoading, questionList])
+  }, [originalQuestionList, questionListLoading, questionList, formatMessage])
 
   if (Object.keys(enabledModules).length === 0 || questionListLoading) {
     return <LoadingPage />
@@ -406,10 +407,10 @@ const QuestionGroupAdminPage: React.VFC = () => {
         </div>
         <div className="header-right">
           <Button className="ml-3" onClick={() => setQuestionList(originalQuestionList)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button className="ml-3" type="primary" onClick={handleSaveQuestionList} loading={savingLoading}>
-            儲存
+            {formatMessage(commonMessages.ui.save)}
           </Button>
         </div>
       </StyledAdminHeader>
@@ -419,7 +420,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
             {originalQuestionList.length > 0 && (
               <ItemsSortingModal
                 items={questionList}
-                triggerText="排序題目"
+                triggerText={formatMessage(questionLibraryMessage.ui.sortQuestions)}
                 onSubmit={values => handleQuestionPositionChange(values)}
               />
             )}
@@ -459,7 +460,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
             </StyledCollapse>
             <AddQuestionBlock>
               <AddButton type="link" icon={<PlusIcon />} className="align-items-center" onClick={handleAddQuestion}>
-                <span>新增題目</span>
+                <span>{formatMessage(questionLibraryMessage.ui.addQuestion)}</span>
               </AddButton>
             </AddQuestionBlock>
           </QuestionGroupBlock>
@@ -467,7 +468,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
         <PreviewBlock>
           {preview.idx !== -1 && (
             <PreviewQuestion>
-              <ExamName>課後名稱</ExamName>
+              <ExamName>{formatMessage(questionLibraryMessage.label.examName)}</ExamName>
               <CurrentQuestionIndex>
                 <p>{`${preview.idx} / ${questionList.length}`}</p>
               </CurrentQuestionIndex>

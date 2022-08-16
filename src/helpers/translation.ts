@@ -1397,6 +1397,13 @@ export const codeMessages = defineMessages({
 })
 
 export const questionLibraryMessage = {
+  ui: defineMessages({
+    sortQuestions: { id: 'questionLibrary.label.sortQuestions', defaultMessage: '排序題目' },
+    addQuestion: { id: 'questionLibrary.label.addQuestion', defaultMessage: '新增題目' },
+    useZhuYinFont: { id: 'questionLibrary.label.useZhuYinFont', defaultMessage: '使用注音字形' },
+    isAnswer: { id: 'questionLibrary.label.isAnswer', defaultMessage: '此為正確解答' },
+    addOption: { id: 'questionLibrary.label.addOption', defaultMessage: '新增選項' },
+  }),
   input: defineMessages({
     untitledQuestionLibrary: {
       id: 'questionLibrary.input.untitledQuestionLibrary',
@@ -1423,11 +1430,47 @@ export const questionLibraryMessage = {
     totalQuestionGroups: { id: 'questionLibrary.label.totalQuestionGroups', defaultMessage: '題組數' },
     basicFormTitle: { id: 'questionLibrary.label.basicFormTitle', defaultMessage: '題庫名稱' },
     basicFormAbstract: { id: 'questionLibrary.label.basicFormAbstract', defaultMessage: '題庫簡述' },
+    questionLibrary: { id: 'questionLibrary.label.questionLibrary', defaultMessage: '題庫' },
+    examName: { id: 'questionLibrary.label.examName', defaultMessage: '測驗名稱' },
+    layout: { id: 'questionLibrary.label.layout', defaultMessage: '版型選項' },
+    explanation: { id: 'questionLibrary.label.explanation', defaultMessage: '解答說明' },
+    createNewQuestionGroup: { id: 'questionLibrary.label.createNewQuestionGroup', defaultMessage: '建立新題組' },
+    importFromQuestionLibrary: { id: 'questionLibrary.label.importFromQuestionLibrary', defaultMessage: '從題庫匯入' },
+    randomlySelectFromQuestionLibrary: { id: 'questionLibrary.label.randomlySelectFromQuestionLibrary', defaultMessage: '題庫隨機抽題' },
+    basicSettings: { id: 'questionLibrary.label.basicSettings', defaultMessage: '基本設定' },
+    renameQuestionGroup: { id: 'questionLibrary.label.renameQuestionGroup', defaultMessage: '重新命名題組' },
+    confirmDuplicateQuestionGroup: { id: 'questionLibrary.label.confirmDuplicateQuestionGroup', defaultMessage: '確認複製此題組?' },
   }),
   message: defineMessages({
-    successDeletedQuestionLibrary: { id: 'questionLibrary.message.successDeletedQuestionLibrary', defaultMessage: '刪除題庫成功' },
-    successDeletedQuestionGroup: { id: 'questionLibrary.message.successDeletedQuestionGroup', defaultMessage: '刪除題組成功' },
-    questionLibraryTitleCanNotNull: { id: 'questionLibrary.message.questionLibraryTitleCanNotNull', defaultMessage: '題庫名稱不可為空' },
-    questionGroupTitleCanNotNull: { id: 'questionLibrary.message.questionGroupTitleCanNotNull', defaultMessage: '題組名稱不可為空' },
-  })
+    successDeletedQuestionLibrary: {
+      id: 'questionLibrary.message.successDeletedQuestionLibrary',
+      defaultMessage: '刪除題庫成功',
+    },
+    successDeletedQuestionGroup: {
+      id: 'questionLibrary.message.successDeletedQuestionGroup',
+      defaultMessage: '刪除題組成功',
+    },
+    successSortQuestionGroup: {
+      id: 'questionLibrary.message.successSortQuestionGroup',
+      defaultMessage: '排序題目成功',
+    },
+    failSortQuestionGroup: { id: 'questionLibrary.message.failSortQuestionGroup', defaultMessage: '排序題目失敗' },
+    failAddQuestionGroup: { id: 'questionLibrary.message.failAddQuestionGroup', defaultMessage: '新增題組失敗' },
+    successDuplicateQuestionGroup: {
+      id: 'questionLibrary.message.successDuplicateQuestionGroup',
+      defaultMessage: '複製題組成功',
+    },
+    failDuplicateQuestionGroup: {
+      id: 'questionLibrary.message.failDuplicateQuestionGroup',
+      defaultMessage: '複製題組失敗',
+    },
+    questionLibraryTitleCanNotNull: {
+      id: 'questionLibrary.message.questionLibraryTitleCanNotNull',
+      defaultMessage: '題庫名稱不可為空',
+    },
+    questionGroupTitleCanNotNull: {
+      id: 'questionLibrary.message.questionGroupTitleCanNotNull',
+      defaultMessage: '題組名稱不可為空',
+    },
+  }),
 }

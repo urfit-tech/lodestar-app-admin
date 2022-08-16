@@ -212,7 +212,11 @@ const pageMessages = {
   }),
   QuestionLibraryCollectionPage: defineMessages({
     questionLibraryCollection: { id: 'page.QuestionLibraryCollectionPage.questionLibraryCollection', defaultMessage: '題庫管理' },
-    deleteQuestionLibraryMessage: { id: 'page.QuestionLibraryAdminPage.deleteQuestionLibraryMessage', defaultMessage: '確定刪除此題庫？' },
+    deleteQuestionLibraryMessage: { id: 'page.QuestionLibraryCollectionPage.deleteQuestionLibraryMessage', defaultMessage: '確定刪除此題庫？' },
+  }),
+  QuestionGroupCollectionPage: defineMessages({
+    questionGroupCollection: { id: 'page.QuestionGroupCollectionPage.questionGroupCollection', defaultMessage: '題組管理' },
+    deleteQuestionGroupMessage: { id: 'page.QuestionGroupCollectionPage.deleteQuestionGroupMessage', defaultMessage: '確定刪除此題組？' },
   }),
   QuestionLibraryAdminPage: defineMessages({
     questionGroupManagement: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
@@ -221,7 +225,11 @@ const pageMessages = {
     deleteQuestionGroupMessage: { id: 'page.QuestionLibraryAdminPage.deleteQuestionGroupMessage', defaultMessage: '確定刪除此題組？' },
   }),
   QuestionLibraryBasicForm: defineMessages({
-    title: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
+    title: { id: 'page.QuestionLibraryBasicForm.questionGroupManagement', defaultMessage: '題庫管理' },
+  }),
+  QuestionGroupAdminPage: defineMessages({
+    question: { id: 'page.QuestionGroupAdminPage.question', defaultMessage: '題目' },
+    option: { id: 'page.QuestionGroupAdminPage.option', defaultMessage: '選項' },
   }),
   CertificateCollectionPage: defineMessages({
     createCertificate: { id: 'page.CertificateCollectionPage.createCertificate', defaultMessage: '新增證書' },
