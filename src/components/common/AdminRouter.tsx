@@ -484,6 +484,12 @@ export const routesProps = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  // venue
+  venue: {
+    path: '/venue',
+    pageName: 'VenueAdminPage',
+    authenticated: true,
+  },
 }
 
 export const useRouteKeys = () => {

@@ -293,6 +293,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
+      permissionIsAllowed: !!enabledModules.venue,
+      key: 'venue',
+      icon: () => <CalendarAltIcon />,
+      name: formatMessage(adminMessages.AdminMenu.venue),
+    },
+    {
       permissionIsAllowed:
         !!enabledModules.blog &&
         (Boolean(permissions.POST_ADMIN) ||

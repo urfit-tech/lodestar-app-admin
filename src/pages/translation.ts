@@ -60,6 +60,7 @@ const pageMessages = {
     createVoucherPlan: { id: 'page.*.createVoucherPlan', defaultMessage: 'create voucher plan' },
     eligibilityList: { id: 'page.*.eligibilityList', defaultMessage: 'eligibility list' },
     certificateSetting: { id: 'page.*.certificateSetting', defaultMessage: 'certificate setting' },
+    venueManagement: { id: 'page.*.venueManagement', defaultMessage: 'venue management' },
     publishSettings: { id: 'page.*.publishSettings', defaultMessage: 'publish settings' },
     successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: 'saved successfully' },
     deleteProductDanger: { id: 'page.*.deleteProductDanger', defaultMessage: '*已購買者在刪除後仍可觀看。' },
