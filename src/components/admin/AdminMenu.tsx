@@ -290,14 +290,14 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           key: 'activity_category',
           name: formatMessage(adminMessages.AdminMenu.activityCategory),
         },
+        {
+          permissionIsAllowed: !!enabledModules.venue,
+          key: 'venue_management',
+          name: formatMessage(adminMessages.AdminMenu.venueManagement),
+        },
       ],
     },
-    {
-      permissionIsAllowed: !!enabledModules.venue,
-      key: 'venue',
-      icon: () => <CalendarAltIcon />,
-      name: formatMessage(adminMessages.AdminMenu.venue),
-    },
+
     {
       permissionIsAllowed:
         !!enabledModules.blog &&

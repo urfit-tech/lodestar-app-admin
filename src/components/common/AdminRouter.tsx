@@ -219,6 +219,11 @@ export const routesProps = {
     pageName: 'ActivityCategoryPage',
     authenticated: true,
   },
+  venue_management: {
+    path: '/venue_management',
+    pageName: 'VenueCollectionPage',
+    authenticated: true,
+  },
 
   // blog
   blog_collection: {
@@ -483,12 +488,6 @@ export const routesProps = {
     pageName: 'AppSecretAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
-  },
-  // venue
-  venue: {
-    path: '/venues',
-    pageName: 'VenueCollectionPage',
-    authenticated: true,
   },
 }
 

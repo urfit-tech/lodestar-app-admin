@@ -33,7 +33,7 @@ const adminMessages = {
     creatorDisplayAdmin: { id: 'admin.AdminMenu.creatorDisplayAdmin', defaultMessage: '講師牆' },
     creatorDisplayManagement: { id: 'admin.AdminMenu.creatorDisplayManagement', defaultMessage: '講師牆管理' },
     creatorDisplayCategory: { id: 'admin.AdminMenu.creatorDisplayCategory', defaultMessage: '領域分類' },
-    venue: { id: 'admin.AdminMenu.venue', defaultMessage: '場地管理' },
+    venueManagement: { id: 'admin.AdminMenu.venueManagement', defaultMessage: '場地管理' },
     activityAdmin: { id: 'admin.AdminMenu.activityAdmin', defaultMessage: '活動' },
     activities: { id: 'admin.AdminMenu.activities', defaultMessage: '活動管理' },
     activityCategory: { id: 'admin.AdminMenu.activityCategory', defaultMessage: '活動分類' },

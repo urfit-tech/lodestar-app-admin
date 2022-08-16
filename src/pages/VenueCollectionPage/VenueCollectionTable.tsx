@@ -40,7 +40,7 @@ const VenueCollectionTable: React.VFC = () => {
       title: formatMessage(pageMessages['*'].title),
       width: '60%',
       render: (_, record) => (
-        <Link to={`/venues/${record.id}`}>
+        <Link to={`/venues-mangement/${record.id}`}>
           <StyledTitle className="flex-grow-1">{record.name}</StyledTitle>
         </Link>
       ),
@@ -63,7 +63,7 @@ const VenueCollectionTable: React.VFC = () => {
       title: formatMessage(pageMessages.VenueCollectionPage.rows),
       width: '10%',
       render: (_, record) => (
-        <Link to={`/venues/${record.id}`}>
+        <Link to={`/venues-mangement/${record.id}`}>
           <StyledTitle className="flex-grow-1">{record.cols}</StyledTitle>
         </Link>
       ),
@@ -73,7 +73,7 @@ const VenueCollectionTable: React.VFC = () => {
       title: formatMessage(pageMessages.VenueCollectionPage.cols),
       width: '10%',
       render: (_, record) => (
-        <Link to={`/venues/${record.id}`}>
+        <Link to={`/venues-mangement/${record.id}`}>
           <StyledTitle className="flex-grow-1">{record.rows}</StyledTitle>
         </Link>
       ),
@@ -83,7 +83,7 @@ const VenueCollectionTable: React.VFC = () => {
       title: formatMessage(pageMessages.VenueCollectionPage.seats),
       width: '10%',
       render: (_, record) => (
-        <Link to={`/venues/${record.id}`}>
+        <Link to={`/venues-mangement/${record.id}`}>
           <StyledTitle className="flex-grow-1">{record.seats}</StyledTitle>
         </Link>
       ),
