@@ -272,6 +272,13 @@ const pageMessages = {
     rows: { id: 'page.VenueCollectionPage.rows', defaultMessage: '總行數' },
     seats: { id: 'page.VenueCollectionPage.seats', defaultMessage: '座位數' },
   }),
+  VenueAdminPage: defineMessages({
+    seatSettings: { id: 'page.VenueAdminPage.seatSettings', defaultMessage: '座位設定' },
+    usage: { id: 'page.VenueAdminPage.usage', defaultMessage: '使用情況' },
+  }),
+  VenueBasicForm: defineMessages({
+    venueName: { id: 'page.VenueBasicForm.venueName', defaultMessage: '場地名稱' },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },

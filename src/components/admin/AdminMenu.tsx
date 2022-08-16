@@ -292,12 +292,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         },
         {
           permissionIsAllowed: !!enabledModules.venue,
-          key: 'venue_management',
+          key: 'venue_collection',
           name: formatMessage(adminMessages.AdminMenu.venueManagement),
         },
       ],
     },
-
     {
       permissionIsAllowed:
         !!enabledModules.blog &&
