@@ -1,7 +1,6 @@
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Dropdown, Form, Input, Menu, message, Table } from 'antd'
-import { useForm } from 'antd/lib/form/Form'
+import { Button, Dropdown, Input, Menu, message, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment-timezone'
@@ -14,6 +13,8 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, questionLibraryMessage } from '../../helpers/translation'
 import pageMessages from '../translation'
+import QuestionGroupDuplicateAdminModal from './QuestionGroupDuplicateAdminModal'
+import QuestionGroupRenameAdminModal from './QuestionGroupRenameAdminModal'
 
 const StyledDiv = styled.div`
   .ant-table-content {
@@ -51,16 +52,12 @@ type QuestionGroupColumn = {
   modifier: string
   lastModified: string
 }
-type RenameFieldProps = {
-  title: string
-}
 
 const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; currentMemberId: string }> = ({
   questionLibraryId,
   currentMemberId,
 }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<RenameFieldProps>()
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const { loading, error, questionGroups, refetchQuestionGroups } = useQuestionGroups({
@@ -71,10 +68,6 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
   const [archiveQuestionGroup] = useMutation<hasura.ARCHIVE_QUESTION_GROUP, hasura.ARCHIVE_QUESTION_GROUPVariables>(
     ARCHIVE_QUESTION_GROUP,
   )
-  const [updateQuestionGroupTitle] = useMutation<
-    hasura.UPDATE_QUESTION_GROUP_TITLE,
-    hasura.UPDATE_QUESTION_GROUP_TITLEVariables
-  >(UPDATE_QUESTION_GROUP_TITLE)
 
   const handleDelete = (questionGroupId: string, setVisible: (visible: boolean) => void) => {
     setDetailLoading(true)
@@ -87,42 +80,15 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
     })
       .then(() => {
         refetchQuestionGroups()
-        message.success(formatMessage(questionLibraryMessage.message.successDeletedQuestionGroup), 3)
+          .then(() => {
+            message.success(formatMessage(questionLibraryMessage.message.successDeletedQuestionGroup), 3)
+          })
+          .catch(handleError)
       })
       .catch(handleError)
       .finally(() => {
         setDetailLoading(false)
         setVisible(false)
-      })
-  }
-
-  const handleRename = (questionGroupId: string, setVisible: (visible: boolean) => void) => {
-    setDetailLoading(true)
-    form
-      .validateFields()
-      .then(() => {
-        const values = form.getFieldsValue()
-        updateQuestionGroupTitle({
-          variables: {
-            questionGroupId: questionGroupId,
-            title: values.title,
-            modifierId: currentMemberId,
-            questionLibraryIdForUpdate: questionLibraryId,
-          },
-        })
-          .then(() => {
-            message.success(formatMessage(pageMessages['*'].successfullySaved))
-            refetchQuestionGroups()
-            setDetailLoading(false)
-          })
-          .catch(handleError)
-          .finally(() => {
-            setVisible(false)
-          })
-      })
-      .catch(() => {
-        message.error(formatMessage(questionLibraryMessage.message.questionGroupTitleCanNotNull))
-        setDetailLoading(false)
       })
   }
 
@@ -177,49 +143,21 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
           overlay={
             <Menu>
               <DetailItem>
-                <div onClick={() => alert('複製成功')}>{formatMessage(commonMessages['ui'].duplicate)}</div>
+                <QuestionGroupDuplicateAdminModal
+                  questionLibraryId={questionLibraryId}
+                  questionGroupId={record.id}
+                  currentMemberId={currentMemberId}
+                  onRefetch={refetchQuestionGroups}
+                />
               </DetailItem>
               <DetailItem>
-                <AdminModal
-                  renderTrigger={({ setVisible }) => (
-                    <div onClick={() => setVisible(true)}>{formatMessage(commonMessages['ui'].rename)}</div>
-                  )}
-                  title="重新命名題組"
-                  footer={null}
-                  renderFooter={({ setVisible }) => (
-                    <>
-                      <Button className="mr-2" onClick={() => setVisible(false)}>
-                        {formatMessage(commonMessages['ui'].cancel)}
-                      </Button>
-                      <Button
-                        type="primary"
-                        loading={detailLoading}
-                        onClick={() => handleRename(record.id, setVisible)}
-                      >
-                        {formatMessage(commonMessages['ui'].save)}
-                      </Button>
-                    </>
-                  )}
-                >
-                  <Form
-                    form={form}
-                    initialValues={{
-                      title: record.title,
-                    }}
-                  >
-                    <Form.Item
-                      name="title"
-                      rules={[
-                        {
-                          required: true,
-                          message: formatMessage(questionLibraryMessage.message.questionGroupTitleCanNotNull),
-                        },
-                      ]}
-                    >
-                      <Input value={record.title} />
-                    </Form.Item>
-                  </Form>
-                </AdminModal>
+                <QuestionGroupRenameAdminModal
+                  questionLibraryId={questionLibraryId}
+                  questionGroupId={record.id}
+                  title={record.title}
+                  currentMemberId={currentMemberId}
+                  onRefetch={refetchQuestionGroups}
+                />
               </DetailItem>
               <DetailItem>
                 <AdminModal
@@ -321,7 +259,7 @@ const GET_QUESTION_GROUPS = gql`
   }
 `
 
-const UPDATE_QUESTION_GROUP_TITLE = gql`
+export const UPDATE_QUESTION_GROUP_TITLE = gql`
   mutation UPDATE_QUESTION_GROUP_TITLE(
     $questionGroupId: uuid!
     $title: String!
@@ -337,15 +275,27 @@ const UPDATE_QUESTION_GROUP_TITLE = gql`
   }
 `
 
-const ARCHIVE_QUESTION_GROUP = gql`
+export const ARCHIVE_QUESTION_GROUP = gql`
   mutation ARCHIVE_QUESTION_GROUP($questionGroupId: uuid!, $modifierId: String!, $questionLibraryIdForArchive: uuid!) {
+    update_question_option(
+      where: { question: { question_group: { id: { _eq: $questionGroupId } } } }
+      _set: { deleted_at: "now()" }
+    ) {
+      affected_rows
+    }
+    update_question(where: { question_group: { id: { _eq: $questionGroupId } } }, _set: { deleted_at: "now()" }) {
+      affected_rows
+    }
     update_question_group(
       where: { id: { _eq: $questionGroupId } }
       _set: { modifier_id: $modifierId, deleted_at: "now()" }
     ) {
       affected_rows
     }
-    update_question_library(where: { id: { _eq: $questionLibraryIdForArchive } }, _set: { updated_at: "now()" }) {
+    update_question_library(
+      where: { id: { _eq: $questionLibraryIdForArchive } }
+      _set: { modifier_id: $modifierId, updated_at: "now()" }
+    ) {
       affected_rows
     }
   }

@@ -339,7 +339,6 @@ const QuestionGroupAdminPage: React.VFC = () => {
       },
     })
       .then(() => {
-        refetchQuestionGroup()
         refetchQuestionGroup().then(() => {
           setQuestionList([])
         })

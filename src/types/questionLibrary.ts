@@ -19,6 +19,7 @@ export type Question = {
   font: string
   position: number
   explanation: string | null
+  modifierId?: string
   options?: QuestionOption[]
 }
 

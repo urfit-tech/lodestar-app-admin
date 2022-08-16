@@ -236,6 +236,24 @@ const GET_QUESTION_LIBRARIES = gql`
 
 const ARCHIVE_QUESTION_LIBRARY = gql`
   mutation ARCHIVE_QUESTION_LIBRARY($questionLibraryId: uuid!, $modifierId: String!) {
+    update_question_option(
+      where: { question: { question_group: { question_library: { id: { _eq: $questionLibraryId } } } } }
+      _set: { deleted_at: "now()" }
+    ) {
+      affected_rows
+    }
+    update_question(
+      where: { question_group: { question_library: { id: { _eq: $questionLibraryId } } } }
+      _set: { deleted_at: "now()" }
+    ) {
+      affected_rows
+    }
+    update_question_group(
+      where: { question_library: { id: { _eq: $questionLibraryId } } }
+      _set: { modifier_id: $modifierId, deleted_at: "now()" }
+    ) {
+      affected_rows
+    }
     update_question_library(
       where: { id: { _eq: $questionLibraryId } }
       _set: { modifier_id: $modifierId, deleted_at: "now()" }
