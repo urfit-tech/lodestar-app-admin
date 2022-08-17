@@ -18,6 +18,7 @@ import { Venue } from '../../types/venue'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import VenueBasicForm from './VenueBasicForm'
+import VenueUsageCalendar from './VenueUsageCalendar'
 
 const VenueAdminPage: React.VFC = () => {
   const { formatMessage } = useIntl()
@@ -85,7 +86,9 @@ const VenueAdminPage: React.VFC = () => {
             <Tabs.TabPane key="usage" tab={formatMessage(pageMessages.VenueAdminPage.usage)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(pageMessages.VenueAdminPage.usage)}</AdminPaneTitle>
-                <AdminBlock></AdminBlock>
+                <AdminBlock>
+                  <VenueUsageCalendar />
+                </AdminBlock>
               </div>
             </Tabs.TabPane>
           </Tabs>

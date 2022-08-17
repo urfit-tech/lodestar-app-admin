@@ -42,7 +42,7 @@ const StyledCategory = styled.span`
   display: flex;
   align-items: center;
 `
-const StyledCategoryDot = styled.span<{ color?: string }>`
+export const StyledCategoryDot = styled.span<{ color?: string }>`
   display: inline-block;
   width: 8px;
   height: 8px;
@@ -60,7 +60,7 @@ const StyledFullCalendarWrapper = styled.div`
     color: var(--gray-darker);
   }
 `
-const StyledEventTime = styled.span`
+export const StyledEventTime = styled.span`
   margin-right: 3px;
   font-weight: normal;
 `
@@ -71,7 +71,7 @@ const priorityLevel: { [key in MemberTaskProps['priority']]: number } = {
   low: 3,
 }
 
-const categoryColors: string[] = [
+export const categoryColors: string[] = [
   '#ff8dcf',
   '#8191be',
   '#81bea4',
