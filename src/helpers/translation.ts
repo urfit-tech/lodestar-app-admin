@@ -694,8 +694,6 @@ export const programMessages = {
 
     practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
     show: { id: 'program.label.show', defaultMessage: '顯示' },
-    availableToGoBack: { id: 'program.label.availableToGoBack', defaultMessage: '可返回前題' },
-    availableToRetry: { id: 'program.label.availableToRetry', defaultMessage: '可重新測驗' },
     notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
     passingScore: { id: 'program.label.passingScore', defaultMessage: '及格分數' },
     points: { id: 'program.label.points', defaultMessage: '單題分數' },
@@ -703,7 +701,6 @@ export const programMessages = {
     choice: { id: 'program.label.choice', defaultMessage: '選項' },
     isCorrectAnswer: { id: 'program.label.isCorrectAnswer', defaultMessage: '此為正確解答' },
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
-    exerciseTitle: { id: 'program.label.exerciseTitle', defaultMessage: '標題' },
     allowMultipleAnswers: { id: 'program.label.allowMultipleAnswers', defaultMessage: '允許多個正確解答' },
     contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.label.description', defaultMessage: '內文' },
@@ -749,11 +746,6 @@ export const programMessages = {
     noQuestionChoice: { id: 'program.text.noQuestionChoice', defaultMessage: '請新增題目選項' },
     noChoiceDescription: { id: 'program.text.noChoiceDescription', defaultMessage: '未填寫選項敘述' },
     noAnswerDescription: { id: 'program.text.noAnswersDescription', defaultMessage: '未填寫解答敘述' },
-
-    deleteExerciseWarning: {
-      id: 'program.text.deleteExerciseWarning',
-      defaultMessage: '將刪除所有與此測驗相關資料且不可復原，確定要刪除嗎？',
-    },
     deletePracticeWarning: {
       id: 'program.text.deletePracticeWarning',
       defaultMessage: '將刪除所有與此作業相關資料且不可復原，確定要刪除嗎？',

@@ -164,7 +164,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                       programContentSectionId: programContentSection.id,
                       title: 'untitled',
                       position: programContentSection.programContents.length,
-                      programContentType: 'exercise',
+                      programContentType: 'exam',
                       publishedAt: isProgramPublished ? new Date() : null,
                       displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
                       metadata: {
@@ -277,6 +277,7 @@ const DELETE_PROGRAM_CONTENT_SECTION = gql`
     delete_program_content_section(where: { id: { _eq: $programContentSectionId } }) {
       affected_rows
     }
+    #FIXME: should delete relation data, practice, exam and exercise ?
   }
 `
 

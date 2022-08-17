@@ -4960,41 +4960,44 @@ export interface GET_PRACTICE_ISSUE_AMOUNTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_EXERCISE
+// GraphQL query operation: GET_ALL_QUESTION
 // ====================================================
 
-export interface UPDATE_EXERCISE_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
+export interface GET_ALL_QUESTION_question_library_question_groups_questions_aggregate_aggregate {
+  __typename: "question_aggregate_fields";
+  count: number;
 }
 
-export interface UPDATE_EXERCISE_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
+export interface GET_ALL_QUESTION_question_library_question_groups_questions_aggregate {
+  __typename: "question_aggregate";
+  aggregate: GET_ALL_QUESTION_question_library_question_groups_questions_aggregate_aggregate | null;
 }
 
-export interface UPDATE_EXERCISE {
+export interface GET_ALL_QUESTION_question_library_question_groups {
+  __typename: "question_group";
+  id: any;
+  title: string;
   /**
-   * update data of the table: "program_content"
+   * An aggregate relationship
    */
-  update_program_content: UPDATE_EXERCISE_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_EXERCISE_update_program_content_body | null;
+  questions_aggregate: GET_ALL_QUESTION_question_library_question_groups_questions_aggregate;
 }
 
-export interface UPDATE_EXERCISEVariables {
-  programContentId: any;
-  content: program_content_set_input;
-  programContentBodyId: any;
-  body: program_content_body_set_input;
+export interface GET_ALL_QUESTION_question_library {
+  __typename: "question_library";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  question_groups: GET_ALL_QUESTION_question_library_question_groups[];
+}
+
+export interface GET_ALL_QUESTION {
+  /**
+   * fetch data from the table: "question_library"
+   */
+  question_library: GET_ALL_QUESTION_question_library[];
 }
 
 /* tslint:disable */
@@ -5003,27 +5006,268 @@ export interface UPDATE_EXERCISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_EXERCISE_POSITION
+// GraphQL query operation: GET_EXAM_ID
 // ====================================================
 
-export interface UPDATE_EXERCISE_POSITION_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
+export interface GET_EXAM_ID_program_content_exam {
+  __typename: "program_content_exam";
+  exam_id: any;
+}
+
+export interface GET_EXAM_ID {
+  /**
+   * fetch data from the table: "program_content_exam"
+   */
+  program_content_exam: GET_EXAM_ID_program_content_exam[];
+}
+
+export interface GET_EXAM_IDVariables {
+  programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_BASIC_EXAM
+// ====================================================
+
+export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate_aggregate {
+  __typename: "question_aggregate_fields";
+  count: number;
+}
+
+export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate {
+  __typename: "question_aggregate";
+  aggregate: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate_aggregate | null;
+}
+
+export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups {
+  __typename: "question_group";
+  id: any;
+  title: string;
+  /**
+   * An aggregate relationship
+   */
+  questions_aggregate: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate;
+}
+
+export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library {
+  __typename: "question_library";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  question_groups: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups[];
+}
+
+export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library {
+  __typename: "exam_question_library";
+  /**
+   * An object relationship
+   */
+  question_library: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library | null;
+}
+
+export interface GET_BASIC_EXAM_exam_by_pk {
+  __typename: "exam";
+  id: any;
+  point: any;
+  passing_score: any;
+  examinable_unit: string | null;
+  examinable_amount: any | null;
+  examinable_started_at: any | null;
+  examinable_ended_at: any | null;
+  time_limit_unit: string | null;
+  time_limit_amount: any | null;
+  is_available_to_retry: boolean;
+  is_available_to_go_back: boolean;
+  is_available_announce_score: boolean;
+  /**
+   * An array relationship
+   */
+  exam_question_library: GET_BASIC_EXAM_exam_by_pk_exam_question_library[];
+}
+
+export interface GET_BASIC_EXAM {
+  /**
+   * fetch data from the table: "exam" using primary key columns
+   */
+  exam_by_pk: GET_BASIC_EXAM_exam_by_pk | null;
+}
+
+export interface GET_BASIC_EXAMVariables {
+  examId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_EXAM
+// ====================================================
+
+export interface UPDATE_EXAM_update_program_content {
+  __typename: "program_content_mutation_response";
   /**
    * number of rows affected by the mutation
    */
   affected_rows: number;
 }
 
-export interface UPDATE_EXERCISE_POSITION {
+export interface UPDATE_EXAM_update_exam {
+  __typename: "exam_mutation_response";
   /**
-   * update data of the table: "program_content_body"
+   * number of rows affected by the mutation
    */
-  update_program_content_body: UPDATE_EXERCISE_POSITION_update_program_content_body | null;
+  affected_rows: number;
 }
 
-export interface UPDATE_EXERCISE_POSITIONVariables {
-  programContentBodyId: any;
-  body: program_content_body_set_input;
+export interface UPDATE_EXAM {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_EXAM_update_program_content | null;
+  /**
+   * update data of the table: "exam"
+   */
+  update_exam: UPDATE_EXAM_update_exam | null;
+}
+
+export interface UPDATE_EXAMVariables {
+  programContentId: any;
+  title?: string | null;
+  publishedAt?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+  displayMode?: string | null;
+  examId: any;
+  point?: any | null;
+  passingScore?: any | null;
+  examinableUnit?: string | null;
+  examinableAmount?: any | null;
+  examinableStartedAt?: any | null;
+  examinableEndedAt?: any | null;
+  timeLimitUnit?: string | null;
+  timeLimitAmount?: any | null;
+  isAvailableToRetry?: boolean | null;
+  isAvailableToGoBack?: boolean | null;
+  isAvailableAnnounceScore?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_EXAM_QUESTION_LIBRARY
+// ====================================================
+
+export interface UPDATE_EXAM_QUESTION_LIBRARY_delete_exam_question_library {
+  __typename: "exam_question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXAM_QUESTION_LIBRARY_insert_exam_question_library {
+  __typename: "exam_question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXAM_QUESTION_LIBRARY {
+  /**
+   * delete data from the table: "exam_question_library"
+   */
+  delete_exam_question_library: UPDATE_EXAM_QUESTION_LIBRARY_delete_exam_question_library | null;
+  /**
+   * insert data into the table: "exam_question_library"
+   */
+  insert_exam_question_library: UPDATE_EXAM_QUESTION_LIBRARY_insert_exam_question_library | null;
+}
+
+export interface UPDATE_EXAM_QUESTION_LIBRARYVariables {
+  examId: any;
+  examQuestionLibraries: exam_question_library_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_EXAM_TIME_LIMIT_LIST
+// ====================================================
+
+export interface GET_EXAM_TIME_LIMIT_LIST_exam_member_time_limit {
+  __typename: "exam_member_time_limit";
+  id: any;
+  expired_at: any;
+  member_id: any;
+}
+
+export interface GET_EXAM_TIME_LIMIT_LIST {
+  /**
+   * fetch data from the table: "exam_member_time_limit"
+   */
+  exam_member_time_limit: GET_EXAM_TIME_LIMIT_LIST_exam_member_time_limit[];
+}
+
+export interface GET_EXAM_TIME_LIMIT_LISTVariables {
+  examId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_EXAM_MEMBER_TIME_LIMIT
+// ====================================================
+
+export interface UPSERT_EXAM_MEMBER_TIME_LIMIT_delete_exam_member_time_limit {
+  __typename: "exam_member_time_limit_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_EXAM_MEMBER_TIME_LIMIT_insert_exam_member_time_limit {
+  __typename: "exam_member_time_limit_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_EXAM_MEMBER_TIME_LIMIT {
+  /**
+   * delete data from the table: "exam_member_time_limit"
+   */
+  delete_exam_member_time_limit: UPSERT_EXAM_MEMBER_TIME_LIMIT_delete_exam_member_time_limit | null;
+  /**
+   * insert data into the table: "exam_member_time_limit"
+   */
+  insert_exam_member_time_limit: UPSERT_EXAM_MEMBER_TIME_LIMIT_insert_exam_member_time_limit | null;
+}
+
+export interface UPSERT_EXAM_MEMBER_TIME_LIMITVariables {
+  examId: any;
+  toDeleteMemberList: any[];
+  timeLimitList: exam_member_time_limit_insert_input[];
 }
 
 /* tslint:disable */
@@ -12654,16 +12898,32 @@ export interface UPDATE_PROGRAM_CONTENT_BODYVariables {
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT
 // ====================================================
 
-export interface DELETE_PROGRAM_CONTENT_delete_practice {
-  __typename: "practice_mutation_response";
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_plan {
+  __typename: "program_content_plan_mutation_response";
   /**
    * number of rows affected by the mutation
    */
   affected_rows: number;
 }
 
-export interface DELETE_PROGRAM_CONTENT_delete_exercise {
-  __typename: "exercise_mutation_response";
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_video {
+  __typename: "program_content_video_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_material {
+  __typename: "program_content_material_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_delete_practice {
+  __typename: "practice_mutation_response";
   /**
    * number of rows affected by the mutation
    */
@@ -12696,13 +12956,21 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content_body {
 
 export interface DELETE_PROGRAM_CONTENT {
   /**
+   * delete data from the table: "program_content_plan"
+   */
+  delete_program_content_plan: DELETE_PROGRAM_CONTENT_delete_program_content_plan | null;
+  /**
+   * delete data from the table: "program_content_video"
+   */
+  delete_program_content_video: DELETE_PROGRAM_CONTENT_delete_program_content_video | null;
+  /**
+   * delete data from the table: "program_content_material"
+   */
+  delete_program_content_material: DELETE_PROGRAM_CONTENT_delete_program_content_material | null;
+  /**
    * delete data from the table: "practice"
    */
   delete_practice: DELETE_PROGRAM_CONTENT_delete_practice | null;
-  /**
-   * delete data from the table: "exercise"
-   */
-  delete_exercise: DELETE_PROGRAM_CONTENT_delete_exercise | null;
   /**
    * delete data from the table: "program_content_progress"
    */
@@ -12719,6 +12987,96 @@ export interface DELETE_PROGRAM_CONTENT {
 
 export interface DELETE_PROGRAM_CONTENTVariables {
   programContentId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM
+// ====================================================
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_exercise {
+  __typename: "exercise_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_progress {
+  __typename: "program_content_progress_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_exam {
+  __typename: "program_content_exam_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_exam {
+  __typename: "exam_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM {
+  /**
+   * delete data from the table: "exercise"
+   */
+  delete_exercise: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_exercise | null;
+  /**
+   * delete data from the table: "program_content_progress"
+   */
+  delete_program_content_progress: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_progress | null;
+  /**
+   * delete data from the table: "program_content_exam"
+   */
+  delete_program_content_exam: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_exam | null;
+  /**
+   * delete data from the table: "program_content_body"
+   */
+  delete_program_content_body: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_body | null;
+  /**
+   * delete data from the table: "exam"
+   */
+  delete_exam: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_exam | null;
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_update_program_content | null;
+}
+
+export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAMVariables {
+  programContentId: any;
+  examId: any;
+  metadata?: any | null;
 }
 
 /* tslint:disable */
@@ -17697,6 +18055,55 @@ export enum currency_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "exam"
+ */
+export enum exam_constraint {
+  exam_pkey = "exam_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "exam_question_library"
+ */
+export enum exam_question_library_constraint {
+  exam_question_library_exam_id_question_library_id_key = "exam_question_library_exam_id_question_library_id_key",
+  exam_question_library_pkey = "exam_question_library_pkey",
+}
+
+/**
+ * update columns of table "exam_question_library"
+ */
+export enum exam_question_library_update_column {
+  created_at = "created_at",
+  exam_id = "exam_id",
+  id = "id",
+  question_library_id = "question_library_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * update columns of table "exam"
+ */
+export enum exam_update_column {
+  abstract = "abstract",
+  app_id = "app_id",
+  applicable_plan_id = "applicable_plan_id",
+  created_at = "created_at",
+  examinable_amount = "examinable_amount",
+  examinable_ended_at = "examinable_ended_at",
+  examinable_started_at = "examinable_started_at",
+  examinable_unit = "examinable_unit",
+  id = "id",
+  is_available_announce_score = "is_available_announce_score",
+  is_available_to_go_back = "is_available_to_go_back",
+  is_available_to_retry = "is_available_to_retry",
+  passing_score = "passing_score",
+  point = "point",
+  time_limit_amount = "time_limit_amount",
+  time_limit_unit = "time_limit_unit",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "exercise"
  */
 export enum exercise_constraint {
@@ -19299,6 +19706,24 @@ export enum program_content_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "program_content_exam"
+ */
+export enum program_content_exam_constraint {
+  program_content_exam_pkey = "program_content_exam_pkey",
+}
+
+/**
+ * update columns of table "program_content_exam"
+ */
+export enum program_content_exam_update_column {
+  created_at = "created_at",
+  exam_id = "exam_id",
+  id = "id",
+  program_content_id = "program_content_id",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "program_content_material"
  */
 export enum program_content_material_constraint {
@@ -19821,6 +20246,92 @@ export enum property_update_column {
   name = "name",
   placeholder = "placeholder",
   position = "position",
+  type = "type",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "question"
+ */
+export enum question_constraint {
+  question_pkey = "question_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "question_group"
+ */
+export enum question_group_constraint {
+  question_group_pkey = "question_group_pkey",
+}
+
+/**
+ * update columns of table "question_group"
+ */
+export enum question_group_update_column {
+  created_at = "created_at",
+  deleted_at = "deleted_at",
+  id = "id",
+  modifier_id = "modifier_id",
+  question_library_id = "question_library_id",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "question_library"
+ */
+export enum question_library_constraint {
+  question_library_pkey = "question_library_pkey",
+}
+
+/**
+ * update columns of table "question_library"
+ */
+export enum question_library_update_column {
+  abstract = "abstract",
+  app_id = "app_id",
+  created_at = "created_at",
+  deleted_at = "deleted_at",
+  id = "id",
+  modifier_id = "modifier_id",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "question_option"
+ */
+export enum question_option_constraint {
+  question_option_pkey = "question_option_pkey",
+}
+
+/**
+ * update columns of table "question_option"
+ */
+export enum question_option_update_column {
+  created_at = "created_at",
+  deleted_at = "deleted_at",
+  id = "id",
+  is_answer = "is_answer",
+  position = "position",
+  question_id = "question_id",
+  updated_at = "updated_at",
+  value = "value",
+}
+
+/**
+ * update columns of table "question"
+ */
+export enum question_update_column {
+  created_at = "created_at",
+  deleted_at = "deleted_at",
+  explanation = "explanation",
+  font = "font",
+  id = "id",
+  layout = "layout",
+  position = "position",
+  question_group_id = "question_group_id",
+  subject = "subject",
   type = "type",
   updated_at = "updated_at",
 }
@@ -24797,6 +25308,138 @@ export interface currency_order_by {
   order_products_aggregate?: order_product_aggregate_order_by | null;
   program_plans_aggregate?: program_plan_aggregate_order_by | null;
   unit?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "exam". All fields are combined with a logical 'AND'.
+ */
+export interface exam_bool_exp {
+  _and?: exam_bool_exp[] | null;
+  _not?: exam_bool_exp | null;
+  _or?: exam_bool_exp[] | null;
+  abstract?: String_comparison_exp | null;
+  app_id?: String_comparison_exp | null;
+  applicable_plan_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  exam_question_library?: exam_question_library_bool_exp | null;
+  examinable_amount?: numeric_comparison_exp | null;
+  examinable_ended_at?: timestamptz_comparison_exp | null;
+  examinable_started_at?: timestamptz_comparison_exp | null;
+  examinable_unit?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_available_announce_score?: Boolean_comparison_exp | null;
+  is_available_to_go_back?: Boolean_comparison_exp | null;
+  is_available_to_retry?: Boolean_comparison_exp | null;
+  passing_score?: numeric_comparison_exp | null;
+  point?: numeric_comparison_exp | null;
+  program_content_exam?: program_content_exam_bool_exp | null;
+  time_limit_amount?: numeric_comparison_exp | null;
+  time_limit_unit?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "exam"
+ */
+export interface exam_insert_input {
+  abstract?: string | null;
+  app_id?: string | null;
+  applicable_plan_id?: any | null;
+  created_at?: any | null;
+  exam_question_library?: exam_question_library_arr_rel_insert_input | null;
+  examinable_amount?: any | null;
+  examinable_ended_at?: any | null;
+  examinable_started_at?: any | null;
+  examinable_unit?: string | null;
+  id?: any | null;
+  is_available_announce_score?: boolean | null;
+  is_available_to_go_back?: boolean | null;
+  is_available_to_retry?: boolean | null;
+  passing_score?: any | null;
+  point?: any | null;
+  program_content_exam?: program_content_exam_obj_rel_insert_input | null;
+  time_limit_amount?: any | null;
+  time_limit_unit?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting data into table "exam_member_time_limit"
+ */
+export interface exam_member_time_limit_insert_input {
+  created_at?: any | null;
+  editor?: member_obj_rel_insert_input | null;
+  editor_id?: any | null;
+  exam?: exam_obj_rel_insert_input | null;
+  exam_id?: any | null;
+  expired_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "exam"
+ */
+export interface exam_obj_rel_insert_input {
+  data: exam_insert_input;
+  on_conflict?: exam_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "exam"
+ */
+export interface exam_on_conflict {
+  constraint: exam_constraint;
+  update_columns: exam_update_column[];
+  where?: exam_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "exam_question_library"
+ */
+export interface exam_question_library_arr_rel_insert_input {
+  data: exam_question_library_insert_input[];
+  on_conflict?: exam_question_library_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "exam_question_library". All fields are combined with a logical 'AND'.
+ */
+export interface exam_question_library_bool_exp {
+  _and?: exam_question_library_bool_exp[] | null;
+  _not?: exam_question_library_bool_exp | null;
+  _or?: exam_question_library_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  exam?: exam_bool_exp | null;
+  exam_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  question_library?: question_library_bool_exp | null;
+  question_library_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "exam_question_library"
+ */
+export interface exam_question_library_insert_input {
+  created_at?: any | null;
+  exam?: exam_obj_rel_insert_input | null;
+  exam_id?: any | null;
+  id?: any | null;
+  question_library?: question_library_obj_rel_insert_input | null;
+  question_library_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on_conflict condition type for table "exam_question_library"
+ */
+export interface exam_question_library_on_conflict {
+  constraint: exam_question_library_constraint;
+  update_columns: exam_question_library_update_column[];
+  where?: exam_question_library_bool_exp | null;
 }
 
 /**
@@ -33520,16 +34163,6 @@ export interface program_content_body_on_conflict {
 }
 
 /**
- * input type for updating data in table "program_content_body"
- */
-export interface program_content_body_set_input {
-  data?: any | null;
-  description?: string | null;
-  id?: any | null;
-  type?: string | null;
-}
-
-/**
  * Boolean expression to filter rows from the table "program_content". All fields are combined with a logical 'AND'.
  */
 export interface program_content_bool_exp {
@@ -33626,6 +34259,52 @@ export interface program_content_enrollment_min_order_by {
   member_id?: order_by | null;
   program_content_id?: order_by | null;
   program_id?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_exam". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_exam_bool_exp {
+  _and?: program_content_exam_bool_exp[] | null;
+  _not?: program_content_exam_bool_exp | null;
+  _or?: program_content_exam_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  exam?: exam_bool_exp | null;
+  exam_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_content_exam"
+ */
+export interface program_content_exam_insert_input {
+  created_at?: any | null;
+  exam?: exam_obj_rel_insert_input | null;
+  exam_id?: any | null;
+  id?: any | null;
+  program_content?: program_content_obj_rel_insert_input | null;
+  program_content_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "program_content_exam"
+ */
+export interface program_content_exam_obj_rel_insert_input {
+  data: program_content_exam_insert_input;
+  on_conflict?: program_content_exam_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "program_content_exam"
+ */
+export interface program_content_exam_on_conflict {
+  constraint: program_content_exam_constraint;
+  update_columns: program_content_exam_update_column[];
+  where?: program_content_exam_bool_exp | null;
 }
 
 /**
@@ -34269,29 +34948,6 @@ export interface program_content_section_var_samp_order_by {
  */
 export interface program_content_section_variance_order_by {
   position?: order_by | null;
-}
-
-/**
- * input type for updating data in table "program_content"
- */
-export interface program_content_set_input {
-  abstract?: string | null;
-  content_body_id?: any | null;
-  content_section_id?: any | null;
-  content_type?: string | null;
-  created_at?: any | null;
-  display_mode?: string | null;
-  duration?: any | null;
-  id?: any | null;
-  is_notify_update?: boolean | null;
-  list_price?: any | null;
-  metadata?: any | null;
-  notified_at?: any | null;
-  position?: number | null;
-  published_at?: any | null;
-  sale_price?: any | null;
-  sold_at?: any | null;
-  title?: string | null;
 }
 
 /**
@@ -37059,6 +37715,234 @@ export interface property_var_samp_order_by {
  */
 export interface property_variance_order_by {
   position?: order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "question"
+ */
+export interface question_arr_rel_insert_input {
+  data: question_insert_input[];
+  on_conflict?: question_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "question". All fields are combined with a logical 'AND'.
+ */
+export interface question_bool_exp {
+  _and?: question_bool_exp[] | null;
+  _not?: question_bool_exp | null;
+  _or?: question_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  explanation?: String_comparison_exp | null;
+  font?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  layout?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  question_group?: question_group_bool_exp | null;
+  question_group_id?: uuid_comparison_exp | null;
+  question_options?: question_option_bool_exp | null;
+  subject?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "question_group"
+ */
+export interface question_group_arr_rel_insert_input {
+  data: question_group_insert_input[];
+  on_conflict?: question_group_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "question_group". All fields are combined with a logical 'AND'.
+ */
+export interface question_group_bool_exp {
+  _and?: question_group_bool_exp[] | null;
+  _not?: question_group_bool_exp | null;
+  _or?: question_group_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  modifier?: member_bool_exp | null;
+  modifier_id?: String_comparison_exp | null;
+  question_library?: question_library_bool_exp | null;
+  question_library_id?: uuid_comparison_exp | null;
+  questions?: question_bool_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "question_group"
+ */
+export interface question_group_insert_input {
+  created_at?: any | null;
+  deleted_at?: any | null;
+  id?: any | null;
+  modifier?: member_obj_rel_insert_input | null;
+  modifier_id?: string | null;
+  question_library?: question_library_obj_rel_insert_input | null;
+  question_library_id?: any | null;
+  questions?: question_arr_rel_insert_input | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "question_group"
+ */
+export interface question_group_obj_rel_insert_input {
+  data: question_group_insert_input;
+  on_conflict?: question_group_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "question_group"
+ */
+export interface question_group_on_conflict {
+  constraint: question_group_constraint;
+  update_columns: question_group_update_column[];
+  where?: question_group_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "question"
+ */
+export interface question_insert_input {
+  created_at?: any | null;
+  deleted_at?: any | null;
+  explanation?: string | null;
+  font?: string | null;
+  id?: any | null;
+  layout?: string | null;
+  position?: number | null;
+  question_group?: question_group_obj_rel_insert_input | null;
+  question_group_id?: any | null;
+  question_options?: question_option_arr_rel_insert_input | null;
+  subject?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "question_library". All fields are combined with a logical 'AND'.
+ */
+export interface question_library_bool_exp {
+  _and?: question_library_bool_exp[] | null;
+  _not?: question_library_bool_exp | null;
+  _or?: question_library_bool_exp[] | null;
+  abstract?: String_comparison_exp | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  modifier?: member_bool_exp | null;
+  modifier_id?: String_comparison_exp | null;
+  question_groups?: question_group_bool_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "question_library"
+ */
+export interface question_library_insert_input {
+  abstract?: string | null;
+  app_id?: string | null;
+  created_at?: any | null;
+  deleted_at?: any | null;
+  id?: any | null;
+  modifier?: member_obj_rel_insert_input | null;
+  modifier_id?: string | null;
+  question_groups?: question_group_arr_rel_insert_input | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "question_library"
+ */
+export interface question_library_obj_rel_insert_input {
+  data: question_library_insert_input;
+  on_conflict?: question_library_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "question_library"
+ */
+export interface question_library_on_conflict {
+  constraint: question_library_constraint;
+  update_columns: question_library_update_column[];
+  where?: question_library_bool_exp | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "question"
+ */
+export interface question_obj_rel_insert_input {
+  data: question_insert_input;
+  on_conflict?: question_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "question"
+ */
+export interface question_on_conflict {
+  constraint: question_constraint;
+  update_columns: question_update_column[];
+  where?: question_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "question_option"
+ */
+export interface question_option_arr_rel_insert_input {
+  data: question_option_insert_input[];
+  on_conflict?: question_option_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "question_option". All fields are combined with a logical 'AND'.
+ */
+export interface question_option_bool_exp {
+  _and?: question_option_bool_exp[] | null;
+  _not?: question_option_bool_exp | null;
+  _or?: question_option_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_answer?: Boolean_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  question?: question_bool_exp | null;
+  question_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "question_option"
+ */
+export interface question_option_insert_input {
+  created_at?: any | null;
+  deleted_at?: any | null;
+  id?: any | null;
+  is_answer?: boolean | null;
+  position?: number | null;
+  question?: question_obj_rel_insert_input | null;
+  question_id?: any | null;
+  updated_at?: any | null;
+  value?: string | null;
+}
+
+/**
+ * on_conflict condition type for table "question_option"
+ */
+export interface question_option_on_conflict {
+  constraint: question_option_constraint;
+  update_columns: question_option_update_column[];
+  where?: question_option_bool_exp | null;
 }
 
 /**

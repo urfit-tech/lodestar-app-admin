@@ -615,9 +615,6 @@ export const useMutateProgramContent = () => {
         delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
-        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
-          affected_rows
-        }
         delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
@@ -631,10 +628,39 @@ export const useMutateProgramContent = () => {
     `,
   )
 
+  const [deleteProgramContentExerciseAndExam] = useMutation<
+    hasura.DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM,
+    hasura.DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAMVariables
+  >(
+    gql`
+      mutation DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM($programContentId: uuid!, $examId: uuid!, $metadata: jsonb) {
+        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_exam(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+          affected_rows
+        }
+        delete_exam(where: { id: { _eq: $examId } }) {
+          affected_rows
+        }
+        update_program_content(where: { id: { _eq: $programContentId } }, _set: { metadata: $metadata }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
   return {
     updateProgramContent,
     updateProgramContentBody,
     deleteProgramContent,
+    deleteProgramContentExerciseAndExam,
     insertProgramContentBody,
   }
 }
