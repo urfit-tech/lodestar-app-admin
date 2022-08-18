@@ -305,7 +305,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
                       }}
                     >
                       <Form.Item name="title">
-                        <Input defaultValue={formatMessage(questionLibraryMessage.input.untitledQuestionGroup)} />
+                        <Input />
                       </Form.Item>
                       <Form.Item name="questionGroupType">
                         <Select
@@ -359,7 +359,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
                               }}
                             />
                           </Form.Item>
-                          {formatMessage(questionLibraryMessage.label.question)}
+                          {formatMessage(questionLibraryMessage.label.questions)}
                         </NumberOfDrawsInputBlock>
                       )}
                       {questionGroupType !== 'new' && (

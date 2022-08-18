@@ -92,7 +92,7 @@ const QuestionLibraryCollectionPage: React.VFC = () => {
                 }}
               >
                 <Form.Item name="title" required={true}>
-                  <Input defaultValue={formatMessage(questionLibraryMessage.input.untitledQuestionLibrary)} />
+                  <Input />
                 </Form.Item>
               </Form>
             </AdminModal>
