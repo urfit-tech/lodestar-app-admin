@@ -74,7 +74,7 @@ const QuestionOptionsBlock: React.VFC<{
   const handleAddOption = () => {
     const newOptions = [
       ...optionList,
-      { id: uuid(), value: '<p><strong>選項內容</strong></p>', isAnswer: false, position: (optionList.length += 1) },
+      { id: uuid(), value: '<p>選項內容</p>', isAnswer: false, position: (optionList.length += 1) },
     ]
     onOptionListChange?.(newOptions)
   }

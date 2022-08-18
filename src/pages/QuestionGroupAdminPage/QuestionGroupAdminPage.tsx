@@ -201,13 +201,13 @@ const QuestionGroupAdminPage: React.VFC = () => {
     mode: '',
   })
   const { upsertQuestion, updateQuestionPosition } = useQuestionMutation()
-
   const {
-    questionListLoading,
-    questionListError,
+    originalQuestionListLoading,
+    originalQuestionListError,
     questionLibraryId,
     questionGroupTitle,
     originalQuestionList,
+    isNewQuestionGroup,
     refetchQuestionGroup,
   } = useQuestionGroup(questionGroupId)
 
@@ -269,13 +269,13 @@ const QuestionGroupAdminPage: React.VFC = () => {
         options: [
           {
             id: uuid(),
-            value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</strong></p>`,
+            value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</p>`,
             isAnswer: true,
             position: 1,
           },
           {
             id: uuid(),
-            value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</strong></p>`,
+            value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</p>`,
             isAnswer: false,
             position: 2,
           },
@@ -322,30 +322,31 @@ const QuestionGroupAdminPage: React.VFC = () => {
     })
   }
 
-  const handleQuestionPositionChange = (values: Question[]) => {
-    return updateQuestionPosition({
-      variables: {
-        questionListData: values.map((value, index) => ({
-          id: value.id,
-          question_group_id: questionGroupId,
-          type: value.type,
-          subject: value.subject,
-          font: value.font,
-          layout: value.layout,
-          explanation: value.explanation,
-          position: index + 1,
-        })),
-        questionGroupIdForUpdatedAt: questionGroupId,
-        questionLibraryIdForUpdatedAt: questionLibraryId,
-      },
-    })
-      .then(() => {
-        refetchQuestionGroup().then(() => {
-          setQuestionList([])
-        })
-        message.success(formatMessage(questionLibraryMessage.message.successSortQuestionGroup), 3)
+  const handleQuestionPositionChange = async (values: Question[]) => {
+    try {
+      await updateQuestionPosition({
+        variables: {
+          questionListData: values.map((value, index) => ({
+            id: value.id,
+            question_group_id: questionGroupId,
+            type: value.type,
+            subject: value.subject,
+            font: value.font,
+            layout: value.layout,
+            explanation: value.explanation,
+            position: index + 1,
+          })),
+          questionGroupIdForUpdatedAt: questionGroupId,
+          questionLibraryIdForUpdatedAt: questionLibraryId,
+        },
       })
-      .catch(message.success(formatMessage(questionLibraryMessage.message.failSortQuestionGroup), 3))
+      refetchQuestionGroup().then(() => {
+        setQuestionList([])
+      })
+      message.success(formatMessage(questionLibraryMessage.message.successSortQuestionGroup), 3)
+    } catch (err) {
+      message.success(formatMessage(questionLibraryMessage.message.failSortQuestionGroup), 3)
+    }
   }
 
   useEffect(() => {
@@ -353,39 +354,12 @@ const QuestionGroupAdminPage: React.VFC = () => {
   }, [])
 
   useEffect(() => {
-    if (questionList.length === 0 && originalQuestionList.length > 0) {
+    if (!originalQuestionListLoading && questionList.length === 0 && originalQuestionList.length > 0) {
       setQuestionList(originalQuestionList)
-    } else if (questionList.length === 0 && !questionListLoading && originalQuestionList.length === 0) {
-      setQuestionList([
-        {
-          id: uuid(),
-          type: 'single',
-          title: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
-          subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
-          layout: 'lists',
-          font: 'auto',
-          explanation: '',
-          position: 1,
-          options: [
-            {
-              id: uuid(),
-              value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</strong></p>`,
-              isAnswer: true,
-              position: 1,
-            },
-            {
-              id: uuid(),
-              value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</strong></p>`,
-              isAnswer: false,
-              position: 2,
-            },
-          ],
-        },
-      ])
     }
-  }, [originalQuestionList, questionListLoading, questionList, formatMessage])
+  }, [originalQuestionList, originalQuestionListLoading, questionList])
 
-  if (Object.keys(enabledModules).length === 0 || questionListLoading) {
+  if (Object.keys(enabledModules).length === 0 || originalQuestionListLoading) {
     return <LoadingPage />
   }
 
@@ -396,7 +370,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
           <Button type="link" className="mr-2" onClick={() => history.goBack()}>
             <CloseOutlined />
           </Button>
-          {questionListLoading ? (
+          {originalQuestionListLoading ? (
             <>
               <Spinner />
               <span className="flex-grow-1" />
@@ -415,9 +389,9 @@ const QuestionGroupAdminPage: React.VFC = () => {
         </div>
       </StyledAdminHeader>
       <StyledContent>
-        {!questionListLoading && (
+        {!originalQuestionListLoading && (
           <QuestionGroupBlock>
-            {originalQuestionList.length > 0 && (
+            {!isNewQuestionGroup && (
               <ItemsSortingModal
                 items={questionList}
                 triggerText={formatMessage(questionLibraryMessage.ui.sortQuestions)}
@@ -569,6 +543,7 @@ const useQuestionMutation = () => {
 }
 
 const useQuestionGroup = (questionGroupId: string) => {
+  const { formatMessage } = useIntl()
   const { loading, error, data, refetch } = useQuery<hasura.GET_QUESTIONS, hasura.GET_QUESTIONSVariables>(
     GET_QUESTIONS,
     {
@@ -578,7 +553,9 @@ const useQuestionGroup = (questionGroupId: string) => {
     },
   )
 
-  const questions: Question[] =
+  let isNewQuestionGroup = false
+
+  let questions: Question[] =
     data?.question_group_by_pk?.questions.map(v => ({
       id: v.id,
       type: v.type,
@@ -598,13 +575,42 @@ const useQuestionGroup = (questionGroupId: string) => {
       }),
     })) || []
 
+  if (questions.length === 0) {
+    isNewQuestionGroup = true
+    questions.push({
+      id: uuid(),
+      type: 'single',
+      title: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
+      subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
+      layout: 'lists',
+      font: 'auto',
+      explanation: '',
+      position: 1,
+      options: [
+        {
+          id: uuid(),
+          value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</strong></p>`,
+          isAnswer: true,
+          position: 1,
+        },
+        {
+          id: uuid(),
+          value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</strong></p>`,
+          isAnswer: false,
+          position: 2,
+        },
+      ],
+    })
+  }
+
   return {
     questionLibraryId: data?.question_group_by_pk?.question_library?.id,
     questionGroupTitle: data?.question_group_by_pk?.title,
     originalQuestionList: questions,
+    isNewQuestionGroup: isNewQuestionGroup,
     refetchQuestionGroup: refetch,
-    questionListLoading: loading,
-    questionListError: error,
+    originalQuestionListLoading: loading,
+    originalQuestionListError: error,
   }
 }
 
