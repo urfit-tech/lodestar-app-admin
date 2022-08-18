@@ -1441,7 +1441,7 @@ export const questionLibraryMessage = {
     renameQuestionGroup: { id: 'questionLibrary.label.renameQuestionGroup', defaultMessage: '重新命名題組' },
     confirmDuplicateQuestionGroup: { id: 'questionLibrary.label.confirmDuplicateQuestionGroup', defaultMessage: '確認複製此題組?' },
     draw: { id: 'questionLibrary.label.draw', defaultMessage: '從中抽' },
-    question: { id: 'questionLibrary.label.question', defaultMessage: '題' },
+    questions: { id: 'questionLibrary.label.questions', defaultMessage: '題' },
   }),
   message: defineMessages({
     successDeletedQuestionLibrary: {
