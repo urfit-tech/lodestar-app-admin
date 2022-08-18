@@ -1440,6 +1440,8 @@ export const questionLibraryMessage = {
     basicSettings: { id: 'questionLibrary.label.basicSettings', defaultMessage: '基本設定' },
     renameQuestionGroup: { id: 'questionLibrary.label.renameQuestionGroup', defaultMessage: '重新命名題組' },
     confirmDuplicateQuestionGroup: { id: 'questionLibrary.label.confirmDuplicateQuestionGroup', defaultMessage: '確認複製此題組?' },
+    draw: { id: 'questionLibrary.label.draw', defaultMessage: '從中抽' },
+    question: { id: 'questionLibrary.label.question', defaultMessage: '題' },
   }),
   message: defineMessages({
     successDeletedQuestionLibrary: {
@@ -1449,6 +1451,10 @@ export const questionLibraryMessage = {
     successDeletedQuestionGroup: {
       id: 'questionLibrary.message.successDeletedQuestionGroup',
       defaultMessage: '刪除題組成功',
+    },
+    failDeletedQuestionGroup: {
+      id: 'questionLibrary.message.failDeletedQuestionGroup',
+      defaultMessage: '刪除題組失敗',
     },
     successSortQuestionGroup: {
       id: 'questionLibrary.message.successSortQuestionGroup',
@@ -1471,6 +1477,14 @@ export const questionLibraryMessage = {
     questionGroupTitleCanNotNull: {
       id: 'questionLibrary.message.questionGroupTitleCanNotNull',
       defaultMessage: '題組名稱不可為空',
+    },
+    exceededQuantityOfDraws: {
+      id: 'questionLibrary.message.exceededQuantityOfDraws',
+      defaultMessage: '超過可抽選的數量',
+    },
+    atLeastChooseOneQuestionGroup: {
+      id: 'questionLibrary.message.atLeastChooseOneQuestionGroup',
+      defaultMessage: '請選擇至少一個題組!',
     },
   }),
 }

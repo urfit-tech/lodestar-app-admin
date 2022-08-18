@@ -53,10 +53,11 @@ type QuestionGroupColumn = {
   lastModified: string
 }
 
-const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; currentMemberId: string }> = ({
-  questionLibraryId,
-  currentMemberId,
-}) => {
+const QuestionGroupCollectionTable: React.VFC<{
+  questionLibraryId: string
+  currentMemberId: string
+  onQuestionGroupChange?: () => void
+}> = ({ questionLibraryId, currentMemberId, onQuestionGroupChange }) => {
   const { formatMessage } = useIntl()
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
   const [detailLoading, setDetailLoading] = useState(false)
@@ -68,6 +69,11 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
   const [archiveQuestionGroup] = useMutation<hasura.ARCHIVE_QUESTION_GROUP, hasura.ARCHIVE_QUESTION_GROUPVariables>(
     ARCHIVE_QUESTION_GROUP,
   )
+
+  const handleDetailsButtonAction = () => {
+    refetchQuestionGroups()
+    onQuestionGroupChange?.()
+  }
 
   const handleDelete = (questionGroupId: string, setVisible: (visible: boolean) => void) => {
     setDetailLoading(true)
@@ -84,6 +90,7 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
             message.success(formatMessage(questionLibraryMessage.message.successDeletedQuestionGroup), 3)
           })
           .catch(handleError)
+        onQuestionGroupChange?.()
       })
       .catch(handleError)
       .finally(() => {
@@ -147,7 +154,7 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
                   questionLibraryId={questionLibraryId}
                   questionGroupId={record.id}
                   currentMemberId={currentMemberId}
-                  onRefetch={refetchQuestionGroups}
+                  onRefetch={handleDetailsButtonAction}
                 />
               </DetailItem>
               <DetailItem>
@@ -156,7 +163,7 @@ const QuestionGroupCollectionTable: React.VFC<{ questionLibraryId: string; curre
                   questionGroupId={record.id}
                   title={record.title}
                   currentMemberId={currentMemberId}
-                  onRefetch={refetchQuestionGroups}
+                  onRefetch={handleDetailsButtonAction}
                 />
               </DetailItem>
               <DetailItem>
