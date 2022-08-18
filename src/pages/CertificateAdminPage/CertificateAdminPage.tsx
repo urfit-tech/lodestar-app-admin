@@ -4,6 +4,7 @@ import { Spinner } from '@chakra-ui/react'
 import { Button, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -24,6 +25,7 @@ import pageMessages from '../translation'
 import CertificateBasicForm from './CertificateBasicForm'
 import CertificateEligibilityListBlock from './CertificateEligibilityListBlock'
 import CertificateIntroForm from './CertificateIntroForm'
+import CertificatePreviewModal from './CertificatePreviewModal'
 import CertificatePublishAdminBlock from './CertificatePublishAdminBlock'
 
 const CertificateAdminPage: React.VFC = () => {
@@ -32,6 +34,7 @@ const CertificateAdminPage: React.VFC = () => {
   const { certificateId } = useParams<{ certificateId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { loading, error, certificate, refetch } = useCertificate(certificateId)
+  const [visible, setVisible] = useState(false)
 
   if (Object.keys(enabledModules).length === 0 || loading) {
     return <LoadingPage />
@@ -54,6 +57,9 @@ const CertificateAdminPage: React.VFC = () => {
         ) : (
           <AdminHeaderTitle>{certificate?.title}</AdminHeaderTitle>
         )}
+        <Button className="mr-2" onClick={() => setVisible(true)}>
+          {formatMessage(pageMessages.CertificateAdminPage.preview)}
+        </Button>
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
@@ -110,6 +116,9 @@ const CertificateAdminPage: React.VFC = () => {
           </Tabs>
         )}
       </StyledLayoutContent>
+      {certificate && (
+        <CertificatePreviewModal visible={visible} onCancel={() => setVisible(false)} certificate={certificate} />
+      )}
     </>
   )
 }
