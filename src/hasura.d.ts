@@ -15223,6 +15223,16 @@ export interface DELETE_POINT_LOGVariables {
 // GraphQL query operation: GET_PRACTICE_PREVIEW_COLLECTION
 // ====================================================
 
+export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_aggregate_aggregate {
+  __typename: "practice_aggregate_fields";
+  count: number;
+}
+
+export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_aggregate {
+  __typename: "practice_aggregate";
+  aggregate: GET_PRACTICE_PREVIEW_COLLECTION_practice_aggregate_aggregate | null;
+}
+
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program_program_roles {
   __typename: "program_role";
   id: any;
@@ -15287,18 +15297,18 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION_practice {
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION {
   /**
+   * fetch aggregated fields from the table: "practice"
+   */
+  practice_aggregate: GET_PRACTICE_PREVIEW_COLLECTION_practice_aggregate;
+  /**
    * fetch data from the table: "practice"
    */
   practice: GET_PRACTICE_PREVIEW_COLLECTION_practice[];
 }
 
 export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
-  searchText?: string | null;
-  programId?: any | null;
-  programContentSectionId?: any | null;
-  programContentId?: any | null;
-  unreviewed?: boolean | null;
-  programRoleMemberId?: string | null;
+  condition: practice_bool_exp;
+  limit: number;
 }
 
 /* tslint:disable */
