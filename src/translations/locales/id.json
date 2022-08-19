@@ -2277,5 +2277,6 @@
   "common.ui.rename": "Ganti nama",
   "admin.AdminMenu.questionLibraryManagement": "Manajemen Perpustakaan Pertanyaan",
   "admin.AdminMenu.questionGroupManagement": "Manajemen Grup Pertanyaan",
-  "admin.AdminMenu.questionLibraryAdmin": "Perpustakaan Pertanyaan"
+  "admin.AdminMenu.questionLibraryAdmin": "Perpustakaan Pertanyaan",
+  "page.QuestionGroupAdminPage.questionTextDescription": "Deskripsi Teks Pertanyaan"
 }

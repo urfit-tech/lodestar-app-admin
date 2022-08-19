@@ -2277,5 +2277,6 @@
   "common.ui.rename": "重新命名",
   "admin.AdminMenu.questionLibraryManagement": "題庫管理",
   "admin.AdminMenu.questionGroupManagement": "題組管理",
-  "admin.AdminMenu.questionLibraryAdmin": "題目庫"
+  "admin.AdminMenu.questionLibraryAdmin": "題目庫",
+  "page.QuestionGroupAdminPage.questionTextDescription": "題目文字描述"
 }

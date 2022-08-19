@@ -2277,5 +2277,6 @@
   "common.ui.rename": "Đổi tên",
   "admin.AdminMenu.questionLibraryManagement": "Quản lý Thư viện Câu hỏi",
   "admin.AdminMenu.questionGroupManagement": "Quản lý nhóm câu hỏi",
-  "admin.AdminMenu.questionLibraryAdmin": "Thư viện câu hỏi"
+  "admin.AdminMenu.questionLibraryAdmin": "Thư viện câu hỏi",
+  "page.QuestionGroupAdminPage.questionTextDescription": "Mô tả Văn bản Câu hỏi"
 }

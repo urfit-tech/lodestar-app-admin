@@ -229,6 +229,7 @@ const pageMessages = {
   }),
   QuestionGroupAdminPage: defineMessages({
     question: { id: 'page.QuestionGroupAdminPage.question', defaultMessage: '題目' },
+    questionTextDescription: { id: 'page.QuestionGroupAdminPage.questionTextDescription', defaultMessage: '題目文字描述' },
     option: { id: 'page.QuestionGroupAdminPage.option', defaultMessage: '選項' },
   }),
   CertificateCollectionPage: defineMessages({

@@ -2277,5 +2277,6 @@
   "common.ui.rename": "Rename",
   "admin.AdminMenu.questionLibraryManagement": "Question Library Management",
   "admin.AdminMenu.questionGroupManagement": "Question Group Management",
-  "admin.AdminMenu.questionLibraryAdmin": "Question Library"
+  "admin.AdminMenu.questionLibraryAdmin": "Question Library",
+  "page.QuestionGroupAdminPage.questionTextDescription": "Question Text Description"
 }
