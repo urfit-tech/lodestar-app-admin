@@ -13,7 +13,7 @@ const OptionBraftEditor: React.VFC<{
   }, [value])
   return (
     <AdminBraftEditor
-      variant="short"
+      variant="question"
       value={editorValue}
       onChange={v => setEditorValue(v.toHTML())}
       onBlur={() => onEditorChange(optionId, editorValue)}

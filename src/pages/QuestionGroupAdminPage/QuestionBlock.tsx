@@ -54,7 +54,7 @@ const StyledCheckBox = styled(Checkbox)`
 const QuestionSubject = styled.div`
   padding-bottom: 20px;
   .bf-content {
-    height: 200px;
+    height: 120px;
     border: 1px solid var(--gray);
     border-top: none;
     border-radius: 4px;
@@ -98,7 +98,11 @@ const QuestionBlock: React.VFC<{
   }
 
   const handleSubjectValueChange = (value: string) => {
-    const newQuestion = { ...question, title: value.replace(/<[^>]+>/g, ''), subject: value }
+    const newQuestion = {
+      ...question,
+      title: value.replace(/<[^>]+>/g, ''),
+      subject: value,
+    }
     onQuestionChange?.(newQuestion)
   }
 
@@ -136,7 +140,7 @@ const QuestionBlock: React.VFC<{
       <StyledP>{formatMessage(pageMessages.QuestionGroupAdminPage.question)}</StyledP>
       <QuestionSubject>
         <AdminBraftEditor
-          variant="short"
+          variant="question"
           value={subjectValue}
           onChange={v => setSubjectValue(v.toHTML())}
           onBlur={() => handleSubjectValueChange(subjectValue)}
@@ -152,7 +156,7 @@ const QuestionBlock: React.VFC<{
       <ExplanationBlock>
         <StyledP>{formatMessage(questionLibraryMessage.label.explanation)}</StyledP>
         <AdminBraftEditor
-          variant="short"
+          variant="question"
           value={explanationValue}
           onChange={v => setExplanationValue(v.toHTML())}
           onBlur={() => handleExplanationValueChange(explanationValue)}

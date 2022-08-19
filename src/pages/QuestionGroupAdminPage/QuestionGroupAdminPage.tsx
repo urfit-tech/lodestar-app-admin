@@ -39,10 +39,10 @@ const StyledAdminHeader = styled(AdminHeader)`
 const StyledContent = styled.div`
   display: flex;
   height: 100vh;
-  padding: 16px;
+  padding: 16px 16px 40px 16px;
 `
 
-const QuestionGroupBlock = styled.div`
+const QuestionGroupBlock = styled.div<{ font: string }>`
   width: 50%;
   padding: 0 24px 0 40px;
   overflow-y: scroll;
@@ -58,6 +58,10 @@ const QuestionGroupBlock = styled.div`
   }
   .ant-collapse > .ant-collapse-item.ant-collapse-item-active .ant-collapse-header {
     padding-bottom: 0;
+  }
+  .DraftEditor-editorContainer {
+    font-family: ${props => (props.font === 'zhuyin' ? 'BpmfGenSenRounded' : 'inherit')};
+    font-size: ${props => (props.font === 'zhuyin' ? '32px' : '16px')};
   }
 `
 
@@ -96,6 +100,7 @@ export const AddButton = styled(Button)`
 `
 
 const AddQuestionBlock = styled.div`
+  margin: 40px 0;
   position: relative;
   text-align: center;
   &:before {
@@ -120,10 +125,12 @@ const AddQuestionBlock = styled.div`
   }
 `
 
-const PreviewBlock = styled.div`
+const PreviewBlock = styled.div<{ font: string }>`
   width: 50%;
   background-color: #f7f8f8;
   overflow-y: scroll;
+  font-family: ${props => (props.font === 'zhuyin' ? 'BpmfGenSenRounded' : 'inherit')};
+  font-size: ${props => (props.font === 'zhuyin' ? '32px' : '16px')};
 `
 
 const PreviewQuestion = styled.div`
@@ -141,7 +148,6 @@ const CurrentQuestionIndex = styled.div`
 `
 
 const PreviewSubject = styled.div`
-  font-size: 16px;
   font-weight: 500;
   line-height: 1.69;
   letter-spacing: 0.2px;
@@ -149,12 +155,9 @@ const PreviewSubject = styled.div`
   padding-bottom: 24px;
 `
 
-const PreviewOptions = styled.div<{ previewMode: string }>``
-
 const ListsOption = styled.div`
   padding: 16px;
   margin-bottom: 16px;
-  font-size: 16px;
   font-weight: 500;
   line-height: 1.5;
   letter-spacing: 0.2px;
@@ -164,13 +167,14 @@ const ListsOption = styled.div`
 `
 
 const GridOption = styled.div`
+  width: 100%;
+  aspect-ratio: 1/1;
   border: 1px solid var(--gray);
   border-radius: 4px;
   padding: 16px;
 `
 
 const ExamName = styled.p`
-  font-size: 18px;
   color: var(--gray-darker);
   font-weight: bold;
   letter-spacing: 0.8px;
@@ -186,6 +190,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const [savingLoading, setSavingLoading] = useState<boolean>(false)
   const [questionList, setQuestionList] = useState<Question[]>([])
   const [deletedQuestionIdList, setDeletedQuestionIdList] = useState<string[]>([])
+  const [font, setFont] = useState<string>('auto')
   const [preview, setPreview] = useState<object & { question: Question; idx: number; mode: string }>({
     question: {
       id: '',
@@ -260,8 +265,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
       {
         id: uuid(),
         type: 'single',
-        title: `${formatMessage(pageMessages.QuestionGroupAdminPage.question)} ${questionList.length + 1}`,
-        subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} ${questionList.length + 1}</p>`,
+        title: `${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}`,
+        subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
         layout: 'lists',
         font: 'auto',
         explanation: '',
@@ -292,6 +297,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
 
   const handleQuestionChange = (newQuestion: Question) => {
     const newQuestionList = questionList.map(question => (question.id === newQuestion.id ? newQuestion : question))
+    setFont(newQuestion.font)
     setPreview({ ...preview, question: newQuestion, mode: newQuestion.layout })
     setQuestionList(newQuestionList)
   }
@@ -317,6 +323,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
 
     questionList.forEach((question, idx) => {
       if (question.id === questionId) {
+        setFont(question.font)
         setPreview({ question: question, idx: idx + 1, mode: question.layout })
       }
     })
@@ -390,7 +397,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
       </StyledAdminHeader>
       <StyledContent>
         {!originalQuestionListLoading && (
-          <QuestionGroupBlock>
+          <QuestionGroupBlock font={font}>
             {!isNewQuestionGroup && (
               <ItemsSortingModal
                 items={questionList}
@@ -411,7 +418,9 @@ const QuestionGroupAdminPage: React.VFC = () => {
                   <StyledPanel
                     header={
                       <QuestionTitle>
-                        {question.subject?.replace(/<[^>]+>/g, '')}
+                        <div dangerouslySetInnerHTML={{ __html: question.subject }}></div>
+                        {/* {question.subject?.replace(/<[^>]+>/g, '') ||
+                          `${formatMessage(pageMessages.QuestionGroupAdminPage.question)} ${idx}`} */}
                         {questionList.length > 1 && (
                           <TrashOIcon
                             style={{ zIndex: 99999 }}
@@ -439,7 +448,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
             </AddQuestionBlock>
           </QuestionGroupBlock>
         )}
-        <PreviewBlock>
+        <PreviewBlock font={font}>
           {preview.idx !== -1 && (
             <PreviewQuestion>
               <ExamName>{formatMessage(questionLibraryMessage.label.examName)}</ExamName>
@@ -447,21 +456,19 @@ const QuestionGroupAdminPage: React.VFC = () => {
                 <p>{`${preview.idx} / ${questionList.length}`}</p>
               </CurrentQuestionIndex>
               <PreviewSubject dangerouslySetInnerHTML={{ __html: preview.question.subject || '' }} />
-              <PreviewOptions previewMode={preview.mode}>
-                {preview.mode === 'lists' &&
-                  preview.question.options?.map(option => (
-                    <ListsOption key={`preview_${option.id}`} dangerouslySetInnerHTML={{ __html: option.value }} />
+              {preview.mode === 'lists' &&
+                preview.question.options?.map(option => (
+                  <ListsOption key={`preview_${option.id}`} dangerouslySetInnerHTML={{ __html: option.value }} />
+                ))}
+              {preview.mode === 'grid' && (
+                <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                  {preview.question.options?.map(option => (
+                    <GridItem key={`preview_${option.id}`} colSpan={1} w="100%">
+                      <GridOption dangerouslySetInnerHTML={{ __html: option.value }} />
+                    </GridItem>
                   ))}
-                {preview.mode === 'grid' && (
-                  <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-                    {preview.question.options?.map(option => (
-                      <GridItem key={`preview_${option.id}`} colSpan={1} w="100%">
-                        <GridOption dangerouslySetInnerHTML={{ __html: option.value }} />
-                      </GridItem>
-                    ))}
-                  </Grid>
-                )}
-              </PreviewOptions>
+                </Grid>
+              )}
             </PreviewQuestion>
           )}
         </PreviewBlock>
@@ -580,8 +587,8 @@ const useQuestionGroup = (questionGroupId: string) => {
     questions.push({
       id: uuid(),
       type: 'single',
-      title: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
-      subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.question)} 1</p>`,
+      title: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
+      subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
       layout: 'lists',
       font: 'auto',
       explanation: '',
@@ -589,13 +596,13 @@ const useQuestionGroup = (questionGroupId: string) => {
       options: [
         {
           id: uuid(),
-          value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</strong></p>`,
+          value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</p>`,
           isAnswer: true,
           position: 1,
         },
         {
           id: uuid(),
-          value: `<p><strong>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</strong></p>`,
+          value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</p>`,
           isAnswer: false,
           position: 2,
         },
