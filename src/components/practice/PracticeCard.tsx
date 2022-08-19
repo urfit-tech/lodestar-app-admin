@@ -5,7 +5,7 @@ import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useEffect, useState } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import Responsive from '../../components/common/Responsive'
@@ -28,6 +28,7 @@ type PracticeCardProps = CardProps & {
   reactedMemberIds: string[]
   roles: { id: string; name: string; memberId: string }[]
   isReviewed: boolean
+  practiceCardRef?: React.Ref<HTMLDivElement>
   onRefetch?: () => void
   desktop?: boolean
 }
@@ -115,6 +116,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   reactedMemberIds,
   roles,
   isReviewed,
+  practiceCardRef,
   onRefetch,
   ...props
 }) => {
@@ -152,7 +154,6 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
             memberId: currentMemberId || '',
           },
         })
-    onRefetch?.()
   }
 
   useEffect(() => {
@@ -165,101 +166,43 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
 
   return (
     <StyledAdminCard className="mb-3" {...props}>
-      <Responsive.Default>
-        <div className="cursor-pointer" onClick={() => window.open(practiceUrl, '_blank')}>
-          {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
-
-          <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
-          <StyledCreatedAt>
-            <CalendarOutlined className="mr-2" />
-            <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
-          </StyledCreatedAt>
-        </div>
-
-        <div className="d-flex justify-content-between algin-items-center mb-3">
-          <MemberAvatar size="28px" withName memberId={memberId} />
-          <div className="d-flex justify-content-center algin-items-center">
-            <StyledCommentIcon>
-              <CommentAltLinesIcon className="mr-2" />
-              <div>{practiceAmount && practiceAmount}</div>
-            </StyledCommentIcon>
-            <StyledHeartIcon
-              reacted={reacted}
-              onClick={() => {
-                toggleReaction(reacted)
-              }}
-            >
-              {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
-              <div>{reactedMemberIds.length}</div>
-            </StyledHeartIcon>
-          </div>
-        </div>
-
-        {currentUserRole === 'app-owner' ||
-        roles
-          .filter(role => role?.id === currentMemberId)
-          .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
-          <StyledCheckboxWrapper>
-            <Checkbox
-              checked={reviewed}
-              onChange={e => {
-                const updatedReviewed = e.target.checked
-                updatedPracticeStatus({
-                  variables: {
-                    practiceId: id,
-                    reviewedAt: updatedReviewed ? new Date() : null,
-                  },
-                }).then(() => {
-                  setReviewed(updatedReviewed)
-                  onRefetch?.()
-                })
-              }}
-            >
-              {isReviewed
-                ? formatMessage(programMessages.status.reviewed)
-                : formatMessage(programMessages.status.unreviewed)}
-            </Checkbox>
-          </StyledCheckboxWrapper>
-        ) : null}
-      </Responsive.Default>
-
-      <Responsive.Desktop>
-        <div className="row">
-          <div
-            className="col-6 d-flex align-items-center cursor-pointer"
-            onClick={() => window.open(practiceUrl, '_blank')}
-          >
+      <div ref={practiceCardRef}>
+        <Responsive.Default>
+          <div className="cursor-pointer" onClick={() => window.open(practiceUrl, '_blank')}>
             {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
-            <StyledTitleBlock>
-              <StyledDesktopTitle>{title}</StyledDesktopTitle>
-              <StyledCreatedAt>
-                <CalendarOutlined className="mr-2" />
-                <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
-              </StyledCreatedAt>
-            </StyledTitleBlock>
+
+            <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
+            <StyledCreatedAt>
+              <CalendarOutlined className="mr-2" />
+              <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
+            </StyledCreatedAt>
           </div>
 
-          <div className="col-3 d-flex align-items-center">
+          <div className="d-flex justify-content-between algin-items-center mb-3">
             <MemberAvatar size="28px" withName memberId={memberId} />
+            <div className="d-flex justify-content-center algin-items-center">
+              <StyledCommentIcon>
+                <CommentAltLinesIcon className="mr-2" />
+                <div>{practiceAmount && practiceAmount}</div>
+              </StyledCommentIcon>
+              <StyledHeartIcon
+                reacted={reacted}
+                onClick={() => {
+                  toggleReaction(reacted)
+                }}
+              >
+                {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
+                <div>{reactedMemberIds.length}</div>
+              </StyledHeartIcon>
+            </div>
           </div>
 
-          <div className="col-3 d-flex align-items-center">
-            <StyledCommentIcon className="mr-3">
-              <CommentAltLinesIcon className="mr-2" />
-              <div>{practiceAmount}</div>
-            </StyledCommentIcon>
-
-            <StyledHeartIcon className="mr-3" reacted={reacted} onClick={e => toggleReaction(reacted)}>
-              {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
-              <div>{reactedMemberIds.length}</div>
-            </StyledHeartIcon>
-
-            {currentUserRole === 'app-owner' ||
-            roles
-              .filter(role => role?.memberId === currentMemberId)
-              .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
+          {currentUserRole === 'app-owner' ||
+          roles
+            .filter(role => role?.id === currentMemberId)
+            .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
+            <StyledCheckboxWrapper>
               <Checkbox
-                className="flex-grow-1 text-right"
                 checked={reviewed}
                 onChange={e => {
                   const updatedReviewed = e.target.checked
@@ -278,10 +221,70 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
                   ? formatMessage(programMessages.status.reviewed)
                   : formatMessage(programMessages.status.unreviewed)}
               </Checkbox>
-            ) : null}
+            </StyledCheckboxWrapper>
+          ) : null}
+        </Responsive.Default>
+
+        <Responsive.Desktop>
+          <div className="row">
+            <div
+              className="col-6 d-flex align-items-center cursor-pointer"
+              onClick={() => window.open(practiceUrl, '_blank')}
+            >
+              {isCoverRequired && <StyledCover src={coverUrl || EmptyCover} />}
+              <StyledTitleBlock>
+                <StyledDesktopTitle>{title}</StyledDesktopTitle>
+                <StyledCreatedAt>
+                  <CalendarOutlined className="mr-2" />
+                  <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
+                </StyledCreatedAt>
+              </StyledTitleBlock>
+            </div>
+
+            <div className="col-3 d-flex align-items-center">
+              <MemberAvatar size="28px" withName memberId={memberId} />
+            </div>
+
+            <div className="col-3 d-flex align-items-center">
+              <StyledCommentIcon className="mr-3">
+                <CommentAltLinesIcon className="mr-2" />
+                <div>{practiceAmount}</div>
+              </StyledCommentIcon>
+
+              <StyledHeartIcon className="mr-3" reacted={reacted} onClick={e => toggleReaction(reacted)}>
+                {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
+                <div>{reactedMemberIds.length}</div>
+              </StyledHeartIcon>
+
+              {currentUserRole === 'app-owner' ||
+              roles
+                .filter(role => role?.memberId === currentMemberId)
+                .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
+                <Checkbox
+                  className="flex-grow-1 text-right"
+                  checked={reviewed}
+                  onChange={e => {
+                    const updatedReviewed = e.target.checked
+                    updatedPracticeStatus({
+                      variables: {
+                        practiceId: id,
+                        reviewedAt: updatedReviewed ? new Date() : null,
+                      },
+                    }).then(() => {
+                      setReviewed(updatedReviewed)
+                      onRefetch?.()
+                    })
+                  }}
+                >
+                  {isReviewed
+                    ? formatMessage(programMessages.status.reviewed)
+                    : formatMessage(programMessages.status.unreviewed)}
+                </Checkbox>
+              ) : null}
+            </div>
           </div>
-        </div>
-      </Responsive.Desktop>
+        </Responsive.Desktop>
+      </div>
     </StyledAdminCard>
   )
 }
@@ -328,4 +331,7 @@ const GET_PRACTICE_ISSUE_AMOUNT = gql`
     }
   }
 `
-export default PracticeCard
+
+export default forwardRef((props: PracticeCardProps & CardProps, ref?: React.Ref<HTMLDivElement>) => (
+  <PracticeCard {...props} practiceCardRef={ref} />
+))
