@@ -1,15 +1,14 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Form, InputNumber, Skeleton, Tag } from 'antd'
-import { FormInstance } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import { flatten, sum } from 'ramda'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { QuestionLibrary } from '../../types/program'
 import TreeTransfer from '../common/TreeTransfer'
-import { FieldProps } from './ExerciseAdminModal'
+import { QuestionExam } from './ExerciseAdminModal'
 import programMessages from './translation'
 
 const StyledLabel = styled.div`
@@ -35,23 +34,14 @@ const StyledQuestionAmount = styled(Tag)`
   }
 `
 
-const ExamQuestionSettingForm: React.VFC<{ form: FormInstance<FieldProps> }> = ({ form }) => {
+const ExamQuestionSettingForm: React.VFC<{
+  questionExam: QuestionExam
+  onChange: React.Dispatch<React.SetStateAction<QuestionExam>>
+}> = ({ questionExam, onChange }) => {
   const { formatMessage } = useIntl()
-  const [targetKeys, setTargetKeys] = useState<string[]>([])
-  const [point, setPoint] = useState<number>(0)
+  const [targetKeys, setTargetKeys] = useState<string[]>(questionExam.questionGroupIds)
+  const [point, setPoint] = useState<number>(questionExam.point)
   const { loading, error, questionLibraries } = useExamQuestionLibrary()
-
-  const onChange = (keys: string[]) => {
-    setTargetKeys(keys)
-  }
-
-  useEffect(() => {
-    console.log('set value')
-    form.setFieldsValue({
-      point: 3,
-      passingScore: 44,
-    })
-  }, [form])
 
   if (loading) return <Skeleton active />
   if (error) return <div>{formatMessage(programMessages['*'].fetchDataError)}</div>
@@ -96,7 +86,18 @@ const ExamQuestionSettingForm: React.VFC<{ form: FormInstance<FieldProps> }> = (
       <StyledLabel>{formatMessage(programMessages.ExamQuestionSettingForm.questionSetting)}</StyledLabel>
       <Form.Item>
         <Form.Item name="questionTarget">
-          <TreeTransfer dataSource={treeData} targetKeys={targetKeys} onChange={onChange} />
+          <TreeTransfer
+            dataSource={treeData}
+            targetKeys={targetKeys}
+            onChange={(keys: string[]) => {
+              setTargetKeys(keys)
+              onChange(prevState => ({
+                ...prevState,
+                ...questionExam,
+                questionGroupIds: keys,
+              }))
+            }}
+          />
         </Form.Item>
       </Form.Item>
       <StyledLabel>{formatMessage(programMessages.ExamQuestionSettingForm.examScore)}</StyledLabel>
@@ -108,7 +109,18 @@ const ExamQuestionSettingForm: React.VFC<{ form: FormInstance<FieldProps> }> = (
         }
       >
         <Form.Item name="point">
-          <InputNumber min={0} onChange={v => setPoint(Number(v))} />
+          <InputNumber
+            min={0}
+            defaultValue={questionExam.point}
+            onChange={v => {
+              setPoint(Number(v))
+              onChange(prevState => ({
+                ...prevState,
+                ...questionExam,
+                point: Number(v),
+              }))
+            }}
+          />
           <span className="ml-2">
             * {questionAmount} = {point * questionAmount}
           </span>
@@ -122,7 +134,17 @@ const ExamQuestionSettingForm: React.VFC<{ form: FormInstance<FieldProps> }> = (
         }
       >
         <Form.Item name="passingScore">
-          <InputNumber min={0} />
+          <InputNumber
+            min={0}
+            defaultValue={questionExam.passingScore}
+            onChange={v =>
+              onChange(prevState => ({
+                ...prevState,
+                ...questionExam,
+                passingScore: Number(v),
+              }))
+            }
+          />
           <span className="ml-2"> / 100</span>
         </Form.Item>
       </Form.Item>

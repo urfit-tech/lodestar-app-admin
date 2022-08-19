@@ -10,6 +10,7 @@ const programMessages = {
     notifyUpdate: { id: 'program.*.notifyUpdate', defaultMessage: '通知內容更新' },
     successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: '儲存成功' },
     fetchDataError: { id: 'program.*.fetchDataError', defaultMessage: '讀取錯誤' },
+    nothingIsChange: { id: 'program.*.nothingIsChange', defaultMessage: '無修改項目' },
   }),
   ProgramCollectionSelector: defineMessages({
     recentWatched: { id: 'program.ProgramCollectionSelector.recentWatched', defaultMessage: '依最後觀看時間' },

@@ -111,12 +111,13 @@ export type ProgramContentProps = {
   displayMode: DisplayMode
 }
 
-export type ProgramContentBodyProps = {
+export type ProgramContentBody = {
   id: string
   type: string | null
   description: string | null
   data: any
   materials: ProgramContentMaterialProps[]
+  target: string | null
 }
 
 export type ProgramContentMaterialProps = {

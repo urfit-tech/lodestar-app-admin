@@ -17,30 +17,35 @@ import ExamBasicForm from './ExamBasicForm'
 import ExamQuestionSettingForm from './ExamQuestionSettingForm'
 import programMessages from './translation'
 
+type FieldProps = {
+  title: string
+  isNotifyUpdate: boolean
+  displayMode: string
+  publishedAt: Date
+}
+
+export type BasicExam = Pick<
+  Exam,
+  | 'id'
+  | 'examinableUnit'
+  | 'examinableAmount'
+  | 'examinableStartedAt'
+  | 'examinableEndedAt'
+  | 'timeLimitAmount'
+  | 'timeLimitUnit'
+  | 'isAvailableToRetry'
+  | 'isAvailableToGoBack'
+  | 'isAvailableAnnounceScore'
+>
+
+export type QuestionExam = Pick<Exam, 'id' | 'point' | 'passingScore'> & { questionGroupIds: string[] }
+
 const StyledTitle = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--gray-darker);
   letter-spacing: 0.2px;
 `
-
-export type FieldProps = {
-  title: string
-  isNotifyUpdate: boolean
-  displayMode: string
-  publishedAt: Date
-  expiredAt: [Date, Date]
-  examinableUnit: string
-  examinableAmount: number
-  timeLimitUnit: string
-  timeLimitAmount: number
-  point: number
-  passingScore: number
-  isAvailableAnnounceScore: boolean
-  isAvailableToGoBack: boolean
-  isAvailableToRetry: boolean
-  questionTarget: string[]
-}
 
 const StyledModal = styled(Modal)<{ isFullWidth?: boolean }>`
   && {
@@ -68,75 +73,174 @@ const ExerciseAdminModal: React.FC<{
 }> = ({ programContent, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const { deleteProgramContentExerciseAndExam } = useMutateProgramContent()
+  const { loading: loadingExamId, error: errorExamId, examId } = useExamId(programContent.id)
+
+  const {
+    loading: loadingBasicExam,
+    error: errorBasicExam,
+    basicExam,
+    refetch: refetchBasicExam,
+  } = useBasicExam(examId)
+  const {
+    loading: loadingQuestionExam,
+    error: errorQuestionExam,
+    questionExam,
+    refetch: refetchQuestionExam,
+  } = useQuestionExam(examId)
+
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
-  const [activityKey, setActivityKey] = useState()
+  const [activityKey, setActivityKey] = useState('basicSetting')
+  const [basicExamSetting, setBasicExamSetting] = useState<BasicExam>(basicExam)
+  const [questionExamSetting, setQuestionExamSetting] = useState<QuestionExam>(questionExam)
 
-  const { loading: loadingGetExamId, error: errorGetExamId, examId } = useExamId(programContent.id)
-  const { deleteProgramContentExerciseAndExam } = useMutateProgramContent()
-  const { loading: loadingExam, error: errorExam, exam } = useExam(examId)
   const [updateExam] = useMutation<hasura.UPDATE_EXAM, hasura.UPDATE_EXAMVariables>(UPDATE_EXAM)
   const [updateExamQuestionLibrary] = useMutation<
-    hasura.UPDATE_EXAM_QUESTION_LIBRARY,
-    hasura.UPDATE_EXAM_QUESTION_LIBRARYVariables
-  >(UPDATE_EXAM_QUESTION_LIBRARY)
+    hasura.UPDATE_EXAM_QUESTION_GROUP,
+    hasura.UPDATE_EXAM_QUESTION_GROUPVariables
+  >(UPDATE_EXAM_QUESTION_GROUP)
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    console.log(values)
-    // if (values.questionSetting[0] !== undefined) {
-    //   updateExamQuestionLibrary({
-    //     variables: {
-    //       examId,
-    //       examQuestionLibraries: values.questionSetting.map((questionLibraryId: string) => ({
-    //         exam_id: examId,
-    //         question_library_id: questionLibraryId,
-    //       })),
-    //     },
-    //   })
-    //     .then(() => {})
-    //     .catch(error => handleError(error))
-    // }
-    updateExam({
-      variables: {
-        programContentId: programContent.id,
-        title: values.title,
-        publishedAt: values.publishedAt
-          ? new Date(values.publishedAt)
-          : values.displayMode !== 'conceal'
-          ? new Date()
-          : null,
-        isNotifyUpdate: values.isNotifyUpdate,
-        notifiedAt: values.isNotifyUpdate ? new Date() : null,
-        displayMode: values.displayMode,
-        examId: examId,
-        point: values.point,
-        passingScore: values.passingScore,
-        examinableUnit: values.examinableUnit,
-        examinableAmount: values.examinableAmount,
-        examinableStartedAt: values.expiredAt ? new Date(values.expiredAt[0]) : null,
-        examinableEndedAt: values.expiredAt ? new Date(values.expiredAt[1]) : null,
-        timeLimitUnit: values.timeLimitUnit,
-        timeLimitAmount: values.timeLimitAmount,
-        isAvailableToRetry: values.isAvailableToRetry,
-        isAvailableToGoBack: values.isAvailableToGoBack,
-        isAvailableAnnounceScore: values.isAvailableAnnounceScore,
-      },
-    })
-      .then(() => {
-        message.success(formatMessage(programMessages['*'].successfullySaved))
-        onRefetch?.()
-        setVisible(false)
-        form.resetFields()
+    if (typeof basicExamSetting.id === 'undefined' && typeof questionExamSetting.id === 'undefined') {
+      message.success(formatMessage(programMessages['*'].successfullySaved))
+      setLoading(false)
+      setActivityKey('basicSetting')
+      setVisible(false)
+      return
+    }
+
+    if (typeof basicExamSetting.id !== 'undefined') {
+      updateExam({
+        variables: {
+          programContentId: programContent.id,
+          title: values.title,
+          publishedAt: values.publishedAt
+            ? new Date(values.publishedAt)
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
+          isNotifyUpdate: values.isNotifyUpdate,
+          notifiedAt: values.isNotifyUpdate ? new Date() : null,
+          displayMode: values.displayMode,
+          examId: examId,
+          examinableUnit: basicExamSetting.examinableUnit,
+          examinableAmount: basicExamSetting.examinableAmount,
+          examinableStartedAt: basicExamSetting?.examinableStartedAt
+            ? new Date(basicExamSetting.examinableStartedAt)
+            : null,
+          examinableEndedAt: basicExamSetting?.examinableEndedAt ? new Date(basicExamSetting.examinableEndedAt) : null,
+          timeLimitUnit: basicExamSetting?.timeLimitUnit || null,
+          timeLimitAmount: basicExamSetting?.timeLimitAmount || null,
+          isAvailableToRetry: basicExamSetting.isAvailableToRetry,
+          isAvailableToGoBack: basicExamSetting.isAvailableToGoBack,
+          isAvailableAnnounceScore: !basicExamSetting.isAvailableAnnounceScore,
+        },
       })
-      .catch(error => handleError(error))
-    setLoading(false)
+        .then(() => {
+          onRefetch?.()
+          refetchBasicExam()
+          message.success(formatMessage(programMessages['*'].successfullySaved))
+          setVisible(false)
+          setActivityKey('basicSetting')
+          setBasicExamSetting(prevState => ({ ...prevState, ...basicExam }))
+        })
+        .catch(error => handleError(error))
+        .finally(() => {
+          setLoading(false)
+        })
+    } else if (typeof questionExamSetting.id === 'undefined') {
+      updateExamQuestionLibrary({
+        variables: {
+          examId,
+          examQuestionGroups: (questionExamSetting.questionGroupIds === []
+            ? questionExam
+            : questionExamSetting
+          )?.questionGroupIds.map((questionGroupId: string) => ({
+            exam_id: examId,
+            question_group_id: questionGroupId,
+          })),
+          point: questionExamSetting?.point || questionExam.point,
+          passingScore: questionExamSetting?.passingScore || questionExam.passingScore,
+        },
+      })
+        .then(() => {
+          onRefetch?.()
+          refetchQuestionExam()
+          message.success(formatMessage(programMessages['*'].successfullySaved))
+          setVisible(false)
+          setActivityKey('basicSetting')
+          setQuestionExamSetting(prevState => ({ ...prevState, ...questionExam }))
+        })
+        .catch(error => handleError(error))
+        .finally(() => {
+          setLoading(false)
+        })
+    } else {
+      Promise.all([
+        updateExam({
+          variables: {
+            programContentId: programContent.id,
+            title: values.title,
+            publishedAt: values.publishedAt
+              ? new Date(values.publishedAt)
+              : values.displayMode !== 'conceal'
+              ? new Date()
+              : null,
+            isNotifyUpdate: values.isNotifyUpdate,
+            notifiedAt: values.isNotifyUpdate ? new Date() : null,
+            displayMode: values.displayMode,
+            examId: examId,
+            examinableUnit: basicExamSetting.examinableUnit,
+            examinableAmount: basicExamSetting.examinableAmount,
+            examinableStartedAt: basicExamSetting?.examinableStartedAt
+              ? new Date(basicExamSetting.examinableStartedAt)
+              : null,
+            examinableEndedAt: basicExamSetting?.examinableEndedAt
+              ? new Date(basicExamSetting.examinableEndedAt)
+              : null,
+            timeLimitUnit: basicExamSetting?.timeLimitUnit || null,
+            timeLimitAmount: basicExamSetting?.timeLimitAmount || null,
+            isAvailableToRetry: basicExamSetting.isAvailableToRetry,
+            isAvailableToGoBack: basicExamSetting.isAvailableToGoBack,
+            isAvailableAnnounceScore: !basicExamSetting.isAvailableAnnounceScore,
+          },
+        }),
+        updateExamQuestionLibrary({
+          variables: {
+            examId,
+            examQuestionGroups: (questionExamSetting.questionGroupIds === []
+              ? questionExam
+              : questionExamSetting
+            )?.questionGroupIds.map((questionGroupId: string) => ({
+              exam_id: examId,
+              question_group_id: questionGroupId,
+            })),
+            point: questionExamSetting?.point || questionExam.point,
+            passingScore: questionExamSetting?.passingScore || questionExam.passingScore,
+          },
+        }),
+      ])
+        .then(() => {
+          onRefetch?.()
+          refetchBasicExam()
+          refetchQuestionExam()
+          message.success(formatMessage(programMessages['*'].successfullySaved))
+          setVisible(false)
+          setActivityKey('basicSetting')
+          setBasicExamSetting(prevState => ({ ...prevState, ...basicExam }))
+          setQuestionExamSetting(prevState => ({ ...prevState, ...questionExam }))
+        })
+        .catch(error => handleError(error))
+        .finally(() => {
+          setLoading(false)
+        })
+    }
   }
 
-  if (loadingGetExamId || loadingExam) return <Skeleton active />
-
-  if (errorGetExamId || errorExam) return <WarningOutlined style={{ color: 'red' }} />
-  console.log(exam.point)
+  if (loadingExamId || loadingBasicExam || loadingQuestionExam) return <Skeleton active />
+  if (errorExamId || errorBasicExam || errorQuestionExam) return <WarningOutlined style={{ color: 'red' }} />
 
   return (
     <>
@@ -159,27 +263,6 @@ const ExerciseAdminModal: React.FC<{
             publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
             displayMode: programContent.displayMode,
             isNotifyUpdate: programContent.isNotifyUpdate,
-            examinable:
-              exam.examinableAmount && exam.examinableUnit
-                ? 'bought'
-                : exam.examinableStartedAt && exam.examinableEndedAt
-                ? 'bought'
-                : 'unlimited',
-            examinableAmount: exam.examinableAmount,
-            examinableUnit: exam.examinableUnit,
-            timeLimit: exam.timeLimitAmount && exam.timeLimitUnit ? 'limited' : 'unlimited',
-            timeLimitAmount: exam.timeLimitAmount || 60,
-            timeLimitUnit: exam.timeLimitUnit || 'minute',
-            isAvailableAnnounceScore: exam.isAvailableAnnounceScore,
-            isAvailableToGoBack: exam.isAvailableToGoBack,
-            isAvailableToRetry: exam.isAvailableToRetry,
-            questionTarget: flatten(
-              exam.questionLibraries.map(questionLibrary =>
-                questionLibrary.questionGroups?.map(questionGroup => questionGroup.id),
-              ),
-            ),
-            // point: exam.point,
-            // passingScore: exam.passingScore,
           }}
           onFinish={handleSubmit}
         >
@@ -196,7 +279,7 @@ const ExerciseAdminModal: React.FC<{
               <Button
                 disabled={loading}
                 onClick={() => {
-                  form.resetFields()
+                  setActivityKey('basicSetting')
                   setVisible(false)
                 }}
                 className="mr-2"
@@ -217,8 +300,7 @@ const ExerciseAdminModal: React.FC<{
                         deleteProgramContentExerciseAndExam({
                           variables: {
                             programContentId: programContent.id,
-                            examId,
-                            metadata: { ...programContent.metadata, examId: undefined },
+                            examId: examId,
                           },
                         })
                           .then(() => onRefetch?.())
@@ -239,26 +321,12 @@ const ExerciseAdminModal: React.FC<{
             {formatMessage(programMessages.ExerciseAdminModal.exerciseSetting)}
           </StyledTitle>
 
-          <Tabs defaultActiveKey={'basicSetting'}>
+          <Tabs activeKey={activityKey} onChange={v => setActivityKey(v)}>
             <Tabs.TabPane key="basicSetting" tab={formatMessage(programMessages.ExerciseAdminModal.basicSetting)}>
-              <ExamBasicForm
-                examId={examId}
-                examinable={
-                  exam.examinableAmount && exam.examinableUnit
-                    ? 'bought'
-                    : exam.examinableStartedAt && exam.examinableEndedAt
-                    ? 'bought'
-                    : 'unlimited'
-                }
-                timeLimit={exam.timeLimitAmount && exam.timeLimitUnit ? 'limited' : 'unlimited'}
-              />
+              <ExamBasicForm basicExam={basicExam} onChange={setBasicExamSetting} />
             </Tabs.TabPane>
-            <Tabs.TabPane
-              key="questionSetting"
-              tab={formatMessage(programMessages.ExerciseAdminModal.questionSetting)}
-              forceRender={true}
-            >
-              <ExamQuestionSettingForm form={form} />
+            <Tabs.TabPane key="questionSetting" tab={formatMessage(programMessages.ExerciseAdminModal.questionSetting)}>
+              <ExamQuestionSettingForm questionExam={questionExam} onChange={setQuestionExamSetting} />
             </Tabs.TabPane>
           </Tabs>
         </Form>
@@ -266,30 +334,34 @@ const ExerciseAdminModal: React.FC<{
     </>
   )
 }
-
 const useExamId = (programContentId: string) => {
-  const { loading, error, data } = useQuery<hasura.GET_EXAM_ID, hasura.GET_EXAM_IDVariables>(
+  const { loading, error, data } = useQuery<
+    hasura.GET_EXAM_ID_BY_PROGRAM_CONTENT_ID,
+    hasura.GET_EXAM_ID_BY_PROGRAM_CONTENT_IDVariables
+  >(
     gql`
-      query GET_EXAM_ID($programContentId: uuid!) {
-        program_content_exam(where: { program_content_id: { _eq: $programContentId } }) {
-          exam_id
+      query GET_EXAM_ID_BY_PROGRAM_CONTENT_ID($programContentId: uuid!) {
+        program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+          target
         }
       }
     `,
     { variables: { programContentId } },
   )
-  const examId = data?.program_content_exam.map(v => v.exam_id)[0]
-  return { loading, error, examId }
+  const examId = data?.program_content_body[0].target
+  return {
+    loading,
+    error,
+    examId,
+  }
 }
 
-const useExam = (examId: string) => {
-  const { loading, error, data } = useQuery<hasura.GET_BASIC_EXAM, hasura.GET_BASIC_EXAMVariables>(
+const useBasicExam = (examId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_BASIC_EXAM, hasura.GET_BASIC_EXAMVariables>(
     gql`
       query GET_BASIC_EXAM($examId: uuid!) {
         exam_by_pk(id: $examId) {
           id
-          point
-          passing_score
           examinable_unit
           examinable_amount
           examinable_started_at
@@ -299,61 +371,64 @@ const useExam = (examId: string) => {
           is_available_to_retry
           is_available_to_go_back
           is_available_announce_score
-          exam_question_library {
-            question_library {
-              id
-              title
-              question_groups {
-                id
-                title
-                questions_aggregate {
-                  aggregate {
-                    count
-                  }
-                }
-              }
-            }
-          }
         }
       }
     `,
     {
       variables: { examId },
+      fetchPolicy: 'no-cache',
     },
   )
 
-  const exam: Exam = {
-    id: data?.exam_by_pk?.id,
-    point: data?.exam_by_pk?.point,
-    passingScore: data?.exam_by_pk?.passing_score,
-    examinableUnit: data?.exam_by_pk?.examinable_unit as ExamTimeUnit,
-    examinableAmount: data?.exam_by_pk?.examinable_amount,
+  const basicExam: BasicExam = {
+    id: data?.exam_by_pk?.id.toString(),
+    examinableUnit: data?.exam_by_pk?.examinable_unit?.toString() as ExamTimeUnit,
+    examinableAmount: Number(data?.exam_by_pk?.examinable_amount),
     examinableStartedAt: data?.exam_by_pk?.examinable_started_at
       ? new Date(data?.exam_by_pk?.examinable_started_at)
       : null,
     examinableEndedAt: data?.exam_by_pk?.examinable_ended_at ? new Date(data?.exam_by_pk?.examinable_ended_at) : null,
-    timeLimitUnit: data?.exam_by_pk?.time_limit_unit as ExamTimeUnit,
-    timeLimitAmount: data?.exam_by_pk?.time_limit_amount,
+    timeLimitUnit: data?.exam_by_pk?.time_limit_unit?.toString() as ExamTimeUnit,
+    timeLimitAmount: Number(data?.exam_by_pk?.time_limit_amount),
     isAvailableToRetry: Boolean(data?.exam_by_pk?.is_available_to_retry),
     isAvailableToGoBack: Boolean(data?.exam_by_pk?.is_available_to_go_back),
-    isAvailableAnnounceScore: Boolean(data?.exam_by_pk?.is_available_announce_score),
-    questionLibraries:
-      data?.exam_by_pk?.exam_question_library.map(v => ({
-        id: v.question_library?.id,
-        title: v.question_library?.title,
-        questionGroups: v.question_library?.question_groups.map(w => ({
-          id: w.id,
-          title: w.title,
-          amount: w.questions_aggregate.aggregate?.count || 0,
-        })),
-      })) || [],
+    isAvailableAnnounceScore: !Boolean(data?.exam_by_pk?.is_available_announce_score),
   }
 
   return {
     loading,
     error,
-    exam,
+    basicExam,
+    refetch,
   }
+}
+
+const useQuestionExam = (examId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_QUESTION_EXAM, hasura.GET_QUESTION_EXAMVariables>(
+    gql`
+      query GET_QUESTION_EXAM($examId: uuid!) {
+        exam_by_pk(id: $examId) {
+          id
+          point
+          passing_score
+          exam_question_group {
+            question_group {
+              id
+            }
+          }
+        }
+      }
+    `,
+    { variables: { examId }, fetchPolicy: 'no-cache' },
+  )
+  const questionExam: QuestionExam = {
+    id: data?.exam_by_pk?.id.toString(),
+    point: Number(data?.exam_by_pk?.point),
+    passingScore: Number(data?.exam_by_pk?.passing_score),
+    questionGroupIds: flatten(data?.exam_by_pk?.exam_question_group.map(v => v.question_group?.id) || []),
+  }
+
+  return { loading, error, questionExam, refetch }
 }
 
 const UPDATE_EXAM = gql`
@@ -365,8 +440,6 @@ const UPDATE_EXAM = gql`
     $notifiedAt: timestamptz
     $displayMode: String
     $examId: uuid!
-    $point: numeric
-    $passingScore: numeric
     $examinableUnit: String
     $examinableAmount: numeric
     $examinableStartedAt: timestamptz
@@ -392,8 +465,6 @@ const UPDATE_EXAM = gql`
     update_exam(
       where: { id: { _eq: $examId } }
       _set: {
-        point: $point
-        passing_score: $passingScore
         examinable_unit: $examinableUnit
         examinable_amount: $examinableAmount
         examinable_started_at: $examinableStartedAt
@@ -409,15 +480,20 @@ const UPDATE_EXAM = gql`
     }
   }
 `
-const UPDATE_EXAM_QUESTION_LIBRARY = gql`
-  mutation UPDATE_EXAM_QUESTION_LIBRARY(
+const UPDATE_EXAM_QUESTION_GROUP = gql`
+  mutation UPDATE_EXAM_QUESTION_GROUP(
     $examId: uuid!
-    $examQuestionLibraries: [exam_question_library_insert_input!]!
+    $point: numeric
+    $passingScore: numeric
+    $examQuestionGroups: [exam_question_group_insert_input!]!
   ) {
-    delete_exam_question_library(where: { exam_id: { _eq: $examId } }) {
+    update_exam(where: { id: { _eq: $examId } }, _set: { point: $point, passing_score: $passingScore }) {
       affected_rows
     }
-    insert_exam_question_library(objects: $examQuestionLibraries) {
+    delete_exam_question_group(where: { exam_id: { _eq: $examId } }) {
+      affected_rows
+    }
+    insert_exam_question_group(objects: $examQuestionGroups) {
       affected_rows
     }
   }

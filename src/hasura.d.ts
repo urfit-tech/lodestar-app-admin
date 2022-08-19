@@ -5006,22 +5006,22 @@ export interface GET_ALL_QUESTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_EXAM_ID
+// GraphQL query operation: GET_EXAM_ID_BY_PROGRAM_CONTENT_ID
 // ====================================================
 
-export interface GET_EXAM_ID_program_content_exam {
-  __typename: "program_content_exam";
-  exam_id: any;
+export interface GET_EXAM_ID_BY_PROGRAM_CONTENT_ID_program_content_body {
+  __typename: "program_content_body";
+  target: any | null;
 }
 
-export interface GET_EXAM_ID {
+export interface GET_EXAM_ID_BY_PROGRAM_CONTENT_ID {
   /**
-   * fetch data from the table: "program_content_exam"
+   * fetch data from the table: "program_content_body"
    */
-  program_content_exam: GET_EXAM_ID_program_content_exam[];
+  program_content_body: GET_EXAM_ID_BY_PROGRAM_CONTENT_ID_program_content_body[];
 }
 
-export interface GET_EXAM_IDVariables {
+export interface GET_EXAM_ID_BY_PROGRAM_CONTENT_IDVariables {
   programContentId: any;
 }
 
@@ -5034,49 +5034,9 @@ export interface GET_EXAM_IDVariables {
 // GraphQL query operation: GET_BASIC_EXAM
 // ====================================================
 
-export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate_aggregate {
-  __typename: "question_aggregate_fields";
-  count: number;
-}
-
-export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate {
-  __typename: "question_aggregate";
-  aggregate: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate_aggregate | null;
-}
-
-export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups {
-  __typename: "question_group";
-  id: any;
-  title: string;
-  /**
-   * An aggregate relationship
-   */
-  questions_aggregate: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups_questions_aggregate;
-}
-
-export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library {
-  __typename: "question_library";
-  id: any;
-  title: string;
-  /**
-   * An array relationship
-   */
-  question_groups: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library_question_groups[];
-}
-
-export interface GET_BASIC_EXAM_exam_by_pk_exam_question_library {
-  __typename: "exam_question_library";
-  /**
-   * An object relationship
-   */
-  question_library: GET_BASIC_EXAM_exam_by_pk_exam_question_library_question_library | null;
-}
-
 export interface GET_BASIC_EXAM_exam_by_pk {
   __typename: "exam";
   id: any;
-  point: any;
-  passing_score: any;
   examinable_unit: string | null;
   examinable_amount: any | null;
   examinable_started_at: any | null;
@@ -5086,10 +5046,6 @@ export interface GET_BASIC_EXAM_exam_by_pk {
   is_available_to_retry: boolean;
   is_available_to_go_back: boolean;
   is_available_announce_score: boolean;
-  /**
-   * An array relationship
-   */
-  exam_question_library: GET_BASIC_EXAM_exam_by_pk_exam_question_library[];
 }
 
 export interface GET_BASIC_EXAM {
@@ -5100,6 +5056,50 @@ export interface GET_BASIC_EXAM {
 }
 
 export interface GET_BASIC_EXAMVariables {
+  examId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_EXAM
+// ====================================================
+
+export interface GET_QUESTION_EXAM_exam_by_pk_exam_question_group_question_group {
+  __typename: "question_group";
+  id: any;
+}
+
+export interface GET_QUESTION_EXAM_exam_by_pk_exam_question_group {
+  __typename: "exam_question_group";
+  /**
+   * An object relationship
+   */
+  question_group: GET_QUESTION_EXAM_exam_by_pk_exam_question_group_question_group | null;
+}
+
+export interface GET_QUESTION_EXAM_exam_by_pk {
+  __typename: "exam";
+  id: any;
+  point: any;
+  passing_score: any;
+  /**
+   * An array relationship
+   */
+  exam_question_group: GET_QUESTION_EXAM_exam_by_pk_exam_question_group[];
+}
+
+export interface GET_QUESTION_EXAM {
+  /**
+   * fetch data from the table: "exam" using primary key columns
+   */
+  exam_by_pk: GET_QUESTION_EXAM_exam_by_pk | null;
+}
+
+export interface GET_QUESTION_EXAMVariables {
   examId: any;
 }
 
@@ -5147,8 +5147,6 @@ export interface UPDATE_EXAMVariables {
   notifiedAt?: any | null;
   displayMode?: string | null;
   examId: any;
-  point?: any | null;
-  passingScore?: any | null;
   examinableUnit?: string | null;
   examinableAmount?: any | null;
   examinableStartedAt?: any | null;
@@ -5166,39 +5164,53 @@ export interface UPDATE_EXAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_EXAM_QUESTION_LIBRARY
+// GraphQL mutation operation: UPDATE_EXAM_QUESTION_GROUP
 // ====================================================
 
-export interface UPDATE_EXAM_QUESTION_LIBRARY_delete_exam_question_library {
-  __typename: "exam_question_library_mutation_response";
+export interface UPDATE_EXAM_QUESTION_GROUP_update_exam {
+  __typename: "exam_mutation_response";
   /**
    * number of rows affected by the mutation
    */
   affected_rows: number;
 }
 
-export interface UPDATE_EXAM_QUESTION_LIBRARY_insert_exam_question_library {
-  __typename: "exam_question_library_mutation_response";
+export interface UPDATE_EXAM_QUESTION_GROUP_delete_exam_question_group {
+  __typename: "exam_question_group_mutation_response";
   /**
    * number of rows affected by the mutation
    */
   affected_rows: number;
 }
 
-export interface UPDATE_EXAM_QUESTION_LIBRARY {
+export interface UPDATE_EXAM_QUESTION_GROUP_insert_exam_question_group {
+  __typename: "exam_question_group_mutation_response";
   /**
-   * delete data from the table: "exam_question_library"
+   * number of rows affected by the mutation
    */
-  delete_exam_question_library: UPDATE_EXAM_QUESTION_LIBRARY_delete_exam_question_library | null;
-  /**
-   * insert data into the table: "exam_question_library"
-   */
-  insert_exam_question_library: UPDATE_EXAM_QUESTION_LIBRARY_insert_exam_question_library | null;
+  affected_rows: number;
 }
 
-export interface UPDATE_EXAM_QUESTION_LIBRARYVariables {
+export interface UPDATE_EXAM_QUESTION_GROUP {
+  /**
+   * update data of the table: "exam"
+   */
+  update_exam: UPDATE_EXAM_QUESTION_GROUP_update_exam | null;
+  /**
+   * delete data from the table: "exam_question_group"
+   */
+  delete_exam_question_group: UPDATE_EXAM_QUESTION_GROUP_delete_exam_question_group | null;
+  /**
+   * insert data into the table: "exam_question_group"
+   */
+  insert_exam_question_group: UPDATE_EXAM_QUESTION_GROUP_insert_exam_question_group | null;
+}
+
+export interface UPDATE_EXAM_QUESTION_GROUPVariables {
   examId: any;
-  examQuestionLibraries: exam_question_library_insert_input[];
+  point?: any | null;
+  passingScore?: any | null;
+  examQuestionGroups: exam_question_group_insert_input[];
 }
 
 /* tslint:disable */
@@ -5406,34 +5418,7 @@ export interface INSERT_EXAM {
 }
 
 export interface INSERT_EXAMVariables {
-  examId: any;
   appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_EXAM
-// ====================================================
-
-export interface INSERT_PROGRAM_CONTENT_EXAM_insert_program_content_exam_one {
-  __typename: "program_content_exam";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_CONTENT_EXAM {
-  /**
-   * insert a single row into the table: "program_content_exam"
-   */
-  insert_program_content_exam_one: INSERT_PROGRAM_CONTENT_EXAM_insert_program_content_exam_one | null;
-}
-
-export interface INSERT_PROGRAM_CONTENT_EXAMVariables {
-  programContentId: any;
-  examId: any;
 }
 
 /* tslint:disable */
@@ -5465,6 +5450,7 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   programContentType: string;
   metadata?: any | null;
   displayMode: string;
+  target?: any | null;
 }
 
 /* tslint:disable */
@@ -12337,6 +12323,7 @@ export interface GET_PODCAST_ALBUM_COUNTSVariables {
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_body {
   __typename: "program_content_body";
   data: any | null;
+  target: any | null;
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_type {
@@ -12595,6 +12582,7 @@ export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_
   type: string | null;
   description: string | null;
   data: any | null;
+  target: any | null;
 }
 
 export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_materials {
@@ -13014,14 +13002,6 @@ export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content
   affected_rows: number;
 }
 
-export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_exam {
-  __typename: "program_content_exam_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_body {
   __typename: "program_content_body_mutation_response";
   /**
@@ -13038,14 +13018,6 @@ export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_exam {
   affected_rows: number;
 }
 
-export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM {
   /**
    * delete data from the table: "exercise"
@@ -13056,10 +13028,6 @@ export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM {
    */
   delete_program_content_progress: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_progress | null;
   /**
-   * delete data from the table: "program_content_exam"
-   */
-  delete_program_content_exam: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_exam | null;
-  /**
    * delete data from the table: "program_content_body"
    */
   delete_program_content_body: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_program_content_body | null;
@@ -13067,16 +13035,11 @@ export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM {
    * delete data from the table: "exam"
    */
   delete_exam: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_delete_exam | null;
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM_update_program_content | null;
 }
 
 export interface DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAMVariables {
   programContentId: any;
   examId: any;
-  metadata?: any | null;
 }
 
 /* tslint:disable */
@@ -18062,21 +18025,20 @@ export enum exam_constraint {
 }
 
 /**
- * unique or primary key constraints on table "exam_question_library"
+ * unique or primary key constraints on table "exam_question_group"
  */
-export enum exam_question_library_constraint {
-  exam_question_library_exam_id_question_library_id_key = "exam_question_library_exam_id_question_library_id_key",
-  exam_question_library_pkey = "exam_question_library_pkey",
+export enum exam_question_group_constraint {
+  exam_question_group_pkey = "exam_question_group_pkey",
 }
 
 /**
- * update columns of table "exam_question_library"
+ * update columns of table "exam_question_group"
  */
-export enum exam_question_library_update_column {
+export enum exam_question_group_update_column {
   created_at = "created_at",
   exam_id = "exam_id",
   id = "id",
-  question_library_id = "question_library_id",
+  question_group_id = "question_group_id",
   updated_at = "updated_at",
 }
 
@@ -19695,6 +19657,7 @@ export enum program_content_body_update_column {
   data = "data",
   description = "description",
   id = "id",
+  target = "target",
   type = "type",
 }
 
@@ -25321,7 +25284,7 @@ export interface exam_bool_exp {
   app_id?: String_comparison_exp | null;
   applicable_plan_id?: uuid_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
-  exam_question_library?: exam_question_library_bool_exp | null;
+  exam_question_group?: exam_question_group_bool_exp | null;
   examinable_amount?: numeric_comparison_exp | null;
   examinable_ended_at?: timestamptz_comparison_exp | null;
   examinable_started_at?: timestamptz_comparison_exp | null;
@@ -25346,7 +25309,7 @@ export interface exam_insert_input {
   app_id?: string | null;
   applicable_plan_id?: any | null;
   created_at?: any | null;
-  exam_question_library?: exam_question_library_arr_rel_insert_input | null;
+  exam_question_group?: exam_question_group_arr_rel_insert_input | null;
   examinable_amount?: any | null;
   examinable_ended_at?: any | null;
   examinable_started_at?: any | null;
@@ -25397,49 +25360,49 @@ export interface exam_on_conflict {
 }
 
 /**
- * input type for inserting array relation for remote table "exam_question_library"
+ * input type for inserting array relation for remote table "exam_question_group"
  */
-export interface exam_question_library_arr_rel_insert_input {
-  data: exam_question_library_insert_input[];
-  on_conflict?: exam_question_library_on_conflict | null;
+export interface exam_question_group_arr_rel_insert_input {
+  data: exam_question_group_insert_input[];
+  on_conflict?: exam_question_group_on_conflict | null;
 }
 
 /**
- * Boolean expression to filter rows from the table "exam_question_library". All fields are combined with a logical 'AND'.
+ * Boolean expression to filter rows from the table "exam_question_group". All fields are combined with a logical 'AND'.
  */
-export interface exam_question_library_bool_exp {
-  _and?: exam_question_library_bool_exp[] | null;
-  _not?: exam_question_library_bool_exp | null;
-  _or?: exam_question_library_bool_exp[] | null;
+export interface exam_question_group_bool_exp {
+  _and?: exam_question_group_bool_exp[] | null;
+  _not?: exam_question_group_bool_exp | null;
+  _or?: exam_question_group_bool_exp[] | null;
   created_at?: timestamptz_comparison_exp | null;
   exam?: exam_bool_exp | null;
   exam_id?: uuid_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  question_library?: question_library_bool_exp | null;
-  question_library_id?: uuid_comparison_exp | null;
+  question_group?: question_group_bool_exp | null;
+  question_group_id?: uuid_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
- * input type for inserting data into table "exam_question_library"
+ * input type for inserting data into table "exam_question_group"
  */
-export interface exam_question_library_insert_input {
+export interface exam_question_group_insert_input {
   created_at?: any | null;
   exam?: exam_obj_rel_insert_input | null;
   exam_id?: any | null;
   id?: any | null;
-  question_library?: question_library_obj_rel_insert_input | null;
-  question_library_id?: any | null;
+  question_group?: question_group_obj_rel_insert_input | null;
+  question_group_id?: any | null;
   updated_at?: any | null;
 }
 
 /**
- * on_conflict condition type for table "exam_question_library"
+ * on_conflict condition type for table "exam_question_group"
  */
-export interface exam_question_library_on_conflict {
-  constraint: exam_question_library_constraint;
-  update_columns: exam_question_library_update_column[];
-  where?: exam_question_library_bool_exp | null;
+export interface exam_question_group_on_conflict {
+  constraint: exam_question_group_constraint;
+  update_columns: exam_question_group_update_column[];
+  where?: exam_question_group_bool_exp | null;
 }
 
 /**
@@ -34131,6 +34094,7 @@ export interface program_content_body_bool_exp {
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   program_contents?: program_content_bool_exp | null;
+  target?: uuid_comparison_exp | null;
   type?: String_comparison_exp | null;
 }
 
@@ -34142,6 +34106,7 @@ export interface program_content_body_insert_input {
   description?: string | null;
   id?: any | null;
   program_contents?: program_content_arr_rel_insert_input | null;
+  target?: any | null;
   type?: string | null;
 }
 

@@ -6,7 +6,6 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { v4 as uuidv4 } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ProgramContentSectionProps } from '../../types/program'
@@ -46,7 +45,7 @@ const ProgramContentSectionAdminCard: React.FC<{
   const [createProgramContent] = useMutation<hasura.INSERT_PROGRAM_CONTENT, hasura.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
   )
-  const { insertExam, insertProgramContentExam } = useCreateExam()
+  const { insertExam } = useCreateExam()
 
   const [updateProgramContentSection] = useMutation<
     hasura.UPDATE_PROGRAM_CONTENT_SECTION,
@@ -153,36 +152,24 @@ const ProgramContentSectionAdminCard: React.FC<{
                 {formatMessage(messages.programPractice)}
               </StyledMenuItem>
             )}
-            {enabledModules.exercise && (
+            {enabledModules.exam && (
               <StyledMenuItem
                 onClick={async () => {
-                  let examId = uuidv4()
-                  let programContentId: string
-
-                  await createProgramContent({
-                    variables: {
-                      programContentSectionId: programContentSection.id,
-                      title: 'untitled',
-                      position: programContentSection.programContents.length,
-                      programContentType: 'exam',
-                      publishedAt: isProgramPublished ? new Date() : null,
-                      displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
-                      metadata: {
-                        examId: examId,
-                      },
-                    },
-                  })
-                    .then(res => {
-                      programContentId = res.data?.insert_program_content_one?.id
-
-                      insertProgramContentExam({
-                        variables: { programContentId: programContentId, examId: examId },
-                      }).catch(handleError)
-                    })
+                  await insertExam({ variables: { appId } })
+                    .then(res =>
+                      createProgramContent({
+                        variables: {
+                          programContentSectionId: programContentSection.id,
+                          title: 'untitled',
+                          position: programContentSection.programContents.length,
+                          programContentType: 'exam',
+                          target: res.data?.insert_exam_one?.id,
+                          publishedAt: isProgramPublished ? new Date() : null,
+                          displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
+                        },
+                      }).catch(handleError),
+                    )
                     .catch(handleError)
-
-                  await insertExam({ variables: { examId, appId } }).catch(handleError)
-
                   onRefetch?.()
                 }}
               >
@@ -204,26 +191,15 @@ const ProgramContentSectionAdminCard: React.FC<{
 const useCreateExam = () => {
   const [insertExam] = useMutation<hasura.INSERT_EXAM, hasura.INSERT_EXAMVariables>(
     gql`
-      mutation INSERT_EXAM($examId: uuid!, $appId: String!) {
-        insert_exam_one(object: { id: $examId, app_id: $appId, point: 0, passing_score: 0 }) {
+      mutation INSERT_EXAM($appId: String!) {
+        insert_exam_one(object: { app_id: $appId, point: 0, passing_score: 0 }) {
           id
         }
       }
     `,
   )
-  const [insertProgramContentExam] = useMutation<
-    hasura.INSERT_PROGRAM_CONTENT_EXAM,
-    hasura.INSERT_PROGRAM_CONTENT_EXAMVariables
-  >(gql`
-    mutation INSERT_PROGRAM_CONTENT_EXAM($programContentId: uuid!, $examId: uuid!) {
-      insert_program_content_exam_one(object: { program_content_id: $programContentId, exam_id: $examId }) {
-        id
-      }
-    }
-  `)
   return {
     insertExam,
-    insertProgramContentExam,
   }
 }
 
@@ -236,13 +212,14 @@ const INSERT_PROGRAM_CONTENT = gql`
     $programContentType: String!
     $metadata: jsonb
     $displayMode: String!
+    $target: uuid
   ) {
     insert_program_content_one(
       object: {
         content_section_id: $programContentSectionId
         title: $title
         position: $position
-        program_content_body: { data: { type: $programContentType, data: {} } }
+        program_content_body: { data: { type: $programContentType, data: {}, target: $target } }
         published_at: $publishedAt
         metadata: $metadata
         display_mode: $displayMode
