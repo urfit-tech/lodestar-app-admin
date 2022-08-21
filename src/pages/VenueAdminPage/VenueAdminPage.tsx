@@ -18,6 +18,7 @@ import { Venue } from '../../types/venue'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import VenueBasicForm from './VenueBasicForm'
+import VenueSeatSetting from './VenueSeatSetting'
 import VenueUsageCalendar from './VenueUsageCalendar'
 
 const VenueAdminPage: React.VFC = () => {
@@ -68,6 +69,7 @@ const VenueAdminPage: React.VFC = () => {
             <Tabs.TabPane key="seatSetting" tab={formatMessage(pageMessages.VenueAdminPage.seatSettings)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(pageMessages.VenueAdminPage.seatSettings)}</AdminPaneTitle>
+                {venue && <VenueSeatSetting venue={venue} />}
               </div>
             </Tabs.TabPane>
 
@@ -103,7 +105,29 @@ const useVenue = (venueId: string) => {
   const { loading, error, data, refetch } = {
     loading: false,
     error: false,
-    data: { venue: { id: '3982031-231', name: '11樓B01', cols: 3, rows: 4, seats: 12 } },
+    data: {
+      venue: {
+        id: '3982031-231',
+        name: '11樓B01',
+        cols: 3,
+        rows: 2,
+        seats: 6,
+        seatInfo: [
+          { venue_id: '3982031-231', id: '0', position: 0, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '1', position: 1, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '2', position: 2, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '3', position: 3, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '4', position: 4, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '5', position: 5, disabled: true, category: 'blocked' },
+          { venue_id: '3982031-231', id: '6', position: 6, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '7', position: 7, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '8', position: 8, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '9', position: 9, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '10', position: 10, disabled: false, category: null },
+          { venue_id: '3982031-231', id: '11', position: 11, disabled: false, category: null },
+        ],
+      },
+    },
     refetch: () => {},
   }
 

@@ -7,7 +7,7 @@ import pageMessages from '../translation'
 
 type FieldProps = Pick<Venue, 'id' | 'name'>
 
-const VenueBasicForm: React.FC<{
+const VenueBasicForm: React.VFC<{
   venue: Venue | null
   onRefetch?: () => void
 }> = ({ venue, onRefetch }) => {
@@ -21,6 +21,7 @@ const VenueBasicForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
+
     // updateVenueBasic
   }
 
@@ -36,7 +37,7 @@ const VenueBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(pageMessages.VenueBasicForm.venueName)} name="title">
+      <Form.Item label={formatMessage(pageMessages.VenueBasicForm.venueName)} name="name">
         <Input />
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>

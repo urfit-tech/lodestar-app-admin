@@ -72,6 +72,7 @@ export const commonMessages = {
     backstage: { id: 'common.ui.backstage', defaultMessage: '管理後台' },
     ownerBackstage: { id: 'common.ui.ownerBackstage', defaultMessage: '平台管理者專區' },
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
+    set: { id: 'common.ui.set', defaultMessage: '設為' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },

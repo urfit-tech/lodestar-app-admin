@@ -279,6 +279,14 @@ const pageMessages = {
   VenueBasicForm: defineMessages({
     venueName: { id: 'page.VenueBasicForm.venueName', defaultMessage: '場地名稱' },
   }),
+  VenueSeatSetting: defineMessages({
+    rows: { id: 'page.VenueSeatSetting.rows', defaultMessage: '橫的行數' },
+    cols: { id: 'page.VenueSeatSetting.cols', defaultMessage: '直的列數' },
+    row: { id: 'page.VenueSeatSetting.row', defaultMessage: '橫列' },
+    col: { id: 'page.VenueSeatSetting.col', defaultMessage: '直欄' },
+    heigh: { id: 'page.VenueSeatSetting.heigh', defaultMessage: '高起來' },
+    walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },
