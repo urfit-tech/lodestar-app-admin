@@ -111,12 +111,13 @@ export type ProgramContentProps = {
   displayMode: DisplayMode
 }
 
-export type ProgramContentBodyProps = {
+export type ProgramContentBody = {
   id: string
   type: string | null
   description: string | null
   data: any
   materials: ProgramContentMaterialProps[]
+  target: string | null
 }
 
 export type ProgramContentMaterialProps = {
@@ -188,4 +189,34 @@ export type ExerciseProps = {
     questionPoints: number
     gainedPoints: number
   }[]
+}
+
+type QuestionGroup = {
+  id: string
+  title: string
+  amount: number
+}
+
+export type QuestionLibrary = {
+  id: string
+  title?: string
+  questionGroups?: QuestionGroup[]
+}
+
+export type ExamTimeUnit = 'day' | 'hour' | 'minute'
+
+export type Exam = {
+  id: string
+  point: number
+  passingScore: number
+  examinableUnit: ExamTimeUnit | null
+  examinableAmount: number | null
+  examinableStartedAt: Date | null
+  examinableEndedAt: Date | null
+  timeLimitUnit: ExamTimeUnit | null
+  timeLimitAmount: number | null
+  isAvailableToRetry: boolean
+  isAvailableToGoBack: boolean
+  isAvailableAnnounceScore: boolean
+  questionLibraries: QuestionLibrary[]
 }
