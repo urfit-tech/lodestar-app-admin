@@ -25,6 +25,7 @@ const formMessages = {
     analysis: { id: 'form.PermissionInput.analysis', defaultMessage: '數據分析' },
     salesLead: { id: 'form.PermissionInput.salesLead', defaultMessage: '名單派發' },
     salesManagement: { id: 'form.PermissionInput.salesManagement', defaultMessage: '業務管理' },
+    customScript: { id: 'form.PermissionInput.customScript', defaultMessage: '自訂腳本' },
   }),
   PermissionGroup: defineMessages({
     // backstage
@@ -313,6 +314,11 @@ const formMessages = {
     PODCAST_PROGRAM_CATEGORY_ADMIN: {
       id: 'form.PermissionGroup.PODCAST_PROGRAM_CATEGORY_ADMIN',
       defaultMessage: '音頻分類功能',
+    },
+    // customScript
+    CUSTOM_SCRIPT_ADMIN: {
+      id: 'form.PermissionGroup.CUSTOM_SCRIPT_ADMIN',
+      defaultMessage: '自訂腳本功能',
     },
   }),
 }
