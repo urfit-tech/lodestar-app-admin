@@ -14,23 +14,19 @@ import MembersWithoutNavigatorBlock from './MembersWithoutNavigatorBlock'
 import TraineesDayOffBlock from './TraineesDayOffBlock'
 
 const CustomScriptsPage: React.VFC = () => {
-  const { isAuthenticating, currentUserRole } = useAuth()
+  const { isAuthenticating, currentUserRole, permissions } = useAuth()
   const [selectedScript, setSelectedScript] = useState('')
   const [script] = useQueryParam('script', StringParam)
 
   useEffect(() => {
-    if (!script) {
-      setSelectedScript('deadline-practices')
-    } else {
-      setSelectedScript(script)
-    }
+    script && setSelectedScript(script)
   }, [script])
 
   if (isAuthenticating) {
     return <LoadingPage />
   }
 
-  if (currentUserRole !== 'app-owner') {
+  if (currentUserRole !== 'app-owner' && !permissions.CUSTOM_SCRIPT_ADMIN) {
     return <NotFoundPage />
   }
 
