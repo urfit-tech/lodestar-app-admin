@@ -127,6 +127,8 @@ const AdminBraftEditor: React.FC<{
       language={braftLanguageFn}
       controls={controls[variant || 'default']}
       media={{ uploadFn: createUploadFn(appId, authToken) }}
+      imageControls={variant === 'question' ? ['remove'] : undefined}
+      imageResizable={variant === 'question' ? false : undefined}
     />
   )
 }
