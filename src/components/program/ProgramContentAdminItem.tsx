@@ -76,7 +76,7 @@ const ProgramContentAdminItem: React.FC<{
                 ) : programContent.programContentType === 'practice' ? (
                   <PracticeIcon />
                 ) : //TODO: remove exercise
-                programContent.programContentType === 'exercise' || 'exam' ? (
+                programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
                   <QuizIcon />
                 ) : null
               }
@@ -130,7 +130,7 @@ const ProgramContentAdminItem: React.FC<{
         {programContent.programContentType === 'practice' ? (
           <PracticeAdminModal programContent={programContent} onRefetch={onRefetch} />
         ) : // TODO: remove exercise
-        programContent.programContentType === 'exercise' || 'exam' ? (
+        programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
           <ExerciseAdminModal programContent={programContent} onRefetch={onRefetch} />
         ) : (
           <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
