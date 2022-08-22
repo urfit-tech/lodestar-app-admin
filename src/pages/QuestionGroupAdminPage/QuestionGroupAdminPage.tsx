@@ -1,10 +1,11 @@
 import { CloseOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Grid, GridItem, Spinner } from '@chakra-ui/react'
+import { Spinner } from '@chakra-ui/react'
 import { Button, Collapse, message } from 'antd'
 import gql from 'graphql-tag'
+import GridOptionsBlock from 'lodestar-app-element/src/components/blocks/GridOptionsBlock'
+import ListsOptionsBlock from 'lodestar-app-element/src/components/blocks/ListsOptionsBlock'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -155,25 +156,6 @@ const PreviewSubject = styled.div`
   padding-bottom: 24px;
 `
 
-const ListsOption = styled.div`
-  padding: 16px;
-  margin-bottom: 16px;
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: 0.2px;
-  color: #585858;
-  border: 1px solid var(--gray);
-  border-radius: 4px;
-`
-
-const GridOption = styled.div`
-  width: 100%;
-  aspect-ratio: 1/1;
-  border: 1px solid var(--gray);
-  border-radius: 4px;
-  padding: 16px;
-`
-
 const ExamName = styled.p`
   color: var(--gray-darker);
   font-weight: bold;
@@ -183,7 +165,6 @@ const ExamName = styled.p`
 
 const QuestionGroupAdminPage: React.VFC = () => {
   const history = useHistory()
-  const { currentMemberId } = useAuth()
   const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const { questionGroupId } = useParams<{ questionGroupId: string }>()
@@ -456,18 +437,11 @@ const QuestionGroupAdminPage: React.VFC = () => {
                 <p>{`${preview.idx} / ${questionList.length}`}</p>
               </CurrentQuestionIndex>
               <PreviewSubject dangerouslySetInnerHTML={{ __html: preview.question.subject || '' }} />
-              {preview.mode === 'lists' &&
-                preview.question.options?.map(option => (
-                  <ListsOption key={`preview_${option.id}`} dangerouslySetInnerHTML={{ __html: option.value }} />
-                ))}
+              {preview.mode === 'lists' && (
+                <ListsOptionsBlock optionList={preview.question.options} questionFontType={font} />
+              )}
               {preview.mode === 'grid' && (
-                <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-                  {preview.question.options?.map(option => (
-                    <GridItem key={`preview_${option.id}`} colSpan={1} w="100%">
-                      <GridOption dangerouslySetInnerHTML={{ __html: option.value }} />
-                    </GridItem>
-                  ))}
-                </Grid>
+                <GridOptionsBlock optionList={preview.question.options} questionFontType={font} />
               )}
             </PreviewQuestion>
           )}
