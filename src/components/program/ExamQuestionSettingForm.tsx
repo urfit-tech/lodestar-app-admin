@@ -145,7 +145,7 @@ const ExamQuestionSettingForm: React.VFC<{
               }))
             }
           />
-          <span className="ml-2"> / 100</span>
+          <span className="ml-2"> / {point * questionAmount}</span>
         </Form.Item>
       </Form.Item>
     </>
