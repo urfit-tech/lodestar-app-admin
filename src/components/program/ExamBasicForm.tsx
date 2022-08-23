@@ -21,7 +21,7 @@ const ExamBasicForm: React.VFC<{
     basicExam.examinableAmount && basicExam.examinableUnit
       ? 'bought'
       : basicExam.examinableStartedAt && basicExam.examinableEndedAt
-      ? 'bought'
+      ? 'limited'
       : 'unlimited',
   )
   const [timeLimit, setTimeLimit] = useState<TimeLimit>(
