@@ -28,18 +28,6 @@ const ExamBasicForm: React.VFC<{
     basicExam.timeLimitAmount && basicExam.timeLimitUnit ? 'limited' : 'unlimited',
   )
 
-  const initialValue = {
-    examinableAmount: basicExam.examinableAmount,
-    examinableUnit: basicExam.examinableUnit,
-    examinableStartedAt: basicExam.examinableStartedAt,
-    examinableEndedAt: basicExam.examinableEndedAt,
-    timeLimitAmount: basicExam.timeLimitAmount,
-    timeLimitUnit: basicExam.timeLimitUnit,
-    isAvailableAnnounceScore: basicExam.isAvailableAnnounceScore,
-    isAvailableToGoBack: basicExam.isAvailableToGoBack,
-    isAvailableToRetry: basicExam.isAvailableToRetry,
-  }
-
   return (
     <>
       <Form.Item name="title" label={formatMessage(programMessages['*'].exerciseTitle)}>
