@@ -1,10 +1,10 @@
 import Icon, { SearchOutlined } from '@ant-design/icons'
 import { Button, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
-import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
-import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
-import { ReactComponent as UserOIcon } from 'lodestar-app-admin/src/images/icon/user-o.svg'
+import AdminCard from '../../components/admin/AdminCard'
+import { commonMessages } from '../../helpers/translation'
+import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
+import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -127,7 +127,7 @@ const SalesCallTransactedMemberBlock: React.FC<{
             {
               key: 'studentName',
               dataIndex: 'studentName',
-              title: formatMessage(salesMessages.label.studentName),
+              title: formatMessage(salesMessages.studentName),
               ...getColumnSearchProps((value?: string) =>
                 setFilters({
                   ...filters,
@@ -138,7 +138,7 @@ const SalesCallTransactedMemberBlock: React.FC<{
             {
               key: 'phones',
               dataIndex: 'phones',
-              title: formatMessage(salesMessages.label.tel),
+              title: formatMessage(salesMessages.tel),
               render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
               ...getColumnSearchProps((value?: string) =>
                 setFilters({
@@ -161,7 +161,7 @@ const SalesCallTransactedMemberBlock: React.FC<{
             {
               key: 'serviceEndedAtList',
               dataIndex: 'serviceEndedAtList',
-              title: formatMessage(salesMessages.label.serviceEndedAt),
+              title: formatMessage(salesMessages.serviceEndedAt),
               render: serviceEndedAtList =>
                 serviceEndedAtList.map((v: Date) => (
                   <time className="d-block">{moment(v).format('YYYY-MM-DD HH:mm')}</time>
@@ -170,7 +170,7 @@ const SalesCallTransactedMemberBlock: React.FC<{
             {
               key: 'projectPlanNames',
               dataIndex: 'projectPlanNames',
-              title: formatMessage(salesMessages.label.productItem),
+              title: formatMessage(salesMessages.productItem),
               render: projectPlanNames => projectPlanNames.map((v: string) => <div>{v}</div>),
             },
             {

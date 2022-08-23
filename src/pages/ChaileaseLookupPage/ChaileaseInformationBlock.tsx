@@ -1,10 +1,10 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import { AdminBlock } from 'lodestar-app-admin/src/components/admin'
-import FileItem from 'lodestar-app-admin/src/components/common/FileItem'
-import { downloadFile, getFileDownloadableLink } from 'lodestar-app-admin/src/helpers/index'
-import { commonMessages, errorMessages } from 'lodestar-app-admin/src/helpers/translation'
+import { AdminBlock } from '../../components/admin'
+import FileItem from '../../components/common/FileItem'
+import { downloadFile, getFileDownloadableLink } from '../../helpers/index'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -120,7 +120,7 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
             idNumber={profile?.idNumber || ''}
             chailease={chailease || []}
             renderTrigger={({ setVisible }) => (
-              <Button onClick={() => setVisible(true)}>{formatMessage(salesMessages.label.chaileaseApply)}</Button>
+              <Button onClick={() => setVisible(true)}>{formatMessage(salesMessages.chaileaseApply)}</Button>
             )}
             onSuccess={refetchMember}
           />

@@ -1,5 +1,5 @@
 import { Card, Typography } from 'antd'
-import DefaultLayout from 'lodestar-app-admin/src/components/layout/DefaultLayout'
+import DefaultLayout from '../components/layout/DefaultLayout'
 import React from 'react'
 import styled from 'styled-components'
 

@@ -1,8 +1,8 @@
 import Icon from '@ant-design/icons'
 import { Input } from 'antd'
-import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
-import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
+import { AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
+import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { salesMessages } from '../../helpers/translation'
@@ -16,7 +16,7 @@ const ChaileaseLookupPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon className="mr-3" component={() => <PhoneIcon />} />
-        <span>{formatMessage(salesMessages.label.chaileaseLookup)}</span>
+        <span>{formatMessage(salesMessages.chaileaseLookup)}</span>
       </AdminPageTitle>
       <Input.Search
         className="mb-3"

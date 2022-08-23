@@ -54,9 +54,9 @@ export type CurrentLeadProps = {
 }
 
 export const useSales = (salesId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_SALES, hasura.GET_SALESVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_SALES_XUEMI, hasura.GET_SALES_XUEMIVariables>(
     gql`
-      query GET_SALES($salesId: String!, $startOfToday: timestamptz!, $startOfMonth: timestamptz!) {
+      query GET_SALES_XUEMI($salesId: String!, $startOfToday: timestamptz!, $startOfMonth: timestamptz!) {
         member_by_pk(id: $salesId) {
           id
           picture_url
@@ -324,8 +324,8 @@ export const useCurrentLead = (sales: SalesProps) => {
   const [updateMemberPhones] = useMutation<hasura.UPDATE_MEMBER_PHONE, hasura.UPDATE_MEMBER_PHONEVariables>(
     UPDATE_MEMBER_PHONE,
   )
-  const [insertMemberNote] = useMutation<hasura.INSERT_MEMBER_NOTE, hasura.INSERT_MEMBER_NOTEVariables>(
-    INSERT_MEMBER_NOTE,
+  const [insertMemberNote] = useMutation<hasura.INSERT_MEMBER_NOTE_XUEMI, hasura.INSERT_MEMBER_NOTE_XUEMIVariables>(
+    INSERT_MEMBER_NOTE_XUEMI,
   )
   const [updateMemberProperties] = useMutation<
     hasura.UPDATE_MEMBER_PROPERTIES,
@@ -403,8 +403,8 @@ const MARK_UNRESPONSIVE_MEMBER = gql`
     }
   }
 `
-const INSERT_MEMBER_NOTE = gql`
-  mutation INSERT_MEMBER_NOTE($data: member_note_insert_input!) {
+const INSERT_MEMBER_NOTE_XUEMI = gql`
+  mutation INSERT_MEMBER_NOTE_XUEMI($data: member_note_insert_input!) {
     insert_member_note_one(object: $data) {
       id
     }

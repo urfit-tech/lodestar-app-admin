@@ -1,0 +1,44 @@
+// ant design
+.ant-btn {
+  display: inline-flex;
+
+  span {
+    margin: auto;
+  }
+  .anticon {
+    line-height: 0;
+  }
+}
+
+.ant-popover {
+  z-index: 1001;
+  .ant-popover-title {
+    padding: 1rem 1.25rem;
+  }
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+
+  @media (max-width: 767px) {
+    .ant-popover-arrow {
+      display: none;
+    }
+  }
+}
+
+.ant-input-number {
+  width: 120px !important;
+}
+
+.ant-select-selection--multiple > ul > li,
+.ant-select-selection--multiple .ant-select-selection__rendered > ul > li {
+  line-height: 36px;
+}
+
+.ant-select-tree li {
+  overflow: hidden;
+  max-width: 432px;
+}
+.position-relative {
+  position: relative;
+}

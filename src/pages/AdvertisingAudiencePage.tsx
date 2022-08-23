@@ -4,8 +4,8 @@ import { BarChartOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Form, Input, Select } from 'antd'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import { AdminPageTitle } from '../components/admin'
+import AdminLayout from '../components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { countBy, map, pipe, toPairs } from 'ramda'
 import React, { useState } from 'react'
@@ -124,9 +124,9 @@ const AdvertisingAudiencePage: React.FC = () => {
 }
 
 const useProperty = (options?: { propertyNames?: string[] }) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PROPERTY, hasura.GET_PROPERTYVariables>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_PROPERTY_XUEMI, hasura.GET_PROPERTY_XUEMIVariables>(
     gql`
-      query GET_PROPERTY($type: String!, $propertyNames: [String!]) {
+      query GET_PROPERTY_XUEMI($type: String!, $propertyNames: [String!]) {
         property(where: { type: { _eq: $type }, name: { _in: $propertyNames } }, order_by: { position: asc }) {
           id
           name

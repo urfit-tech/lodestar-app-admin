@@ -2,8 +2,8 @@ import Icon, { RadarChartOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { DatePicker } from 'antd'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import { AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
 import moment from 'moment-timezone'
 import { sum } from 'ramda'
 import React, { useState } from 'react'
@@ -23,7 +23,7 @@ const SalesStatusPage: React.VFC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon className="mr-3" component={() => <RadarChartOutlined />} />
-        <span className="mr-3">{formatMessage(salesMessages.label.salesStatus)}</span>
+        <span className="mr-3">{formatMessage(salesMessages.salesStatus)}</span>
         <DatePicker onChange={e => setToday((e || moment()).startOf('day'))} />
       </AdminPageTitle>
       <TotalRevenueBlock salesStatus={salesStatus} loading={loading} error={error} />

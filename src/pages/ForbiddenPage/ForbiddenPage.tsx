@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/react'
-import DefaultLayout from 'lodestar-app-admin/src/components/layout/DefaultLayout'
+import DefaultLayout from '../../components/layout/DefaultLayout'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'

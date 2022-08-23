@@ -1,20 +1,19 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Select } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../../hasura'
-export default function CategoryInput({
-  class: categoryClass,
-  value,
-  onChange,
-}: {
-  class: string
+
+const CategoryInput: React.VFC<{
+  categoryClass: string
   value?: string
   onChange?: (category: string | null) => void
-}) {
+}> = ({ categoryClass, value, onChange }) => {
+  const { id: appId } = useApp()
   const { loading, error, data } = useQuery<hasura.GET_CATEGORY_LIST>(
     gql`
-      query GET_CATEGORY_LIST($class: String!) {
-        category(where: { class: { _eq: $class } }) {
+      query GET_CATEGORY_LIST($appId: String!, $class: String!) {
+        category(where: { app_id: { _eq: $appId }, class: { _eq: $class } }) {
           id
           name
         }
@@ -22,6 +21,7 @@ export default function CategoryInput({
     `,
     {
       variables: {
+        appId,
         class: categoryClass,
       },
     },
@@ -44,3 +44,5 @@ export default function CategoryInput({
     </Select>
   )
 }
+
+export default CategoryInput

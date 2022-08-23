@@ -5,21 +5,21 @@ import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import Axios from 'axios'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
-import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
-import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
-import MemberNoteAdminModal from 'lodestar-app-admin/src/components/member/MemberNoteAdminModal'
+import { AdminPageTitle } from '../components/admin'
+import AdminCard from '../components/admin/AdminCard'
+import { AvatarImage } from '../components/common/Image'
+import AdminLayout from '../components/layout/AdminLayout'
+import MemberNoteAdminModal from '../components/member/MemberNoteAdminModal'
 import {
   currencyFormatter,
   dateFormatter,
   downloadFile,
   getFileDownloadableLink,
   handleError,
-} from 'lodestar-app-admin/src/helpers'
-import { commonMessages, memberMessages, podcastMessages } from 'lodestar-app-admin/src/helpers/translation'
-import { useMutateAttachment, useUploadAttachments } from 'lodestar-app-admin/src/hooks/data'
-import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
+} from '../helpers'
+import { commonMessages, memberMessages, podcastMessages } from '../helpers/translation'
+import { useMutateAttachment, useUploadAttachments } from '../hooks/data'
+import { useMutateMemberNote } from '../hooks/member'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
@@ -126,7 +126,7 @@ const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
 
-  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
+  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy']>({
     created_at: 'desc' as hasura.order_by,
   })
   const [filters, setFilters] = useState<FiltersProps>({
@@ -584,9 +584,9 @@ const LoadRecordFileButton: React.FC<{
   )
 }
 
-const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
+const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'], filters?: FiltersProps) => {
   const { permissions, currentMemberId } = useAuth()
-  const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -644,11 +644,11 @@ const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['or
     },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    hasura.GET_MEMBER_NOTES_ADMIN,
-    hasura.GET_MEMBER_NOTES_ADMINVariables
+    hasura.GET_MEMBER_NOTES_ADMIN_XUEMI,
+    hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables
   >(
     gql`
-      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+      query GET_MEMBER_NOTES_ADMIN_XUEMI($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
         category(where: { member_categories: {} }) {
           id
           name

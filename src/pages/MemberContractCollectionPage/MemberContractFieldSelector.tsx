@@ -1,8 +1,8 @@
 import Icon from '@ant-design/icons'
 import { Button, Popover, Tree } from 'antd'
 import { DataNode } from 'antd/lib/tree'
-import { memberMessages } from 'lodestar-app-admin/src/helpers/translation'
-import { ReactComponent as TableIcon } from 'lodestar-app-admin/src/images/icon/table.svg'
+import { memberMessages } from '../../helpers/translation'
+import { ReactComponent as TableIcon } from '../../images/icon/table.svg'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 

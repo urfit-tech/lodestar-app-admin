@@ -1,12 +1,12 @@
 import Icon from '@ant-design/icons'
 import { Tabs } from 'antd'
-import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import { AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { memberContractMessages } from '../../helpers/translation'
-import { ReactComponent as UserCopyIcon } from '../../images/icons/user-copy.svg'
+import { ReactComponent as UserCopyIcon } from '../../images/icon/user-copy.svg'
 import { MemberContractCollectionBlock } from './MemberContractCollectionBlock'
 
 const StyledIcon = styled(Icon)`
