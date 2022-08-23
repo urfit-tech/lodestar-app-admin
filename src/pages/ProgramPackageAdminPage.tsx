@@ -35,7 +35,7 @@ const ProgramPackageAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
   const { programPackage, refetch } = useProgramPackage(programPackageId)
-  const [updatePosition] = useMutation<
+  const [updateProgramPosition] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION)
@@ -91,7 +91,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                   }
                   triggerText={formatMessage(programMessages.ui.sortProgram)}
                   onSubmit={values =>
-                    updatePosition({
+                    updateProgramPosition({
                       variables: {
                         data: values.map((value, index) => ({
                           id: value.id,
