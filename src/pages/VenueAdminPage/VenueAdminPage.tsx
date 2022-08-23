@@ -1,10 +1,13 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
+import { useQuery } from '@apollo/react-hooks'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Tabs } from 'antd'
+import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
+import { v4 as uuid } from 'uuid'
 import {
   AdminBlock,
   AdminBlockTitle,
@@ -14,6 +17,7 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import hasura from '../../hasura'
 import { Venue } from '../../types/venue'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
@@ -69,7 +73,7 @@ const VenueAdminPage: React.VFC = () => {
             <Tabs.TabPane key="seatSetting" tab={formatMessage(pageMessages.VenueAdminPage.seatSettings)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(pageMessages.VenueAdminPage.seatSettings)}</AdminPaneTitle>
-                {venue && <VenueSeatSetting venue={venue} />}
+                {venue && <VenueSeatSetting venue={venue} onRefetch={refetch} />}
               </div>
             </Tabs.TabPane>
 
@@ -80,7 +84,7 @@ const VenueAdminPage: React.VFC = () => {
                 </AdminPaneTitle>
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(pageMessages['*'].basicSettings)}</AdminBlockTitle>
-                  <VenueBasicForm venue={venue} />
+                  <VenueBasicForm venue={venue} onRefetch={refetch} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
@@ -101,37 +105,26 @@ const VenueAdminPage: React.VFC = () => {
 }
 export default VenueAdminPage
 
-const useVenue = (venueId: string) => {
-  const { loading, error, data, refetch } = {
-    loading: false,
-    error: false,
-    data: {
-      venue: {
-        id: '3982031-231',
-        name: '11樓B01',
-        cols: 3,
-        rows: 2,
-        seats: 6,
-        seatInfo: [
-          { venue_id: '3982031-231', id: '0', position: 0, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '1', position: 1, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '2', position: 2, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '3', position: 3, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '4', position: 4, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '5', position: 5, disabled: true, category: 'blocked' },
-          { venue_id: '3982031-231', id: '6', position: 6, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '7', position: 7, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '8', position: 8, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '9', position: 9, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '10', position: 10, disabled: false, category: null },
-          { venue_id: '3982031-231', id: '11', position: 11, disabled: false, category: null },
-        ],
-      },
-    },
-    refetch: () => {},
-  }
+const defaultVenueSeatId = uuid()
 
-  const venue: Venue | null = data.venue
+const useVenue = (venueId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_VENUE>(GET_VENUE, { variables: { venueId } })
+
+  const venue: Venue | null = data?.venue_by_pk
+    ? {
+        ...data?.venue_by_pk,
+        venue_seats:
+          data?.venue_by_pk.venue_seats.length === 0
+            ? [{ id: defaultVenueSeatId, venue_id: data?.venue_by_pk.id, position: 0, disabled: false, category: null }]
+            : data?.venue_by_pk.venue_seats.map(seat => ({
+                id: seat.id,
+                venue_id: seat.venue_id,
+                position: seat.position,
+                disabled: seat.disabled,
+                category: seat.category,
+              })),
+      }
+    : null
   return {
     loading,
     error,
@@ -139,3 +132,22 @@ const useVenue = (venueId: string) => {
     refetch,
   }
 }
+
+const GET_VENUE = gql`
+  query GET_VENUE($venueId: uuid!) {
+    venue_by_pk(id: $venueId) {
+      id
+      name
+      rows
+      cols
+      seats
+      venue_seats {
+        id
+        venue_id
+        position
+        disabled
+        category
+      }
+    }
+  }
+`

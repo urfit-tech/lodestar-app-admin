@@ -4,7 +4,7 @@ export type Venue = {
   cols: number
   rows: number
   seats: number
-  seatInfo: Seat[]
+  venue_seats: Seat[]
 }
 
 export type Seat = {

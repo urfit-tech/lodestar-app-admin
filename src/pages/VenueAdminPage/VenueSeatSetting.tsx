@@ -1,9 +1,13 @@
-import { Button, Dropdown, Input, Menu } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Dropdown, Input, Menu, message } from 'antd'
+import gql from 'graphql-tag'
 import React, { useMemo, useState } from 'react'
 import GridLayout from 'react-grid-layout'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import { AdminBlock } from '../../components/admin'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { Seat, Venue } from '../../types/venue'
 import pageMessages from '../translation'
@@ -54,22 +58,24 @@ const generateGridLayout = (cols: number, rows: number) => {
   }))
 }
 
-const VenueSeatSetting: React.VFC<{ venue: Venue }> = ({ venue }) => {
+const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({ venue, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [cols, setCols] = useState(venue.cols)
   const [rows, setRows] = useState(venue.rows)
-  const [seats, setSeats] = useState<Seat[]>(venue.seatInfo)
+  const [seats, setSeats] = useState<Seat[]>(venue.venue_seats)
+  const [loading, setLoading] = useState(false)
+  const [saveVenueSeats] = useMutation<hasura.SAVE_VENUE_SEATS, hasura.SAVE_VENUE_SEATSVariables>(SAVE_VENUE_SEATS)
 
   const isSeatInfoChanged: boolean = useMemo(() => {
     let isChanged = false
-    for (const seat of venue.seatInfo) {
-      if (JSON.stringify(seat) !== JSON.stringify(seats.filter(s => s.position === seat.position)[0])) {
+    for (const seat of seats) {
+      if (JSON.stringify(seat) !== JSON.stringify(venue.venue_seats.filter(s => s.position === seat.position)[0])) {
         isChanged = true
         break
       }
     }
     return isChanged
-  }, [venue.seatInfo, seats])
+  }, [venue.venue_seats, seats])
 
   const layout = useMemo(() => {
     return generateGridLayout(cols + 1, rows + 1)
@@ -93,7 +99,7 @@ const VenueSeatSetting: React.VFC<{ venue: Venue }> = ({ venue }) => {
           const newPosition = (newValue + 1) * (Math.floor(i / dif) + 1) - dif + (i % dif)
           newSeats.push({
             venue_id: venue.id,
-            id: (seats.length + i).toString(),
+            id: uuid().toString(),
             position: newPosition,
             disabled: false,
             category: null,
@@ -108,6 +114,7 @@ const VenueSeatSetting: React.VFC<{ venue: Venue }> = ({ venue }) => {
           })
         }
       }
+
       setCols(newValue)
       setSeats(newSeats)
     }
@@ -124,7 +131,7 @@ const VenueSeatSetting: React.VFC<{ venue: Venue }> = ({ venue }) => {
           if (i / (cols + 1) < newValue - dif + 1) {
             newSeats.push({ ...seats.filter(seat => seat.position === i)[0] })
           } else {
-            newSeats.push({ venue_id: venue.id, id: i.toString(), position: i, disabled: false, category: null })
+            newSeats.push({ venue_id: venue.id, id: uuid().toString(), position: i, disabled: false, category: null })
           }
         }
       } else {
@@ -204,10 +211,44 @@ const VenueSeatSetting: React.VFC<{ venue: Venue }> = ({ venue }) => {
         <div className="d-flex align-items-center">
           {isSeatInfoChanged && (
             <>
-              <Button className="mr-2" onClick={() => {}}>
+              <Button
+                className="mr-2"
+                disabled={loading}
+                loading={loading}
+                onClick={() => {
+                  setLoading(true)
+                  saveVenueSeats({
+                    variables: {
+                      venueId: venue.id,
+                      objects: seats,
+                      cols: cols,
+                      rows: rows,
+                      seats: seats.filter(
+                        seat =>
+                          Math.floor(seat.position / (cols + 1)) !== 0 &&
+                          seat.position % (cols + 1) !== 0 &&
+                          !seat.disabled,
+                      ).length,
+                    },
+                  })
+                    .then(() => {
+                      message.success(formatMessage(pageMessages['*'].successfullySaved))
+                      onRefetch?.()
+                    })
+                    .finally(() => setLoading(false))
+                }}
+              >
                 {formatMessage(commonMessages.ui.save)}
               </Button>
-              <Button onClick={() => setSeats(venue.seatInfo)}>{formatMessage(commonMessages.ui.cancel)}</Button>
+              <Button
+                onClick={() => {
+                  setCols(venue.cols)
+                  setRows(venue.rows)
+                  setSeats(venue.venue_seats)
+                }}
+              >
+                {formatMessage(commonMessages.ui.cancel)}
+              </Button>
             </>
           )}
         </div>
@@ -351,5 +392,25 @@ const GridItem: React.VFC<GridItemProps> = ({
     </StyledButton>
   )
 }
+
+const SAVE_VENUE_SEATS = gql`
+  mutation SAVE_VENUE_SEATS(
+    $venueId: uuid!
+    $objects: [venue_seat_insert_input!]!
+    $cols: Int!
+    $rows: Int!
+    $seats: Int!
+  ) {
+    update_venue(where: { id: { _eq: $venueId } }, _set: { cols: $cols, rows: $rows, seats: $seats }) {
+      affected_rows
+    }
+    delete_venue_seat(where: { venue_id: { _eq: $venueId } }) {
+      affected_rows
+    }
+    insert_venue_seat(objects: $objects) {
+      affected_rows
+    }
+  }
+`
 
 export default VenueSeatSetting

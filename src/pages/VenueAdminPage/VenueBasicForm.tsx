@@ -1,7 +1,11 @@
-import { Button, Form, Input, Skeleton } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import gql from 'graphql-tag'
+import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import hasura from '../../hasura'
 import { Venue } from '../../types/venue'
 import pageMessages from '../translation'
 
@@ -14,6 +18,9 @@ const VenueBasicForm: React.VFC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
+  const [updateVenueBasic] = useMutation<hasura.UPDATE_VENUE_BASIC, hasura.UPDATE_VENUE_BASICVariables>(
+    UPDATE_VENUE_BASIC,
+  )
 
   if (!venue) {
     return <Skeleton active />
@@ -21,8 +28,13 @@ const VenueBasicForm: React.VFC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-
-    // updateVenueBasic
+    updateVenueBasic({ variables: { venueId: venue.id, name: values.name } })
+      .then(() => {
+        message.success(formatMessage(pageMessages['*'].successfullySaved))
+        onRefetch?.()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -51,5 +63,13 @@ const VenueBasicForm: React.VFC<{
     </Form>
   )
 }
+
+const UPDATE_VENUE_BASIC = gql`
+  mutation UPDATE_VENUE_BASIC($venueId: uuid!, $name: String) {
+    update_venue(where: { id: { _eq: $venueId } }, _set: { name: $name }) {
+      affected_rows
+    }
+  }
+`
 
 export default VenueBasicForm

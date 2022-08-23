@@ -1,10 +1,13 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Dropdown, Input, Menu, Table } from 'antd'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Dropdown, Input, Menu, message, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { MoreIcon } from '../../images/icon'
 import { Venue } from '../../types/venue'
@@ -20,16 +23,19 @@ const StyledTitle = styled.div`
   cursor: pointer;
 `
 
+type VenueColumn = Pick<Venue, 'id' | 'name' | 'cols' | 'rows' | 'seats'>
+
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
 const VenueCollectionTable: React.VFC = () => {
   const { formatMessage } = useIntl()
   const [searchName, setSearchName] = useState<string | null>(null)
-  const { loading, error, venues } = useVenue({ title: searchName ? { _ilike: `%${searchName}%` } : undefined })
+  const { loading, error, venues, refetch } = useVenue({ name: searchName ? { _ilike: `%${searchName}%` } : undefined })
+  const [archiveVenue] = useMutation<hasura.ARCHIVE_VENUE, hasura.ARCHIVE_VENUEVariables>(ARCHIVE_VENUE)
 
-  const columns: ColumnProps<Venue>[] = [
+  const columns: ColumnProps<VenueColumn>[] = [
     {
-      key: 'title',
+      key: 'name',
       title: formatMessage(pageMessages['*'].title),
       width: '60%',
       render: (_, record) => (
@@ -91,7 +97,10 @@ const VenueCollectionTable: React.VFC = () => {
             <Menu>
               <Menu.Item
                 onClick={() => {
-                  //deleteVenue
+                  archiveVenue({ variables: { venueId: record.id } }).then(() => {
+                    message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                    refetch()
+                  })
                 }}
               >
                 {formatMessage(commonMessages.ui.delete)}
@@ -110,26 +119,45 @@ const VenueCollectionTable: React.VFC = () => {
     return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
   }
 
-  return <Table<Venue> loading={loading} rowKey="id" columns={columns} dataSource={venues} />
+  return <Table<VenueColumn> loading={loading} rowKey="id" columns={columns} dataSource={venues} pagination={false} />
 }
 
 const useVenue = (condition: any) => {
-  const { loading, error, data } = {
-    loading: false,
-    error: false,
-    data: {
-      venue: [
-        { id: '3982031-231', name: '11樓B01', cols: 3, rows: 4, seats: 12 },
-        { id: '3909131-291', name: '11樓B02', cols: 10, rows: 8, seats: 72 },
-      ],
-    } as { venue: Venue[] },
-  } //useQuery
+  const { loading, error, data, refetch } = useQuery<hasura.GET_VENUE_PREVIEW, hasura.GET_VENUE_PREVIEWVariables>(
+    GET_VENUE_PREVIEW,
+    {
+      variables: {
+        condition,
+      },
+    },
+  )
 
   return {
     loading,
     error,
-    venues: data.venue,
+    venues: data?.venue,
+    refetch,
   }
 }
+
+const GET_VENUE_PREVIEW = gql`
+  query GET_VENUE_PREVIEW($condition: venue_bool_exp!) {
+    venue(where: $condition) {
+      id
+      name
+      rows
+      cols
+      seats
+    }
+  }
+`
+
+const ARCHIVE_VENUE = gql`
+  mutation ARCHIVE_VENUE($venueId: uuid!) {
+    update_venue(where: { id: { _eq: $venueId } }, _set: { deleted_at: "now()" }) {
+      affected_rows
+    }
+  }
+`
 
 export default VenueCollectionTable
