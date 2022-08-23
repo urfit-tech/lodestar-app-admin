@@ -281,9 +281,9 @@
     reflect-metadata "^0.1.13"
 
 "@antv/g2@^4.1.26":
-  version "4.2.6"
-  resolved "https://registry.yarnpkg.com/@antv/g2/-/g2-4.2.6.tgz#828375cf69edcce0b0253fe927abc06e2021a9d1"
-  integrity sha512-mg3r+U9GqOU4aqosSUll5srEgOZxgl8WZ5Z6+9gH0ewaUGusvy2MUm6vEMyrp+VBoU0R/fOGv/3EuqRhT7+cgg==
+  version "4.2.7"
+  resolved "https://registry.yarnpkg.com/@antv/g2/-/g2-4.2.7.tgz#f2d457a15edade9fee416e4e254bc1c17fce4442"
+  integrity sha512-Uc8Z6xL3dQOpjKkRu/x1SVQG4Cx2+dtcsfDe7hXINzv5OWysjPYypXGB33d/gXu/v8BAvOv6n3t75NfYFuHy+A==
   dependencies:
     "@antv/adjust" "^0.2.1"
     "@antv/attr" "^0.3.1"
@@ -3096,25 +3096,25 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.4.4.tgz#11d5db19bd178936ec89cd84519c4de439574398"
   integrity sha512-1oO6+dN5kdIA3sKPZhRGJTfGVP4SWV6KqlMOwry4J3HfyD68sl/3KmG7DeYUzvN+RbhXDnv/D8vNNB8168tAMg==
 
-"@probe.gl/env@3.5.1":
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/@probe.gl/env/-/env-3.5.1.tgz#c32436a4a93c02d8fe5270c8c50d28b75a20062c"
-  integrity sha512-jeqR75tbO4hBiJZR+WSw4Ja8lV44ANpDmQRY0HBNJfi66fwffSH/3xCut3dvDDx7NwPcVKErnRvQLFtMHT85lg==
+"@probe.gl/env@3.5.2":
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/@probe.gl/env/-/env-3.5.2.tgz#f5639d5686235afb165f353675efea26766f8555"
+  integrity sha512-JlNvJ2p6+ObWX7es6n3TycGPTv5CfVrCS8vblI1eHhrFCcZ6RxIo727ffRVwldpp0YTzdgjx3/4fB/1dnVYElw==
   dependencies:
     "@babel/runtime" "^7.0.0"
 
-"@probe.gl/log@3.5.1":
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/@probe.gl/log/-/log-3.5.1.tgz#81dbbce86c0fa31697cff9af04f6a235bed2320a"
-  integrity sha512-+HQD+HTWVB/3f4QRhXpiHuNIHI6ed2/Ec3W/j/cmweu8HH8rJdqQKrGk0c8392stgsmFgzy11l2kS+caHx0jDw==
+"@probe.gl/log@3.5.2":
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/@probe.gl/log/-/log-3.5.2.tgz#e33103f6151c30431c4bfe63f1341bc0d9febe94"
+  integrity sha512-5yo8Dg8LrSltuPBdGlLh/WOvt4LdU7DDHu75GMeiS0fKM+J4IACRpGV8SOrktCj1MWZ6JVHcNQkJnoyZ6G7p/w==
   dependencies:
     "@babel/runtime" "^7.0.0"
-    "@probe.gl/env" "3.5.1"
+    "@probe.gl/env" "3.5.2"
 
-"@probe.gl/stats@3.5.1":
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/@probe.gl/stats/-/stats-3.5.1.tgz#7fd35534b4d16c511481621731134584de53fb8d"
-  integrity sha512-WfayGiGgxlzSbomIkFxGfPj1i4eO60DVCEjUt6uFcolQteLkDNWI9FWV0s1WrmqwTRz4L4246SciPDWbFQSRHg==
+"@probe.gl/stats@3.5.2":
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/@probe.gl/stats/-/stats-3.5.2.tgz#8ee41f73199182fddb8e40221da967414eaea619"
+  integrity sha512-YKaYXiHF//fgy1OkX38JD70Lc8qxg2Viw8Q2CTNMwGPDJe12wda7kEmMKPJNw2oYLyFUfTzv00KJMA5h18z02w==
   dependencies:
     "@babel/runtime" "^7.0.0"
 
@@ -3499,9 +3499,9 @@
     "@types/lodash" "*"
 
 "@types/lodash@*", "@types/lodash@^4.14.168":
-  version "4.14.183"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.183.tgz#1173e843e858cff5b997c234df2789a4a54c2374"
-  integrity sha512-UXavyuxzXKMqJPEpFPri6Ku5F9af6ZJXUneHhvQJxavrEjuHkFp2YnDWHcxJiG7hk8ZkWqjcyNeW1s/smZv5cw==
+  version "4.14.184"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.184.tgz#23f96cd2a21a28e106dc24d825d4aa966de7a9fe"
+  integrity sha512-RoZphVtHbxPZizt4IcILciSWiC6dcn+eZ8oX9IWEYfDMcocdd42f7NPI6fQj+6zI8y4E0L7gu2pcZKLGTRaV9Q==
 
 "@types/md5@^2.3.0":
   version "2.3.2"
@@ -3555,9 +3555,9 @@
     form-data "^3.0.0"
 
 "@types/node@*", "@types/node@>=6":
-  version "18.7.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.6.tgz#31743bc5772b6ac223845e18c3fc26f042713c83"
-  integrity sha512-EdxgKRXgYsNITy5mjjXjVE/CS8YENSdhiagGrLqjG0pvA2owgJ6i4l7wy/PFZGC0B1/H20lWKN7ONVDNYDZm7A==
+  version "18.7.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.9.tgz#180bfc495c91dc62573967edf047e15dbdce1491"
+  integrity sha512-0N5Y1XAdcl865nDdjbO0m3T6FdmQ4ijE89/urOHLREyTXbpMWbSafx9y7XIsgWGtwUP2iYTinLyyW3FatAxBLQ==
 
 "@types/node@12.0.0":
   version "12.0.0"
@@ -4959,11 +4959,11 @@ argparse@^1.0.7:
     sprintf-js "~1.0.2"
 
 aria-hidden@^1.1.1:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/aria-hidden/-/aria-hidden-1.1.3.tgz#bb48de18dc84787a3c6eee113709c473c64ec254"
-  integrity sha512-RhVWFtKH5BiGMycI72q2RAFMLQi8JP9bLuQXgR5a8Znp7P5KOIADSJeyfI8PCVxLEp067B2HbP5JIiI/PXIZeA==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/aria-hidden/-/aria-hidden-1.2.0.tgz#5c6fdae120da4237c4023422b695d9de91f0e4d5"
+  integrity sha512-gk7QBfz7M9dMK6xZmlCZkR0wqGe9ojBmYHCAZUhdvdYpfY1BLnnLDxdNGzxXhPAtbr09FZS3exsZhX9ELnJJ0w==
   dependencies:
-    tslib "^1.0.0"
+    tslib "^2.0.0"
 
 aria-query@^4.2.2:
   version "4.2.2"
@@ -5993,9 +5993,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001370:
-  version "1.0.30001378"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001378.tgz#3d2159bf5a8f9ca093275b0d3ecc717b00f27b67"
-  integrity sha512-JVQnfoO7FK7WvU4ZkBRbPjaot4+YqxogSDosHv0Hv5mWpUESmN+UubMU6L/hGz8QlQ2aY5U0vR6MOs6j/CXpNA==
+  version "1.0.30001381"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001381.tgz#e62955310e6e69cdf4b40bc5bc0895aa24bc4b8b"
+  integrity sha512-fEnkDOKpvp6qc+olg7+NzE1SqyfiyKf4uci7fAU38M3zxs0YOyKOxW/nMZ2l9sJbt7KZHcDIxUnbI0Iime7V4w==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -7261,9 +7261,9 @@ date-fns@^1.27.2:
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
 date-fns@^2.15.0:
-  version "2.29.1"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.1.tgz#9667c2615525e552b5135a3116b95b1961456e60"
-  integrity sha512-dlLD5rKaKxpFdnjrs+5azHDFOPEu4ANy/LTh04A1DTzMM7qoajmKCBc8pkKRFT41CNzw+4gQh79X5C+Jq27HAw==
+  version "2.29.2"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.2.tgz#0d4b3d0f3dff0f920820a070920f0d9662c51931"
+  integrity sha512-0VNbwmWJDS/G3ySwFSJA3ayhbURMTJLtwM2DTxf9CWondCnh6DTNlO9JgRSq6ibf4eD0lfMJNBxUdEAHHix+bA==
 
 dayjs@^1.11.3, dayjs@^1.8.30:
   version "1.11.5"
@@ -7742,9 +7742,9 @@ ejs@^3.1.5:
     jake "^10.8.5"
 
 electron-to-chromium@^1.3.564, electron-to-chromium@^1.4.202:
-  version "1.4.224"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.224.tgz#ecf2eed395cfedcbbe634658ccc4b457f7b254c3"
-  integrity sha512-dOujC5Yzj0nOVE23iD5HKqrRSDj2SD7RazpZS/b/WX85MtO6/LzKDF4TlYZTBteB+7fvSg5JpWh0sN7fImNF8w==
+  version "1.4.225"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.225.tgz#3e27bdd157cbaf19768141f2e0f0f45071e52338"
+  integrity sha512-ICHvGaCIQR3P88uK8aRtx8gmejbVJyC6bB4LEC3anzBrIzdzC7aiZHY4iFfXhN4st6I7lMO0x4sgBHf/7kBvRw==
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -8678,9 +8678,9 @@ flat-cache@^3.0.4:
     rimraf "^3.0.2"
 
 flatted@^3.1.0:
-  version "3.2.6"
-  resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.6.tgz#022e9218c637f9f3fc9c35ab9c9193f05add60b2"
-  integrity sha512-0sQoMh9s0BYsm+12Huy/rkKxVu4R1+r96YX5cG44rHV0pQ6iC3Q+mkoMFaGWObMFYQxCVT+ssG1ksneA2MI9KQ==
+  version "3.2.7"
+  resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
+  integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
 
 flatten@^1.0.2:
   version "1.0.3"
@@ -11664,9 +11664,9 @@ lodash.xorby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
+lodestar-app-admin@urfit-tech/lodestar-app-admin.git#feature/xuemi-custom-script-permission:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/ef621a1b6b5e5c129268a0bf513bfa9e8bda11d7"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-admin/tar.gz/94a7f5cf1e1a5e4bee23100e1d1dc7fdd67d78e2"
   dependencies:
     "@ant-design/charts" "1.2.14"
     "@ant-design/compatible" "^1.0.8"
@@ -11731,7 +11731,7 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
     less-loader "^7.1.0"
     lint-staged "^10.5.4"
     lodash "^4.17.21"
-    lodestar-app-element urfit-tech/lodestar-app-element#v1.15.0
+    lodestar-app-element urfit-tech/lodestar-app-element#master
     md5 "^2.3.0"
     moment "^2.29.1"
     moment-range "^4.0.2"
@@ -11775,9 +11775,9 @@ lodestar-app-admin@urfit-tech/lodestar-app-admin.git#master:
     uuid "8.3.2"
     wavesurfer.js "^4.1.1"
 
-lodestar-app-element@urfit-tech/lodestar-app-element#v1.15.0:
+lodestar-app-element@urfit-tech/lodestar-app-element#master:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/3b28186ddbbc9478b5f8a39172a1685cddca8d1c"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/aad4dfb6fd1ab187b9f2edeb5183662cf0d6745f"
   dependencies:
     "@apollo/react-hooks" "3.1.5"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
@@ -14088,9 +14088,9 @@ postcss@^8.1.0:
     source-map-js "^1.0.2"
 
 preact@^10.5.13:
-  version "10.10.3"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.10.3.tgz#ea82c5dce85c8a85d541f0110507b2de195ed711"
-  integrity sha512-Gwwh0o531izatQQZu0yEX4mtfxVYsZJ4TT/o2VK3UZ/UuAWAWFnzsEfpZvad32vY3TKoRnSY2WqiDz2rH/viWQ==
+  version "10.10.6"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.10.6.tgz#1fe62aecf93974b64e6a42e09ba1f00f93207d14"
+  integrity sha512-w0mCL5vICUAZrh1DuHEdOWBjxdO62lvcO++jbzr8UhhYcTbFkpegLH9XX+7MadjTl/y0feoqwQ/zAnzkc/EGog==
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -14136,14 +14136,14 @@ pretty-format@^26.6.0, pretty-format@^26.6.2:
     react-is "^17.0.1"
 
 probe.gl@^3.1.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/probe.gl/-/probe.gl-3.5.1.tgz#eabc7540b78425f9b13b9bdcbc988265e66fda81"
-  integrity sha512-DG8jtIeAZ3sULNMsqL8X3SQqwjA06EzASbWZj90YAlFM8yMQlsBBzLMZWy+/RvAfIWS3IcoK8vu8DOor7RRPTA==
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/probe.gl/-/probe.gl-3.5.2.tgz#d24f84a24678bd7ce005826d4cf2d7221b9c7db8"
+  integrity sha512-8lFQVmi7pMQZkqfj8+VjX4GU9HTkyxgRm5/h/xxA/4/IvZPv3qtP996L+awPwZsrPRKEw99t12SvqEHqSls/sA==
   dependencies:
     "@babel/runtime" "^7.0.0"
-    "@probe.gl/env" "3.5.1"
-    "@probe.gl/log" "3.5.1"
-    "@probe.gl/stats" "3.5.1"
+    "@probe.gl/env" "3.5.2"
+    "@probe.gl/log" "3.5.2"
+    "@probe.gl/stats" "3.5.2"
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
