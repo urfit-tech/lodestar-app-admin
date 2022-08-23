@@ -5288,6 +5288,38 @@ export interface UPSERT_EXAM_MEMBER_TIME_LIMITVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_EXAMINABLE_EXAM
+// ====================================================
+
+export interface UPDATE_EXAMINABLE_EXAM_update_exam {
+  __typename: "exam_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXAMINABLE_EXAM {
+  /**
+   * update data of the table: "exam"
+   */
+  update_exam: UPDATE_EXAMINABLE_EXAM_update_exam | null;
+}
+
+export interface UPDATE_EXAMINABLE_EXAMVariables {
+  examId: any;
+  examinableUnit?: string | null;
+  examinableAmount?: any | null;
+  examinableStartedAt?: any | null;
+  examinableEndedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PRACTICE
 // ====================================================
 
@@ -18310,6 +18342,7 @@ export enum exercise_constraint {
 export enum exercise_update_column {
   answer = "answer",
   created_at = "created_at",
+  exam_id = "exam_id",
   id = "id",
   member_id = "member_id",
   program_content_id = "program_content_id",
@@ -25703,6 +25736,8 @@ export interface exercise_bool_exp {
   _or?: exercise_bool_exp[] | null;
   answer?: jsonb_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  exam?: exam_bool_exp | null;
+  exam_id?: uuid_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -25717,6 +25752,8 @@ export interface exercise_bool_exp {
 export interface exercise_insert_input {
   answer?: any | null;
   created_at?: any | null;
+  exam?: exam_obj_rel_insert_input | null;
+  exam_id?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
@@ -25730,6 +25767,7 @@ export interface exercise_insert_input {
  */
 export interface exercise_max_order_by {
   created_at?: order_by | null;
+  exam_id?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   program_content_id?: order_by | null;
@@ -25741,6 +25779,7 @@ export interface exercise_max_order_by {
  */
 export interface exercise_min_order_by {
   created_at?: order_by | null;
+  exam_id?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   program_content_id?: order_by | null;

@@ -110,7 +110,6 @@ const ExerciseAdminModal: React.FC<{
       setVisible(false)
       return
     }
-
     if (typeof basicExamSetting.id !== 'undefined') {
       updateExam({
         variables: {
@@ -323,7 +322,7 @@ const ExerciseAdminModal: React.FC<{
 
           <Tabs activeKey={activityKey} onChange={v => setActivityKey(v)}>
             <Tabs.TabPane key="basicSetting" tab={formatMessage(programMessages.ExerciseAdminModal.basicSetting)}>
-              <ExamBasicForm basicExam={basicExam} onChange={setBasicExamSetting} />
+              <ExamBasicForm basicExam={basicExam} currentBasicExam={basicExamSetting} onChange={setBasicExamSetting} />
             </Tabs.TabPane>
             <Tabs.TabPane key="questionSetting" tab={formatMessage(programMessages.ExerciseAdminModal.questionSetting)}>
               <ExamQuestionSettingForm questionExam={questionExam} onChange={setQuestionExamSetting} />

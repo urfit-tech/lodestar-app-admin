@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { PlusIcon, TrashOIcon } from '../../images/icon'
+import { Exam } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 import { AllMemberSelector } from '../form/MemberSelector'
 import programMessages from './translation'
@@ -24,7 +25,10 @@ const StyledTimeLimitModal = styled.div`
   font-weight: 500;
 `
 
-const IndividualExamTimeLimitModal: React.VFC<{ examId: string }> = ({ examId }) => {
+const IndividualExamTimeLimitModal: React.VFC<{
+  examId: string
+  currentStatus: Pick<Exam, 'examinableUnit' | 'examinableAmount' | 'examinableStartedAt' | 'examinableEndedAt'>
+}> = ({ examId, currentStatus }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [form] = useForm<FieldProps>()
@@ -40,6 +44,9 @@ const IndividualExamTimeLimitModal: React.VFC<{ examId: string }> = ({ examId })
     hasura.UPSERT_EXAM_MEMBER_TIME_LIMIT,
     hasura.UPSERT_EXAM_MEMBER_TIME_LIMITVariables
   >(UPSERT_EXAM_MEMBER_TIME_LIMIT)
+  const [updateExam] = useMutation<hasura.UPDATE_EXAMINABLE_EXAM, hasura.UPDATE_EXAMINABLE_EXAMVariables>(
+    UPDATE_EXAMINABLE_EXAM,
+  )
 
   if (loadingTimeLimitList) return <Spin />
   if (error) return <div>fetch data error</div>
@@ -64,6 +71,16 @@ const IndividualExamTimeLimitModal: React.VFC<{ examId: string }> = ({ examId })
             })),
           },
         })
+        updateExam({
+          variables: {
+            examId,
+            examinableUnit: currentStatus.examinableUnit,
+            examinableAmount: currentStatus.examinableAmount,
+            examinableStartedAt: currentStatus.examinableStartedAt,
+            examinableEndedAt: currentStatus.examinableEndedAt,
+          },
+        })
+
         form.resetFields()
         refetch()
         onSuccess()
@@ -220,6 +237,28 @@ const UPSERT_EXAM_MEMBER_TIME_LIMIT = gql`
     insert_exam_member_time_limit(
       objects: $timeLimitList
       on_conflict: { constraint: exam_member_time_limit_exam_id_member_id_key, update_columns: [] }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_EXAMINABLE_EXAM = gql`
+  mutation UPDATE_EXAMINABLE_EXAM(
+    $examId: uuid!
+    $examinableUnit: String
+    $examinableAmount: numeric
+    $examinableStartedAt: timestamptz
+    $examinableEndedAt: timestamptz
+  ) {
+    update_exam(
+      where: { id: { _eq: $examId } }
+      _set: {
+        examinable_unit: $examinableUnit
+        examinable_amount: $examinableAmount
+        examinable_started_at: $examinableStartedAt
+        examinable_ended_at: $examinableEndedAt
+      }
     ) {
       affected_rows
     }

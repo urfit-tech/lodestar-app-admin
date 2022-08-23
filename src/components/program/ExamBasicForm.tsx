@@ -14,8 +14,9 @@ type TimeLimit = 'unlimited' | 'limited'
 
 const ExamBasicForm: React.VFC<{
   basicExam: BasicExam
+  currentBasicExam: BasicExam
   onChange: React.Dispatch<React.SetStateAction<BasicExam>>
-}> = ({ basicExam, onChange }) => {
+}> = ({ basicExam, currentBasicExam, onChange }) => {
   const { formatMessage } = useIntl()
   const [examinable, setExaminable] = useState<Examinable>(
     basicExam.examinableAmount && basicExam.examinableUnit
@@ -136,7 +137,15 @@ const ExamBasicForm: React.VFC<{
                 </Select>
               </Form.Item>
               <Form.Item className="ml-2">
-                <IndividualExamTimeLimitModal examId={basicExam.id} />
+                <IndividualExamTimeLimitModal
+                  examId={basicExam.id}
+                  currentStatus={{
+                    examinableAmount: currentBasicExam.examinableAmount || 7,
+                    examinableUnit: currentBasicExam.examinableUnit || 'day',
+                    examinableStartedAt: null,
+                    examinableEndedAt: null,
+                  }}
+                />
               </Form.Item>
             </>
           )}
@@ -161,7 +170,15 @@ const ExamBasicForm: React.VFC<{
                 />
               </Form.Item>
               <Form.Item className="ml-2">
-                <IndividualExamTimeLimitModal examId={basicExam.id} />
+                <IndividualExamTimeLimitModal
+                  examId={basicExam.id}
+                  currentStatus={{
+                    examinableAmount: null,
+                    examinableUnit: null,
+                    examinableStartedAt: currentBasicExam.examinableStartedAt,
+                    examinableEndedAt: currentBasicExam.examinableEndedAt,
+                  }}
+                />
               </Form.Item>
             </>
           )}
