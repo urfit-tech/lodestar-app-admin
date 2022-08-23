@@ -290,6 +290,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           key: 'activity_category',
           name: formatMessage(adminMessages.AdminMenu.activityCategory),
         },
+        {
+          permissionIsAllowed: !!enabledModules.venue,
+          key: 'venue_collection',
+          name: formatMessage(adminMessages.AdminMenu.venueManagement),
+        },
       ],
     },
     {

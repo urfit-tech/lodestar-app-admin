@@ -60,6 +60,7 @@ const pageMessages = {
     createVoucherPlan: { id: 'page.*.createVoucherPlan', defaultMessage: 'create voucher plan' },
     eligibilityList: { id: 'page.*.eligibilityList', defaultMessage: 'eligibility list' },
     certificateSetting: { id: 'page.*.certificateSetting', defaultMessage: 'certificate setting' },
+    venueManagement: { id: 'page.*.venueManagement', defaultMessage: '場地管理' },
     publishSettings: { id: 'page.*.publishSettings', defaultMessage: 'publish settings' },
     successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: 'saved successfully' },
     deleteProductDanger: { id: 'page.*.deleteProductDanger', defaultMessage: '*已購買者在刪除後仍可觀看。' },
@@ -264,6 +265,27 @@ const pageMessages = {
       id: 'page.CertificateEligibilityListBlock.deleteMemberCertificateWarning',
       defaultMessage: '你確定要刪除此會員的證書？此動作無法還原',
     },
+  }),
+  VenueCollectionPage: defineMessages({
+    createVenue: { id: 'page.VenueCollectionPage.createVenue', defaultMessage: '新增場地' },
+    cols: { id: 'page.VenueCollectionPage.cols', defaultMessage: '總列數' },
+    rows: { id: 'page.VenueCollectionPage.rows', defaultMessage: '總行數' },
+    seats: { id: 'page.VenueCollectionPage.seats', defaultMessage: '座位數' },
+  }),
+  VenueAdminPage: defineMessages({
+    seatSettings: { id: 'page.VenueAdminPage.seatSettings', defaultMessage: '座位設定' },
+    usage: { id: 'page.VenueAdminPage.usage', defaultMessage: '使用情況' },
+  }),
+  VenueBasicForm: defineMessages({
+    venueName: { id: 'page.VenueBasicForm.venueName', defaultMessage: '場地名稱' },
+  }),
+  VenueSeatSetting: defineMessages({
+    rows: { id: 'page.VenueSeatSetting.rows', defaultMessage: '橫的行數' },
+    cols: { id: 'page.VenueSeatSetting.cols', defaultMessage: '直的列數' },
+    row: { id: 'page.VenueSeatSetting.row', defaultMessage: '橫列' },
+    col: { id: 'page.VenueSeatSetting.col', defaultMessage: '直欄' },
+    heigh: { id: 'page.VenueSeatSetting.heigh', defaultMessage: '高起來' },
+    walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
   }),
 }
 

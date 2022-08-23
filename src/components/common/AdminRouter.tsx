@@ -219,6 +219,16 @@ export const routesProps = {
     pageName: 'ActivityCategoryPage',
     authenticated: true,
   },
+  venue_collection: {
+    path: '/venue-management',
+    pageName: 'VenueCollectionPage',
+    authenticated: true,
+  },
+  venue_management: {
+    path: '/venue-management/:venueId',
+    pageName: 'VenueAdminPage',
+    authenticated: true,
+  },
 
   // blog
   blog_collection: {

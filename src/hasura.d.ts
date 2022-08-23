@@ -17264,6 +17264,228 @@ export interface GET_MEMBER_CONTRACT_LISTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL query operation: GET_VENUE
+// ====================================================
+
+export interface GET_VENUE_venue_by_pk_venue_seats {
+  __typename: "venue_seat";
+  id: any;
+  venue_id: any;
+  position: number;
+  disabled: boolean;
+  category: string | null;
+}
+
+export interface GET_VENUE_venue_by_pk {
+  __typename: "venue";
+  id: any;
+  name: string;
+  rows: number;
+  cols: number;
+  seats: number;
+  /**
+   * An array relationship
+   */
+  venue_seats: GET_VENUE_venue_by_pk_venue_seats[];
+}
+
+export interface GET_VENUE {
+  /**
+   * fetch data from the table: "venue" using primary key columns
+   */
+  venue_by_pk: GET_VENUE_venue_by_pk | null;
+}
+
+export interface GET_VENUEVariables {
+  venueId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_VENUE_BASIC
+// ====================================================
+
+export interface UPDATE_VENUE_BASIC_update_venue {
+  __typename: "venue_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VENUE_BASIC {
+  /**
+   * update data of the table: "venue"
+   */
+  update_venue: UPDATE_VENUE_BASIC_update_venue | null;
+}
+
+export interface UPDATE_VENUE_BASICVariables {
+  venueId: any;
+  name?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: SAVE_VENUE_SEATS
+// ====================================================
+
+export interface SAVE_VENUE_SEATS_update_venue {
+  __typename: "venue_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface SAVE_VENUE_SEATS_delete_venue_seat {
+  __typename: "venue_seat_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface SAVE_VENUE_SEATS_insert_venue_seat {
+  __typename: "venue_seat_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface SAVE_VENUE_SEATS {
+  /**
+   * update data of the table: "venue"
+   */
+  update_venue: SAVE_VENUE_SEATS_update_venue | null;
+  /**
+   * delete data from the table: "venue_seat"
+   */
+  delete_venue_seat: SAVE_VENUE_SEATS_delete_venue_seat | null;
+  /**
+   * insert data into the table: "venue_seat"
+   */
+  insert_venue_seat: SAVE_VENUE_SEATS_insert_venue_seat | null;
+}
+
+export interface SAVE_VENUE_SEATSVariables {
+  venueId: any;
+  objects: venue_seat_insert_input[];
+  cols: number;
+  rows: number;
+  seats: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_VENUE
+// ====================================================
+
+export interface INSERT_VENUE_insert_venue_returning {
+  __typename: "venue";
+  id: any;
+}
+
+export interface INSERT_VENUE_insert_venue {
+  __typename: "venue_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_VENUE_insert_venue_returning[];
+}
+
+export interface INSERT_VENUE {
+  /**
+   * insert data into the table: "venue"
+   */
+  insert_venue: INSERT_VENUE_insert_venue | null;
+}
+
+export interface INSERT_VENUEVariables {
+  name: string;
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_VENUE_PREVIEW
+// ====================================================
+
+export interface GET_VENUE_PREVIEW_venue {
+  __typename: "venue";
+  id: any;
+  name: string;
+  rows: number;
+  cols: number;
+  seats: number;
+}
+
+export interface GET_VENUE_PREVIEW {
+  /**
+   * fetch data from the table: "venue"
+   */
+  venue: GET_VENUE_PREVIEW_venue[];
+}
+
+export interface GET_VENUE_PREVIEWVariables {
+  condition: venue_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ARCHIVE_VENUE
+// ====================================================
+
+export interface ARCHIVE_VENUE_update_venue {
+  __typename: "venue_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_VENUE {
+  /**
+   * update data of the table: "venue"
+   */
+  update_venue: ARCHIVE_VENUE_update_venue | null;
+}
+
+export interface ARCHIVE_VENUEVariables {
+  venueId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -20520,6 +20742,46 @@ export enum tag_update_column {
   filterable = "filterable",
   name = "name",
   type = "type",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "venue"
+ */
+export enum venue_constraint {
+  venue_pkey = "venue_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "venue_seat"
+ */
+export enum venue_seat_constraint {
+  venue_seat_pkey = "venue_seat_pkey",
+}
+
+/**
+ * update columns of table "venue_seat"
+ */
+export enum venue_seat_update_column {
+  category = "category",
+  disabled = "disabled",
+  id = "id",
+  position = "position",
+  venue_id = "venue_id",
+}
+
+/**
+ * update columns of table "venue"
+ */
+export enum venue_update_column {
+  app_id = "app_id",
+  cols = "cols",
+  created_at = "created_at",
+  deleted_at = "deleted_at",
+  id = "id",
+  name = "name",
+  rows = "rows",
+  seats = "seats",
   updated_at = "updated_at",
 }
 
@@ -38667,6 +38929,102 @@ export interface uuid_comparison_exp {
   _lte?: any | null;
   _neq?: any | null;
   _nin?: any[] | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "venue". All fields are combined with a logical 'AND'.
+ */
+export interface venue_bool_exp {
+  _and?: venue_bool_exp[] | null;
+  _not?: venue_bool_exp | null;
+  _or?: venue_bool_exp[] | null;
+  app_id?: String_comparison_exp | null;
+  cols?: Int_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  rows?: Int_comparison_exp | null;
+  seats?: Int_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+  venue_seats?: venue_seat_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "venue"
+ */
+export interface venue_insert_input {
+  app_id?: string | null;
+  cols?: number | null;
+  created_at?: any | null;
+  deleted_at?: any | null;
+  id?: any | null;
+  name?: string | null;
+  rows?: number | null;
+  seats?: number | null;
+  updated_at?: any | null;
+  venue_seats?: venue_seat_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "venue"
+ */
+export interface venue_obj_rel_insert_input {
+  data: venue_insert_input;
+  on_conflict?: venue_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "venue"
+ */
+export interface venue_on_conflict {
+  constraint: venue_constraint;
+  update_columns: venue_update_column[];
+  where?: venue_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "venue_seat"
+ */
+export interface venue_seat_arr_rel_insert_input {
+  data: venue_seat_insert_input[];
+  on_conflict?: venue_seat_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "venue_seat". All fields are combined with a logical 'AND'.
+ */
+export interface venue_seat_bool_exp {
+  _and?: venue_seat_bool_exp[] | null;
+  _not?: venue_seat_bool_exp | null;
+  _or?: venue_seat_bool_exp[] | null;
+  category?: String_comparison_exp | null;
+  disabled?: Boolean_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  venue?: venue_bool_exp | null;
+  venue_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "venue_seat"
+ */
+export interface venue_seat_insert_input {
+  category?: string | null;
+  disabled?: boolean | null;
+  id?: any | null;
+  position?: number | null;
+  venue?: venue_obj_rel_insert_input | null;
+  venue_id?: any | null;
+}
+
+/**
+ * on_conflict condition type for table "venue_seat"
+ */
+export interface venue_seat_on_conflict {
+  constraint: venue_seat_constraint;
+  update_columns: venue_seat_update_column[];
+  where?: venue_seat_bool_exp | null;
 }
 
 /**
