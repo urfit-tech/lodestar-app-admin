@@ -56,6 +56,7 @@ const PermissionInput: React.FC<{
     project: !!enabledModules.project,
     contract: !!enabledModules.contract,
     analysis: !!enabledModules.analysis,
+    customScript: !!enabledModules.customScript,
     salesLead: settings['custom.permission_group.salesLead'] === '1',
     salesManagement: settings['custom.permission_group.salesManagement'] === '1',
   }
