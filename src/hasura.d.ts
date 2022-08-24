@@ -17037,6 +17037,952 @@ export interface GET_PROJECT_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPSERT_QUESTION
+// ====================================================
+
+export interface UPSERT_QUESTION_insert_question_returning {
+  __typename: "question";
+  id: any;
+}
+
+export interface UPSERT_QUESTION_insert_question {
+  __typename: "question_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: UPSERT_QUESTION_insert_question_returning[];
+}
+
+export interface UPSERT_QUESTION_insert_question_option_returning {
+  __typename: "question_option";
+  id: any;
+}
+
+export interface UPSERT_QUESTION_insert_question_option {
+  __typename: "question_option_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: UPSERT_QUESTION_insert_question_option_returning[];
+}
+
+export interface UPSERT_QUESTION_update_question {
+  __typename: "question_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_QUESTION_update_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_QUESTION_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_QUESTION {
+  /**
+   * insert data into the table: "question"
+   */
+  insert_question: UPSERT_QUESTION_insert_question | null;
+  /**
+   * insert data into the table: "question_option"
+   */
+  insert_question_option: UPSERT_QUESTION_insert_question_option | null;
+  /**
+   * update data of the table: "question"
+   */
+  update_question: UPSERT_QUESTION_update_question | null;
+  /**
+   * update data of the table: "question_group"
+   */
+  update_question_group: UPSERT_QUESTION_update_question_group | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: UPSERT_QUESTION_update_question_library | null;
+}
+
+export interface UPSERT_QUESTIONVariables {
+  questionListData: question_insert_input[];
+  questionOptionsData: question_option_insert_input[];
+  archivedQuestionIds: any[];
+  questionGroupIdForUpdatedAt: any;
+  questionLibraryIdForUpdatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_QUESTION_POSITION
+// ====================================================
+
+export interface UPDATE_QUESTION_POSITION_insert_question_returning {
+  __typename: "question";
+  id: any;
+}
+
+export interface UPDATE_QUESTION_POSITION_insert_question {
+  __typename: "question_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: UPDATE_QUESTION_POSITION_insert_question_returning[];
+}
+
+export interface UPDATE_QUESTION_POSITION_update_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_QUESTION_POSITION_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_QUESTION_POSITION {
+  /**
+   * insert data into the table: "question"
+   */
+  insert_question: UPDATE_QUESTION_POSITION_insert_question | null;
+  /**
+   * update data of the table: "question_group"
+   */
+  update_question_group: UPDATE_QUESTION_POSITION_update_question_group | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: UPDATE_QUESTION_POSITION_update_question_library | null;
+}
+
+export interface UPDATE_QUESTION_POSITIONVariables {
+  questionListData: question_insert_input[];
+  questionGroupIdForUpdatedAt: any;
+  questionLibraryIdForUpdatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTIONS
+// ====================================================
+
+export interface GET_QUESTIONS_question_group_by_pk_questions_question_options {
+  __typename: "question_option";
+  id: any;
+  value: string;
+  is_answer: boolean | null;
+  position: number;
+}
+
+export interface GET_QUESTIONS_question_group_by_pk_questions {
+  __typename: "question";
+  id: any;
+  type: string;
+  subject: string;
+  layout: string;
+  font: string;
+  explanation: string | null;
+  position: number;
+  /**
+   * An array relationship
+   */
+  question_options: GET_QUESTIONS_question_group_by_pk_questions_question_options[];
+}
+
+export interface GET_QUESTIONS_question_group_by_pk_question_library {
+  __typename: "question_library";
+  id: any;
+}
+
+export interface GET_QUESTIONS_question_group_by_pk {
+  __typename: "question_group";
+  title: string;
+  /**
+   * An array relationship
+   */
+  questions: GET_QUESTIONS_question_group_by_pk_questions[];
+  /**
+   * An object relationship
+   */
+  question_library: GET_QUESTIONS_question_group_by_pk_question_library;
+}
+
+export interface GET_QUESTIONS {
+  /**
+   * fetch data from the table: "question_group" using primary key columns
+   */
+  question_group_by_pk: GET_QUESTIONS_question_group_by_pk | null;
+}
+
+export interface GET_QUESTIONSVariables {
+  questionGroupId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_GROUP_LIST
+// ====================================================
+
+export interface GET_QUESTION_GROUP_LIST_question_library_question_groups_modifier {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_QUESTION_GROUP_LIST_question_library_question_groups_questions_aggregate_aggregate {
+  __typename: "question_aggregate_fields";
+  count: number;
+}
+
+export interface GET_QUESTION_GROUP_LIST_question_library_question_groups_questions_aggregate {
+  __typename: "question_aggregate";
+  aggregate: GET_QUESTION_GROUP_LIST_question_library_question_groups_questions_aggregate_aggregate | null;
+}
+
+export interface GET_QUESTION_GROUP_LIST_question_library_question_groups {
+  __typename: "question_group";
+  id: any;
+  title: string;
+  modifier_id: string;
+  /**
+   * An object relationship
+   */
+  modifier: GET_QUESTION_GROUP_LIST_question_library_question_groups_modifier;
+  updated_at: any;
+  /**
+   * An aggregate relationship
+   */
+  questions_aggregate: GET_QUESTION_GROUP_LIST_question_library_question_groups_questions_aggregate;
+}
+
+export interface GET_QUESTION_GROUP_LIST_question_library {
+  __typename: "question_library";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  question_groups: GET_QUESTION_GROUP_LIST_question_library_question_groups[];
+}
+
+export interface GET_QUESTION_GROUP_LIST {
+  /**
+   * fetch data from the table: "question_library"
+   */
+  question_library: GET_QUESTION_GROUP_LIST_question_library[];
+}
+
+export interface GET_QUESTION_GROUP_LISTVariables {
+  appId: string;
+  condition: question_group_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_GROUP_DATA
+// ====================================================
+
+export interface GET_QUESTION_GROUP_DATA_question_group_by_pk_questions_question_options {
+  __typename: "question_option";
+  id: any;
+  value: string;
+  is_answer: boolean | null;
+  position: number;
+}
+
+export interface GET_QUESTION_GROUP_DATA_question_group_by_pk_questions {
+  __typename: "question";
+  type: string;
+  subject: string;
+  position: number;
+  layout: string;
+  font: string;
+  explanation: string | null;
+  /**
+   * An array relationship
+   */
+  question_options: GET_QUESTION_GROUP_DATA_question_group_by_pk_questions_question_options[];
+}
+
+export interface GET_QUESTION_GROUP_DATA_question_group_by_pk {
+  __typename: "question_group";
+  title: string;
+  /**
+   * An array relationship
+   */
+  questions: GET_QUESTION_GROUP_DATA_question_group_by_pk_questions[];
+}
+
+export interface GET_QUESTION_GROUP_DATA {
+  /**
+   * fetch data from the table: "question_group" using primary key columns
+   */
+  question_group_by_pk: GET_QUESTION_GROUP_DATA_question_group_by_pk | null;
+}
+
+export interface GET_QUESTION_GROUP_DATAVariables {
+  questionGroupId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_DUPLICATE_QUESTION_GROUP
+// ====================================================
+
+export interface INSERT_DUPLICATE_QUESTION_GROUP_insert_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_DUPLICATE_QUESTION_GROUP_insert_question {
+  __typename: "question_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_DUPLICATE_QUESTION_GROUP_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_DUPLICATE_QUESTION_GROUP {
+  /**
+   * insert data into the table: "question_group"
+   */
+  insert_question_group: INSERT_DUPLICATE_QUESTION_GROUP_insert_question_group | null;
+  /**
+   * insert data into the table: "question"
+   */
+  insert_question: INSERT_DUPLICATE_QUESTION_GROUP_insert_question | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: INSERT_DUPLICATE_QUESTION_GROUP_update_question_library | null;
+}
+
+export interface INSERT_DUPLICATE_QUESTION_GROUPVariables {
+  duplicateQuestionGroupData: question_group_insert_input[];
+  duplicateQuestionsData: question_insert_input[];
+  questionLibraryIdForDuplicate: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_LIBRARY
+// ====================================================
+
+export interface GET_QUESTION_LIBRARY_question_library_by_pk {
+  __typename: "question_library";
+  id: any;
+  title: string;
+  abstract: string | null;
+}
+
+export interface GET_QUESTION_LIBRARY {
+  /**
+   * fetch data from the table: "question_library" using primary key columns
+   */
+  question_library_by_pk: GET_QUESTION_LIBRARY_question_library_by_pk | null;
+}
+
+export interface GET_QUESTION_LIBRARYVariables {
+  questionLibraryId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_LIBRARY_LIST
+// ====================================================
+
+export interface GET_QUESTION_LIBRARY_LIST_question_library_question_groups {
+  __typename: "question_group";
+  id: any;
+  title: string;
+}
+
+export interface GET_QUESTION_LIBRARY_LIST_question_library {
+  __typename: "question_library";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  question_groups: GET_QUESTION_LIBRARY_LIST_question_library_question_groups[];
+}
+
+export interface GET_QUESTION_LIBRARY_LIST {
+  /**
+   * fetch data from the table: "question_library"
+   */
+  question_library: GET_QUESTION_LIBRARY_LIST_question_library[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_LIST
+// ====================================================
+
+export interface GET_QUESTION_LIST_question_group_questions_question_options {
+  __typename: "question_option";
+  id: any;
+  value: string;
+  is_answer: boolean | null;
+  position: number;
+}
+
+export interface GET_QUESTION_LIST_question_group_questions {
+  __typename: "question";
+  id: any;
+  type: string;
+  subject: string;
+  layout: string;
+  font: string;
+  explanation: string | null;
+  position: number;
+  /**
+   * An array relationship
+   */
+  question_options: GET_QUESTION_LIST_question_group_questions_question_options[];
+}
+
+export interface GET_QUESTION_LIST_question_group {
+  __typename: "question_group";
+  /**
+   * An array relationship
+   */
+  questions: GET_QUESTION_LIST_question_group_questions[];
+}
+
+export interface GET_QUESTION_LIST {
+  /**
+   * fetch data from the table: "question_group"
+   */
+  question_group: GET_QUESTION_LIST_question_group[];
+}
+
+export interface GET_QUESTION_LISTVariables {
+  questionGroupIdList?: any[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_QUESTION_GROUP
+// ====================================================
+
+export interface INSERT_QUESTION_GROUP_insert_question_group_returning {
+  __typename: "question_group";
+  id: any;
+}
+
+export interface INSERT_QUESTION_GROUP_insert_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_QUESTION_GROUP_insert_question_group_returning[];
+}
+
+export interface INSERT_QUESTION_GROUP_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_QUESTION_GROUP {
+  /**
+   * insert data into the table: "question_group"
+   */
+  insert_question_group: INSERT_QUESTION_GROUP_insert_question_group | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: INSERT_QUESTION_GROUP_update_question_library | null;
+}
+
+export interface INSERT_QUESTION_GROUPVariables {
+  title: string;
+  modifierId: string;
+  questionLibraryId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_IMPORT_QUESTION_GROUP
+// ====================================================
+
+export interface INSERT_IMPORT_QUESTION_GROUP_insert_question_group_returning {
+  __typename: "question_group";
+  id: any;
+}
+
+export interface INSERT_IMPORT_QUESTION_GROUP_insert_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_IMPORT_QUESTION_GROUP_insert_question_group_returning[];
+}
+
+export interface INSERT_IMPORT_QUESTION_GROUP_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_IMPORT_QUESTION_GROUP {
+  /**
+   * insert data into the table: "question_group"
+   */
+  insert_question_group: INSERT_IMPORT_QUESTION_GROUP_insert_question_group | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: INSERT_IMPORT_QUESTION_GROUP_update_question_library | null;
+}
+
+export interface INSERT_IMPORT_QUESTION_GROUPVariables {
+  importQuestionGroupData: question_group_insert_input[];
+  questionLibraryId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_GROUPS
+// ====================================================
+
+export interface GET_QUESTION_GROUPS_question_group_modifier {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_QUESTION_GROUPS_question_group_questions_aggregate_aggregate {
+  __typename: "question_aggregate_fields";
+  count: number;
+}
+
+export interface GET_QUESTION_GROUPS_question_group_questions_aggregate {
+  __typename: "question_aggregate";
+  aggregate: GET_QUESTION_GROUPS_question_group_questions_aggregate_aggregate | null;
+}
+
+export interface GET_QUESTION_GROUPS_question_group {
+  __typename: "question_group";
+  id: any;
+  title: string;
+  modifier_id: string;
+  /**
+   * An object relationship
+   */
+  modifier: GET_QUESTION_GROUPS_question_group_modifier;
+  updated_at: any;
+  /**
+   * An aggregate relationship
+   */
+  questions_aggregate: GET_QUESTION_GROUPS_question_group_questions_aggregate;
+}
+
+export interface GET_QUESTION_GROUPS {
+  /**
+   * fetch data from the table: "question_group"
+   */
+  question_group: GET_QUESTION_GROUPS_question_group[];
+}
+
+export interface GET_QUESTION_GROUPSVariables {
+  condition: question_group_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_QUESTION_GROUP_TITLE
+// ====================================================
+
+export interface UPDATE_QUESTION_GROUP_TITLE_update_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_QUESTION_GROUP_TITLE_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_QUESTION_GROUP_TITLE {
+  /**
+   * update data of the table: "question_group"
+   */
+  update_question_group: UPDATE_QUESTION_GROUP_TITLE_update_question_group | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: UPDATE_QUESTION_GROUP_TITLE_update_question_library | null;
+}
+
+export interface UPDATE_QUESTION_GROUP_TITLEVariables {
+  questionGroupId: any;
+  title: string;
+  modifierId: string;
+  questionLibraryIdForUpdate: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ARCHIVE_QUESTION_GROUP
+// ====================================================
+
+export interface ARCHIVE_QUESTION_GROUP_update_question_option {
+  __typename: "question_option_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_GROUP_update_question {
+  __typename: "question_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_GROUP_update_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_GROUP_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_GROUP {
+  /**
+   * update data of the table: "question_option"
+   */
+  update_question_option: ARCHIVE_QUESTION_GROUP_update_question_option | null;
+  /**
+   * update data of the table: "question"
+   */
+  update_question: ARCHIVE_QUESTION_GROUP_update_question | null;
+  /**
+   * update data of the table: "question_group"
+   */
+  update_question_group: ARCHIVE_QUESTION_GROUP_update_question_group | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: ARCHIVE_QUESTION_GROUP_update_question_library | null;
+}
+
+export interface ARCHIVE_QUESTION_GROUPVariables {
+  questionGroupId: any;
+  modifierId: string;
+  questionLibraryIdForArchive: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_QUESTION_LIBRARY_BASIC
+// ====================================================
+
+export interface UPDATE_QUESTION_LIBRARY_BASIC_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_QUESTION_LIBRARY_BASIC {
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: UPDATE_QUESTION_LIBRARY_BASIC_update_question_library | null;
+}
+
+export interface UPDATE_QUESTION_LIBRARY_BASICVariables {
+  questionLibraryId: any;
+  title: string;
+  abstract?: string | null;
+  modifierId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_QUESTION_LIBRARY
+// ====================================================
+
+export interface INSERT_QUESTION_LIBRARY_insert_question_library_returning {
+  __typename: "question_library";
+  id: any;
+}
+
+export interface INSERT_QUESTION_LIBRARY_insert_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_QUESTION_LIBRARY_insert_question_library_returning[];
+}
+
+export interface INSERT_QUESTION_LIBRARY {
+  /**
+   * insert data into the table: "question_library"
+   */
+  insert_question_library: INSERT_QUESTION_LIBRARY_insert_question_library | null;
+}
+
+export interface INSERT_QUESTION_LIBRARYVariables {
+  title: string;
+  modifierId: string;
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_QUESTION_LIBRARIES
+// ====================================================
+
+export interface GET_QUESTION_LIBRARIES_question_library_modifier {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_QUESTION_LIBRARIES_question_library_question_groups_aggregate_aggregate {
+  __typename: "question_group_aggregate_fields";
+  count: number;
+}
+
+export interface GET_QUESTION_LIBRARIES_question_library_question_groups_aggregate {
+  __typename: "question_group_aggregate";
+  aggregate: GET_QUESTION_LIBRARIES_question_library_question_groups_aggregate_aggregate | null;
+}
+
+export interface GET_QUESTION_LIBRARIES_question_library {
+  __typename: "question_library";
+  id: any;
+  title: string;
+  modifier_id: string;
+  /**
+   * An object relationship
+   */
+  modifier: GET_QUESTION_LIBRARIES_question_library_modifier;
+  updated_at: any;
+  /**
+   * An aggregate relationship
+   */
+  question_groups_aggregate: GET_QUESTION_LIBRARIES_question_library_question_groups_aggregate;
+}
+
+export interface GET_QUESTION_LIBRARIES {
+  /**
+   * fetch data from the table: "question_library"
+   */
+  question_library: GET_QUESTION_LIBRARIES_question_library[];
+}
+
+export interface GET_QUESTION_LIBRARIESVariables {
+  condition: question_library_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ARCHIVE_QUESTION_LIBRARY
+// ====================================================
+
+export interface ARCHIVE_QUESTION_LIBRARY_update_question_option {
+  __typename: "question_option_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_LIBRARY_update_question {
+  __typename: "question_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_LIBRARY_update_question_group {
+  __typename: "question_group_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_LIBRARY_update_question_library {
+  __typename: "question_library_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARCHIVE_QUESTION_LIBRARY {
+  /**
+   * update data of the table: "question_option"
+   */
+  update_question_option: ARCHIVE_QUESTION_LIBRARY_update_question_option | null;
+  /**
+   * update data of the table: "question"
+   */
+  update_question: ARCHIVE_QUESTION_LIBRARY_update_question | null;
+  /**
+   * update data of the table: "question_group"
+   */
+  update_question_group: ARCHIVE_QUESTION_LIBRARY_update_question_group | null;
+  /**
+   * update data of the table: "question_library"
+   */
+  update_question_library: ARCHIVE_QUESTION_LIBRARY_update_question_library | null;
+}
+
+export interface ARCHIVE_QUESTION_LIBRARYVariables {
+  questionLibraryId: any;
+  modifierId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_AUDIO_DATA
 // ====================================================
 

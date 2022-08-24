@@ -75,6 +75,9 @@ const adminMessages = {
     certificateAdmin: { id: 'admin.AdminMenu.certificate', defaultMessage: '證書管理' },
     certificateSetting: { id: 'admin.AdminMenu.certificateSetting', defaultMessage: '證書設定' },
     certificateTemplate: { id: 'admin.AdminMenu.certificateTemplate', defaultMessage: '證書模板' },
+    questionLibraryAdmin: { id: 'admin.AdminMenu.questionLibraryAdmin', defaultMessage: '題目庫' },
+    questionLibraryManagement: { id: 'admin.AdminMenu.questionLibraryManagement', defaultMessage: '題庫管理' },
+    questionGroupManagement: { id: 'admin.AdminMenu.questionGroupManagement', defaultMessage: '題組管理' },
   }),
 }
 export default adminMessages
