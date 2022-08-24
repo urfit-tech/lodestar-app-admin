@@ -254,6 +254,11 @@ const DELETE_PROGRAM_CONTENT_SECTION = gql`
     delete_program_content_section(where: { id: { _eq: $programContentSectionId } }) {
       affected_rows
     }
+    delete_exercise(
+      where: { program_content: { program_content_section: { id: { _eq: $programContentSectionId } } } }
+    ) {
+      affected_rows
+    }
     #FIXME: should delete relation data, practice, exam and exercise ?
   }
 `

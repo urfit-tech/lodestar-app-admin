@@ -5555,6 +5555,14 @@ export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section {
   affected_rows: number;
 }
 
+export interface DELETE_PROGRAM_CONTENT_SECTION_delete_exercise {
+  __typename: "exercise_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT_SECTION {
   /**
    * delete data from the table: "program_content_progress"
@@ -5572,6 +5580,10 @@ export interface DELETE_PROGRAM_CONTENT_SECTION {
    * delete data from the table: "program_content_section"
    */
   delete_program_content_section: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section | null;
+  /**
+   * delete data from the table: "exercise"
+   */
+  delete_exercise: DELETE_PROGRAM_CONTENT_SECTION_delete_exercise | null;
 }
 
 export interface DELETE_PROGRAM_CONTENT_SECTIONVariables {
