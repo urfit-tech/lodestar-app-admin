@@ -1,6 +1,6 @@
 import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Divider, Popover, Tag } from 'antd'
+import { Button, Divider, Tag } from 'antd'
 import gql from 'graphql-tag'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
@@ -10,15 +10,8 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
-import PositionAdminLayout, {
-  OverlayBlock,
-  OverlayList,
-  OverlayListContent,
-  OverlayListItem,
-  OverlayWrapper,
-} from '../admin/PositionAdminLayout'
+import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 import ProductSkuModal from '../common/ProductSkuModal'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 import programPackageMessages from './translation'
@@ -77,97 +70,47 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
 
   return (
     <div className="row py-5">
-      <PositionAdminLayout<ProgramPackagePlanProps>
-        value={plans}
-        onChange={value =>
-          updatePosition({
-            variables: {
-              data: value.map((plan, index) => ({
-                id: plan.id,
-                program_package_id: programPackageId,
-                is_subscription: plan.isSubscription,
-                title: plan.title,
-                period_amount: plan.periodAmount,
-                period_type: plan.periodType,
-                list_price: plan.listPrice,
-                position: index,
-              })),
-            },
-          }).then(() => onRefetch?.())
-        }
-        renderItem={(plan, currentIndex, moveTarget) => (
-          <div key={plan.id} className="col-12 col-md-6 mb-4">
-            <OverlayWrapper>
-              <ProgramPackagePlanCard {...plan} />
+      {plans.map(plan => (
+        <div key={plan.id} className="col-12 col-md-6 mb-4">
+          <OverlayWrapper>
+            <ProgramPackagePlanCard {...plan} />
 
-              <OverlayBlock>
-                <div>
-                  <ProgramPackagePlanAdminModal
-                    programPackageId={programPackageId}
-                    onRefetch={onRefetch}
-                    plan={plan}
-                    title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
-                    renderTrigger={({ setVisible }) => (
-                      <StyledButton block icon={<EditOutlined />} onClick={() => setVisible?.(true)}>
-                        {formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
+            <OverlayBlock>
+              <div>
+                <ProgramPackagePlanAdminModal
+                  programPackageId={programPackageId}
+                  onRefetch={onRefetch}
+                  plan={plan}
+                  title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
+                  renderTrigger={({ setVisible }) => (
+                    <StyledButton block icon={<EditOutlined />} onClick={() => setVisible?.(true)}>
+                      {formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
+                    </StyledButton>
+                  )}
+                />
+
+                {enabledModules.sku && (
+                  <ProductSkuModal
+                    productId={`ProgramPackagePlan_${plan.id}`}
+                    renderTrigger={({ onOpen, sku }) => (
+                      <StyledButton block className="mt-4" onClick={() => onOpen?.()}>
+                        <Icon component={() => <BarcodeOutlined />} />
+                        {sku
+                          ? `${formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}: ${sku}`
+                          : formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)}
                       </StyledButton>
                     )}
-                  />
-
-                  <Popover
-                    placement="bottomLeft"
-                    content={
-                      <OverlayList
-                        header={formatMessage(commonMessages.label.currentPosition, {
-                          position: currentIndex + 1,
-                        })}
-                      >
-                        <OverlayListContent>
-                          {plans.map((plan, index) => (
-                            <OverlayListItem
-                              key={plan.id}
-                              className={currentIndex === index ? 'active' : ''}
-                              onClick={() => moveTarget(currentIndex, index)}
-                            >
-                              <span className="flex-shrink-0">{index + 1}</span>
-                              <span>{plan.title}</span>
-                            </OverlayListItem>
-                          ))}
-                        </OverlayListContent>
-                      </OverlayList>
+                    renderTitle={() =>
+                      formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)
                     }
-                  >
-                    <StyledButton block className="mt-4">
-                      <Icon component={() => <MoveIcon />} />
-                      {formatMessage(commonMessages.ui.changePosition)}
-                    </StyledButton>
-                  </Popover>
-
-                  {enabledModules.sku && (
-                    <ProductSkuModal
-                      productId={`ProgramPackagePlan_${plan.id}`}
-                      renderTrigger={({ onOpen, sku }) => (
-                        <StyledButton block className="mt-4" onClick={() => onOpen?.()}>
-                          <Icon component={() => <BarcodeOutlined />} />
-                          {sku
-                            ? `${formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}: ${sku}`
-                            : formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)}
-                        </StyledButton>
-                      )}
-                      renderTitle={() =>
-                        formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)
-                      }
-                      renderInputLabel={() =>
-                        formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)
-                      }
-                    />
-                  )}
-                </div>
-              </OverlayBlock>
-            </OverlayWrapper>
-          </div>
-        )}
-      />
+                    renderInputLabel={() => formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}
+                  />
+                )}
+              </div>
+            </OverlayBlock>
+          </OverlayWrapper>
+        </div>
+      ))}
     </div>
   )
 }
