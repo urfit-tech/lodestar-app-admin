@@ -1398,11 +1398,11 @@ export const codeMessages = defineMessages({
 
 export const questionLibraryMessage = {
   ui: defineMessages({
-    sortQuestions: { id: 'questionLibrary.label.sortQuestions', defaultMessage: '排序題目' },
-    addQuestion: { id: 'questionLibrary.label.addQuestion', defaultMessage: '新增題目' },
-    useZhuYinFont: { id: 'questionLibrary.label.useZhuYinFont', defaultMessage: '使用注音字形' },
-    isAnswer: { id: 'questionLibrary.label.isAnswer', defaultMessage: '此為正確解答' },
-    addOption: { id: 'questionLibrary.label.addOption', defaultMessage: '新增選項' },
+    sortQuestions: { id: 'questionLibrary.ui.sortQuestions', defaultMessage: '排序題目' },
+    addQuestion: { id: 'questionLibrary.ui.addQuestion', defaultMessage: '新增題目' },
+    useZhuYinFont: { id: 'questionLibrary.ui.useZhuYinFont', defaultMessage: '使用注音字形' },
+    isAnswer: { id: 'questionLibrary.ui.isAnswer', defaultMessage: '此為正確解答' },
+    addOption: { id: 'questionLibrary.ui.addOption', defaultMessage: '新增選項' },
   }),
   input: defineMessages({
     untitledQuestionLibrary: {
