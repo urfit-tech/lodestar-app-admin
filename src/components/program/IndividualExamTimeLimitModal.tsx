@@ -1,6 +1,6 @@
 import { EditOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, DatePicker, Form, Spin } from 'antd'
+import { Button, DatePicker, Form, message, Spin } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { gql } from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -33,13 +33,13 @@ const IndividualExamTimeLimitModal: React.VFC<{
   const { currentMemberId } = useAuth()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState<boolean>(false)
+
   const {
     loading: loadingTimeLimitList,
     error,
     timeLimitList: defaultTimeLimitList,
     refetch,
   } = useTimeLimitList(examId)
-  const [timeLimitList, setTimeLimitList] = useState<IndividualExamTimeLimit[]>(defaultTimeLimitList)
   const [upsertExamMemberTimeLimit] = useMutation<
     hasura.UPSERT_EXAM_MEMBER_TIME_LIMIT,
     hasura.UPSERT_EXAM_MEMBER_TIME_LIMITVariables
@@ -52,17 +52,19 @@ const IndividualExamTimeLimitModal: React.VFC<{
   if (error) return <div>fetch data error</div>
 
   const handleSubmit = (onSuccess: () => void) => {
+    const values = form.getFieldsValue()
+
+    const defaultMemberList = defaultTimeLimitList.map(v => v.memberId)
+    const memberList = values.timeLimitList.map(v => v.memberId)
+
     form
       .validateFields()
       .then(() => {
         setLoading(true)
-        const values = form.getFieldsValue()
         upsertExamMemberTimeLimit({
           variables: {
             examId,
-            toDeleteMemberList: defaultTimeLimitList.filter(v =>
-              values.timeLimitList.map(v => v.memberId).find(x => x !== v.memberId),
-            ),
+            toDeleteMemberList: defaultMemberList.filter(v => !memberList.find(w => w === v)),
             timeLimitList: values.timeLimitList.map(v => ({
               exam_id: examId,
               member_id: v.memberId,
@@ -80,9 +82,8 @@ const IndividualExamTimeLimitModal: React.VFC<{
             examinableEndedAt: currentStatus.examinableEndedAt,
           },
         })
-
-        form.resetFields()
         refetch()
+        message.success(formatMessage(programMessages['*'].successfullySaved))
         onSuccess()
       })
       .catch(handleError)
@@ -157,19 +158,13 @@ const IndividualExamTimeLimitModal: React.VFC<{
                       <DatePicker
                         format="YYYY-MM-DD HH:mm"
                         showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
+                        disabledDate={current => !!current && current < moment().startOf('day')}
                         placeholder={formatMessage(programMessages.IndividualExamTimeLimitModal.expiredAt)}
                         style={{ width: '200px' }}
                       />
                     </Form.Item>
                     <div className="flex-grow-1 text-right">
-                      <Button
-                        type="link"
-                        icon={<TrashOIcon />}
-                        onClick={() => {
-                          remove(field.name)
-                          setTimeLimitList(timeLimitList?.filter((_, i) => i !== index))
-                        }}
-                      />
+                      <Button type="link" icon={<TrashOIcon />} onClick={() => remove(field.name)} />
                     </div>
                   </div>
                 </Fragment>
@@ -179,10 +174,7 @@ const IndividualExamTimeLimitModal: React.VFC<{
                 type="link"
                 icon={<PlusIcon className="mr-2" />}
                 className="d-flex align-items-center"
-                onClick={() => {
-                  add({ listPrice: 0 })
-                  setTimeLimitList([...timeLimitList, { memberId: null, expiredAt: null }])
-                }}
+                onClick={() => add({ memberId: null, expiredAt: null })}
               >
                 {formatMessage(programMessages.IndividualExamTimeLimitModal.addMember)}
               </Button>
@@ -208,7 +200,7 @@ const useTimeLimitList = (examId: string) => {
         }
       }
     `,
-    { variables: { examId } },
+    { variables: { examId }, fetchPolicy: 'no-cache' },
   )
 
   const timeLimitList: IndividualExamTimeLimit[] =
