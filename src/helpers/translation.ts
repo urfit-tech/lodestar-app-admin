@@ -778,6 +778,7 @@ export const programPackageMessages = {
     createProgramPackage: { id: 'programPackage.ui.createProgramPackage', defaultMessage: '建立課程組合' },
     connectProgram: { id: 'programPackage.ui.connectProgram', defaultMessage: '加入課程' },
     editPlan: { id: 'programPackage.ui.editPlan', defaultMessage: '編輯方案' },
+    sortPlan: { id: 'programPackage.ui.sortPlan', defaultMessage: '方案排序'},
   }),
   label: defineMessages({
     generalSetting: { id: 'programPackage.label.generalSetting', defaultMessage: '一般設定' },
