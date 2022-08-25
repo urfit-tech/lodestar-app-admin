@@ -35,10 +35,14 @@ const ProgramPackageAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
   const { programPackage, refetch } = useProgramPackage(programPackageId)
-  const [updatePosition] = useMutation<
+  const [updateProgramPosition] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION)
+  const [updatePlanPosition] = useMutation<
+    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
+    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables
+  >(UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION)
 
   return (
     <>
@@ -91,7 +95,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                   }
                   triggerText={formatMessage(programMessages.ui.sortProgram)}
                   onSubmit={values =>
-                    updatePosition({
+                    updateProgramPosition({
                       variables: {
                         data: values.map((value, index) => ({
                           id: value.id,
@@ -134,49 +138,77 @@ const ProgramPackageAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
 
-              <ProgramPackagePlanAdminModal
-                programPackageId={programPackageId}
-                onRefetch={refetch}
-                title={formatMessage(commonMessages.ui.createPlan)}
-                renderTrigger={({ setVisible, setProgramPackagePlanType }) => (
-                  <div className="d-flex mb-4">
-                    <Button
-                      icon={<FileAddOutlined />}
-                      type="primary"
-                      className="mr-2"
-                      onClick={() => {
-                        setVisible?.(true)
-                        setProgramPackagePlanType?.('perpetual')
-                      }}
-                    >
-                      {formatMessage(commonMessages.ui.perpetualPlan)}
-                    </Button>
-                    <Button
-                      icon={<FileAddOutlined />}
-                      type="primary"
-                      className="mr-2"
-                      onClick={() => {
-                        setVisible?.(true)
-                        setProgramPackagePlanType?.('period')
-                      }}
-                    >
-                      {formatMessage(commonMessages.ui.periodPlan)}
-                    </Button>
-                    <Button
-                      icon={<FileAddOutlined />}
-                      type="primary"
-                      className="mr-2"
-                      onClick={() => {
-                        setVisible?.(true)
-                        setProgramPackagePlanType?.('subscription')
-                      }}
-                    >
-                      {formatMessage(commonMessages.ui.subscriptionPlan)}
-                    </Button>
-                  </div>
-                )}
-              />
-
+              <div className="d-flex justify-content-between">
+                <ProgramPackagePlanAdminModal
+                  programPackageId={programPackageId}
+                  onRefetch={refetch}
+                  title={formatMessage(commonMessages.ui.createPlan)}
+                  renderTrigger={({ setVisible, setProgramPackagePlanType }) => (
+                    <div className="d-flex mb-4">
+                      <Button
+                        icon={<FileAddOutlined />}
+                        type="primary"
+                        className="mr-2"
+                        onClick={() => {
+                          setVisible?.(true)
+                          setProgramPackagePlanType?.('perpetual')
+                        }}
+                      >
+                        {formatMessage(commonMessages.ui.perpetualPlan)}
+                      </Button>
+                      <Button
+                        icon={<FileAddOutlined />}
+                        type="primary"
+                        className="mr-2"
+                        onClick={() => {
+                          setVisible?.(true)
+                          setProgramPackagePlanType?.('period')
+                        }}
+                      >
+                        {formatMessage(commonMessages.ui.periodPlan)}
+                      </Button>
+                      <Button
+                        icon={<FileAddOutlined />}
+                        type="primary"
+                        className="mr-2"
+                        onClick={() => {
+                          setVisible?.(true)
+                          setProgramPackagePlanType?.('subscription')
+                        }}
+                      >
+                        {formatMessage(commonMessages.ui.subscriptionPlan)}
+                      </Button>
+                    </div>
+                  )}
+                />
+                <ItemsSortingModal
+                  items={
+                    programPackage?.plans.map(plan => ({
+                      id: plan.id,
+                      title: plan.title,
+                      isSubscription: plan.isSubscription,
+                      listPrice: plan.listPrice,
+                    })) || []
+                  }
+                  triggerText={formatMessage(programPackageMessages.ui.sortPlan)}
+                  onSubmit={values =>
+                    updatePlanPosition({
+                      variables: {
+                        data: values.map((value, index) => ({
+                          position: index,
+                          id: value.id,
+                          title: value.title,
+                          is_subscription: value.isSubscription,
+                          list_price: value.listPrice,
+                          program_package_id: programPackageId,
+                        })),
+                      },
+                    })
+                      .then(() => refetch())
+                      .catch(handleError)
+                  }
+                />
+              </div>
               <ProgramPackagePlanCollectionBlock
                 programPackageId={programPackageId}
                 plans={programPackage?.plans || []}
@@ -205,6 +237,17 @@ const UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION = gql`
     insert_program_package_program(
       objects: $data
       on_conflict: { constraint: program_package_program_pkey, update_columns: position }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION = gql`
+  mutation UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION($data: [program_package_plan_insert_input!]!) {
+    insert_program_package_plan(
+      objects: $data
+      on_conflict: { constraint: program_package_plan_pkey, update_columns: position }
     ) {
       affected_rows
     }

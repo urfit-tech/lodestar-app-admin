@@ -200,7 +200,7 @@ const useTimeLimitList = (examId: string) => {
         }
       }
     `,
-    { variables: { examId }, fetchPolicy: 'no-cache' },
+    { variables: { examId } },
   )
 
   const timeLimitList: IndividualExamTimeLimit[] =
