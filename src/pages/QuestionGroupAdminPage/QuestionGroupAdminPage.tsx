@@ -246,8 +246,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
       {
         id: uuid(),
         type: 'single',
-        title: `${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}`,
-        subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
+        title: '',
+        subject: '',
         layout: 'lists',
         font: 'auto',
         explanation: '',
@@ -255,13 +255,13 @@ const QuestionGroupAdminPage: React.VFC = () => {
         options: [
           {
             id: uuid(),
-            value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</p>`,
+            value: '',
             isAnswer: true,
             position: 1,
           },
           {
             id: uuid(),
-            value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</p>`,
+            value: '',
             isAnswer: false,
             position: 2,
           },

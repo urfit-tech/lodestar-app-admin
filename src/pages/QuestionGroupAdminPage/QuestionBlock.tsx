@@ -21,6 +21,18 @@ const LayoutOptionsBlock = styled.div`
   display: flex;
   align-items: center;
   padding-bottom: 32px;
+  .ant-radio-group {
+    display: flex;
+    flex-direction: row;
+  }
+  .ant-radio-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .ant-checkbox-wrapper {
+    margin-left: 16px;
+  }
 `
 
 const LayoutOptionsButtonGroup = styled(Radio.Group)`
