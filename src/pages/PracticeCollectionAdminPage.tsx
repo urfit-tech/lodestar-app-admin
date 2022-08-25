@@ -4,7 +4,7 @@ import { Input, Select, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle, EmptyBlock } from '../components/admin'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -14,6 +14,9 @@ import hasura from '../hasura'
 import { commonMessages, errorMessages, programMessages } from '../helpers/translation'
 import { ReactComponent as BookIcon } from '../images/icon/book.svg'
 import ForbiddenPage from './ForbiddenPage'
+
+const MAX_LIMIT = 100
+const LIMIT = 20
 
 type PracticeFiltersProps = {
   searchText?: string
@@ -96,6 +99,7 @@ const AllPracticeCollectionBlock: React.FC<{
 }> = ({ selectedStatus, filters }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, permissions } = useAuth()
+  const observer = useRef<IntersectionObserver>()
 
   let unreviewed: boolean | undefined
   switch (selectedStatus) {
@@ -107,13 +111,28 @@ const AllPracticeCollectionBlock: React.FC<{
       break
   }
 
-  const { loadingPractice, errorPractice, practices, refetchPractice } = usePracticePreviewCollection({
-    ...filters,
-    unreviewed,
-    programRoleMemberId: permissions.PRACTICE_ADMIN ? undefined : currentMemberId,
-  })
+  const { loadingPractice, errorPractice, practices, refetchPractice, loadMorePractices, hasMore } =
+    usePracticePreviewCollection({
+      ...filters,
+      unreviewed,
+      programRoleMemberId: permissions.PRACTICE_ADMIN ? undefined : currentMemberId,
+    })
 
-  if (loadingPractice) {
+  const lastElementRef = useCallback(
+    node => {
+      if (loadingPractice) return
+      if (observer.current) observer.current.disconnect()
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMorePractices?.()
+        }
+      })
+      if (node) observer.current.observe(node)
+    },
+    [loadingPractice, loadMorePractices, hasMore],
+  )
+
+  if (loadingPractice && practices.length === 0) {
     return <Skeleton active />
   }
 
@@ -127,31 +146,76 @@ const AllPracticeCollectionBlock: React.FC<{
 
   return (
     <>
-      {practices.map(v => (
-        <PracticeCard key={v.id} {...v} onRefetch={refetchPractice} />
-      ))}
+      {practices.map((practice, index) => {
+        const isLast = practices.length === index + 1
+        return (
+          <PracticeCard
+            key={practice.id}
+            {...practice}
+            onRefetch={() => refetchPractice(practices.length > MAX_LIMIT ? MAX_LIMIT : practices.length)}
+            ref={isLast ? lastElementRef : undefined}
+          />
+        )
+      })}
+      {loadingPractice && hasMore && <Skeleton active />}
     </>
   )
 }
+
 const usePracticePreviewCollection = (
   options?: PracticeFiltersProps & {
     unreviewed?: boolean
     programRoleMemberId?: string | null
   },
 ) => {
-  const { loading, error, data, refetch } = useQuery<
+  const condition: hasura.GET_PRACTICE_PREVIEW_COLLECTIONVariables['condition'] = {
+    _or: [
+      { member: { username: { _like: options?.searchText ? `%${options.searchText}%` : undefined } } },
+      { title: { _like: options?.searchText ? `%${options.searchText}%` : undefined } },
+    ],
+    program_content: {
+      id: { _eq: options?.selectedProgramContentId },
+      program_content_section: {
+        id: { _eq: options?.selectedProgramContentSectionId },
+        program_id: { _eq: options?.selectedProgramId },
+        program: { program_roles: { member_id: { _eq: options?.programRoleMemberId } } },
+      },
+    },
+    reviewed_at: { _is_null: options?.unreviewed },
+    is_deleted: { _eq: false },
+  }
+  const { loading, error, data, fetchMore, refetch } = useQuery<
     hasura.GET_PRACTICE_PREVIEW_COLLECTION,
     hasura.GET_PRACTICE_PREVIEW_COLLECTIONVariables
   >(GET_PRACTICE_PREVIEW_COLLECTION, {
     variables: {
-      searchText: options?.searchText ? `%${options.searchText}%` : undefined,
-      programId: options?.selectedProgramId,
-      programContentSectionId: options?.selectedProgramContentSectionId,
-      programContentId: options?.selectedProgramContentId,
-      unreviewed: options?.unreviewed,
-      programRoleMemberId: options?.programRoleMemberId,
+      condition,
+      limit: LIMIT,
     },
+    notifyOnNetworkStatusChange: true,
   })
+
+  const loadMorePractices =
+    (data?.practice.length || 0) < (data?.practice_aggregate.aggregate?.count || 0)
+      ? () =>
+          fetchMore({
+            variables: {
+              condition: {
+                ...condition,
+                created_at: { _gt: data?.practice.slice(-1)[0]?.created_at },
+              },
+              limit: LIMIT,
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return Object.assign({}, prev, {
+                practice: [...prev.practice, ...fetchMoreResult.practice],
+              })
+            },
+          })
+      : undefined
 
   const practices: {
     id: string
@@ -184,35 +248,20 @@ const usePracticePreviewCollection = (
     loadingPractice: loading,
     errorPractice: error,
     practices,
-    refetchPractice: refetch,
+    hasMore: practices.length !== (data?.practice_aggregate.aggregate?.count || 0),
+    refetchPractice: (dataLength: number) => refetch({ condition, limit: dataLength }),
+    loadMorePractices,
   }
 }
 
 const GET_PRACTICE_PREVIEW_COLLECTION = gql`
-  query GET_PRACTICE_PREVIEW_COLLECTION(
-    $searchText: String
-    $programId: uuid
-    $programContentSectionId: uuid
-    $programContentId: uuid
-    $unreviewed: Boolean
-    $programRoleMemberId: String
-  ) {
-    practice(
-      where: {
-        _or: [{ member: { username: { _like: $searchText } } }, { title: { _like: $searchText } }]
-        program_content: {
-          id: { _eq: $programContentId }
-          program_content_section: {
-            id: { _eq: $programContentSectionId }
-            program_id: { _eq: $programId }
-            program: { program_roles: { member_id: { _eq: $programRoleMemberId } } }
-          }
-        }
-        reviewed_at: { _is_null: $unreviewed }
-        is_deleted: { _eq: false }
+  query GET_PRACTICE_PREVIEW_COLLECTION($condition: practice_bool_exp!, $limit: Int!) {
+    practice_aggregate(where: $condition) {
+      aggregate {
+        count
       }
-      order_by: { created_at: asc }
-    ) {
+    }
+    practice(where: $condition, order_by: { created_at: asc }, limit: $limit) {
       id
       title
       cover_url

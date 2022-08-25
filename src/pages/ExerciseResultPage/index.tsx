@@ -47,6 +47,7 @@ const ExerciseResultPage: React.VFC = () => {
         <div className="col-12 col-lg-6">
           {currentMemberId && (
             <ProgramTreeSelector
+              //TODO: change contentType to exam, also lodestar-app
               allowContentType="exercise"
               treeNodeSelectable={false}
               memberId={permissions.EXERCISE_ADMIN ? undefined : permissions.EXERCISE_NORMAL ? currentMemberId : ''}

@@ -60,6 +60,7 @@ const pageMessages = {
     createVoucherPlan: { id: 'page.*.createVoucherPlan', defaultMessage: 'create voucher plan' },
     eligibilityList: { id: 'page.*.eligibilityList', defaultMessage: 'eligibility list' },
     certificateSetting: { id: 'page.*.certificateSetting', defaultMessage: 'certificate setting' },
+    venueManagement: { id: 'page.*.venueManagement', defaultMessage: '場地管理' },
     publishSettings: { id: 'page.*.publishSettings', defaultMessage: 'publish settings' },
     successfullySaved: { id: 'page.*.successfullySaved', defaultMessage: 'saved successfully' },
     deleteProductDanger: { id: 'page.*.deleteProductDanger', defaultMessage: '*已購買者在刪除後仍可觀看。' },
@@ -209,6 +210,28 @@ const pageMessages = {
       defaultMessage: '無任何折價方案',
     },
   }),
+  QuestionLibraryCollectionPage: defineMessages({
+    questionLibraryCollection: { id: 'page.QuestionLibraryCollectionPage.questionLibraryCollection', defaultMessage: '題庫管理' },
+    deleteQuestionLibraryMessage: { id: 'page.QuestionLibraryCollectionPage.deleteQuestionLibraryMessage', defaultMessage: '確定刪除此題庫？' },
+  }),
+  QuestionGroupCollectionPage: defineMessages({
+    questionGroupCollection: { id: 'page.QuestionGroupCollectionPage.questionGroupCollection', defaultMessage: '題組管理' },
+    deleteQuestionGroupMessage: { id: 'page.QuestionGroupCollectionPage.deleteQuestionGroupMessage', defaultMessage: '確定刪除此題組？' },
+  }),
+  QuestionLibraryAdminPage: defineMessages({
+    questionGroupManagement: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
+    questionLibrarySettings: { id: 'page.QuestionLibraryAdminPage.questionLibrarySettings', defaultMessage: '題庫設定' },
+    noMemberId: { id: 'page.QuestionLibraryAdminPage.noMemberId', defaultMessage: '無使用者ID' },
+    deleteQuestionGroupMessage: { id: 'page.QuestionLibraryAdminPage.deleteQuestionGroupMessage', defaultMessage: '確定刪除此題組？' },
+  }),
+  QuestionLibraryBasicForm: defineMessages({
+    title: { id: 'page.QuestionLibraryBasicForm.questionGroupManagement', defaultMessage: '題庫管理' },
+  }),
+  QuestionGroupAdminPage: defineMessages({
+    question: { id: 'page.QuestionGroupAdminPage.question', defaultMessage: '題目' },
+    questionTextDescription: { id: 'page.QuestionGroupAdminPage.questionTextDescription', defaultMessage: '題目文字描述' },
+    option: { id: 'page.QuestionGroupAdminPage.option', defaultMessage: '選項' },
+  }),
   CertificateCollectionPage: defineMessages({
     createCertificate: { id: 'page.CertificateCollectionPage.createCertificate', defaultMessage: '新增證書' },
   }),
@@ -264,6 +287,27 @@ const pageMessages = {
       id: 'page.CertificateEligibilityListBlock.deleteMemberCertificateWarning',
       defaultMessage: '你確定要刪除此會員的證書？此動作無法還原',
     },
+  }),
+  VenueCollectionPage: defineMessages({
+    createVenue: { id: 'page.VenueCollectionPage.createVenue', defaultMessage: '新增場地' },
+    cols: { id: 'page.VenueCollectionPage.cols', defaultMessage: '總列數' },
+    rows: { id: 'page.VenueCollectionPage.rows', defaultMessage: '總行數' },
+    seats: { id: 'page.VenueCollectionPage.seats', defaultMessage: '座位數' },
+  }),
+  VenueAdminPage: defineMessages({
+    seatSettings: { id: 'page.VenueAdminPage.seatSettings', defaultMessage: '座位設定' },
+    usage: { id: 'page.VenueAdminPage.usage', defaultMessage: '使用情況' },
+  }),
+  VenueBasicForm: defineMessages({
+    venueName: { id: 'page.VenueBasicForm.venueName', defaultMessage: '場地名稱' },
+  }),
+  VenueSeatSetting: defineMessages({
+    rows: { id: 'page.VenueSeatSetting.rows', defaultMessage: '橫的行數' },
+    cols: { id: 'page.VenueSeatSetting.cols', defaultMessage: '直的列數' },
+    row: { id: 'page.VenueSeatSetting.row', defaultMessage: '橫列' },
+    col: { id: 'page.VenueSeatSetting.col', defaultMessage: '直欄' },
+    heigh: { id: 'page.VenueSeatSetting.heigh', defaultMessage: '高起來' },
+    walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
   }),
 }
 

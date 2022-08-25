@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
+import { ProgramContentSectionProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
 
@@ -35,15 +35,18 @@ const StyledMenuItem = styled(Menu.Item)`
 `
 
 const ProgramContentSectionAdminCard: React.FC<{
-  program: ProgramAdminProps
+  programId: string
+  isProgramPublished: boolean
   programContentSection: ProgramContentSectionProps
   onRefetch?: () => void
-}> = ({ program, programContentSection, onRefetch }) => {
+}> = ({ programId, isProgramPublished, programContentSection, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { enabledModules, id: appId } = useApp()
   const [createProgramContent] = useMutation<hasura.INSERT_PROGRAM_CONTENT, hasura.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
   )
+  const { insertExam } = useCreateExam()
+
   const [updateProgramContentSection] = useMutation<
     hasura.UPDATE_PROGRAM_CONTENT_SECTION,
     hasura.UPDATE_PROGRAM_CONTENT_SECTIONVariables
@@ -98,7 +101,13 @@ const ProgramContentSectionAdminCard: React.FC<{
 
       {programContentSection.programContents.map(programContent => (
         <div key={programContent.id} className="mb-2">
-          <ProgramContentAdminItem program={program} programContent={programContent} showPlans onRefetch={onRefetch} />
+          <ProgramContentAdminItem
+            programId={programId}
+            isProgramPublished={isProgramPublished}
+            programContent={programContent}
+            showPlans
+            onRefetch={onRefetch}
+          />
         </div>
       ))}
       <Dropdown
@@ -113,8 +122,8 @@ const ProgramContentSectionAdminCard: React.FC<{
                     title: 'untitled',
                     position: programContentSection.programContents.length,
                     programContentType: 'text',
-                    publishedAt: program?.publishedAt ? new Date() : null,
-                    displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
+                    publishedAt: isProgramPublished ? new Date() : null,
+                    displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
                   },
                 })
                   .then(() => onRefetch?.())
@@ -132,8 +141,8 @@ const ProgramContentSectionAdminCard: React.FC<{
                       title: 'untitled',
                       position: programContentSection.programContents.length,
                       programContentType: 'practice',
-                      publishedAt: program?.publishedAt ? new Date() : null,
-                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
+                      publishedAt: isProgramPublished ? new Date() : null,
+                      displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
                     },
                   })
                     .then(() => onRefetch?.())
@@ -143,26 +152,26 @@ const ProgramContentSectionAdminCard: React.FC<{
                 {formatMessage(messages.programPractice)}
               </StyledMenuItem>
             )}
-            {enabledModules.exercise && (
+            {enabledModules.exam && (
               <StyledMenuItem
-                onClick={() =>
-                  createProgramContent({
-                    variables: {
-                      programContentSectionId: programContentSection.id,
-                      title: 'untitled',
-                      position: programContentSection.programContents.length,
-                      programContentType: 'exercise',
-                      publishedAt: program?.publishedAt ? new Date() : null,
-                      displayMode: program?.publishedAt ? 'payToWatch' : 'conceal',
-                      metadata: {
-                        isAvailableToGoBack: true,
-                        isAvailableToRetry: true,
-                      },
-                    },
-                  })
-                    .then(() => onRefetch?.())
+                onClick={async () => {
+                  await insertExam({ variables: { appId } })
+                    .then(res =>
+                      createProgramContent({
+                        variables: {
+                          programContentSectionId: programContentSection.id,
+                          title: 'untitled',
+                          position: programContentSection.programContents.length,
+                          programContentType: 'exam',
+                          target: res.data?.insert_exam_one?.id,
+                          publishedAt: isProgramPublished ? new Date() : null,
+                          displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
+                        },
+                      }).catch(handleError),
+                    )
                     .catch(handleError)
-                }
+                  onRefetch?.()
+                }}
               >
                 {formatMessage(messages.programExercise)}
               </StyledMenuItem>
@@ -179,6 +188,21 @@ const ProgramContentSectionAdminCard: React.FC<{
   )
 }
 
+const useCreateExam = () => {
+  const [insertExam] = useMutation<hasura.INSERT_EXAM, hasura.INSERT_EXAMVariables>(
+    gql`
+      mutation INSERT_EXAM($appId: String!) {
+        insert_exam_one(object: { app_id: $appId, point: 0, passing_score: 0 }) {
+          id
+        }
+      }
+    `,
+  )
+  return {
+    insertExam,
+  }
+}
+
 const INSERT_PROGRAM_CONTENT = gql`
   mutation INSERT_PROGRAM_CONTENT(
     $programContentSectionId: uuid!
@@ -188,21 +212,20 @@ const INSERT_PROGRAM_CONTENT = gql`
     $programContentType: String!
     $metadata: jsonb
     $displayMode: String!
+    $target: uuid
   ) {
-    insert_program_content(
-      objects: {
+    insert_program_content_one(
+      object: {
         content_section_id: $programContentSectionId
         title: $title
         position: $position
-        program_content_body: { data: { type: $programContentType, data: {} } }
+        program_content_body: { data: { type: $programContentType, data: {}, target: $target } }
         published_at: $publishedAt
         metadata: $metadata
         display_mode: $displayMode
       }
     ) {
-      returning {
-        id
-      }
+      id
     }
   }
 `
@@ -231,6 +254,12 @@ const DELETE_PROGRAM_CONTENT_SECTION = gql`
     delete_program_content_section(where: { id: { _eq: $programContentSectionId } }) {
       affected_rows
     }
+    delete_exercise(
+      where: { program_content: { program_content_section: { id: { _eq: $programContentSectionId } } } }
+    ) {
+      affected_rows
+    }
+    #FIXME: should delete relation data, practice, exam and exercise ?
   }
 `
 

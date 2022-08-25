@@ -44,7 +44,8 @@ const ProgramStructureAdminBlock: React.FC<{
       {program.contentSections.map(programContentSection => (
         <div key={programContentSection.id} className="mb-3">
           <ProgramContentSectionAdminCard
-            program={program}
+            programId={program.id}
+            isProgramPublished={!!program?.publishedAt}
             programContentSection={programContentSection}
             onRefetch={onRefetch}
           />

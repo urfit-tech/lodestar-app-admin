@@ -128,6 +128,28 @@ export const routesProps = {
     authenticated: true,
   },
 
+  // question_library
+  question_library_management: {
+    path: '/question-libraries',
+    pageName: 'QuestionLibraryCollectionPage',
+    authenticated: true,
+  },
+  question_library: {
+    path: '/question-libraries/:questionLibraryId',
+    pageName: 'QuestionLibraryAdminPage',
+    authenticated: true,
+  },
+  question_group_management: {
+    path: '/question-groups',
+    pageName: 'QuestionGroupCollectionPage',
+    authenticated: true,
+  },
+  question_group: {
+    path: '/question-groups/:questionGroupId',
+    pageName: 'QuestionGroupAdminPage',
+    authenticated: true,
+  },
+
   //project
   project: {
     path: '/projects/:projectId',
@@ -217,6 +239,16 @@ export const routesProps = {
   activity_category: {
     path: '/activity-category',
     pageName: 'ActivityCategoryPage',
+    authenticated: true,
+  },
+  venue_collection: {
+    path: '/venue-management',
+    pageName: 'VenueCollectionPage',
+    authenticated: true,
+  },
+  venue_management: {
+    path: '/venue-management/:venueId',
+    pageName: 'VenueAdminPage',
     authenticated: true,
   },
 

@@ -7,7 +7,7 @@ import programMessages from './translation'
 export type DisplayMode = 'conceal' | 'trial' | 'loginToTrial' | 'payToWatch'
 
 const DisplayModeSelector: React.VFC<{
-  contentType: 'program' | 'exercise' | 'practice'
+  contentType: 'program' | 'exercise' | 'practice' | 'exam'
   displayMode: DisplayMode
 }> = ({ contentType, displayMode }) => {
   const { formatMessage } = useIntl()

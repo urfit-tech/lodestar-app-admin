@@ -14,6 +14,8 @@ export const commonMessages = {
     edit: { id: 'common.ui.edit', defaultMessage: '編輯' },
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
     delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
+    duplicate: { id: 'common.ui.duplicate', defaultMessage: '複製' },
+    rename: { id: 'common.ui.rename', defaultMessage: '重新命名' },
     deleteProgram: { id: 'common.ui.deleteProgram', defaultMessage: '刪除課程' },
     deletePost: { id: 'common.ui.deletePost', defaultMessage: '刪除文章' },
     login: { id: 'common.ui.login', defaultMessage: '登入' },
@@ -72,6 +74,7 @@ export const commonMessages = {
     backstage: { id: 'common.ui.backstage', defaultMessage: '管理後台' },
     ownerBackstage: { id: 'common.ui.ownerBackstage', defaultMessage: '平台管理者專區' },
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
+    set: { id: 'common.ui.set', defaultMessage: '設為' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -694,17 +697,13 @@ export const programMessages = {
 
     practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
     show: { id: 'program.label.show', defaultMessage: '顯示' },
-    availableToGoBack: { id: 'program.label.availableToGoBack', defaultMessage: '可返回前題' },
-    availableToRetry: { id: 'program.label.availableToRetry', defaultMessage: '可重新測驗' },
     notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
-    exercise: { id: 'program.label.exercise', defaultMessage: '課後測驗' },
     passingScore: { id: 'program.label.passingScore', defaultMessage: '及格分數' },
     points: { id: 'program.label.points', defaultMessage: '單題分數' },
     question: { id: 'program.label.question', defaultMessage: '題目' },
     choice: { id: 'program.label.choice', defaultMessage: '選項' },
     isCorrectAnswer: { id: 'program.label.isCorrectAnswer', defaultMessage: '此為正確解答' },
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
-    exerciseTitle: { id: 'program.label.exerciseTitle', defaultMessage: '標題' },
     allowMultipleAnswers: { id: 'program.label.allowMultipleAnswers', defaultMessage: '允許多個正確解答' },
     contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.label.description', defaultMessage: '內文' },
@@ -750,11 +749,6 @@ export const programMessages = {
     noQuestionChoice: { id: 'program.text.noQuestionChoice', defaultMessage: '請新增題目選項' },
     noChoiceDescription: { id: 'program.text.noChoiceDescription', defaultMessage: '未填寫選項敘述' },
     noAnswerDescription: { id: 'program.text.noAnswersDescription', defaultMessage: '未填寫解答敘述' },
-
-    deleteExerciseWarning: {
-      id: 'program.text.deleteExerciseWarning',
-      defaultMessage: '將刪除所有與此測驗相關資料且不可復原，確定要刪除嗎？',
-    },
     deletePracticeWarning: {
       id: 'program.text.deletePracticeWarning',
       defaultMessage: '將刪除所有與此作業相關資料且不可復原，確定要刪除嗎？',
@@ -1401,3 +1395,96 @@ export const codeMessages = defineMessages({
     defaultMessage: 'payment proceed is error',
   },
 })
+
+export const questionLibraryMessage = {
+  ui: defineMessages({
+    sortQuestions: { id: 'questionLibrary.ui.sortQuestions', defaultMessage: '排序題目' },
+    addQuestion: { id: 'questionLibrary.ui.addQuestion', defaultMessage: '新增題目' },
+    useZhuYinFont: { id: 'questionLibrary.ui.useZhuYinFont', defaultMessage: '使用注音字形' },
+    isAnswer: { id: 'questionLibrary.ui.isAnswer', defaultMessage: '此為正確解答' },
+    addOption: { id: 'questionLibrary.ui.addOption', defaultMessage: '新增選項' },
+  }),
+  input: defineMessages({
+    untitledQuestionLibrary: {
+      id: 'questionLibrary.input.untitledQuestionLibrary',
+      defaultMessage: '未命名題庫',
+    },
+    addQuestionLibrary: {
+      id: 'questionLibrary.input.addQuestionLibrary',
+      defaultMessage: '建立題庫',
+    },
+    untitledQuestionGroup: {
+      id: 'questionLibrary.input.untitledQuestionGroup',
+      defaultMessage: '未命名題組',
+    },
+    addQuestionGroup: {
+      id: 'questionLibrary.input.addQuestionGroup',
+      defaultMessage: '新增題組',
+    },
+  }),
+  label: defineMessages({
+    noQuestionLibrary: { id: 'questionLibrary.label.noQuestionLibrary', defaultMessage: '尚未建立任何題庫' },
+    noQuestionGroup: { id: 'questionLibrary.label.noQuestionGroup', defaultMessage: '尚未建立任何題組' },
+    latestUpdatedAt: { id: 'questionLibrary.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
+    totalQuestions: { id: 'questionLibrary.label.totalQuestions', defaultMessage: '總題數' },
+    totalQuestionGroups: { id: 'questionLibrary.label.totalQuestionGroups', defaultMessage: '題組數' },
+    basicFormTitle: { id: 'questionLibrary.label.basicFormTitle', defaultMessage: '題庫名稱' },
+    basicFormAbstract: { id: 'questionLibrary.label.basicFormAbstract', defaultMessage: '題庫簡述' },
+    questionLibrary: { id: 'questionLibrary.label.questionLibrary', defaultMessage: '題庫' },
+    examName: { id: 'questionLibrary.label.examName', defaultMessage: '測驗名稱' },
+    layout: { id: 'questionLibrary.label.layout', defaultMessage: '版型選項' },
+    explanation: { id: 'questionLibrary.label.explanation', defaultMessage: '解答說明' },
+    createNewQuestionGroup: { id: 'questionLibrary.label.createNewQuestionGroup', defaultMessage: '建立新題組' },
+    importFromQuestionLibrary: { id: 'questionLibrary.label.importFromQuestionLibrary', defaultMessage: '從題庫匯入' },
+    randomlySelectFromQuestionLibrary: { id: 'questionLibrary.label.randomlySelectFromQuestionLibrary', defaultMessage: '題庫隨機抽題' },
+    basicSettings: { id: 'questionLibrary.label.basicSettings', defaultMessage: '基本設定' },
+    renameQuestionGroup: { id: 'questionLibrary.label.renameQuestionGroup', defaultMessage: '重新命名題組' },
+    confirmDuplicateQuestionGroup: { id: 'questionLibrary.label.confirmDuplicateQuestionGroup', defaultMessage: '確認複製此題組?' },
+    draw: { id: 'questionLibrary.label.draw', defaultMessage: '從中抽' },
+    questions: { id: 'questionLibrary.label.questions', defaultMessage: '題' },
+  }),
+  message: defineMessages({
+    successDeletedQuestionLibrary: {
+      id: 'questionLibrary.message.successDeletedQuestionLibrary',
+      defaultMessage: '刪除題庫成功',
+    },
+    successDeletedQuestionGroup: {
+      id: 'questionLibrary.message.successDeletedQuestionGroup',
+      defaultMessage: '刪除題組成功',
+    },
+    failDeletedQuestionGroup: {
+      id: 'questionLibrary.message.failDeletedQuestionGroup',
+      defaultMessage: '刪除題組失敗',
+    },
+    successSortQuestionGroup: {
+      id: 'questionLibrary.message.successSortQuestionGroup',
+      defaultMessage: '排序題目成功',
+    },
+    failSortQuestionGroup: { id: 'questionLibrary.message.failSortQuestionGroup', defaultMessage: '排序題目失敗' },
+    failAddQuestionGroup: { id: 'questionLibrary.message.failAddQuestionGroup', defaultMessage: '新增題組失敗' },
+    successDuplicateQuestionGroup: {
+      id: 'questionLibrary.message.successDuplicateQuestionGroup',
+      defaultMessage: '複製題組成功',
+    },
+    failDuplicateQuestionGroup: {
+      id: 'questionLibrary.message.failDuplicateQuestionGroup',
+      defaultMessage: '複製題組失敗',
+    },
+    questionLibraryTitleCanNotNull: {
+      id: 'questionLibrary.message.questionLibraryTitleCanNotNull',
+      defaultMessage: '題庫名稱不可為空',
+    },
+    questionGroupTitleCanNotNull: {
+      id: 'questionLibrary.message.questionGroupTitleCanNotNull',
+      defaultMessage: '題組名稱不可為空',
+    },
+    exceededQuantityOfDraws: {
+      id: 'questionLibrary.message.exceededQuantityOfDraws',
+      defaultMessage: '超過可抽選的數量',
+    },
+    atLeastChooseOneQuestionGroup: {
+      id: 'questionLibrary.message.atLeastChooseOneQuestionGroup',
+      defaultMessage: '請選擇至少一個題組!',
+    },
+  }),
+}

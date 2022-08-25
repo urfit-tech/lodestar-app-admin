@@ -33,6 +33,7 @@ const adminMessages = {
     creatorDisplayAdmin: { id: 'admin.AdminMenu.creatorDisplayAdmin', defaultMessage: '講師牆' },
     creatorDisplayManagement: { id: 'admin.AdminMenu.creatorDisplayManagement', defaultMessage: '講師牆管理' },
     creatorDisplayCategory: { id: 'admin.AdminMenu.creatorDisplayCategory', defaultMessage: '領域分類' },
+    venueManagement: { id: 'admin.AdminMenu.venueManagement', defaultMessage: '場地管理' },
     activityAdmin: { id: 'admin.AdminMenu.activityAdmin', defaultMessage: '活動' },
     activities: { id: 'admin.AdminMenu.activities', defaultMessage: '活動管理' },
     activityCategory: { id: 'admin.AdminMenu.activityCategory', defaultMessage: '活動分類' },
@@ -74,6 +75,9 @@ const adminMessages = {
     certificateAdmin: { id: 'admin.AdminMenu.certificate', defaultMessage: '證書管理' },
     certificateSetting: { id: 'admin.AdminMenu.certificateSetting', defaultMessage: '證書設定' },
     certificateTemplate: { id: 'admin.AdminMenu.certificateTemplate', defaultMessage: '證書模板' },
+    questionLibraryAdmin: { id: 'admin.AdminMenu.questionLibraryAdmin', defaultMessage: '題目庫' },
+    questionLibraryManagement: { id: 'admin.AdminMenu.questionLibraryManagement', defaultMessage: '題庫管理' },
+    questionGroupManagement: { id: 'admin.AdminMenu.questionGroupManagement', defaultMessage: '題組管理' },
   }),
 }
 export default adminMessages
