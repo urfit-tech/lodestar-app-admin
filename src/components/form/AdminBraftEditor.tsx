@@ -39,9 +39,11 @@ export const createUploadFn = (appId: string, authToken: string | null) => {
     const uniqId = uuid()
     uploadFile(`images/${appId}/editor/${uniqId}`, params.file, authToken).then(() => {
       params.success({
-        url: params.file.type.startsWith('image')
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}/1200`
-          : `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}`,
+        // FIXME: backend image resize need to fix
+        // url: params.file.type.startsWith('image')
+        //   ? `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}/1200`
+        //   : `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}`,
+        url: `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}`,
         meta: {
           id: '',
           title: '',
@@ -56,7 +58,7 @@ export const createUploadFn = (appId: string, authToken: string | null) => {
   }
 }
 
-type AdminBraftVariant = 'default' | 'short' | 'merchandise'
+type AdminBraftVariant = 'default' | 'short' | 'merchandise' | 'question'
 const controls: {
   [key in AdminBraftVariant]: ControlType[]
 } = {
@@ -104,6 +106,7 @@ const controls: {
     'separator',
     'fullscreen',
   ],
+  question: ['font-size', 'bold', 'italic', 'underline', 'list-ol', 'list-ul', 'remove-styles', 'separator', 'media'],
 }
 
 const AdminBraftEditor: React.FC<{
@@ -124,6 +127,8 @@ const AdminBraftEditor: React.FC<{
       language={braftLanguageFn}
       controls={controls[variant || 'default']}
       media={{ uploadFn: createUploadFn(appId, authToken) }}
+      imageControls={variant === 'question' ? ['remove'] : undefined}
+      imageResizable={variant === 'question' ? false : undefined}
     />
   )
 }

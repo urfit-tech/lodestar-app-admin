@@ -2,6 +2,13 @@ import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-desi
 import { Button, Checkbox, Dropdown, Input, Menu, Popover, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import moment from 'moment'
+import React, { useRef, useState } from 'react'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
 import AdminCard from '../components/admin/AdminCard'
 import { AvatarImage } from '../components/common/Image'
@@ -16,12 +23,7 @@ import { useMemberCollection, useMemberRoleCount, useProperty } from '../hooks/m
 import { usePermissionGroupsDropdownMenu } from '../hooks/permission'
 import { ReactComponent as TableIcon } from '../images/icon/table.svg'
 import { MemberInfoProps, UserRole } from '../types/member'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment from 'moment'
-import React, { useContext, useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
-import styled, { ThemeContext } from 'styled-components'
+import ForbiddenPage from './ForbiddenPage'
 
 const StyledDropdown = styled(Dropdown)`
   width: 100%;
@@ -81,7 +83,8 @@ const StyledTag = styled(Tag)`
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const theme = useContext(ThemeContext)
+
+  const theme = useAppTheme()
   const { permissions, currentUserRole, currentMemberId } = useAuth()
   const { id: appId, enabledModules, settings } = useApp()
 
@@ -93,6 +96,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   } | null)[] = [
     { id: 'email', title: 'Email' },
     permissions['MEMBER_PHONE_ADMIN'] ? { id: 'phone', title: formatMessage(commonMessages.label.phone) } : null,
+    { id: 'username', title: formatMessage(commonMessages.label.account) },
     { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
     { id: 'loginedAt', title: formatMessage(commonMessages.label.lastLogin) },
     { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
@@ -114,9 +118,9 @@ const MemberCollectionAdminPage: React.FC = () => {
     name?: string
     email?: string
     phone?: string
+    username?: string
     category?: string
     managerName?: string
-    managerId?: string
     tag?: string
     permissionGroup?: string
     properties?: {
@@ -289,10 +293,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             </StyledTag>
           )}
           {record.role === 'content-creator' && (
-            <StyledTag
-              color={theme ? theme['@primary-color'] : settings['theme.@primary-color'] || '#2d313a'}
-              className="ml-2 mr-0"
-            >
+            <StyledTag color={theme.colors.primary[500]} className="ml-2 mr-0">
               {formatMessage(commonMessages.label.contentCreator)}
             </StyledTag>
           )}
@@ -314,6 +315,12 @@ const MemberCollectionAdminPage: React.FC = () => {
       ...getColumnSearchProps('phone'),
     },
     {
+      title: formatMessage(commonMessages.label.account),
+      dataIndex: 'username',
+      key: 'username',
+      ...getColumnSearchProps('username'),
+    },
+    {
       title: formatMessage(commonMessages.label.createdDate),
       dataIndex: 'createdAt',
       key: 'createdAt',
@@ -332,7 +339,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       dataIndex: 'consumption',
       key: 'consumption',
       align: 'right',
-      render: text => currencyFormatter(text),
+      render: (_, record) => currencyFormatter(record.consumption),
       sorter: (a, b) => a.consumption - b.consumption,
     },
     {
@@ -380,6 +387,10 @@ const MemberCollectionAdminPage: React.FC = () => {
       }),
   ]
 
+  if (!permissions.MEMBER_ADMIN) {
+    return <ForbiddenPage />
+  }
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -420,14 +431,12 @@ const MemberCollectionAdminPage: React.FC = () => {
               {formatMessage(memberMessages.label.field)}
             </StyledButton>
           </Popover>
-          <div className="mr-2">
-            {permissions['MEMBER_CREATE'] && <MemberCreationModal onRefetch={refetchMembers} />}
-          </div>
+          <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal onRefetch={refetchMembers} />}</div>
           <div className="mr-2">
             <MemberImportModal onRefetch={refetchMembers} />
           </div>
           <MemberExportModal
-            appId="xuemi"
+            appId={appId}
             visibleFields={visibleColumnIds}
             columns={columns}
             filter={{
@@ -449,7 +458,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             pagination={false}
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
-              onClick: () => window.open(`/admin/members/${record.id}`, '_blank'),
+              onClick: () => window.open(`${process.env.PUBLIC_URL}/members/${record.id}`, '_blank'),
             })}
             onChange={(pagination, filters, sorter) => {
               const newSorter = sorter as SorterResult<MemberInfoProps>

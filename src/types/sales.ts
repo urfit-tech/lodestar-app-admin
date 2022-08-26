@@ -4,7 +4,7 @@ export type LeadProps = {
   email: string
   phones: string[]
   categoryNames: string[]
-  properties: { id: string, name: string; value: string }[]
+  properties: { id: string; name: string; value: string }[]
   paid: number
   star: number
   createdAt: Date
@@ -62,8 +62,6 @@ export type CurrentLeadProps = {
     value: string
   }[]
 }
-
-
 export type SalesStatus = {
   name: string
   data: {

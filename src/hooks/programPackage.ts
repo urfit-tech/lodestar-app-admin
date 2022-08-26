@@ -319,7 +319,7 @@ export const useProgramPackage = (id: string) => {
             }
             position
           }
-          program_package_plans(order_by: { position: asc, created_at: asc }) {
+          program_package_plans(order_by: [{ position: asc }, { created_at: asc }]) {
             id
             title
             list_price

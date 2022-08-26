@@ -13,7 +13,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentBody } from '../../hooks/program'
-import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
+import { ProgramContentBody, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
 import RatingInput from '../common/RatingInput'
@@ -86,7 +86,7 @@ const PracticeAdminModal: React.FC<{
 
 const PracticeForm: React.FC<{
   programContent: ProgramContentProps
-  programContentBody: ProgramContentBodyProps
+  programContentBody: ProgramContentBody
   onRefetch?: () => void
   onCancel?: () => void
 }> = ({ programContent, programContentBody, onRefetch, onCancel }) => {

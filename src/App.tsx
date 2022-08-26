@@ -1,11 +1,11 @@
 import Icon, { BarChartOutlined } from '@ant-design/icons'
 import { Menu } from 'antd'
-import Application from './Application'
-import { StyledMenu } from './components/admin/AdminMenu'
-import { ReactComponent as PhoneIcon } from './images/icon/phone.svg'
 import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
+import Application from './Application'
+import { StyledMenu } from './components/admin/AdminMenu'
+import { ReactComponent as PhoneIcon } from './images/icon/phone.svg'
 import { ReactComponent as UserCopyIcon } from './images/icon/user-copy.svg'
 import AdvertisingAudiencePage from './pages/AdvertisingAudiencePage'
 import ChaileaseLookupPage from './pages/ChaileaseLookupPage/index'
@@ -21,10 +21,12 @@ import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
 import SalesStatusPage from './pages/SalesStatusPage'
 import TermsPtPage from './pages/TermsPtPage'
 
-const App: React.FC = () => {
+const App: React.FC<{
+  appId: string
+}> = ({ appId }) => {
   return (
     <Application
-      appId="xuemi"
+      appId={appId}
       customRender={{
         renderAdminMenu: ({ settings, role, permissions, menuItems, onClick }) => {
           const customMenuItems: typeof menuItems = [

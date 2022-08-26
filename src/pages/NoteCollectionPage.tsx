@@ -3,23 +3,8 @@ import { useQuery } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Input, message, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
-import Axios from 'axios'
+import axios from 'axios'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from '../components/admin'
-import AdminCard from '../components/admin/AdminCard'
-import { AvatarImage } from '../components/common/Image'
-import AdminLayout from '../components/layout/AdminLayout'
-import MemberNoteAdminModal from '../components/member/MemberNoteAdminModal'
-import {
-  currencyFormatter,
-  dateFormatter,
-  downloadFile,
-  getFileDownloadableLink,
-  handleError,
-} from '../helpers'
-import { commonMessages, memberMessages, podcastMessages } from '../helpers/translation'
-import { useMutateAttachment, useUploadAttachments } from '../hooks/data'
-import { useMutateMemberNote } from '../hooks/member'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
@@ -27,7 +12,18 @@ import { sum } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { AdminPageTitle } from '../components/admin'
+import AdminCard from '../components/admin/AdminCard'
+import { AvatarImage } from '../components/common/Image'
+import AdminLayout from '../components/layout/AdminLayout'
+import MemberNoteAdminModal from '../components/member/MemberNoteAdminModal'
 import hasura from '../hasura'
+import { currencyFormatter, dateFormatter, downloadFile, getFileDownloadableLink, handleError } from '../helpers'
+import { commonMessages, memberMessages, podcastMessages } from '../helpers/translation'
+import { useMutateAttachment, useUploadAttachments } from '../hooks/data'
+import { useMutateMemberNote } from '../hooks/member'
+import { NoteAdminProps } from '../types/member'
+import ForbiddenPage from './ForbiddenPage'
 
 const messages = defineMessages({
   memberNoteCreatedAt: { id: 'member.label.memberNoteCreatedAt', defaultMessage: '聯絡時間' },
@@ -80,52 +76,11 @@ type FiltersProps = {
   tags?: string[]
 }
 
-type NoteAdminProps = {
-  id: string
-  createdAt: Date
-  type: 'inbound' | 'outbound' | null
-  status: string | null
-  author: {
-    id: string
-    pictureUrl: string | null
-    name: string
-  }
-  manager: {
-    id: string
-    name: string
-  } | null
-  member: {
-    id: string
-    pictureUrl: string | null
-    name: string
-    email: string
-    properties: {
-      name: string
-      value: string
-    }[]
-  } | null
-  memberCategories: {
-    id: string
-    name: string
-  }[]
-  memberTags: string[]
-  consumption: number
-  duration: number
-  audioFilePath: string | null
-  description: string | null
-  metadata: any
-  note: string | null
-  attachments: {
-    id: string
-    data: any
-    options: any
-  }[]
-}
-
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { authToken } = useAuth()
+  const { authToken, permissions } = useAuth()
 
+  const { enabledModules } = useApp()
   const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy']>({
     created_at: 'desc' as hasura.order_by,
   })
@@ -138,7 +93,7 @@ const NoteCollectionPage: React.FC = () => {
   )
   const { updateMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  const { deleteAttachments } = useMutateAttachment()
+  const { archiveAttachments } = useMutateAttachment()
 
   const searchInputRef = useRef<Input | null>(null)
 
@@ -346,6 +301,7 @@ const NoteCollectionPage: React.FC = () => {
           </Select>
         </>
       ),
+
       render: (text, record, index) => {
         const recordAttachmentId = record.attachments.find(v => v.data.name.includes('recordFile'))?.id
         return (
@@ -405,6 +361,10 @@ const NoteCollectionPage: React.FC = () => {
       ),
     },
   ]
+
+  if (!enabledModules.member_note || !permissions.MEMBER_NOTE_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
     <AdminLayout>
@@ -495,7 +455,7 @@ const NoteCollectionPage: React.FC = () => {
                           ),
                         )
                         if (memberNoteId && attachments.length) {
-                          await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                          await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
                           await uploadAttachments('MemberNote', memberNoteId, newAttachments)
                         }
                         message.success(formatMessage(commonMessages.event.successfullyEdited))
@@ -559,7 +519,8 @@ const LoadRecordFileButton: React.FC<{
     setAudioUrl('')
     try {
       const link: string = await getFileDownloadableLink(`attachments/${attachmentId}`, authToken)
-      const response = await Axios.get(link, {
+
+      const response = await axios.get(link, {
         responseType: 'blob',
       })
       const blob = new Blob([response.data], { type: 'audio/wav' })
@@ -584,7 +545,10 @@ const LoadRecordFileButton: React.FC<{
   )
 }
 
-const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'], filters?: FiltersProps) => {
+const useMemberNotesAdmin = (
+  orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
+  filters?: FiltersProps,
+) => {
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range

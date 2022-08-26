@@ -11,4 +11,3 @@ declare module 'react-style-editor'
 declare module 'console' {
   export = typeof import('console')
 }
-declare module '@bobthered/tailwindcss-palette-generator'

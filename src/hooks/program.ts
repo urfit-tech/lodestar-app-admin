@@ -8,7 +8,7 @@ import {
   ProgramAdminProps,
   ProgramApprovalProps,
   ProgramContent,
-  ProgramContentBodyProps,
+  ProgramContentBody,
   ProgramRoleName,
 } from '../types/program'
 import { DeepPick } from 'ts-deep-pick'
@@ -57,6 +57,7 @@ export const useProgram = (programId: string) => {
               display_mode
               program_content_body {
                 data
+                target
               }
               program_content_type {
                 id
@@ -181,6 +182,7 @@ export const useProgram = (programId: string) => {
           })),
           metadata: pc.metadata,
           programContentBodyData: pc.program_content_body.data,
+          programContentBodyTarget: pc.program_content_body.target,
           attachments: pc.program_content_attachments.map(v => ({
             id: v.attachment_id,
             data: v.data,
@@ -259,6 +261,7 @@ export const useProgramContentBody = (programContentId: string) => {
             type
             description
             data
+            target
           }
           program_content_materials {
             id
@@ -269,7 +272,8 @@ export const useProgramContentBody = (programContentId: string) => {
     `,
     { variables: { programContentId } },
   )
-  const programContentBody: ProgramContentBodyProps = useMemo(() => {
+
+  const programContentBody: ProgramContentBody = useMemo(() => {
     if (loading || error || !data || !data.program_content_by_pk) {
       return {
         id: '',
@@ -277,6 +281,7 @@ export const useProgramContentBody = (programContentId: string) => {
         description: '',
         data: {},
         materials: [],
+        target: null,
       }
     }
     return {
@@ -288,6 +293,7 @@ export const useProgramContentBody = (programContentId: string) => {
         id: v.id,
         data: v.data,
       })),
+      target: data.program_content_by_pk.program_content_body.target,
     }
   }, [data, error, loading])
 
@@ -615,9 +621,6 @@ export const useMutateProgramContent = () => {
         delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
-        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
-          affected_rows
-        }
         delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
@@ -631,10 +634,33 @@ export const useMutateProgramContent = () => {
     `,
   )
 
+  const [deleteProgramContentExerciseAndExam] = useMutation<
+    hasura.DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM,
+    hasura.DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAMVariables
+  >(
+    gql`
+      mutation DELETE_PROGRAM_CONTENT_EXERCISE_AND_EXAM($programContentId: uuid!, $examId: uuid!) {
+        delete_exercise(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+          affected_rows
+        }
+        delete_exam(where: { id: { _eq: $examId } }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
   return {
     updateProgramContent,
     updateProgramContentBody,
     deleteProgramContent,
+    deleteProgramContentExerciseAndExam,
     insertProgramContentBody,
   }
 }

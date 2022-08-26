@@ -51,8 +51,6 @@ const TreeTransfer = ({ dataSource, targetKeys, ...restProps }: TreeTransferProp
               <Tree
                 blockNode
                 checkable
-                checkStrictly
-                defaultExpandAll
                 checkedKeys={checkedKeys}
                 treeData={generateTree(dataSource, targetKeys)}
                 onCheck={(_, { node: { key } }) => {

@@ -1,8 +1,8 @@
 import { Button } from '@chakra-ui/react'
-import DefaultLayout from '../../components/layout/DefaultLayout'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
+import DefaultLayout from '../../components/layout/DefaultLayout'
 import ForbiddenPageMessages from './translation'
 
 const ForbiddenPage: React.VFC = () => {

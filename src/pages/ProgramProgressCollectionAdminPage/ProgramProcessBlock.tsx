@@ -145,7 +145,7 @@ const ProgramProcessBlock: React.VFC = () => {
                     { totalGainedPoints: 0, updatedAt: null },
                   )
                 const exerciseStatus =
-                  programContentType === 'exercise'
+                  programContentType === 'exam' || 'exercise'
                     ? hightestScore.totalGainedPoints >= pc.metadata?.passingScore
                       ? formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
                       : formatMessage(pageMessages.ProgramProcessBlock.exerciseFailed)

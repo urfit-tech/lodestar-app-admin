@@ -8,7 +8,7 @@ const appId: string = process.env.REACT_APP_ID || (window as any).APP_ID
 if (!appId) {
   render(<div>Application cannot be loaded</div>, rootElement)
 } else {
-  render(<App />, rootElement)
+  render(<App appId={appId} />, rootElement)
 }
 
 unregister()
