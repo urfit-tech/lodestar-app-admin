@@ -1,7 +1,7 @@
 import { Divider, Progress, Switch, Tooltip } from 'antd'
-import { AdminBlock } from 'lodestar-app-admin/src/components/admin'
-import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
-import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
+import { AdminBlock } from '../../components/admin'
+import { AvatarImage } from '../../components/common/Image'
+import { currencyFormatter } from '../../helpers'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -64,7 +64,7 @@ const SalesSummaryBlock: React.FC<{
           <AssignmentRateBar salesId={sales.id} baseOdds={sales.baseOdds} lastAttend={sales.lastAttend} />
         </div>
         <div>
-          <span className="mr-2">{formatMessage(salesMessages.label.autoStartCalls)}</span>
+          <span className="mr-2">{formatMessage(salesMessages.autoStartCalls)}</span>
           <Switch disabled />
         </div>
       </div>

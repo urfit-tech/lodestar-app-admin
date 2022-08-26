@@ -3,23 +3,8 @@ import { useQuery } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Input, message, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
-import Axios from 'axios'
+import axios from 'axios'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
-import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
-import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
-import MemberNoteAdminModal from 'lodestar-app-admin/src/components/member/MemberNoteAdminModal'
-import {
-  currencyFormatter,
-  dateFormatter,
-  downloadFile,
-  getFileDownloadableLink,
-  handleError,
-} from 'lodestar-app-admin/src/helpers'
-import { commonMessages, memberMessages, podcastMessages } from 'lodestar-app-admin/src/helpers/translation'
-import { useMutateAttachment, useUploadAttachments } from 'lodestar-app-admin/src/hooks/data'
-import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
@@ -27,7 +12,18 @@ import { sum } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { AdminPageTitle } from '../components/admin'
+import AdminCard from '../components/admin/AdminCard'
+import { AvatarImage } from '../components/common/Image'
+import AdminLayout from '../components/layout/AdminLayout'
+import MemberNoteAdminModal from '../components/member/MemberNoteAdminModal'
 import hasura from '../hasura'
+import { currencyFormatter, dateFormatter, downloadFile, getFileDownloadableLink, handleError } from '../helpers'
+import { commonMessages, memberMessages, podcastMessages } from '../helpers/translation'
+import { useMutateAttachment, useUploadAttachments } from '../hooks/data'
+import { useMutateMemberNote } from '../hooks/member'
+import { NoteAdminProps } from '../types/member'
+import ForbiddenPage from './ForbiddenPage'
 
 const messages = defineMessages({
   memberNoteCreatedAt: { id: 'member.label.memberNoteCreatedAt', defaultMessage: '聯絡時間' },
@@ -80,53 +76,22 @@ type FiltersProps = {
   tags?: string[]
 }
 
-type NoteAdminProps = {
-  id: string
-  createdAt: Date
-  type: 'inbound' | 'outbound' | null
-  status: string | null
-  author: {
-    id: string
-    pictureUrl: string | null
-    name: string
-  }
-  manager: {
-    id: string
-    name: string
-  } | null
-  member: {
-    id: string
-    pictureUrl: string | null
-    name: string
-    email: string
-    properties: {
-      name: string
-      value: string
-    }[]
-  } | null
-  memberCategories: {
-    id: string
-    name: string
-  }[]
-  memberTags: string[]
-  consumption: number
-  duration: number
-  audioFilePath: string | null
-  description: string | null
-  metadata: any
-  note: string | null
-  attachments: {
-    id: string
-    data: any
-    options: any
-  }[]
+type NoteAdmin = NoteAdminProps & {
+  member:
+    | (NoteAdminProps['member'] & {
+        properties: {
+          name: string
+          value: string
+        }[]
+      })
+    | null
 }
-
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { authToken } = useAuth()
+  const { authToken, permissions } = useAuth()
 
-  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
+  const { enabledModules } = useApp()
+  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy']>({
     created_at: 'desc' as hasura.order_by,
   })
   const [filters, setFilters] = useState<FiltersProps>({
@@ -138,17 +103,17 @@ const NoteCollectionPage: React.FC = () => {
   )
   const { updateMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  const { deleteAttachments } = useMutateAttachment()
+  const { archiveAttachments } = useMutateAttachment()
 
   const searchInputRef = useRef<Input | null>(null)
 
   const [updatedNotes, setUpdatedNotes] = useState<{ [NoteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
   const [downloadingNoteIds, setDownloadingNoteIds] = useState<string[]>([])
-  const [selectedNote, setSelectedNote] = useState<NoteAdminProps | null>(null)
+  const [selectedNote, setSelectedNote] = useState<NoteAdmin | null>(null)
   const [playbackRate, setPlaybackRate] = useState(1)
 
-  const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
+  const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdmin> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -201,7 +166,7 @@ const NoteCollectionPage: React.FC = () => {
     onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
   })
 
-  const columns: ColumnProps<NoteAdminProps>[] = [
+  const columns: ColumnProps<NoteAdmin>[] = [
     {
       key: 'createdAt',
       title: formatMessage(messages.memberNoteCreatedAt),
@@ -346,6 +311,7 @@ const NoteCollectionPage: React.FC = () => {
           </Select>
         </>
       ),
+
       render: (text, record, index) => {
         const recordAttachmentId = record.attachments.find(v => v.data.name.includes('recordFile'))?.id
         return (
@@ -406,6 +372,10 @@ const NoteCollectionPage: React.FC = () => {
     },
   ]
 
+  if (!enabledModules.member_note || !permissions.MEMBER_NOTE_ADMIN) {
+    return <ForbiddenPage />
+  }
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -434,7 +404,7 @@ const NoteCollectionPage: React.FC = () => {
             title={formatMessage(memberMessages.label.editNote)}
             note={selectedNote || undefined}
             renderTrigger={({ setVisible }) => (
-              <Table<NoteAdminProps>
+              <Table<NoteAdmin>
                 columns={columns}
                 rowKey="id"
                 rowClassName="cursor-pointer"
@@ -442,7 +412,7 @@ const NoteCollectionPage: React.FC = () => {
                 loading={loadingNotes}
                 dataSource={notes}
                 onChange={(pagination, filters, sorter) => {
-                  const newSorter = sorter as SorterResult<NoteAdminProps>
+                  const newSorter = sorter as SorterResult<NoteAdmin>
                   setOrderBy({
                     [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
                       newSorter.order === 'ascend' ? 'asc' : 'desc',
@@ -495,7 +465,7 @@ const NoteCollectionPage: React.FC = () => {
                           ),
                         )
                         if (memberNoteId && attachments.length) {
-                          await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                          await archiveAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
                           await uploadAttachments('MemberNote', memberNoteId, newAttachments)
                         }
                         message.success(formatMessage(commonMessages.event.successfullyEdited))
@@ -559,7 +529,8 @@ const LoadRecordFileButton: React.FC<{
     setAudioUrl('')
     try {
       const link: string = await getFileDownloadableLink(`attachments/${attachmentId}`, authToken)
-      const response = await Axios.get(link, {
+
+      const response = await axios.get(link, {
         responseType: 'blob',
       })
       const blob = new Blob([response.data], { type: 'audio/wav' })
@@ -584,9 +555,12 @@ const LoadRecordFileButton: React.FC<{
   )
 }
 
-const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
+const useMemberNotesAdmin = (
+  orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
+  filters?: FiltersProps,
+) => {
   const { permissions, currentMemberId } = useAuth()
-  const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -644,11 +618,11 @@ const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['or
     },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    hasura.GET_MEMBER_NOTES_ADMIN,
-    hasura.GET_MEMBER_NOTES_ADMINVariables
+    hasura.GET_MEMBER_NOTES_ADMIN_XUEMI,
+    hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables
   >(
     gql`
-      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+      query GET_MEMBER_NOTES_ADMIN_XUEMI($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
         category(where: { member_categories: {} }) {
           id
           name
@@ -744,11 +718,11 @@ const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['or
     })) || []
   const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
 
-  const notes: NoteAdminProps[] =
+  const notes: NoteAdmin[] =
     data?.member_note.map(v => ({
       id: v.id,
       createdAt: new Date(v.created_at),
-      type: v.type as NoteAdminProps['type'],
+      type: v.type as NoteAdmin['type'],
       status: v.status,
       author: {
         id: v.author.id,

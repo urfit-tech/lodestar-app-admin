@@ -1,7 +1,7 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
-import { AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
+import { AdminBlockTitle } from '../../components/admin'
 import moment from 'moment'
 import { keys, last } from 'ramda'
 import React, { memo, useState } from 'react'

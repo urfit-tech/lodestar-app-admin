@@ -2,8 +2,13 @@ import React from 'react'
 import { render } from 'react-dom'
 import App from './App'
 import { unregister } from './serviceWorker'
-
+import './styles/default/index.scss'
 const rootElement = document.getElementById('root')
-render(<App />, rootElement)
+const appId: string = process.env.REACT_APP_ID || (window as any).APP_ID
+if (!appId) {
+  render(<div>Application cannot be loaded</div>, rootElement)
+} else {
+  render(<App appId={appId} />, rootElement)
+}
 
 unregister()

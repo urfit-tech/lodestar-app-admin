@@ -1,12 +1,12 @@
 import Icon, { SearchOutlined } from '@ant-design/icons'
 import { Button, Input, message, Skeleton, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
-import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
-import { handleError } from 'lodestar-app-admin/src/helpers'
-import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
-import { useMutateMemberNote } from 'lodestar-app-admin/src/hooks/member'
-import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
-import { ReactComponent as UserOIcon } from 'lodestar-app-admin/src/images/icon/user-o.svg'
+import AdminCard from '../../components/admin/AdminCard'
+import { handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
+import { useMutateMemberNote } from '../../hooks/member'
+import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
+import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -15,7 +15,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { ReactComponent as DemoIcon } from '../../images/icons/demo.svg'
+import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
 import JitsiDemoModal from './JitsiDemoModal'
 import { SalesCallMemberProps, SalesProps } from './salesHooks'
 
@@ -131,7 +131,7 @@ const SalesCallContactedMemberBlock: React.FC<{
     {
       key: 'studentName',
       dataIndex: 'name',
-      title: formatMessage(salesMessages.label.studentName),
+      title: formatMessage(salesMessages.studentName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,
@@ -142,7 +142,7 @@ const SalesCallContactedMemberBlock: React.FC<{
     {
       key: 'phones',
       dataIndex: 'phones',
-      title: formatMessage(salesMessages.label.tel),
+      title: formatMessage(salesMessages.tel),
       render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
@@ -165,7 +165,7 @@ const SalesCallContactedMemberBlock: React.FC<{
     {
       key: 'lastContactAt',
       dataIndex: 'lastContactAt',
-      title: formatMessage(salesMessages.label.lastContactAt),
+      title: formatMessage(salesMessages.lastContactAt),
       defaultSortOrder: 'ascend',
       sorter: (a, b) => (b.lastContactAt?.getTime() || 0) - (a.lastContactAt?.getTime() || 0),
       render: lastContactAt => <time>{moment(lastContactAt).fromNow()}</time>,
@@ -173,7 +173,7 @@ const SalesCallContactedMemberBlock: React.FC<{
     {
       key: 'lastTaskCategoryName',
       dataIndex: ['lastTask', 'categoryName'],
-      title: formatMessage(salesMessages.label.lastTask),
+      title: formatMessage(salesMessages.lastTask),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
           ...filters,

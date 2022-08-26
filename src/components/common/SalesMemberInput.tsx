@@ -1,16 +1,18 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
 import gql from 'graphql-tag'
-import MemberSelector from 'lodestar-app-admin/src/components/form/MemberSelector'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import hasura from '../../hasura'
+import MemberSelector from '../form/MemberSelector'
 
 const SalesMemberInput: React.FC<{
   value?: string
   onChange?: (value: string) => void
   disabled?: boolean
 }> = ({ value, onChange, disabled }) => {
-  const { loading, error, data } = useQuery<hasura.GET_SALES_MEMBERS>(GET_SALES_MEMBERS)
+  const { id: appId } = useApp()
+  const { loading, error, data } = useQuery<hasura.GET_SALES_MEMBERS>(GET_SALES_MEMBERS, { variables: { appId } })
 
   if (loading) {
     return <Spin />
@@ -19,10 +21,11 @@ const SalesMemberInput: React.FC<{
   if (error || !data) {
     return <div>讀取錯誤</div>
   }
+
   return (
     <MemberSelector
       allowClear
-      members={data.member.map(v => ({
+      members={data?.member?.map(v => ({
         id: v.id,
         avatarUrl: v.picture_url,
         name: v.name,
@@ -35,10 +38,11 @@ const SalesMemberInput: React.FC<{
     />
   )
 }
-
+// member: searchText(username, email, name) limit:20
+// searchable
 const GET_SALES_MEMBERS = gql`
-  query GET_SALES_MEMBERS {
-    member(where: { member_properties: { property: { name: { _eq: "分機號碼" } }, value: { _is_null: false } } }) {
+  query GET_SALES_MEMBERS($appId: String!) {
+    member(where: { app_id: { _eq: $appId }, member_permissions: { permission_id: { _eq: "BACKSTAGE_ENTER" } } }) {
       id
       picture_url
       name

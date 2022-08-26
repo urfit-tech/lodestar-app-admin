@@ -1,9 +1,9 @@
 import Icon from '@ant-design/icons'
 import { Skeleton, Tabs } from 'antd'
-import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
-import { errorMessages } from 'lodestar-app-admin/src/helpers/translation'
-import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
+import { AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
+import { errorMessages } from '../../helpers/translation'
+import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -23,7 +23,7 @@ const SalesCallPage: React.VFC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon className="mr-3" component={() => <PhoneIcon />} />
-        <span>{formatMessage(salesMessages.label.salesCall)}</span>
+        <span>{formatMessage(salesMessages.salesCall)}</span>
       </AdminPageTitle>
 
       {currentMemberId ? <SalesCallBlock currentMemberId={currentMemberId} /> : <Skeleton active />}
@@ -64,7 +64,7 @@ const SalesCallBlock: React.VFC<{
       <SalesSummaryBlock sales={sales} />
 
       <Tabs activeKey={activeKey || 'potentials'} onChange={key => setActiveKey(key)}>
-        <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}>
+        <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.potentials)}>
           <CurrentLeadContactBlock
             sales={sales}
             onSubmit={(status, member) => {
@@ -87,7 +87,7 @@ const SalesCallBlock: React.VFC<{
         </Tabs.TabPane>
         <Tabs.TabPane
           key="keep-in-touch"
-          tab={`${formatMessage(salesMessages.label.keepInTouch)} (${
+          tab={`${formatMessage(salesMessages.keepInTouch)} (${
             totalContactedMembers + submittedPotentialMembers.length
           })`}
         >
@@ -97,15 +97,15 @@ const SalesCallBlock: React.VFC<{
             loadingMembers={loadingContactedMembers}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane key="deals" tab={`${formatMessage(salesMessages.label.deals)} (${totalTransactedMembers})`}>
+        <Tabs.TabPane key="deals" tab={`${formatMessage(salesMessages.deals)} (${totalTransactedMembers})`}>
           <SalesCallTransactedMemberBlock
             sales={sales}
             members={transactedMembers}
             loadingMembers={loadingTransactedMembers}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane key="revoked" tab={formatMessage(salesMessages.label.revoked)} disabled></Tabs.TabPane>
-        <Tabs.TabPane key="rejected" tab={formatMessage(salesMessages.label.rejected)} disabled></Tabs.TabPane>
+        <Tabs.TabPane key="revoked" tab={formatMessage(salesMessages.revoked)} disabled></Tabs.TabPane>
+        <Tabs.TabPane key="rejected" tab={formatMessage(salesMessages.rejected)} disabled></Tabs.TabPane>
       </Tabs>
     </>
   )

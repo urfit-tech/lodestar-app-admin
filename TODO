@@ -1,0 +1,12 @@
+1. move sourceOptions type out of craft
+2. member/project/podcastProgram collection
+3. template do not use JSON to generate
+5. remove component in admin/index
+6. image settings
+7. button settings align
+8. drag / duplicate / save / delete
+9. serialize 
+10. template refetch
+11. section settings is sucks
+12. refactor collection settings
+13. remove ratios from layout
