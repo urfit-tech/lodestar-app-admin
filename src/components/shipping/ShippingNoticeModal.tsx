@@ -24,7 +24,7 @@ const messages = defineMessages({
   send: { id: 'merchandise.ui.send', defaultMessage: '送出' },
 })
 
-const StyledFormItem = styled(Form.Item)`
+const StyledFormItemContent = styled.div`
   && {
     .ant-form-item-control {
       line-height: 1.2;
@@ -120,13 +120,15 @@ const ShippingNoticeModal: React.FC<ShippingNoticeModalProps> = ({
       ) : (
         <div>
           <Form>
-            <StyledFormItem>
-              {getFieldDecorator('deliverMessage', {
-                initialValue: `您好，商品已於 ${moment().format('YYYY-MM-DD')} 出貨。
+            <Form.Item>
+              <StyledFormItemContent>
+                {getFieldDecorator('deliverMessage', {
+                  initialValue: `您好，商品已於 ${moment().format('YYYY-MM-DD')} 出貨。
 物流編號是 [請填入您的物流編號]，謝謝！`,
-              })(<TextArea rows={3} />)}
+                })(<TextArea rows={3} />)}
+              </StyledFormItemContent>
               <StyledNotice>{formatMessage(messages.notice)}</StyledNotice>
-            </StyledFormItem>
+            </Form.Item>
           </Form>
         </div>
       )}

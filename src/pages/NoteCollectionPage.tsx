@@ -76,6 +76,16 @@ type FiltersProps = {
   tags?: string[]
 }
 
+type NoteAdmin = NoteAdminProps & {
+  member:
+    | (NoteAdminProps['member'] & {
+        properties: {
+          name: string
+          value: string
+        }[]
+      })
+    | null
+}
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
@@ -100,10 +110,10 @@ const NoteCollectionPage: React.FC = () => {
   const [updatedNotes, setUpdatedNotes] = useState<{ [NoteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
   const [downloadingNoteIds, setDownloadingNoteIds] = useState<string[]>([])
-  const [selectedNote, setSelectedNote] = useState<NoteAdminProps | null>(null)
+  const [selectedNote, setSelectedNote] = useState<NoteAdmin | null>(null)
   const [playbackRate, setPlaybackRate] = useState(1)
 
-  const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
+  const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdmin> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -156,7 +166,7 @@ const NoteCollectionPage: React.FC = () => {
     onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
   })
 
-  const columns: ColumnProps<NoteAdminProps>[] = [
+  const columns: ColumnProps<NoteAdmin>[] = [
     {
       key: 'createdAt',
       title: formatMessage(messages.memberNoteCreatedAt),
@@ -394,7 +404,7 @@ const NoteCollectionPage: React.FC = () => {
             title={formatMessage(memberMessages.label.editNote)}
             note={selectedNote || undefined}
             renderTrigger={({ setVisible }) => (
-              <Table<NoteAdminProps>
+              <Table<NoteAdmin>
                 columns={columns}
                 rowKey="id"
                 rowClassName="cursor-pointer"
@@ -402,7 +412,7 @@ const NoteCollectionPage: React.FC = () => {
                 loading={loadingNotes}
                 dataSource={notes}
                 onChange={(pagination, filters, sorter) => {
-                  const newSorter = sorter as SorterResult<NoteAdminProps>
+                  const newSorter = sorter as SorterResult<NoteAdmin>
                   setOrderBy({
                     [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
                       newSorter.order === 'ascend' ? 'asc' : 'desc',
@@ -708,11 +718,11 @@ const useMemberNotesAdmin = (
     })) || []
   const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
 
-  const notes: NoteAdminProps[] =
+  const notes: NoteAdmin[] =
     data?.member_note.map(v => ({
       id: v.id,
       createdAt: new Date(v.created_at),
-      type: v.type as NoteAdminProps['type'],
+      type: v.type as NoteAdmin['type'],
       status: v.status,
       author: {
         id: v.author.id,
