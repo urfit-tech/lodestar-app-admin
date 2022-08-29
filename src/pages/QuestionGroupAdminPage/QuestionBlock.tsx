@@ -1,15 +1,17 @@
 import { Checkbox, Radio } from 'antd'
 import { RadioChangeEvent } from 'antd/lib/radio'
-import BraftEditor from 'braft-editor'
-import React, { useEffect, useState } from 'react'
+import BraftEditor, { EditorState } from 'braft-editor'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import AdminBraftEditor from '../../components/form/AdminBraftEditor'
 import { questionLibraryMessage } from '../../helpers/translation'
-import { BarsIcon, GridIcon } from '../../images/icon'
+import { BarsIcon, GridIcon, PlusIcon } from '../../images/icon'
 import { Question, QuestionOption } from '../../types/questionLibrary'
 import pageMessages from '../translation'
-import QuestionOptionsBlock from './QuestionOptionsBlock'
+import { AddButton } from './QuestionGroupAdminPage'
+import QuestionOptionBlock from './QuestionOptionBlock'
 
 const StyledP = styled.p`
   font-size: 16px;
@@ -47,15 +49,15 @@ const LayoutOptionButton = styled(Radio.Button)`
   border-radius: 4px;
 `
 
-const StyledBarsIcon = styled(BarsIcon)<{ layoutOption: string }>`
+const StyledBarsIcon = styled(BarsIcon)<{ layout: string }>`
   path {
-    fill: ${props => (props.layoutOption === 'lists' ? '#fff' : '#585858')};
+    fill: ${props => (props.layout === 'lists' ? '#fff' : '#585858')};
   }
 `
 
-const StyledGridIcon = styled(GridIcon)<{ layoutOption: string }>`
+const StyledGridIcon = styled(GridIcon)<{ layout: string }>`
   path {
-    fill: ${props => (props.layoutOption === 'grid' ? '#fff' : '#585858')};
+    fill: ${props => (props.layout === 'grid' ? '#fff' : '#585858')};
   }
 `
 
@@ -73,6 +75,11 @@ const QuestionSubject = styled.div`
   }
 `
 
+const OptionsBlock = styled.div`
+  padding: 0 0 30px 24px;
+  width: 100%;
+`
+
 const ExplanationBlock = styled.div`
   .bf-content {
     height: 120px;
@@ -87,46 +94,60 @@ const QuestionBlock: React.VFC<{
   onQuestionChange?: (question: Question) => void
 }> = ({ question, onQuestionChange }) => {
   const { formatMessage } = useIntl()
-  const [layoutOption, setLayoutOption] = useState<string>(question.layout || 'lists')
-  const [isUseZhuYin, setIsUseZhuYin] = useState<boolean>(question.font === 'zhuyin')
-  const [subjectValue, setSubjectValue] = useState<string>('')
-  const [explanationValue, setExplanationValue] = useState<string>('')
+  const [subjectValue, setSubjectValue] = useState<EditorState>(BraftEditor.createEditorState(question.subject))
+  const [explanationValue, setExplanationValue] = useState<EditorState>(
+    BraftEditor.createEditorState(question.explanation),
+  )
+  const layoutOption = question.layout || 'lists'
+  const isUseZhuYin = question.font === 'zhuyin'
 
   const onLayoutOptionChange = (e: RadioChangeEvent) => {
     const newQuestion = { ...question, layout: e.target.value }
-    setLayoutOption(e.target.value)
     onQuestionChange?.(newQuestion)
   }
 
-  const handleOptionListChange = (newOptions: QuestionOption[]) => {
-    const newQuestion = { ...question, options: newOptions }
+  const handleOptionChange = (newOption: QuestionOption) => {
+    const newQuestion = {
+      ...question,
+      options: question.options?.map(option => {
+        if (option.id === newOption.id) {
+          return {
+            ...option,
+            value: newOption.value,
+            isAnswer: newOption.isAnswer,
+          }
+        }
+        return option
+      }),
+    }
     onQuestionChange?.(newQuestion)
   }
 
   const handleFontChange = () => {
     const newQuestion = { ...question, font: !isUseZhuYin ? 'zhuyin' : 'auto' }
-    setIsUseZhuYin(!isUseZhuYin)
     onQuestionChange?.(newQuestion)
   }
 
-  const handleSubjectValueChange = (value: string) => {
+  const handleAddOption = () => {
+    const optionsLength = question.options?.length || 0
     const newQuestion = {
       ...question,
-      title: value.replace(/<[^>]+>/g, ''),
-      subject: value,
+      options: [
+        ...(question.options || []),
+        { id: uuid(), value: '<p>選項內容</p>', isAnswer: false, position: optionsLength + 1 },
+      ],
     }
     onQuestionChange?.(newQuestion)
   }
 
-  const handleExplanationValueChange = (value: string) => {
-    const newQuestion = { ...question, explanation: value }
+  const handleOptionDelete = (optionId: string) => {
+    const newOptions = question.options?.filter(option => option.id !== optionId)
+    const newQuestion = {
+      ...question,
+      options: newOptions,
+    }
     onQuestionChange?.(newQuestion)
   }
-
-  useEffect(() => {
-    setSubjectValue(BraftEditor.createEditorState(question.subject))
-    setExplanationValue(BraftEditor.createEditorState(question.explanation))
-  }, [question])
 
   return (
     <>
@@ -139,10 +160,10 @@ const QuestionBlock: React.VFC<{
           onChange={onLayoutOptionChange}
         >
           <LayoutOptionButton value="lists">
-            <StyledBarsIcon layoutOption={layoutOption} />
+            <StyledBarsIcon layout={layoutOption} />
           </LayoutOptionButton>
           <LayoutOptionButton value="grid">
-            <StyledGridIcon layoutOption={layoutOption} />
+            <StyledGridIcon layout={layoutOption} />
           </LayoutOptionButton>
         </LayoutOptionsButtonGroup>
         <StyledCheckBox checked={isUseZhuYin ? true : false} onClick={handleFontChange}>
@@ -154,24 +175,42 @@ const QuestionBlock: React.VFC<{
         <AdminBraftEditor
           variant="question"
           value={subjectValue}
-          onChange={v => setSubjectValue(v.toHTML())}
-          onBlur={() => handleSubjectValueChange(subjectValue)}
+          onChange={v => {
+            setSubjectValue(v)
+            const newQuestion = {
+              ...question,
+              title: v.toHTML().replace(/<[^>]+>/g, ''),
+              subject: v.toHTML(),
+            }
+            onQuestionChange?.(newQuestion)
+          }}
         />
       </QuestionSubject>
-      {question.options && (
-        <QuestionOptionsBlock
-          key={question.id}
-          optionList={question.options}
-          onOptionListChange={handleOptionListChange}
-        />
-      )}
+      <OptionsBlock>
+        {question.options?.map((option, idx, options) => (
+          <QuestionOptionBlock
+            key={option.id}
+            idx={idx}
+            option={option}
+            showDelete={options.length > 1 ? true : false}
+            onOptionChange={handleOptionChange}
+            onOptionDelete={handleOptionDelete}
+          />
+        ))}
+        <AddButton type="link" icon={<PlusIcon />} className="align-items-center" onClick={handleAddOption}>
+          <span>{formatMessage(questionLibraryMessage.ui.addOption)}</span>
+        </AddButton>
+      </OptionsBlock>
       <ExplanationBlock>
         <StyledP>{formatMessage(questionLibraryMessage.label.explanation)}</StyledP>
         <AdminBraftEditor
           variant="question"
           value={explanationValue}
-          onChange={v => setExplanationValue(v.toHTML())}
-          onBlur={() => handleExplanationValueChange(explanationValue)}
+          onChange={v => {
+            setExplanationValue(v)
+            const newQuestion = { ...question, explanation: v.toHTML() }
+            onQuestionChange?.(newQuestion)
+          }}
         />
       </ExplanationBlock>
     </>
