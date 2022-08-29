@@ -244,7 +244,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
       ...questionList,
       {
         id: uuid(),
-        type: 'single',
+        type: 'multiple',
         title: '',
         subject: '',
         layout: 'lists',
@@ -327,12 +327,6 @@ const QuestionGroupAdminPage: React.VFC = () => {
     document.body.style.overflowY = 'hidden'
   }, [])
 
-  // useEffect(() => {
-  //   if (!originalQuestionListLoading && questionList.length === 0 && originalQuestionList.length > 0) {
-  //     setQuestionList(originalQuestionList)
-  //   }
-  // }, [originalQuestionList, originalQuestionListLoading, questionList])
-
   useEffect(() => {
     setQuestionList(originalQuestionList)
   }, [originalQuestionList])
@@ -368,7 +362,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
       </StyledAdminHeader>
       <StyledContent>
         {!originalQuestionListLoading && (
-          <QuestionGroupBlock font={questionList[previewQuestionIdx].font}>
+          <QuestionGroupBlock font={questionList[previewQuestionIdx]?.font}>
             {!isNewQuestionGroup && (
               <ItemsSortingModal
                 items={questionList}
@@ -419,7 +413,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
             </AddQuestionBlock>
           </QuestionGroupBlock>
         )}
-        <PreviewBlock font={questionList[previewQuestionIdx].font}>
+        <PreviewBlock font={questionList[previewQuestionIdx]?.font}>
           {previewQuestionIdx !== -1 && (
             <PreviewQuestion>
               <ExamName>{formatMessage(questionLibraryMessage.label.examName)}</ExamName>
@@ -561,7 +555,7 @@ const useQuestionGroup = (questionGroupId: string) => {
     isNewQuestionGroup = true
     questions.push({
       id: uuid(),
-      type: 'single',
+      type: 'multiple',
       title: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
       subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
       layout: 'lists',
