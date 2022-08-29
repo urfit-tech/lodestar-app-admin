@@ -1,10 +1,8 @@
 import { Checkbox, Radio } from 'antd'
 import { RadioChangeEvent } from 'antd/lib/radio'
-import BraftEditor from 'braft-editor'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AdminBraftEditor from '../../components/form/AdminBraftEditor'
 import { questionLibraryMessage } from '../../helpers/translation'
 import { BarsIcon, GridIcon } from '../../images/icon'
 import { Question, QuestionOption } from '../../types/questionLibrary'
@@ -47,15 +45,15 @@ const LayoutOptionButton = styled(Radio.Button)`
   border-radius: 4px;
 `
 
-const StyledBarsIcon = styled(BarsIcon)<{ layoutOption: string }>`
+const StyledBarsIcon = styled(BarsIcon)<{ layout: string }>`
   path {
-    fill: ${props => (props.layoutOption === 'lists' ? '#fff' : '#585858')};
+    fill: ${props => (props.layout === 'lists' ? '#fff' : '#585858')};
   }
 `
 
-const StyledGridIcon = styled(GridIcon)<{ layoutOption: string }>`
+const StyledGridIcon = styled(GridIcon)<{ layout: string }>`
   path {
-    fill: ${props => (props.layoutOption === 'grid' ? '#fff' : '#585858')};
+    fill: ${props => (props.layout === 'grid' ? '#fff' : '#585858')};
   }
 `
 
@@ -87,14 +85,11 @@ const QuestionBlock: React.VFC<{
   onQuestionChange?: (question: Question) => void
 }> = ({ question, onQuestionChange }) => {
   const { formatMessage } = useIntl()
-  const [layoutOption, setLayoutOption] = useState<string>(question.layout || 'lists')
-  const [isUseZhuYin, setIsUseZhuYin] = useState<boolean>(question.font === 'zhuyin')
-  const [subjectValue, setSubjectValue] = useState<string>('')
-  const [explanationValue, setExplanationValue] = useState<string>('')
+  const layoutOption = question.layout || 'lists'
+  const isUseZhuYin = question.font === 'zhuyin'
 
   const onLayoutOptionChange = (e: RadioChangeEvent) => {
     const newQuestion = { ...question, layout: e.target.value }
-    setLayoutOption(e.target.value)
     onQuestionChange?.(newQuestion)
   }
 
@@ -105,28 +100,8 @@ const QuestionBlock: React.VFC<{
 
   const handleFontChange = () => {
     const newQuestion = { ...question, font: !isUseZhuYin ? 'zhuyin' : 'auto' }
-    setIsUseZhuYin(!isUseZhuYin)
     onQuestionChange?.(newQuestion)
   }
-
-  const handleSubjectValueChange = (value: string) => {
-    const newQuestion = {
-      ...question,
-      title: value.replace(/<[^>]+>/g, ''),
-      subject: value,
-    }
-    onQuestionChange?.(newQuestion)
-  }
-
-  const handleExplanationValueChange = (value: string) => {
-    const newQuestion = { ...question, explanation: value }
-    onQuestionChange?.(newQuestion)
-  }
-
-  useEffect(() => {
-    setSubjectValue(BraftEditor.createEditorState(question.subject))
-    setExplanationValue(BraftEditor.createEditorState(question.explanation))
-  }, [question])
 
   return (
     <>
@@ -139,10 +114,10 @@ const QuestionBlock: React.VFC<{
           onChange={onLayoutOptionChange}
         >
           <LayoutOptionButton value="lists">
-            <StyledBarsIcon layoutOption={layoutOption} />
+            <StyledBarsIcon layout={layoutOption} />
           </LayoutOptionButton>
           <LayoutOptionButton value="grid">
-            <StyledGridIcon layoutOption={layoutOption} />
+            <StyledGridIcon layout={layoutOption} />
           </LayoutOptionButton>
         </LayoutOptionsButtonGroup>
         <StyledCheckBox checked={isUseZhuYin ? true : false} onClick={handleFontChange}>
@@ -151,12 +126,18 @@ const QuestionBlock: React.VFC<{
       </LayoutOptionsBlock>
       <StyledP>{formatMessage(pageMessages.QuestionGroupAdminPage.question)}</StyledP>
       <QuestionSubject>
-        <AdminBraftEditor
+        {/* <AdminBraftEditor
           variant="question"
-          value={subjectValue}
-          onChange={v => setSubjectValue(v.toHTML())}
-          onBlur={() => handleSubjectValueChange(subjectValue)}
-        />
+          value={BraftEditor.createEditorState(question.subject)}
+          onChange={v => {
+            const newQuestion = {
+              ...question,
+              title: v.toHTML().replace(/<[^>]+>/g, ''),
+              subject: v.toHTML(),
+            }
+            onQuestionChange?.(newQuestion)
+          }}
+        /> */}
       </QuestionSubject>
       {question.options && (
         <QuestionOptionsBlock
@@ -167,12 +148,14 @@ const QuestionBlock: React.VFC<{
       )}
       <ExplanationBlock>
         <StyledP>{formatMessage(questionLibraryMessage.label.explanation)}</StyledP>
-        <AdminBraftEditor
+        {/* <AdminBraftEditor
           variant="question"
-          value={explanationValue}
-          onChange={v => setExplanationValue(v.toHTML())}
-          onBlur={() => handleExplanationValueChange(explanationValue)}
-        />
+          value={BraftEditor.createEditorState(question.explanation)}
+          onChange={v => {
+            const newQuestion = { ...question, explanation: v.toHTML() }
+            onQuestionChange?.(newQuestion)
+          }}
+        /> */}
       </ExplanationBlock>
     </>
   )

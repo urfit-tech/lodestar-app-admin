@@ -1,13 +1,14 @@
 import { Checkbox } from 'antd'
-import React, { useEffect, useState } from 'react'
+import BraftEditor from 'braft-editor'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
+import AdminBraftEditor from '../../components/form/AdminBraftEditor'
 import { questionLibraryMessage } from '../../helpers/translation'
 import { PlusIcon, TrashOIcon } from '../../images/icon'
 import { QuestionOption } from '../../types/questionLibrary'
 import pageMessages from '../translation'
-import OptionBraftEditor from './OptionBraftEditor'
 import { AddButton } from './QuestionGroupAdminPage'
 
 const Option = styled.div`
@@ -60,10 +61,8 @@ const QuestionOptionsBlock: React.VFC<{
   onOptionListChange?: (options: QuestionOption[]) => void
 }> = ({ optionList, onOptionListChange }) => {
   const { formatMessage } = useIntl()
-  const [answerOptionId, setAnswerOptionId] = useState<string>('')
 
   const handleIsAnswerClick = (optionId: string) => {
-    setAnswerOptionId(optionId)
     const newOptions = optionList.map(option => ({
       ...option,
       isAnswer: option.id === optionId ? true : false,
@@ -89,17 +88,10 @@ const QuestionOptionsBlock: React.VFC<{
     onOptionListChange?.(newOptionList)
   }
 
-  useEffect(() => {
-    optionList.forEach(option => {
-      if (option.isAnswer) {
-        setAnswerOptionId(option.id)
-      }
-    })
-  }, [optionList])
-
   return (
     <StyledBlock>
       {optionList.map((option, idx) => {
+        const optionValue = BraftEditor.createEditorState(option.value)
         return (
           <Option key={option.id}>
             <OptionHeader>
@@ -112,9 +104,18 @@ const QuestionOptionsBlock: React.VFC<{
                 />
               )}
             </OptionHeader>
-            <OptionBraftEditor optionId={option.id} value={option.value} onEditorChange={handleEditorChange} />
+            {/* <OptionBraftEditor optionId={option.id} value={option.value} onEditorChange={handleEditorChange} /> */}
+            <AdminBraftEditor
+              variant="question"
+              value={optionValue}
+              onChange={v => {
+                if (optionValue.toHTML() !== v.toHTML()) {
+                  handleEditorChange(option.id, v.toHTML())
+                }
+              }}
+            />
             <StyledCheckbox
-              checked={option.id === answerOptionId ? true : false}
+              checked={option.isAnswer}
               onClick={() => {
                 handleIsAnswerClick(option.id)
               }}
