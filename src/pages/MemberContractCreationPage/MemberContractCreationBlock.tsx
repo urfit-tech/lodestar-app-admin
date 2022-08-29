@@ -2,7 +2,6 @@ import { useMutation } from '@apollo/react-hooks'
 import { Alert, Button, message } from 'antd'
 import { FormInstance } from 'antd/lib/form'
 import gql from 'graphql-tag'
-import { currencyFormatter, notEmpty } from '../../helpers'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { flatten, range, sum, uniqBy } from 'ramda'
@@ -12,6 +11,7 @@ import { v4 } from 'uuid'
 import { ContractInfo, ContractItem, FieldProps } from '.'
 import { paymentMethods } from '../../constants'
 import hasura from '../../hasura'
+import { currencyFormatter, notEmpty } from '../../helpers'
 
 const StyledOrder = styled.div`
   border: 1px solid var(--gray-darker);
@@ -108,12 +108,15 @@ const MemberContractCreationBlock: React.FC<{
               return null
             }
 
+            const previewEndAt = new Date(startedAt)
+            previewEndAt.setDate(startedAt.getDate() + 14)
+
             return product.previews.map(v => ({
               product_id: v.productId,
               name: v.title,
               price: v.price ?? 225,
               started_at: fieldValue.withProductStartedAt ? startedAt.toISOString() : null,
-              ended_at: endedAt?.toISOString(),
+              ended_at: previewEndAt.toISOString(),
               delivered_at: new Date(),
             }))
           })
