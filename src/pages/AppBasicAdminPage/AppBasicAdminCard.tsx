@@ -29,11 +29,13 @@ const AppBasicAdminCard: React.VFC<AppBasicAdminCardProps> = ({ ...cardProps }) 
       return
     }
     setUploading(true)
-    const key = `images/${appId}/logo${extname(file.name)}`
+    const timestamp = Date.now()
+    const key = `images/${appId}/logo_${timestamp}${extname(file.name)}`
+    const logoUrl = `https://${process.env.REACT_APP_S3_BUCKET}/${key}/120?v=${timestamp}`
     uploadFile(key, file, authToken)
       .then(() =>
         updateLogo({
-          variables: { appId, logoUrl: `https://${process.env.REACT_APP_S3_BUCKET}/${key}/120?v=${Date.now()}` },
+          variables: { appId, logoUrl },
         }),
       )
       .then(() => {
