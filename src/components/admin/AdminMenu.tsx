@@ -376,7 +376,9 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         Boolean(permissions.COUPON_PLAN_ADMIN) ||
         Boolean(permissions.COUPON_PLAN_NORMAL) ||
         Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
-        Boolean(permissions.VOUCHER_PLAN_NORMAL),
+        Boolean(permissions.VOUCHER_PLAN_NORMAL) ||
+        Boolean(permissions.GIFT_PLAN_ADMIN) ||
+        Boolean(permissions.GIFT_PLAN_NORMAL),
       key: 'promotion_admin',
       icon: () => <DiscountIcon />,
       name: formatMessage(adminMessages.AdminMenu.promotionAdmin),
@@ -392,6 +394,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
             (Boolean(permissions.VOUCHER_PLAN_ADMIN) || Boolean(permissions.VOUCHER_PLAN_NORMAL)),
           key: 'voucher_plans',
           name: formatMessage(adminMessages.AdminMenu.vouchers),
+        },
+        {
+          permissionIsAllowed:
+            !!enabledModules.gift && (Boolean(permissions.GIFT_PLAN_ADMIN) || Boolean(permissions.GIFT_PLAN_NORMAL)),
+          key: 'gift_plans',
+          name: formatMessage(adminMessages.AdminMenu.gift),
         },
       ],
     },
