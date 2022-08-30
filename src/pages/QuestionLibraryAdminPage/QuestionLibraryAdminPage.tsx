@@ -200,7 +200,6 @@ const QuestionLibraryAdminPage: React.VFC = () => {
               },
             })
               .then(({ data }) => {
-                console.log(data)
                 const questionGroupId = data?.insert_question_group?.returning[0].id
                 setSavingLoading(false)
                 questionGroupId && history.push(`/question-groups/${questionGroupId}`)

@@ -9,7 +9,7 @@ import {
   SyncOutlined,
 } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Table } from 'antd'
+import { Button, Input, message, Table, Tag } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -69,6 +69,7 @@ const SalesLeadTable: React.VFC<{
     nameAndEmail?: string
     phone?: string
     lastTaskCategoryName?: string
+    leadLevel?: string
     categoryName?: string
     materialName?: string
     status?: string
@@ -131,7 +132,33 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'memberId',
       dataIndex: 'id',
-      title: '',
+      title: formatMessage(commonMessages.label.leadLevel),
+      filters: [
+        {
+          text: 'SSR',
+          value: 'SSR',
+        },
+        {
+          text: 'SR',
+          value: 'SR',
+        },
+        {
+          text: 'R',
+          value: 'R',
+        },
+        {
+          text: 'N',
+          value: 'N',
+        },
+      ],
+      sorter: (a, b) =>
+        (a.properties.find(property => property.name === '名單分級')?.value || 'N') >
+        (b.properties.find(property => property.name === '名單分級')?.value || 'N')
+          ? 1
+          : -1,
+      defaultSortOrder: 'descend',
+      onFilter: (value, lead) =>
+        value === (lead.properties.find(property => property.name === '名單分級')?.value || 'N'),
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
           {/* <Button
@@ -183,12 +210,16 @@ const SalesLeadTable: React.VFC<{
           nameAndEmail: value,
         }),
       ),
-
       render: (nameAndEmail, lead) => {
+        const leadLevel = lead.properties.find(property => property.name === '名單分級')?.value || 'N'
+        const color = leadLevel === 'SSR' ? 'red' : leadLevel === 'SR' ? 'orange' : leadLevel === 'R' ? 'yellow' : ''
         return (
           <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
             {lead.name}
-            <small>{lead.email}</small>
+            <small>
+              <Tag color={color}>{leadLevel}</Tag>
+              {lead.email}
+            </small>
           </a>
         )
       },
@@ -256,17 +287,15 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
-      defaultSortOrder: 'descend',
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
-    // {
-    //   key: 'recentContactedAt',
-    //   dataIndex: 'recentContactedAt',
-    //   title: formatMessage(salesMessages.recentContactedAt),
-    //   defaultSortOrder: 'descend',
-    //   sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
-    //   render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
-    // },
+    {
+      key: 'recentContactedAt',
+      dataIndex: 'recentContactedAt',
+      title: formatMessage(salesMessages.recentContactedAt),
+      sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
+      render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
+    },
     // {
     //   key: 'recentTaskedAt',
     //   dataIndex: 'recentTaskedAt',
@@ -521,8 +550,10 @@ const SalesLeadTable: React.VFC<{
             selectedRowKeys,
             onChange: onSelectChange,
           }}
+          rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}
+          pagination={{ pageSize: 10 }}
           className="mb-3"
         />
       </TableWrapper>

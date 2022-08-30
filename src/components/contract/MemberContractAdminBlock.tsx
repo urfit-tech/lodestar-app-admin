@@ -131,25 +131,54 @@ const MemberContractAdminBlock: React.FC<{
             className="mb-4"
           >
             <StyledMeta>
-              {contract.revokedAt
-                ? formatMessage(memberMessages.text.revokedAt, {
-                    time: moment(contract.revokedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })
-                : contract.agreedAt
-                ? formatMessage(memberMessages.text.agreedAt, {
+              {contract.agreedAt && (
+                <div>
+                  {formatMessage(memberMessages.text.agreedAt, {
                     time: moment(contract.agreedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })
-                : null}
+                  })}
+                </div>
+              )}
+              {contract.options.approvedAt && (
+                <div>
+                  {formatMessage(memberMessages.text.approvedAt, {
+                    time: moment(contract.options.approvedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })}
+                </div>
+              )}
+              {contract.options.loanCanceledAt && (
+                <div>
+                  {formatMessage(memberMessages.text.loanCanceledAt, {
+                    time: moment(contract.options.loanCanceledAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })}
+                </div>
+              )}
+              {contract.revokedAt && (
+                <div>
+                  {formatMessage(memberMessages.text.revokedAt, {
+                    time: moment(contract.revokedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })}
+                </div>
+              )}
+              {contract.options.refundAppliedAt && (
+                <div>
+                  {formatMessage(memberMessages.text.refundAppliedAt, {
+                    time: moment(contract.options.refundAppliedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })}
+                </div>
+              )}
             </StyledMeta>
             <div className="d-flex align-items-center justify-content-between">
               <StyledDescription>
-                {formatMessage(memberMessages.text.startedAt, {
-                  time: moment(contract.startedAt).format('YYYY-MM-DD HH:mm:ss'),
-                })}
-                <br />
-                {formatMessage(memberMessages.text.endedAt, {
-                  time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
-                })}
+                <div>
+                  {formatMessage(memberMessages.text.startedAt, {
+                    time: moment(contract.startedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })}
+                </div>
+                <div>
+                  {formatMessage(memberMessages.text.endedAt, {
+                    time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })}
+                </div>
               </StyledDescription>
               {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
                 <Button
@@ -184,6 +213,7 @@ const useMemberContracts = (memberId: string) => {
           agreed_options
           revoked_at
           values
+          options
           contract {
             id
             name
@@ -203,6 +233,7 @@ const useMemberContracts = (memberId: string) => {
     agreedAt: Date | null
     agreedIp: string | null
     agreedOptions: any
+    options: any
     revokedAt: Date | null
   }[] =
     data?.member_contract.map(v => {
@@ -215,10 +246,10 @@ const useMemberContracts = (memberId: string) => {
         agreedAt: v.agreed_at && new Date(v.agreed_at),
         agreedIp: v.agreed_ip,
         agreedOptions: v.agreed_options,
+        options: v.options,
         revokedAt: v.revoked_at && new Date(v.revoked_at),
       }
     }) || []
-
   return {
     loadingContracts: loading,
     errorContracts: error,

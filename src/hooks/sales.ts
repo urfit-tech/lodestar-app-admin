@@ -96,16 +96,9 @@ export const useSalesLeads = (managerId: string, leadFilter?: (lead: LeadProps) 
   const { id: appId } = useApp()
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
-    { variables: { appId, managerId } },
+    { variables: { managerId } },
   )
-  const convertToLead = (v: hasura.GET_SALES_LEADS_lead_status_new): LeadProps | null => {
-    const notified =
-      v.paid <= 0 &&
-      v.member &&
-      (!v.recent_contacted_at ||
-        !v.recent_tasked_at ||
-        (v.recent_contacted_at && moment(v.recent_contacted_at) <= moment().startOf('day').subtract(3, 'weeks')) ||
-        (v.recent_tasked_at && moment(v.recent_tasked_at) <= moment().startOf('day').subtract(3, 'days')))
+  const convertToLead = (v: hasura.GET_SALES_LEADS_xuemi_lead_status): LeadProps | null => {
     return v.member && v.member.member_phones.length > 0
       ? {
           id: v.member.id,
@@ -122,20 +115,22 @@ export const useSalesLeads = (managerId: string, leadFilter?: (lead: LeadProps) 
           })),
           paid: v.paid,
           status: v.status as LeadProps['status'],
-          notified,
+          notified: v.recent_contacted_at === null,
           recentTaskedAt: v.recent_tasked_at ? new Date(v.recent_tasked_at) : null,
-          recentContactedAt: v.recent_tasked_at ? new Date(v.recent_tasked_at) : null,
+          recentContactedAt: v.recent_contacted_at ? new Date(v.recent_contacted_at) : null,
         }
       : null
   }
 
-  const totalLeads: LeadProps[] = sortBy(prop('id'))(data?.lead_status_new.map(convertToLead).filter(notEmpty) || [])
+  const totalLeads: LeadProps[] = sortBy(prop('id'))(data?.xuemi_lead_status.map(convertToLead).filter(notEmpty) || [])
   const filteredLeads = totalLeads.filter(lead => (leadFilter ? leadFilter(lead) : true))
   return {
     loading,
     error,
     refetch,
     totalLeads,
+    dedicatedLeads: filteredLeads.filter(lead => lead.status === 'DEDICATED'),
+    existedLeads: filteredLeads.filter(lead => lead.status === 'EXISTED'),
     idledLeads: filteredLeads.filter(lead => lead.status === 'IDLED'),
     contactedLeads: filteredLeads.filter(lead => lead.status === 'CONTACTED'),
     invitedLeads: filteredLeads.filter(lead => lead?.status === 'INVITED'),
@@ -146,8 +141,8 @@ export const useSalesLeads = (managerId: string, leadFilter?: (lead: LeadProps) 
 }
 
 const GET_SALES_LEADS = gql`
-  query GET_SALES_LEADS($appId: String!, $managerId: String!) {
-    lead_status_new(where: { member: { app_id: { _eq: $appId }, manager_id: { _eq: $managerId } } }) {
+  query GET_SALES_LEADS($managerId: String!) {
+    xuemi_lead_status(where: { manager_id: { _eq: $managerId } }) {
       member {
         id
         name

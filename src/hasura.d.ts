@@ -1990,6 +1990,7 @@ export interface GET_MEMBER_CONTRACTS_member_contract {
   agreed_options: any | null;
   revoked_at: any | null;
   values: any | null;
+  options: any | null;
   /**
    * An object relationship
    */
@@ -6069,6 +6070,34 @@ export interface INSERT_PROGRAM_PACKAGE_PLAN {
 
 export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
   data: program_package_plan_insert_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION_insert_program_package_plan {
+  __typename: "program_package_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "program_package_plan"
+   */
+  insert_program_package_plan: UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION_insert_program_package_plan | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables {
+  data: program_package_plan_insert_input[];
 }
 
 /* tslint:disable */
@@ -14085,40 +14114,40 @@ export interface GET_SALESVariables {
 // GraphQL query operation: GET_SALES_LEADS
 // ====================================================
 
-export interface GET_SALES_LEADS_lead_status_new_member_member_properties_property {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_properties_property {
   __typename: "property";
   id: any;
   name: string;
 }
 
-export interface GET_SALES_LEADS_lead_status_new_member_member_properties {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_properties {
   __typename: "member_property";
   /**
    * An object relationship
    */
-  property: GET_SALES_LEADS_lead_status_new_member_member_properties_property;
+  property: GET_SALES_LEADS_xuemi_lead_status_member_member_properties_property;
   value: string;
 }
 
-export interface GET_SALES_LEADS_lead_status_new_member_member_phones {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_phones {
   __typename: "member_phone";
   phone: string;
 }
 
-export interface GET_SALES_LEADS_lead_status_new_member_member_categories_category {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_categories_category {
   __typename: "category";
   name: string;
 }
 
-export interface GET_SALES_LEADS_lead_status_new_member_member_categories {
+export interface GET_SALES_LEADS_xuemi_lead_status_member_member_categories {
   __typename: "member_category";
   /**
    * An object relationship
    */
-  category: GET_SALES_LEADS_lead_status_new_member_member_categories_category;
+  category: GET_SALES_LEADS_xuemi_lead_status_member_member_categories_category;
 }
 
-export interface GET_SALES_LEADS_lead_status_new_member {
+export interface GET_SALES_LEADS_xuemi_lead_status_member {
   __typename: "member";
   id: string;
   name: string;
@@ -14129,23 +14158,23 @@ export interface GET_SALES_LEADS_lead_status_new_member {
   /**
    * An array relationship
    */
-  member_properties: GET_SALES_LEADS_lead_status_new_member_member_properties[];
+  member_properties: GET_SALES_LEADS_xuemi_lead_status_member_member_properties[];
   /**
    * An array relationship
    */
-  member_phones: GET_SALES_LEADS_lead_status_new_member_member_phones[];
+  member_phones: GET_SALES_LEADS_xuemi_lead_status_member_member_phones[];
   /**
    * An array relationship
    */
-  member_categories: GET_SALES_LEADS_lead_status_new_member_member_categories[];
+  member_categories: GET_SALES_LEADS_xuemi_lead_status_member_member_categories[];
 }
 
-export interface GET_SALES_LEADS_lead_status_new {
-  __typename: "lead_status_new";
+export interface GET_SALES_LEADS_xuemi_lead_status {
+  __typename: "xuemi_lead_status";
   /**
    * An object relationship
    */
-  member: GET_SALES_LEADS_lead_status_new_member | null;
+  member: GET_SALES_LEADS_xuemi_lead_status_member | null;
   status: string | null;
   paid: any | null;
   recent_contacted_at: any | null;
@@ -14154,13 +14183,12 @@ export interface GET_SALES_LEADS_lead_status_new {
 
 export interface GET_SALES_LEADS {
   /**
-   * fetch data from the table: "lead_status_new"
+   * fetch data from the table: "xuemi.lead_status"
    */
-  lead_status_new: GET_SALES_LEADS_lead_status_new[];
+  xuemi_lead_status: GET_SALES_LEADS_xuemi_lead_status[];
 }
 
 export interface GET_SALES_LEADSVariables {
-  appId: string;
   managerId: string;
 }
 
@@ -17721,34 +17749,6 @@ export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION
-// ====================================================
-
-export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION_insert_program_package_plan {
-  __typename: "program_package_plan_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION {
-  /**
-   * insert data into the table: "program_package_plan"
-   */
-  insert_program_package_plan: UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION_insert_program_package_plan | null;
-}
-
-export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables {
-  data: program_package_plan_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
 // ====================================================
 
@@ -20325,12 +20325,21 @@ export interface GET_ASSIGNED_MEMBERVariables {
 // GraphQL query operation: GET_MEMBER_CONTRACT_LIST
 // ====================================================
 
+export interface GET_MEMBER_CONTRACT_LIST_order_executor_member_member_properties {
+  __typename: "member_property";
+  value: string;
+}
+
 export interface GET_MEMBER_CONTRACT_LIST_order_executor_member {
   __typename: "member";
   id: string;
   name: string;
   email: string;
   app_id: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_MEMBER_CONTRACT_LIST_order_executor_member_member_properties[];
 }
 
 export interface GET_MEMBER_CONTRACT_LIST_order_executor {
@@ -21526,10 +21535,12 @@ export enum exercise_constraint {
 export enum exercise_update_column {
   answer = "answer",
   created_at = "created_at",
+  ended_at = "ended_at",
   exam_id = "exam_id",
   id = "id",
   member_id = "member_id",
   program_content_id = "program_content_id",
+  started_at = "started_at",
   updated_at = "updated_at",
 }
 
@@ -28920,6 +28931,7 @@ export interface exercise_bool_exp {
   _or?: exercise_bool_exp[] | null;
   answer?: jsonb_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
   exam?: exam_bool_exp | null;
   exam_id?: uuid_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -28927,6 +28939,7 @@ export interface exercise_bool_exp {
   member_id?: String_comparison_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -28936,6 +28949,7 @@ export interface exercise_bool_exp {
 export interface exercise_insert_input {
   answer?: any | null;
   created_at?: any | null;
+  ended_at?: any | null;
   exam?: exam_obj_rel_insert_input | null;
   exam_id?: any | null;
   id?: any | null;
@@ -28943,6 +28957,7 @@ export interface exercise_insert_input {
   member_id?: string | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
+  started_at?: any | null;
   updated_at?: any | null;
 }
 
@@ -28951,10 +28966,12 @@ export interface exercise_insert_input {
  */
 export interface exercise_max_order_by {
   created_at?: order_by | null;
+  ended_at?: order_by | null;
   exam_id?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   program_content_id?: order_by | null;
+  started_at?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -28963,10 +28980,12 @@ export interface exercise_max_order_by {
  */
 export interface exercise_min_order_by {
   created_at?: order_by | null;
+  ended_at?: order_by | null;
   exam_id?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
   program_content_id?: order_by | null;
+  started_at?: order_by | null;
   updated_at?: order_by | null;
 }
 
