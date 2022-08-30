@@ -2325,5 +2325,17 @@
   "admin.AdminMenu.questionLibraryAdmin": "題目庫",
   "page.QuestionGroupAdminPage.questionTextDescription": "題目文字描述",
   "admin.AdminMenu.venueManagement": "場地管理",
-  "admin.AdminMenu.giftPlans": "贈品方案"
+  "admin.AdminMenu.giftPlans": "贈品方案",
+  "page.GiftPlanCollectionAdminPage.giftPlan": "贈品方案",
+  "page.GiftPlanCollectionAdminPage.giftPlanTitle": "贈品方案名稱",
+  "page.GiftPlanCollectionAdminPage.giftItemName": "贈品項目",
+  "page.GiftPlanCollectionAdminPage.deliver": "是，需索取寄送地址",
+  "page.GiftPlanCollectionAdminPage.online": "否，線上自行交付",
+  "promotion.*.isRequired": "請輸入{field}",
+  "promotion.ui.createGiftPlan": "建立贈品",
+  "page.*.discontinued": "已下架",
+  "page.GriftPlanCollectionPage.deleteGriftPlanMessage": "確定刪除此贈品方案？",
+  "common.ui.discontinue": "下架",
+  "page.GriftPlanCollectionPage.discontinueGriftPlanMessage": "確定下架此贈品方案？",
+  "page.GiftPlanCollectionAdminPage.editGiftPlan": "編輯贈品方案"
 }

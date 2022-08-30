@@ -75,6 +75,7 @@ export const commonMessages = {
     ownerBackstage: { id: 'common.ui.ownerBackstage', defaultMessage: '平台管理者專區' },
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
     set: { id: 'common.ui.set', defaultMessage: '設為' },
+    discontinue: { id: 'common.ui.discontinue', defaultMessage: '下架' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -605,6 +606,9 @@ export const appointmentMessages = {
 }
 
 export const promotionMessages = {
+  '*': defineMessages({
+    isRequired: { id: 'promotion.*.isRequired', defaultMessage: '請輸入{field}' },
+  }),
   ui: defineMessages({
     editCouponPlan: { id: 'promotion.ui.editCouponPlan', defaultMessage: '編輯折價方案' },
     random: { id: 'promotion.ui.random', defaultMessage: '隨機' },
@@ -613,6 +617,7 @@ export const promotionMessages = {
     exchange: { id: 'promotion.ui.exchange', defaultMessage: '兌換' },
     addVoucher: { id: 'promotion.ui.addVoucher', defaultMessage: '新增兌換券' },
     exportCodes: { id: 'promotion.ui.exportCodes', defaultMessage: '匯出代碼' },
+    createGiftPlan: { id: 'promotion.ui.createGiftPlan', defaultMessage: '建立贈品' },
   }),
   label: defineMessages({
     fromNow: { id: 'promotion.label.fromNow', defaultMessage: '即日起' },
@@ -778,7 +783,7 @@ export const programPackageMessages = {
     createProgramPackage: { id: 'programPackage.ui.createProgramPackage', defaultMessage: '建立課程組合' },
     connectProgram: { id: 'programPackage.ui.connectProgram', defaultMessage: '加入課程' },
     editPlan: { id: 'programPackage.ui.editPlan', defaultMessage: '編輯方案' },
-    sortPlan: { id: 'programPackage.ui.sortPlan', defaultMessage: '方案排序'},
+    sortPlan: { id: 'programPackage.ui.sortPlan', defaultMessage: '方案排序' },
   }),
   label: defineMessages({
     generalSetting: { id: 'programPackage.label.generalSetting', defaultMessage: '一般設定' },
@@ -1437,10 +1442,16 @@ export const questionLibraryMessage = {
     explanation: { id: 'questionLibrary.label.explanation', defaultMessage: '解答說明' },
     createNewQuestionGroup: { id: 'questionLibrary.label.createNewQuestionGroup', defaultMessage: '建立新題組' },
     importFromQuestionLibrary: { id: 'questionLibrary.label.importFromQuestionLibrary', defaultMessage: '從題庫匯入' },
-    randomlySelectFromQuestionLibrary: { id: 'questionLibrary.label.randomlySelectFromQuestionLibrary', defaultMessage: '題庫隨機抽題' },
+    randomlySelectFromQuestionLibrary: {
+      id: 'questionLibrary.label.randomlySelectFromQuestionLibrary',
+      defaultMessage: '題庫隨機抽題',
+    },
     basicSettings: { id: 'questionLibrary.label.basicSettings', defaultMessage: '基本設定' },
     renameQuestionGroup: { id: 'questionLibrary.label.renameQuestionGroup', defaultMessage: '重新命名題組' },
-    confirmDuplicateQuestionGroup: { id: 'questionLibrary.label.confirmDuplicateQuestionGroup', defaultMessage: '確認複製此題組?' },
+    confirmDuplicateQuestionGroup: {
+      id: 'questionLibrary.label.confirmDuplicateQuestionGroup',
+      defaultMessage: '確認複製此題組?',
+    },
     draw: { id: 'questionLibrary.label.draw', defaultMessage: '從中抽' },
     questions: { id: 'questionLibrary.label.questions', defaultMessage: '題' },
   }),

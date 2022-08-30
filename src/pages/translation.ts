@@ -71,6 +71,7 @@ const pageMessages = {
     deliveryDate: { id: 'page.*.deliveryDate', defaultMessage: '發送日' },
     expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
     upload: { id: 'page.*.upload', defaultMessage: '上傳' },
+    discontinued: { id: 'page.*.discontinued', defaultMessage: '已下架' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -344,6 +345,23 @@ const pageMessages = {
     col: { id: 'page.VenueSeatSetting.col', defaultMessage: '直欄' },
     high: { id: 'page.VenueSeatSetting.high', defaultMessage: '高起來' },
     walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
+  }),
+  GiftPlanCollectionAdminPage: defineMessages({
+    giftPlan: { id: 'page.GiftPlanCollectionAdminPage.giftPlan', defaultMessage: '贈品方案' },
+    giftPlanTitle: { id: 'page.GiftPlanCollectionAdminPage.giftPlanTitle', defaultMessage: '贈品方案名稱' },
+    giftItemName: { id: 'page.GiftPlanCollectionAdminPage.giftItemName', defaultMessage: '贈品項目' },
+    deliver: { id: 'page.GiftPlanCollectionAdminPage.deliver', defaultMessage: '是，需索取寄送地址' },
+    online: { id: 'page.GiftPlanCollectionAdminPage.online', defaultMessage: '否，線上自行交付' },
+    deleteGriftPlanMessage: {
+      id: 'page.GriftPlanCollectionPage.deleteGriftPlanMessage',
+      defaultMessage: '確定刪除此贈品方案？',
+    },
+    discontinueGriftPlanMessage: {
+      id: 'page.GriftPlanCollectionPage.discontinueGriftPlanMessage',
+      defaultMessage: '確定下架此贈品方案？',
+    },
+    editGiftPlan: { id: 'page.GiftPlanCollectionAdminPage.editGiftPlan', defaultMessage: '編輯贈品方案' },
+    giftPlanCover: { id: 'page.GiftPlanCollectionAdminPage.giftPlanCover', defaultMessage: '贈品方案封面' },
   }),
 }
 
