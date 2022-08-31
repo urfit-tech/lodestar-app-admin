@@ -15,6 +15,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -128,10 +129,33 @@ const SalesLeadTable: React.VFC<{
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
+  const dataSource = leads
+    .filter(
+      v =>
+        (!filters.nameAndEmail ||
+          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
+          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
+        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
+        (!filters.categoryName ||
+          v.categoryNames.find(categoryName =>
+            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
+          )) &&
+        (!filters.materialName ||
+          v.properties.find(
+            property =>
+              property.name === '廣告素材' &&
+              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
+          )),
+    )
+    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
+
+  const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
+
   const columns: ColumnsType<LeadProps> = [
     {
       key: 'memberId',
       dataIndex: 'id',
+      width: 80,
       title: formatMessage(commonMessages.label.leadLevel),
       filters: [
         {
@@ -175,7 +199,7 @@ const SalesLeadTable: React.VFC<{
           /> */}
           <Button
             icon={<CheckSquareOutlined />}
-            className="mr-2"
+            className="mr-1"
             onClick={() => {
               setSelectedMember({
                 id: record.id,
@@ -186,7 +210,7 @@ const SalesLeadTable: React.VFC<{
             }}
           />
           <Button
-            className="mr-2"
+            className="mr-1"
             icon={<FileAddOutlined />}
             onClick={() => {
               setSelectedMember({
@@ -203,6 +227,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'nameAndEmail',
       dataIndex: 'nameAndEmail',
+      width: 200,
       title: formatMessage(salesMessages.studentName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
@@ -215,11 +240,11 @@ const SalesLeadTable: React.VFC<{
         const color = leadLevel === 'SSR' ? 'red' : leadLevel === 'SR' ? 'orange' : leadLevel === 'R' ? 'yellow' : ''
         return (
           <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
-            {lead.name}
-            <small>
+            <span>
               <Tag color={color}>{leadLevel}</Tag>
-              {lead.email}
-            </small>
+              {lead.name}
+            </span>
+            <small>{lead.email}</small>
           </a>
         )
       },
@@ -227,6 +252,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'phones',
       dataIndex: 'phones',
+      width: 100,
       title: formatMessage(salesMessages.tel),
       render: (phones: string[]) =>
         phones.map((phone, idx) => (
@@ -257,12 +283,11 @@ const SalesLeadTable: React.VFC<{
       key: 'categoryNames',
       dataIndex: 'categoryNames',
       title: formatMessage(commonMessages.label.category),
-      ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
-          categoryName: value,
-        }),
-      ),
+      filters: categoryNames.map(categoryName => ({
+        text: categoryName,
+        value: categoryName,
+      })),
+      onFilter: (value, lead) => lead.categoryNames.includes(value.toString()),
       render: (categoryNames: string[]) =>
         categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
     },
@@ -283,18 +308,18 @@ const SalesLeadTable: React.VFC<{
           .map((v, idx) => <div key={idx}>{v}</div>),
     },
     {
-      key: 'createdAt',
-      dataIndex: 'createdAt',
-      title: formatMessage(salesMessages.createdAt),
-      sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
-      render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
-    },
-    {
       key: 'recentContactedAt',
       dataIndex: 'recentContactedAt',
       title: formatMessage(salesMessages.recentContactedAt),
       sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
       render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
+    },
+    {
+      key: 'createdAt',
+      dataIndex: 'createdAt',
+      title: formatMessage(salesMessages.createdAt),
+      sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
+      render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
     // {
     //   key: 'recentTaskedAt',
@@ -310,25 +335,6 @@ const SalesLeadTable: React.VFC<{
     //   sorter: (a, b) => a.paid - b.paid,
     // },
   ]
-  const dataSource = leads
-    .filter(
-      v =>
-        (!filters.nameAndEmail ||
-          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
-          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
-        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
-        (!filters.categoryName ||
-          v.categoryNames.find(categoryName =>
-            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
-          )) &&
-        (!filters.materialName ||
-          v.properties.find(
-            property =>
-              property.name === '廣告素材' &&
-              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
-          )),
-    )
-    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   return (
     <StyledAdminCard>

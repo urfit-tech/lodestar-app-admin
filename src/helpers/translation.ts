@@ -214,7 +214,7 @@ export const commonMessages = {
     caption: { id: 'common.label.caption', defaultMessage: '字幕' },
     title: { id: 'common.label.title', defaultMessage: '名稱' },
     customTitle: { id: 'common.label.customTitle', defaultMessage: '{customTitle}' },
-    leadLevel: { id: 'common.label.leadLevel', defaultMessage: '名單分級' },
+    leadLevel: { id: 'common.label.leadLevel', defaultMessage: '分級' },
     category: { id: 'common.label.category', defaultMessage: '分類' },
     adMaterial: { id: 'common.label.adMaterial', defaultMessage: '廣告素材' },
     tag: { id: 'common.label.tag', defaultMessage: '標籤' },
