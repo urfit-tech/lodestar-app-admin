@@ -69,7 +69,7 @@ const ExamBasicForm: React.VFC<{
                     ...prevState,
                     ...basicExam,
                     examinableAmount: basicExam.examinableAmount || 7,
-                    examinableUnit: basicExam.examinableUnit || 'day',
+                    examinableUnit: basicExam.examinableUnit || 'd',
                     examinableStartedAt: null,
                     examinableEndedAt: null,
                   }))
@@ -80,7 +80,7 @@ const ExamBasicForm: React.VFC<{
                     examinableAmount: null,
                     examinableUnit: null,
                     examinableStartedAt: basicExam.examinableStartedAt || new Date(),
-                    examinableEndedAt: basicExam.examinableEndedAt || new Date(moment().add(7, 'day').toString()),
+                    examinableEndedAt: basicExam.examinableEndedAt || new Date(moment().add(7, 'd').toString()),
                   }))
                 }
               }}
@@ -116,7 +116,7 @@ const ExamBasicForm: React.VFC<{
               <Form.Item name="examinableUnit">
                 <Select
                   style={{ width: '80px' }}
-                  defaultValue={(basicExam.examinableUnit || 'day') as ExamTimeUnit}
+                  defaultValue={(basicExam.examinableUnit || 'd') as ExamTimeUnit}
                   onChange={v =>
                     onChange(prevState => ({
                       ...prevState,
@@ -125,13 +125,13 @@ const ExamBasicForm: React.VFC<{
                     }))
                   }
                 >
-                  <Select.Option key="day" value="day">
+                  <Select.Option key="d" value="d">
                     {formatMessage(programMessages.ExamBasicForm.day)}
                   </Select.Option>
-                  <Select.Option key="hour" value="hour">
+                  <Select.Option key="h" value="h">
                     {formatMessage(programMessages.ExamBasicForm.hour)}
                   </Select.Option>
-                  <Select.Option key="minute" value="minute">
+                  <Select.Option key="m" value="m">
                     {formatMessage(programMessages.ExamBasicForm.minute)}
                   </Select.Option>
                 </Select>
@@ -141,7 +141,7 @@ const ExamBasicForm: React.VFC<{
                   examId={basicExam.id}
                   currentStatus={{
                     examinableAmount: currentBasicExam.examinableAmount || 7,
-                    examinableUnit: currentBasicExam.examinableUnit || 'day',
+                    examinableUnit: currentBasicExam.examinableUnit || 'd',
                     examinableStartedAt: null,
                     examinableEndedAt: null,
                   }}
@@ -157,7 +157,7 @@ const ExamBasicForm: React.VFC<{
                   format="YYYY-MM-DD"
                   defaultValue={[
                     basicExam.examinableStartedAt ? moment(basicExam.examinableStartedAt) : moment(),
-                    basicExam.examinableEndedAt ? moment(basicExam.examinableEndedAt) : moment().add(7, 'day'),
+                    basicExam.examinableEndedAt ? moment(basicExam.examinableEndedAt) : moment().add(7, 'd'),
                   ]}
                   onChange={v =>
                     onChange(prevState => ({
@@ -205,7 +205,7 @@ const ExamBasicForm: React.VFC<{
                     ...prevState,
                     ...basicExam,
                     timeLimitAmount: basicExam.timeLimitAmount || 1,
-                    timeLimitUnit: basicExam.timeLimitUnit || 'hour',
+                    timeLimitUnit: basicExam.timeLimitUnit || 'h',
                   }))
                 }
               }}
@@ -238,7 +238,7 @@ const ExamBasicForm: React.VFC<{
               <Form.Item name="timeLimitUnit">
                 <Select
                   style={{ width: '80px' }}
-                  defaultValue={basicExam.timeLimitUnit || 'hour'}
+                  defaultValue={basicExam.timeLimitUnit || 'h'}
                   onChange={v =>
                     onChange(prevState => ({
                       ...prevState,
@@ -247,13 +247,13 @@ const ExamBasicForm: React.VFC<{
                     }))
                   }
                 >
-                  <Select.Option key="day" value="day">
+                  <Select.Option key="d" value="d">
                     {formatMessage(programMessages.ExamBasicForm.day)}
                   </Select.Option>
-                  <Select.Option key="hour" value="hour">
+                  <Select.Option key="h" value="h">
                     {formatMessage(programMessages.ExamBasicForm.hour)}
                   </Select.Option>
-                  <Select.Option key="minute" value="minute">
+                  <Select.Option key="m" value="m">
                     {formatMessage(programMessages.ExamBasicForm.minute)}
                   </Select.Option>
                 </Select>
