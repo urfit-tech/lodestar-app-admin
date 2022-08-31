@@ -23,6 +23,7 @@ type Filter = {
   starRangeIsNull: boolean
   marketingActivity: string
   adMaterials: string
+  leadLevel: string
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -41,6 +42,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     starRangeIsNull: false,
     marketingActivity: '',
     adMaterials: '',
+    leadLevel: '',
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -145,6 +147,9 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
       >
         <Input />
       </Form.Item>
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.leadLevel)} name="leadLevel">
+        <Input />
+      </Form.Item>
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
         name="createdAtRange"
@@ -227,6 +232,12 @@ const ConfirmSection: React.FC<{
               member_properties:
                 filter.adMaterials !== ''
                   ? { property: { name: { _eq: '廣告素材' } }, value: { _like: `%${filter.adMaterials}%` } }
+                  : undefined,
+            },
+            {
+              member_properties:
+                filter.leadLevel !== ''
+                  ? { property: { name: { _eq: '名單分級' } }, value: { _eq: `${filter.leadLevel}` } }
                   : undefined,
             },
           ],

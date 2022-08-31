@@ -9,12 +9,13 @@ import {
   SyncOutlined,
 } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Table } from 'antd'
+import { Button, Input, message, Table, Tag } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -69,6 +70,7 @@ const SalesLeadTable: React.VFC<{
     nameAndEmail?: string
     phone?: string
     lastTaskCategoryName?: string
+    leadLevel?: string
     categoryName?: string
     materialName?: string
     status?: string
@@ -127,11 +129,60 @@ const SalesLeadTable: React.VFC<{
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
+  const dataSource = leads
+    .filter(
+      v =>
+        (!filters.nameAndEmail ||
+          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
+          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
+        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
+        (!filters.categoryName ||
+          v.categoryNames.find(categoryName =>
+            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
+          )) &&
+        (!filters.materialName ||
+          v.properties.find(
+            property =>
+              property.name === '廣告素材' &&
+              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
+          )),
+    )
+    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
+
+  const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
+
   const columns: ColumnsType<LeadProps> = [
     {
       key: 'memberId',
       dataIndex: 'id',
-      title: '',
+      width: 80,
+      title: formatMessage(commonMessages.label.leadLevel),
+      filters: [
+        {
+          text: 'SSR',
+          value: 'SSR',
+        },
+        {
+          text: 'SR',
+          value: 'SR',
+        },
+        {
+          text: 'R',
+          value: 'R',
+        },
+        {
+          text: 'N',
+          value: 'N',
+        },
+      ],
+      sorter: (a, b) =>
+        (a.properties.find(property => property.name === '名單分級')?.value || 'N') >
+        (b.properties.find(property => property.name === '名單分級')?.value || 'N')
+          ? 1
+          : -1,
+      defaultSortOrder: 'descend',
+      onFilter: (value, lead) =>
+        value === (lead.properties.find(property => property.name === '名單分級')?.value || 'N'),
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
           {/* <Button
@@ -148,7 +199,7 @@ const SalesLeadTable: React.VFC<{
           /> */}
           <Button
             icon={<CheckSquareOutlined />}
-            className="mr-2"
+            className="mr-1"
             onClick={() => {
               setSelectedMember({
                 id: record.id,
@@ -159,7 +210,7 @@ const SalesLeadTable: React.VFC<{
             }}
           />
           <Button
-            className="mr-2"
+            className="mr-1"
             icon={<FileAddOutlined />}
             onClick={() => {
               setSelectedMember({
@@ -176,6 +227,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'nameAndEmail',
       dataIndex: 'nameAndEmail',
+      width: 200,
       title: formatMessage(salesMessages.studentName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
@@ -183,11 +235,15 @@ const SalesLeadTable: React.VFC<{
           nameAndEmail: value,
         }),
       ),
-
       render: (nameAndEmail, lead) => {
+        const leadLevel = lead.properties.find(property => property.name === '名單分級')?.value || 'N'
+        const color = leadLevel === 'SSR' ? 'red' : leadLevel === 'SR' ? 'orange' : leadLevel === 'R' ? 'yellow' : ''
         return (
           <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
-            {lead.name}
+            <span>
+              <Tag color={color}>{leadLevel}</Tag>
+              {lead.name}
+            </span>
             <small>{lead.email}</small>
           </a>
         )
@@ -196,6 +252,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'phones',
       dataIndex: 'phones',
+      width: 100,
       title: formatMessage(salesMessages.tel),
       render: (phones: string[]) =>
         phones.map((phone, idx) => (
@@ -226,12 +283,11 @@ const SalesLeadTable: React.VFC<{
       key: 'categoryNames',
       dataIndex: 'categoryNames',
       title: formatMessage(commonMessages.label.category),
-      ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
-          categoryName: value,
-        }),
-      ),
+      filters: categoryNames.map(categoryName => ({
+        text: categoryName,
+        value: categoryName,
+      })),
+      onFilter: (value, lead) => lead.categoryNames.includes(value.toString()),
       render: (categoryNames: string[]) =>
         categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
     },
@@ -252,21 +308,19 @@ const SalesLeadTable: React.VFC<{
           .map((v, idx) => <div key={idx}>{v}</div>),
     },
     {
+      key: 'recentContactedAt',
+      dataIndex: 'recentContactedAt',
+      title: formatMessage(salesMessages.recentContactedAt),
+      sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
+      render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
+    },
+    {
       key: 'createdAt',
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
-      defaultSortOrder: 'descend',
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
-    // {
-    //   key: 'recentContactedAt',
-    //   dataIndex: 'recentContactedAt',
-    //   title: formatMessage(salesMessages.recentContactedAt),
-    //   defaultSortOrder: 'descend',
-    //   sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
-    //   render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
-    // },
     // {
     //   key: 'recentTaskedAt',
     //   dataIndex: 'recentTaskedAt',
@@ -281,25 +335,6 @@ const SalesLeadTable: React.VFC<{
     //   sorter: (a, b) => a.paid - b.paid,
     // },
   ]
-  const dataSource = leads
-    .filter(
-      v =>
-        (!filters.nameAndEmail ||
-          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
-          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
-        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
-        (!filters.categoryName ||
-          v.categoryNames.find(categoryName =>
-            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
-          )) &&
-        (!filters.materialName ||
-          v.properties.find(
-            property =>
-              property.name === '廣告素材' &&
-              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
-          )),
-    )
-    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   return (
     <StyledAdminCard>
@@ -521,8 +556,10 @@ const SalesLeadTable: React.VFC<{
             selectedRowKeys,
             onChange: onSelectChange,
           }}
+          rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}
+          pagination={{ pageSize: 10 }}
           className="mb-3"
         />
       </TableWrapper>

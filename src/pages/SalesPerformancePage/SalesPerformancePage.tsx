@@ -6,7 +6,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
-import { sum } from 'ramda'
+import { sum, uniqBy } from 'ramda'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -34,7 +34,7 @@ export type MemberContract = {
   executor: {
     id: string
     name: string
-    agency: string
+    groupName: string
   }
   member: {
     id: string
@@ -58,6 +58,7 @@ const TableWrapper = styled.div`
 
 const SalesPerformancePage: React.VFC = () => {
   const [month, setMonth] = useState(moment().startOf('month'))
+  const [activeGroupName, setActiveGroupName] = useState<string>()
   const [activeManagerId, setActiveManagerId] = useState<string>()
   const { formatMessage } = useIntl()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
@@ -101,6 +102,22 @@ const SalesPerformancePage: React.VFC = () => {
               ))}
             </Select>
           )}
+          <Select
+            className="mr-3"
+            style={{ width: 200 }}
+            showSearch
+            allowClear
+            placeholder="組別"
+            value={activeGroupName}
+            optionFilterProp="children"
+            onChange={setActiveGroupName}
+          >
+            {uniqBy(manager => manager.groupName, managers || []).map(manager => (
+              <Select.Option key={manager.id} value={manager.groupName}>
+                {manager.groupName}
+              </Select.Option>
+            ))}
+          </Select>
         </div>
       </AdminPageTitle>
       {currentMemberId ? (
@@ -108,7 +125,15 @@ const SalesPerformancePage: React.VFC = () => {
           loading={loading}
           memberContracts={
             activeManagerId
-              ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
+              ? activeGroupName
+                ? memberContracts.filter(
+                    memberContract =>
+                      memberContract.executor.id === activeManagerId &&
+                      memberContract.executor.groupName === activeGroupName,
+                  )
+                : memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
+              : activeGroupName
+              ? memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
               : memberContracts
           }
         />
@@ -121,9 +146,8 @@ const SalesPerformancePage: React.VFC = () => {
 
 const SalesPerformanceTable: React.VFC<{
   loading: boolean
-  activeManagerId?: string
   memberContracts: MemberContract[]
-}> = ({ loading, activeManagerId, memberContracts }) => {
+}> = ({ loading, memberContracts }) => {
   const columns: ColumnsType<MemberContract> = [
     {
       title: '簽署日',
@@ -200,10 +224,6 @@ const SalesPerformanceTable: React.VFC<{
     },
   ]
 
-  const managerMemberContracts = activeManagerId
-    ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
-    : memberContracts
-
   const isCanceled = (mc: MemberContract) => !!mc.canceledAt && !!mc.agreedAt && !mc.approvedAt
   const isRevoked = (mc: MemberContract) => !!mc.revokedAt && !!mc.agreedAt && !mc.canceledAt
   const isRefundApplied = (mc: MemberContract) =>
@@ -213,9 +233,9 @@ const SalesPerformanceTable: React.VFC<{
     !!mc.agreedAt && !mc.approvedAt && !mc.refundAppliedAt && !mc.revokedAt && !mc.canceledAt
 
   const calculatePerformance = (condition: (mc: MemberContract) => boolean) =>
-    sum(managerMemberContracts.filter(condition).map(mc => mc.performance))
+    sum(memberContracts.filter(condition).map(mc => mc.performance))
   const calculateRecognizePerformance = (condition: (mc: MemberContract) => boolean) =>
-    sum(managerMemberContracts.filter(condition).map(mc => mc.recognizePerformance))
+    sum(memberContracts.filter(condition).map(mc => mc.recognizePerformance))
 
   const performance = {
     currentPerformance: calculateRecognizePerformance(isApproved),
@@ -259,6 +279,9 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
             name
             email
             app_id
+            member_properties(where: { property: { name: { _eq: "組別" } } }) {
+              value
+            }
           }
         }
         member_contract(
@@ -300,7 +323,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
           id: v.member?.id || v4(),
           name: v.member?.name || 'unknown',
           email: v.member?.email || 'unknown',
-          agency: v.member?.app_id || appId,
+          groupName: v.member?.member_properties[0]?.value || 'unknown',
         }
       }) || [],
     [data?.order_executor],
@@ -326,7 +349,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                 executor: {
                   id: executor?.id,
                   name: executor?.name,
-                  agency: executor?.agency,
+                  groupName: executor?.groupName,
                 },
                 member: {
                   id: v.member.id,

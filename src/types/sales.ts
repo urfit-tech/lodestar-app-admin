@@ -8,7 +8,7 @@ export type LeadProps = {
   paid: number
   star: number
   createdAt: Date
-  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'SIGNED' | 'CLOSED'
+  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'SIGNED' | 'CLOSED' | 'DEDICATED' | 'EXISTED'
   notified: Boolean
   recentTaskedAt: Date | null
   recentContactedAt: Date | null

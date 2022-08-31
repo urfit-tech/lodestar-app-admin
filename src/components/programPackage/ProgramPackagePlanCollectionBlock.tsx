@@ -209,7 +209,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
   )
 }
 
-const UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION = gql`
+export const UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION = gql`
   mutation UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION($data: [program_package_plan_insert_input!]!) {
     insert_program_package_plan(
       objects: $data

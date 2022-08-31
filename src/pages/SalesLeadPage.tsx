@@ -25,7 +25,7 @@ const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const { currentMemberId, currentMember, permissions } = useAuth()
-  const [activeKey, setActiveKey] = useState('idled')
+  const [activeKey, setActiveKey] = useState('starred')
   const [saleId, setSaleId] = useState<string | undefined>()
   useMemberContractNotification()
 
@@ -74,6 +74,8 @@ const SalesLeadTabs: React.VFC<{
     refetch,
     totalLeads,
     idledLeads,
+    dedicatedLeads,
+    existedLeads,
     contactedLeads,
     invitedLeads,
     presentedLeads,
@@ -108,6 +110,31 @@ const SalesLeadTabs: React.VFC<{
       >
         {<SalesLeadTable variant="starred" sales={sales} leads={starredLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="dedicated"
+        tab={
+          <div>
+            {formatMessage(salesMessages.dedicatedLead)}
+            <span>({dedicatedLeads.length})</span>
+          </div>
+        }
+      >
+        {<SalesLeadTable sales={sales} leads={dedicatedLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="existed"
+        tab={
+          <div>
+            {formatMessage(salesMessages.existedLead)}
+            <span>({existedLeads.length})</span>
+          </div>
+        }
+      >
+        {<SalesLeadTable sales={sales} leads={existedLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+      {/*       
       <Tabs.TabPane
         key="idled"
         tab={
@@ -154,7 +181,7 @@ const SalesLeadTabs: React.VFC<{
         }
       >
         {<SalesLeadTable sales={sales} leads={presentedLeads} onRefetch={refetch} />}
-      </Tabs.TabPane>
+      </Tabs.TabPane> */}
 
       <Tabs.TabPane
         key="paid"
