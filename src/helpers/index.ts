@@ -5,6 +5,7 @@ import moment from 'moment'
 import queryString from 'query-string'
 import { css, FlattenSimpleInterpolation } from 'styled-components'
 import { BREAK_POINT } from '../components/common/Responsive'
+import { PeriodType } from '../types/general'
 
 export const TPDirect = (window as any)['TPDirect']
 
@@ -362,3 +363,13 @@ export const isHTMLString = (str: string) =>
     .replace(/(<([^>]+)>)/gi, '')
     // remove extra space at start and end
     .trim()
+
+type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
+
+export const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
+  if (['D', 'W', 'Y'].includes(type)) {
+    return type.toLowerCase() as MomentPeriodType
+  }
+
+  return type as MomentPeriodType
+}

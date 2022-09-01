@@ -1,12 +1,12 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Checkbox, DatePicker, Descriptions, Form, Input, InputNumber, Radio, Select, Space } from 'antd'
+import { Button, Checkbox, Descriptions, Form, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
-import { AdminBlockTitle } from '../../components/admin'
 import moment from 'moment'
-import { keys, last } from 'ramda'
-import React, { memo, useState } from 'react'
+import { keys } from 'ramda'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps } from '.'
+import { AdminBlockTitle } from '../../components/admin'
 import { installmentPlans, paymentMethods } from '../../constants'
 import CertificationUploader from './CertificationUploader'
 import ReferralMemberSelector from './ReferralMemberSelector'
@@ -23,7 +23,9 @@ const MemberContractCreationForm: React.FC<
     contracts: ContractInfo['contracts']
     projectPlans: ContractInfo['projectPlans']
     startedAt: Date
-    endedAt: Date | null
+    endedAt: Date
+    serviceStartedAt: Date
+    serviceEndedAt: Date
     products: ContractInfo['products']
     contractProducts: NonNullable<FieldProps['contractProducts']>
     appointmentPlanCreators: ContractInfo['appointmentPlanCreators']
@@ -39,12 +41,15 @@ const MemberContractCreationForm: React.FC<
       }[]
     }
   }
-> = memo(
+> =
+  // memo(
   ({
     contracts,
     projectPlans,
     startedAt,
     endedAt,
+    serviceStartedAt,
+    serviceEndedAt,
     products,
     contractProducts,
     appointmentPlanCreators,
@@ -71,53 +76,6 @@ const MemberContractCreationForm: React.FC<
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
-        <Descriptions title="合約期間" column={2} bordered className="mb-5">
-          <Descriptions.Item label="合約項目">
-            <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
-              <Select<string> style={{ width: 150 }}>
-                {contracts.map(v => (
-                  <Select.Option key={v.id} value={v.id}>
-                    {v.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Descriptions.Item>
-
-          <Descriptions.Item label="合約效期">
-            <Form.Item
-              className="mb-0"
-              name="selectedProjectPlanId"
-              rules={[{ required: true, message: '請選擇合約效期' }]}
-            >
-              <Select<string> onChange={() => form?.setFieldsValue({ contractProducts: [] })} style={{ width: 150 }}>
-                {projectPlans.map(v => (
-                  <Select.Option key={v.id} value={v.id}>
-                    {v.periodAmount} {v.periodType}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <div className="d-flex align-items-center mt-2">
-              <div>加贈：</div>
-              <Form.Item className="mb-0" name="selectedGiftDays">
-                <Select<string> style={{ width: 100 }}>
-                  {[0, 7, 14].map(value => (
-                    <Select.Option key={value} value={value}>
-                      {value}天
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </div>
-          </Descriptions.Item>
-
-          <Descriptions.Item label="服務開始日">{moment(startedAt).format('YYYY-MM-DD HH:mm:ss')}</Descriptions.Item>
-          <Descriptions.Item label="服務結束日">
-            {endedAt ? moment(endedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
-          </Descriptions.Item>
-        </Descriptions>
-
         <div className="mb-5">
           <AdminBlockTitle>合約內容</AdminBlockTitle>
           <Form.List name="contractProducts">
@@ -136,9 +94,17 @@ const MemberContractCreationForm: React.FC<
                           fieldKey={[field.fieldKey, 'id']}
                           label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                         >
-                          <Select<string> className="mr-3" style={{ width: '250px' }}>
+                          <Select<string>
+                            className="mr-3"
+                            style={{ width: '300px' }}
+                            showSearch
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                              option?.title.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
                             {products.map(product => (
-                              <Select.Option key={product.id} value={product.id}>
+                              <Select.Option key={product.id} value={product.id} title={product.name}>
                                 {product.name}
                               </Select.Option>
                             ))}
@@ -174,10 +140,29 @@ const MemberContractCreationForm: React.FC<
               )
             }}
           </Form.List>
-        </div>
-
-        <Descriptions column={1} bordered className="mb-5">
-          <Descriptions.Item label="指定業師">
+          <Descriptions column={1} bordered className="mb-5 mt-3">
+            <Descriptions.Item label="合約項目">
+              <Form.Item className="mb-0" name="contractId" rules={[{ required: true, message: '請選擇合約' }]}>
+                <Select<string>>
+                  {contracts.map(v => (
+                    <Select.Option key={v.id} value={v.id}>
+                      {v.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Descriptions.Item>
+            <Descriptions.Item label="合約期間">
+              {moment(startedAt).format('YYYY-MM-DD')}
+              <span className="mx-1">~</span>
+              {endedAt ? moment(endedAt).format('YYYY-MM-DD') : ''}
+            </Descriptions.Item>
+            <Descriptions.Item label="服務期間">
+              {moment(serviceStartedAt).format('YYYY-MM-DD')}
+              <span className="mx-1">~</span>
+              {serviceEndedAt ? moment(serviceEndedAt).format('YYYY-MM-DD') : ''}
+            </Descriptions.Item>
+            {/* <Descriptions.Item label="指定業師">
             <Form.Item noStyle name="withCreatorId">
               <Radio.Group>
                 <Radio value={false}>不指定</Radio>
@@ -196,38 +181,38 @@ const MemberContractCreationForm: React.FC<
                 )}
               </Select>
             </Form.Item>
-          </Descriptions.Item>
+          </Descriptions.Item> */}
 
-          <Descriptions.Item label="學員身份" className="m-0">
-            <div className="d-flex align-items-center">
-              <Form.Item name="identity" noStyle>
-                <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
-                  <Radio value="normal">一般</Radio>
-                  <Radio value="student">學生</Radio>
-                </Radio.Group>
+            <Descriptions.Item label="學員身份" className="m-0">
+              <div className="d-flex align-items-center">
+                <Form.Item name="identity" noStyle>
+                  <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
+                    <Radio value="normal">一般</Radio>
+                    <Radio value="student">學生</Radio>
+                  </Radio.Group>
+                </Form.Item>
+
+                <Form.Item name="certification" noStyle>
+                  {identity === 'student' && (
+                    <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
+                  )}
+                </Form.Item>
+
+                {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
+              </div>
+            </Descriptions.Item>
+
+            <Descriptions.Item label="介紹人">
+              <Form.Item name="referralMemberId" noStyle>
+                <ReferralMemberSelector />
               </Form.Item>
-
-              <Form.Item name="certification" noStyle>
-                {identity === 'student' && (
-                  <CertificationUploader memberId={memberId} onFinish={path => setCertificationPath(path)} />
-                )}
+            </Descriptions.Item>
+            <Descriptions.Item label="訂金">
+              <Form.Item name="hasDeposit" valuePropName="checked" noStyle>
+                <Checkbox>扣除訂金 $1000</Checkbox>
               </Form.Item>
-
-              {<span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>}
-            </div>
-          </Descriptions.Item>
-
-          <Descriptions.Item label="介紹人">
-            <Form.Item name="referralMemberId" noStyle>
-              <ReferralMemberSelector />
-            </Form.Item>
-          </Descriptions.Item>
-          <Descriptions.Item label="訂金">
-            <Form.Item name="hasDeposit" valuePropName="checked" noStyle>
-              <Checkbox>扣除訂金 $1000</Checkbox>
-            </Form.Item>
-          </Descriptions.Item>
-          <Descriptions.Item label="鑑賞期">
+            </Descriptions.Item>
+            {/* <Descriptions.Item label="鑑賞期">
             <div className="d-flex align-items-center">
               <div className="flex-shrink-0">
                 <Form.Item name="withProductStartedAt" valuePropName="checked" noStyle>
@@ -245,27 +230,28 @@ const MemberContractCreationForm: React.FC<
                 </Form.Item>
               </div>
             </div>
-          </Descriptions.Item>
+          </Descriptions.Item> */}
 
-          {totalPrice >= minRebatePrice && targetRebateGiftList.length > 0 && (
-            <Descriptions.Item label="滿額學習工具">
-              <Form.Item name="rebateGift" style={{ width: '300px' }}>
-                <Select<string>>
-                  {targetRebateGiftList?.map(v => (
-                    <Select.Option key={v.name} value={`${v.couponPlanId}_${-v.price}_${v.name}`}>
-                      {v.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Descriptions.Item>
-          )}
-        </Descriptions>
+            {/* {totalPrice >= minRebatePrice && targetRebateGiftList.length > 0 && (
+              <Descriptions.Item label="滿額學習工具">
+                <Form.Item name="rebateGift" style={{ width: '300px' }}>
+                  <Select<string>>
+                    {targetRebateGiftList?.map(v => (
+                      <Select.Option key={v.name} value={`${v.couponPlanId}_${-v.price}_${v.name}`}>
+                        {v.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Descriptions.Item>
+            )} */}
+          </Descriptions>
+        </div>
 
-        <Descriptions title="付款方式" bordered className="mb-5">
-          <Descriptions.Item label="付款方式">
+        <Descriptions title="付款方式" bordered className="mb-5" column={6}>
+          <Descriptions.Item label="付款方式" span={4}>
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> style={{ width: 120 }}>
+              <Select<string> style={{ width: 240 }}>
                 {paymentMethods
                   .filter(paymentMethod => !paymentMethod.hidden)
                   .map(paymentMethod => (
@@ -277,7 +263,7 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="分期期數">
+          <Descriptions.Item label="分期期數" span={2}>
             <Form.Item className="mb-0" name="installmentPlan" rules={[{ required: true, message: '請選擇分期期數' }]}>
               <Select<string> style={{ width: 120 }}>
                 {installmentPlans.map(installmentPlan => (
@@ -289,16 +275,16 @@ const MemberContractCreationForm: React.FC<
             </Form.Item>
           </Descriptions.Item>
 
-          <Descriptions.Item label="金流編號">
+          {/* <Descriptions.Item label="金流編號">
             <Form.Item className="mb-0" name="paymentNumber" rules={[{ required: true, message: '請填寫金流編號' }]}>
               <Input />
             </Form.Item>
-          </Descriptions.Item>
+          </Descriptions.Item> */}
 
-          <Descriptions.Item label="承辦人 / 分潤" span={3}>
+          <Descriptions.Item label="承辦人 / 分潤" span={6}>
             <Space align="center" className="d-flex mb-3">
               <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
-                <Select<string> showSearch placeholder="承辦人" style={{ width: '150px' }} optionFilterProp="label">
+                <Select<string> showSearch placeholder="承辦人" style={{ width: '250px' }} optionFilterProp="label">
                   {sales.map(member => (
                     <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
                       {member.name}
@@ -353,15 +339,16 @@ const MemberContractCreationForm: React.FC<
         </Descriptions>
       </Form>
     )
-  },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.endedAt?.getTime() === nextProps.endedAt?.getTime() &&
-      prevProps.isAppointmentOnly === nextProps.isAppointmentOnly &&
-      prevProps.contractProducts.length === nextProps.contractProducts.length &&
-      last(prevProps.contractProducts)?.id === last(nextProps.contractProducts)?.id
-    )
-  },
-)
+  }
+//   ,
+//   (prevProps, nextProps) => {
+//     return (
+//       prevProps.endedAt?.getTime() === nextProps.endedAt?.getTime() &&
+//       prevProps.isAppointmentOnly === nextProps.isAppointmentOnly &&
+//       prevProps.contractProducts.length === nextProps.contractProducts.length &&
+//       last(prevProps.contractProducts)?.id === last(nextProps.contractProducts)?.id
+//     )
+//   },
+// )
 
 export default MemberContractCreationForm

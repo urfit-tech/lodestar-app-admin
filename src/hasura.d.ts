@@ -5090,6 +5090,9 @@ export interface GET_EXAM_ID_BY_PROGRAM_CONTENT_IDVariables {
 export interface GET_BASIC_EXAM_exam_by_pk {
   __typename: "exam";
   id: any;
+  /**
+   * d, h, m
+   */
   examinable_unit: string | null;
   examinable_amount: any | null;
   examinable_started_at: any | null;
@@ -5279,7 +5282,7 @@ export interface GET_EXAM_TIME_LIMIT_LIST_exam_member_time_limit {
   __typename: "exam_member_time_limit";
   id: any;
   expired_at: any;
-  member_id: any;
+  member_id: string;
 }
 
 export interface GET_EXAM_TIME_LIMIT_LIST {
@@ -16188,6 +16191,36 @@ export interface ADD_MEMBER_CONTRACTVariables {
   endedAt: any;
   values: any;
   options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_BASIC_INFO
+// ====================================================
+
+export interface UPDATE_MEMBER_BASIC_INFO_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_INFO {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_BASIC_INFO_update_member | null;
+}
+
+export interface UPDATE_MEMBER_BASIC_INFOVariables {
+  memberId: string;
+  name?: string | null;
+  email?: string | null;
 }
 
 /* tslint:disable */
@@ -28838,7 +28871,7 @@ export interface exam_member_time_limit_insert_input {
   expired_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
-  member_id?: any | null;
+  member_id?: string | null;
   updated_at?: any | null;
 }
 
@@ -37704,6 +37737,7 @@ export interface program_content_enrollment_bool_exp {
   _or?: program_content_enrollment_bool_exp[] | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  product_delivered_at?: timestamptz_comparison_exp | null;
   program?: program_bool_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
@@ -37716,6 +37750,7 @@ export interface program_content_enrollment_bool_exp {
 export interface program_content_enrollment_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  product_delivered_at?: any | null;
   program?: program_obj_rel_insert_input | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
@@ -37727,6 +37762,7 @@ export interface program_content_enrollment_insert_input {
  */
 export interface program_content_enrollment_max_order_by {
   member_id?: order_by | null;
+  product_delivered_at?: order_by | null;
   program_content_id?: order_by | null;
   program_id?: order_by | null;
 }
@@ -37736,6 +37772,7 @@ export interface program_content_enrollment_max_order_by {
  */
 export interface program_content_enrollment_min_order_by {
   member_id?: order_by | null;
+  product_delivered_at?: order_by | null;
   program_content_id?: order_by | null;
   program_id?: order_by | null;
 }
@@ -38619,6 +38656,7 @@ export interface program_enrollment_bool_exp {
   member_id?: String_comparison_exp | null;
   member_name?: String_comparison_exp | null;
   member_picture_url?: String_comparison_exp | null;
+  product_delivered_at?: timestamptz_comparison_exp | null;
   program?: program_bool_exp | null;
   program_id?: uuid_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -38633,6 +38671,7 @@ export interface program_enrollment_insert_input {
   member_id?: string | null;
   member_name?: string | null;
   member_picture_url?: string | null;
+  product_delivered_at?: any | null;
   program?: program_obj_rel_insert_input | null;
   program_id?: any | null;
   updated_at?: any | null;
@@ -38646,6 +38685,7 @@ export interface program_enrollment_max_order_by {
   member_id?: order_by | null;
   member_name?: order_by | null;
   member_picture_url?: order_by | null;
+  product_delivered_at?: order_by | null;
   program_id?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -38658,6 +38698,7 @@ export interface program_enrollment_min_order_by {
   member_id?: order_by | null;
   member_name?: order_by | null;
   member_picture_url?: order_by | null;
+  product_delivered_at?: order_by | null;
   program_id?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -39029,6 +39070,7 @@ export interface program_package_plan_enrollment_bool_exp {
   _or?: program_package_plan_enrollment_bool_exp[] | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  product_delivered_at?: timestamp_comparison_exp | null;
   program_package_plan?: program_package_plan_bool_exp | null;
   program_package_plan_id?: uuid_comparison_exp | null;
 }
@@ -39039,6 +39081,7 @@ export interface program_package_plan_enrollment_bool_exp {
 export interface program_package_plan_enrollment_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  product_delivered_at?: any | null;
   program_package_plan?: program_package_plan_obj_rel_insert_input | null;
   program_package_plan_id?: any | null;
 }
@@ -39369,6 +39412,7 @@ export interface program_plan_enrollment_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
+  product_delivered_at?: timestamp_comparison_exp | null;
   program_plan?: program_plan_bool_exp | null;
   program_plan_id?: uuid_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
@@ -39383,6 +39427,7 @@ export interface program_plan_enrollment_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   options?: any | null;
+  product_delivered_at?: any | null;
   program_plan?: program_plan_obj_rel_insert_input | null;
   program_plan_id?: any | null;
   started_at?: any | null;

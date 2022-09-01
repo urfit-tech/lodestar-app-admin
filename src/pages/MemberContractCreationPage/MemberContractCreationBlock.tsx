@@ -29,14 +29,16 @@ const MemberContractCreationBlock: React.FC<{
   products: ContractInfo['products']
   selectedProjectPlan: ContractInfo['projectPlans'][number] | null
   startedAt: Date
-  endedAt: Date | null
+  endedAt: Date
+  serviceStartedAt: Date
+  serviceEndedAt: Date
   memberBlockRef: React.MutableRefObject<HTMLDivElement | null>
   selectedProducts: NonNullable<FieldProps['contractProducts']>
   form: FormInstance<FieldProps>
   coinExchangeRage: number
   contractProducts: ContractItem[]
   contractDiscounts: ContractItem[]
-  finalPrice: number
+  totalPrice: number
   totalAppointments: number
   totalCoins: number
 }> = ({
@@ -45,24 +47,33 @@ const MemberContractCreationBlock: React.FC<{
   selectedProjectPlan,
   startedAt,
   endedAt,
+  serviceStartedAt,
+  serviceEndedAt,
   memberBlockRef,
   form,
   selectedProducts,
   coinExchangeRage,
   contractProducts,
   contractDiscounts,
-  finalPrice,
+  totalPrice,
   totalAppointments,
   totalCoins,
 }) => {
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
+
   const { currentMemberId } = useAuth()
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const fieldValue = form.getFieldsValue()
 
   const handleMemberContractCreate = async () => {
+    const alert = document.getElementsByClassName('ant-alert')[0]
+
+    if (memberBlockRef.current?.contains(alert)) {
+      message.warning('學員資料請填寫完整')
+      return
+    }
     if (fieldValue.identity === 'student' && !fieldValue?.certification?.file.name) {
       message.warn('需上傳證明')
       return
@@ -108,15 +119,14 @@ const MemberContractCreationBlock: React.FC<{
               return null
             }
 
-            const previewEndAt = new Date(startedAt)
-            previewEndAt.setDate(startedAt.getDate() + 14)
-
             return product.previews.map(v => ({
               product_id: v.productId,
               name: v.title,
-              price: v.price ?? 225,
-              started_at: fieldValue.withProductStartedAt ? startedAt.toISOString() : null,
-              ended_at: previewEndAt.toISOString(),
+              price: 0,
+              started_at: serviceStartedAt,
+              ended_at: serviceStartedAt
+                ? moment(serviceStartedAt).add(14, 'day').endOf('day').toDate().toISOString()
+                : null,
               delivered_at: new Date(),
             }))
           })
@@ -150,8 +160,8 @@ const MemberContractCreationBlock: React.FC<{
                     amount: 100,
                     title: `學米諮詢券`,
                     description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
-                    started_at: startedAt.toISOString(),
-                    ended_at: endedAt?.toISOString(),
+                    started_at: serviceStartedAt.toISOString(),
+                    ended_at: serviceEndedAt?.toISOString(),
                     scope: ['AppointmentPlan'],
                   },
                 }
@@ -186,23 +196,23 @@ const MemberContractCreationBlock: React.FC<{
         values: {
           memberId: member.id,
           coinLogs: [
-            {
-              id: previewProductCoinLogId,
-              member_id: member.id,
-              title: '學習禮包',
-              description: '搶先看學習禮包',
-              amount: Math.ceil(sum(previewProducts.map(v => v.price)) / coinExchangeRage),
-              started_at: null,
-              ended_at: endedAt?.toISOString(),
-            },
+            // {
+            //   id: previewProductCoinLogId,
+            //   member_id: member.id,
+            //   title: '學習禮包',
+            //   description: '搶先看學習禮包',
+            //   amount: Math.ceil(sum(previewProducts.map(v => v.price)) / coinExchangeRage),
+            //   started_at: null,
+            //   ended_at: serviceEndedAt?.toISOString(),
+            // },
             {
               id: v4(),
               member_id: member.id,
               title: `${selectedProjectPlan?.title}`,
               description: '私塾課代幣',
               amount: totalCoins,
-              started_at: startedAt.toISOString(),
-              ended_at: endedAt?.toISOString(),
+              started_at: serviceStartedAt.toISOString(),
+              ended_at: serviceEndedAt?.toISOString(),
             },
           ],
           coupons: [
@@ -216,9 +226,9 @@ const MemberContractCreationBlock: React.FC<{
           orderId: `${moment().format('YYYYMMDDHHmmssSSS')}00`,
           orderOptions: {
             recognizePerformance:
-              finalPrice -
+              totalPrice -
               Math.round(
-                finalPrice *
+                totalPrice *
                   (paymentMethods
                     .find(paymentMethod => paymentMethod.method === fieldValue.paymentMethod)
                     ?.feeWithInstallmentPlans.find(
@@ -228,54 +238,70 @@ const MemberContractCreationBlock: React.FC<{
           },
           orderProducts: [
             {
-              product_id: `ProjectPlan_${fieldValue.selectedProjectPlanId}`,
+              product_id: `ProjectPlan_${selectedProjectPlan?.id}`,
               name: selectedProjectPlan?.title,
-              price: 0,
-              started_at: startedAt.toISOString(),
-              ended_at: endedAt?.toISOString(),
+              price: totalPrice,
+              started_at: serviceStartedAt.toISOString(),
+              ended_at: serviceEndedAt?.toISOString(),
               delivered_at: new Date(),
             },
-            ...contractProducts.map(v => ({
-              product_id: `ProjectPlan_${v.id}`,
-              name: v.name,
-              price: v.price * v.amount,
-              started_at: startedAt.toISOString(),
-              ended_at: endedAt?.toISOString(),
-              delivered_at: new Date(),
-              options:
-                v.amount > 1
-                  ? {
-                      quantity: v.amount,
-                    }
-                  : null,
-            })),
+            ...contractProducts
+              .filter(v => v.name !== '業師諮詢')
+              .map(v => ({
+                product_id: `ProjectPlan_${v.id}`,
+                name: v.name,
+                price: 0,
+                started_at: serviceStartedAt.toISOString(),
+                ended_at: serviceEndedAt?.toISOString(),
+                delivered_at: new Date(),
+                options:
+                  v.amount > 1
+                    ? {
+                        quantity: v.amount,
+                      }
+                    : null,
+              })),
+            ...[
+              totalAppointments &&
+                products.find(p => p.name === '業師諮詢') && {
+                  product_id: `ProjectPlan_${products.find(p => p.name === '業師諮詢')?.id}`,
+                  name: products.find(p => p.name === '業師諮詢')?.name,
+                  price: 0,
+                  started_at: serviceStartedAt.toISOString(),
+                  ended_at: serviceEndedAt?.toISOString(),
+                  delivered_at: new Date(),
+                  options: {
+                    quantity: totalAppointments,
+                  },
+                },
+            ].filter(notEmpty),
             ...previewProducts,
             {
               product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
               name: '學米 VIP 會員卡',
               price: 0,
-              started_at: startedAt.toISOString(),
-              ended_at: endedAt?.toISOString(),
+              started_at: serviceStartedAt.toISOString(),
+              ended_at: serviceEndedAt?.toISOString(),
               delivered_at: new Date(),
             },
           ],
           orderDiscounts: [
-            ...contractCoupons.map(v => ({
-              name: `【折價券】${v.name}`,
-              price: v.price,
-              type: 'Coupon',
-              target: v.id,
-            })),
-            ...previewProducts.map(v => ({
-              name: `【代幣折抵】${v.name}`,
-              price: 225,
-              type: 'Coin',
-              target: previewProductCoinLogId,
-              options: {
-                coins: 5,
-                exchangeRate: 45,
-              },
-            })),
+            // ...contractCoupons.map(v => ({
+            //   name: `【折價券】${v.name}`,
+            //   price: 0,
+            //   type: 'Coupon',
+            //   target: v.id,
+            // })),
+            // ...previewProducts.map(v => ({
+            //   name: `【代幣折抵】${v.name}`,
+            //   price: 0,
+            //   type: 'Coin',
+            //   target: previewProductCoinLogId,
+            //   options: {
+            //     coins: 5,
+            //     exchangeRate: 45,
+            //   },
+            // })),
           ],
           orderExecutors,
           invoice: {
@@ -289,12 +315,13 @@ const MemberContractCreationBlock: React.FC<{
             installmentPlan: fieldValue.installmentPlan,
             paymentNumber: fieldValue.paymentNumber,
           },
-          price: finalPrice,
+          price: totalPrice,
         },
         options: {
           appointmentCreatorId: fieldValue.withCreatorId ? fieldValue.creatorId : null,
           studentCertification: fieldValue.identity === 'student' ? fieldValue?.certification?.file.name : null,
           referralMemberId: fieldValue.referralMemberId,
+          serviceEndedAt: serviceEndedAt.toISOString(),
         },
       },
     })
@@ -329,7 +356,7 @@ const MemberContractCreationBlock: React.FC<{
           <strong className="col-6 text-right">合計</strong>
 
           <div className="col-6 text-right">
-            <StyledTotal>{currencyFormatter(finalPrice)}</StyledTotal>
+            <StyledTotal>{currencyFormatter(totalPrice)}</StyledTotal>
             <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
             <StyledTotal>{totalCoins} XP</StyledTotal>
           </div>

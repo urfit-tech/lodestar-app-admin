@@ -1,18 +1,18 @@
 import { useQuery } from '@apollo/react-hooks'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import { AdminBlock } from '../../components/admin'
-import DefaultLayout from '../../components/layout/DefaultLayout'
-import { notEmpty } from '../../helpers'
-import LoadingPage from '../../pages/LoadingPage'
-import { PeriodType } from '../../types/general'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
 import { sum, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { AdminBlock } from '../../components/admin'
+import DefaultLayout from '../../components/layout/DefaultLayout'
 import { installmentPlans } from '../../constants'
 import hasura from '../../hasura'
+import { notEmpty } from '../../helpers'
+import LoadingPage from '../../pages/LoadingPage'
+import { PeriodType } from '../../types/general'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
 import MemberContractCreationForm from './MemberContractCreationForm'
 import MemberDescriptionBlock from './MemberDescriptionBlock'
@@ -27,7 +27,7 @@ type FieldProps = {
       name: string
     }
   }
-  selectedProjectPlanId?: string | null
+  selectedProjectPlanId: string | null
   selectedGiftDays?: 0 | 7 | 14
   contractProducts?: {
     id: string
@@ -110,8 +110,6 @@ type ContractItem = {
   amount: number
 }
 
-type MomentPeriodType = 'd' | 'w' | 'M' | 'y'
-
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId } = useApp()
@@ -138,7 +136,7 @@ const MemberContractCreationPage: React.VFC = () => {
     return <LoadingPage />
   }
 
-  const selectedProjectPlan = projectPlans.find(v => v.id === fieldValue.selectedProjectPlanId) || null
+  const selectedProjectPlan = projectPlans.find(v => v.periodAmount === 1 && v.periodType === 'Y') || null
 
   // calculate contract items results
   const selectedProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
@@ -282,19 +280,21 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: 1,
     })
   }
-
-  const endedAt = selectedProjectPlan
-    ? moment(startedAt)
-        .add(
-          selectedProjectPlan.periodAmount || 0,
-          selectedProjectPlan.periodType ? periodTypeConverter(selectedProjectPlan.periodType) : 'y',
-        )
-        .add(fieldValue.selectedGiftDays, 'days')
-        .add(Math.floor(totalCoins / 1200) / 2, 'years')
-        .toDate()
-    : null
-
   const totalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
+
+  const endedAt = moment(startedAt).add(1, 'year').subtract(1, 'second').toDate()
+  const serviceStartedAt = moment().toDate()
+  const serviceEndedAt = (
+    totalPrice > 250000
+      ? moment(endedAt).add(24, 'months')
+      : totalPrice > 200000
+      ? moment(endedAt).add(18, 'months')
+      : totalPrice > 150000
+      ? moment(endedAt).add(12, 'months')
+      : totalPrice > 90000
+      ? moment(endedAt).add(6, 'months')
+      : moment(endedAt)
+  ).toDate()
 
   // calculate rebateGift
   if (fieldValue.rebateGift) {
@@ -309,8 +309,6 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: 1,
     })
   }
-
-  const finalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
 
   return (
     <DefaultLayout>
@@ -338,14 +336,11 @@ const MemberContractCreationPage: React.VFC = () => {
             memberId={memberId}
             startedAt={startedAt}
             endedAt={endedAt}
+            serviceStartedAt={serviceStartedAt}
+            serviceEndedAt={serviceEndedAt}
             contractProducts={selectedProducts}
             isAppointmentOnly={isAppointmentOnly}
-            products={products.filter(
-              product =>
-                product.periodType === null ||
-                (product.periodAmount === selectedProjectPlan?.periodAmount &&
-                  product.periodType === selectedProjectPlan.periodType),
-            )}
+            products={products}
             contracts={contracts}
             projectPlans={projectPlans}
             sales={sales}
@@ -361,12 +356,14 @@ const MemberContractCreationPage: React.VFC = () => {
             selectedProjectPlan={selectedProjectPlan}
             startedAt={startedAt}
             endedAt={endedAt}
+            serviceStartedAt={serviceStartedAt}
+            serviceEndedAt={serviceEndedAt}
             selectedProducts={selectedProducts}
             memberBlockRef={memberBlockRef}
             coinExchangeRage={coinExchangeRage}
             contractProducts={contractProducts}
             contractDiscounts={contractDiscounts}
-            finalPrice={finalPrice}
+            totalPrice={totalPrice}
             totalAppointments={totalAppointments}
             totalCoins={totalCoins}
           />
@@ -374,14 +371,6 @@ const MemberContractCreationPage: React.VFC = () => {
       </div>
     </DefaultLayout>
   )
-}
-
-const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type => {
-  if (['D', 'W', 'Y'].includes(type)) {
-    return type.toLowerCase() as MomentPeriodType
-  }
-
-  return type as MomentPeriodType
 }
 
 const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
@@ -405,7 +394,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             }
           }
         }
-        property(where: { name: { _in: ["學生程度", "每月學習預算", "轉職意願", "上過其他課程", "特別需求"] } }) {
+        property(where: { placeholder: { _like: "%必填%" } }) {
           id
           name
           placeholder
@@ -488,7 +477,10 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           })),
         }
       : null
-    info.properties = data.property
+    info.properties = data.property.map(v => ({
+      ...v,
+      placeholder: v.placeholder?.replace(/[()]/g, '').replace(/必填：/g, '') || null,
+    }))
     info.contracts = data.contract
     info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
       id: v.id,

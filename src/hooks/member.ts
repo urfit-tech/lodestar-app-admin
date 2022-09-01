@@ -1046,7 +1046,7 @@ export const useProperty = () => {
     data?.property.map(v => ({
       id: v.id,
       name: v.name,
-      placeholder: v.placeholder?.replace(/[()]/g, ''),
+      placeholder: v.placeholder?.replace(/[()]/g, '').replace(/必填：/g, ''),
     })) || []
 
   return {
