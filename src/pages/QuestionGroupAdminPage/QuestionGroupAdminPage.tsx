@@ -6,7 +6,7 @@ import gql from 'graphql-tag'
 import GridOptionsBlock from 'lodestar-app-element/src/components/blocks/GridOptionsBlock'
 import ListsOptionsBlock from 'lodestar-app-element/src/components/blocks/ListsOptionsBlock'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -44,6 +44,18 @@ const StyledContent = styled.div`
 `
 
 const QuestionGroupBlock = styled.div<{ font: string }>`
+  @font-face {
+    font-family: 'BpmfGenSenRounded';
+    src: url('https://static.kolable.com/public/fonts/BpmfGenSenRounded/BpmfGenSenRounded-R.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BpmfGenSenRounded';
+    src: url('https://static.kolable.com/public/fonts/BpmfGenSenRounded/BpmfGenSenRounded-B.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
   width: 50%;
   padding: 0 24px 0 40px;
   overflow-y: scroll;
@@ -171,21 +183,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const [savingLoading, setSavingLoading] = useState<boolean>(false)
   const [questionList, setQuestionList] = useState<Question[]>([])
   const [deletedQuestionIdList, setDeletedQuestionIdList] = useState<string[]>([])
-  const [font, setFont] = useState<string>('auto')
-  const [preview, setPreview] = useState<object & { question: Question; idx: number; mode: string }>({
-    question: {
-      id: '',
-      type: 'single',
-      title: '',
-      subject: '',
-      layout: 'lists',
-      font: 'auto',
-      explanation: '',
-      position: 1,
-    },
-    idx: -1,
-    mode: '',
-  })
+  // const [font, setFont] = useState<string>('auto')
+  const [previewQuestionIdx, setPreviewQuestionIdx] = useState<number>(0)
   const { upsertQuestion, updateQuestionPosition } = useQuestionMutation()
   const {
     originalQuestionListLoading,
@@ -245,9 +244,9 @@ const QuestionGroupAdminPage: React.VFC = () => {
       ...questionList,
       {
         id: uuid(),
-        type: 'single',
-        title: `${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}`,
-        subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
+        type: 'multiple',
+        title: '',
+        subject: '',
         layout: 'lists',
         font: 'auto',
         explanation: '',
@@ -255,13 +254,13 @@ const QuestionGroupAdminPage: React.VFC = () => {
         options: [
           {
             id: uuid(),
-            value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}1</p>`,
+            value: '',
             isAnswer: true,
             position: 1,
           },
           {
             id: uuid(),
-            value: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.option)}2</p>`,
+            value: '',
             isAnswer: false,
             position: 2,
           },
@@ -278,34 +277,21 @@ const QuestionGroupAdminPage: React.VFC = () => {
 
   const handleQuestionChange = (newQuestion: Question) => {
     const newQuestionList = questionList.map(question => (question.id === newQuestion.id ? newQuestion : question))
-    setFont(newQuestion.font)
-    setPreview({ ...preview, question: newQuestion, mode: newQuestion.layout })
+    // setFont(newQuestion.font)
+    setPreviewQuestionIdx(questionList.findIndex(question => question.id === newQuestion.id))
     setQuestionList(newQuestionList)
   }
 
   const handleQuestionPanelChange = (questionId: string | undefined) => {
     if (questionId === undefined) {
-      setPreview({
-        question: {
-          id: '',
-          type: 'single',
-          title: '',
-          subject: '',
-          layout: 'lists',
-          font: 'auto',
-          explanation: '',
-          position: 1,
-        },
-        idx: -1,
-        mode: '',
-      })
+      setPreviewQuestionIdx(-1)
       return
     }
 
     questionList.forEach((question, idx) => {
       if (question.id === questionId) {
-        setFont(question.font)
-        setPreview({ question: question, idx: idx + 1, mode: question.layout })
+        // setFont(question.font)
+        setPreviewQuestionIdx(idx)
       }
     })
   }
@@ -342,10 +328,8 @@ const QuestionGroupAdminPage: React.VFC = () => {
   }, [])
 
   useEffect(() => {
-    if (!originalQuestionListLoading && questionList.length === 0 && originalQuestionList.length > 0) {
-      setQuestionList(originalQuestionList)
-    }
-  }, [originalQuestionList, originalQuestionListLoading, questionList])
+    setQuestionList(originalQuestionList)
+  }, [originalQuestionList])
 
   if (Object.keys(enabledModules).length === 0 || originalQuestionListLoading) {
     return <LoadingPage />
@@ -378,7 +362,7 @@ const QuestionGroupAdminPage: React.VFC = () => {
       </StyledAdminHeader>
       <StyledContent>
         {!originalQuestionListLoading && (
-          <QuestionGroupBlock font={font}>
+          <QuestionGroupBlock font={questionList[previewQuestionIdx]?.font}>
             {!isNewQuestionGroup && (
               <ItemsSortingModal
                 items={questionList}
@@ -399,12 +383,12 @@ const QuestionGroupAdminPage: React.VFC = () => {
                   <StyledPanel
                     header={
                       <QuestionTitle>
-                        <div dangerouslySetInnerHTML={{ __html: question.subject }}></div>
+                        <div dangerouslySetInnerHTML={{ __html: question?.subject }}></div>
                         {/* {question.subject?.replace(/<[^>]+>/g, '') ||
                           `${formatMessage(pageMessages.QuestionGroupAdminPage.question)} ${idx}`} */}
                         {questionList.length > 1 && (
                           <TrashOIcon
-                            style={{ zIndex: 99999 }}
+                            style={{ zIndex: 9 }}
                             onClick={() => {
                               setTimeout(() => {
                                 handleQuestionDelete(question.id)
@@ -429,19 +413,25 @@ const QuestionGroupAdminPage: React.VFC = () => {
             </AddQuestionBlock>
           </QuestionGroupBlock>
         )}
-        <PreviewBlock font={font}>
-          {preview.idx !== -1 && (
+        <PreviewBlock font={questionList[previewQuestionIdx]?.font}>
+          {previewQuestionIdx !== -1 && (
             <PreviewQuestion>
               <ExamName>{formatMessage(questionLibraryMessage.label.examName)}</ExamName>
               <CurrentQuestionIndex>
-                <p>{`${preview.idx} / ${questionList.length}`}</p>
+                <p>{`${previewQuestionIdx + 1} / ${questionList.length}`}</p>
               </CurrentQuestionIndex>
-              <PreviewSubject dangerouslySetInnerHTML={{ __html: preview.question.subject || '' }} />
-              {preview.mode === 'lists' && (
-                <ListsOptionsBlock optionList={preview.question.options} questionFontType={font} />
+              <PreviewSubject dangerouslySetInnerHTML={{ __html: questionList[previewQuestionIdx]?.subject || '' }} />
+              {questionList[previewQuestionIdx]?.layout === 'lists' && (
+                <ListsOptionsBlock
+                  optionList={questionList[previewQuestionIdx].options}
+                  questionFontType={questionList[previewQuestionIdx].font}
+                />
               )}
-              {preview.mode === 'grid' && (
-                <GridOptionsBlock optionList={preview.question.options} questionFontType={font} />
+              {questionList[previewQuestionIdx]?.layout === 'grid' && (
+                <GridOptionsBlock
+                  optionList={questionList[previewQuestionIdx].options}
+                  questionFontType={questionList[previewQuestionIdx].font}
+                />
               )}
             </PreviewQuestion>
           )}
@@ -480,6 +470,8 @@ const useQuestionMutation = () => {
           id
         }
       }
+      # delete_question_option(where: {})
+      # delete_question(where: {})
       update_question(where: { id: { _in: $archivedQuestionIds } }, _set: { deleted_at: "now()" }) {
         affected_rows
       }
@@ -536,31 +528,34 @@ const useQuestionGroup = (questionGroupId: string) => {
 
   let isNewQuestionGroup = false
 
-  let questions: Question[] =
-    data?.question_group_by_pk?.questions.map(v => ({
-      id: v.id,
-      type: v.type,
-      title: v.subject.replace(/<[^>]+>/g, ''),
-      subject: v.subject,
-      layout: v.layout,
-      font: v.font,
-      explanation: v.explanation,
-      position: v.position,
-      options: v.question_options.map(w => {
-        return {
-          id: String(w.id),
-          value: w.value,
-          isAnswer: w.is_answer || false,
-          position: w.position,
-        }
-      }),
-    })) || []
+  let questions: Question[] = useMemo(
+    () =>
+      data?.question_group_by_pk?.questions.map(v => ({
+        id: v.id,
+        type: v.type,
+        title: v.subject.replace(/<[^>]+>/g, ''),
+        subject: v.subject,
+        layout: v.layout,
+        font: v.font,
+        explanation: v.explanation,
+        position: v.position,
+        options: v.question_options.map(w => {
+          return {
+            id: String(w.id),
+            value: w.value,
+            isAnswer: w.is_answer || false,
+            position: w.position,
+          }
+        }),
+      })) || [],
+    [data],
+  )
 
   if (questions.length === 0) {
     isNewQuestionGroup = true
     questions.push({
       id: uuid(),
-      type: 'single',
+      type: 'multiple',
       title: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
       subject: `<p>${formatMessage(pageMessages.QuestionGroupAdminPage.questionTextDescription)}</p>`,
       layout: 'lists',
