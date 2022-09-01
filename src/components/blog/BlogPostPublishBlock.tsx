@@ -12,11 +12,11 @@ const messages = defineMessages({
   noTitle: { id: 'merchandise.text.noTitle', defaultMessage: '尚未填寫名稱' },
   notCompleteNotation: {
     id: 'blog.status.notCompleteNotation',
-    defaultMessage: '你的文章未發佈，此文章並不會顯示在頁面上。',
+    defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
   },
   unpublishedNotation: {
     id: 'blog.status.unpublishedNotation',
-    defaultMessage: '現在你的文章已發佈，此文章會出現在頁面上。',
+    defaultMessage: '你的文章未發佈，此文章並不會顯示在頁面上。',
   },
   publishedNotation: {
     id: 'blog.status.publishedNotation',

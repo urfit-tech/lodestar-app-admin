@@ -203,7 +203,7 @@ export type QuestionLibrary = {
   questionGroups?: QuestionGroup[]
 }
 
-export type ExamTimeUnit = 'day' | 'hour' | 'minute'
+export type ExamTimeUnit = 'd' | 'h' | 'm'
 
 export type Exam = {
   id: string
