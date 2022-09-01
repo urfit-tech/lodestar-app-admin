@@ -321,6 +321,7 @@ const MemberContractCreationBlock: React.FC<{
           appointmentCreatorId: fieldValue.withCreatorId ? fieldValue.creatorId : null,
           studentCertification: fieldValue.identity === 'student' ? fieldValue?.certification?.file.name : null,
           referralMemberId: fieldValue.referralMemberId,
+          serviceStartedAt: serviceStartedAt.toISOString(),
           serviceEndedAt: serviceEndedAt.toISOString(),
         },
       },
