@@ -24,7 +24,7 @@ const commonMessages = {
       defaultMessage: '{metaProduct}一經刪除即不可恢復，確定要刪除嗎？',
     },
     deleteProductWarning: {
-      id: 'program.MetaProductDeletionBlock.deleteProductWarning',
+      id: 'common.MetaProductDeletionBlock.deleteProductWarning',
       defaultMessage: '請仔細確認是否真的要刪除{metaProduct}，因為一旦刪除就無法恢復。',
     },
   }),
