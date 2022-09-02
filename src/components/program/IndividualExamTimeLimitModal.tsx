@@ -4,6 +4,7 @@ import { Button, DatePicker, Form, message, Spin } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { gql } from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { notEmpty } from 'lodestar-app-element/src/helpers'
 import moment from 'moment'
 import { Fragment, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -64,7 +65,7 @@ const IndividualExamTimeLimitModal: React.VFC<{
         upsertExamMemberTimeLimit({
           variables: {
             examId,
-            toDeleteMemberList: defaultMemberList.filter(v => !memberList.find(w => w === v)),
+            toDeleteMemberList: defaultMemberList.filter(v => !memberList.find(w => w === v)).filter(notEmpty),
             timeLimitList: values.timeLimitList.map(v => ({
               exam_id: examId,
               member_id: v.memberId,
@@ -220,7 +221,7 @@ const useTimeLimitList = (examId: string) => {
 const UPSERT_EXAM_MEMBER_TIME_LIMIT = gql`
   mutation UPSERT_EXAM_MEMBER_TIME_LIMIT(
     $examId: uuid!
-    $toDeleteMemberList: [uuid!]!
+    $toDeleteMemberList: [String!]!
     $timeLimitList: [exam_member_time_limit_insert_input!]!
   ) {
     delete_exam_member_time_limit(where: { exam_id: { _eq: $examId }, member_id: { _in: $toDeleteMemberList } }) {
