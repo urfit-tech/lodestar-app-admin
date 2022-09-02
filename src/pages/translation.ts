@@ -350,8 +350,9 @@ const pageMessages = {
     giftPlan: { id: 'page.GiftPlanCollectionAdminPage.giftPlan', defaultMessage: '贈品方案' },
     giftPlanTitle: { id: 'page.GiftPlanCollectionAdminPage.giftPlanTitle', defaultMessage: '贈品方案名稱' },
     giftItemName: { id: 'page.GiftPlanCollectionAdminPage.giftItemName', defaultMessage: '贈品項目' },
-    deliver: { id: 'page.GiftPlanCollectionAdminPage.deliver', defaultMessage: '是，需索取寄送地址' },
-    online: { id: 'page.GiftPlanCollectionAdminPage.online', defaultMessage: '否，線上自行交付' },
+    giftDeliverMethod: { id: 'page.GiftPlanCollectionAdminPage.giftDeliverMethod', defaultMessage: '贈品交付方式' },
+    isDeliverable: { id: 'page.GiftPlanCollectionAdminPage.isDeliverable', defaultMessage: '需索取寄送地址' },
+    isNotDeliverable: { id: 'page.GiftPlanCollectionAdminPage.isNotDeliverable', defaultMessage: '線上自行交付' },
     deleteGriftPlanMessage: {
       id: 'page.GriftPlanCollectionPage.deleteGriftPlanMessage',
       defaultMessage: '確定刪除此贈品方案？',
@@ -361,7 +362,9 @@ const pageMessages = {
       defaultMessage: '確定下架此贈品方案？',
     },
     editGiftPlan: { id: 'page.GiftPlanCollectionAdminPage.editGiftPlan', defaultMessage: '編輯贈品方案' },
-    giftPlanCover: { id: 'page.GiftPlanCollectionAdminPage.giftPlanCover', defaultMessage: '贈品方案封面' },
+    giftCover: { id: 'page.GiftPlanCollectionAdminPage.giftCover', defaultMessage: '贈品封面' },
+    giftCoverTips: { id: 'page.GiftPlanCollectionAdminPage.giftCoverTips', defaultMessage: '建議圖片尺寸：600*600px' },
+    createAt: {id: 'page.GiftPlanCollectionAdminPage.createAt', defaultMessage: '建立日期'}
   }),
 }
 

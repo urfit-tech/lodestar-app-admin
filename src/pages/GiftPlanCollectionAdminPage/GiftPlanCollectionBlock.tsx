@@ -1,14 +1,12 @@
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { Dropdown, Input, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { EmptyBlock } from '../../components/admin'
 import GiftPlanCollectionAdminModal from '../../components/gift/GiftPlanCollectionAdminModal'
 import GiftPlanDeleteAdminModal from '../../components/gift/GiftPlanDeleteAdminModal'
-import GiftPlanPublishAdminModal from '../../components/gift/GiftPlanPublishAdminModal'
 import pageMessages from '../translation'
 
 const StyledDiv = styled.div`
@@ -17,29 +15,69 @@ const StyledDiv = styled.div`
   }
 `
 
+const StyledTitle = styled.div`
+  color: var(--gray-darker);
+  line-height: normal;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+`
+
 const DetailItem = styled(Menu.Item)`
   padding: 0.5rem 1rem;
 `
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-type GiftPlanColumn = {
+export type GiftPlanColumn = {
   id: string
   title: string
+  createdAt: string
+  giftIdList: string[]
 }
 
 const GiftPlanCollectionBlock: React.VFC<{
-  tab: string
-}> = ({ tab }) => {
+  giftPlanCollection: GiftPlanColumn[]
+  searchTitle: string
+  onSearch?: (searchTitle: string) => void
+}> = ({ giftPlanCollection, searchTitle, onSearch }) => {
   const { formatMessage } = useIntl()
-  const [searchTitle, setSearchTitle] = useState('')
 
   const columns: ColumnProps<GiftPlanColumn>[] = [
     {
       key: 'title',
       title: formatMessage(pageMessages['*'].title),
-      width: '95%',
-      render: (_, record) => <GiftPlanCollectionAdminModal giftPlanId={record.id} />,
+      width: '70%',
+      render: (_, record) => (
+        <GiftPlanCollectionAdminModal
+          giftPlanId={record.id}
+          giftPlanTitle={record.title}
+          giftIdList={record.giftIdList}
+          renderTrigger={({ setVisible }) => (
+            <StyledTitle className="flex-grow-1" onClick={() => setVisible(true)}>
+              {record.title}
+            </StyledTitle>
+          )}
+        />
+      ),
+      filterDropdown: () => (
+        <div className="p-2">
+          <Input
+            autoFocus
+            value={searchTitle}
+            onChange={e => {
+              onSearch?.(e.target.value)
+            }}
+          />
+        </div>
+      ),
+      filterIcon,
+    },
+    // TODO: 排序
+    {
+      key: 'createdAt',
+      title: formatMessage(pageMessages['GiftPlanCollectionAdminPage'].createAt),
+      width: '25%',
+      render: (_, record) => <>{record.createdAt}</>,
     },
     {
       key: '',
@@ -50,9 +88,10 @@ const GiftPlanCollectionBlock: React.VFC<{
           placement="bottomRight"
           overlay={
             <Menu>
-              <DetailItem>
+              {/* TODO: 先註解，之後看情況再決定要不要加上/下架 */}
+              {/* <DetailItem>
                 <GiftPlanPublishAdminModal giftPlanId={record.id} />
-              </DetailItem>
+              </DetailItem> */}
               <DetailItem>
                 <GiftPlanDeleteAdminModal giftPlanId={record.id} />
               </DetailItem>
@@ -63,19 +102,6 @@ const GiftPlanCollectionBlock: React.VFC<{
           <MoreOutlined style={{ fontSize: '20px' }} onClick={e => e.stopPropagation()} />
         </Dropdown>
       ),
-      filterDropdown: () => (
-        <div className="p-2">
-          <Input
-            autoFocus
-            value={searchTitle}
-            onChange={e => {
-              searchTitle && setSearchTitle('')
-              setSearchTitle(e.target.value)
-            }}
-          />
-        </div>
-      ),
-      filterIcon,
     },
   ]
 
@@ -87,15 +113,13 @@ const GiftPlanCollectionBlock: React.VFC<{
   //   return <div>{formatMessage(pageMessages.VoucherPlanCollectionBlock.fetchDataError)}</div>
   // }
 
-  const giftPlansData: any[] = [{ id: 1, title: '大麥克' }]
-
   return (
     <>
-      {giftPlansData.length === 0 ? (
+      {giftPlanCollection.length === 0 && searchTitle === '' ? (
         <EmptyBlock>{formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}</EmptyBlock>
       ) : (
         <StyledDiv>
-          <Table<GiftPlanColumn> loading={false} rowKey="id" columns={columns} dataSource={giftPlansData} />
+          <Table<GiftPlanColumn> loading={false} rowKey="id" columns={columns} dataSource={giftPlanCollection} />
         </StyledDiv>
       )}
     </>
@@ -103,35 +127,3 @@ const GiftPlanCollectionBlock: React.VFC<{
 }
 
 export default GiftPlanCollectionBlock
-
-// const useGiftPlanCollection = (condition: hasura.GET_GIFT_PLAN_COLLECTIONVariables['condition']) => {
-//   const { loading, error, data, refetch } = useQuery<
-//     hasura.GET_GIFT_PLAN_COLLECTION,
-//     hasura.GET_GIFT_PLAN_COLLECTIONVariables
-//   >(GET_GIFT_PLAN_COLLECTION, {
-//     variables: {
-//       condition,
-//     },
-//   })
-//   const giftPlans: GiftPlanColumn[] =
-//     data?.gift_plan.map(v => ({
-//       id: v.id,
-//       title: v.title,
-//     })) || []
-
-//   return {
-//     giftPlans: giftPlans,
-//     refetchQuestionLibrary: refetch,
-//     giftPlansLoading: loading,
-//     giftPlansError: error,
-//   }
-// }
-
-const GET_GIFT_PLAN_COLLECTION = gql`
-  query GET_GIFT_PLAN_COLLECTION($condition: gift_plan_bool_exp!) {
-    gift_plan(where: $condition, order_by: { updated_at: desc }) {
-      id
-      title
-    }
-  }
-`
