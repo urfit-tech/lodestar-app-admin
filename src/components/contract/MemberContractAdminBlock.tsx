@@ -180,18 +180,6 @@ const MemberContractAdminBlock: React.FC<{
                   })}
                 </div>
               </StyledDescription>
-              <StyledDescription>
-                <div>
-                  {formatMessage(memberMessages.text.serviceStartedAt, {
-                    time: moment(contract.options.serviceStartedAt || contract.startedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })}
-                </div>
-                <div>
-                  {formatMessage(memberMessages.text.serviceEndedAt, {
-                    time: moment(contract.options.serviceEndedAt || contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
-                  })}
-                </div>
-              </StyledDescription>
               {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
                 <Button
                   danger
