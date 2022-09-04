@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Input, Menu, message } from 'antd'
+import { Button, Dropdown, InputNumber, Menu, message } from 'antd'
 import gql from 'graphql-tag'
 import React, { useMemo, useState } from 'react'
 import GridLayout from 'react-grid-layout'
@@ -9,26 +9,19 @@ import { v4 as uuid } from 'uuid'
 import { AdminBlock } from '../../components/admin'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import { Seat, Venue } from '../../types/venue'
+import { KeyOfSeat, Seat, Venue } from '../../types/venue'
 import pageMessages from '../translation'
+import { category, categoryFilter, colHead, generateGridLayout } from './helpers/grid'
 
 interface ButtonProps {
-  seatDisabled?: boolean
-  category?: string | null
+  backgroundColor?: string
 }
 
 const StyledButton = styled.button<ButtonProps>`
   border: 1px solid #000000;
   width: 100%;
   height: 100%;
-  background-color: ${props =>
-    props.seatDisabled
-      ? props.category === 'walkway'
-        ? '#ececec'
-        : props.category === 'heigh'
-        ? 'rgba(255, 190, 30, 0.1)'
-        : undefined
-      : undefined};
+  background-color: ${props => props.backgroundColor};
   &:hover {
     background-color: pink;
   }
@@ -41,23 +34,10 @@ const StyledSubTitle = styled.div`
   margin-right: 0.8rem;
 `
 
-const StyledInput = styled(Input)`
+const StyledInput = styled(InputNumber)`
   margin-right: 1.5rem;
   width: 80px;
 `
-
-const generateGridLayout = (cols: number, rows: number) => {
-  const item = cols * rows
-  return Array.from(Array(item).keys()).map((_, index) => ({
-    x: index % cols,
-    y: Math.floor(index / cols),
-    w: 1,
-    h: 1,
-    i: index.toString(),
-    static: true,
-  }))
-}
-
 const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({ venue, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [cols, setCols] = useState(venue.cols)
@@ -67,14 +47,14 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
   const [saveVenueSeats] = useMutation<hasura.SAVE_VENUE_SEATS, hasura.SAVE_VENUE_SEATSVariables>(SAVE_VENUE_SEATS)
 
   const isSeatInfoChanged: boolean = useMemo(() => {
-    let isChanged = false
     for (const seat of seats) {
-      if (JSON.stringify(seat) !== JSON.stringify(venue.venue_seats.filter(s => s.position === seat.position)[0])) {
-        isChanged = true
-        break
+      for (const key of Object.keys(seat) as KeyOfSeat[]) {
+        if (venue.venue_seats.find(s => s.position === seat.position)?.[key] !== seat[key]) {
+          return true
+        }
       }
     }
-    return isChanged
+    return false
   }, [venue.venue_seats, seats])
 
   const layout = useMemo(() => {
@@ -82,9 +62,9 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
   }, [cols, rows])
 
   // adjust number of cols/rows
-  const handleChangeCols = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(e.target.value)
-    if (newValue < 0) return
+  const handleChangeCols = (value: string | number | undefined) => {
+    const newValue = Number(value)
+    if (newValue < 0 || newValue > 30) return
     if (!isNaN(newValue)) {
       let newSeats: Seat[] = []
       const dif = newValue - cols
@@ -102,7 +82,7 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
             id: uuid().toString(),
             position: newPosition,
             disabled: false,
-            category: null,
+            category: 'normal',
           })
         }
       } else {
@@ -119,9 +99,9 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
       setSeats(newSeats)
     }
   }
-  const handleChangeRows = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(e.target.value)
-    if (newValue < 0) return
+  const handleChangeRows = (value: string | number | undefined) => {
+    const newValue = Number(value)
+    if (newValue < 0 || newValue > 30) return
     if (!isNaN(newValue)) {
       let newSeats: Seat[] = []
       const dif = newValue - rows
@@ -129,9 +109,16 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
       if (dif >= 0) {
         for (let i = 0; i < (newValue + 1) * (cols + 1); i++) {
           if (i / (cols + 1) < newValue - dif + 1) {
-            newSeats.push({ ...seats.filter(seat => seat.position === i)[0] })
+            const newSeatInfo = seats.find(seat => seat.position === i)
+            newSeatInfo && newSeats.push(newSeatInfo)
           } else {
-            newSeats.push({ venue_id: venue.id, id: uuid().toString(), position: i, disabled: false, category: null })
+            newSeats.push({
+              venue_id: venue.id,
+              id: uuid().toString(),
+              position: i,
+              disabled: false,
+              category: 'normal',
+            })
           }
         }
       } else {
@@ -145,28 +132,62 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
   }
 
   // adjust single seat info
-  const handleChangeSeat = (newValue: Seat) => {
-    setSeats([...seats.filter(seat => seat.position !== newValue.position), newValue])
+  const handleChangeSeatBlock = (seatInfo: Seat, position: Position) => {
+    const newCategory = category.find(
+      c =>
+        c.order ===
+        Math.min(
+          categoryFilter(seatInfo.category === 'blocked' ? 'normal' : 'blocked').order,
+          categoryFilter(seats.filter(seat => seat.position === position.x)[0].category).order,
+          categoryFilter(seats.filter(seat => seat.position === position.idx - position.x)[0].category).order,
+        ),
+    )
+    newCategory &&
+      setSeats([
+        ...seats.filter(seat => seat.position !== position.idx),
+        { ...seatInfo, category: newCategory.name, disabled: !!newCategory.disabled },
+      ])
   }
 
   // adjust all seats of one col/row
-  const handleChangeRowSeats = (row: number, newValue: Seat) => {
+  const handleChangeRowSeatsIsHigh = (seatInfo: Seat, position: Position) => {
     let newSeats: Seat[] = []
-    for (const seat of seats.filter(seat => Math.floor(seat.position / (cols + 1)) === row)) {
-      newSeats.push({
-        ...seat,
-        disabled: seat.category === 'walkway' || seat.category === 'blocked' || newValue.disabled,
-        category: seat.category === 'walkway' || seat.category === 'blocked' ? seat.category : newValue.category,
-      })
+    for (const seat of seats.filter(s => Math.floor(s.position / (cols + 1)) === position.y)) {
+      const seatCategory = seats.filter(s => s.position === seat.position)[0].category
+      const newCategory = category.find(
+        c =>
+          c.order ===
+          Math.min(
+            categoryFilter(seatInfo.category === 'high' ? 'normal' : 'high').order,
+            categoryFilter(seats.filter(s => s.position === seat.position - position.idx)[0].category).order,
+            categoryFilter(seatCategory === 'high' ? 'normal' : seatCategory).order,
+          ),
+      )
+      newCategory &&
+        newSeats.push({
+          ...seat,
+          disabled: newCategory.disabled,
+          category: newCategory.name,
+        })
     }
-    setSeats([...seats.filter(seat => Math.floor(seat.position / (cols + 1)) !== row), ...newSeats])
+    setSeats([...seats.filter(s => Math.floor(s.position / (cols + 1)) !== position.y), ...newSeats])
   }
-  const handleChangeColSeats = (col: number, newValue: Seat) => {
+  const handleChangeColSeatsIsWalkway = (seatInfo: Seat, position: Position) => {
     let newSeats: Seat[] = []
-    for (const seat of seats.filter(seat => seat.position % (cols + 1) === col)) {
-      newSeats.push({ ...seat, disabled: newValue.disabled, category: newValue.category })
+    for (const seat of seats.filter(s => s.position % (cols + 1) === position.x)) {
+      const seatCategory = seats.filter(s => s.position === seat.position)[0].category
+      const newCategory = category.find(
+        c =>
+          c.order ===
+          Math.min(
+            categoryFilter(seatInfo.category === 'walkway' ? 'normal' : 'walkway').order,
+            categoryFilter(seatCategory === 'walkway' ? 'normal' : seatCategory).order,
+            categoryFilter(seats.filter(s => s.position === seat.position - position.x)[0].category).order,
+          ),
+      )
+      newCategory && newSeats.push({ ...seat, disabled: newCategory.disabled, category: newCategory.name })
     }
-    setSeats([...seats.filter(seat => seat.position % (cols + 1) !== col), ...newSeats])
+    setSeats([...seats.filter(s => s.position % (cols + 1) !== position.x), ...newSeats])
   }
 
   const handleDeleteRow = (deleteRow: number) => {
@@ -198,62 +219,59 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
     setCols(cols - 1)
     setSeats(newSeats)
   }
-
+  console.log(seats)
   return (
     <>
-      <div className="d-flex align-items-center justify-content-between mb-4">
-        <div className="d-flex align-items-center">
-          <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.rows)}</StyledSubTitle>
-          <StyledInput value={rows} onChange={handleChangeRows} />
-          <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.cols)}</StyledSubTitle>
-          <StyledInput value={cols} onChange={handleChangeCols} />
-        </div>
-        <div className="d-flex align-items-center">
-          {isSeatInfoChanged && (
-            <>
-              <Button
-                className="mr-2"
-                disabled={loading}
-                loading={loading}
-                onClick={() => {
-                  setLoading(true)
-                  saveVenueSeats({
-                    variables: {
-                      venueId: venue.id,
-                      objects: seats,
-                      cols: cols,
-                      rows: rows,
-                      seats: seats.filter(
-                        seat =>
-                          Math.floor(seat.position / (cols + 1)) !== 0 &&
-                          seat.position % (cols + 1) !== 0 &&
-                          !seat.disabled,
-                      ).length,
-                    },
+      <div className="d-flex align-items-center mb-4">
+        <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.rows)}</StyledSubTitle>
+        <StyledInput className="mr-3" value={rows} max={30} onChange={handleChangeRows} />
+        <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.cols)}</StyledSubTitle>
+        <StyledInput className="mr-3" value={cols} max={30} onChange={handleChangeCols} />
+        {isSeatInfoChanged && (
+          <>
+            <Button
+              className="mr-2"
+              onClick={() => {
+                setCols(venue.cols)
+                setRows(venue.rows)
+                setSeats(venue.venue_seats)
+              }}
+            >
+              {formatMessage(commonMessages.ui.cancel)}
+            </Button>
+            <Button
+              type="primary"
+              disabled={loading}
+              loading={loading}
+              onClick={() => {
+                setLoading(true)
+                saveVenueSeats({
+                  variables: {
+                    venueId: venue.id,
+                    objects: seats,
+                    cols: cols,
+                    rows: rows,
+                    seats: seats.filter(
+                      seat =>
+                        Math.floor(seat.position / (cols + 1)) !== 0 &&
+                        seat.position % (cols + 1) !== 0 &&
+                        !seat.disabled,
+                    ).length,
+                  },
+                })
+                  .then(() => {
+                    message.success(formatMessage(pageMessages['*'].successfullySaved))
+                    onRefetch?.()
                   })
-                    .then(() => {
-                      message.success(formatMessage(pageMessages['*'].successfullySaved))
-                      onRefetch?.()
-                    })
-                    .finally(() => setLoading(false))
-                }}
-              >
-                {formatMessage(commonMessages.ui.save)}
-              </Button>
-              <Button
-                onClick={() => {
-                  setCols(venue.cols)
-                  setRows(venue.rows)
-                  setSeats(venue.venue_seats)
-                }}
-              >
-                {formatMessage(commonMessages.ui.cancel)}
-              </Button>
-            </>
-          )}
-        </div>
+                  .finally(() => setLoading(false))
+              }}
+            >
+              {formatMessage(commonMessages.ui.save)}
+            </Button>
+          </>
+        )}
       </div>
-      <AdminBlock>
+      <AdminBlock style={{ position: 'relative', overflow: 'auto' }}>
         <GridLayout
           className="layout"
           layout={layout}
@@ -263,18 +281,16 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
           margin={[0, 0]}
           containerPadding={[0, 0]}
           isBounded
-          useCSSTransforms
-          style={{ position: 'relative' }}
+          style={{ width: (cols + 1) * 50 }}
         >
           {layout.map(i => (
             <div key={i.i}>
               <GridItem
-                colIndex={i.x}
-                rowIndex={i.y}
-                seatInfo={seats.filter(seat => seat.position.toString() === i.i)[0]}
-                onSeatChange={handleChangeSeat}
-                onRowSeatsChange={handleChangeRowSeats}
-                onColSeatsChange={handleChangeColSeats}
+                position={{ x: i.x, y: i.y, idx: Number(i.i) }}
+                seats={seats}
+                onSeatChange={handleChangeSeatBlock}
+                onRowSeatsChange={handleChangeRowSeatsIsHigh}
+                onColSeatsChange={handleChangeColSeatsIsWalkway}
                 onRowDelete={handleDeleteRow}
                 onColDelete={handleDeleteCol}
               />
@@ -286,21 +302,21 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
   )
 }
 
+type Position = { x: number; y: number; idx: number }
+
 interface GridItemProps {
-  colIndex: number
-  rowIndex: number
-  seatInfo: Seat
-  onSeatChange: (newValue: Seat) => void
-  onRowSeatsChange: (row: number, newValue: Seat) => void
-  onColSeatsChange: (col: number, newValue: Seat) => void
+  position: Position
+  seats: Seat[]
+  onSeatChange: (seatInfo: Seat, position: Position) => void
+  onRowSeatsChange: (seatInfo: Seat, position: Position) => void
+  onColSeatsChange: (seatInfo: Seat, position: Position) => void
   onRowDelete: (row: number) => void
   onColDelete: (col: number) => void
 }
 
 const GridItem: React.VFC<GridItemProps> = ({
-  colIndex,
-  rowIndex,
-  seatInfo,
+  position,
+  seats,
   onSeatChange,
   onRowSeatsChange,
   onColSeatsChange,
@@ -308,89 +324,85 @@ const GridItem: React.VFC<GridItemProps> = ({
   onColDelete,
 }: GridItemProps) => {
   const { formatMessage } = useIntl()
-  return colIndex === 0 && rowIndex === 0 ? (
-    <StyledButton disabled></StyledButton>
-  ) : rowIndex === 0 ? (
-    <Dropdown
-      overlay={
-        <Menu>
-          <Menu.Item
-            onClick={() => {
-              onColSeatsChange(colIndex, {
-                ...seatInfo,
-                disabled: !seatInfo.disabled,
-                category: !seatInfo.disabled ? 'walkway' : null,
-              })
-            }}
-          >
-            {seatInfo.disabled
-              ? `${formatMessage(commonMessages.ui.cancel)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`
-              : `${formatMessage(commonMessages.ui.set)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`}
-          </Menu.Item>
-          <Menu.Item
-            onClick={() => {
-              onColDelete(colIndex)
-            }}
-          >
-            {formatMessage(commonMessages.ui.delete)}
-            {formatMessage(pageMessages.VenueSeatSetting.col)}
-          </Menu.Item>
-        </Menu>
-      }
-      trigger={['click']}
-    >
-      <StyledButton seatDisabled={seatInfo.disabled} category={seatInfo.category}>
-        {colIndex}
-      </StyledButton>
-    </Dropdown>
-  ) : colIndex === 0 ? (
-    <Dropdown
-      overlay={
-        <Menu>
-          <Menu.Item
-            onClick={() => {
-              onRowSeatsChange(rowIndex, {
-                ...seatInfo,
-                disabled: !seatInfo.disabled,
-                category: !seatInfo.disabled ? 'heigh' : null,
-              })
-            }}
-          >
-            {seatInfo.disabled
-              ? `${formatMessage(commonMessages.ui.cancel)}${formatMessage(pageMessages.VenueSeatSetting.heigh)}`
-              : `${formatMessage(commonMessages.ui.set)}${formatMessage(pageMessages.VenueSeatSetting.heigh)}`}
-          </Menu.Item>
-          <Menu.Item
-            onClick={() => {
-              onRowDelete(rowIndex)
-            }}
-          >
-            {formatMessage(commonMessages.ui.delete)}
-            {formatMessage(pageMessages.VenueSeatSetting.row)}
-          </Menu.Item>
-        </Menu>
-      }
-      trigger={['click']}
-    >
-      <StyledButton seatDisabled={seatInfo.disabled} category={seatInfo.category}>
-        {rowIndex}
-      </StyledButton>
-    </Dropdown>
-  ) : (
-    <StyledButton
-      seatDisabled={seatInfo.disabled}
-      category={seatInfo.category}
-      onClick={() => {
-        onSeatChange({
-          ...seatInfo,
-          disabled: seatInfo.category === 'walkway' || !seatInfo.disabled,
-          category: seatInfo.category === 'walkway' ? 'walkway' : seatInfo.disabled ? null : 'blocked',
-        })
-      }}
-    >
-      {seatInfo.category === 'blocked' && 'XXX'}
-    </StyledButton>
-  )
+  const seatInfo = seats.find(seat => seat.position === position.idx)
+  const backgroundColor = seatInfo ? categoryFilter(seatInfo.category).gridColor : '#ffffff'
+
+  if (seatInfo) {
+    if (position.x === 0 && position.y === 0) {
+      return <StyledButton disabled></StyledButton>
+    } else if (position.y === 0) {
+      return (
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item
+                onClick={() => {
+                  seatInfo && onColSeatsChange(seatInfo, position)
+                }}
+              >
+                {seatInfo?.category === 'walkway'
+                  ? `${formatMessage(commonMessages.ui.cancel)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`
+                  : `${formatMessage(commonMessages.ui.set)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`}
+              </Menu.Item>
+              <Menu.Item
+                onClick={() => {
+                  onColDelete(position.x)
+                }}
+              >
+                {formatMessage(commonMessages.ui.delete)}
+                {formatMessage(pageMessages.VenueSeatSetting.col)}
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <StyledButton backgroundColor={backgroundColor}>{colHead(seats)[position.x]}</StyledButton>
+        </Dropdown>
+      )
+    } else if (position.x === 0) {
+      return (
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item
+                onClick={() => {
+                  seatInfo && onRowSeatsChange(seatInfo, position)
+                }}
+              >
+                {seatInfo?.category === 'high'
+                  ? `${formatMessage(commonMessages.ui.cancel)}${formatMessage(pageMessages.VenueSeatSetting.high)}`
+                  : `${formatMessage(commonMessages.ui.set)}${formatMessage(pageMessages.VenueSeatSetting.high)}`}
+              </Menu.Item>
+              <Menu.Item
+                onClick={() => {
+                  onRowDelete(position.y)
+                }}
+              >
+                {formatMessage(commonMessages.ui.delete)}
+                {formatMessage(pageMessages.VenueSeatSetting.row)}
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <StyledButton backgroundColor={backgroundColor}>{position.y}</StyledButton>
+        </Dropdown>
+      )
+    } else {
+      return (
+        <StyledButton
+          backgroundColor={backgroundColor}
+          onClick={() => {
+            seatInfo && onSeatChange(seatInfo, position)
+          }}
+        >
+          {seatInfo && categoryFilter(seatInfo.category).content}
+        </StyledButton>
+      )
+    }
+  } else {
+    return null
+  }
 }
 
 const SAVE_VENUE_SEATS = gql`

@@ -1,6 +1,8 @@
 // organize-imports-ignore
 import FullCalendar from '@fullcalendar/react'
+import listPlugin from '@fullcalendar/list'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import zhTWLocale from '@fullcalendar/core/locales/zh-tw'
 import moment from 'moment'
 import { categoryColors, StyledCategoryDot, StyledEventTime } from '../../components/task/MemberTaskAdminBlock'
 
@@ -45,7 +47,12 @@ const VenueUsageCalendar: React.VFC = () => {
   ]
   return (
     <FullCalendar
-      plugins={[dayGridPlugin]}
+      plugins={[dayGridPlugin, listPlugin]}
+      locales={[zhTWLocale]}
+      headerToolbar={{
+        left: 'title',
+        right: 'dayGridDay dayGridWeek dayGridMonth listWeek today prev next',
+      }}
       initialView="dayGridMonth"
       eventContent={arg => (
         <div className="fc-event-title">
