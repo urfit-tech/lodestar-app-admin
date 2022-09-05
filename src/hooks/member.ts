@@ -969,9 +969,20 @@ export const useMemberCollection = (filter?: {
     fetchMore({
       variables: {
         condition: {
-          ...condition,
-          created_at: { _lte: data?.member.slice(-1)[0]?.created_at },
-          id: { _gt: data?.member.slice(-1)[0]?.id },
+          _and: [
+            condition,
+            {
+              _or: [
+                {
+                  _and: [
+                    { created_at: { _eq: data?.member.slice(-1)[0]?.created_at } },
+                    { id: { _gt: data?.member.slice(-1)[0]?.id } },
+                  ],
+                },
+                { created_at: { _lt: data?.member.slice(-1)[0]?.created_at } },
+              ],
+            },
+          ],
         },
         limit: 10,
       },
