@@ -211,25 +211,49 @@ const pageMessages = {
     },
   }),
   QuestionLibraryCollectionPage: defineMessages({
-    questionLibraryCollection: { id: 'page.QuestionLibraryCollectionPage.questionLibraryCollection', defaultMessage: '題庫管理' },
-    deleteQuestionLibraryMessage: { id: 'page.QuestionLibraryCollectionPage.deleteQuestionLibraryMessage', defaultMessage: '確定刪除此題庫？' },
+    questionLibraryCollection: {
+      id: 'page.QuestionLibraryCollectionPage.questionLibraryCollection',
+      defaultMessage: '題庫管理',
+    },
+    deleteQuestionLibraryMessage: {
+      id: 'page.QuestionLibraryCollectionPage.deleteQuestionLibraryMessage',
+      defaultMessage: '確定刪除此題庫？',
+    },
   }),
   QuestionGroupCollectionPage: defineMessages({
-    questionGroupCollection: { id: 'page.QuestionGroupCollectionPage.questionGroupCollection', defaultMessage: '題組管理' },
-    deleteQuestionGroupMessage: { id: 'page.QuestionGroupCollectionPage.deleteQuestionGroupMessage', defaultMessage: '確定刪除此題組？' },
+    questionGroupCollection: {
+      id: 'page.QuestionGroupCollectionPage.questionGroupCollection',
+      defaultMessage: '題組管理',
+    },
+    deleteQuestionGroupMessage: {
+      id: 'page.QuestionGroupCollectionPage.deleteQuestionGroupMessage',
+      defaultMessage: '確定刪除此題組？',
+    },
   }),
   QuestionLibraryAdminPage: defineMessages({
-    questionGroupManagement: { id: 'page.QuestionLibraryAdminPage.questionGroupManagement', defaultMessage: '題庫管理' },
-    questionLibrarySettings: { id: 'page.QuestionLibraryAdminPage.questionLibrarySettings', defaultMessage: '題庫設定' },
+    questionGroupManagement: {
+      id: 'page.QuestionLibraryAdminPage.questionGroupManagement',
+      defaultMessage: '題庫管理',
+    },
+    questionLibrarySettings: {
+      id: 'page.QuestionLibraryAdminPage.questionLibrarySettings',
+      defaultMessage: '題庫設定',
+    },
     noMemberId: { id: 'page.QuestionLibraryAdminPage.noMemberId', defaultMessage: '無使用者ID' },
-    deleteQuestionGroupMessage: { id: 'page.QuestionLibraryAdminPage.deleteQuestionGroupMessage', defaultMessage: '確定刪除此題組？' },
+    deleteQuestionGroupMessage: {
+      id: 'page.QuestionLibraryAdminPage.deleteQuestionGroupMessage',
+      defaultMessage: '確定刪除此題組？',
+    },
   }),
   QuestionLibraryBasicForm: defineMessages({
     title: { id: 'page.QuestionLibraryBasicForm.questionGroupManagement', defaultMessage: '題庫管理' },
   }),
   QuestionGroupAdminPage: defineMessages({
     question: { id: 'page.QuestionGroupAdminPage.question', defaultMessage: '題目' },
-    questionTextDescription: { id: 'page.QuestionGroupAdminPage.questionTextDescription', defaultMessage: '題目文字描述' },
+    questionTextDescription: {
+      id: 'page.QuestionGroupAdminPage.questionTextDescription',
+      defaultMessage: '題目文字描述',
+    },
     option: { id: 'page.QuestionGroupAdminPage.option', defaultMessage: '選項' },
   }),
   CertificateCollectionPage: defineMessages({
@@ -306,7 +330,7 @@ const pageMessages = {
     cols: { id: 'page.VenueSeatSetting.cols', defaultMessage: '直的列數' },
     row: { id: 'page.VenueSeatSetting.row', defaultMessage: '橫列' },
     col: { id: 'page.VenueSeatSetting.col', defaultMessage: '直欄' },
-    heigh: { id: 'page.VenueSeatSetting.heigh', defaultMessage: '高起來' },
+    high: { id: 'page.VenueSeatSetting.high', defaultMessage: '高起來' },
     walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
   }),
 }
