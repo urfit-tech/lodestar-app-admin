@@ -33,14 +33,20 @@ export type GiftPlanColumn = {
   title: string
   createdAt: string
   giftIdList: string[]
+  giftPlanProductIdList: string[]
 }
 
 const GiftPlanCollectionBlock: React.VFC<{
   giftPlanCollection: GiftPlanColumn[]
   searchTitle: string
   onSearch?: (searchTitle: string) => void
-}> = ({ giftPlanCollection, searchTitle, onSearch }) => {
+  onRefetch?: () => void
+}> = ({ giftPlanCollection, searchTitle, onSearch, onRefetch }) => {
   const { formatMessage } = useIntl()
+
+  const handleUpdatedGiftPlan = () => {
+    onRefetch?.()
+  }
 
   const columns: ColumnProps<GiftPlanColumn>[] = [
     {
@@ -49,14 +55,14 @@ const GiftPlanCollectionBlock: React.VFC<{
       width: '70%',
       render: (_, record) => (
         <GiftPlanCollectionAdminModal
-          giftPlanId={record.id}
-          giftPlanTitle={record.title}
-          giftIdList={record.giftIdList}
+          giftPlan={{ id: record.id, title: record.title, giftPlanProductId: record.giftPlanProductIdList[0] }}
+          giftId={record.giftIdList[0]}
           renderTrigger={({ setVisible }) => (
             <StyledTitle className="flex-grow-1" onClick={() => setVisible(true)}>
               {record.title}
             </StyledTitle>
           )}
+          onRefetch={handleUpdatedGiftPlan}
         />
       ),
       filterDropdown: () => (

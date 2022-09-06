@@ -56,7 +56,7 @@ const GiftPlanCollectionAdminPage: React.FC = () => {
               </Button>
             )}
             maskClosable={false}
-            giftIdList={[]}
+            onRefetch={refetchGiftPlanCollection}
           />
         </div>
       </div>
@@ -64,6 +64,7 @@ const GiftPlanCollectionAdminPage: React.FC = () => {
         giftPlanCollection={giftPlanCollection}
         searchTitle={searchTitle}
         onSearch={setSearchTitle}
+        onRefetch={refetchGiftPlanCollection}
       />
     </AdminLayout>
   )
@@ -87,6 +88,7 @@ const useGiftPlanCollection = (condition: hasura.GET_GIFT_PLAN_COLLECTIONVariabl
       title: v.title,
       createdAt: moment(v.created_at).format('YYYY-MM-DD HH:mm:ss'),
       giftIdList: v.gift_plan_products.map(w => w.product.target),
+      giftPlanProductIdList: v.gift_plan_products.map(x => x.id),
     })) || []
 
   return {
@@ -104,6 +106,7 @@ const GET_GIFT_PLAN_COLLECTION = gql`
       title
       created_at
       gift_plan_products {
+        id
         product {
           target
         }
