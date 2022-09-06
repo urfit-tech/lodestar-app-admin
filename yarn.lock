@@ -5414,7 +5414,7 @@ babel-plugin-polyfill-regenerator@^0.4.0:
 
 babel-plugin-react-intl@7:
   version "7.9.4"
-  resolved "https://registry.yarnpkg.com/babel-plugin-re,act-intl/-/babel-plugin-react-intl-7.9.4.tgz#1fc9ab50470d41b934df50d8f436578ee1732cb0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl/-/babel-plugin-react-intl-7.9.4.tgz#1fc9ab50470d41b934df50d8f436578ee1732cb0"
   integrity sha512-cMKrHEXrw43yT4M89Wbgq8A8N8lffSquj1Piwov/HVukR7jwOw8gf9btXNsQhT27ccyqEwy+M286JQYy0jby2g==
   dependencies:
     "@babel/core" "^7.9.0"
