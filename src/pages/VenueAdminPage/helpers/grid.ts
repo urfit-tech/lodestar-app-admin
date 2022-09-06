@@ -66,20 +66,19 @@ export const generateGridLayout = (cols: number, rows: number) => {
   }))
 }
 
-export const colHead = (seats: Seat[]) => {
+export const colHead = (count: number, seats: Seat[]) => {
   const character = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
   const length = character.length
   let walkwayCount = 0,
     result = ['']
-  const max = seats.length > 50 ? 50 : seats.length
-  for (let i = 0; i < max; i++) {
+  for (let i = 0; i < count; i++) {
     if (seats.find(s => s.position === i + 1)?.category === 'walkway') {
       walkwayCount += 1
       result.push('')
     } else {
       result.push(
-        (i + 1 > length ? character[Math.floor((i + 1 - length) / length)] : '') +
-          character[(i % length) - walkwayCount],
+        (i + 1 > length + walkwayCount ? character[Math.floor((i + 1 - length) / length)] : '') +
+          character[(i - walkwayCount) % length],
       )
     }
   }

@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid'
 import { AdminBlock } from '../../components/admin'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
-import { KeyOfSeat, Seat, Venue } from '../../types/venue'
+import { CategoryName, KeyOfSeat, Seat, Venue } from '../../types/venue'
 import pageMessages from '../translation'
 import { category, categoryFilter, colHead, generateGridLayout } from './helpers/grid'
 
@@ -150,7 +150,7 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
   }
 
   // adjust all seats of one col/row
-  const handleChangeRowSeatsIsHigh = (seatInfo: Seat, position: Position) => {
+  const handleChangeRowSeats = (newValue: CategoryName, seatInfo: Seat, position: Position) => {
     let newSeats: Seat[] = []
     for (const seat of seats.filter(s => Math.floor(s.position / (cols + 1)) === position.y)) {
       const seatCategory = seats.filter(s => s.position === seat.position)[0].category
@@ -158,9 +158,9 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
         c =>
           c.order ===
           Math.min(
-            categoryFilter(seatInfo.category === 'high' ? 'normal' : 'high').order,
+            categoryFilter(seatInfo.category === newValue ? 'normal' : newValue).order,
             categoryFilter(seats.filter(s => s.position === seat.position - position.idx)[0].category).order,
-            categoryFilter(seatCategory === 'high' ? 'normal' : seatCategory).order,
+            categoryFilter(seatCategory === newValue ? 'normal' : seatCategory).order,
           ),
       )
       newCategory &&
@@ -172,7 +172,7 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
     }
     setSeats([...seats.filter(s => Math.floor(s.position / (cols + 1)) !== position.y), ...newSeats])
   }
-  const handleChangeColSeatsIsWalkway = (seatInfo: Seat, position: Position) => {
+  const handleChangeColSeats = (newValue: CategoryName, seatInfo: Seat, position: Position) => {
     let newSeats: Seat[] = []
     for (const seat of seats.filter(s => s.position % (cols + 1) === position.x)) {
       const seatCategory = seats.filter(s => s.position === seat.position)[0].category
@@ -180,8 +180,8 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
         c =>
           c.order ===
           Math.min(
-            categoryFilter(seatInfo.category === 'walkway' ? 'normal' : 'walkway').order,
-            categoryFilter(seatCategory === 'walkway' ? 'normal' : seatCategory).order,
+            categoryFilter(seatInfo.category === newValue ? 'normal' : newValue).order,
+            categoryFilter(seatCategory === newValue ? 'normal' : seatCategory).order,
             categoryFilter(seats.filter(s => s.position === seat.position - position.x)[0].category).order,
           ),
       )
@@ -219,7 +219,10 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
     setCols(cols - 1)
     setSeats(newSeats)
   }
-  console.log(seats)
+  const colHeadTitle = useMemo(() => {
+    return colHead(cols, seats)
+  }, [seats, cols])
+
   return (
     <>
       <div className="d-flex align-items-center mb-4">
@@ -283,19 +286,35 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
           isBounded
           style={{ width: (cols + 1) * 50 }}
         >
-          {layout.map(i => (
-            <div key={i.i}>
-              <GridItem
-                position={{ x: i.x, y: i.y, idx: Number(i.i) }}
-                seats={seats}
-                onSeatChange={handleChangeSeatBlock}
-                onRowSeatsChange={handleChangeRowSeatsIsHigh}
-                onColSeatsChange={handleChangeColSeatsIsWalkway}
-                onRowDelete={handleDeleteRow}
-                onColDelete={handleDeleteCol}
-              />
-            </div>
-          ))}
+          {layout.map(i => {
+            const seatInfo = seats.find(seat => seat.position === Number(i.i))
+            const colHeadInfo = seats.find(seat => seat.position === i.x)
+            const rowHeadInfo = seats.find(seat => seat.position === i.y * (cols + 1))
+            const background =
+              seatInfo && colHeadInfo && rowHeadInfo
+                ? [seatInfo, colHeadInfo, rowHeadInfo].find(v => v.category === 'walkway')
+                  ? categoryFilter('walkway').gridColor
+                  : [seatInfo, colHeadInfo, rowHeadInfo].find(v => v.category === 'high')
+                  ? categoryFilter('high').gridColor
+                  : '#ffffff'
+                : '#ffffff'
+
+            return (
+              <div key={i.i}>
+                <GridItem
+                  position={{ x: i.x, y: i.y, idx: Number(i.i) }}
+                  seats={seats}
+                  onSeatChange={handleChangeSeatBlock}
+                  onRowSeatsChange={handleChangeRowSeats}
+                  onColSeatsChange={handleChangeColSeats}
+                  onRowDelete={handleDeleteRow}
+                  onColDelete={handleDeleteCol}
+                  colHead={colHeadTitle}
+                  backgroundColor={background}
+                />
+              </div>
+            )
+          })}
         </GridLayout>
       </AdminBlock>
     </>
@@ -308,10 +327,12 @@ interface GridItemProps {
   position: Position
   seats: Seat[]
   onSeatChange: (seatInfo: Seat, position: Position) => void
-  onRowSeatsChange: (seatInfo: Seat, position: Position) => void
-  onColSeatsChange: (seatInfo: Seat, position: Position) => void
+  onRowSeatsChange: (newValue: CategoryName, seatInfo: Seat, position: Position) => void
+  onColSeatsChange: (newValue: CategoryName, seatInfo: Seat, position: Position) => void
   onRowDelete: (row: number) => void
   onColDelete: (col: number) => void
+  colHead: string[]
+  backgroundColor?: string
 }
 
 const GridItem: React.VFC<GridItemProps> = ({
@@ -322,10 +343,11 @@ const GridItem: React.VFC<GridItemProps> = ({
   onColSeatsChange,
   onRowDelete,
   onColDelete,
+  colHead,
+  backgroundColor,
 }: GridItemProps) => {
   const { formatMessage } = useIntl()
   const seatInfo = seats.find(seat => seat.position === position.idx)
-  const backgroundColor = seatInfo ? categoryFilter(seatInfo.category).gridColor : '#ffffff'
 
   if (seatInfo) {
     if (position.x === 0 && position.y === 0) {
@@ -337,12 +359,21 @@ const GridItem: React.VFC<GridItemProps> = ({
             <Menu>
               <Menu.Item
                 onClick={() => {
-                  seatInfo && onColSeatsChange(seatInfo, position)
+                  seatInfo && onColSeatsChange('walkway', seatInfo, position)
                 }}
               >
                 {seatInfo?.category === 'walkway'
                   ? `${formatMessage(commonMessages.ui.cancel)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`
                   : `${formatMessage(commonMessages.ui.set)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`}
+              </Menu.Item>
+              <Menu.Item
+                onClick={() => {
+                  seatInfo && onColSeatsChange('high', seatInfo, position)
+                }}
+              >
+                {seatInfo?.category === 'high'
+                  ? `${formatMessage(commonMessages.ui.cancel)}${formatMessage(pageMessages.VenueSeatSetting.high)}`
+                  : `${formatMessage(commonMessages.ui.set)}${formatMessage(pageMessages.VenueSeatSetting.high)}`}
               </Menu.Item>
               <Menu.Item
                 onClick={() => {
@@ -356,7 +387,7 @@ const GridItem: React.VFC<GridItemProps> = ({
           }
           trigger={['click']}
         >
-          <StyledButton backgroundColor={backgroundColor}>{colHead(seats)[position.x]}</StyledButton>
+          <StyledButton backgroundColor={backgroundColor}>{colHead[position.x]}</StyledButton>
         </Dropdown>
       )
     } else if (position.x === 0) {
@@ -366,7 +397,16 @@ const GridItem: React.VFC<GridItemProps> = ({
             <Menu>
               <Menu.Item
                 onClick={() => {
-                  seatInfo && onRowSeatsChange(seatInfo, position)
+                  seatInfo && onRowSeatsChange('walkway', seatInfo, position)
+                }}
+              >
+                {seatInfo?.category === 'walkway'
+                  ? `${formatMessage(commonMessages.ui.cancel)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`
+                  : `${formatMessage(commonMessages.ui.set)}${formatMessage(pageMessages.VenueSeatSetting.walkway)}`}
+              </Menu.Item>
+              <Menu.Item
+                onClick={() => {
+                  seatInfo && onRowSeatsChange('high', seatInfo, position)
                 }}
               >
                 {seatInfo?.category === 'high'
