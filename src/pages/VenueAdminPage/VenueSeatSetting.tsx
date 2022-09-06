@@ -11,7 +11,7 @@ import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { CategoryName, KeyOfSeat, Seat, Venue } from '../../types/venue'
 import pageMessages from '../translation'
-import { category, categoryFilter, colHead, generateGridLayout } from './helpers/grid'
+import { category, categoryFilter, generateGridLayout, generateHeadTitles } from './helpers/grid'
 
 interface ButtonProps {
   backgroundColor?: string
@@ -219,9 +219,9 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
     setCols(cols - 1)
     setSeats(newSeats)
   }
-  const colHeadTitle = useMemo(() => {
-    return colHead(cols, seats)
-  }, [seats, cols])
+  const headTitles = useMemo(() => {
+    return generateHeadTitles(cols + 1, rows + 1, seats)
+  }, [seats, cols, rows])
 
   return (
     <>
@@ -309,7 +309,7 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
                   onColSeatsChange={handleChangeColSeats}
                   onRowDelete={handleDeleteRow}
                   onColDelete={handleDeleteCol}
-                  colHead={colHeadTitle}
+                  headTitles={headTitles}
                   backgroundColor={background}
                 />
               </div>
@@ -331,7 +331,7 @@ interface GridItemProps {
   onColSeatsChange: (newValue: CategoryName, seatInfo: Seat, position: Position) => void
   onRowDelete: (row: number) => void
   onColDelete: (col: number) => void
-  colHead: string[]
+  headTitles: { col: string[]; row: string[] }
   backgroundColor?: string
 }
 
@@ -343,7 +343,7 @@ const GridItem: React.VFC<GridItemProps> = ({
   onColSeatsChange,
   onRowDelete,
   onColDelete,
-  colHead,
+  headTitles,
   backgroundColor,
 }: GridItemProps) => {
   const { formatMessage } = useIntl()
@@ -387,7 +387,7 @@ const GridItem: React.VFC<GridItemProps> = ({
           }
           trigger={['click']}
         >
-          <StyledButton backgroundColor={backgroundColor}>{colHead[position.x]}</StyledButton>
+          <StyledButton backgroundColor={backgroundColor}>{headTitles.col[position.x]}</StyledButton>
         </Dropdown>
       )
     } else if (position.x === 0) {
@@ -425,7 +425,7 @@ const GridItem: React.VFC<GridItemProps> = ({
           }
           trigger={['click']}
         >
-          <StyledButton backgroundColor={backgroundColor}>{position.y}</StyledButton>
+          <StyledButton backgroundColor={backgroundColor}>{headTitles.row[position.y]}</StyledButton>
         </Dropdown>
       )
     } else {

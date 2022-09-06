@@ -66,21 +66,31 @@ export const generateGridLayout = (cols: number, rows: number) => {
   }))
 }
 
-export const colHead = (count: number, seats: Seat[]) => {
+export const generateHeadTitles = (cols: number, rows: number, seats: Seat[]) => {
   const character = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
   const length = character.length
-  let walkwayCount = 0,
-    result = ['']
-  for (let i = 0; i < count; i++) {
+  let colWalkwayCount = 0,
+    rowWalkwayCount = 0,
+    colResult = [''],
+    rowResult = ['']
+  for (let i = 0; i < cols; i++) {
     if (seats.find(s => s.position === i + 1)?.category === 'walkway') {
-      walkwayCount += 1
-      result.push('')
+      colWalkwayCount += 1
+      colResult.push('')
     } else {
-      result.push(
-        (i + 1 > length + walkwayCount ? character[Math.floor((i + 1 - length) / length)] : '') +
-          character[(i - walkwayCount) % length],
+      colResult.push(
+        (i + 1 > length + colWalkwayCount ? character[Math.floor((i + 1 - length) / length)] : '') +
+          character[(i - colWalkwayCount) % length],
       )
     }
   }
-  return result
+  for (let i = 0; i < rows; i++) {
+    if (seats.find(s => Math.floor(s.position / cols) === i + 1)?.category === 'walkway') {
+      rowWalkwayCount += 1
+      rowResult.push('')
+    } else {
+      rowResult.push(`${i + 1 - rowWalkwayCount}`)
+    }
+  }
+  return { col: colResult, row: rowResult }
 }
