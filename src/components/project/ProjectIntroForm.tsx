@@ -67,10 +67,7 @@ const ProjectIntroForm: React.FC<{
       variables: {
         projectId: project.id,
         previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`,
-        coverUrl:
-          project.coverUrl === null
-            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`
-            : project.coverUrl,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`,
       },
     })
       .then(() => {

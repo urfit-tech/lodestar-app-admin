@@ -332,7 +332,7 @@ const pageMessages = {
     cols: { id: 'page.VenueSeatSetting.cols', defaultMessage: '直的列數' },
     row: { id: 'page.VenueSeatSetting.row', defaultMessage: '橫列' },
     col: { id: 'page.VenueSeatSetting.col', defaultMessage: '直欄' },
-    heigh: { id: 'page.VenueSeatSetting.heigh', defaultMessage: '高起來' },
+    high: { id: 'page.VenueSeatSetting.high', defaultMessage: '高起來' },
     walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
   }),
 }

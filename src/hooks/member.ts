@@ -869,7 +869,7 @@ export const useMemberCollection = (filter?: {
             count
           }
         }
-        member(where: $condition, order_by: { created_at: desc_nulls_last }, limit: $limit) {
+        member(where: $condition, order_by: [{ created_at: desc_nulls_last }, { id: asc }], limit: $limit) {
           id
           picture_url
           name
@@ -969,8 +969,20 @@ export const useMemberCollection = (filter?: {
     fetchMore({
       variables: {
         condition: {
-          ...condition,
-          created_at: { _lt: data?.member.slice(-1)[0]?.created_at },
+          _and: [
+            condition,
+            {
+              _or: [
+                {
+                  _and: [
+                    { created_at: { _eq: data?.member.slice(-1)[0]?.created_at } },
+                    { id: { _gt: data?.member.slice(-1)[0]?.id } },
+                  ],
+                },
+                { created_at: { _lt: data?.member.slice(-1)[0]?.created_at } },
+              ],
+            },
+          ],
         },
         limit: 10,
       },

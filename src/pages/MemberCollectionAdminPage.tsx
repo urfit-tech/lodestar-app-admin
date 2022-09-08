@@ -110,7 +110,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       title: property.name,
     })),
   ]
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['email', 'createdAt', 'consumption'])
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['#', 'email', 'createdAt', 'consumption'])
 
   // get member info
   const [fieldFilter, setFieldFilter] = useState<{
@@ -280,6 +280,11 @@ const MemberCollectionAdminPage: React.FC = () => {
     })
 
   const columns: ColumnProps<MemberInfoProps>[] = [
+    {
+      title: '#',
+      key: '#',
+      render: (text, record, index) => <div>{index + 1}</div>,
+    },
     {
       title: formatMessage(commonMessages.label.memberName),
       key: 'name',

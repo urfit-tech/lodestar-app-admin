@@ -5275,6 +5275,39 @@ export interface UPDATE_EXAM_QUESTION_GROUPVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_EXAM_PROGRAM_CONTENT
+// ====================================================
+
+export interface UPDATE_EXAM_PROGRAM_CONTENT_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXAM_PROGRAM_CONTENT {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_EXAM_PROGRAM_CONTENT_update_program_content | null;
+}
+
+export interface UPDATE_EXAM_PROGRAM_CONTENTVariables {
+  programContentId: any;
+  title?: string | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+  displayMode?: string | null;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_EXAM_TIME_LIMIT_LIST
 // ====================================================
 
@@ -5334,7 +5367,7 @@ export interface UPSERT_EXAM_MEMBER_TIME_LIMIT {
 
 export interface UPSERT_EXAM_MEMBER_TIME_LIMITVariables {
   examId: any;
-  toDeleteMemberList: any[];
+  toDeleteMemberList: string[];
   timeLimitList: exam_member_time_limit_insert_input[];
 }
 
