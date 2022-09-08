@@ -18,7 +18,7 @@ import {
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import hasura from '../../hasura'
-import { Venue } from '../../types/venue'
+import { CategoryName, Venue } from '../../types/venue'
 import LoadingPage from '../LoadingPage'
 import pageMessages from '../translation'
 import VenueBasicForm from './VenueBasicForm'
@@ -105,23 +105,29 @@ const VenueAdminPage: React.VFC = () => {
 }
 export default VenueAdminPage
 
-const defaultVenueSeatId = uuid()
-
 const useVenue = (venueId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_VENUE>(GET_VENUE, { variables: { venueId } })
+
+  const defaultSeatInfo = Array.from(Array(4).keys()).map((_i, idx) => ({
+    id: uuid(),
+    venue_id: data?.venue_by_pk?.id,
+    position: idx,
+    disabled: false,
+    category: 'normal' as CategoryName,
+  }))
 
   const venue: Venue | null = data?.venue_by_pk
     ? {
         ...data?.venue_by_pk,
         venue_seats:
           data?.venue_by_pk.venue_seats.length === 0
-            ? [{ id: defaultVenueSeatId, venue_id: data?.venue_by_pk.id, position: 0, disabled: false, category: null }]
+            ? defaultSeatInfo
             : data?.venue_by_pk.venue_seats.map(seat => ({
                 id: seat.id,
                 venue_id: seat.venue_id,
                 position: seat.position,
                 disabled: seat.disabled,
-                category: seat.category,
+                category: seat.category as CategoryName,
               })),
       }
     : null

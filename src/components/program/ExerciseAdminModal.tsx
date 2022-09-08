@@ -75,6 +75,15 @@ const ExerciseAdminModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { deleteProgramContentExerciseAndExam } = useMutateProgramContent()
   const { loading: loadingExamId, error: errorExamId, examId } = useExamId(programContent.id)
+  const [updateExam] = useMutation<hasura.UPDATE_EXAM, hasura.UPDATE_EXAMVariables>(UPDATE_EXAM)
+  const [updateExamQuestionLibrary] = useMutation<
+    hasura.UPDATE_EXAM_QUESTION_GROUP,
+    hasura.UPDATE_EXAM_QUESTION_GROUPVariables
+  >(UPDATE_EXAM_QUESTION_GROUP)
+  const [updateExamProgramContent] = useMutation<
+    hasura.UPDATE_EXAM_PROGRAM_CONTENT,
+    hasura.UPDATE_EXAM_PROGRAM_CONTENTVariables
+  >(UPDATE_EXAM_PROGRAM_CONTENT)
 
   const {
     loading: loadingBasicExam,
@@ -95,22 +104,32 @@ const ExerciseAdminModal: React.FC<{
   const [basicExamSetting, setBasicExamSetting] = useState<BasicExam>(basicExam)
   const [questionExamSetting, setQuestionExamSetting] = useState<QuestionExam>(questionExam)
 
-  const [updateExam] = useMutation<hasura.UPDATE_EXAM, hasura.UPDATE_EXAMVariables>(UPDATE_EXAM)
-  const [updateExamQuestionLibrary] = useMutation<
-    hasura.UPDATE_EXAM_QUESTION_GROUP,
-    hasura.UPDATE_EXAM_QUESTION_GROUPVariables
-  >(UPDATE_EXAM_QUESTION_GROUP)
-
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
     if (typeof basicExamSetting.id === 'undefined' && typeof questionExamSetting.id === 'undefined') {
-      message.success(formatMessage(programMessages['*'].successfullySaved))
-      setLoading(false)
-      setActivityKey('basicSetting')
-      setVisible(false)
-      return
-    }
-    if (typeof basicExamSetting.id !== 'undefined') {
+      updateExamProgramContent({
+        variables: {
+          programContentId: programContent.id,
+          title: values.title,
+          isNotifyUpdate: values.isNotifyUpdate,
+          notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+          displayMode: values.displayMode,
+          publishedAt: values.publishedAt
+            ? new Date(values.publishedAt)
+            : values.displayMode !== 'conceal'
+            ? new Date()
+            : null,
+        },
+      })
+        .then(() => {
+          message.success(formatMessage(programMessages['*'].successfullySaved))
+          onRefetch?.()
+          setLoading(false)
+          setActivityKey('basicSetting')
+          setVisible(false)
+        })
+        .catch(error => handleError(error))
+    } else if (typeof basicExamSetting.id !== 'undefined') {
       updateExam({
         variables: {
           programContentId: programContent.id,
@@ -493,6 +512,29 @@ const UPDATE_EXAM_QUESTION_GROUP = gql`
       affected_rows
     }
     insert_exam_question_group(objects: $examQuestionGroups) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_EXAM_PROGRAM_CONTENT = gql`
+  mutation UPDATE_EXAM_PROGRAM_CONTENT(
+    $programContentId: uuid!
+    $title: String
+    $isNotifyUpdate: Boolean
+    $notifiedAt: timestamptz
+    $displayMode: String
+    $publishedAt: timestamptz
+  ) {
+    update_program_content(
+      where: { id: { _eq: $programContentId } }
+      _set: {
+        title: $title
+        is_notify_update: $isNotifyUpdate
+        notified_at: $notifiedAt
+        display_mode: $displayMode
+        published_at: $publishedAt
+      }
+    ) {
       affected_rows
     }
   }

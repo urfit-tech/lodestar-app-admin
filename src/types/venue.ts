@@ -12,7 +12,8 @@ export type Seat = {
   venue_id: string
   position: number
   disabled: boolean
-  category: Category
+  category: CategoryName
 }
 
-type Category = 'walkway' | 'blocked' | 'heigh' | string | null
+export type KeyOfSeat = keyof Seat
+export type CategoryName = 'walkway' | 'blocked' | 'high' | 'normal' | null

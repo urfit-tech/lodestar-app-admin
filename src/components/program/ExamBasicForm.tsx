@@ -268,7 +268,7 @@ const ExamBasicForm: React.VFC<{
           <Checkbox
             defaultChecked={basicExam.isAvailableAnnounceScore}
             onChange={v =>
-              onChange(prevState => ({ ...prevState, ...basicExam, isAvailableAnnounceScore: v.target.checked }))
+              onChange(prevState => ({ ...prevState, ...basicExam, isAvailableAnnounceScore: !v.target.checked }))
             }
           >
             {formatMessage(programMessages.ExamBasicForm.unAnnounceScore)}
