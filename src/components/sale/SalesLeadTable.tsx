@@ -559,7 +559,7 @@ const SalesLeadTable: React.VFC<{
           rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}
-          pagination={{ pageSize: 10 }}
+          pagination={{ defaultPageSize: 100, pageSizeOptions: ['20', '50', '100', '300', '500', '1000'] }}
           className="mb-3"
         />
       </TableWrapper>
