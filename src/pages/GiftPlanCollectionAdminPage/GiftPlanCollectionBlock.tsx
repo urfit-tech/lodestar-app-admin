@@ -1,7 +1,7 @@
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { Dropdown, Input, Menu, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { EmptyBlock } from '../../components/admin'
@@ -43,6 +43,13 @@ const GiftPlanCollectionBlock: React.VFC<{
   onRefetch?: () => void
 }> = ({ giftPlanCollection, searchTitle, onSearch, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [giftPlanProps, setGiftPlanProps] = useState<{
+    id: string
+    title: string
+    giftPlanProductId: string
+    giftId: string
+  }>()
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   const handleUpdatedGiftPlan = () => {
     onRefetch?.()
@@ -54,16 +61,20 @@ const GiftPlanCollectionBlock: React.VFC<{
       title: formatMessage(pageMessages['*'].title),
       width: '70%',
       render: (_, record) => (
-        <GiftPlanCollectionAdminModal
-          giftPlan={{ id: record.id, title: record.title, giftPlanProductId: record.giftPlanProductIdList[0] }}
-          giftId={record.giftIdList[0]}
-          renderTrigger={({ setVisible }) => (
-            <StyledTitle className="flex-grow-1" onClick={() => setVisible(true)}>
-              {record.title}
-            </StyledTitle>
-          )}
-          onRefetch={handleUpdatedGiftPlan}
-        />
+        <StyledTitle
+          className="flex-grow-1"
+          onClick={() => {
+            setIsModalVisible(true)
+            setGiftPlanProps({
+              id: record.id,
+              title: record.title,
+              giftPlanProductId: record.giftPlanProductIdList[0],
+              giftId: record.giftIdList[0],
+            })
+          }}
+        >
+          {record.title}
+        </StyledTitle>
       ),
       filterDropdown: () => (
         <div className="p-2">
@@ -111,16 +122,21 @@ const GiftPlanCollectionBlock: React.VFC<{
     },
   ]
 
-  // if (loadingVoucherPlans) {
-  //   return <Skeleton active />
-  // }
-
-  // if (error) {
-  //   return <div>{formatMessage(pageMessages.VoucherPlanCollectionBlock.fetchDataError)}</div>
-  // }
-
   return (
     <>
+      {giftPlanProps && (
+        <GiftPlanCollectionAdminModal
+          visible={isModalVisible}
+          setModalVisible={setIsModalVisible}
+          giftPlan={{
+            id: giftPlanProps.id,
+            title: giftPlanProps.title,
+            giftPlanProductId: giftPlanProps.giftPlanProductId,
+          }}
+          giftId={giftPlanProps.giftId}
+          onRefetch={handleUpdatedGiftPlan}
+        />
+      )}
       {giftPlanCollection.length === 0 && searchTitle === '' ? (
         <EmptyBlock>{formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}</EmptyBlock>
       ) : (

@@ -20,10 +20,10 @@ import GiftPlanCollectionBlock, { GiftPlanColumn } from './GiftPlanCollectionBlo
 const GiftPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { permissions, currentMemberId } = useAuth()
-  const [loading, setLoading] = useState(false)
+  const { permissions } = useAuth()
   const { id: appId } = useApp()
   const [searchTitle, setSearchTitle] = useState('')
+  const [isModalVisible, setIsModalVisible] = useState(false)
   const { giftPlanCollection, refetchGiftPlanCollection, giftPlanCollectionLoading, giftPlanCollectionError } =
     useGiftPlanCollection({
       app_id: appId ? { _eq: appId } : undefined,
@@ -50,12 +50,18 @@ const GiftPlanCollectionAdminPage: React.FC = () => {
             title={formatMessage(promotionMessages.ui.createGiftPlan)}
             destroyOnClose
             footer={null}
-            renderTrigger={({ setVisible }) => (
-              <Button className="mb-4" type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+            renderTrigger={() => (
+              <Button
+                className="mb-4"
+                type="primary"
+                icon={<FileAddOutlined />}
+                onClick={() => setIsModalVisible(true)}
+              >
                 {formatMessage(promotionMessages.ui.createGiftPlan)}
               </Button>
             )}
-            maskClosable={false}
+            visible={isModalVisible}
+            setModalVisible={setIsModalVisible}
             onRefetch={refetchGiftPlanCollection}
           />
         </div>
@@ -114,14 +120,3 @@ const GET_GIFT_PLAN_COLLECTION = gql`
     }
   }
 `
-
-// const INSERT_GIFT_PLAN = gql`
-//   mutation INSERT_GIFT_PLAN($appId: string!, $title: String!, $editorId: String!) {
-//     insert_gift_plan(objects: { app_id: $appId, title: $title, editor_id: $editorId }) {
-//       affected_rows
-//       returning {
-//         id
-//       }
-//     }
-//   }
-// `

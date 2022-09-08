@@ -364,7 +364,9 @@ const pageMessages = {
     editGiftPlan: { id: 'page.GiftPlanCollectionAdminPage.editGiftPlan', defaultMessage: '編輯贈品方案' },
     giftCover: { id: 'page.GiftPlanCollectionAdminPage.giftCover', defaultMessage: '贈品封面' },
     giftCoverTips: { id: 'page.GiftPlanCollectionAdminPage.giftCoverTips', defaultMessage: '建議圖片尺寸：600*600px' },
-    createAt: {id: 'page.GiftPlanCollectionAdminPage.createAt', defaultMessage: '建立日期'}
+    createAt: {id: 'page.GiftPlanCollectionAdminPage.createAt', defaultMessage: '建立日期'},
+    giftPlanTitleIsRequired: {id: 'page.GiftPlanCollectionAdminPage.giftPlanTitleIsRequired', defaultMessage: '贈品方案名稱為必填'},
+    customGiftNameIsRequired: {id: 'page.GiftPlanCollectionAdminPage.customGiftNameIsRequired', defaultMessage: '贈品項目名稱為必填'},
   }),
 }
 

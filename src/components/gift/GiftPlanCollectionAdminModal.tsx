@@ -1,18 +1,19 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { FormControl, Input, Radio, RadioGroup, Stack } from '@chakra-ui/react'
-import { Button, message, Tooltip } from 'antd'
+import { FormControl, FormErrorMessage, Input, Radio, RadioGroup, Stack } from '@chakra-ui/react'
+import { Button, message, Skeleton, Tooltip } from 'antd'
 import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { uploadFile } from 'lodestar-app-element/src/helpers'
-import React, { useEffect, useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import React, { useRef, useState } from 'react'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import pageMessages from '../../pages/translation'
 import { StyledTips } from '../admin'
@@ -54,20 +55,24 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
       giftPlanProductId?: string
     }
     giftId?: string
+    setModalVisible?: (value: boolean) => void
     onRefetch?: () => void
   }
-> = ({ giftPlan, giftId, onRefetch, ...props }) => {
+> = ({ giftPlan, giftId, setModalVisible, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { currentMemberId, authToken } = useAuth()
   const uploadCanceler = useRef<Canceler>()
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState<GiftPlanFields>()
   const [coverImg, setCoverImg] = useState<File | null>(null)
   const { gift, refetchGift, giftLoading, giftError } = useGift({
     id: giftId !== undefined ? { _eq: giftId } : { _is_null: true },
   })
-  const { control, reset, getValues } = useForm<GiftPlanFields>()
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<GiftPlanFields>()
   const [updateCustomGiftCoverUrl] = useMutation<
     hasura.UPDATE_CUSTOM_GIFT_COVER_URL,
     hasura.UPDATE_CUSTOM_GIFT_COVER_URLVariables
@@ -76,12 +81,11 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
   const [updateGiftPlan] = useMutation<hasura.UPDATE_GIFT_PLAN, hasura.UPDATE_GIFT_PLANVariables>(UPDATE_GIFT_PLAN)
   const [upsertGift] = useMutation<hasura.UPSERT_GIFT, hasura.UPSERT_GIFTVariables>(UPSERT_GIFT)
 
-  const handleSubmit = (setVisible: (visible: boolean) => void) => {
+  const onSubmit: SubmitHandler<GiftPlanFields> = values => {
     setLoading(true)
-    const values = getValues()
     const upsertGiftPlanProductId = giftPlan?.giftPlanProductId || uuid()
     const upsertGiftPlanId = giftPlan?.id || uuid()
-    const upsertGiftId = values.tokenId || uuid()
+    const upsertGiftId = gift.id || uuid()
 
     upsertGift({
       variables: {
@@ -117,12 +121,10 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
                 values.tokenId || upsertGiftId
               }/${coverId}/400`,
             },
-          }).catch(err => {
-            console.log(err)
-          })
+          }).catch(handleError)
         }
       })
-      .catch(err => console.log(err))
+      .catch(handleError)
       .finally(() => {
         if (giftPlan?.giftPlanProductId !== undefined) {
           updateGiftPlan({
@@ -135,11 +137,11 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
               onRefetch?.()
               refetchGift().then(() => {
                 setLoading(false)
-                setVisible(false)
+                setModalVisible?.(false)
                 message.success(formatMessage(commonMessages.event.successfullySaved))
               })
             })
-            .catch(err => console.log(err))
+            .catch(handleError)
         } else {
           insertGiftPlan({
             variables: {
@@ -155,174 +157,130 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
               onRefetch?.()
               refetchGift().then(() => {
                 setLoading(false)
-                setVisible(false)
+                setModalVisible?.(false)
                 message.success(formatMessage(commonMessages.event.successfullySaved))
               })
             })
-            .catch(err => console.log(err))
+            .catch(handleError)
         }
+        setCoverImg(null)
       })
   }
-
-  useEffect(() => {
-    setFormData({
-      tokenId: gift.id,
-      giftPlanTitle: giftPlan?.title || '',
-      customGiftName: gift.title,
-      customGiftCoverUrl: gift.coverUrl || '',
-      isDeliverable: gift.isDeliverable?.toString(),
-    })
-  }, [gift.coverUrl, gift.id, gift.isDeliverable, gift.title, giftPlan?.title])
-
-  useEffect(() => {
-    reset(formData)
-  }, [formData, reset])
 
   return (
     <AdminModal
       title={formatMessage(pageMessages['GiftPlanCollectionAdminPage'].editGiftPlan)}
       footer={null}
-      renderFooter={({ setVisible }) => (
-        <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages['ui'].cancel)}
-          </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
-            {formatMessage(commonMessages['ui'].confirm)}
-          </Button>
-        </>
-      )}
+      onCancel={() => setModalVisible?.(false)}
       {...props}
     >
-      <form style={{ marginBottom: '32px' }}>
-        <FormControl id="tokenId">
-          <StyledFormItem>
-            <Controller
-              name="tokenId"
-              control={control}
-              rules={{ required: true }}
-              render={field => <Input {...field} hidden />}
-            />
-          </StyledFormItem>
-        </FormControl>
-        <FormControl id="giftPlanTitle">
-          <StyledFormItem>
-            <StyledLabel htmlFor="giftPlanTitle">
-              {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftPlanTitle)}
-            </StyledLabel>
-            <Controller
-              name="giftPlanTitle"
-              control={control}
-              rules={{ required: true }}
-              render={field => (
-                <Input
-                  {...field}
-                  onBlur={e => {
-                    setFormData({
-                      ...formData,
-                      giftPlanTitle: e.target.value,
-                    })
-                  }}
-                />
-              )}
-            />
-          </StyledFormItem>
-        </FormControl>
-        <FormControl id="customGiftName">
-          <StyledFormItem>
-            <StyledLabel htmlFor="customGiftName">
-              {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftItemName)}
-            </StyledLabel>
-            <Controller
-              name="customGiftName"
-              control={control}
-              rules={{ required: true }}
-              render={field => (
-                <Input
-                  {...field}
-                  onBlur={e => {
-                    setFormData({
-                      ...formData,
-                      customGiftName: e.target.value,
-                    })
-                  }}
-                />
-              )}
-            />
-          </StyledFormItem>
-        </FormControl>
-        <FormControl id="customGiftCoverUrl">
-          <StyledFormItem>
-            <StyledLabel className="d-flex align-items-center">
-              {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftCover)}
-              <Tooltip
-                placement="top"
-                title={
-                  <StyledTips>{formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftCoverTips)}</StyledTips>
-                }
-              >
-                <QuestionCircleFilled className="ml-2" />
-              </Tooltip>
-            </StyledLabel>
-            <Controller
-              name="customGiftCoverUrl"
-              control={control}
-              render={field => {
-                return (
-                  <ImageUploader
-                    file={coverImg}
-                    initialCoverUrl={formData?.customGiftCoverUrl || null}
-                    onChange={file => setCoverImg(file)}
-                  />
-                  // <ImageInput
-                  //   path={`gift_plan_covers/${appId}/${gift?.id || newGiftId}/${coverId}`}
-                  //   image={{
-                  //     width: '120px',
-                  //     ratio: 1,
-                  //   }}
-                  //   value={formData?.customGiftCoverUrl}
-                  //   onChange={value => {
-                  //     handleUpload(value)
-                  //   }}
-                  // />
-                )
-              }}
-            />
-          </StyledFormItem>
-        </FormControl>
-        <FormControl id="isDeliverable">
-          <StyledFormItem>
-            <StyledLabel className="d-flex align-items-center">
-              {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftDeliverMethod)}
-            </StyledLabel>
-            <Controller
-              name="isDeliverable"
-              control={control}
-              render={field => (
-                <RadioGroup
-                  {...field}
-                  defaultValue="true"
-                  onChange={e => {
-                    setFormData({
-                      ...formData,
-                      isDeliverable: e.toLocaleString(),
-                    })
-                  }}
+      {giftLoading ? (
+        <Skeleton active />
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormControl id="giftPlanTitle" isInvalid={!!errors?.giftPlanTitle?.message}>
+            <StyledFormItem>
+              <StyledLabel htmlFor="giftPlanTitle">
+                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftPlanTitle)}
+              </StyledLabel>
+              <Controller
+                name="giftPlanTitle"
+                control={control}
+                rules={{ required: formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftPlanTitleIsRequired) }}
+                render={field => (
+                  <>
+                    <Input {...field} />
+                    <FormErrorMessage>{errors.giftPlanTitle?.message}</FormErrorMessage>
+                  </>
+                )}
+                defaultValue={giftPlan?.title || ''}
+              />
+            </StyledFormItem>
+          </FormControl>
+          <FormControl id="customGiftName" isInvalid={!!errors?.customGiftName?.message}>
+            <StyledFormItem>
+              <StyledLabel htmlFor="customGiftName">
+                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftItemName)}
+              </StyledLabel>
+              <Controller
+                name="customGiftName"
+                control={control}
+                rules={{
+                  required: formatMessage(pageMessages['GiftPlanCollectionAdminPage'].customGiftNameIsRequired),
+                }}
+                render={field => (
+                  <>
+                    <Input {...field} />
+                    <FormErrorMessage>{errors.customGiftName?.message}</FormErrorMessage>
+                  </>
+                )}
+                defaultValue={gift.title || ''}
+              />
+            </StyledFormItem>
+          </FormControl>
+          <FormControl id="customGiftCoverUrl">
+            <StyledFormItem>
+              <StyledLabel className="d-flex align-items-center">
+                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftCover)}
+                <Tooltip
+                  placement="top"
+                  title={
+                    <StyledTips>{formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftCoverTips)}</StyledTips>
+                  }
                 >
-                  <Stack direction="column">
-                    <Radio size="md" value="true">
-                      {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].isDeliverable)}
-                    </Radio>
-                    <Radio size="md" value="false">
-                      {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].isNotDeliverable)}
-                    </Radio>
-                  </Stack>
-                </RadioGroup>
-              )}
-            />
-          </StyledFormItem>
-        </FormControl>
-      </form>
+                  <QuestionCircleFilled className="ml-2" />
+                </Tooltip>
+              </StyledLabel>
+              <Controller
+                name="customGiftCoverUrl"
+                control={control}
+                render={field => {
+                  return (
+                    <ImageUploader
+                      file={coverImg}
+                      initialCoverUrl={gift.coverUrl || null}
+                      onChange={file => setCoverImg(file)}
+                    />
+                  )
+                }}
+                defaultValue={gift.coverUrl || ''}
+              />
+            </StyledFormItem>
+          </FormControl>
+          <FormControl id="isDeliverable">
+            <StyledFormItem>
+              <StyledLabel className="d-flex align-items-center">
+                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftDeliverMethod)}
+              </StyledLabel>
+              <Controller
+                name="isDeliverable"
+                control={control}
+                render={field => (
+                  <RadioGroup {...field}>
+                    <Stack direction="column">
+                      <Radio size="md" value="true">
+                        {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].isDeliverable)}
+                      </Radio>
+                      <Radio size="md" value="false">
+                        {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].isNotDeliverable)}
+                      </Radio>
+                    </Stack>
+                  </RadioGroup>
+                )}
+                defaultValue={gift.isDeliverable?.toString() || 'true'}
+              />
+            </StyledFormItem>
+          </FormControl>
+          <div className="text-right">
+            <Button className="mr-2" onClick={() => setModalVisible?.(false)}>
+              {formatMessage(commonMessages['ui'].cancel)}
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              {formatMessage(commonMessages['ui'].confirm)}
+            </Button>
+          </div>
+        </form>
+      )}
     </AdminModal>
   )
 }

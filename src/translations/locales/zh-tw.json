@@ -2341,5 +2341,7 @@
   "page.GiftPlanCollectionAdminPage.giftCover": "贈品封面",
   "page.GiftPlanCollectionAdminPage.giftDeliverMethod": "贈品交付方式",
   "page.GiftPlanCollectionAdminPage.createAt": "建立日期",
-  "page.GiftPlanCollectionAdminPage.giftCoverTips": "建議圖片尺寸：600*600px"
+  "page.GiftPlanCollectionAdminPage.giftCoverTips": "建議圖片尺寸：600*600px",
+  "page.GiftPlanCollectionAdminPage.giftPlanTitleIsRequired": "贈品方案名稱為必填",
+  "page.GiftPlanCollectionAdminPage.customGiftNameIsRequired": "贈品項目為必填"
 }
