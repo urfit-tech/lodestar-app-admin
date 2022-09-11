@@ -266,7 +266,7 @@ const ExamBasicForm: React.VFC<{
       <Input.Group compact>
         <Form.Item name="isAvailableAnnounceScore">
           <Checkbox
-            defaultChecked={basicExam.isAvailableAnnounceScore}
+            defaultChecked={!basicExam.isAvailableAnnounceScore}
             onChange={v =>
               onChange(prevState => ({ ...prevState, ...basicExam, isAvailableAnnounceScore: !v.target.checked }))
             }

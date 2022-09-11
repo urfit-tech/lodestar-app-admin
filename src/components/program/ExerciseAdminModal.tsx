@@ -153,7 +153,7 @@ const ExerciseAdminModal: React.FC<{
           timeLimitAmount: basicExamSetting?.timeLimitAmount || null,
           isAvailableToRetry: basicExamSetting.isAvailableToRetry,
           isAvailableToGoBack: basicExamSetting.isAvailableToGoBack,
-          isAvailableAnnounceScore: !basicExamSetting.isAvailableAnnounceScore,
+          isAvailableAnnounceScore: basicExamSetting.isAvailableAnnounceScore,
         },
       })
         .then(() => {
@@ -222,7 +222,7 @@ const ExerciseAdminModal: React.FC<{
             timeLimitAmount: basicExamSetting?.timeLimitAmount || null,
             isAvailableToRetry: basicExamSetting.isAvailableToRetry,
             isAvailableToGoBack: basicExamSetting.isAvailableToGoBack,
-            isAvailableAnnounceScore: !basicExamSetting.isAvailableAnnounceScore,
+            isAvailableAnnounceScore: basicExamSetting.isAvailableAnnounceScore,
           },
         }),
         updateExamQuestionLibrary({
@@ -410,7 +410,7 @@ const useBasicExam = (examId: string) => {
     timeLimitAmount: Number(data?.exam_by_pk?.time_limit_amount),
     isAvailableToRetry: Boolean(data?.exam_by_pk?.is_available_to_retry),
     isAvailableToGoBack: Boolean(data?.exam_by_pk?.is_available_to_go_back),
-    isAvailableAnnounceScore: !Boolean(data?.exam_by_pk?.is_available_announce_score),
+    isAvailableAnnounceScore: Boolean(data?.exam_by_pk?.is_available_announce_score),
   }
 
   return {
