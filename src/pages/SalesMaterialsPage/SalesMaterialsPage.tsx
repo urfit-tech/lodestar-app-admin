@@ -3,16 +3,16 @@ import { useQuery } from '@apollo/react-hooks'
 import { Checkbox, DatePicker, Form, Skeleton, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from '../components/admin'
-import AdminLayout from '../components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { countBy, eqProps, filter, flatten, map, pipe, split, trim, unionWith, uniq } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import SalesMemberInput from '../components/common/SalesMemberInput'
-import hasura from '../hasura'
-import ForbiddenPage from './ForbiddenPage'
+import { AdminPageTitle } from '../../components/admin'
+import SalesMemberInput from '../../components/common/SalesMemberInput'
+import AdminLayout from '../../components/layout/AdminLayout'
+import hasura from '../../hasura'
+import ForbiddenPage from '../ForbiddenPage'
 
 const count = pipe(
   map(
@@ -58,14 +58,17 @@ const SalesMaterialsPage: React.FC = () => {
         </Form.Item>
         <Form.Item label="業務">
           <StyledWrapper className="d-flex align-items-center">
-            <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} disabled={isSelectedAllSales} />
-            <Checkbox
-              checked={isSelectedAllSales}
-              onChange={e => setIsSelectedAllSales(e.target.checked)}
-              className="ml-3 flex-shrink-0"
-            >
-              全部業務
-            </Checkbox>
+            <>
+              <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} disabled={isSelectedAllSales} />
+              <Checkbox
+                checked={isSelectedAllSales}
+                onChange={e => setIsSelectedAllSales(e.target.checked)}
+                className="ml-3 flex-shrink-0"
+              >
+                全部業務
+              </Checkbox>
+            </>
+            <></>
           </StyledWrapper>
         </Form.Item>
       </Form>
@@ -74,6 +77,7 @@ const SalesMaterialsPage: React.FC = () => {
         <Tabs.TabPane key="廣告素材" tab="廣告素材"></Tabs.TabPane>
         <Tabs.TabPane key="廣告組合" tab="廣告組合"></Tabs.TabPane>
         <Tabs.TabPane key="行銷活動" tab="行銷活動"></Tabs.TabPane>
+        <Tabs.TabPane key="名單分級" tab="名單分級"></Tabs.TabPane>
       </Tabs>
 
       {(selectedSalesId || isSelectedAllSales) && (
