@@ -1,9 +1,9 @@
 import { Button, message } from 'antd'
+import { useGiftPlanMutation } from 'lodestar-app-element/src/hooks/giftPlan'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useGiftPlanMutation } from '../../hooks/giftPlan'
 import AdminModal from '../admin/AdminModal'
 import giftPlanMessages from './translation'
 
