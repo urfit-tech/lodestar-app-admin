@@ -15,8 +15,8 @@ import hasura from '../../hasura'
 import { promotionMessages } from '../../helpers/translation'
 import { GiftPlan } from '../../types/giftPlan'
 import ForbiddenPage from '../ForbiddenPage'
-import pageMessages from '../translation'
 import GiftPlanCollectionBlock from './GiftPlanCollectionBlock'
+import GiftPlanCollectionAdminPageMessages from './translation'
 
 const GiftPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -43,7 +43,7 @@ const GiftPlanCollectionAdminPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-3" />
-        <span>{formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftPlan)}</span>
+        <span>{formatMessage(GiftPlanCollectionAdminPageMessages.GiftPlanCollectionAdminPage.giftPlan)}</span>
       </AdminPageTitle>
       <div className="row mb-5">
         <div className="col-8">

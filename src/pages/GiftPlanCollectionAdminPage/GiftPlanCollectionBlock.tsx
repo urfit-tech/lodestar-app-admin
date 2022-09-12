@@ -9,6 +9,7 @@ import GiftPlanCollectionAdminModal from '../../components/gift/GiftPlanCollecti
 import GiftPlanDeleteAdminModal from '../../components/gift/GiftPlanDeleteAdminModal'
 import { GiftPlan } from '../../types/giftPlan'
 import pageMessages from '../translation'
+import GiftPlanCollectionAdminPageMessages from './translation'
 
 const StyledDiv = styled.div`
   .ant-table-content {
@@ -85,7 +86,7 @@ const GiftPlanCollectionBlock: React.VFC<{
     // TODO: 排序
     {
       key: 'createdAt',
-      title: formatMessage(pageMessages['GiftPlanCollectionAdminPage'].createAt),
+      title: formatMessage(GiftPlanCollectionAdminPageMessages.GiftPlanCollectionBlock.createAt),
       width: '25%',
       render: (_, record) => <>{record.createdAt}</>,
     },

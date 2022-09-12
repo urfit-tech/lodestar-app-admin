@@ -15,11 +15,11 @@ import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import pageMessages from '../../pages/translation'
 import { Gift } from '../../types/giftPlan'
 import { StyledTips } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ImageUploader from '../common/ImageUploader'
+import giftPlanMessages from './translation'
 
 const StyledLabel = styled.label`
   margin-bottom: 4px;
@@ -162,7 +162,7 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
 
   return (
     <AdminModal
-      title={formatMessage(pageMessages['GiftPlanCollectionAdminPage'].editGiftPlan)}
+      title={formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.editGiftPlan)}
       footer={null}
       onCancel={() => setModalVisible?.(false)}
       {...props}
@@ -174,12 +174,12 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
           <FormControl id="giftPlanTitle" isInvalid={!!errors?.giftPlanTitle?.message}>
             <StyledFormItem>
               <StyledLabel htmlFor="giftPlanTitle">
-                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftPlanTitle)}
+                {formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.title)}
               </StyledLabel>
               <Controller
                 name="giftPlanTitle"
                 control={control}
-                rules={{ required: formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftPlanTitleIsRequired) }}
+                rules={{ required: formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.titleIsRequired) }}
                 render={field => (
                   <>
                     <Input {...field} />
@@ -193,13 +193,13 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
           <FormControl id="customGiftName" isInvalid={!!errors?.customGiftName?.message}>
             <StyledFormItem>
               <StyledLabel htmlFor="customGiftName">
-                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftItemName)}
+                {formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.giftItemName)}
               </StyledLabel>
               <Controller
                 name="customGiftName"
                 control={control}
                 rules={{
-                  required: formatMessage(pageMessages['GiftPlanCollectionAdminPage'].customGiftNameIsRequired),
+                  required: formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.customGiftNameIsRequired),
                 }}
                 render={field => (
                   <>
@@ -214,11 +214,13 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
           <FormControl id="customGiftCoverUrl">
             <StyledFormItem>
               <StyledLabel className="d-flex align-items-center">
-                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftCover)}
+                {formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.giftCover)}
                 <Tooltip
                   placement="top"
                   title={
-                    <StyledTips>{formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftCoverTips)}</StyledTips>
+                    <StyledTips>
+                      {formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.giftCoverTips)}
+                    </StyledTips>
                   }
                 >
                   <QuestionCircleFilled className="ml-2" />
@@ -243,7 +245,7 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
           <FormControl id="isDeliverable">
             <StyledFormItem>
               <StyledLabel className="d-flex align-items-center">
-                {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].giftDeliverMethod)}
+                {formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.giftDeliverMethod)}
               </StyledLabel>
               <Controller
                 name="isDeliverable"
@@ -252,10 +254,10 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
                   <RadioGroup {...field}>
                     <Stack direction="column">
                       <Radio size="md" value="true">
-                        {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].isDeliverable)}
+                        {formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.isDeliverable)}
                       </Radio>
                       <Radio size="md" value="false">
-                        {formatMessage(pageMessages['GiftPlanCollectionAdminPage'].isNotDeliverable)}
+                        {formatMessage(giftPlanMessages.GiftPlanCollectionAdminModal.isNotDeliverable)}
                       </Radio>
                     </Stack>
                   </RadioGroup>

@@ -2,8 +2,8 @@ import { Button } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import pageMessages from '../../pages/translation'
 import AdminModal from '../admin/AdminModal'
+import giftPlanMessages from './translation'
 
 const GiftPlanDeleteAdminModal: React.VFC<{
   giftPlanId: string
@@ -24,7 +24,7 @@ const GiftPlanDeleteAdminModal: React.VFC<{
       renderTrigger={({ setVisible }) => (
         <span onClick={() => setVisible(true)}>{formatMessage(commonMessages['ui'].delete)}</span>
       )}
-      title={formatMessage(pageMessages['GiftPlanCollectionAdminPage'].deleteGriftPlanMessage)}
+      title={formatMessage(giftPlanMessages.GiftPlanDeleteAdminModal.deleteGriftPlanMessage)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <div>
