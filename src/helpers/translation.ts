@@ -153,6 +153,7 @@ export const commonMessages = {
     allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
     allPodcastProgram: { id: 'common.label.allPodcastProgram', defaultMessage: '所有廣播' },
+    allGiftPlan: { id: 'common.label.allGiftPlan', defaultMessage: '所有贈品方案' },
     publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
     publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
     all: { id: 'common.label.all', defaultMessage: '全部' },

@@ -10,6 +10,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
+import { useProductGiftPlan } from '../../hooks/giftPlan'
 import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
@@ -26,6 +27,18 @@ const StyledMenuItemText = styled.span`
   display: block;
 `
 
+const StyledPriceBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const GiftPlanTag = styled(Tag)`
+  color: ${props => props.theme['@primary-color']};
+  border: 1px solid ${props => props.theme['@primary-color']};
+  border-radius: 4px;
+`
+
 const ProgramSubscriptionPlanAdminCard: React.FC<{
   programId: string
   programPlan: ProgramPlan
@@ -35,6 +48,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   const { enabledModules } = useApp()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
+  const { productGiftPlan, refetchProductGiftPlan } = useProductGiftPlan(`ProgramPlan_${programPlan?.id}`)
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
   const description = programPlan.description?.trim() || ''
@@ -58,8 +72,10 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         </div>
         <ProgramPlanAdminModal
           onRefetch={onRefetch}
+          onProductGiftPlanRefetch={refetchProductGiftPlan}
           programId={programId}
           programPlan={programPlan}
+          productGiftPlan={productGiftPlan}
           renderTrigger={({ onOpen }) => (
             <div className="d-flex align-items-center">
               <EditOutlined
@@ -77,15 +93,18 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           )}
         />
       </AdminBlockTitle>
-      <PriceLabel
-        listPrice={listPrice}
-        salePrice={isOnSale ? salePrice : undefined}
-        downPrice={discountDownPrice || undefined}
-        periodAmount={periodAmount || 1}
-        periodType={periodType as ProgramPlanPeriodType}
-        currencyId={currencyId}
-        variant="full-detail"
-      />
+      <StyledPriceBlock>
+        <PriceLabel
+          listPrice={listPrice}
+          salePrice={isOnSale ? salePrice : undefined}
+          downPrice={discountDownPrice || undefined}
+          periodAmount={periodAmount || 1}
+          periodType={periodType as ProgramPlanPeriodType}
+          currencyId={currencyId}
+          variant="full-detail"
+        />
+        {productGiftPlan.productGiftPlanId && <GiftPlanTag>附贈品</GiftPlanTag>}
+      </StyledPriceBlock>
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>
           <CountDownTimeBlock expiredAt={programPlan?.soldAt} icon />

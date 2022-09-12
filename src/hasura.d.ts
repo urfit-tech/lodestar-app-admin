@@ -2433,6 +2433,12 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_card {
   title: string;
 }
 
+export interface GET_PRODUCT_SELECTION_COLLECTION_gift_plan {
+  __typename: "gift_plan";
+  id: any;
+  title: string;
+}
+
 export interface GET_PRODUCT_SELECTION_COLLECTION {
   /**
    * fetch data from the table: "program_plan"
@@ -2454,6 +2460,10 @@ export interface GET_PRODUCT_SELECTION_COLLECTION {
    * fetch data from the table: "card"
    */
   card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+  /**
+   * fetch data from the table: "gift_plan"
+   */
+  gift_plan: GET_PRODUCT_SELECTION_COLLECTION_gift_plan[];
 }
 
 /* tslint:disable */
@@ -10356,6 +10366,103 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
    * fetch data from the table: "voucher_plan"
    */
   voucher_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_voucher_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PRODUCT_GIFT_PLAN
+// ====================================================
+
+export interface UPSERT_PRODUCT_GIFT_PLAN_insert_product_gift_plan {
+  __typename: "product_gift_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PRODUCT_GIFT_PLAN {
+  /**
+   * insert data into the table: "product_gift_plan"
+   */
+  insert_product_gift_plan: UPSERT_PRODUCT_GIFT_PLAN_insert_product_gift_plan | null;
+}
+
+export interface UPSERT_PRODUCT_GIFT_PLANVariables {
+  productGiftPlanId: any;
+  productId: string;
+  giftPlanId: any;
+  giftPlanStartedAt?: any | null;
+  giftPlanEndedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PRODUCT_GIFT_PLAN
+// ====================================================
+
+export interface DELETE_PRODUCT_GIFT_PLAN_delete_product_gift_plan {
+  __typename: "product_gift_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PRODUCT_GIFT_PLAN {
+  /**
+   * delete data from the table: "product_gift_plan"
+   */
+  delete_product_gift_plan: DELETE_PRODUCT_GIFT_PLAN_delete_product_gift_plan | null;
+}
+
+export interface DELETE_PRODUCT_GIFT_PLANVariables {
+  productGiftPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_GIFT_PLAN
+// ====================================================
+
+export interface GET_PRODUCT_GIFT_PLAN_product_gift_plan_gift_plan {
+  __typename: "gift_plan";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_GIFT_PLAN_product_gift_plan {
+  __typename: "product_gift_plan";
+  id: any;
+  started_at: any | null;
+  ended_at: any | null;
+  /**
+   * An object relationship
+   */
+  gift_plan: GET_PRODUCT_GIFT_PLAN_product_gift_plan_gift_plan | null;
+}
+
+export interface GET_PRODUCT_GIFT_PLAN {
+  /**
+   * fetch data from the table: "product_gift_plan"
+   */
+  product_gift_plan: GET_PRODUCT_GIFT_PLAN_product_gift_plan[];
+}
+
+export interface GET_PRODUCT_GIFT_PLANVariables {
+  productId: string;
 }
 
 /* tslint:disable */
@@ -34764,7 +34871,6 @@ export interface product_gift_plan_bool_exp {
   gift_plan?: gift_plan_bool_exp | null;
   gift_plan_id?: uuid_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  product?: product_bool_exp | null;
   product_id?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;

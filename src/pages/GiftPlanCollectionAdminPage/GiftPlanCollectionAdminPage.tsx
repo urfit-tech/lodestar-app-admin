@@ -13,9 +13,10 @@ import GiftPlanCollectionAdminModal from '../../components/gift/GiftPlanCollecti
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { promotionMessages } from '../../helpers/translation'
+import { GiftPlan } from '../../types/giftPlan'
 import ForbiddenPage from '../ForbiddenPage'
 import pageMessages from '../translation'
-import GiftPlanCollectionBlock, { GiftPlanColumn } from './GiftPlanCollectionBlock'
+import GiftPlanCollectionBlock from './GiftPlanCollectionBlock'
 
 const GiftPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -88,7 +89,7 @@ const useGiftPlanCollection = (condition: hasura.GET_GIFT_PLAN_COLLECTIONVariabl
     },
   })
 
-  const giftPlanCollection: GiftPlanColumn[] =
+  const giftPlanCollection: GiftPlan[] =
     data?.gift_plan.map(v => ({
       id: v.id,
       title: v.title,

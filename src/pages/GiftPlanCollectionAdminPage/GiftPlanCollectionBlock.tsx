@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { EmptyBlock } from '../../components/admin'
 import GiftPlanCollectionAdminModal from '../../components/gift/GiftPlanCollectionAdminModal'
 import GiftPlanDeleteAdminModal from '../../components/gift/GiftPlanDeleteAdminModal'
+import { GiftPlan } from '../../types/giftPlan'
 import pageMessages from '../translation'
 
 const StyledDiv = styled.div`
@@ -28,16 +29,8 @@ const DetailItem = styled(Menu.Item)`
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-export type GiftPlanColumn = {
-  id: string
-  title: string
-  createdAt: string
-  giftIdList: string[]
-  giftPlanProductIdList: string[]
-}
-
 const GiftPlanCollectionBlock: React.VFC<{
-  giftPlanCollection: GiftPlanColumn[]
+  giftPlanCollection: GiftPlan[]
   searchTitle: string
   onSearch?: (searchTitle: string) => void
   onRefetch?: () => void
@@ -55,7 +48,7 @@ const GiftPlanCollectionBlock: React.VFC<{
     onRefetch?.()
   }
 
-  const columns: ColumnProps<GiftPlanColumn>[] = [
+  const columns: ColumnProps<GiftPlan>[] = [
     {
       key: 'title',
       title: formatMessage(pageMessages['*'].title),
@@ -141,7 +134,7 @@ const GiftPlanCollectionBlock: React.VFC<{
         <EmptyBlock>{formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}</EmptyBlock>
       ) : (
         <StyledDiv>
-          <Table<GiftPlanColumn> loading={false} rowKey="id" columns={columns} dataSource={giftPlanCollection} />
+          <Table<GiftPlan> loading={false} rowKey="id" columns={columns} dataSource={giftPlanCollection} />
         </StyledDiv>
       )}
     </>

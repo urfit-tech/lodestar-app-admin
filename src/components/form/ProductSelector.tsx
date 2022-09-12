@@ -22,6 +22,8 @@ const productTypeLabel = (productType: string) => {
       return commonMessages.label.allActivityTicket
     case 'PodcastProgram':
       return commonMessages.label.allPodcastProgram
+    case 'GiftPlan':
+      return commonMessages.label.allGiftPlan
     default:
       return commonMessages.label.unknownProduct
   }
@@ -161,13 +163,17 @@ const useProductSelections = () => {
           id
           title
         }
+        gift_plan(order_by: { created_at: desc_nulls_last, updated_at: desc_nulls_last }) {
+          id
+          title
+        }
       }
     `,
     { fetchPolicy: 'no-cache' },
   )
 
   const productSelections: {
-    productType: 'ProgramPlan' | 'ProgramPackagePlan' | 'ActivityTicket' | 'PodcastProgram' | 'Card'
+    productType: 'ProgramPlan' | 'ProgramPackagePlan' | 'ActivityTicket' | 'PodcastProgram' | 'Card' | 'GiftPlan'
     products: {
       id: string
       title: string
@@ -226,6 +232,14 @@ const useProductSelections = () => {
       products:
         data?.card.map(v => ({
           id: `Card_${v.id}`,
+          title: v.title,
+        })) || [],
+    },
+    {
+      productType: 'GiftPlan',
+      products:
+        data?.gift_plan.map(v => ({
+          id: `${v.id}`,
           title: v.title,
         })) || [],
     },

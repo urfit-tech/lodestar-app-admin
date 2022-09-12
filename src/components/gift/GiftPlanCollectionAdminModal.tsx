@@ -16,6 +16,7 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import pageMessages from '../../pages/translation'
+import { Gift } from '../../types/giftPlan'
 import { StyledTips } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ImageUploader from '../common/ImageUploader'
@@ -32,19 +33,11 @@ const StyledFormItem = styled.div`
   margin-bottom: 32px;
 `
 
-export type GiftPlanFields = {
+type GiftPlanFields = {
   giftPlanTitle?: string
-  tokenId?: string
   customGiftName?: string
   customGiftCoverUrl?: string
   isDeliverable?: boolean | string
-}
-
-type TokenGift = {
-  id: string
-  title: string
-  coverUrl: string | null
-  isDeliverable?: boolean
 }
 
 const GiftPlanCollectionEditAdminModal: React.VFC<
@@ -105,7 +98,7 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
         if (coverImg) {
           const coverId = uuid()
           try {
-            await uploadFile(`gift_images/${appId}/${values.tokenId || upsertGiftId}/${coverId}`, coverImg, authToken, {
+            await uploadFile(`gift_images/${appId}/${upsertGiftId || upsertGiftId}/${coverId}`, coverImg, authToken, {
               cancelToken: new axios.CancelToken(canceler => {
                 uploadCanceler.current = canceler
               }),
@@ -116,9 +109,9 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
           }
           await updateCustomGiftCoverUrl({
             variables: {
-              tokenId: values.tokenId || upsertGiftId,
+              tokenId: upsertGiftId || upsertGiftId,
               coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/gift_images/${appId}/${
-                values.tokenId || upsertGiftId
+                upsertGiftId || upsertGiftId
               }/${coverId}/400`,
             },
           }).catch(handleError)
@@ -294,7 +287,7 @@ const useGift = (condition: hasura.GET_GIFTVariables['condition']) => {
     },
   })
 
-  const gift: TokenGift = {
+  const gift: Gift = {
     id: data?.token[0]?.id,
     title: data?.token[0]?.title || '',
     coverUrl: data?.token[0]?.cover_url || '',
