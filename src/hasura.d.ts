@@ -10434,6 +10434,46 @@ export interface DELETE_PRODUCT_GIFT_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: DELETE_GIFT_PLAN
+// ====================================================
+
+export interface DELETE_GIFT_PLAN_delete_product_gift_plan {
+  __typename: "product_gift_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_GIFT_PLAN_delete_gift_plan {
+  __typename: "gift_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_GIFT_PLAN {
+  /**
+   * delete data from the table: "product_gift_plan"
+   */
+  delete_product_gift_plan: DELETE_GIFT_PLAN_delete_product_gift_plan | null;
+  /**
+   * delete data from the table: "gift_plan"
+   */
+  delete_gift_plan: DELETE_GIFT_PLAN_delete_gift_plan | null;
+}
+
+export interface DELETE_GIFT_PLANVariables {
+  giftPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PRODUCT_GIFT_PLAN
 // ====================================================
 

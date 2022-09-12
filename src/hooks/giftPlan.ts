@@ -11,10 +11,12 @@ export const useGiftPlanMutation = () => {
     hasura.DELETE_PRODUCT_GIFT_PLAN,
     hasura.DELETE_PRODUCT_GIFT_PLANVariables
   >(DELETE_PRODUCT_GIFT_PLAN)
+  const [deleteGiftPlan] = useMutation<hasura.DELETE_GIFT_PLAN, hasura.DELETE_GIFT_PLANVariables>(DELETE_GIFT_PLAN)
 
   return {
     upsertProductGiftPlan,
     deleteProductGiftPlan,
+    deleteGiftPlan,
   }
 }
 
@@ -44,6 +46,20 @@ const UPSERT_PRODUCT_GIFT_PLAN = gql`
 const DELETE_PRODUCT_GIFT_PLAN = gql`
   mutation DELETE_PRODUCT_GIFT_PLAN($productGiftPlanId: uuid!) {
     delete_product_gift_plan(where: { id: { _eq: $productGiftPlanId } }) {
+      affected_rows
+    }
+  }
+`
+
+const DELETE_GIFT_PLAN = gql`
+  mutation DELETE_GIFT_PLAN($giftPlanId: uuid!) {
+    delete_gift_plan_product(where: { gift_plan_id: { _eq: $giftPlanId } }) {
+      affected_rows
+    }
+    delete_product_gift_plan(where: { gift_plan_id: { _eq: $giftPlanId } }) {
+      affected_rows
+    }
+    delete_gift_plan(where: { id: { _eq: $giftPlanId } }) {
       affected_rows
     }
   }

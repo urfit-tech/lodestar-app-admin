@@ -1,22 +1,34 @@
-import { Button } from 'antd'
+import { Button, message } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useGiftPlanMutation } from '../../hooks/giftPlan'
 import AdminModal from '../admin/AdminModal'
 import giftPlanMessages from './translation'
 
 const GiftPlanDeleteAdminModal: React.VFC<{
   giftPlanId: string
   onRefetch?: () => void
-}> = ({ giftPlanId }) => {
+}> = ({ giftPlanId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
+  const { deleteGiftPlan } = useGiftPlanMutation()
 
   const handleDelete = (id: string, setVisible: (visible: boolean) => void) => {
     setLoading(true)
-    console.log(id)
-    setLoading(false)
-    setVisible(false)
+    deleteGiftPlan({
+      variables: {
+        giftPlanId: id,
+      },
+    })
+      .then(() => {
+        onRefetch?.()
+        setLoading(false)
+        setVisible(false)
+        message.success(formatMessage(commonMessages.event.successfullyDeleted))
+      })
+      .catch(handleError)
   }
 
   return (

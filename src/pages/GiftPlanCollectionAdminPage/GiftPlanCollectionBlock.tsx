@@ -45,10 +45,6 @@ const GiftPlanCollectionBlock: React.VFC<{
   }>()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  const handleUpdatedGiftPlan = () => {
-    onRefetch?.()
-  }
-
   const columns: ColumnProps<GiftPlan>[] = [
     {
       key: 'title',
@@ -104,7 +100,7 @@ const GiftPlanCollectionBlock: React.VFC<{
                 <GiftPlanPublishAdminModal giftPlanId={record.id} />
               </DetailItem> */}
               <DetailItem>
-                <GiftPlanDeleteAdminModal giftPlanId={record.id} />
+                <GiftPlanDeleteAdminModal giftPlanId={record.id} onRefetch={onRefetch} />
               </DetailItem>
             </Menu>
           }
@@ -128,7 +124,7 @@ const GiftPlanCollectionBlock: React.VFC<{
             giftPlanProductId: giftPlanProps.giftPlanProductId,
           }}
           giftId={giftPlanProps.giftId}
-          onRefetch={handleUpdatedGiftPlan}
+          onRefetch={onRefetch}
         />
       )}
       {giftPlanCollection.length === 0 && searchTitle === '' ? (
