@@ -3,16 +3,26 @@ import { useQuery } from '@apollo/react-hooks'
 import { Checkbox, DatePicker, Form, Skeleton, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from '../components/admin'
-import AdminLayout from '../components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { countBy, eqProps, filter, flatten, map, pipe, split, trim, unionWith, uniq } from 'ramda'
 import React, { useState } from 'react'
-import styled from 'styled-components'
-import SalesMemberInput from '../components/common/SalesMemberInput'
-import hasura from '../hasura'
-import ForbiddenPage from './ForbiddenPage'
+import { AdminPageTitle } from '../../components/admin'
+import SalesMemberInput from '../../components/common/SalesMemberInput'
+import AdminLayout from '../../components/layout/AdminLayout'
+import hasura from '../../hasura'
+import ForbiddenPage from '../ForbiddenPage'
+import SalesMaterialsExportButton from './SalesMaterialsExportButton'
+
+export type MaterialStatistics = {
+  materialName: string
+  called: number
+  contacted: number
+  demoInvited: number
+  demonstrated: number
+  dealt: number
+  rejected: number
+}
 
 const count = pipe(
   map(
@@ -27,10 +37,6 @@ const count = pipe(
   countBy(v => v),
 )
 
-const StyledWrapper = styled.div`
-  width: 400px;
-`
-
 const SalesMaterialsPage: React.FC = () => {
   const [range, setRange] = useState<[Moment, Moment]>([moment().startOf('month'), moment().endOf('month')])
   const [selectedSalesId, setSelectedSalesId] = useState('')
@@ -38,111 +44,38 @@ const SalesMaterialsPage: React.FC = () => {
   const [selectedMaterialName, setSelectedMaterialName] = useState('廣告素材')
   const { permissions } = useAuth()
 
-  if (!permissions.ANALYSIS_ADMIN) {
-    return <ForbiddenPage />
-  }
-
-  return (
-    <AdminLayout>
-      <AdminPageTitle className="mb-4">
-        <BarChartOutlined className="mr-3" />
-        <span>素材表現</span>
-      </AdminPageTitle>
-
-      <Form colon={false} labelAlign="left">
-        <Form.Item label="時間">
-          <DatePicker.RangePicker
-            value={range}
-            onChange={value => value?.[0] && value[1] && setRange([value[0].startOf('day'), value[1].endOf('day')])}
-          />
-        </Form.Item>
-        <Form.Item label="業務">
-          <StyledWrapper className="d-flex align-items-center">
-            <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} disabled={isSelectedAllSales} />
-            <Checkbox
-              checked={isSelectedAllSales}
-              onChange={e => setIsSelectedAllSales(e.target.checked)}
-              className="ml-3 flex-shrink-0"
-            >
-              全部業務
-            </Checkbox>
-          </StyledWrapper>
-        </Form.Item>
-      </Form>
-
-      <Tabs activeKey={selectedMaterialName} onChange={key => setSelectedMaterialName(key)}>
-        <Tabs.TabPane key="廣告素材" tab="廣告素材"></Tabs.TabPane>
-        <Tabs.TabPane key="廣告組合" tab="廣告組合"></Tabs.TabPane>
-        <Tabs.TabPane key="行銷活動" tab="行銷活動"></Tabs.TabPane>
-      </Tabs>
-
-      {(selectedSalesId || isSelectedAllSales) && (
-        <MaterialStatisticsTable
-          startedAt={range[0].toDate()}
-          endedAt={range[1].toDate()}
-          salesId={isSelectedAllSales ? null : selectedSalesId}
-          materialName={selectedMaterialName}
-        />
-      )}
-    </AdminLayout>
-  )
-}
-
-type MaterialStatisticsProps = {
-  materialName: string
-  called: number
-  contacted: number
-  demoInvited: number
-  demonstrated: number
-  dealt: number
-  rejected: number
-}
-
-const MaterialStatisticsTable: React.FC<{
-  startedAt: Date
-  endedAt: Date
-  salesId: string | null
-  materialName: string
-}> = ({ startedAt, endedAt, salesId, materialName }) => {
   const { loading, error, data } = useQuery<hasura.GET_SALES_MATERIALS, hasura.GET_SALES_MATERIALSVariables>(
     GET_SALES_MATERIALS,
     {
       variables: {
-        startedAt,
-        endedAt,
-        sales: salesId ? { _eq: salesId } : {},
-        materialName,
+        startedAt: range[0].toDate(),
+        endedAt: range[1].toDate(),
+        sales: isSelectedAllSales ? {} : { _eq: selectedSalesId },
+        materialName: selectedMaterialName,
       },
     },
   )
 
-  if (loading) {
-    return <Skeleton active />
-  }
-
-  if (error || !data) {
-    return <div>讀取錯誤</div>
-  }
-
   const salesMaterials = {
-    calledMembersCount: count(data.calledMembers.map(v => v.v)),
-    contactedMembersCount: count(data.contactedMembers.map(v => v.v)),
-    demoInvitedMembersCount: count(unionWith(eqProps('m'), data.demoInvitedMembers, data.dealtMembers).map(v => v.v)),
-    demonstratedMembersCount: count(data.demonstratedMembers.map(v => v.v)),
-    dealtMembersCount: count(data.dealtMembers.map(v => v.v)),
-    rejectedMembersCount: count(data.rejectedMembers.map(v => v.v)),
+    calledMembersCount: count(data?.calledMembers.map(v => v.v) || []),
+    contactedMembersCount: count(data?.contactedMembers.map(v => v.v) || []),
+    demoInvitedMembersCount: count(
+      unionWith(eqProps('m'), data?.demoInvitedMembers || [], data?.dealtMembers || []).map(v => v.v),
+    ),
+    demonstratedMembersCount: count(data?.demonstratedMembers.map(v => v.v) || []),
+    dealtMembersCount: count(data?.dealtMembers.map(v => v.v) || []),
+    rejectedMembersCount: count(data?.rejectedMembers.map(v => v.v) || []),
   }
-
   const allMaterialNames = pipe(
     map((v: { [index: string]: number }) => Object.keys(v)),
     flatten,
     uniq,
   )(Object.values(salesMaterials))
 
-  const columns: ColumnProps<MaterialStatisticsProps>[] = [
+  const columns: ColumnProps<MaterialStatistics>[] = [
     {
       key: 'materialName',
-      title: materialName,
+      title: selectedMaterialName,
       render: (_, record, i) => record.materialName,
       filters: allMaterialNames.map(materialName => ({
         text: materialName,
@@ -181,31 +114,85 @@ const MaterialStatisticsTable: React.FC<{
       sorter: (a, b) => a.rejected - b.rejected,
     },
   ]
+  if (!permissions.ANALYSIS_ADMIN) {
+    return <ForbiddenPage />
+  }
 
   return (
-    <Table<MaterialStatisticsProps>
-      columns={columns}
-      dataSource={allMaterialNames.map(materialName => {
-        const called = salesMaterials.calledMembersCount[materialName] || 0
-        const contacted = salesMaterials.contactedMembersCount[materialName] || 0
-        const demoInvited = salesMaterials.demoInvitedMembersCount[materialName] || 0
-        const demonstrated = salesMaterials.demonstratedMembersCount[materialName] || 0
-        const dealt = salesMaterials.dealtMembersCount[materialName] || 0
-        const rejected = salesMaterials.rejectedMembersCount[materialName] || 0
+    <AdminLayout>
+      <AdminPageTitle className="mb-4">
+        <BarChartOutlined className="mr-3" />
+        <span>素材表現</span>
+      </AdminPageTitle>
 
-        return {
-          materialName,
-          called: Math.max(called, contacted),
-          contacted: Math.max(contacted, demoInvited),
-          demoInvited: Math.max(demoInvited, demonstrated),
-          demonstrated: Math.max(demonstrated, dealt),
-          dealt,
-          rejected,
-        }
-      })}
-      pagination={false}
-      className="mb-5"
-    />
+      <Form colon={false} labelAlign="left">
+        <Form.Item label="時間">
+          <DatePicker.RangePicker
+            value={range}
+            onChange={value => value?.[0] && value[1] && setRange([value[0].startOf('day'), value[1].endOf('day')])}
+          />
+        </Form.Item>
+        <Form.Item label="業務">
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center" style={{ width: '400px' }}>
+              <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} disabled={isSelectedAllSales} />
+              <Checkbox
+                checked={isSelectedAllSales}
+                onChange={e => setIsSelectedAllSales(e.target.checked)}
+                className="ml-3 flex-shrink-0"
+              >
+                全部業務
+              </Checkbox>
+            </div>
+            <SalesMaterialsExportButton
+              selectedMaterialName={selectedMaterialName}
+              allMaterialNames={allMaterialNames}
+              salesMaterials={salesMaterials}
+            />
+          </div>
+        </Form.Item>
+      </Form>
+
+      <Tabs activeKey={selectedMaterialName} onChange={key => setSelectedMaterialName(key)}>
+        <Tabs.TabPane key="廣告素材" tab="廣告素材"></Tabs.TabPane>
+        <Tabs.TabPane key="廣告組合" tab="廣告組合"></Tabs.TabPane>
+        <Tabs.TabPane key="行銷活動" tab="行銷活動"></Tabs.TabPane>
+        <Tabs.TabPane key="名單分級" tab="名單分級"></Tabs.TabPane>
+      </Tabs>
+
+      {loading ? (
+        <Skeleton active />
+      ) : error || !data ? (
+        <div>讀取錯誤</div>
+      ) : selectedSalesId || isSelectedAllSales ? (
+        <Table<MaterialStatistics>
+          rowKey="id"
+          columns={columns}
+          dataSource={allMaterialNames.map(materialName => {
+            const called = salesMaterials.calledMembersCount[materialName] || 0
+            const contacted = salesMaterials.contactedMembersCount[materialName] || 0
+            const demoInvited = salesMaterials.demoInvitedMembersCount[materialName] || 0
+            const demonstrated = salesMaterials.demonstratedMembersCount[materialName] || 0
+            const dealt = salesMaterials.dealtMembersCount[materialName] || 0
+            const rejected = salesMaterials.rejectedMembersCount[materialName] || 0
+
+            return {
+              materialName,
+              called: Math.max(called, contacted),
+              contacted: Math.max(contacted, demoInvited),
+              demoInvited: Math.max(demoInvited, demonstrated),
+              demonstrated: Math.max(demonstrated, dealt),
+              dealt,
+              rejected,
+            }
+          })}
+          pagination={false}
+          className="mb-5"
+        />
+      ) : (
+        <>請選擇業務</>
+      )}
+    </AdminLayout>
   )
 }
 
