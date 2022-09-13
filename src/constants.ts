@@ -19,7 +19,7 @@ export const paymentMethods: {
     ],
   },
   {
-    method: '歐付寶',
+    method: '綠界科技',
     feeWithInstallmentPlans: [
       { installmentPlan: 1, fee: 0.0245 },
       { installmentPlan: 3, fee: 0.025 },
@@ -139,6 +139,19 @@ export const paymentMethods: {
       { installmentPlan: 24, fee: 0.09 },
       { installmentPlan: 30, fee: 0.1 },
       { installmentPlan: 36, fee: 0.13 },
+    ],
+  },
+  // no longer cooperate
+  {
+    method: '歐付寶',
+    hidden: true,
+    feeWithInstallmentPlans: [
+      { installmentPlan: 1, fee: 0.0245 },
+      { installmentPlan: 3, fee: 0.025 },
+      { installmentPlan: 6, fee: 0.04 },
+      { installmentPlan: 12, fee: 0.07 },
+      { installmentPlan: 18, fee: 0.095 },
+      { installmentPlan: 24, fee: 0.11 },
     ],
   },
 ]
