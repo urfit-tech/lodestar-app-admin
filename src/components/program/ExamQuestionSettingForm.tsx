@@ -36,8 +36,9 @@ const StyledQuestionAmount = styled(Tag)`
 
 const ExamQuestionSettingForm: React.VFC<{
   questionExam: QuestionExam
+  currentQuestionExam: QuestionExam
   onChange: React.Dispatch<React.SetStateAction<QuestionExam>>
-}> = ({ questionExam, onChange }) => {
+}> = ({ questionExam, currentQuestionExam, onChange }) => {
   const { formatMessage } = useIntl()
   const [targetKeys, setTargetKeys] = useState<string[]>(questionExam.questionGroupIds)
   const [point, setPoint] = useState<number>(questionExam.point)
@@ -91,11 +92,19 @@ const ExamQuestionSettingForm: React.VFC<{
             targetKeys={targetKeys}
             onChange={(keys: string[]) => {
               setTargetKeys(keys)
-              onChange(prevState => ({
-                ...prevState,
-                ...questionExam,
-                questionGroupIds: keys,
-              }))
+              onChange(prevState =>
+                currentQuestionExam.id
+                  ? {
+                      ...prevState,
+                      ...currentQuestionExam,
+                      questionGroupIds: keys,
+                    }
+                  : {
+                      ...prevState,
+                      ...questionExam,
+                      questionGroupIds: keys,
+                    },
+              )
             }}
           />
         </Form.Item>
@@ -114,11 +123,19 @@ const ExamQuestionSettingForm: React.VFC<{
             defaultValue={questionExam.point}
             onChange={v => {
               setPoint(Number(v))
-              onChange(prevState => ({
-                ...prevState,
-                ...questionExam,
-                point: Number(v),
-              }))
+              onChange(prevState =>
+                currentQuestionExam.id
+                  ? {
+                      ...prevState,
+                      ...currentQuestionExam,
+                      point: Number(v),
+                    }
+                  : {
+                      ...prevState,
+                      ...questionExam,
+                      point: Number(v),
+                    },
+              )
             }}
           />
           <span className="ml-2">
@@ -138,11 +155,19 @@ const ExamQuestionSettingForm: React.VFC<{
             min={0}
             defaultValue={questionExam.passingScore}
             onChange={v =>
-              onChange(prevState => ({
-                ...prevState,
-                ...questionExam,
-                passingScore: Number(v),
-              }))
+              onChange(prevState =>
+                currentQuestionExam.id
+                  ? {
+                      ...prevState,
+                      ...currentQuestionExam,
+                      passingScore: Number(v),
+                    }
+                  : {
+                      ...prevState,
+                      ...questionExam,
+                      passingScore: Number(v),
+                    },
+              )
             }
           />
           <span className="ml-2"> / {point * questionAmount}</span>
