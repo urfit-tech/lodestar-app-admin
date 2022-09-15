@@ -100,7 +100,7 @@ const AppSettingCard: React.FC<
       updateAppSettings({
         variables: {
           appSettings: Object.keys(values)
-            .filter(key => values[key as keyof FieldProps])
+            .filter(key => values[key as keyof FieldProps] !== undefined)
             .map(key => ({
               app_id: appId,
               key,
