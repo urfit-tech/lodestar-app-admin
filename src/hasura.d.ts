@@ -21080,6 +21080,7 @@ export enum app_update_column {
   ended_at = "ended_at",
   id = "id",
   name = "name",
+  org_id = "org_id",
   point_discount_ratio = "point_discount_ratio",
   point_exchange_rate = "point_exchange_rate",
   point_validity_period = "point_validity_period",
@@ -23195,24 +23196,6 @@ export enum program_content_constraint {
 }
 
 /**
- * unique or primary key constraints on table "program_content_exam"
- */
-export enum program_content_exam_constraint {
-  program_content_exam_pkey = "program_content_exam_pkey",
-}
-
-/**
- * update columns of table "program_content_exam"
- */
-export enum program_content_exam_update_column {
-  created_at = "created_at",
-  exam_id = "exam_id",
-  id = "id",
-  program_content_id = "program_content_id",
-  updated_at = "updated_at",
-}
-
-/**
  * unique or primary key constraints on table "program_content_material"
  */
 export enum program_content_material_constraint {
@@ -25087,6 +25070,7 @@ export interface app_bool_exp {
   members?: member_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
   name?: String_comparison_exp | null;
+  org_id?: String_comparison_exp | null;
   packages?: package_bool_exp | null;
   podcasts?: podcast_bool_exp | null;
   point_discount_ratio?: numeric_comparison_exp | null;
@@ -25259,6 +25243,7 @@ export interface app_insert_input {
   members?: member_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   name?: string | null;
+  org_id?: string | null;
   packages?: package_arr_rel_insert_input | null;
   podcasts?: podcast_arr_rel_insert_input | null;
   point_discount_ratio?: any | null;
@@ -25300,6 +25285,7 @@ export interface app_module_bool_exp {
   _and?: app_module_bool_exp[] | null;
   _not?: app_module_bool_exp | null;
   _or?: app_module_bool_exp[] | null;
+  app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   module_id?: String_comparison_exp | null;
@@ -25309,6 +25295,7 @@ export interface app_module_bool_exp {
  * input type for inserting data into table "app_module"
  */
 export interface app_module_insert_input {
+  app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   id?: any | null;
   module_id?: string | null;
@@ -25537,6 +25524,7 @@ export interface app_order_by {
   members_aggregate?: member_aggregate_order_by | null;
   merchandises_aggregate?: merchandise_aggregate_order_by | null;
   name?: order_by | null;
+  org_id?: order_by | null;
   packages_aggregate?: package_aggregate_order_by | null;
   podcasts_aggregate?: podcast_aggregate_order_by | null;
   point_discount_ratio?: order_by | null;
@@ -28861,7 +28849,6 @@ export interface exam_bool_exp {
   is_available_to_retry?: Boolean_comparison_exp | null;
   passing_score?: numeric_comparison_exp | null;
   point?: numeric_comparison_exp | null;
-  program_content_exam?: program_content_exam_bool_exp | null;
   time_limit_amount?: numeric_comparison_exp | null;
   time_limit_unit?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -28886,7 +28873,6 @@ export interface exam_insert_input {
   is_available_to_retry?: boolean | null;
   passing_score?: any | null;
   point?: any | null;
-  program_content_exam?: program_content_exam_obj_rel_insert_input | null;
   time_limit_amount?: any | null;
   time_limit_unit?: string | null;
   updated_at?: any | null;
@@ -37808,52 +37794,6 @@ export interface program_content_enrollment_min_order_by {
   product_delivered_at?: order_by | null;
   program_content_id?: order_by | null;
   program_id?: order_by | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "program_content_exam". All fields are combined with a logical 'AND'.
- */
-export interface program_content_exam_bool_exp {
-  _and?: program_content_exam_bool_exp[] | null;
-  _not?: program_content_exam_bool_exp | null;
-  _or?: program_content_exam_bool_exp[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  exam?: exam_bool_exp | null;
-  exam_id?: uuid_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  program_content?: program_content_bool_exp | null;
-  program_content_id?: uuid_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "program_content_exam"
- */
-export interface program_content_exam_insert_input {
-  created_at?: any | null;
-  exam?: exam_obj_rel_insert_input | null;
-  exam_id?: any | null;
-  id?: any | null;
-  program_content?: program_content_obj_rel_insert_input | null;
-  program_content_id?: any | null;
-  updated_at?: any | null;
-}
-
-/**
- * input type for inserting object relation for remote table "program_content_exam"
- */
-export interface program_content_exam_obj_rel_insert_input {
-  data: program_content_exam_insert_input;
-  on_conflict?: program_content_exam_on_conflict | null;
-}
-
-/**
- * on_conflict condition type for table "program_content_exam"
- */
-export interface program_content_exam_on_conflict {
-  constraint: program_content_exam_constraint;
-  update_columns: program_content_exam_update_column[];
-  where?: program_content_exam_bool_exp | null;
 }
 
 /**

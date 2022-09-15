@@ -101,12 +101,220 @@ const ExerciseAdminModal: React.FC<{
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
   const [activityKey, setActivityKey] = useState('basicSetting')
-  const [basicExamSetting, setBasicExamSetting] = useState<BasicExam>(basicExam)
-  const [questionExamSetting, setQuestionExamSetting] = useState<QuestionExam>(questionExam)
+  const [currentBasicExam, setCurrentBasicExam] = useState<BasicExam>(basicExam)
+  const [currentQuestionExam, setCurrentQuestionExam] = useState<QuestionExam>(questionExam)
+
+  const handleInitialCurrentState = () => {
+    setCurrentBasicExam({
+      id: null,
+      examinableAmount: NaN,
+      examinableEndedAt: null,
+      examinableStartedAt: null,
+      examinableUnit: null,
+      isAvailableAnnounceScore: false,
+      isAvailableToGoBack: false,
+      isAvailableToRetry: false,
+      timeLimitAmount: NaN,
+      timeLimitUnit: null,
+    })
+    setCurrentQuestionExam({
+      id: null,
+      passingScore: NaN,
+      point: NaN,
+      questionGroupIds: [],
+    })
+  }
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    if (typeof basicExamSetting.id === 'undefined' && typeof questionExamSetting.id === 'undefined') {
+    if (
+      typeof currentBasicExam?.id !== 'undefined' &&
+      currentBasicExam?.id !== null &&
+      typeof currentQuestionExam?.id !== 'undefined' &&
+      currentQuestionExam?.id !== null
+    ) {
+      // adjust all form
+      Promise.all([
+        updateExam({
+          variables: {
+            programContentId: programContent.id,
+            title: values.title,
+            publishedAt: values.publishedAt
+              ? new Date(values.publishedAt)
+              : values.displayMode !== 'conceal'
+              ? new Date()
+              : null,
+            isNotifyUpdate: values.isNotifyUpdate,
+            notifiedAt: values.isNotifyUpdate ? new Date() : null,
+            displayMode: values.displayMode,
+            examId: examId,
+            examinableUnit: currentBasicExam.examinableUnit,
+            examinableAmount: currentBasicExam.examinableAmount,
+            examinableStartedAt: currentBasicExam?.examinableStartedAt
+              ? new Date(currentBasicExam.examinableStartedAt)
+              : null,
+            examinableEndedAt: currentBasicExam?.examinableEndedAt
+              ? new Date(currentBasicExam.examinableEndedAt)
+              : null,
+            timeLimitUnit: currentBasicExam?.timeLimitUnit || null,
+            timeLimitAmount: currentBasicExam?.timeLimitAmount || null,
+            isAvailableToRetry: currentBasicExam.isAvailableToRetry,
+            isAvailableToGoBack: currentBasicExam.isAvailableToGoBack,
+            isAvailableAnnounceScore: currentBasicExam.isAvailableAnnounceScore,
+          },
+        }),
+        updateExamQuestionLibrary({
+          variables: {
+            examId,
+            examQuestionGroups: currentQuestionExam?.questionGroupIds.map((questionGroupId: string) => ({
+              exam_id: examId,
+              question_group_id: questionGroupId,
+            })),
+            point: currentQuestionExam?.point,
+            passingScore: currentQuestionExam?.passingScore,
+          },
+        }),
+        updateExamProgramContent({
+          variables: {
+            programContentId: programContent.id,
+            title: values.title,
+            isNotifyUpdate: values.isNotifyUpdate,
+            notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+            displayMode: values.displayMode,
+            publishedAt: values.publishedAt
+              ? new Date(values.publishedAt)
+              : values.displayMode !== 'conceal'
+              ? new Date()
+              : null,
+          },
+        }),
+      ])
+        .then(() => {
+          onRefetch?.()
+          refetchBasicExam()
+          refetchQuestionExam()
+          message.success(formatMessage(programMessages['*'].successfullySaved))
+          setVisible(false)
+          setActivityKey('basicSetting')
+          setCurrentBasicExam(prevState => ({ ...prevState, ...basicExam }))
+          setCurrentQuestionExam(prevState => ({ ...prevState, ...questionExam }))
+        })
+        .catch(error => handleError(error))
+        .finally(() => {
+          setLoading(false)
+          handleInitialCurrentState()
+        })
+    } else if (
+      typeof currentBasicExam?.id !== 'undefined' &&
+      currentBasicExam?.id !== null &&
+      (typeof currentQuestionExam?.id === 'undefined' || currentQuestionExam?.id === null)
+    ) {
+      // only adjust basic form
+      Promise.all([
+        updateExam({
+          variables: {
+            programContentId: programContent.id,
+            title: values.title,
+            publishedAt: values.publishedAt
+              ? new Date(values.publishedAt)
+              : values.displayMode !== 'conceal'
+              ? new Date()
+              : null,
+            isNotifyUpdate: values.isNotifyUpdate,
+            notifiedAt: values.isNotifyUpdate ? new Date() : null,
+            displayMode: values.displayMode,
+            examId: examId,
+            examinableUnit: currentBasicExam.examinableUnit,
+            examinableAmount: currentBasicExam.examinableAmount,
+            examinableStartedAt: currentBasicExam?.examinableStartedAt
+              ? new Date(currentBasicExam.examinableStartedAt)
+              : null,
+            examinableEndedAt: currentBasicExam?.examinableEndedAt
+              ? new Date(currentBasicExam.examinableEndedAt)
+              : null,
+            timeLimitUnit: currentBasicExam?.timeLimitUnit || null,
+            timeLimitAmount: currentBasicExam?.timeLimitAmount || null,
+            isAvailableToRetry: currentBasicExam.isAvailableToRetry,
+            isAvailableToGoBack: currentBasicExam.isAvailableToGoBack,
+            isAvailableAnnounceScore: currentBasicExam.isAvailableAnnounceScore,
+          },
+        }),
+        updateExamProgramContent({
+          variables: {
+            programContentId: programContent.id,
+            title: values.title,
+            isNotifyUpdate: values.isNotifyUpdate,
+            notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+            displayMode: values.displayMode,
+            publishedAt: values.publishedAt
+              ? new Date(values.publishedAt)
+              : values.displayMode !== 'conceal'
+              ? new Date()
+              : null,
+          },
+        }),
+      ])
+        .then(() => {
+          onRefetch?.()
+          refetchBasicExam()
+          message.success(formatMessage(programMessages['*'].successfullySaved))
+          setVisible(false)
+          setActivityKey('basicSetting')
+          setCurrentBasicExam(prevState => ({ ...prevState, ...basicExam }))
+        })
+        .catch(error => handleError(error))
+        .finally(() => {
+          setLoading(false)
+          handleInitialCurrentState()
+        })
+    } else if (
+      (typeof currentBasicExam?.id === 'undefined' || currentBasicExam?.id === null) &&
+      typeof currentQuestionExam?.id !== 'undefined' &&
+      currentQuestionExam?.id !== null
+    ) {
+      // only adjust question form
+      Promise.all([
+        updateExamQuestionLibrary({
+          variables: {
+            examId,
+            examQuestionGroups: currentQuestionExam?.questionGroupIds.map((questionGroupId: string) => ({
+              exam_id: examId,
+              question_group_id: questionGroupId,
+            })),
+            point: currentQuestionExam?.point,
+            passingScore: currentQuestionExam?.passingScore,
+          },
+        }),
+        updateExamProgramContent({
+          variables: {
+            programContentId: programContent.id,
+            title: values.title,
+            isNotifyUpdate: values.isNotifyUpdate,
+            notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+            displayMode: values.displayMode,
+            publishedAt: values.publishedAt
+              ? new Date(values.publishedAt)
+              : values.displayMode !== 'conceal'
+              ? new Date()
+              : null,
+          },
+        }),
+      ])
+        .then(() => {
+          onRefetch?.()
+          refetchQuestionExam()
+          message.success(formatMessage(programMessages['*'].successfullySaved))
+          setVisible(false)
+          setActivityKey('basicSetting')
+          setCurrentQuestionExam(prevState => ({ ...prevState, ...questionExam }))
+        })
+        .catch(error => handleError(error))
+        .finally(() => {
+          setLoading(false)
+          handleInitialCurrentState()
+        })
+    } else {
+      // only adjust program content
       updateExamProgramContent({
         variables: {
           programContentId: programContent.id,
@@ -124,135 +332,13 @@ const ExerciseAdminModal: React.FC<{
         .then(() => {
           message.success(formatMessage(programMessages['*'].successfullySaved))
           onRefetch?.()
-          setLoading(false)
           setActivityKey('basicSetting')
           setVisible(false)
-        })
-        .catch(error => handleError(error))
-    } else if (typeof basicExamSetting.id !== 'undefined') {
-      updateExam({
-        variables: {
-          programContentId: programContent.id,
-          title: values.title,
-          publishedAt: values.publishedAt
-            ? new Date(values.publishedAt)
-            : values.displayMode !== 'conceal'
-            ? new Date()
-            : null,
-          isNotifyUpdate: values.isNotifyUpdate,
-          notifiedAt: values.isNotifyUpdate ? new Date() : null,
-          displayMode: values.displayMode,
-          examId: examId,
-          examinableUnit: basicExamSetting.examinableUnit,
-          examinableAmount: basicExamSetting.examinableAmount,
-          examinableStartedAt: basicExamSetting?.examinableStartedAt
-            ? new Date(basicExamSetting.examinableStartedAt)
-            : null,
-          examinableEndedAt: basicExamSetting?.examinableEndedAt ? new Date(basicExamSetting.examinableEndedAt) : null,
-          timeLimitUnit: basicExamSetting?.timeLimitUnit || null,
-          timeLimitAmount: basicExamSetting?.timeLimitAmount || null,
-          isAvailableToRetry: basicExamSetting.isAvailableToRetry,
-          isAvailableToGoBack: basicExamSetting.isAvailableToGoBack,
-          isAvailableAnnounceScore: !basicExamSetting.isAvailableAnnounceScore,
-        },
-      })
-        .then(() => {
-          onRefetch?.()
-          refetchBasicExam()
-          message.success(formatMessage(programMessages['*'].successfullySaved))
-          setVisible(false)
-          setActivityKey('basicSetting')
-          setBasicExamSetting(prevState => ({ ...prevState, ...basicExam }))
         })
         .catch(error => handleError(error))
         .finally(() => {
           setLoading(false)
-        })
-    } else if (typeof questionExamSetting.id === 'undefined') {
-      updateExamQuestionLibrary({
-        variables: {
-          examId,
-          examQuestionGroups: (questionExamSetting.questionGroupIds === []
-            ? questionExam
-            : questionExamSetting
-          )?.questionGroupIds.map((questionGroupId: string) => ({
-            exam_id: examId,
-            question_group_id: questionGroupId,
-          })),
-          point: questionExamSetting?.point || questionExam.point,
-          passingScore: questionExamSetting?.passingScore || questionExam.passingScore,
-        },
-      })
-        .then(() => {
-          onRefetch?.()
-          refetchQuestionExam()
-          message.success(formatMessage(programMessages['*'].successfullySaved))
-          setVisible(false)
-          setActivityKey('basicSetting')
-          setQuestionExamSetting(prevState => ({ ...prevState, ...questionExam }))
-        })
-        .catch(error => handleError(error))
-        .finally(() => {
-          setLoading(false)
-        })
-    } else {
-      Promise.all([
-        updateExam({
-          variables: {
-            programContentId: programContent.id,
-            title: values.title,
-            publishedAt: values.publishedAt
-              ? new Date(values.publishedAt)
-              : values.displayMode !== 'conceal'
-              ? new Date()
-              : null,
-            isNotifyUpdate: values.isNotifyUpdate,
-            notifiedAt: values.isNotifyUpdate ? new Date() : null,
-            displayMode: values.displayMode,
-            examId: examId,
-            examinableUnit: basicExamSetting.examinableUnit,
-            examinableAmount: basicExamSetting.examinableAmount,
-            examinableStartedAt: basicExamSetting?.examinableStartedAt
-              ? new Date(basicExamSetting.examinableStartedAt)
-              : null,
-            examinableEndedAt: basicExamSetting?.examinableEndedAt
-              ? new Date(basicExamSetting.examinableEndedAt)
-              : null,
-            timeLimitUnit: basicExamSetting?.timeLimitUnit || null,
-            timeLimitAmount: basicExamSetting?.timeLimitAmount || null,
-            isAvailableToRetry: basicExamSetting.isAvailableToRetry,
-            isAvailableToGoBack: basicExamSetting.isAvailableToGoBack,
-            isAvailableAnnounceScore: !basicExamSetting.isAvailableAnnounceScore,
-          },
-        }),
-        updateExamQuestionLibrary({
-          variables: {
-            examId,
-            examQuestionGroups: (questionExamSetting.questionGroupIds === []
-              ? questionExam
-              : questionExamSetting
-            )?.questionGroupIds.map((questionGroupId: string) => ({
-              exam_id: examId,
-              question_group_id: questionGroupId,
-            })),
-            point: questionExamSetting?.point || questionExam.point,
-            passingScore: questionExamSetting?.passingScore || questionExam.passingScore,
-          },
-        }),
-      ])
-        .then(() => {
-          onRefetch?.()
-          refetchBasicExam()
-          refetchQuestionExam()
-          message.success(formatMessage(programMessages['*'].successfullySaved))
-          setVisible(false)
-          setActivityKey('basicSetting')
-          setBasicExamSetting(prevState => ({ ...prevState, ...basicExam }))
-          setQuestionExamSetting(prevState => ({ ...prevState, ...questionExam }))
-        })
-        .catch(error => handleError(error))
-        .finally(() => {
-          setLoading(false)
+          handleInitialCurrentState()
         })
     }
   }
@@ -297,8 +383,11 @@ const ExerciseAdminModal: React.FC<{
               <Button
                 disabled={loading}
                 onClick={() => {
+                  form.resetFields()
+                  handleInitialCurrentState()
                   setActivityKey('basicSetting')
                   setVisible(false)
+                  Modal.destroyAll()
                 }}
                 className="mr-2"
               >
@@ -341,10 +430,14 @@ const ExerciseAdminModal: React.FC<{
 
           <Tabs activeKey={activityKey} onChange={v => setActivityKey(v)}>
             <Tabs.TabPane key="basicSetting" tab={formatMessage(programMessages.ExerciseAdminModal.basicSetting)}>
-              <ExamBasicForm basicExam={basicExam} currentBasicExam={basicExamSetting} onChange={setBasicExamSetting} />
+              <ExamBasicForm basicExam={basicExam} currentBasicExam={currentBasicExam} onChange={setCurrentBasicExam} />
             </Tabs.TabPane>
             <Tabs.TabPane key="questionSetting" tab={formatMessage(programMessages.ExerciseAdminModal.questionSetting)}>
-              <ExamQuestionSettingForm questionExam={questionExam} onChange={setQuestionExamSetting} />
+              <ExamQuestionSettingForm
+                questionExam={questionExam}
+                currentQuestionExam={currentQuestionExam}
+                onChange={setCurrentQuestionExam}
+              />
             </Tabs.TabPane>
           </Tabs>
         </Form>
@@ -410,7 +503,7 @@ const useBasicExam = (examId: string) => {
     timeLimitAmount: Number(data?.exam_by_pk?.time_limit_amount),
     isAvailableToRetry: Boolean(data?.exam_by_pk?.is_available_to_retry),
     isAvailableToGoBack: Boolean(data?.exam_by_pk?.is_available_to_go_back),
-    isAvailableAnnounceScore: !Boolean(data?.exam_by_pk?.is_available_announce_score),
+    isAvailableAnnounceScore: Boolean(data?.exam_by_pk?.is_available_announce_score),
   }
 
   return {
@@ -437,7 +530,10 @@ const useQuestionExam = (examId: string) => {
         }
       }
     `,
-    { variables: { examId }, fetchPolicy: 'no-cache' },
+    {
+      variables: { examId },
+      fetchPolicy: 'no-cache',
+    },
   )
   const questionExam: QuestionExam = {
     id: data?.exam_by_pk?.id.toString(),
