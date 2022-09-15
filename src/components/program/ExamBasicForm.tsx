@@ -1,7 +1,7 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { Checkbox, DatePicker, Form, Input, InputNumber, Select, Tooltip } from 'antd'
 import moment from 'moment'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ExamTimeUnit } from '../../types/program'
 import { StyledTips } from '../admin'
@@ -29,6 +29,29 @@ const ExamBasicForm: React.VFC<{
     basicExam.timeLimitAmount && basicExam.timeLimitUnit ? 'limited' : 'unlimited',
   )
 
+  // reset when cancel
+  useEffect(() => {
+    ;(typeof currentBasicExam.id === 'undefined' || currentBasicExam.id === null) &&
+      setExaminable(
+        basicExam.examinableAmount && basicExam.examinableUnit
+          ? 'bought'
+          : basicExam.examinableStartedAt && basicExam.examinableEndedAt
+          ? 'limited'
+          : 'unlimited',
+      )
+  }, [
+    basicExam.examinableAmount,
+    basicExam.examinableEndedAt,
+    basicExam.examinableStartedAt,
+    basicExam.examinableUnit,
+    currentBasicExam.id,
+  ])
+  // reset when cancel
+  useEffect(() => {
+    ;(typeof currentBasicExam.id === 'undefined' || currentBasicExam.id === null) &&
+      setTimeLimit(basicExam.timeLimitAmount && basicExam.timeLimitUnit ? 'limited' : 'unlimited')
+  }, [basicExam.timeLimitAmount, basicExam.timeLimitUnit, currentBasicExam.id])
+
   return (
     <>
       <Form.Item name="title" label={formatMessage(programMessages['*'].exerciseTitle)}>
@@ -48,7 +71,8 @@ const ExamBasicForm: React.VFC<{
         }
       >
         <Input.Group compact>
-          <Form.Item name="examinable">
+          {/* examinable */}
+          <Form.Item>
             <Select
               className="mr-2"
               style={{ width: '160px' }}
@@ -56,32 +80,66 @@ const ExamBasicForm: React.VFC<{
               onChange={v => {
                 setExaminable(v as Examinable)
                 if (v === 'unlimited') {
-                  onChange(prevState => ({
-                    ...prevState,
-                    ...basicExam,
-                    examinableAmount: null,
-                    examinableUnit: null,
-                    examinableStartedAt: null,
-                    examinableEndedAt: null,
-                  }))
+                  onChange(prevState =>
+                    currentBasicExam.id
+                      ? {
+                          ...prevState,
+                          ...currentBasicExam,
+                          examinableAmount: null,
+                          examinableUnit: null,
+                          examinableStartedAt: null,
+                          examinableEndedAt: null,
+                        }
+                      : {
+                          ...prevState,
+                          ...basicExam,
+                          examinableAmount: null,
+                          examinableUnit: null,
+                          examinableStartedAt: null,
+                          examinableEndedAt: null,
+                        },
+                  )
                 } else if (v === 'bought') {
-                  onChange(prevState => ({
-                    ...prevState,
-                    ...basicExam,
-                    examinableAmount: basicExam.examinableAmount || 7,
-                    examinableUnit: basicExam.examinableUnit || 'd',
-                    examinableStartedAt: null,
-                    examinableEndedAt: null,
-                  }))
+                  onChange(prevState =>
+                    currentBasicExam.id
+                      ? {
+                          ...prevState,
+                          ...currentBasicExam,
+                          examinableAmount: currentBasicExam.examinableAmount || 7,
+                          examinableUnit: currentBasicExam.examinableUnit || 'd',
+                          examinableStartedAt: null,
+                          examinableEndedAt: null,
+                        }
+                      : {
+                          ...prevState,
+                          ...basicExam,
+                          examinableAmount: basicExam.examinableAmount || 7,
+                          examinableUnit: basicExam.examinableUnit || 'd',
+                          examinableStartedAt: null,
+                          examinableEndedAt: null,
+                        },
+                  )
                 } else if (v === 'limited') {
-                  onChange(prevState => ({
-                    ...prevState,
-                    ...basicExam,
-                    examinableAmount: null,
-                    examinableUnit: null,
-                    examinableStartedAt: basicExam.examinableStartedAt || new Date(),
-                    examinableEndedAt: basicExam.examinableEndedAt || new Date(moment().add(7, 'd').toString()),
-                  }))
+                  onChange(prevState =>
+                    currentBasicExam.id
+                      ? {
+                          ...prevState,
+                          ...currentBasicExam,
+                          examinableAmount: null,
+                          examinableUnit: null,
+                          examinableStartedAt: currentBasicExam.examinableStartedAt || new Date(),
+                          examinableEndedAt:
+                            currentBasicExam.examinableEndedAt || new Date(moment().add(7, 'd').toString()),
+                        }
+                      : {
+                          ...prevState,
+                          ...basicExam,
+                          examinableAmount: null,
+                          examinableUnit: null,
+                          examinableStartedAt: basicExam.examinableStartedAt || new Date(),
+                          examinableEndedAt: basicExam.examinableEndedAt || new Date(moment().add(7, 'd').toString()),
+                        },
+                  )
                 }
               }}
             >
@@ -98,31 +156,49 @@ const ExamBasicForm: React.VFC<{
           </Form.Item>
           {examinable === 'bought' && (
             <>
-              <Form.Item name="examinableAmount">
+              {/* examinableAmount */}
+              <Form.Item>
                 <InputNumber
                   className="mr-2"
                   style={{ width: '80px' }}
                   min={0}
                   defaultValue={Number(basicExam.examinableAmount) || 7}
                   onChange={v =>
-                    onChange(prevState => ({
-                      ...prevState,
-                      ...basicExam,
-                      examinableAmount: Number(v),
-                    }))
+                    onChange(prevState =>
+                      currentBasicExam.id
+                        ? {
+                            ...prevState,
+                            ...currentBasicExam,
+                            examinableAmount: Number(v),
+                          }
+                        : {
+                            ...prevState,
+                            ...basicExam,
+                            examinableAmount: Number(v),
+                          },
+                    )
                   }
                 />
               </Form.Item>
-              <Form.Item name="examinableUnit">
+              {/* examinableUnit */}
+              <Form.Item>
                 <Select
                   style={{ width: '80px' }}
                   defaultValue={(basicExam.examinableUnit || 'd') as ExamTimeUnit}
                   onChange={v =>
-                    onChange(prevState => ({
-                      ...prevState,
-                      ...basicExam,
-                      examinableUnit: v.toString() as ExamTimeUnit,
-                    }))
+                    onChange(prevState =>
+                      currentBasicExam.id
+                        ? {
+                            ...prevState,
+                            ...currentBasicExam,
+                            examinableUnit: v.toString() as ExamTimeUnit,
+                          }
+                        : {
+                            ...prevState,
+                            ...basicExam,
+                            examinableUnit: v.toString() as ExamTimeUnit,
+                          },
+                    )
                   }
                 >
                   <Select.Option key="d" value="d">
@@ -137,21 +213,24 @@ const ExamBasicForm: React.VFC<{
                 </Select>
               </Form.Item>
               <Form.Item className="ml-2">
-                <IndividualExamTimeLimitModal
-                  examId={basicExam.id}
-                  currentStatus={{
-                    examinableAmount: currentBasicExam.examinableAmount || 7,
-                    examinableUnit: currentBasicExam.examinableUnit || 'd',
-                    examinableStartedAt: null,
-                    examinableEndedAt: null,
-                  }}
-                />
+                {basicExam?.id ? (
+                  <IndividualExamTimeLimitModal
+                    examId={basicExam.id}
+                    currentStatus={{
+                      examinableAmount: currentBasicExam.examinableAmount || 7,
+                      examinableUnit: currentBasicExam.examinableUnit || 'd',
+                      examinableStartedAt: null,
+                      examinableEndedAt: null,
+                    }}
+                  />
+                ) : null}
               </Form.Item>
             </>
           )}
           {examinable === 'limited' && (
             <>
-              <Form.Item name="expiredAt">
+              {/* expiredAt */}
+              <Form.Item>
                 <DatePicker.RangePicker
                   style={{ width: '456px' }}
                   format="YYYY-MM-DD"
@@ -160,25 +239,36 @@ const ExamBasicForm: React.VFC<{
                     basicExam.examinableEndedAt ? moment(basicExam.examinableEndedAt) : moment().add(7, 'd'),
                   ]}
                   onChange={v =>
-                    onChange(prevState => ({
-                      ...prevState,
-                      ...basicExam,
-                      examinableStartedAt: v?.[0] ? new Date(v[0].toString()) : null,
-                      examinableEndedAt: v?.[1] ? new Date(v[1].toString()) : null,
-                    }))
+                    onChange(prevState =>
+                      currentBasicExam.id
+                        ? {
+                            ...prevState,
+                            ...currentBasicExam,
+                            examinableStartedAt: v?.[0] ? new Date(v[0].toString()) : null,
+                            examinableEndedAt: v?.[1] ? new Date(v[1].toString()) : null,
+                          }
+                        : {
+                            ...prevState,
+                            ...basicExam,
+                            examinableStartedAt: v?.[0] ? new Date(v[0].toString()) : null,
+                            examinableEndedAt: v?.[1] ? new Date(v[1].toString()) : null,
+                          },
+                    )
                   }
                 />
               </Form.Item>
               <Form.Item className="ml-2">
-                <IndividualExamTimeLimitModal
-                  examId={basicExam.id}
-                  currentStatus={{
-                    examinableAmount: null,
-                    examinableUnit: null,
-                    examinableStartedAt: currentBasicExam.examinableStartedAt,
-                    examinableEndedAt: currentBasicExam.examinableEndedAt,
-                  }}
-                />
+                {basicExam?.id ? (
+                  <IndividualExamTimeLimitModal
+                    examId={basicExam.id}
+                    currentStatus={{
+                      examinableAmount: null,
+                      examinableUnit: null,
+                      examinableStartedAt: currentBasicExam.examinableStartedAt,
+                      examinableEndedAt: currentBasicExam.examinableEndedAt,
+                    }}
+                  />
+                ) : null}
               </Form.Item>
             </>
           )}
@@ -186,7 +276,8 @@ const ExamBasicForm: React.VFC<{
       </Form.Item>
       <Form.Item label={formatMessage(programMessages.ExamBasicForm.countDownAnswerTime)}>
         <Input.Group compact>
-          <Form.Item name="timeLimit">
+          {/* timeLimit */}
+          <Form.Item>
             <Select
               className="mr-2"
               style={{ width: '160px' }}
@@ -194,19 +285,37 @@ const ExamBasicForm: React.VFC<{
               onChange={v => {
                 setTimeLimit(v as TimeLimit)
                 if (v === 'unlimited') {
-                  onChange(prevState => ({
-                    ...prevState,
-                    ...basicExam,
-                    timeLimitAmount: null,
-                    timeLimitUnit: null,
-                  }))
+                  onChange(prevState =>
+                    currentBasicExam.id
+                      ? {
+                          ...prevState,
+                          ...currentBasicExam,
+                          timeLimitAmount: null,
+                          timeLimitUnit: null,
+                        }
+                      : {
+                          ...prevState,
+                          ...basicExam,
+                          timeLimitAmount: null,
+                          timeLimitUnit: null,
+                        },
+                  )
                 } else if (v === 'limited') {
-                  onChange(prevState => ({
-                    ...prevState,
-                    ...basicExam,
-                    timeLimitAmount: basicExam.timeLimitAmount || 1,
-                    timeLimitUnit: basicExam.timeLimitUnit || 'h',
-                  }))
+                  onChange(prevState =>
+                    currentBasicExam.id
+                      ? {
+                          ...prevState,
+                          ...currentBasicExam,
+                          timeLimitAmount: currentBasicExam.timeLimitAmount || 1,
+                          timeLimitUnit: currentBasicExam.timeLimitUnit || 'h',
+                        }
+                      : {
+                          ...prevState,
+                          ...basicExam,
+                          timeLimitAmount: basicExam.timeLimitAmount || 1,
+                          timeLimitUnit: basicExam.timeLimitUnit || 'h',
+                        },
+                  )
                 }
               }}
             >
@@ -220,31 +329,49 @@ const ExamBasicForm: React.VFC<{
           </Form.Item>
           {timeLimit === 'limited' && (
             <>
-              <Form.Item name="timeLimitAmount">
+              {/* timeLimitAmount */}
+              <Form.Item>
                 <InputNumber
                   className="mr-2"
                   style={{ width: '80px' }}
                   min={0}
                   defaultValue={basicExam.timeLimitAmount || 1}
                   onChange={v =>
-                    onChange(prevState => ({
-                      ...prevState,
-                      ...basicExam,
-                      timeLimitAmount: Number(v),
-                    }))
+                    onChange(prevState =>
+                      currentBasicExam.id
+                        ? {
+                            ...prevState,
+                            ...currentBasicExam,
+                            timeLimitAmount: Number(v),
+                          }
+                        : {
+                            ...prevState,
+                            ...basicExam,
+                            timeLimitAmount: Number(v),
+                          },
+                    )
                   }
                 />
               </Form.Item>
-              <Form.Item name="timeLimitUnit">
+              {/* timeLimitUnit */}
+              <Form.Item>
                 <Select
                   style={{ width: '80px' }}
                   defaultValue={basicExam.timeLimitUnit || 'h'}
                   onChange={v =>
-                    onChange(prevState => ({
-                      ...prevState,
-                      ...basicExam,
-                      timeLimitUnit: v.toString() as ExamTimeUnit,
-                    }))
+                    onChange(prevState =>
+                      currentBasicExam.id
+                        ? {
+                            ...prevState,
+                            ...currentBasicExam,
+                            timeLimitUnit: v.toString() as ExamTimeUnit,
+                          }
+                        : {
+                            ...prevState,
+                            ...basicExam,
+                            timeLimitUnit: v.toString() as ExamTimeUnit,
+                          },
+                    )
                   }
                 >
                   <Select.Option key="d" value="d">
@@ -264,31 +391,48 @@ const ExamBasicForm: React.VFC<{
       </Form.Item>
 
       <Input.Group compact>
-        <Form.Item name="isAvailableAnnounceScore">
+        {/* isAvailableAnnounceScore */}
+        <Form.Item>
           <Checkbox
-            defaultChecked={basicExam.isAvailableAnnounceScore}
+            checked={
+              currentBasicExam.id ? !currentBasicExam.isAvailableAnnounceScore : !basicExam.isAvailableAnnounceScore
+            }
             onChange={v =>
-              onChange(prevState => ({ ...prevState, ...basicExam, isAvailableAnnounceScore: !v.target.checked }))
+              onChange(prevState =>
+                currentBasicExam.id
+                  ? { ...prevState, ...currentBasicExam, isAvailableAnnounceScore: !v.target.checked }
+                  : { ...prevState, ...basicExam, isAvailableAnnounceScore: !v.target.checked },
+              )
             }
           >
             {formatMessage(programMessages.ExamBasicForm.unAnnounceScore)}
           </Checkbox>
         </Form.Item>
-        <Form.Item name="isAvailableToGoBack">
+        {/* isAvailableToGoBack */}
+        <Form.Item>
           <Checkbox
-            defaultChecked={basicExam.isAvailableToGoBack}
+            checked={currentBasicExam.id ? currentBasicExam.isAvailableToGoBack : basicExam.isAvailableToGoBack}
             onChange={v =>
-              onChange(prevState => ({ ...prevState, ...basicExam, isAvailableToGoBack: v.target.checked }))
+              onChange(prevState =>
+                currentBasicExam.id
+                  ? { ...prevState, ...currentBasicExam, isAvailableToGoBack: v.target.checked }
+                  : { ...prevState, ...basicExam, isAvailableToGoBack: v.target.checked },
+              )
             }
           >
             {formatMessage(programMessages.ExamBasicForm.canGoBack)}
           </Checkbox>
         </Form.Item>
-        <Form.Item name="isAvailableToRetry">
+        {/* isAvailableToRetry */}
+        <Form.Item>
           <Checkbox
-            defaultChecked={basicExam.isAvailableToRetry}
+            checked={currentBasicExam.id ? currentBasicExam.isAvailableToRetry : basicExam.isAvailableToRetry}
             onChange={v => {
-              onChange(prevState => ({ ...prevState, ...basicExam, isAvailableToRetry: v.target.checked }))
+              onChange(prevState =>
+                currentBasicExam.id
+                  ? { ...prevState, ...currentBasicExam, isAvailableToRetry: v.target.checked }
+                  : { ...prevState, ...basicExam, isAvailableToRetry: v.target.checked },
+              )
             }}
           >
             {formatMessage(programMessages.ExamBasicForm.canRetry)}
