@@ -159,7 +159,7 @@ const SalesLeadTabs: React.VFC<{
         {<SalesLeadTable sales={sales} leads={contactedLeads} onRefetch={refetch} />}
       </Tabs.TabPane> */}
 
-      <Tabs.TabPane
+      {/* <Tabs.TabPane
         key="invited"
         tab={
           <div>
@@ -181,7 +181,7 @@ const SalesLeadTabs: React.VFC<{
         }
       >
         {<SalesLeadTable sales={sales} leads={presentedLeads} onRefetch={refetch} />}
-      </Tabs.TabPane>
+      </Tabs.TabPane> */}
 
       <Tabs.TabPane
         key="paid"
