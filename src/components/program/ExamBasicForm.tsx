@@ -1,7 +1,7 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { Checkbox, DatePicker, Form, Input, InputNumber, Select, Tooltip } from 'antd'
 import moment from 'moment'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ExamTimeUnit } from '../../types/program'
 import { StyledTips } from '../admin'
@@ -29,6 +29,29 @@ const ExamBasicForm: React.VFC<{
     basicExam.timeLimitAmount && basicExam.timeLimitUnit ? 'limited' : 'unlimited',
   )
 
+  // reset when cancel
+  useEffect(() => {
+    ;(typeof currentBasicExam.id === 'undefined' || currentBasicExam.id === null) &&
+      setExaminable(
+        basicExam.examinableAmount && basicExam.examinableUnit
+          ? 'bought'
+          : basicExam.examinableStartedAt && basicExam.examinableEndedAt
+          ? 'limited'
+          : 'unlimited',
+      )
+  }, [
+    basicExam.examinableAmount,
+    basicExam.examinableEndedAt,
+    basicExam.examinableStartedAt,
+    basicExam.examinableUnit,
+    currentBasicExam.id,
+  ])
+  // reset when cancel
+  useEffect(() => {
+    ;(typeof currentBasicExam.id === 'undefined' || currentBasicExam.id === null) &&
+      setTimeLimit(basicExam.timeLimitAmount && basicExam.timeLimitUnit ? 'limited' : 'unlimited')
+  }, [basicExam.timeLimitAmount, basicExam.timeLimitUnit, currentBasicExam.id])
+
   return (
     <>
       <Form.Item name="title" label={formatMessage(programMessages['*'].exerciseTitle)}>
@@ -48,7 +71,8 @@ const ExamBasicForm: React.VFC<{
         }
       >
         <Input.Group compact>
-          <Form.Item name="examinable">
+          {/* examinable */}
+          <Form.Item>
             <Select
               className="mr-2"
               style={{ width: '160px' }}
@@ -132,7 +156,8 @@ const ExamBasicForm: React.VFC<{
           </Form.Item>
           {examinable === 'bought' && (
             <>
-              <Form.Item name="examinableAmount">
+              {/* examinableAmount */}
+              <Form.Item>
                 <InputNumber
                   className="mr-2"
                   style={{ width: '80px' }}
@@ -155,7 +180,8 @@ const ExamBasicForm: React.VFC<{
                   }
                 />
               </Form.Item>
-              <Form.Item name="examinableUnit">
+              {/* examinableUnit */}
+              <Form.Item>
                 <Select
                   style={{ width: '80px' }}
                   defaultValue={(basicExam.examinableUnit || 'd') as ExamTimeUnit}
@@ -187,21 +213,24 @@ const ExamBasicForm: React.VFC<{
                 </Select>
               </Form.Item>
               <Form.Item className="ml-2">
-                <IndividualExamTimeLimitModal
-                  examId={basicExam.id}
-                  currentStatus={{
-                    examinableAmount: currentBasicExam.examinableAmount || 7,
-                    examinableUnit: currentBasicExam.examinableUnit || 'd',
-                    examinableStartedAt: null,
-                    examinableEndedAt: null,
-                  }}
-                />
+                {basicExam?.id ? (
+                  <IndividualExamTimeLimitModal
+                    examId={basicExam.id}
+                    currentStatus={{
+                      examinableAmount: currentBasicExam.examinableAmount || 7,
+                      examinableUnit: currentBasicExam.examinableUnit || 'd',
+                      examinableStartedAt: null,
+                      examinableEndedAt: null,
+                    }}
+                  />
+                ) : null}
               </Form.Item>
             </>
           )}
           {examinable === 'limited' && (
             <>
-              <Form.Item name="expiredAt">
+              {/* expiredAt */}
+              <Form.Item>
                 <DatePicker.RangePicker
                   style={{ width: '456px' }}
                   format="YYYY-MM-DD"
@@ -229,15 +258,17 @@ const ExamBasicForm: React.VFC<{
                 />
               </Form.Item>
               <Form.Item className="ml-2">
-                <IndividualExamTimeLimitModal
-                  examId={basicExam.id}
-                  currentStatus={{
-                    examinableAmount: null,
-                    examinableUnit: null,
-                    examinableStartedAt: currentBasicExam.examinableStartedAt,
-                    examinableEndedAt: currentBasicExam.examinableEndedAt,
-                  }}
-                />
+                {basicExam?.id ? (
+                  <IndividualExamTimeLimitModal
+                    examId={basicExam.id}
+                    currentStatus={{
+                      examinableAmount: null,
+                      examinableUnit: null,
+                      examinableStartedAt: currentBasicExam.examinableStartedAt,
+                      examinableEndedAt: currentBasicExam.examinableEndedAt,
+                    }}
+                  />
+                ) : null}
               </Form.Item>
             </>
           )}
@@ -245,7 +276,8 @@ const ExamBasicForm: React.VFC<{
       </Form.Item>
       <Form.Item label={formatMessage(programMessages.ExamBasicForm.countDownAnswerTime)}>
         <Input.Group compact>
-          <Form.Item name="timeLimit">
+          {/* timeLimit */}
+          <Form.Item>
             <Select
               className="mr-2"
               style={{ width: '160px' }}
@@ -273,7 +305,7 @@ const ExamBasicForm: React.VFC<{
                     currentBasicExam.id
                       ? {
                           ...prevState,
-                          ...basicExam,
+                          ...currentBasicExam,
                           timeLimitAmount: currentBasicExam.timeLimitAmount || 1,
                           timeLimitUnit: currentBasicExam.timeLimitUnit || 'h',
                         }
@@ -297,7 +329,8 @@ const ExamBasicForm: React.VFC<{
           </Form.Item>
           {timeLimit === 'limited' && (
             <>
-              <Form.Item name="timeLimitAmount">
+              {/* timeLimitAmount */}
+              <Form.Item>
                 <InputNumber
                   className="mr-2"
                   style={{ width: '80px' }}
@@ -320,7 +353,8 @@ const ExamBasicForm: React.VFC<{
                   }
                 />
               </Form.Item>
-              <Form.Item name="timeLimitUnit">
+              {/* timeLimitUnit */}
+              <Form.Item>
                 <Select
                   style={{ width: '80px' }}
                   defaultValue={basicExam.timeLimitUnit || 'h'}
@@ -357,9 +391,12 @@ const ExamBasicForm: React.VFC<{
       </Form.Item>
 
       <Input.Group compact>
-        <Form.Item name="isAvailableAnnounceScore">
+        {/* isAvailableAnnounceScore */}
+        <Form.Item>
           <Checkbox
-            defaultChecked={!basicExam.isAvailableAnnounceScore}
+            checked={
+              currentBasicExam.id ? !currentBasicExam.isAvailableAnnounceScore : !basicExam.isAvailableAnnounceScore
+            }
             onChange={v =>
               onChange(prevState =>
                 currentBasicExam.id
@@ -371,9 +408,10 @@ const ExamBasicForm: React.VFC<{
             {formatMessage(programMessages.ExamBasicForm.unAnnounceScore)}
           </Checkbox>
         </Form.Item>
-        <Form.Item name="isAvailableToGoBack">
+        {/* isAvailableToGoBack */}
+        <Form.Item>
           <Checkbox
-            defaultChecked={basicExam.isAvailableToGoBack}
+            checked={currentBasicExam.id ? currentBasicExam.isAvailableToGoBack : basicExam.isAvailableToGoBack}
             onChange={v =>
               onChange(prevState =>
                 currentBasicExam.id
@@ -385,9 +423,10 @@ const ExamBasicForm: React.VFC<{
             {formatMessage(programMessages.ExamBasicForm.canGoBack)}
           </Checkbox>
         </Form.Item>
-        <Form.Item name="isAvailableToRetry">
+        {/* isAvailableToRetry */}
+        <Form.Item>
           <Checkbox
-            defaultChecked={basicExam.isAvailableToRetry}
+            checked={currentBasicExam.id ? currentBasicExam.isAvailableToRetry : basicExam.isAvailableToRetry}
             onChange={v => {
               onChange(prevState =>
                 currentBasicExam.id

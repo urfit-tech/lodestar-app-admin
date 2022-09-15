@@ -206,7 +206,7 @@ export type QuestionLibrary = {
 export type ExamTimeUnit = 'd' | 'h' | 'm'
 
 export type Exam = {
-  id: string
+  id: string | null
   point: number
   passingScore: number
   examinableUnit: ExamTimeUnit | null

@@ -85,29 +85,28 @@ const ExamQuestionSettingForm: React.VFC<{
   return (
     <>
       <StyledLabel>{formatMessage(programMessages.ExamQuestionSettingForm.questionSetting)}</StyledLabel>
+      {/* questionTarget */}
       <Form.Item>
-        <Form.Item name="questionTarget">
-          <TreeTransfer
-            dataSource={treeData}
-            targetKeys={targetKeys}
-            onChange={(keys: string[]) => {
-              setTargetKeys(keys)
-              onChange(prevState =>
-                currentQuestionExam.id
-                  ? {
-                      ...prevState,
-                      ...currentQuestionExam,
-                      questionGroupIds: keys,
-                    }
-                  : {
-                      ...prevState,
-                      ...questionExam,
-                      questionGroupIds: keys,
-                    },
-              )
-            }}
-          />
-        </Form.Item>
+        <TreeTransfer
+          dataSource={treeData}
+          targetKeys={currentQuestionExam.id ? currentQuestionExam.questionGroupIds : questionExam.questionGroupIds}
+          onChange={(keys: string[]) => {
+            setTargetKeys(keys)
+            onChange(prevState =>
+              currentQuestionExam.id
+                ? {
+                    ...prevState,
+                    ...currentQuestionExam,
+                    questionGroupIds: keys,
+                  }
+                : {
+                    ...prevState,
+                    ...questionExam,
+                    questionGroupIds: keys,
+                  },
+            )
+          }}
+        />
       </Form.Item>
       <StyledLabel>{formatMessage(programMessages.ExamQuestionSettingForm.examScore)}</StyledLabel>
       <Form.Item
@@ -117,10 +116,11 @@ const ExamQuestionSettingForm: React.VFC<{
           </StyledFormItemLabel>
         }
       >
-        <Form.Item name="point">
+        {/* point */}
+        <Form.Item>
           <InputNumber
             min={0}
-            defaultValue={questionExam.point}
+            value={currentQuestionExam.id ? currentQuestionExam.point : questionExam.point}
             onChange={v => {
               setPoint(Number(v))
               onChange(prevState =>
@@ -150,10 +150,11 @@ const ExamQuestionSettingForm: React.VFC<{
           </StyledFormItemLabel>
         }
       >
-        <Form.Item name="passingScore">
+        {/* passingScore */}
+        <Form.Item>
           <InputNumber
             min={0}
-            defaultValue={questionExam.passingScore}
+            value={currentQuestionExam.id ? currentQuestionExam.passingScore : questionExam.passingScore}
             onChange={v =>
               onChange(prevState =>
                 currentQuestionExam.id

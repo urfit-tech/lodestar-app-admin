@@ -104,9 +104,36 @@ const ExerciseAdminModal: React.FC<{
   const [currentBasicExam, setCurrentBasicExam] = useState<BasicExam>(basicExam)
   const [currentQuestionExam, setCurrentQuestionExam] = useState<QuestionExam>(questionExam)
 
+  const handleInitialCurrentState = () => {
+    setCurrentBasicExam({
+      id: null,
+      examinableAmount: NaN,
+      examinableEndedAt: null,
+      examinableStartedAt: null,
+      examinableUnit: null,
+      isAvailableAnnounceScore: false,
+      isAvailableToGoBack: false,
+      isAvailableToRetry: false,
+      timeLimitAmount: NaN,
+      timeLimitUnit: null,
+    })
+    setCurrentQuestionExam({
+      id: null,
+      passingScore: NaN,
+      point: NaN,
+      questionGroupIds: [],
+    })
+  }
+
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
-    if (typeof currentBasicExam.id !== 'undefined' && typeof currentQuestionExam.id !== 'undefined') {
+    if (
+      typeof currentBasicExam?.id !== 'undefined' &&
+      currentBasicExam?.id !== null &&
+      typeof currentQuestionExam?.id !== 'undefined' &&
+      currentQuestionExam?.id !== null
+    ) {
+      // adjust all form
       Promise.all([
         updateExam({
           variables: {
@@ -139,15 +166,12 @@ const ExerciseAdminModal: React.FC<{
         updateExamQuestionLibrary({
           variables: {
             examId,
-            examQuestionGroups: (currentQuestionExam.questionGroupIds === []
-              ? questionExam
-              : currentQuestionExam
-            )?.questionGroupIds.map((questionGroupId: string) => ({
+            examQuestionGroups: currentQuestionExam?.questionGroupIds.map((questionGroupId: string) => ({
               exam_id: examId,
               question_group_id: questionGroupId,
             })),
-            point: currentQuestionExam?.point || questionExam.point,
-            passingScore: currentQuestionExam?.passingScore || questionExam.passingScore,
+            point: currentQuestionExam?.point,
+            passingScore: currentQuestionExam?.passingScore,
           },
         }),
         updateExamProgramContent({
@@ -178,8 +202,14 @@ const ExerciseAdminModal: React.FC<{
         .catch(error => handleError(error))
         .finally(() => {
           setLoading(false)
+          handleInitialCurrentState()
         })
-    } else if (typeof currentBasicExam.id !== 'undefined' && typeof currentQuestionExam.id === 'undefined') {
+    } else if (
+      typeof currentBasicExam?.id !== 'undefined' &&
+      currentBasicExam?.id !== null &&
+      (typeof currentQuestionExam?.id === 'undefined' || currentQuestionExam?.id === null)
+    ) {
+      // only adjust basic form
       Promise.all([
         updateExam({
           variables: {
@@ -235,21 +265,24 @@ const ExerciseAdminModal: React.FC<{
         .catch(error => handleError(error))
         .finally(() => {
           setLoading(false)
+          handleInitialCurrentState()
         })
-    } else if (typeof currentBasicExam.id === 'undefined' && typeof currentQuestionExam.id !== 'undefined') {
+    } else if (
+      (typeof currentBasicExam?.id === 'undefined' || currentBasicExam?.id === null) &&
+      typeof currentQuestionExam?.id !== 'undefined' &&
+      currentQuestionExam?.id !== null
+    ) {
+      // only adjust question form
       Promise.all([
         updateExamQuestionLibrary({
           variables: {
             examId,
-            examQuestionGroups: (currentQuestionExam.questionGroupIds === []
-              ? questionExam
-              : currentQuestionExam
-            )?.questionGroupIds.map((questionGroupId: string) => ({
+            examQuestionGroups: currentQuestionExam?.questionGroupIds.map((questionGroupId: string) => ({
               exam_id: examId,
               question_group_id: questionGroupId,
             })),
-            point: currentQuestionExam?.point || questionExam.point,
-            passingScore: currentQuestionExam?.passingScore || questionExam.passingScore,
+            point: currentQuestionExam?.point,
+            passingScore: currentQuestionExam?.passingScore,
           },
         }),
         updateExamProgramContent({
@@ -278,8 +311,10 @@ const ExerciseAdminModal: React.FC<{
         .catch(error => handleError(error))
         .finally(() => {
           setLoading(false)
+          handleInitialCurrentState()
         })
     } else {
+      // only adjust program content
       updateExamProgramContent({
         variables: {
           programContentId: programContent.id,
@@ -297,11 +332,14 @@ const ExerciseAdminModal: React.FC<{
         .then(() => {
           message.success(formatMessage(programMessages['*'].successfullySaved))
           onRefetch?.()
-          setLoading(false)
           setActivityKey('basicSetting')
           setVisible(false)
         })
         .catch(error => handleError(error))
+        .finally(() => {
+          setLoading(false)
+          handleInitialCurrentState()
+        })
     }
   }
 
@@ -345,8 +383,11 @@ const ExerciseAdminModal: React.FC<{
               <Button
                 disabled={loading}
                 onClick={() => {
+                  form.resetFields()
+                  handleInitialCurrentState()
                   setActivityKey('basicSetting')
                   setVisible(false)
+                  Modal.destroyAll()
                 }}
                 className="mr-2"
               >
@@ -489,7 +530,10 @@ const useQuestionExam = (examId: string) => {
         }
       }
     `,
-    { variables: { examId }, fetchPolicy: 'no-cache' },
+    {
+      variables: { examId },
+      fetchPolicy: 'no-cache',
+    },
   )
   const questionExam: QuestionExam = {
     id: data?.exam_by_pk?.id.toString(),
