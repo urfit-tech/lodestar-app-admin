@@ -1176,6 +1176,11 @@ export const orderMessages = {
     invoiceId: { id: 'order.label.invoiceId', defaultMessage: '發票編號' },
     invoiceStatus: { id: 'order.label.invoiceStatus', defaultMessage: '發票狀態' },
     invoiceIssuedAt: { id: 'order.label.invoiceIssuedAt', defaultMessage: '發票開立時間' },
+    // gift
+    gift: { id: 'order.label.gift', defaultMessage: '贈品項目' },
+    recipientName: { id: 'order.label.recipientName', defaultMessage: '收件人' },
+    recipientPhone: { id: 'order.label.recipientPhone', defaultMessage: '收件電話' },
+    recipientAddress: { id: 'order.label.recipientAddress', defaultMessage: '收件地址' },
   }),
 }
 
