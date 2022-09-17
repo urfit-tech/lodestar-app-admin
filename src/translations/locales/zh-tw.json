@@ -2413,5 +2413,9 @@
   "craft.label.generalSettings": "一般設定",
   "craft.label.pageTitle": "Page Title",
   "craft.label.keywords": "keywords",
-  "craft.label.seoSettings": "SEO 設定"
+  "craft.label.seoSettings": "SEO 設定",
+  "order.label.gift": "贈品項目",
+  "order.label.recipientName": "收件人",
+  "order.label.recipientPhone": "收件電話",
+  "order.label.recipientAddress": "收件地址"
 }
