@@ -190,7 +190,7 @@ const pageMessages = {
   VoucherPlanCollectionAdminPage: defineMessages({
     searchPlaceholder: {
       id: 'page.VoucherPlanCollectionAdminPage.searchPlaceholder',
-      defaultMessage: '搜尋折扣代碼或折價券名稱',
+      defaultMessage: '搜尋兌換代碼或兌換券名稱',
     },
   }),
   VoucherPlanCollectionBlock: defineMessages({
@@ -212,7 +212,7 @@ const pageMessages = {
   CouponPlanCollectionAdminPage: defineMessages({
     searchPlaceholder: {
       id: 'page.CouponPlanCollectionAdminPage.searchPlaceholder',
-      defaultMessage: '搜尋兌換代碼或兌換券名稱',
+      defaultMessage: '搜尋折扣代碼或折價券名稱',
     },
   }),
   CouponCollectionBlock: defineMessages({
