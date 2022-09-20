@@ -90,7 +90,7 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
           <VoucherPlanAdminModal
             renderTrigger={({ setVisible }) => (
               <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(pageMessages['*'].create)}
+                {formatMessage(pageMessages['*'].createVoucherPlan)}
               </Button>
             )}
             icon={<FileAddOutlined />}
