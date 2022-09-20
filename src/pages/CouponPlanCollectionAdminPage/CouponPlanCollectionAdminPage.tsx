@@ -110,7 +110,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
         </div>
         <div className="col-4">
           <Input.Search
-            placeholder={'search'}
+            placeholder={formatMessage(pageMessages.CouponPlanCollectionAdminPage.searchPlaceholder)}
             onChange={e => !e.target.value.trim() && setSearchText('')}
             onSearch={value => setSearchText(value.trim())}
           />
