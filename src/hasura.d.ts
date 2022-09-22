@@ -7087,6 +7087,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   order_executors: string | null;
   shipping: any | null;
   payment_gateway: string | null;
+  gift_plans: string | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {

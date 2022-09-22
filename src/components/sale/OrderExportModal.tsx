@@ -135,10 +135,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 .join('\n') || '',
               orderLog.member_name,
               orderLog.member_email,
-              orderLog.order_products
-                ?.split('\\n')
-                .filter(orderProduct => !orderProduct.includes('【贈品】'))
-                .join('\n') || '',
+              orderLog.order_products?.split('\\n').join('\n') || '',
               orderLog.order_discounts?.split('\\n').join('\n') || '',
               orderLog.order_product_num || 0,
               Math.max(orderLog.order_product_total_price || 0, 0),
@@ -152,13 +149,14 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
-              orderLog.order_products
-                ?.split('\\n')
-                .filter(orderProduct => orderProduct.includes('【贈品】'))
-                .join('\n') || '',
-              orderLog.shipping?.name || '',
-              orderLog.shipping?.phone || '',
-              `${orderLog.shipping?.city || ''}${orderLog.shipping?.district || ''}${orderLog.shipping?.address || ''}`,
+              orderLog.gift_plans?.split('\\n').join('\n') || '',
+              orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.name : '',
+              orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.phone : '',
+              orderLog.shipping?.isOutsideTaiwanIsland === 'false'
+                ? `${orderLog.shipping?.city || ''}${orderLog.shipping?.district || ''}${
+                    orderLog.shipping?.address || ''
+                  }`
+                : '',
               orderLog.invoice_options?.name || '',
               orderLog.invoice_options?.email || '',
               orderLog.invoice_options?.phone || orderLog.invoice_options?.buyerPhone || '',
@@ -618,6 +616,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       order_executors
       shipping
       payment_gateway
+      gift_plans
     }
   }
 `
