@@ -23302,6 +23302,7 @@ export interface app_page_bool_exp {
   _and?: app_page_bool_exp[] | null;
   _not?: app_page_bool_exp | null;
   _or?: app_page_bool_exp[] | null;
+  app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   app_page_sections?: app_page_section_bool_exp | null;
   craft_data?: jsonb_comparison_exp | null;
@@ -23321,6 +23322,7 @@ export interface app_page_bool_exp {
  * input type for inserting data into table "app_page"
  */
 export interface app_page_insert_input {
+  app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   app_page_sections?: app_page_section_arr_rel_insert_input | null;
   craft_data?: any | null;

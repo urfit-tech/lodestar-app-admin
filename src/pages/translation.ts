@@ -187,6 +187,12 @@ const pageMessages = {
       defaultMessage: '計算此日期區間的學習狀況',
     },
   }),
+  VoucherPlanCollectionAdminPage: defineMessages({
+    searchPlaceholder: {
+      id: 'page.VoucherPlanCollectionAdminPage.searchPlaceholder',
+      defaultMessage: '搜尋兌換代碼或兌換券名稱',
+    },
+  }),
   VoucherPlanCollectionBlock: defineMessages({
     edit: { id: 'page.VoucherPlanCollectionBlock.edit', defaultMessage: '編輯' },
     fetchDataError: {
@@ -201,6 +207,12 @@ const pageMessages = {
     emptyVoucherPlan: {
       id: 'page.VoucherPlanCollectionBlock.emptyVoucherPlan',
       defaultMessage: '無任何兌換方案',
+    },
+  }),
+  CouponPlanCollectionAdminPage: defineMessages({
+    searchPlaceholder: {
+      id: 'page.CouponPlanCollectionAdminPage.searchPlaceholder',
+      defaultMessage: '搜尋折扣代碼或折價券名稱',
     },
   }),
   CouponCollectionBlock: defineMessages({

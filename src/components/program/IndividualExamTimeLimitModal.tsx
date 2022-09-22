@@ -157,8 +157,8 @@ const IndividualExamTimeLimitModal: React.VFC<{
                       ]}
                     >
                       <DatePicker
-                        format="YYYY-MM-DD HH:mm"
-                        showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
+                        format="YYYY-MM-DD HH:mm:ss"
+                        showTime={{ format: 'HH:mm:ss', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
                         disabledDate={current => !!current && current < moment().startOf('day')}
                         placeholder={formatMessage(programMessages.IndividualExamTimeLimitModal.expiredAt)}
                         style={{ width: '200px' }}
@@ -229,7 +229,7 @@ const UPSERT_EXAM_MEMBER_TIME_LIMIT = gql`
     }
     insert_exam_member_time_limit(
       objects: $timeLimitList
-      on_conflict: { constraint: exam_member_time_limit_exam_id_member_id_key, update_columns: [] }
+      on_conflict: { constraint: exam_member_time_limit_exam_id_member_id_key, update_columns: [editor_id, expired_at] }
     ) {
       affected_rows
     }
