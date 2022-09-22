@@ -24,13 +24,22 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
       key: 'available',
       tab: formatMessage(pageMessages['*'].available),
       condition: {
-        _or: [
-          { ended_at: { _gte: 'now()' } },
-          { started_at: { _is_null: true }, ended_at: { _is_null: true } },
-          { ended_at: { _is_null: true } },
-          { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
+        _and: [
+          {
+            _or: [
+              { ended_at: { _gte: 'now()' } },
+              { started_at: { _is_null: true }, ended_at: { _is_null: true } },
+              { ended_at: { _is_null: true } },
+              { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
+            ],
+          },
+          {
+            _or: [
+              { title: searchText ? { _ilike: `%${searchText}%` } : undefined },
+              { voucher_codes: searchText ? { code: { _ilike: `%${searchText}%` } } : undefined },
+            ],
+          },
         ],
-        title: searchText ? { _ilike: `%${searchText}%` } : undefined,
         voucher_codes: { remaining: { _nin: [0] } },
         editor_id: permissions.VOUCHER_PLAN_ADMIN
           ? undefined
@@ -43,8 +52,15 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
       key: 'unavailable',
       tab: formatMessage(pageMessages['*'].unavailable),
       condition: {
-        _or: [{ voucher_codes: { remaining: { _eq: 0 } } }, { ended_at: { _lt: 'now()' } }],
-        title: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        _and: [
+          { _or: [{ voucher_codes: { remaining: { _eq: 0 } } }, { ended_at: { _lt: 'now()' } }] },
+          {
+            _or: [
+              { title: searchText ? { _ilike: `%${searchText}%` } : undefined },
+              { voucher_codes: searchText ? { code: { _ilike: `%${searchText}%` } } : undefined },
+            ],
+          },
+        ],
         editor_id: permissions.VOUCHER_PLAN_ADMIN
           ? undefined
           : permissions.VOUCHER_PLAN_NORMAL
@@ -74,7 +90,7 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
           <VoucherPlanAdminModal
             renderTrigger={({ setVisible }) => (
               <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
-                {formatMessage(pageMessages['*'].create)}
+                {formatMessage(pageMessages['*'].createVoucherPlan)}
               </Button>
             )}
             icon={<FileAddOutlined />}
@@ -84,7 +100,7 @@ const VoucherPlanCollectionAdminPage: React.FC = () => {
         </div>
         <div className="col-4">
           <Input.Search
-            placeholder={'search'}
+            placeholder={formatMessage(pageMessages.VoucherPlanCollectionAdminPage.searchPlaceholder)}
             onChange={e => !e.target.value.trim() && setSearchText('')}
             onSearch={value => setSearchText(value.trim())}
           />
