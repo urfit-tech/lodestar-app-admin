@@ -347,6 +347,22 @@ const SaleCollectionAdminCard: React.VFC<{
               </div>
             </div>
             <Divider />
+            {v.options?.giftPlans?.length > 0 &&
+              v.options?.giftPlans.map((v: any) => {
+                return (
+                  <>
+                    <div className="row">
+                      <div className="col-2">
+                        <ProductTypeLabel productType="GiftPlan" />
+                      </div>
+                      <div className="col-7">
+                        <span>{v.giftPlan.gift.title}</span>
+                      </div>
+                    </div>
+                    <Divider />
+                  </>
+                )
+              })}
           </StyledRowWrapper>
         )
       })}

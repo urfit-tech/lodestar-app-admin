@@ -425,6 +425,7 @@ export const commonMessages = {
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
+    giftPlan: { id: 'common.product.giftPlan', defaultMessage: '贈品' },
   }),
   unit: defineMessages({
     minute: { id: 'common.unit.minute', defaultMessage: '分' },
