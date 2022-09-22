@@ -217,8 +217,10 @@ const ExamBasicForm: React.VFC<{
                   <IndividualExamTimeLimitModal
                     examId={basicExam.id}
                     currentStatus={{
-                      examinableAmount: currentBasicExam.examinableAmount || 7,
-                      examinableUnit: currentBasicExam.examinableUnit || 'd',
+                      examinableAmount: currentBasicExam.id
+                        ? currentBasicExam.examinableAmount
+                        : basicExam.examinableAmount,
+                      examinableUnit: currentBasicExam.id ? currentBasicExam.examinableUnit : basicExam.examinableUnit,
                       examinableStartedAt: null,
                       examinableEndedAt: null,
                     }}
@@ -233,7 +235,11 @@ const ExamBasicForm: React.VFC<{
               <Form.Item>
                 <DatePicker.RangePicker
                   style={{ width: '456px' }}
-                  format="YYYY-MM-DD"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  showTime={{
+                    format: 'HH:mm:ss',
+                    defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                  }}
                   defaultValue={[
                     basicExam.examinableStartedAt ? moment(basicExam.examinableStartedAt) : moment(),
                     basicExam.examinableEndedAt ? moment(basicExam.examinableEndedAt) : moment().add(7, 'd'),
@@ -264,8 +270,12 @@ const ExamBasicForm: React.VFC<{
                     currentStatus={{
                       examinableAmount: null,
                       examinableUnit: null,
-                      examinableStartedAt: currentBasicExam.examinableStartedAt,
-                      examinableEndedAt: currentBasicExam.examinableEndedAt,
+                      examinableStartedAt: currentBasicExam.id
+                        ? currentBasicExam.examinableStartedAt
+                        : basicExam.examinableStartedAt,
+                      examinableEndedAt: currentBasicExam.id
+                        ? currentBasicExam.examinableEndedAt
+                        : basicExam.examinableEndedAt,
                     }}
                   />
                 ) : null}

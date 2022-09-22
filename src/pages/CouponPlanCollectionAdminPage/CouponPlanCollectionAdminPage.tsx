@@ -23,13 +23,22 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
       key: 'available',
       tab: formatMessage(pageMessages['*'].available),
       condition: {
-        _or: [
-          { started_at: { _lte: 'now()' }, ended_at: { _gte: 'now()' } },
-          { started_at: { _is_null: true }, ended_at: { _is_null: true } },
-          { started_at: { _lte: 'now()' }, ended_at: { _is_null: true } },
-          { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
+        _and: [
+          {
+            _or: [
+              { started_at: { _lte: 'now()' }, ended_at: { _gte: 'now()' } },
+              { started_at: { _is_null: true }, ended_at: { _is_null: true } },
+              { started_at: { _lte: 'now()' }, ended_at: { _is_null: true } },
+              { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
+            ],
+          },
+          {
+            _or: [
+              { title: searchText ? { _ilike: `%${searchText}%` } : undefined },
+              { coupon_codes: searchText ? { code: { _ilike: `%${searchText}%` } } : undefined },
+            ],
+          },
         ],
-        title: searchText ? { _ilike: `%${searchText}%` } : undefined,
         editor_id: permissions.COUPON_PLAN_ADMIN
           ? undefined
           : permissions.COUPON_PLAN_NORMAL
@@ -42,7 +51,10 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
       tab: formatMessage(pageMessages['*'].notYet),
       condition: {
         started_at: { _gt: 'now()' },
-        title: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        _or: [
+          { title: searchText ? { _ilike: `%${searchText}%` } : undefined },
+          { coupon_codes: searchText ? { code: { _ilike: `%${searchText}%` } } : undefined },
+        ],
       },
       editor_id: permissions.COUPON_PLAN_ADMIN
         ? undefined
@@ -55,7 +67,10 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
       tab: formatMessage(pageMessages['*'].unavailable),
       condition: {
         ended_at: { _lt: 'now()' },
-        title: searchText ? { _ilike: `%${searchText}%` } : undefined,
+        _or: [
+          { title: searchText ? { _ilike: `%${searchText}%` } : undefined },
+          { coupon_codes: searchText ? { code: { _ilike: `%${searchText}%` } } : undefined },
+        ],
       },
       editor_id: permissions.COUPON_PLAN_ADMIN
         ? undefined
@@ -95,7 +110,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
         </div>
         <div className="col-4">
           <Input.Search
-            placeholder={'search'}
+            placeholder={formatMessage(pageMessages.CouponPlanCollectionAdminPage.searchPlaceholder)}
             onChange={e => !e.target.value.trim() && setSearchText('')}
             onSearch={value => setSearchText(value.trim())}
           />
