@@ -1278,6 +1278,15 @@ export const craftPageMessages = {
     actionSetting: { id: 'craft.label.actionSetting', defaultMessage: '行為設定' },
     purchaseProduct: { id: 'craft.label.purchaseProduct', defaultMessage: '購買產品' },
     choiceProduct: { id: 'craft.label.choiceProduct', defaultMessage: '選擇產品' },
+    generalSettings: { id: 'craft.label.generalSettings', defaultMessage: '一般設定' },
+    pageTitle: { id: 'craft.label.pageTitle', defaultMessage: 'Page Title' },
+    keywords: { id: 'craft.label.keywords', defaultMessage: 'keywords' },
+    seoSettings: { id: 'craft.label.seoSettings', defaultMessage: 'SEO 設定' },
+    openGraphSettings: { id: 'craft.label.openGraphSettings', defaultMessage: 'Open Graph 設定' },
+    ogTitle: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:title' },
+    ogDescription: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:description' },
+    ogImage: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image' },
+    ogImageAlt: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image:alt' },
   }),
   text: defineMessages({
     chooseCategories: {
