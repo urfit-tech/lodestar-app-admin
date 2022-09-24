@@ -362,9 +362,9 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                 refundAppliedAt: v.options?.refundAppliedAt,
                 performance: isGuaranteed ? performance * 0.7 : performance,
                 recognizePerformance,
-                products: v.values.orderProducts
-                  ?.filter((op: any) => op.price >= 1500)
-                  .map((op: any) => op.name + (op.options ? `(${op.options.quantity})` : '')),
+                products: v.values.orderProducts?.map(
+                  (op: any) => op.name + (op.options ? `(${op.options.quantity})` : ''),
+                ),
                 paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
                 paymentNumber: v.values.paymentOptions.paymentNumber,
                 note: v.options?.note,
