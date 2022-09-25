@@ -7,11 +7,12 @@ import { Moment } from 'moment'
 import { useState } from 'react'
 import AdminModal from '../../components/admin/AdminModal'
 
-const MemberSmsModel: React.VFC<{ memberId: string; phone: string }> = ({ memberId, phone }) => {
+const MemberSmsModel: React.VFC<{ memberId: string; phone: string, name: string }> = ({ memberId, phone, name }) => {
   const [isSending, setIsSending] = useState(false)
   const [content, setContent] = useState('')
   const [sentAt, setSentAt] = useState<Moment | null>(null)
   const { authToken } = useAuth()
+
   return (
     <AdminModal
       okText="寄送"
@@ -49,7 +50,7 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string }> = ({ member
       )}
       confirmLoading={isSending}
     >
-      <div className="mb-3">{phone}</div>
+      <div className="mb-3">{`${name} / ${phone}`}</div>
       <TextArea
         className="mb-3"
         placeholder="content"
