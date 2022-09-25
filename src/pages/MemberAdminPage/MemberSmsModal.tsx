@@ -15,7 +15,7 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string }> = ({ member
   return (
     <AdminModal
       okText="寄送"
-      onOk={() => {
+      onOk={(_e, setVisible) => {
         setIsSending(true)
         axios
           .post(
@@ -39,11 +39,15 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string }> = ({ member
               message.error(`sent faild: ${error}`)
             }
           })
-          .finally(() => setIsSending(false))
+          .finally(() => {
+            setVisible(false)
+            setIsSending(false)
+          })
       }}
       renderTrigger={({ setVisible }) => (
         <Icon component={() => <MessageOutlined />} onClick={() => setVisible(true)} className="cursor-pointer" />
       )}
+      confirmLoading={isSending}
     >
       <div className="mb-3">{phone}</div>
       <TextArea
