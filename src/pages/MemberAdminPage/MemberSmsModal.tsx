@@ -1,5 +1,5 @@
 import Icon, { MessageOutlined } from '@ant-design/icons'
-import { DatePicker, message } from 'antd'
+import { DatePicker, Form, message } from 'antd'
 import TextArea from 'antd/lib/input/TextArea'
 import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -9,16 +9,38 @@ import { useIntl } from 'react-intl'
 import AdminModal from '../../components/admin/AdminModal'
 import { memberMessages } from '../../helpers/translation'
 
+const ONLY_GSM_ALPHABET_MAX_LENGTH = 160;
+const MAX_LENGTH = 70;
+const isGSMAlphabet = (text: string) => {
+  const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
+  const regex = new RegExp(rule, 'ig')
+  return Boolean(text.match(regex))
+}
+
 const MemberSmsModel: React.VFC<{ memberId: string; phone: string, name: string }> = ({ memberId, phone, name }) => {
   const [isSending, setIsSending] = useState(false)
+  const [isTooLong, setIsTooLong] = useState(false)
   const [content, setContent] = useState('')
   const [sentAt, setSentAt] = useState<Moment | null>(null)
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
 
+  const isValidateText = (text: string) => {
+    if (text.length < MAX_LENGTH) {
+      return true
+    }
+    if (isGSMAlphabet(text) && text.length < ONLY_GSM_ALPHABET_MAX_LENGTH) {
+      return true
+    }
+    return false
+  };
+
   return (
     <AdminModal
       okText="寄送"
+      okButtonProps={{
+        disabled: isTooLong || content === ''
+      }}
       onOk={(_e, setVisible) => {
         setIsSending(true)
         axios
@@ -56,13 +78,22 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string, name: string 
       confirmLoading={isSending}
     >
       <div className="mb-3">{`${name} / ${phone}`}</div>
-      <TextArea
+      <Form.Item
         className="mb-3"
-        placeholder={formatMessage(memberMessages.placeholder.smsContent)}
-        required
-        value={content}
-        onChange={e => setContent(e.target.value)}
-      />
+        validateStatus={isTooLong ? 'error' : ''}
+        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong) : undefined}
+      >
+        <TextArea
+          placeholder={formatMessage(memberMessages.placeholder.smsContent)}
+          required
+          value={content}
+          onChange={e => {
+            const text = e.target.value
+            setContent(text)
+            setIsTooLong(!isValidateText(text))
+          }}
+        />
+      </Form.Item>
       <DatePicker
         style={{ width: '100%' }}
         showTime
