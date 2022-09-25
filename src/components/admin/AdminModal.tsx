@@ -32,7 +32,7 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.77;
 `
 
-export type AdminModalProps = ModalProps & {
+export type AdminModalProps = Omit<ModalProps, 'onOk'> & {
   renderTrigger?: React.FC<{
     setVisible: React.Dispatch<React.SetStateAction<boolean>>
   }>
@@ -40,7 +40,12 @@ export type AdminModalProps = ModalProps & {
   renderFooter?: React.FC<{
     setVisible: React.Dispatch<React.SetStateAction<boolean>>
   }>
+  onOk?: (
+		e: React.MouseEvent<HTMLElement>,
+		setVisible: React.Dispatch<React.SetStateAction<boolean>>
+	) => void;
 }
+
 const AdminModal: React.FC<AdminModalProps> = ({
   title,
   renderTrigger,
@@ -48,6 +53,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
   children,
   icon,
   onCancel,
+  onOk,
   ...ModalProps
 }) => {
   const [visible, setVisible] = useState(false)
@@ -64,6 +70,9 @@ const AdminModal: React.FC<AdminModalProps> = ({
         onCancel={e => {
           onCancel?.(e)
           setVisible(false)
+        }}
+        onOk={async e => {
+          onOk?.(e, setVisible)
         }}
         {...ModalProps}
       >
