@@ -82,7 +82,7 @@ const MemberNoteAdminItem: React.FC<{
                     null
                   }
                 />
-                {note.status === 'answered' && (
+                {note.status === 'answered' && note.type !== 'sms' && (
                   <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
                 )}
                 {note.status === 'missed' && (
