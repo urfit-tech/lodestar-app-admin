@@ -249,7 +249,7 @@ const ProgramPlanAdminModal: React.FC<
           groupBuyingPeople: programPlan?.groupBuyingPeople || 1,
           hasGiftPlan: productGiftPlan?.giftPlanId !== undefined ? true : false,
           productGiftPlanId: productGiftPlan?.productGiftPlanId,
-          giftPlanProductId: productGiftPlan?.giftPlanId || '',
+          giftPlanProductId: productGiftPlan?.giftPlanId || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
         }}

@@ -2353,5 +2353,7 @@
   "form.GiftPlanInput.pleaseSelectAGiftPlan": "請選擇一個贈品方案",
   "form.GiftPlanInput.noGiftPlan": "無贈品",
   "form.GiftPlanInput.hasGiftPlan": "有贈品",
-  "form.GiftPlanInput.whetherProvideGift": "是否有提供贈品"
+  "form.GiftPlanInput.whetherProvideGift": "是否有提供贈品",
+  "form.GiftPlanInput.selectGiftPlan": "選擇贈品方案",
+  "form.GiftPlanInput.pleaseCreateGiftPlan": "請新增贈品方案"
 }

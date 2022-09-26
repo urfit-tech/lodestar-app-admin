@@ -1,9 +1,13 @@
-import { DatePicker, Form, Input, Radio } from 'antd'
+import { useQuery } from '@apollo/react-hooks'
+import { DatePicker, Form, Input, Radio, Select } from 'antd'
+import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import ProductSelector from './ProductSelector'
+import hasura from '../../hasura'
+import { GiftPlan } from '../../types/giftPlan'
 import formMessages from './translation'
 
 const StyledDiv = styled.div`
@@ -12,6 +16,9 @@ const StyledDiv = styled.div`
 
 const GiftPlanInput: React.VFC<{ value?: boolean; onChange?: (event: any) => void }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
+  const { giftPlans, giftPlansLoading } = useGiftPlans(appId)
+
   return (
     <>
       <Radio.Group defaultValue={value} onChange={onChange}>
@@ -36,7 +43,15 @@ const GiftPlanInput: React.VFC<{ value?: boolean; onChange?: (event: any) => voi
               },
             ]}
           >
-            <ProductSelector allowTypes={['GiftPlan']} />
+            {giftPlans ? (
+              <Select placeholder={formatMessage(formMessages.GiftPlanInput.pleaseSelectAGiftPlan)}>
+                {giftPlans.map(giftPlan => (
+                  <Select.Option value={giftPlan.id}>{giftPlan.title}</Select.Option>
+                ))}
+              </Select>
+            ) : (
+              formatMessage(formMessages.GiftPlanInput.pleaseCreateGiftPlan)
+            )}
           </Form.Item>
           <Input.Group compact>
             <Form.Item name="giftPlanStartedAt">
@@ -61,3 +76,36 @@ const GiftPlanInput: React.VFC<{ value?: boolean; onChange?: (event: any) => voi
 }
 
 export default GiftPlanInput
+
+const useGiftPlans = (appId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_GIFT_PLANS, hasura.GET_GIFT_PLANSVariables>(
+    GET_GIFT_PLANS,
+    {
+      variables: {
+        appId,
+      },
+    },
+  )
+
+  const giftPlans: Pick<GiftPlan, 'id' | 'title'>[] =
+    data?.gift_plan.map(v => ({
+      id: v.id,
+      title: v.title,
+    })) || []
+
+  return {
+    giftPlans: giftPlans,
+    refetchGiftPlans: refetch,
+    giftPlansLoading: loading,
+    giftPlansError: error,
+  }
+}
+
+const GET_GIFT_PLANS = gql`
+  query GET_GIFT_PLANS($appId: String!) {
+    gift_plan(where: { app_id: { _eq: $appId } }, order_by: { created_at: desc }) {
+      id
+      title
+    }
+  }
+`

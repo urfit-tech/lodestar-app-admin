@@ -329,6 +329,8 @@ const formMessages = {
     noGiftPlan: { id: 'form.GiftPlanInput.noGiftPlan', message: '無贈品' },
     hasGiftPlan: { id: 'form.GiftPlanInput.hasGiftPlan', message: '有贈品' },
     whetherProvideGift: { id: 'form.GiftPlanInput.whetherProvideGift', defaultMessage: '是否有提供贈品' },
+    selectGiftPlan: { id: 'form.GiftPlanInput.selectGiftPlan', defaultMessage: '選擇贈品方案' },
+    pleaseCreateGiftPlan: { id: 'form.GiftPlanInput.pleaseCreateGiftPlan', message: '請新增贈品方案' },
   }),
 }
 export default formMessages
