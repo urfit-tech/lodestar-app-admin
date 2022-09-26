@@ -2282,6 +2282,32 @@ export interface GET_CONTENT_CREATOR_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_GIFT_PLANS
+// ====================================================
+
+export interface GET_GIFT_PLANS_gift_plan {
+  __typename: "gift_plan";
+  id: any;
+  title: string;
+}
+
+export interface GET_GIFT_PLANS {
+  /**
+   * fetch data from the table: "gift_plan"
+   */
+  gift_plan: GET_GIFT_PLANS_gift_plan[];
+}
+
+export interface GET_GIFT_PLANSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ALL_MEMBER_COLLECTION
 // ====================================================
 
@@ -2454,6 +2480,180 @@ export interface GET_PRODUCT_SELECTION_COLLECTION {
    * fetch data from the table: "card"
    */
   card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_GIFT
+// ====================================================
+
+export interface GET_GIFT_token {
+  __typename: "token";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  is_deliverable: boolean;
+}
+
+export interface GET_GIFT {
+  /**
+   * fetch data from the table: "token"
+   */
+  token: GET_GIFT_token[];
+}
+
+export interface GET_GIFTVariables {
+  condition: token_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_GIFT
+// ====================================================
+
+export interface UPSERT_GIFT_insert_token_returning {
+  __typename: "token";
+  id: any;
+}
+
+export interface UPSERT_GIFT_insert_token {
+  __typename: "token_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: UPSERT_GIFT_insert_token_returning[];
+}
+
+export interface UPSERT_GIFT {
+  /**
+   * insert data into the table: "token"
+   */
+  insert_token: UPSERT_GIFT_insert_token | null;
+}
+
+export interface UPSERT_GIFTVariables {
+  tokens: token_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_GIFT_PLAN
+// ====================================================
+
+export interface INSERT_GIFT_PLAN_insert_gift_plan_returning {
+  __typename: "gift_plan";
+  id: any;
+}
+
+export interface INSERT_GIFT_PLAN_insert_gift_plan {
+  __typename: "gift_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_GIFT_PLAN_insert_gift_plan_returning[];
+}
+
+export interface INSERT_GIFT_PLAN {
+  /**
+   * insert data into the table: "gift_plan"
+   */
+  insert_gift_plan: INSERT_GIFT_PLAN_insert_gift_plan | null;
+}
+
+export interface INSERT_GIFT_PLANVariables {
+  giftPlanId: any;
+  appId: string;
+  giftPlanTitle: string;
+  editorId?: string | null;
+  giftPlanProductId: any;
+  productId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_GIFT_PLAN
+// ====================================================
+
+export interface UPDATE_GIFT_PLAN_update_gift_plan_returning {
+  __typename: "gift_plan";
+  app_id: string;
+}
+
+export interface UPDATE_GIFT_PLAN_update_gift_plan {
+  __typename: "gift_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: UPDATE_GIFT_PLAN_update_gift_plan_returning[];
+}
+
+export interface UPDATE_GIFT_PLAN {
+  /**
+   * update data of the table: "gift_plan"
+   */
+  update_gift_plan: UPDATE_GIFT_PLAN_update_gift_plan | null;
+}
+
+export interface UPDATE_GIFT_PLANVariables {
+  giftPlanId: any;
+  title: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CUSTOM_GIFT_COVER_URL
+// ====================================================
+
+export interface UPDATE_CUSTOM_GIFT_COVER_URL_update_token {
+  __typename: "token_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CUSTOM_GIFT_COVER_URL {
+  /**
+   * update data of the table: "token"
+   */
+  update_token: UPDATE_CUSTOM_GIFT_COVER_URL_update_token | null;
+}
+
+export interface UPDATE_CUSTOM_GIFT_COVER_URLVariables {
+  tokenId: any;
+  coverUrl: string;
 }
 
 /* tslint:disable */
@@ -14894,6 +15094,51 @@ export interface GET_EXERCISE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_GIFT_PLAN_COLLECTION
+// ====================================================
+
+export interface GET_GIFT_PLAN_COLLECTION_gift_plan_gift_plan_products_product {
+  __typename: "product";
+  target: string;
+}
+
+export interface GET_GIFT_PLAN_COLLECTION_gift_plan_gift_plan_products {
+  __typename: "gift_plan_product";
+  id: any;
+  /**
+   * An object relationship
+   */
+  product: GET_GIFT_PLAN_COLLECTION_gift_plan_gift_plan_products_product;
+}
+
+export interface GET_GIFT_PLAN_COLLECTION_gift_plan {
+  __typename: "gift_plan";
+  id: any;
+  title: string;
+  created_at: any | null;
+  /**
+   * An array relationship
+   */
+  gift_plan_products: GET_GIFT_PLAN_COLLECTION_gift_plan_gift_plan_products[];
+}
+
+export interface GET_GIFT_PLAN_COLLECTION {
+  /**
+   * fetch data from the table: "gift_plan"
+   */
+  gift_plan: GET_GIFT_PLAN_COLLECTION_gift_plan[];
+}
+
+export interface GET_GIFT_PLAN_COLLECTIONVariables {
+  condition: gift_plan_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_LEARNING_REPORT
 // ====================================================
 
@@ -16566,6 +16811,34 @@ export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION {
 
 export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
   data: program_package_program_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION_insert_program_package_plan {
+  __typename: "program_package_plan_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION {
+  /**
+   * insert data into the table: "program_package_plan"
+   */
+  insert_program_package_plan: UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION_insert_program_package_plan | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITIONVariables {
+  data: program_package_plan_insert_input[];
 }
 
 /* tslint:disable */
@@ -18761,6 +19034,7 @@ export enum app_page_update_column {
   editor_id = "editor_id",
   id = "id",
   is_deleted = "is_deleted",
+  meta_tag = "meta_tag",
   options = "options",
   path = "path",
   published_at = "published_at",
@@ -23311,6 +23585,7 @@ export interface app_page_bool_exp {
   editor_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  meta_tag?: jsonb_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   path?: String_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -23331,6 +23606,7 @@ export interface app_page_insert_input {
   editor_id?: string | null;
   id?: any | null;
   is_deleted?: boolean | null;
+  meta_tag?: any | null;
   options?: any | null;
   path?: string | null;
   published_at?: any | null;
@@ -23437,6 +23713,7 @@ export interface app_page_set_input {
   editor_id?: string | null;
   id?: any | null;
   is_deleted?: boolean | null;
+  meta_tag?: any | null;
   options?: any | null;
   path?: string | null;
   published_at?: any | null;
@@ -26855,6 +27132,37 @@ export interface file_on_conflict {
   constraint: file_constraint;
   update_columns: file_update_column[];
   where?: file_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "gift_plan". All fields are combined with a logical 'AND'.
+ */
+export interface gift_plan_bool_exp {
+  _and?: gift_plan_bool_exp[] | null;
+  _not?: gift_plan_bool_exp | null;
+  _or?: gift_plan_bool_exp[] | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  editor_id?: String_comparison_exp | null;
+  gift_plan_products?: gift_plan_product_bool_exp | null;
+  id?: uuid_comparison_exp | null;
+  product_gift_plans?: product_gift_plan_bool_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "gift_plan_product". All fields are combined with a logical 'AND'.
+ */
+export interface gift_plan_product_bool_exp {
+  _and?: gift_plan_product_bool_exp[] | null;
+  _not?: gift_plan_product_bool_exp | null;
+  _or?: gift_plan_product_bool_exp[] | null;
+  gift_plan?: gift_plan_bool_exp | null;
+  gift_plan_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
 }
 
 /**
@@ -31066,6 +31374,7 @@ export interface order_log_export_bool_exp {
   _or?: order_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  gift_plans?: String_comparison_exp | null;
   invoice_issued_at?: String_comparison_exp | null;
   invoice_options?: jsonb_comparison_exp | null;
   last_paid_at?: timestamptz_comparison_exp | null;
@@ -31097,6 +31406,7 @@ export interface order_log_export_bool_exp {
 export interface order_log_export_order_by {
   app_id?: order_by | null;
   created_at?: order_by | null;
+  gift_plans?: order_by | null;
   invoice_issued_at?: order_by | null;
   invoice_options?: order_by | null;
   last_paid_at?: order_by | null;
@@ -34589,6 +34899,23 @@ export interface product_enrollment_max_order_by {
 export interface product_enrollment_min_order_by {
   member_id?: order_by | null;
   product_id?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product_gift_plan". All fields are combined with a logical 'AND'.
+ */
+export interface product_gift_plan_bool_exp {
+  _and?: product_gift_plan_bool_exp[] | null;
+  _not?: product_gift_plan_bool_exp | null;
+  _or?: product_gift_plan_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  gift_plan?: gift_plan_bool_exp | null;
+  gift_plan_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product_id?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -39911,6 +40238,41 @@ export interface timestamptz_comparison_exp {
   _lte?: any | null;
   _neq?: any | null;
   _nin?: any[] | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "token". All fields are combined with a logical 'AND'.
+ */
+export interface token_bool_exp {
+  _and?: token_bool_exp[] | null;
+  _not?: token_bool_exp | null;
+  _or?: token_bool_exp[] | null;
+  app_id?: String_comparison_exp | null;
+  cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  currency_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_deliverable?: Boolean_comparison_exp | null;
+  price?: numeric_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "token"
+ */
+export interface token_insert_input {
+  app_id?: string | null;
+  cover_url?: string | null;
+  created_at?: any | null;
+  currency_id?: string | null;
+  id?: any | null;
+  is_deliverable?: boolean | null;
+  price?: any | null;
+  title?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
 }
 
 /**

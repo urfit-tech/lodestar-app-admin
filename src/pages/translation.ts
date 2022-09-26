@@ -71,6 +71,7 @@ const pageMessages = {
     deliveryDate: { id: 'page.*.deliveryDate', defaultMessage: '發送日' },
     expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
     upload: { id: 'page.*.upload', defaultMessage: '上傳' },
+    discontinued: { id: 'page.*.discontinued', defaultMessage: '已下架' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
