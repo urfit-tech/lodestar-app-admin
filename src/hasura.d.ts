@@ -17106,12 +17106,21 @@ export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_s
   member_id: string;
 }
 
+export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_exercises_exam {
+  __typename: "exam";
+  passing_score: any;
+}
+
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_exercises {
   __typename: "exercise";
   id: any;
   member_id: string;
   answer: any | null;
   updated_at: any;
+  /**
+   * An object relationship
+   */
+  exam: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_exercises_exam | null;
 }
 
 export interface GET_ADVANCED_PROGRAM_CONTENT_PROGRESS_program_program_content_sections_program_contents_program_content_progress {

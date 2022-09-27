@@ -117,11 +117,16 @@ const ProgramProcessBlock: React.VFC = () => {
                   ),
                 )
                 const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
-                const watchedProgress = memberProgramContentProgress?.progress || 0
+                const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
+                const watchedProgress =
+                  programContentType === 'exam' || programContentType === 'exercise'
+                    ? exercises.length > 0
+                      ? 1
+                      : 0
+                    : memberProgramContentProgress?.progress || 0
                 const firstWatchedAt = memberProgramContentProgress?.created_at || ''
                 const lastWatchedAt = memberProgramContentProgress?.updated_at || ''
                 const watchedDuration = programContentDuration * watchedProgress
-                const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
                 const exercisePoint = exercises
                   .map(ex => {
                     const totalQuestionPoints = sum(
@@ -136,21 +141,30 @@ const ProgramProcessBlock: React.VFC = () => {
                 const hightestScore = exercises
                   .map(ex => ({
                     totalGainedPoints: sum(ex.answer.map((ans: { gainedPoints: number }) => ans.gainedPoints || 0)),
+                    passingScore: ex.exam?.passing_score,
                     updatedAt: ex.updated_at,
                   }))
                   .reduce(
                     (accu, curr) => {
                       return curr.totalGainedPoints > accu.totalGainedPoints ? curr : accu
                     },
-                    { totalGainedPoints: 0, updatedAt: null },
+                    { totalGainedPoints: 0, updatedAt: null, passingScore: 0 },
                   )
-                const exerciseStatus =
-                  // TODO: remove exercise
-                  programContentType === 'exam' || 'exercise'
-                    ? hightestScore.totalGainedPoints >= pc.metadata?.passingScore
+
+                // TODO: remove exercise
+                let exerciseStatus = ''
+                if (programContentType === 'exercise' && hightestScore.updatedAt !== null) {
+                  exerciseStatus =
+                    hightestScore.totalGainedPoints >= pc.metadata?.passingScore
                       ? formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
                       : formatMessage(pageMessages.ProgramProcessBlock.exerciseFailed)
-                    : ''
+                } else if (programContentType === 'exam' && hightestScore.updatedAt !== null) {
+                  exerciseStatus =
+                    hightestScore.totalGainedPoints >= hightestScore.passingScore
+                      ? formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
+                      : formatMessage(pageMessages.ProgramProcessBlock.exerciseFailed)
+                }
+
                 const exercisePassedAt =
                   exerciseStatus === formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
                     ? hightestScore.updatedAt
@@ -173,7 +187,7 @@ const ProgramProcessBlock: React.VFC = () => {
                   ((memberWatchedDuration / (programDuration || 1)) * 100).toFixed(0) + '%',
                   exerciseStatus,
                   exercisePoint,
-                  exercisePassedAt,
+                  exercisePassedAt && dayjs(exercisePassedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   pc.practices.filter(p => p.member_id === m.id).length,
                 ])
               })
@@ -374,6 +388,9 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
             member_id
             answer
             updated_at
+            exam {
+              passing_score
+            }
           }
           program_content_progress(where: { updated_at: { _lte: $lastUpdatedAt } }) {
             member_id
