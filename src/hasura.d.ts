@@ -8640,6 +8640,7 @@ export interface GET_APP_PAGE_app_page_by_pk {
   updated_at: any;
   published_at: any | null;
   options: any | null;
+  meta_tag: any | null;
   editor_id: string | null;
   /**
    * An object relationship
@@ -8681,6 +8682,7 @@ export interface GET_APP_PAGE_COLLECTION_app_page {
   updated_at: any;
   published_at: any | null;
   options: any | null;
+  meta_tag: any | null;
   editor_id: string | null;
   /**
    * An object relationship

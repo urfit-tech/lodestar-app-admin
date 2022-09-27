@@ -2409,5 +2409,9 @@
   "form.GiftPlanInput.hasGiftPlan": "有贈品",
   "form.GiftPlanInput.whetherProvideGift": "是否有提供贈品",
   "form.GiftPlanInput.selectGiftPlan": "選擇贈品方案",
-  "form.GiftPlanInput.pleaseCreateGiftPlan": "請新增贈品方案"
+  "form.GiftPlanInput.pleaseCreateGiftPlan": "請新增贈品方案",
+  "craft.label.generalSettings": "一般設定",
+  "craft.label.pageTitle": "Page Title",
+  "craft.label.keywords": "keywords",
+  "craft.label.seoSettings": "SEO 設定"
 }
