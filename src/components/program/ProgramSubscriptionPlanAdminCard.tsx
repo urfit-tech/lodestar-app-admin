@@ -31,12 +31,11 @@ const StyledPriceBlock = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
-
-const GiftPlanTag = styled(Tag)`
-  color: ${props => props.theme['@primary-color']};
-  border: 1px solid ${props => props.theme['@primary-color']};
-  border-radius: 4px;
+  .ant-tag {
+    color: ${props => props.theme['@primary-color']};
+    border: 1px solid ${props => props.theme['@primary-color']};
+    border-radius: 4px;
+  }
 `
 
 const ProgramSubscriptionPlanAdminCard: React.FC<{
@@ -103,7 +102,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           currencyId={currencyId}
           variant="full-detail"
         />
-        {productGiftPlan.productGiftPlanId && <GiftPlanTag>附贈品</GiftPlanTag>}
+        {productGiftPlan.id && <Tag>{formatMessage(commonMessages.ui.hasGiftPlan)}</Tag>}
       </StyledPriceBlock>
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>
