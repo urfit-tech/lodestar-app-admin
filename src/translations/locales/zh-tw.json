@@ -2417,5 +2417,7 @@
   "order.label.gift": "贈品項目",
   "order.label.recipientName": "收件人",
   "order.label.recipientPhone": "收件電話",
-  "order.label.recipientAddress": "收件地址"
+  "order.label.recipientAddress": "收件地址",
+  "common.ui.hasGiftPlan": "附贈品",
+  "common.unit.monthWithQuantifier": "個月"
 }

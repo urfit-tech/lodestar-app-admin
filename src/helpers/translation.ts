@@ -76,6 +76,7 @@ export const commonMessages = {
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
     set: { id: 'common.ui.set', defaultMessage: '設為' },
     discontinue: { id: 'common.ui.discontinue', defaultMessage: '下架' },
+    hasGiftPlan: { id: 'common.ui.hasGiftPlan', defaultMessage: '附贈品' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -425,7 +426,6 @@ export const commonMessages = {
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
-    giftPlan: { id: 'common.product.giftPlan', defaultMessage: '贈品' },
   }),
   unit: defineMessages({
     minute: { id: 'common.unit.minute', defaultMessage: '分' },

@@ -4,6 +4,7 @@ import { Button, Divider, Input, message, Switch, Table, Tooltip, Typography } f
 import { ColumnProps } from 'antd/lib/table'
 import ApolloClient from 'apollo-client'
 import gql from 'graphql-tag'
+import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -353,7 +354,7 @@ const SaleCollectionAdminCard: React.VFC<{
                   <>
                     <div className="row">
                       <div className="col-2">
-                        <ProductTypeLabel productType="GiftPlan" />
+                        <TokenTypeLabel tokenType="GiftPlan" />
                       </div>
                       <div className="col-7">
                         <span>{v.giftPlan.gift.title}</span>
