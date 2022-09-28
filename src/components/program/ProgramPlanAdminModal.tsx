@@ -169,10 +169,10 @@ const ProgramPlanAdminModal: React.FC<
                   onRefetch?.()
                 })
                 .catch(err => console.log(err))
-            } else if (!values.hasGiftPlan && productGiftPlan?.productGiftPlanId) {
+            } else if (!values.hasGiftPlan && productGiftPlan?.id) {
               deleteProductGiftPlan({
                 variables: {
-                  productGiftPlanId: productGiftPlan.productGiftPlanId,
+                  productGiftPlanId: productGiftPlan.id,
                 },
               })
                 .then(() => {
@@ -247,9 +247,9 @@ const ProgramPlanAdminModal: React.FC<
           remindPeriod: { amount: programPlan?.remindPeriodAmount || 1, type: programPlan?.remindPeriodType || 'D' },
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
           groupBuyingPeople: programPlan?.groupBuyingPeople || 1,
-          hasGiftPlan: productGiftPlan?.giftPlanId !== undefined ? true : false,
-          productGiftPlanId: productGiftPlan?.productGiftPlanId,
-          giftPlanProductId: productGiftPlan?.giftPlanId || undefined,
+          hasGiftPlan: productGiftPlan?.giftPlan.id !== undefined ? true : false,
+          productGiftPlanId: productGiftPlan?.id,
+          giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
         }}
