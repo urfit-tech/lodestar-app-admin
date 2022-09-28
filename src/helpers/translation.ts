@@ -1122,6 +1122,13 @@ export const memberMessages = {
     endedAt: { id: 'member.text.endedAt', defaultMessage: '結束時間：{time}' },
     unavailableContract: { id: 'member.text.unavailableContract', defaultMessage: '此合約已失效' },
     searchNoteRecord: { id: 'member.text.searchNoteRecord', defaultMessage: '搜尋聯絡紀錄' },
+    smsSucceed: { id: 'member.text.smsSucceed', defaultMessage: '簡訊寄送成功' },
+    smsFailed: { id: 'member.text.smsFailed', defaultMessage: '簡訊寄送失敗: {errorMessage}' },
+    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數69字' },
+  },
+  placeholder: {
+    smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過69字' },
+    smsSchedule: { id: 'member.placeholder.smsSchedule', defaultMessage: '排程發送時間（選填）' },
   },
 }
 

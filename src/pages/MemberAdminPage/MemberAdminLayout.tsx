@@ -244,7 +244,7 @@ const MemberAdminLayout: React.FC<{
                 <StyledDescription key={phone}>
                   <Icon className="mr-2" component={() => <PhoneIcon />} />
                   <span className="mr-2">{phone}</span>
-                  {enabledModules.sms && <MemberSmsModel memberId={member.id} phone={phone} />}
+                  {enabledModules.sms && <MemberSmsModel memberId={member.id} phone={phone} name={member.name || member.username}/>}
                 </StyledDescription>
               ))}
 
