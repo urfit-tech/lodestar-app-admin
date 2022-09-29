@@ -254,30 +254,41 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
 
   const handleExport = () => {
     const sortedSeats = seats.sort((a, b) => a.position - b.position)
-    let csvData: any[][] = []
+    let csvData: string[][] = []
+
     for (let i = 0; i < rows + 1; i++) {
-      const rowSeats = sortedSeats.filter(v => v.position < (i + 1) * (cols + 1) && v.position > i * (cols + 1))
+      const rowSeats = sortedSeats.filter(v => v.position < (i + 1) * (cols + 1) && v.position >= i * (cols + 1))
       const isHighRow = rowSeats[0].category === 'high'
-      const rowHeadTitle = ` ${i === 0 ? '' : i} ${
+      const rowHeadTitle = `${i === 0 ? '' : headTitles.row[i]}${
         isHighRow ? formatMessage(pageMessages.VenueSeatSetting.highWord) : ''
-      },`
+      }`
+
       csvData.push(
-        (
-          rowHeadTitle +
-          rowSeats
-            .map((v, idx) =>
-              i === 0
-                ? headTitles.col[idx + 1]
-                  ? headTitles.col[idx + 1]
-                  : formatMessage(pageMessages.VenueSeatSetting.walkway)
-                : v.category === 'blocked'
-                ? 'XXX'
-                : v.category === 'walkway'
-                ? rowHeadTitle
-                : '',
-            )
-            .join()
-        ).split(','),
+        rowSeats.map((v, idx) =>
+          i === 0 && idx === 0
+            ? ''
+            : i === 0
+            ? headTitles.col[idx]
+              ? `${headTitles.col[idx]}${
+                  sortedSeats[idx].category === 'high' || rowSeats[0].category === 'high'
+                    ? formatMessage(pageMessages.VenueSeatSetting.highWord)
+                    : ''
+                }`
+              : formatMessage(pageMessages.VenueSeatSetting.walkway)
+            : idx === 0
+            ? headTitles.row[i]
+              ? `${headTitles.row[i]}${
+                  sortedSeats[idx].category === 'high' || rowSeats[0].category === 'high'
+                    ? formatMessage(pageMessages.VenueSeatSetting.highWord)
+                    : ''
+                }`
+              : formatMessage(pageMessages.VenueSeatSetting.walkway)
+            : v.category === 'blocked'
+            ? 'XXX'
+            : sortedSeats[idx].category === 'walkway'
+            ? rowHeadTitle
+            : '',
+        ),
       )
     }
 
