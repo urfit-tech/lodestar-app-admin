@@ -7,7 +7,7 @@ export type CraftPageAdminProps = {
   craftData: { [key: string]: string } | null
   options: { customStyle?: string } | null
   metaTags?: {
-    seo?: { pageTitle?: string; keywords?: string }
+    seo?: { pageTitle?: string; description?: string; keywords?: string }
     openGraph?: { title?: string; description?: string; image?: string; imageAlt?: string }
   } | null
 }

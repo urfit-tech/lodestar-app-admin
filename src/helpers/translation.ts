@@ -1287,6 +1287,7 @@ export const craftPageMessages = {
     choiceProduct: { id: 'craft.label.choiceProduct', defaultMessage: '選擇產品' },
     generalSettings: { id: 'craft.label.generalSettings', defaultMessage: '一般設定' },
     pageTitle: { id: 'craft.label.pageTitle', defaultMessage: 'Page Title' },
+    seoDescription: { id: 'craft.label.seoDescription', defaultMessage: 'description' },
     keywords: { id: 'craft.label.keywords', defaultMessage: 'keywords' },
     seoSettings: { id: 'craft.label.seoSettings', defaultMessage: 'SEO 設定' },
     openGraphSettings: { id: 'craft.label.openGraphSettings', defaultMessage: 'Open Graph 設定' },

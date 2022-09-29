@@ -11,6 +11,7 @@ import { CraftPageAdminProps } from '../../types/craft'
 
 type FieldProps = {
   pageTitle: string
+  description: string
   keywords: string
 }
 
@@ -35,7 +36,10 @@ const CraftPageSeoSettingBlock: React.VFC<{
     setLoading(true)
     updateAppPage({
       pageId: pageAdmin.id,
-      metaTags: { ...pageAdmin.metaTags, seo: { pageTitle: values.pageTitle, keywords: values.keywords } },
+      metaTags: {
+        ...pageAdmin.metaTags,
+        seo: { pageTitle: values.pageTitle, description: values.description, keywords: values.keywords },
+      },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -57,11 +61,15 @@ const CraftPageSeoSettingBlock: React.VFC<{
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
           pageTitle: pageAdmin?.metaTags?.seo?.pageTitle,
+          description: pageAdmin?.metaTags?.seo?.description,
           keywords: pageAdmin?.metaTags?.seo?.keywords,
         }}
         onFinish={handleSubmit}
       >
         <Form.Item name="pageTitle" label={formatMessage(craftPageMessages.label.pageTitle)}>
+          <Input />
+        </Form.Item>
+        <Form.Item name="description" label={formatMessage(craftPageMessages.label.seoDescription)}>
           <Input />
         </Form.Item>
         <Form.Item name="keywords" label={formatMessage(craftPageMessages.label.keywords)}>
