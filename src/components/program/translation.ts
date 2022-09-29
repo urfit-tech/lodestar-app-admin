@@ -31,6 +31,26 @@ const programMessages = {
   ProgramPackageSelector: defineMessages({
     allProgramPackage: { id: 'program.ProgramPackageSelector.allProgramPackage', defaultMessage: '全部課程組合' },
   }),
+  ProgramPlanAdminModal: defineMessages({
+    isPublished: { id: 'program.ProgramPlanAdminModal.isPublished', defaultMessage: '是否顯示方案' },
+    published: { id: 'program.ProgramPlanAdminModal.published', defaultMessage: '發售，上架後立即開賣' },
+    unpublished: { id: 'program.ProgramPlanAdminModal.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
+    subscriptionPlan: { id: 'program.ProgramPlanAdminModal.subscriptionPlan', defaultMessage: '訂閱付費方案' },
+    permissionType: { id: 'program.ProgramPlanAdminModal.permissionType', defaultMessage: '選擇內容觀看權限' },
+    availableForPastContent: {
+      id: 'program.ProgramPlanAdminModal.availableForPastContent',
+      defaultMessage: '可看指定方案過去與未來內容',
+    },
+    unavailableForPastContent: {
+      id: 'program.ProgramPlanAdminModal.unavailableForPastContent',
+      defaultMessage: '僅可看指定方案未來內容',
+    },
+    availableForAllContent: { id: 'program.ProgramPlanAdminModal.availableForAllContent', defaultMessage: '可看課程所有內容' },
+    subscriptionPeriodType: { id: 'program.ProgramPlanAdminModal.subscriptionPeriodType', defaultMessage: '訂閱週期' },
+    programExpirationNotice: { id: 'program.ProgramPlanAdminModal.programExpirationNotice', defaultMessage: '課程到期通知' },
+    planDescription: { id: 'program.ProgramPlanAdminModal.planDescription', defaultMessage: '方案描述' },
+    planTitle: { id: 'program.ProgramPlanAdminModal.planTitle', defaultMessage: '方案名稱' },
+  }),
   DisplayModeSelector: defineMessages({
     conceal: { id: 'program.DisplayModeSelector.conceal', defaultMessage: '隱藏' },
     trial: { id: 'program.DisplayModeSelector.trial', defaultMessage: '試看' },

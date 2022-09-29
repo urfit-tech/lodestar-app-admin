@@ -75,6 +75,7 @@ export const commonMessages = {
     ownerBackstage: { id: 'common.ui.ownerBackstage', defaultMessage: '平台管理者專區' },
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
     set: { id: 'common.ui.set', defaultMessage: '設為' },
+    discontinue: { id: 'common.ui.discontinue', defaultMessage: '下架' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -152,6 +153,7 @@ export const commonMessages = {
     allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
     allPodcastProgram: { id: 'common.label.allPodcastProgram', defaultMessage: '所有廣播' },
+    allGiftPlan: { id: 'common.label.allGiftPlan', defaultMessage: '所有贈品方案' },
     publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
     publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
     all: { id: 'common.label.all', defaultMessage: '全部' },
@@ -606,6 +608,9 @@ export const appointmentMessages = {
 }
 
 export const promotionMessages = {
+  '*': defineMessages({
+    isRequired: { id: 'promotion.*.isRequired', defaultMessage: '請輸入{field}' },
+  }),
   ui: defineMessages({
     editCouponPlan: { id: 'promotion.ui.editCouponPlan', defaultMessage: '編輯折價方案' },
     random: { id: 'promotion.ui.random', defaultMessage: '隨機' },
@@ -614,6 +619,7 @@ export const promotionMessages = {
     exchange: { id: 'promotion.ui.exchange', defaultMessage: '兌換' },
     addVoucher: { id: 'promotion.ui.addVoucher', defaultMessage: '新增兌換券' },
     exportCodes: { id: 'promotion.ui.exportCodes', defaultMessage: '匯出代碼' },
+    createGiftPlan: { id: 'promotion.ui.createGiftPlan', defaultMessage: '建立贈品' },
   }),
   label: defineMessages({
     fromNow: { id: 'promotion.label.fromNow', defaultMessage: '即日起' },
@@ -1129,6 +1135,13 @@ export const memberMessages = {
     serviceEndedAt: { id: 'member.text.serviceEndedAt', defaultMessage: '服務結束時間：{time}' },
     unavailableContract: { id: 'member.text.unavailableContract', defaultMessage: '此合約已失效' },
     searchNoteRecord: { id: 'member.text.searchNoteRecord', defaultMessage: '搜尋聯絡紀錄' },
+    smsSucceed: { id: 'member.text.smsSucceed', defaultMessage: '簡訊寄送成功' },
+    smsFailed: { id: 'member.text.smsFailed', defaultMessage: '簡訊寄送失敗: {errorMessage}' },
+    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數69字' },
+  },
+  placeholder: {
+    smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過69字' },
+    smsSchedule: { id: 'member.placeholder.smsSchedule', defaultMessage: '排程發送時間（選填）' },
   },
 }
 
@@ -1285,6 +1298,15 @@ export const craftPageMessages = {
     actionSetting: { id: 'craft.label.actionSetting', defaultMessage: '行為設定' },
     purchaseProduct: { id: 'craft.label.purchaseProduct', defaultMessage: '購買產品' },
     choiceProduct: { id: 'craft.label.choiceProduct', defaultMessage: '選擇產品' },
+    generalSettings: { id: 'craft.label.generalSettings', defaultMessage: '一般設定' },
+    pageTitle: { id: 'craft.label.pageTitle', defaultMessage: 'Page Title' },
+    keywords: { id: 'craft.label.keywords', defaultMessage: 'keywords' },
+    seoSettings: { id: 'craft.label.seoSettings', defaultMessage: 'SEO 設定' },
+    openGraphSettings: { id: 'craft.label.openGraphSettings', defaultMessage: 'Open Graph 設定' },
+    ogTitle: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:title' },
+    ogDescription: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:description' },
+    ogImage: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image' },
+    ogImageAlt: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image:alt' },
   }),
   text: defineMessages({
     chooseCategories: {
@@ -1386,6 +1408,10 @@ export const salesMessages = defineMessages({
 })
 
 export const codeMessages = defineMessages({
+  E_PAYMENT_PROCEED: {
+    id: 'code.E_PAYMENT_PROCEED',
+    defaultMessage: 'payment proceed is error',
+  },
   SUCCESS: {
     id: 'code.SUCCESS',
     defaultMessage: '成功',
@@ -1406,9 +1432,213 @@ export const codeMessages = defineMessages({
     id: 'code.E_SEND_EMAIL',
     defaultMessage: '寄送信件失敗',
   },
-  E_PAYMENT_PROCEED: {
-    id: 'code.E_PAYMENT_PROCEED',
-    defaultMessage: 'payment proceed is error',
+  E_UNKNOWN: {
+    id: 'code.E_UNKNOWN',
+    defaultMessage: '未知錯誤',
+  },
+  E_INSERT_QUEUE: {
+    id: 'code.E_INSERT_QUEUE',
+    defaultMessage: 'E_INSERT_QUEUE',
+  },
+  E_NO_MEMBER: {
+    id: 'code.E_NO_MEMBER',
+    defaultMessage: '找不到該使用者',
+  },
+  E_NO_APP_HOST: {
+    id: 'code.E_NO_APP_HOST',
+    defaultMessage: 'E_NO_APP_HOST',
+  },
+  E_NO_ORDER: {
+    id: 'code.E_NO_ORDER',
+    defaultMessage: '找不到該訂單',
+  },
+  E_NO_PAYMENT: {
+    id: 'code.E_NO_PAYMENT',
+    defaultMessage: '找不到該付款紀錄',
+  },
+  E_NO_EMAIL: {
+    id: 'code.E_NO_EMAIL',
+    defaultMessage: '找不到信箱',
+  },
+  E_PASSWORD: {
+    id: 'code.E_PASSWORD',
+    defaultMessage: '密碼錯誤',
+  },
+  E_PROVIDER: {
+    id: 'code.E_PROVIDER',
+    defaultMessage: 'E_PROVIDER',
+  },
+  E_PROVIDER_TOKEN: {
+    id: 'code.E_PROVIDER_TOKEN',
+    defaultMessage: 'E_PROVIDER_TOKEN',
+  },
+  E_UPDATE_PASSWORD: {
+    id: 'code.E_UPDATE_PASSWORD',
+    defaultMessage: '更新密碼錯誤',
+  },
+  E_CHECKOUT_ORDER: {
+    id: 'code.E_CHECKOUT_ORDER',
+    defaultMessage: '結帳錯誤',
+  },
+  E_MPG_SERVICE: {
+    id: 'code.E_MPG_SERVICE',
+    defaultMessage: 'E_MPG_SERVICE',
+  },
+  E_SPGATEWAY_NOTIFY: {
+    id: 'code.E_SPGATEWAY_NOTIFY',
+    defaultMessage: 'E_SPGATEWAY_NOTIFY',
+  },
+  E_UPDATE_ORDER_STATUS: {
+    id: 'code.E_UPDATE_ORDER_STATUS',
+    defaultMessage: 'E_UPDATE_ORDER_STATUS',
+  },
+  E_LOGOUT: {
+    id: 'code.E_LOGOUT',
+    defaultMessage: '登出錯誤',
+  },
+  E_DELIVER_PRODUCTS: {
+    id: 'code.E_DELIVER_PRODUCTS',
+    defaultMessage: 'E_DELIVER_PRODUCTS',
+  },
+  E_ISSUE_INVOICE: {
+    id: 'code.E_ISSUE_INVOICE',
+    defaultMessage: '開立發票錯誤',
+  },
+  E_NO_CODE: {
+    id: 'code.E_NO_CODE',
+    defaultMessage: '無此序號',
+  },
+  E_EXCHANGE_CODE: {
+    id: 'code.E_EXCHANGE_CODE',
+    defaultMessage: 'Unable to exchange this discount',
+  },
+  E_OUTDATED_CODE: {
+    id: 'code.E_OUTDATED_CODE',
+    defaultMessage: '此序號已過期',
+  },
+  E_VALIDATE_CREDIT_CARD: {
+    id: 'code.E_VALIDATE_CREDIT_CARD',
+    defaultMessage: '信用卡驗證錯誤',
+  },
+  E_SETUP_TPCLIENT: {
+    id: 'code.E_SETUP_TPCLIENT',
+    defaultMessage: 'E_SETUP_TPCLIENT',
+  },
+  E_BIND_CREDIT_CARD: {
+    id: 'code.E_BIND_CREDIT_CARD',
+    defaultMessage: '綁定信用卡錯誤',
+  },
+  E_PAYPAL_EXEC: {
+    id: 'code.E_PAYPAL_EXEC',
+    defaultMessage: 'PAYPAL執行操作失敗',
+  },
+  E_PAYPAL_ORDER: {
+    id: 'code.E_PAYPAL_ORDER',
+    defaultMessage: 'PAYPAL建立付款失敗',
+  },
+  E_PAYPAL_CAPTURE: {
+    id: 'code.E_PAYPAL_CAPTURE',
+    defaultMessage: 'PAYPAL請款失敗',
+  },
+  E_NO_PAYMENT_METHOD: {
+    id: 'code.E_NO_PAYMENT_METHOD',
+    defaultMessage: '找不到該付款方式',
+  },
+  E_INVALID_PAYMENT_METHOD: {
+    id: 'code.E_INVALID_PAYMENT_METHOD',
+    defaultMessage: '該付款方式無效',
+  },
+  E_PAY_TPCLIENT: {
+    id: 'code.E_PAY_TPCLIENT',
+    defaultMessage: '信用卡付款失敗請重新輸入卡號',
+  },
+  E_SIGN_URL: {
+    id: 'code.E_SIGN_URL',
+    defaultMessage: 'E_SIGN_URL',
+  },
+  E_ZOOM_SECRET: {
+    id: 'code.E_ZOOM_SECRET',
+    defaultMessage: 'E_ZOOM_SECRET',
+  },
+  E_LIST_ZOOM_USER: {
+    id: 'code.E_LIST_ZOOM_USER',
+    defaultMessage: 'E_LIST_ZOOM_USER',
+  },
+  E_HANDLE_TRIGGER: {
+    id: 'code.E_HANDLE_TRIGGER',
+    defaultMessage: 'E_HANDLE_TRIGGER',
+  },
+  E_GET_MEMBER: {
+    id: 'code.E_GET_MEMBER',
+    defaultMessage: '無法取得使用者',
+  },
+  E_REGISTER_MEMBER: {
+    id: 'code.E_REGISTER_MEMBER',
+    defaultMessage: '註冊使用者錯誤',
+  },
+  E_PAYMENT_GATEWAY: {
+    id: 'code.E_PAYMENT_GATEWAY',
+    defaultMessage: 'E_PAYMENT_GATEWAY',
+  },
+  E_RESET_PASSWORD_TOKEN: {
+    id: 'code.E_RESET_PASSWORD_TOKEN',
+    defaultMessage: '連結已失效',
+  },
+  E_SETUP_PAYPAL: {
+    id: 'code.E_SETUP_PAYPAL',
+    defaultMessage: 'Paypal 環境設定失敗',
+  },
+  E_CW_SETUP: {
+    id: 'code.E_CW_SETUP',
+    defaultMessage: 'CW 環境設定失敗',
+  },
+  E_CW_SERVICE: {
+    id: 'code.E_CW_SERVICE',
+    defaultMessage: 'CW 導入付款頁失敗',
+  },
+  E_REFUND: {
+    id: 'code.E_REFUND',
+    defaultMessage: '退款失敗',
+  },
+  E_REDEEM: {
+    id: 'code.E_REDEEM',
+    defaultMessage: '接收失敗',
+  },
+  E_CHECK_PRODUCT_VALID: {
+    id: 'code.E_CHECK_PRODUCT_VALID',
+    defaultMessage: 'product is invalid',
+  },
+  E_PRODUCT_SESSION_OUTDATE: {
+    id: 'code.E_PRODUCT_SESSION_OUTDATE',
+    defaultMessage: 'session is outdated',
+  },
+  E_NO_PRODUCT: {
+    id: 'code.E_NO_PRODUCT',
+    defaultMessage: 'product does not exist',
+  },
+  E_DUPLICATED_EXCHANGE: {
+    id: 'code.E_DUPLICATED_EXCHANGE',
+    defaultMessage: 'Discount already exchange',
+  },
+  E_ORDER_STATUS: {
+    id: 'code.E_ORDER_STATUS',
+    defaultMessage: '訂單已被限制，請重新下單',
+  },
+  E_PAYMENT_LIMIT: {
+    id: 'code.E_PAYMENT_LIMIT',
+    defaultMessage: '付款次數已達十次上限，請建立新訂單',
+  },
+  E_COIN_INCLUDED: {
+    id: 'code.E_COIN_INCLUDED',
+    defaultMessage: '無法建立含有代幣的交易，請移除該項目',
+  },
+  E_NOT_ENOUGH_COINS: {
+    id: 'code.E_NOT_ENOUGH_COINS',
+    defaultMessage: '代幣不足，無法建立交易',
+  },
+  E_NO_PRICE: {
+    id: 'code.E_NO_PRICE',
+    defaultMessage: '零元訂單無法建立交易',
   },
 })
 
