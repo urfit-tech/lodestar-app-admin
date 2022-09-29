@@ -1,21 +1,47 @@
 import Icon, { MessageOutlined } from '@ant-design/icons'
-import { DatePicker, message } from 'antd'
+import { DatePicker, Form, message } from 'antd'
 import TextArea from 'antd/lib/input/TextArea'
 import axios from 'axios'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { Moment } from 'moment'
 import { useState } from 'react'
+import { useIntl } from 'react-intl'
 import AdminModal from '../../components/admin/AdminModal'
+import { memberMessages } from '../../helpers/translation'
 
-const MemberSmsModel: React.VFC<{ memberId: string; phone: string }> = ({ memberId, phone }) => {
+const ONLY_GSM_ALPHABET_MAX_LENGTH = 160
+const MAX_LENGTH = 70
+const isGSMAlphabet = (text: string) => {
+  const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
+  const regex = new RegExp(rule, 'ig')
+  return Boolean(text.match(regex))
+}
+
+const MemberSmsModel: React.VFC<{ memberId: string; phone: string; name: string }> = ({ memberId, phone, name }) => {
   const [isSending, setIsSending] = useState(false)
+  const [isTooLong, setIsTooLong] = useState(false)
   const [content, setContent] = useState('')
   const [sentAt, setSentAt] = useState<Moment | null>(null)
   const { authToken } = useAuth()
+  const { formatMessage } = useIntl()
+
+  const isValidateText = (text: string) => {
+    if (text.length < MAX_LENGTH) {
+      return true
+    }
+    if (isGSMAlphabet(text) && text.length < ONLY_GSM_ALPHABET_MAX_LENGTH) {
+      return true
+    }
+    return false
+  }
+
   return (
     <AdminModal
       okText="寄送"
-      onOk={() => {
+      okButtonProps={{
+        disabled: isTooLong || content === '',
+      }}
+      onOk={(_e, setVisible) => {
         setIsSending(true)
         axios
           .post(
@@ -34,29 +60,46 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string }> = ({ member
           )
           .then(({ data: { code, error, result } }) => {
             if (code === 'SUCCESS') {
-              message.success('sent successfully')
+              message.success(formatMessage(memberMessages.text.smsSucceed))
             } else {
-              message.error(`sent faild: ${error}`)
+              message.error(
+                formatMessage(memberMessages.text.smsFailed, {
+                  errorMessage: error,
+                }),
+              )
             }
           })
-          .finally(() => setIsSending(false))
+          .finally(() => {
+            setVisible(false)
+            setIsSending(false)
+          })
       }}
       renderTrigger={({ setVisible }) => (
         <Icon component={() => <MessageOutlined />} onClick={() => setVisible(true)} className="cursor-pointer" />
       )}
+      confirmLoading={isSending}
     >
-      <div className="mb-3">{phone}</div>
-      <TextArea
+      <div className="mb-3">{`${name} / ${phone}`}</div>
+      <Form.Item
         className="mb-3"
-        placeholder="content"
-        required
-        value={content}
-        onChange={e => setContent(e.target.value)}
-      />
+        validateStatus={isTooLong ? 'error' : ''}
+        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong) : undefined}
+      >
+        <TextArea
+          placeholder={formatMessage(memberMessages.placeholder.smsContent)}
+          required
+          value={content}
+          onChange={e => {
+            const text = e.target.value
+            setContent(text)
+            setIsTooLong(!isValidateText(text))
+          }}
+        />
+      </Form.Item>
       <DatePicker
         style={{ width: '100%' }}
         showTime
-        placeholder="scheduled date to sent (optional)"
+        placeholder={formatMessage(memberMessages.placeholder.smsSchedule)}
         value={sentAt}
         onChange={date => setSentAt(date)}
       />

@@ -75,6 +75,7 @@ export const commonMessages = {
     ownerBackstage: { id: 'common.ui.ownerBackstage', defaultMessage: '平台管理者專區' },
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
     set: { id: 'common.ui.set', defaultMessage: '設為' },
+    discontinue: { id: 'common.ui.discontinue', defaultMessage: '下架' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -152,6 +153,7 @@ export const commonMessages = {
     allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
     allPodcastProgram: { id: 'common.label.allPodcastProgram', defaultMessage: '所有廣播' },
+    allGiftPlan: { id: 'common.label.allGiftPlan', defaultMessage: '所有贈品方案' },
     publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
     publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
     all: { id: 'common.label.all', defaultMessage: '全部' },
@@ -605,6 +607,9 @@ export const appointmentMessages = {
 }
 
 export const promotionMessages = {
+  '*': defineMessages({
+    isRequired: { id: 'promotion.*.isRequired', defaultMessage: '請輸入{field}' },
+  }),
   ui: defineMessages({
     editCouponPlan: { id: 'promotion.ui.editCouponPlan', defaultMessage: '編輯折價方案' },
     random: { id: 'promotion.ui.random', defaultMessage: '隨機' },
@@ -613,6 +618,7 @@ export const promotionMessages = {
     exchange: { id: 'promotion.ui.exchange', defaultMessage: '兌換' },
     addVoucher: { id: 'promotion.ui.addVoucher', defaultMessage: '新增兌換券' },
     exportCodes: { id: 'promotion.ui.exportCodes', defaultMessage: '匯出代碼' },
+    createGiftPlan: { id: 'promotion.ui.createGiftPlan', defaultMessage: '建立贈品' },
   }),
   label: defineMessages({
     fromNow: { id: 'promotion.label.fromNow', defaultMessage: '即日起' },
@@ -1116,6 +1122,13 @@ export const memberMessages = {
     endedAt: { id: 'member.text.endedAt', defaultMessage: '結束時間：{time}' },
     unavailableContract: { id: 'member.text.unavailableContract', defaultMessage: '此合約已失效' },
     searchNoteRecord: { id: 'member.text.searchNoteRecord', defaultMessage: '搜尋聯絡紀錄' },
+    smsSucceed: { id: 'member.text.smsSucceed', defaultMessage: '簡訊寄送成功' },
+    smsFailed: { id: 'member.text.smsFailed', defaultMessage: '簡訊寄送失敗: {errorMessage}' },
+    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數69字' },
+  },
+  placeholder: {
+    smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過69字' },
+    smsSchedule: { id: 'member.placeholder.smsSchedule', defaultMessage: '排程發送時間（選填）' },
   },
 }
 
@@ -1272,6 +1285,15 @@ export const craftPageMessages = {
     actionSetting: { id: 'craft.label.actionSetting', defaultMessage: '行為設定' },
     purchaseProduct: { id: 'craft.label.purchaseProduct', defaultMessage: '購買產品' },
     choiceProduct: { id: 'craft.label.choiceProduct', defaultMessage: '選擇產品' },
+    generalSettings: { id: 'craft.label.generalSettings', defaultMessage: '一般設定' },
+    pageTitle: { id: 'craft.label.pageTitle', defaultMessage: 'Page Title' },
+    keywords: { id: 'craft.label.keywords', defaultMessage: 'keywords' },
+    seoSettings: { id: 'craft.label.seoSettings', defaultMessage: 'SEO 設定' },
+    openGraphSettings: { id: 'craft.label.openGraphSettings', defaultMessage: 'Open Graph 設定' },
+    ogTitle: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:title' },
+    ogDescription: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:description' },
+    ogImage: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image' },
+    ogImageAlt: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image:alt' },
   }),
   text: defineMessages({
     chooseCategories: {

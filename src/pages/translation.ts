@@ -71,6 +71,7 @@ const pageMessages = {
     deliveryDate: { id: 'page.*.deliveryDate', defaultMessage: '發送日' },
     expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
     upload: { id: 'page.*.upload', defaultMessage: '上傳' },
+    discontinued: { id: 'page.*.discontinued', defaultMessage: '已下架' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -343,7 +344,9 @@ const pageMessages = {
     row: { id: 'page.VenueSeatSetting.row', defaultMessage: '橫列' },
     col: { id: 'page.VenueSeatSetting.col', defaultMessage: '直欄' },
     high: { id: 'page.VenueSeatSetting.high', defaultMessage: '高起來' },
+    highWord: { id: 'page.VenueSeatSetting.highWord', defaultMessage: '高' },
     walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
+    blackboardPosition: { id: 'page.VenueSeatSetting.blackboardPosition', defaultMessage: '黑板位置' },
   }),
 }
 

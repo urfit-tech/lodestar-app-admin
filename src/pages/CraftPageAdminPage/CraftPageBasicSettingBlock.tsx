@@ -12,6 +12,8 @@ import { handleError } from '../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
+import CraftPageOpenGraphSettingBlock from './CraftPageOpenGraphSettingBlock'
+import CraftPageSeoSettingBlock from './CraftPageSeoSettingBlock'
 import { CraftSettingLabel } from './CraftSettingsPanel'
 
 type FieldProps = {
@@ -56,6 +58,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
     <div className="container py-5">
       <AdminPaneTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminPaneTitle>
       <AdminBlock>
+        <AdminBlockTitle>{formatMessage(craftPageMessages.label.generalSettings)}</AdminBlockTitle>
         <Form
           form={form}
           colon={false}
@@ -135,6 +138,8 @@ const CraftPageBasicSettingBlock: React.VFC<{
           </Form.Item>
         </Form>
       </AdminBlock>
+      <CraftPageSeoSettingBlock pageAdmin={pageAdmin} onRefetch={onRefetch} />
+      <CraftPageOpenGraphSettingBlock pageAdmin={pageAdmin} onRefetch={onRefetch} />
       <AdminBlock>
         <AdminBlockTitle>{formatMessage(craftPageMessages.label.deletePage)}</AdminBlockTitle>
         <CraftPageDeletionAdminCard
