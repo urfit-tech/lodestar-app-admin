@@ -2412,6 +2412,7 @@
   "form.GiftPlanInput.pleaseCreateGiftPlan": "請新增贈品方案",
   "craft.label.generalSettings": "一般設定",
   "craft.label.pageTitle": "Page Title",
+  "craft.label.seoDescription": "description",
   "craft.label.keywords": "keywords",
   "craft.label.seoSettings": "SEO 設定"
 }
