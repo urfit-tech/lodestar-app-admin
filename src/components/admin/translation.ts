@@ -78,6 +78,7 @@ const adminMessages = {
     questionLibraryAdmin: { id: 'admin.AdminMenu.questionLibraryAdmin', defaultMessage: '題目庫' },
     questionLibraryManagement: { id: 'admin.AdminMenu.questionLibraryManagement', defaultMessage: '題庫管理' },
     questionGroupManagement: { id: 'admin.AdminMenu.questionGroupManagement', defaultMessage: '題組管理' },
+    gift: { id: 'admin.AdminMenu.giftPlans', defaultMessage: '贈品方案' },
   }),
 }
 export default adminMessages

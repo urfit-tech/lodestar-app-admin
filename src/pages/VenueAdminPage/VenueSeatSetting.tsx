@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, InputNumber, Menu, message } from 'antd'
 import gql from 'graphql-tag'
+import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import GridLayout from 'react-grid-layout'
 import { useIntl } from 'react-intl'
@@ -8,7 +9,9 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { AdminBlock } from '../../components/admin'
 import hasura from '../../hasura'
+import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { ExportIcon } from '../../images/icon'
 import { CategoryName, KeyOfSeat, Seat, Venue } from '../../types/venue'
 import pageMessages from '../translation'
 import { category, categoryFilter, generateGridLayout, generateHeadTitles } from './helpers/grid'
@@ -38,6 +41,32 @@ const StyledInput = styled(InputNumber)`
   margin-right: 1.5rem;
   width: 80px;
 `
+
+const StyledGridTitle = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  color: var(--gray-darker);
+  margin-right: 8px;
+  text-align: center;
+`
+
+const StyledPrintButton = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.2px;
+  color: #4c5b8f;
+  cursor: pointer;
+`
+
 const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({ venue, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [cols, setCols] = useState(venue.cols)
@@ -223,58 +252,107 @@ const VenueSeatSetting: React.VFC<{ venue: Venue; onRefetch?: () => void }> = ({
     return generateHeadTitles(cols + 1, rows + 1, seats)
   }, [seats, cols, rows])
 
+  const handleExport = () => {
+    const sortedSeats = seats.sort((a, b) => a.position - b.position)
+    let csvData: any[][] = []
+    for (let i = 0; i < rows + 1; i++) {
+      const rowSeats = sortedSeats.filter(v => v.position < (i + 1) * (cols + 1) && v.position > i * (cols + 1))
+      const isHighRow = rowSeats[0].category === 'high'
+      const rowHeadTitle = ` ${i === 0 ? '' : i} ${
+        isHighRow ? formatMessage(pageMessages.VenueSeatSetting.highWord) : ''
+      },`
+      csvData.push(
+        (
+          rowHeadTitle +
+          rowSeats
+            .map((v, idx) =>
+              i === 0
+                ? headTitles.col[idx + 1]
+                  ? headTitles.col[idx + 1]
+                  : formatMessage(pageMessages.VenueSeatSetting.walkway)
+                : v.category === 'blocked'
+                ? 'XXX'
+                : v.category === 'walkway'
+                ? rowHeadTitle
+                : '',
+            )
+            .join()
+        ).split(','),
+      )
+    }
+
+    const title = formatMessage(pageMessages.VenueSeatSetting.blackboardPosition)
+    let firstRow = []
+    for (let i = 0; i < cols + 1; i++) {
+      firstRow.push(title)
+    }
+    downloadCSV(
+      `${venue.name}-${formatMessage(pageMessages.VenueAdminPage.seatSettings)}-${moment().format('YYYYMMDD')}.csv`,
+      toCSV([firstRow, ...csvData]),
+    )
+  }
+
   return (
     <>
-      <div className="d-flex align-items-center mb-4">
-        <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.rows)}</StyledSubTitle>
-        <StyledInput className="mr-3" value={rows} max={30} onChange={handleChangeRows} />
-        <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.cols)}</StyledSubTitle>
-        <StyledInput className="mr-3" value={cols} max={30} onChange={handleChangeCols} />
-        {isSeatInfoChanged && (
-          <>
-            <Button
-              className="mr-2"
-              onClick={() => {
-                setCols(venue.cols)
-                setRows(venue.rows)
-                setSeats(venue.venue_seats)
-              }}
-            >
-              {formatMessage(commonMessages.ui.cancel)}
-            </Button>
-            <Button
-              type="primary"
-              disabled={loading}
-              loading={loading}
-              onClick={() => {
-                setLoading(true)
-                saveVenueSeats({
-                  variables: {
-                    venueId: venue.id,
-                    objects: seats,
-                    cols: cols,
-                    rows: rows,
-                    seats: seats.filter(
-                      seat =>
-                        Math.floor(seat.position / (cols + 1)) !== 0 &&
-                        seat.position % (cols + 1) !== 0 &&
-                        !seat.disabled,
-                    ).length,
-                  },
-                })
-                  .then(() => {
-                    message.success(formatMessage(pageMessages['*'].successfullySaved))
-                    onRefetch?.()
+      <div className="d-flex align-items-center mb-4 justify-content-between">
+        <div className="d-flex align-items-center">
+          <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.rows)}</StyledSubTitle>
+          <StyledInput className="mr-3" value={rows} max={30} onChange={handleChangeRows} />
+          <StyledSubTitle>{formatMessage(pageMessages.VenueSeatSetting.cols)}</StyledSubTitle>
+          <StyledInput className="mr-3" value={cols} max={30} onChange={handleChangeCols} />
+          {isSeatInfoChanged && (
+            <>
+              <Button
+                className="mr-2"
+                onClick={() => {
+                  setCols(venue.cols)
+                  setRows(venue.rows)
+                  setSeats(venue.venue_seats)
+                }}
+              >
+                {formatMessage(commonMessages.ui.cancel)}
+              </Button>
+              <Button
+                type="primary"
+                disabled={loading}
+                loading={loading}
+                onClick={() => {
+                  setLoading(true)
+                  saveVenueSeats({
+                    variables: {
+                      venueId: venue.id,
+                      objects: seats,
+                      cols: cols,
+                      rows: rows,
+                      seats: seats.filter(
+                        seat =>
+                          Math.floor(seat.position / (cols + 1)) !== 0 &&
+                          seat.position % (cols + 1) !== 0 &&
+                          !seat.disabled,
+                      ).length,
+                    },
                   })
-                  .finally(() => setLoading(false))
-              }}
-            >
-              {formatMessage(commonMessages.ui.save)}
-            </Button>
-          </>
-        )}
+                    .then(() => {
+                      message.success(formatMessage(pageMessages['*'].successfullySaved))
+                      onRefetch?.()
+                    })
+                    .finally(() => setLoading(false))
+                }}
+              >
+                {formatMessage(commonMessages.ui.save)}
+              </Button>
+            </>
+          )}
+        </div>
+        <StyledPrintButton onClick={handleExport}>
+          <ExportIcon className="mr-2" />
+          <div>{formatMessage(commonMessages.ui.print)}</div>
+        </StyledPrintButton>
       </div>
       <AdminBlock style={{ position: 'relative', overflow: 'auto' }}>
+        <StyledGridTitle style={{ width: (cols + 1) * 50 }}>
+          {formatMessage(pageMessages.VenueSeatSetting.blackboardPosition)}
+        </StyledGridTitle>
         <GridLayout
           className="layout"
           layout={layout}

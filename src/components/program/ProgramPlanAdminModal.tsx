@@ -5,21 +5,27 @@ import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useGiftPlanMutation } from 'lodestar-app-element/src/hooks/giftPlan'
+import moment, { Moment } from 'moment'
 import React, { useEffect, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
+import { ProductGiftPlan } from '../../types/giftPlan'
 import { ProgramPlan } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import CurrencyInput from '../form/CurrencyInput'
 import CurrencySelector from '../form/CurrencySelector'
+import GiftPlanInput from '../form/GiftPlanInput'
 import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
+import formMessages from '../form/translation'
+import programMessages from './translation'
 
 const StyledNotation = styled.div`
   line-height: 1.5;
@@ -29,26 +35,6 @@ const StyledNotation = styled.div`
   color: #9b9b9b;
   white-space: pre-line;
 `
-
-const messages = defineMessages({
-  isPublished: { id: 'program.label.isPublished', defaultMessage: '是否顯示方案' },
-  published: { id: 'program.label.published', defaultMessage: '發售，上架後立即開賣' },
-  unpublished: { id: 'program.label.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
-  subscriptionPlan: { id: 'program.label.subscriptionPlan', defaultMessage: '訂閱付費方案' },
-  permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
-  availableForPastContent: {
-    id: 'program.label.availableForPastContent',
-    defaultMessage: '可看指定方案過去與未來內容',
-  },
-  unavailableForPastContent: {
-    id: 'program.label.unavailableForPastContent',
-    defaultMessage: '僅可看指定方案未來內容',
-  },
-  availableForAllContent: { id: 'program.label.availableForAllContent', defaultMessage: '可看課程所有內容' },
-  subscriptionPeriodType: { id: 'program.label.subscriptionPeriodType', defaultMessage: '訂閱週期' },
-  programExpirationNotice: { id: 'program.label.programExpirationNotice', defaultMessage: '課程到期通知' },
-  planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
-})
 
 type FieldProps = {
   title: string
@@ -62,6 +48,12 @@ type FieldProps = {
   type: 1 | 2 | 3
   description: EditorState
   groupBuyingPeople?: number
+  hasGiftPlan: boolean
+  productGiftPlanId: string
+  productId?: string
+  giftPlanProductId: string
+  giftPlanStartedAt?: Moment | null
+  giftPlanEndedAt?: Moment | null
 }
 
 type ProgramPlanType = 'perpetual' | 'period' | 'subscription'
@@ -69,13 +61,23 @@ const ProgramPlanAdminModal: React.FC<
   Omit<AdminModalProps, 'renderTrigger'> & {
     programId: string
     programPlan?: ProgramPlan
+    productGiftPlan?: ProductGiftPlan
     onRefetch?: () => void
+    onProductGiftPlanRefetch?: () => void
     renderTrigger?: React.FC<{
       onOpen?: (programProgramPlanType: ProgramPlanType) => void
       onClose?: () => void
     }>
   }
-> = ({ programId, programPlan, onRefetch, renderTrigger, ...modalProps }) => {
+> = ({
+  programId,
+  programPlan,
+  productGiftPlan,
+  onRefetch,
+  onProductGiftPlanRefetch,
+  renderTrigger,
+  ...modalProps
+}) => {
   const [programPlanType, setProgramPlanType] = useState<ProgramPlanType>()
   const [toggle, setToggle] = useState({
     withDiscountDownPrice: false,
@@ -87,6 +89,7 @@ const ProgramPlanAdminModal: React.FC<
   const [upsertProgramPlan] = useMutation<hasura.UPSERT_PROGRAM_PLAN, hasura.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )
+  const { upsertProductGiftPlan, deleteProductGiftPlan } = useGiftPlanMutation()
   const [loading, setLoading] = useState(false)
   const currencyId = programPlan?.currencyId || ''
 
@@ -116,9 +119,11 @@ const ProgramPlanAdminModal: React.FC<
       .then(() => {
         setLoading(true)
         const values = form.getFieldsValue()
+        const newProgramPlanId = uuid()
+
         upsertProgramPlan({
           variables: {
-            id: programPlan ? programPlan.id : uuid(),
+            id: programPlan ? programPlan.id : newProgramPlanId,
             programId,
             type: values.type,
             title: values.title,
@@ -138,16 +143,58 @@ const ProgramPlanAdminModal: React.FC<
             groupBuyingPeople: values.groupBuyingPeople,
           },
         })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            onSuccess()
-            onRefetch?.()
-          })
           .catch(handleError)
-          .finally(() => setLoading(false))
+          .finally(() => {
+            if (values.hasGiftPlan) {
+              upsertProductGiftPlan({
+                variables: {
+                  productGiftPlanId: values.productGiftPlanId || uuid(),
+                  productId: `ProgramPlan_${programPlan ? programPlan.id : newProgramPlanId}`,
+                  giftPlanId: values.hasGiftPlan
+                    ? typeof values.giftPlanProductId === 'string'
+                      ? values.giftPlanProductId
+                      : values.giftPlanProductId[0]
+                    : null,
+                  giftPlanStartedAt:
+                    values.hasGiftPlan && values.giftPlanStartedAt ? values.giftPlanStartedAt?.toISOString() : null,
+                  giftPlanEndedAt:
+                    values.hasGiftPlan && values.giftPlanEndedAt ? values.giftPlanEndedAt?.toISOString() : null,
+                },
+              })
+                .then(() => {
+                  setLoading(false)
+                  message.success(formatMessage(commonMessages.event.successfullySaved))
+                  onSuccess()
+                  onProductGiftPlanRefetch?.()
+                  onRefetch?.()
+                })
+                .catch(err => console.log(err))
+            } else if (!values.hasGiftPlan && productGiftPlan?.productGiftPlanId) {
+              deleteProductGiftPlan({
+                variables: {
+                  productGiftPlanId: productGiftPlan.productGiftPlanId,
+                },
+              })
+                .then(() => {
+                  setLoading(false)
+                  message.success(formatMessage(commonMessages.event.successfullySaved))
+                  onSuccess()
+                  onProductGiftPlanRefetch?.()
+                  onRefetch?.()
+                })
+                .catch(err => console.log(err))
+            } else {
+              setLoading(false)
+              message.success(formatMessage(commonMessages.event.successfullySaved))
+              onSuccess()
+              onProductGiftPlanRefetch?.()
+              onRefetch?.()
+            }
+          })
       })
       .catch(() => {})
   }
+
   return (
     <AdminModal
       title={formatMessage(commonMessages.label.salesPlan)}
@@ -200,44 +247,60 @@ const ProgramPlanAdminModal: React.FC<
           remindPeriod: { amount: programPlan?.remindPeriodAmount || 1, type: programPlan?.remindPeriodType || 'D' },
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
           groupBuyingPeople: programPlan?.groupBuyingPeople || 1,
+          hasGiftPlan: productGiftPlan?.giftPlanId !== undefined ? true : false,
+          productGiftPlanId: productGiftPlan?.productGiftPlanId,
+          giftPlanProductId: productGiftPlan?.giftPlanId || undefined,
+          giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
+          giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
         }}
       >
         <Form.Item
-          label={formatMessage(programMessages.label.planTitle)}
+          label={formatMessage(programMessages.ProgramPlanAdminModal.planTitle)}
           name="title"
           rules={[
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(programMessages.label.planTitle),
+                field: formatMessage(programMessages.ProgramPlanAdminModal.planTitle),
               }),
             },
           ]}
         >
           <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">
+        <Form.Item label={formatMessage(programMessages.ProgramPlanAdminModal.isPublished)} name="isPublished">
           <Radio.Group>
             <Radio value={true} className="d-block">
-              {formatMessage(messages.published)}
+              {formatMessage(programMessages.ProgramPlanAdminModal.published)}
             </Radio>
             <Radio value={false} className="d-block">
-              {formatMessage(messages.unpublished)}
+              {formatMessage(programMessages.ProgramPlanAdminModal.unpublished)}
             </Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item label={formatMessage(messages.permissionType)} name="type" rules={[{ required: true }]}>
+        <Form.Item
+          label={formatMessage(programMessages.ProgramPlanAdminModal.permissionType)}
+          name="type"
+          rules={[{ required: true }]}
+        >
           <Radio.Group>
             <Radio value={3} className="default d-block">
-              {formatMessage(messages.availableForAllContent)}
+              {formatMessage(programMessages.ProgramPlanAdminModal.availableForAllContent)}
             </Radio>
             <Radio value={1} className="d-block">
-              {formatMessage(messages.availableForPastContent)}
+              {formatMessage(programMessages.ProgramPlanAdminModal.availableForPastContent)}
             </Radio>
             <Radio value={2} className="d-block">
-              {formatMessage(messages.unavailableForPastContent)}
+              {formatMessage(programMessages.ProgramPlanAdminModal.unavailableForPastContent)}
             </Radio>
           </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label={formatMessage(formMessages.GiftPlanInput.whetherProvideGift)}
+          name="hasGiftPlan"
+          rules={[{ required: true }]}
+        >
+          <GiftPlanInput />
         </Form.Item>
         {withPeriod && (
           <Form.Item name="period" label={formatMessage(commonMessages.label.period)}>
@@ -251,7 +314,7 @@ const ProgramPlanAdminModal: React.FC<
               className="mb-2"
               onChange={e => setToggle({ ...toggle, withRemind: e.target.checked })}
             >
-              {formatMessage(messages.programExpirationNotice)}
+              {formatMessage(programMessages.ProgramPlanAdminModal.programExpirationNotice)}
             </Checkbox>
             {toggle.withRemind && (
               <Form.Item name="remindPeriod">
@@ -313,7 +376,7 @@ const ProgramPlanAdminModal: React.FC<
             <InputNumber min={1} />
           </Form.Item>
         )}
-        <Form.Item label={formatMessage(messages.planDescription)} name="description">
+        <Form.Item label={formatMessage(programMessages.ProgramPlanAdminModal.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
       </Form>

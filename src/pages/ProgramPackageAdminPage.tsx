@@ -20,9 +20,7 @@ import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import ProgramPackageBasicForm from '../components/programPackage/ProgramPackageBasicFrom'
 import ProgramPackageDescriptionForm from '../components/programPackage/ProgramPackageDescriptionForm'
 import ProgramPackagePlanAdminModal from '../components/programPackage/ProgramPackagePlanAdminModal'
-import ProgramPackagePlanCollectionBlock, {
-  UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
-} from '../components/programPackage/ProgramPackagePlanCollectionBlock'
+import ProgramPackagePlanCollectionBlock from '../components/programPackage/ProgramPackagePlanCollectionBlock'
 import ProgramPackageProgramCollectionBlock from '../components/programPackage/ProgramPackageProgramCollectionBlock'
 import ProgramPackageProgramConnectionModal from '../components/programPackage/ProgramPackageProgramConnectionModal'
 import ProgramPackagePublishBlock from '../components/programPackage/ProgramPackagePublishBlock'
@@ -42,9 +40,9 @@ const ProgramPackageAdminPage: React.FC = () => {
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION)
   const [updatePlanPosition] = useMutation<
-    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
-    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables
-  >(UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION)
+    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION,
+    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITIONVariables
+  >(UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION)
 
   return (
     <>
@@ -239,6 +237,17 @@ const UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION = gql`
     insert_program_package_program(
       objects: $data
       on_conflict: { constraint: program_package_program_pkey, update_columns: position }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION = gql`
+  mutation UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION($data: [program_package_plan_insert_input!]!) {
+    insert_program_package_plan(
+      objects: $data
+      on_conflict: { constraint: program_package_plan_pkey, update_columns: position }
     ) {
       affected_rows
     }

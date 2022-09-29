@@ -112,13 +112,13 @@ export const useActivityAdmin = (activityId: string) => {
               name
             }
           }
-          activity_tags(order_by: { position: asc }){
+          activity_tags(order_by: { position: asc }) {
             id
-            tag{
+            tag {
               name
             }
           }
-          activity_tickets(where: { deleted_at: { _is_null: true } }, order_by: { started_at: asc }) {
+          activity_tickets(where: { deleted_at: { _is_null: true } }, order_by: { ended_at: asc }) {
             id
             title
             started_at

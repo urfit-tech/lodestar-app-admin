@@ -447,6 +447,11 @@ export const routesProps = {
     pageName: 'VoucherPlanCollectionAdminPage',
     authenticated: true,
   },
+  gift_plans: {
+    path: '/gift-plans',
+    pageName: 'GiftPlanCollectionAdminPage',
+    authenticated: true,
+  },
   members: {
     path: '/members',
     pageName: 'MemberCollectionAdminPage',
