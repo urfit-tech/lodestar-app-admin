@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useProductGiftPlan } from 'lodestar-app-element/src/hooks/giftPlan'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -45,6 +46,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
+  const { permissions } = useAuth()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
   const { productGiftPlan, refetchProductGiftPlan } = useProductGiftPlan(`ProgramPlan_${programPlan?.id}`)
@@ -102,7 +104,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           currencyId={currencyId}
           variant="full-detail"
         />
-        {productGiftPlan.id && <Tag>{formatMessage(commonMessages.ui.hasGiftPlan)}</Tag>}
+        {!!enabledModules.gift &&
+          (Boolean(permissions.GIFT_PLAN_ADMIN) || Boolean(permissions.GIFT_PLAN_NORMAL)) &&
+          productGiftPlan.id && <Tag>{formatMessage(commonMessages.ui.hasGiftPlan)}</Tag>}
       </StyledPriceBlock>
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>
