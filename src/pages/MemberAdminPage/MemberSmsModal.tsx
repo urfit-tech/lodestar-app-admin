@@ -10,7 +10,7 @@ import AdminModal from '../../components/admin/AdminModal'
 import { memberMessages } from '../../helpers/translation'
 
 const ONLY_GSM_ALPHABET_MAX_LENGTH = 160
-const MAX_LENGTH = 70
+const MAX_LENGTH = 140
 const isGSMAlphabet = (text: string) => {
   const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
   const regex = new RegExp(rule, 'ig')
