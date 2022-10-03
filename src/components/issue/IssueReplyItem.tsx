@@ -150,7 +150,9 @@ const IssueReplyItem: React.FC<{
             placement="bottomRight"
             overlay={
               <Menu>
-                <Menu.Item onClick={() => setEditing(true)}>{formatMessage(commonMessages.ui.edit)}</Menu.Item>
+                {memberId === currentMemberId && (
+                  <Menu.Item onClick={() => setEditing(true)}>{formatMessage(commonMessages.ui.edit)}</Menu.Item>
+                )}
                 <Menu.Item
                   onClick={() =>
                     window.confirm(formatMessage(commonMessages.label.cannotRecover)) &&
