@@ -61,7 +61,7 @@ const IssueReplyItem: React.FC<{
 }> = ({ programRoles, issueReplyId, content, reactedMemberIds, createdAt, memberId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const { currentMemberId, authToken } = useAuth()
+  const { currentMemberId, authToken, currentUserRole } = useAuth()
   const { id: appId } = useApp()
   const theme = useAppTheme()
 
@@ -145,7 +145,7 @@ const IssueReplyItem: React.FC<{
           </span>
         </div>
 
-        {memberId === currentMemberId && !editing && (
+        {(memberId === currentMemberId || currentUserRole === 'app-owner') && !editing && (
           <Dropdown
             placement="bottomRight"
             overlay={
