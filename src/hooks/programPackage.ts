@@ -305,10 +305,12 @@ export const useProgramPackage = (id: string) => {
     gql`
       query GET_PROGRAM_PACKAGE($id: uuid!) {
         program_package_by_pk(id: $id) {
+          id
           title
           cover_url
           published_at
           description
+          meta_tag
           program_package_programs(order_by: { position: asc }) {
             id
             program {
@@ -369,11 +371,12 @@ export const useProgramPackage = (id: string) => {
     loading || error || !data || !data.program_package_by_pk
       ? null
       : {
-          id,
+          id:  data.program_package_by_pk.id,
           title: data.program_package_by_pk.title || null,
           coverUrl: data.program_package_by_pk.cover_url || null,
           publishedAt: data.program_package_by_pk.published_at || null,
           description: data.program_package_by_pk.description || null,
+          metaTags: data.program_package_by_pk.meta_tag,
           programs: data.program_package_by_pk.program_package_programs.map(programPackageProgram => ({
             id: programPackageProgram.id,
             program: {
@@ -416,5 +419,24 @@ export const useProgramPackage = (id: string) => {
     programPackage,
     error,
     refetch,
+  }
+}
+
+export const useMutateProgramPackage = () => {
+  const [updateProgramPackageMetaTag] = useMutation<
+    hasura.UPDATE_PROGRAM_PACKAGE_META_TAG,
+    hasura.UPDATE_PROGRAM_PACKAGE_META_TAGVariables
+  >(
+    gql`
+      mutation UPDATE_PROGRAM_PACKAGE_META_TAG($id: uuid!, $metaTags: jsonb) {
+        update_program_package(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTags }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return {
+    updateProgramPackageMetaTag,
   }
 }
