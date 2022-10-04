@@ -119,7 +119,7 @@ const IssueReplyItem: React.FC<{
   const handleDeleteIssueReply = () => {
     setIsDeleting(true)
     deleteIssueReplyReaction({
-      variables: { issueReplyId, memberId: currentMemberId ?? '' },
+      variables: { issueReplyId },
     })
       .then(() => deleteIssueReply({ variables: { issueReplyId } }))
       .then(() => onRefetch?.())
@@ -252,7 +252,7 @@ const INSERT_ISSUE_REPLY_REACTION = gql`
 `
 
 const DELETE_ISSUE_REPLY_REACTION = gql`
-  mutation DELETE_ISSUE_REPLY_REACTION($memberId: String!, $issueReplyId: uuid!) {
+  mutation DELETE_ISSUE_REPLY_REACTION($issueReplyId: uuid!, $memberId: String) {
     delete_issue_reply_reaction(where: { member_id: { _eq: $memberId }, issue_reply_id: { _eq: $issueReplyId } }) {
       affected_rows
     }

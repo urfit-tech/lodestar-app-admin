@@ -2968,8 +2968,8 @@ export interface DELETE_ISSUE_REPLY_REACTION {
 }
 
 export interface DELETE_ISSUE_REPLY_REACTIONVariables {
-  memberId: string;
   issueReplyId: any;
+  memberId?: string | null;
 }
 
 /* tslint:disable */
