@@ -104,6 +104,7 @@ export type Member = {
   username: string
   pictureUrl: string | null
 }
+
 export type Attachment = {
   id: string
   name: string
@@ -118,6 +119,11 @@ export type Attachment = {
   updatedAt: Date
   options: any
   data: any
+}
+
+export type MetaTag = {
+  seo?: { pageTitle?: string; description?: string; keywords?: string }
+  openGraph?: { title?: string; description?: string; image?: string; imageAlt?: string }
 }
 
 export type UploadState = 'idle' | 'uploading' | 'upload-success' | 'upload-error'
