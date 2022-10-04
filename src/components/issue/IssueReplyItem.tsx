@@ -32,8 +32,18 @@ const IssueReplyContentBlock = styled.div`
   transition: background-color 1s ease-in-out;
 `
 const StyledIssueReplyItem = styled.div`
+  position: relative;
   transition: background-color 1s ease-in-out;
 
+  &.isIssueDeleting::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    content: ' ';
+    background: rgba(256, 256, 256, 0.6);
+  }
   &.focus {
     background: ${props => rgba(props.theme['@primary-color'], 0.1)};
   }
@@ -81,6 +91,7 @@ const IssueReplyItem: React.FC<{
   )
 
   const [editing, setEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [focus, setFocus] = useState(qIssueReplyId === issueReplyId)
   const [contentState, setContentState] = useState(BraftEditor.createEditorState(content))
   const [reacted, setReacted] = useState(false)
@@ -105,9 +116,19 @@ const IssueReplyItem: React.FC<{
     onRefetch?.()
   }
 
+  const handleDeleteIssueReply = () => {
+    setIsDeleting(true)
+    deleteIssueReplyReaction({
+      variables: { issueReplyId, memberId: currentMemberId ?? '' },
+    })
+      .then(() => deleteIssueReply({ variables: { issueReplyId } }))
+      .then(() => onRefetch?.())
+      .finally(() => setIsDeleting(false))
+  }
+
   return (
     <StyledIssueReplyItem
-      className={focus ? 'focus' : ''}
+      className={focus ? 'focus' : '' + (isDeleting ? ' isIssueDeleting' : ' ')}
       ref={ref => {
         if (ref && focus) {
           ref.scrollIntoView()
@@ -155,8 +176,7 @@ const IssueReplyItem: React.FC<{
                 )}
                 <Menu.Item
                   onClick={() =>
-                    window.confirm(formatMessage(commonMessages.label.cannotRecover)) &&
-                    deleteIssueReply({ variables: { issueReplyId } }).then(() => onRefetch?.())
+                    window.confirm(formatMessage(commonMessages.label.cannotRecover)) && handleDeleteIssueReply()
                   }
                 >
                   {formatMessage(commonMessages.ui.delete)}
