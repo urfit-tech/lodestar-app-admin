@@ -12807,6 +12807,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk {
   in_advance: boolean;
   is_sold_out: boolean | null;
   support_locales: any | null;
+  meta_tag: any | null;
   is_deleted: boolean;
   is_private: boolean;
   is_issues_open: boolean;
@@ -12945,6 +12946,35 @@ export interface GET_PROGRAMSVariables {
   contentCondition?: program_content_bool_exp | null;
   withContentSection: boolean;
   withContent: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_META_TAG
+// ====================================================
+
+export interface UPDATE_PROGRAM_META_TAG_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_META_TAG {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_META_TAG_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_META_TAGVariables {
+  id: any;
+  metaTags?: any | null;
 }
 
 /* tslint:disable */
