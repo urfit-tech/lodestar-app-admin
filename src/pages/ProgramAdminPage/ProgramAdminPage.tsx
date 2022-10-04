@@ -16,8 +16,10 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
+import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
+import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import { useProgram } from '../../hooks/program'
+import { useMutateProgram, useProgram } from '../../hooks/program'
 import pageMessages from '../translation'
 import ProgramApprovalHistoryBlock from './ProgramApprovalHistoryBlock'
 import ProgramBasicForm from './ProgramBasicForm'
@@ -37,6 +39,7 @@ const ProgramAdminPage: React.FC = () => {
   const { host, enabledModules } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
+  const { updateProgramMetaTag } = useMutateProgram()
 
   return (
     <>
@@ -118,6 +121,22 @@ const ProgramAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(ProgramAdminPageMessages['*'].programIntroduction)}</AdminBlockTitle>
                 <ProgramIntroForm program={program} onRefetch={refetchProgram} />
               </AdminBlock>
+
+              <SeoSettingsBlock
+                id={program?.id}
+                metaTags={program?.metaTags}
+                updateMetaTag={updateProgramMetaTag}
+                onRefetch={refetchProgram}
+              />
+
+              <OpenGraphSettingsBlock
+                id={program?.id}
+                type="program"
+                metaTags={program?.metaTags}
+                updateMetaTag={updateProgramMetaTag}
+                onRefetch={refetchProgram}
+              />
+
               <MetaProductDeletionBlock
                 metaProductType="Program"
                 targetId={programId}
