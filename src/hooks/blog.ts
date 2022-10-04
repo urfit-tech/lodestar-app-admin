@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { uniq } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -19,6 +19,7 @@ export const usePost = (postId: string) => {
           code_name
           cover_url
           published_at
+          meta_tag
           post_categories {
             id
             category {
@@ -60,6 +61,7 @@ export const usePost = (postId: string) => {
           source: data.post_by_pk.source,
           videoUrl: data.post_by_pk.video_url,
           description: data.post_by_pk.description,
+          metaTags: data.post_by_pk.meta_tag,
           isDeleted: data.post_by_pk.is_deleted,
           categories:
             data.post_by_pk.post_categories.map(category => ({
@@ -90,6 +92,22 @@ export const usePost = (postId: string) => {
     errorPost: error,
     post,
     refetchPost: refetch,
+  }
+}
+
+export const useMutatePost = () => {
+  const [updatePostMetaTag] = useMutation<hasura.UPDATE_POST_META_TAG, hasura.UPDATE_POST_META_TAGVariables>(
+    gql`
+      mutation UPDATE_POST_META_TAG($id: uuid!, $metaTags: jsonb) {
+        update_post(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTags }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return {
+    updatePostMetaTag,
   }
 }
 

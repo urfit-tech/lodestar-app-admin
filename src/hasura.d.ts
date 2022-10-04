@@ -8903,6 +8903,7 @@ export interface GET_POST_post_by_pk {
   code_name: string | null;
   cover_url: string | null;
   published_at: any | null;
+  meta_tag: any | null;
   /**
    * An array relationship
    */
@@ -8940,6 +8941,35 @@ export interface GET_POST {
 
 export interface GET_POSTVariables {
   id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_POST_META_TAG
+// ====================================================
+
+export interface UPDATE_POST_META_TAG_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_META_TAG {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_META_TAG_update_post | null;
+}
+
+export interface UPDATE_POST_META_TAGVariables {
+  id: any;
+  metaTags?: any | null;
 }
 
 /* tslint:disable */
