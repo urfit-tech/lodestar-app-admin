@@ -22,7 +22,7 @@ type FieldProps = {
 const OpenGraphSettingsBlock: React.VFC<{
   id?: string
   type: string
-  metaTags?: MetaTag
+  metaTags?: MetaTag | null
   updateMetaTag: (options?: any) => Promise<any>
   onRefetch?: () => void
 }> = ({ id, type, metaTags, updateMetaTag, onRefetch }) => {

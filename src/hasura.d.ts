@@ -8764,6 +8764,35 @@ export interface UPDATE_APP_PAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_APP_PAGE_META_TAG
+// ====================================================
+
+export interface UPDATE_APP_PAGE_META_TAG_update_app_page {
+  __typename: "app_page_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_PAGE_META_TAG {
+  /**
+   * update data of the table: "app_page"
+   */
+  update_app_page: UPDATE_APP_PAGE_META_TAG_update_app_page | null;
+}
+
+export interface UPDATE_APP_PAGE_META_TAGVariables {
+  id: any;
+  metaTags?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ATTEND
 // ====================================================
 
@@ -13980,8 +14009,8 @@ export interface GET_PROGRAM_PACKAGEVariables {
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_META_TAG
 // ====================================================
 
-export interface UPDATE_PROGRAM_PACKAGE_META_TAG_update_program {
-  __typename: "program_mutation_response";
+export interface UPDATE_PROGRAM_PACKAGE_META_TAG_update_program_package {
+  __typename: "program_package_mutation_response";
   /**
    * number of rows affected by the mutation
    */
@@ -13990,9 +14019,9 @@ export interface UPDATE_PROGRAM_PACKAGE_META_TAG_update_program {
 
 export interface UPDATE_PROGRAM_PACKAGE_META_TAG {
   /**
-   * update data of the table: "program"
+   * update data of the table: "program_package"
    */
-  update_program: UPDATE_PROGRAM_PACKAGE_META_TAG_update_program | null;
+  update_program_package: UPDATE_PROGRAM_PACKAGE_META_TAG_update_program_package | null;
 }
 
 export interface UPDATE_PROGRAM_PACKAGE_META_TAGVariables {

@@ -16,7 +16,7 @@ type FieldProps = {
 
 const SeoSettingsBlock: React.VFC<{
   id?: string
-  metaTags?: MetaTag
+  metaTags?: MetaTag | null
   updateMetaTag: (options?: any) => Promise<any>
   onRefetch?: () => void
 }> = ({ id, metaTags, updateMetaTag, onRefetch }) => {

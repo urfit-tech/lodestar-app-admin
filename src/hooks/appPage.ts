@@ -179,7 +179,6 @@ export const useMutateAppPage = () => {
     editorId?: string
     publishedAt?: Date | null
     craftData?: { [key: string]: any }
-    metaTags?: { [key: string]: any }
     isDeleted?: boolean
   }) => {
     return updateAppPageHandler({
@@ -190,16 +189,28 @@ export const useMutateAppPage = () => {
           title: values.title,
           editor_id: values.editorId,
           craft_data: values.craftData,
-          meta_tag: values.metaTags,
           is_deleted: values.isDeleted,
           published_at: values.publishedAt,
         },
       },
     })
   }
+  const [updateAppPageMetaTag] = useMutation<
+    hasura.UPDATE_APP_PAGE_META_TAG,
+    hasura.UPDATE_APP_PAGE_META_TAGVariables
+  >(
+    gql`
+      mutation UPDATE_APP_PAGE_META_TAG($id: uuid!, $metaTags: jsonb) {
+        update_app_page(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTags }) {
+          affected_rows
+        }
+      }
+    `,
+  )
 
   return {
     insertAppPage,
     updateAppPage,
+    updateAppPageMetaTag
   }
 }
