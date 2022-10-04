@@ -5,7 +5,7 @@ import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminBlock, AdminBlockTitle } from '../../components/admin'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
 
@@ -51,7 +51,7 @@ const CraftPageSeoSettingBlock: React.VFC<{
 
   return (
     <AdminBlock>
-      <AdminBlockTitle>{formatMessage(craftPageMessages.label.seoSettings)}</AdminBlockTitle>
+      <AdminBlockTitle>{formatMessage(commonMessages.label.seoSettings)}</AdminBlockTitle>
       <Form
         form={form}
         colon={false}
@@ -66,13 +66,13 @@ const CraftPageSeoSettingBlock: React.VFC<{
         }}
         onFinish={handleSubmit}
       >
-        <Form.Item name="pageTitle" label={formatMessage(craftPageMessages.label.pageTitle)}>
+        <Form.Item name="pageTitle" label={formatMessage(commonMessages.label.pageTitle)}>
           <Input />
         </Form.Item>
-        <Form.Item name="description" label={formatMessage(craftPageMessages.label.seoDescription)}>
+        <Form.Item name="description" label={formatMessage(commonMessages.label.seoDescription)}>
           <Input />
         </Form.Item>
-        <Form.Item name="keywords" label={formatMessage(craftPageMessages.label.keywords)}>
+        <Form.Item name="keywords" label={formatMessage(commonMessages.label.keywords)}>
           <Input />
         </Form.Item>
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>

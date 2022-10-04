@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
 import { AdminBlock, AdminBlockTitle } from '../../components/admin'
 import ImageUploader from '../../components/common/ImageUploader'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
 
@@ -58,7 +58,7 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
         if (ogImage) {
           const ogImageId = uuid()
           try {
-            await uploadFile(`og_images/${appId}/${pageAdmin.id}/${ogImageId}`, ogImage, authToken, {
+            await uploadFile(`og_images/${appId}/page/${pageAdmin.id}/${ogImageId}`, ogImage, authToken, {
               cancelToken: new axios.CancelToken(canceler => {
                 uploadCanceler.current = canceler
               }),
@@ -73,7 +73,7 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
               openGraph: {
                 title: values.title,
                 description: values.description,
-                image: `https://${process.env.REACT_APP_S3_BUCKET}/og_images/${appId}/${pageAdmin.id}/${ogImageId}`,
+                image: `https://${process.env.REACT_APP_S3_BUCKET}/og_images/${appId}/page/${pageAdmin.id}/${ogImageId}`,
                 imageAlt: values.imageAlt,
               },
             },
@@ -88,7 +88,7 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
 
   return (
     <AdminBlock>
-      <AdminBlockTitle>{formatMessage(craftPageMessages.label.openGraphSettings)}</AdminBlockTitle>
+      <AdminBlockTitle>{formatMessage(commonMessages.label.openGraphSettings)}</AdminBlockTitle>
       <Form
         form={form}
         colon={false}
@@ -104,20 +104,20 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
         }}
         onFinish={handleSubmit}
       >
-        <Form.Item name="title" label={formatMessage(craftPageMessages.label.ogTitle)}>
+        <Form.Item name="title" label={formatMessage(commonMessages.label.ogTitle)}>
           <Input />
         </Form.Item>
-        <Form.Item name="description" label={formatMessage(craftPageMessages.label.ogDescription)}>
+        <Form.Item name="description" label={formatMessage(commonMessages.label.ogDescription)}>
           <Input />
         </Form.Item>
-        <Form.Item name="image" label={formatMessage(craftPageMessages.label.ogImage)}>
+        <Form.Item name="image" label={formatMessage(commonMessages.label.ogImage)}>
           <ImageUploader
             file={ogImage}
             initialCoverUrl={pageAdmin?.metaTags?.openGraph?.image}
             onChange={file => setOgImage(file)}
           />
         </Form.Item>
-        <Form.Item name="imageAlt" label={formatMessage(craftPageMessages.label.ogImageAlt)}>
+        <Form.Item name="imageAlt" label={formatMessage(commonMessages.label.ogImageAlt)}>
           <Input />
         </Form.Item>
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
