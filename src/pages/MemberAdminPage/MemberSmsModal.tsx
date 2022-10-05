@@ -9,8 +9,8 @@ import { useIntl } from 'react-intl'
 import AdminModal from '../../components/admin/AdminModal'
 import { memberMessages } from '../../helpers/translation'
 
-const ONLY_GSM_ALPHABET_MAX_LENGTH = 160;
-const MAX_LENGTH = 70;
+const ONLY_GSM_ALPHABET_MAX_LENGTH = 159;
+const MAX_LENGTH = 69;
 const isGSMAlphabet = (text: string) => {
   const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
   const regex = new RegExp(rule, 'ig')
@@ -26,10 +26,10 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string, name: string 
   const { formatMessage } = useIntl()
 
   const isValidateText = (text: string) => {
-    if (text.length < MAX_LENGTH) {
+    if (text.length <= MAX_LENGTH) {
       return true
     }
-    if (isGSMAlphabet(text) && text.length < ONLY_GSM_ALPHABET_MAX_LENGTH) {
+    if (isGSMAlphabet(text) && text.length <= ONLY_GSM_ALPHABET_MAX_LENGTH) {
       return true
     }
     return false
@@ -81,7 +81,7 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string, name: string 
       <Form.Item
         className="mb-3"
         validateStatus={isTooLong ? 'error' : ''}
-        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong) : undefined}
+        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong, {charactersLimit: MAX_LENGTH}) : undefined}
       >
         <TextArea
           placeholder={formatMessage(memberMessages.placeholder.smsContent)}
