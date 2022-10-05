@@ -16,20 +16,20 @@ import {
   AdminTabBarWrapper,
 } from '../components/admin'
 import ItemsSortingModal from '../components/common/ItemsSortingModal'
+import OpenGraphSettingsBlock from '../components/form/OpenGraphSettingsBlock'
+import SeoSettingsBlock from '../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import ProgramPackageBasicForm from '../components/programPackage/ProgramPackageBasicFrom'
 import ProgramPackageDescriptionForm from '../components/programPackage/ProgramPackageDescriptionForm'
 import ProgramPackagePlanAdminModal from '../components/programPackage/ProgramPackagePlanAdminModal'
-import ProgramPackagePlanCollectionBlock, {
-  UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
-} from '../components/programPackage/ProgramPackagePlanCollectionBlock'
+import ProgramPackagePlanCollectionBlock from '../components/programPackage/ProgramPackagePlanCollectionBlock'
 import ProgramPackageProgramCollectionBlock from '../components/programPackage/ProgramPackageProgramCollectionBlock'
 import ProgramPackageProgramConnectionModal from '../components/programPackage/ProgramPackageProgramConnectionModal'
 import ProgramPackagePublishBlock from '../components/programPackage/ProgramPackagePublishBlock'
 import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { commonMessages, programMessages, programPackageMessages } from '../helpers/translation'
-import { useProgramPackage } from '../hooks/programPackage'
+import { useMutateProgramPackage, useProgramPackage } from '../hooks/programPackage'
 
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -45,6 +45,7 @@ const ProgramPackageAdminPage: React.FC = () => {
     hasura.UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION,
     hasura.UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITIONVariables
   >(UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION)
+  const { updateProgramPackageMetaTag } = useMutateProgramPackage()
 
   return (
     <>
@@ -133,6 +134,21 @@ const ProgramPackageAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(commonMessages.label.description)}</AdminBlockTitle>
                 <ProgramPackageDescriptionForm programPackage={programPackage} onRefetch={refetch} />
               </AdminBlock>
+
+              <SeoSettingsBlock
+                id={programPackage?.id}
+                metaTag={programPackage?.metaTag}
+                updateMetaTag={updateProgramPackageMetaTag}
+                onRefetch={refetch}
+              />
+
+              <OpenGraphSettingsBlock
+                id={programPackage?.id}
+                type="program_package"
+                metaTag={programPackage?.metaTag}
+                updateMetaTag={updateProgramPackageMetaTag}
+                onRefetch={refetch}
+              />
             </div>
           </Tabs.TabPane>
 

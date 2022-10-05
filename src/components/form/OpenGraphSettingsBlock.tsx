@@ -9,9 +9,8 @@ import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
 import { AdminBlock, AdminBlockTitle } from '../../components/admin'
 import ImageUploader from '../../components/common/ImageUploader'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import { useMutateAppPage } from '../../hooks/appPage'
-import { CraftPageAdminProps } from '../../types/craft'
+import { commonMessages } from '../../helpers/translation'
+import { MetaTag } from '../../types/general'
 
 type FieldProps = {
   title: string
@@ -20,20 +19,22 @@ type FieldProps = {
   imageAlt: string
 }
 
-const CraftPageOpenGraphSettingBlock: React.VFC<{
-  pageAdmin: CraftPageAdminProps | null
+const OpenGraphSettingsBlock: React.VFC<{
+  id?: string
+  type: string
+  metaTag?: MetaTag | null
+  updateMetaTag: (options?: any) => Promise<any>
   onRefetch?: () => void
-}> = ({ pageAdmin, onRefetch }) => {
+}> = ({ id, type, metaTag, updateMetaTag, onRefetch }) => {
   const { id: appId } = useApp()
   const { currentMemberId, authToken } = useAuth()
   const { formatMessage } = useIntl()
   const uploadCanceler = useRef<Canceler>()
-  const { updateAppPage } = useMutateAppPage()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
   const [ogImage, setOgImage] = useState<File | null>(null)
 
-  if (!pageAdmin) {
+  if (!id) {
     return <Skeleton active />
   }
 
@@ -41,16 +42,25 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
     if (!currentMemberId) {
       return
     }
+    if (!id) {
+      message.error(formatMessage(commonMessages.event.failedSave))
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
-    updateAppPage({
-      pageId: pageAdmin.id,
-      metaTags: {
-        ...pageAdmin.metaTags,
-        openGraph: {
-          title: values.title,
-          description: values.description,
-          image: values.image,
-          imageAlt: values.imageAlt,
+
+    updateMetaTag({
+      variables: {
+        id: id,
+        metaTag: {
+          ...metaTag,
+          openGraph: {
+            title: values.title,
+            description: values.description,
+            image: values.image,
+            imageAlt: values.imageAlt,
+          },
         },
       },
     })
@@ -58,7 +68,7 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
         if (ogImage) {
           const ogImageId = uuid()
           try {
-            await uploadFile(`og_images/${appId}/${pageAdmin.id}/${ogImageId}`, ogImage, authToken, {
+            await uploadFile(`og_images/${appId}/${type}/${id}/${ogImageId}`, ogImage, authToken, {
               cancelToken: new axios.CancelToken(canceler => {
                 uploadCanceler.current = canceler
               }),
@@ -66,15 +76,18 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
           } catch (error) {
             process.env.NODE_ENV === 'development' && console.log(error)
           }
-          await updateAppPage({
-            pageId: pageAdmin.id,
-            metaTags: {
-              ...pageAdmin.metaTags,
-              openGraph: {
-                title: values.title,
-                description: values.description,
-                image: `https://${process.env.REACT_APP_S3_BUCKET}/og_images/${appId}/${pageAdmin.id}/${ogImageId}`,
-                imageAlt: values.imageAlt,
+
+          await updateMetaTag({
+            variables: {
+              id: id,
+              metaTag: {
+                ...metaTag,
+                openGraph: {
+                  title: values.title,
+                  description: values.description,
+                  image: `https://${process.env.REACT_APP_S3_BUCKET}/og_images/${appId}/${type}/${id}/${ogImageId}`,
+                  imageAlt: values.imageAlt,
+                },
               },
             },
           })
@@ -88,7 +101,7 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
 
   return (
     <AdminBlock>
-      <AdminBlockTitle>{formatMessage(craftPageMessages.label.openGraphSettings)}</AdminBlockTitle>
+      <AdminBlockTitle>{formatMessage(commonMessages.label.openGraphSettings)}</AdminBlockTitle>
       <Form
         form={form}
         colon={false}
@@ -97,27 +110,27 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
-          title: pageAdmin?.metaTags?.openGraph?.title,
-          description: pageAdmin?.metaTags?.openGraph?.description,
-          image: pageAdmin?.metaTags?.openGraph?.image,
-          imageAlt: pageAdmin?.metaTags?.openGraph?.imageAlt,
+          title: metaTag?.openGraph?.title,
+          description: metaTag?.openGraph?.description,
+          image: metaTag?.openGraph?.image,
+          imageAlt: metaTag?.openGraph?.imageAlt,
         }}
         onFinish={handleSubmit}
       >
-        <Form.Item name="title" label={formatMessage(craftPageMessages.label.ogTitle)}>
+        <Form.Item name="title" label={formatMessage(commonMessages.label.ogTitle)}>
           <Input />
         </Form.Item>
-        <Form.Item name="description" label={formatMessage(craftPageMessages.label.ogDescription)}>
+        <Form.Item name="description" label={formatMessage(commonMessages.label.ogDescription)}>
           <Input />
         </Form.Item>
-        <Form.Item name="image" label={formatMessage(craftPageMessages.label.ogImage)}>
+        <Form.Item name="image" label={formatMessage(commonMessages.label.ogImage)}>
           <ImageUploader
             file={ogImage}
-            initialCoverUrl={pageAdmin?.metaTags?.openGraph?.image}
+            initialCoverUrl={metaTag?.openGraph?.image}
             onChange={file => setOgImage(file)}
           />
         </Form.Item>
-        <Form.Item name="imageAlt" label={formatMessage(craftPageMessages.label.ogImageAlt)}>
+        <Form.Item name="imageAlt" label={formatMessage(commonMessages.label.ogImageAlt)}>
           <Input />
         </Form.Item>
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -138,4 +151,4 @@ const CraftPageOpenGraphSettingBlock: React.VFC<{
   )
 }
 
-export default CraftPageOpenGraphSettingBlock
+export default OpenGraphSettingsBlock
