@@ -16,10 +16,10 @@ type FieldProps = {
 
 const SeoSettingsBlock: React.VFC<{
   id?: string
-  metaTags?: MetaTag | null
+  metaTag?: MetaTag | null
   updateMetaTag: (options?: any) => Promise<any>
   onRefetch?: () => void
-}> = ({ id, metaTags, updateMetaTag, onRefetch }) => {
+}> = ({ id, metaTag, updateMetaTag, onRefetch }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -44,8 +44,8 @@ const SeoSettingsBlock: React.VFC<{
     updateMetaTag({
       variables: {
         id: id,
-        metaTags: {
-          ...metaTags,
+        metaTag: {
+          ...metaTag,
           seo: { pageTitle: values.pageTitle, description: values.description, keywords: values.keywords },
         },
       },
@@ -69,9 +69,9 @@ const SeoSettingsBlock: React.VFC<{
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
-          pageTitle: metaTags?.seo?.pageTitle,
-          description: metaTags?.seo?.description,
-          keywords: metaTags?.seo?.keywords,
+          pageTitle: metaTag?.seo?.pageTitle,
+          description: metaTag?.seo?.description,
+          keywords: metaTag?.seo?.keywords,
         }}
         onFinish={handleSubmit}
       >

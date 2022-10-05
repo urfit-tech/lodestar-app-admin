@@ -124,7 +124,7 @@ const ProgramAdminPage: React.FC = () => {
 
               <SeoSettingsBlock
                 id={program?.id}
-                metaTags={program?.metaTags}
+                metaTag={program?.metaTag}
                 updateMetaTag={updateProgramMetaTag}
                 onRefetch={refetchProgram}
               />
@@ -132,7 +132,7 @@ const ProgramAdminPage: React.FC = () => {
               <OpenGraphSettingsBlock
                 id={program?.id}
                 type="program"
-                metaTags={program?.metaTags}
+                metaTag={program?.metaTag}
                 updateMetaTag={updateProgramMetaTag}
                 onRefetch={refetchProgram}
               />

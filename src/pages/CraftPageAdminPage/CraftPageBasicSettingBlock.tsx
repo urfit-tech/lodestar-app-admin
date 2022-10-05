@@ -140,14 +140,14 @@ const CraftPageBasicSettingBlock: React.VFC<{
       </AdminBlock>
       <SeoSettingsBlock
         id={pageAdmin.id}
-        metaTags={pageAdmin.metaTags}
+        metaTag={pageAdmin.metaTag}
         updateMetaTag={updateAppPageMetaTag}
         onRefetch={onRefetch}
       />
       <OpenGraphSettingsBlock
         id={pageAdmin.id}
         type="page"
-        metaTags={pageAdmin.metaTags}
+        metaTag={pageAdmin.metaTag}
         updateMetaTag={updateAppPageMetaTag}
         onRefetch={onRefetch}
       />

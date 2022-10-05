@@ -96,7 +96,7 @@ const BlogAdminPage: React.FC = () => {
 
               <SeoSettingsBlock
                 id={post?.id}
-                metaTags={post?.metaTags}
+                metaTag={post?.metaTag}
                 updateMetaTag={updatePostMetaTag}
                 onRefetch={refetchPost}
               />
@@ -104,7 +104,7 @@ const BlogAdminPage: React.FC = () => {
               <OpenGraphSettingsBlock
                 id={post?.id}
                 type="post"
-                metaTags={post?.metaTags}
+                metaTag={post?.metaTag}
                 updateMetaTag={updatePostMetaTag}
                 onRefetch={refetchPost}
               />

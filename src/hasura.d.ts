@@ -8784,7 +8784,7 @@ export interface UPDATE_APP_PAGE_META_TAG {
 
 export interface UPDATE_APP_PAGE_META_TAGVariables {
   id: any;
-  metaTags?: any | null;
+  metaTag?: any | null;
 }
 
 /* tslint:disable */
@@ -8998,7 +8998,7 @@ export interface UPDATE_POST_META_TAG {
 
 export interface UPDATE_POST_META_TAGVariables {
   id: any;
-  metaTags?: any | null;
+  metaTag?: any | null;
 }
 
 /* tslint:disable */
@@ -13033,7 +13033,7 @@ export interface UPDATE_PROGRAM_META_TAG {
 
 export interface UPDATE_PROGRAM_META_TAGVariables {
   id: any;
-  metaTags?: any | null;
+  metaTag?: any | null;
 }
 
 /* tslint:disable */
@@ -14026,7 +14026,7 @@ export interface UPDATE_PROGRAM_PACKAGE_META_TAG {
 
 export interface UPDATE_PROGRAM_PACKAGE_META_TAGVariables {
   id: any;
-  metaTags?: any | null;
+  metaTag?: any | null;
 }
 
 /* tslint:disable */

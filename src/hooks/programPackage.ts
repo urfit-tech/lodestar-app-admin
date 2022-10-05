@@ -376,7 +376,7 @@ export const useProgramPackage = (id: string) => {
           coverUrl: data.program_package_by_pk.cover_url || null,
           publishedAt: data.program_package_by_pk.published_at || null,
           description: data.program_package_by_pk.description || null,
-          metaTags: data.program_package_by_pk.meta_tag,
+          metaTag: data.program_package_by_pk.meta_tag,
           programs: data.program_package_by_pk.program_package_programs.map(programPackageProgram => ({
             id: programPackageProgram.id,
             program: {
@@ -428,8 +428,8 @@ export const useMutateProgramPackage = () => {
     hasura.UPDATE_PROGRAM_PACKAGE_META_TAGVariables
   >(
     gql`
-      mutation UPDATE_PROGRAM_PACKAGE_META_TAG($id: uuid!, $metaTags: jsonb) {
-        update_program_package(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTags }) {
+      mutation UPDATE_PROGRAM_PACKAGE_META_TAG($id: uuid!, $metaTag: jsonb) {
+        update_program_package(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTag }) {
           affected_rows
         }
       }

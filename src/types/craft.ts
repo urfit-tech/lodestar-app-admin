@@ -8,7 +8,7 @@ export type CraftPageAdminProps = {
   editorId: string | null
   craftData: { [key: string]: string } | null
   options: { customStyle?: string } | null
-  metaTags?: MetaTag | null
+  metaTag?: MetaTag | null
 }
 
 export type CraftPageColumnProps = {

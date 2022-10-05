@@ -158,7 +158,7 @@ export const useProgram = (programId: string) => {
       inAdvance: data.program_by_pk.in_advance,
       isSoldOut: data.program_by_pk.is_sold_out,
       supportLocales: data.program_by_pk.support_locales || [],
-      metaTags: data.program_by_pk.meta_tag,
+      metaTag: data.program_by_pk.meta_tag,
       isDeleted: data.program_by_pk.is_deleted,
       isPrivate: data.program_by_pk.is_private,
       isIssuesOpen: data.program_by_pk.is_issues_open,
@@ -400,8 +400,8 @@ export const useMutateProgram = () => {
     hasura.UPDATE_PROGRAM_META_TAGVariables
   >(
     gql`
-      mutation UPDATE_PROGRAM_META_TAG($id: uuid!, $metaTags: jsonb) {
-        update_program(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTags }) {
+      mutation UPDATE_PROGRAM_META_TAG($id: uuid!, $metaTag: jsonb) {
+        update_program(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTag }) {
           affected_rows
         }
       }

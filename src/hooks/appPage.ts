@@ -14,7 +14,7 @@ export type AppPageProps = {
   publishedAt: Date | null
   updatedAt: Date
   options: { [key: string]: string } | null
-  metaTags: { [key: string]: any } | null
+  metaTag: { [key: string]: any } | null
 }
 
 export const useAppPage = (pageId: string) => {
@@ -55,7 +55,7 @@ export const useAppPage = (pageId: string) => {
         publishedAt: data.app_page_by_pk.published_at ? new Date(data.app_page_by_pk.published_at) : null,
         updatedAt: new Date(data.app_page_by_pk.updated_at),
         options: data.app_page_by_pk.options,
-        metaTags: data.app_page_by_pk.meta_tag,
+        metaTag: data.app_page_by_pk.meta_tag,
       }
     : null
 
@@ -118,7 +118,7 @@ export const useAppPageCollection = () => {
         publishedAt: v.published_at ? new Date(v.published_at) : null,
         updatedAt: new Date(v.updated_at),
         options: v.options,
-        metaTags: v.meta_tag,
+        metaTag: v.meta_tag,
       }))
       .filter(v => v.craftData) || []
 
@@ -200,8 +200,8 @@ export const useMutateAppPage = () => {
     hasura.UPDATE_APP_PAGE_META_TAGVariables
   >(
     gql`
-      mutation UPDATE_APP_PAGE_META_TAG($id: uuid!, $metaTags: jsonb) {
-        update_app_page(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTags }) {
+      mutation UPDATE_APP_PAGE_META_TAG($id: uuid!, $metaTag: jsonb) {
+        update_app_page(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTag }) {
           affected_rows
         }
       }

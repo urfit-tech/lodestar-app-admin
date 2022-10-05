@@ -23,5 +23,5 @@ export type PostProps = {
     pictureUrl: string | null
   }[]
   publishedAt: Date | null
-  metaTags: MetaTag
+  metaTag: MetaTag
 }

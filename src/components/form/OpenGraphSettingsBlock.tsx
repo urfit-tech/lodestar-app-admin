@@ -22,10 +22,10 @@ type FieldProps = {
 const OpenGraphSettingsBlock: React.VFC<{
   id?: string
   type: string
-  metaTags?: MetaTag | null
+  metaTag?: MetaTag | null
   updateMetaTag: (options?: any) => Promise<any>
   onRefetch?: () => void
-}> = ({ id, type, metaTags, updateMetaTag, onRefetch }) => {
+}> = ({ id, type, metaTag, updateMetaTag, onRefetch }) => {
   const { id: appId } = useApp()
   const { currentMemberId, authToken } = useAuth()
   const { formatMessage } = useIntl()
@@ -53,8 +53,8 @@ const OpenGraphSettingsBlock: React.VFC<{
     updateMetaTag({
       variables: {
         id: id,
-        metaTags: {
-          ...metaTags,
+        metaTag: {
+          ...metaTag,
           openGraph: {
             title: values.title,
             description: values.description,
@@ -80,8 +80,8 @@ const OpenGraphSettingsBlock: React.VFC<{
           await updateMetaTag({
             variables: {
               id: id,
-              metaTags: {
-                ...metaTags,
+              metaTag: {
+                ...metaTag,
                 openGraph: {
                   title: values.title,
                   description: values.description,
@@ -110,10 +110,10 @@ const OpenGraphSettingsBlock: React.VFC<{
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
-          title: metaTags?.openGraph?.title,
-          description: metaTags?.openGraph?.description,
-          image: metaTags?.openGraph?.image,
-          imageAlt: metaTags?.openGraph?.imageAlt,
+          title: metaTag?.openGraph?.title,
+          description: metaTag?.openGraph?.description,
+          image: metaTag?.openGraph?.image,
+          imageAlt: metaTag?.openGraph?.imageAlt,
         }}
         onFinish={handleSubmit}
       >
@@ -126,7 +126,7 @@ const OpenGraphSettingsBlock: React.VFC<{
         <Form.Item name="image" label={formatMessage(commonMessages.label.ogImage)}>
           <ImageUploader
             file={ogImage}
-            initialCoverUrl={metaTags?.openGraph?.image}
+            initialCoverUrl={metaTag?.openGraph?.image}
             onChange={file => setOgImage(file)}
           />
         </Form.Item>

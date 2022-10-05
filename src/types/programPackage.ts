@@ -6,7 +6,7 @@ export type ProgramPackageProps = {
   coverUrl: string | null
   publishedAt: string | null
   description: string | null
-  metaTags: MetaTag
+  metaTag: MetaTag
   programs: ProgramPackageProgramProps[]
   plans: ProgramPackagePlanProps[]
   categories: CategoryProps[]

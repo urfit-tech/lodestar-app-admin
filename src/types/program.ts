@@ -40,7 +40,7 @@ export type ProgramProps = {
   inAdvance: boolean
   isSoldOut: boolean | null
   supportLocales: string[]
-  metaTags: MetaTag
+  metaTag: MetaTag
 
   isDeleted: boolean
   isPrivate: boolean
