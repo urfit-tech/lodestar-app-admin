@@ -104,6 +104,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
             enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingNote) : undefined,
             enabledModules.member_assignment ? formatMessage(orderMessages.label.orderLogExecutor) : undefined,
+            formatMessage(orderMessages.label.gift),
+            formatMessage(orderMessages.label.recipientName),
+            formatMessage(orderMessages.label.recipientPhone),
+            formatMessage(orderMessages.label.recipientAddress),
             formatMessage(orderMessages.label.invoiceName),
             formatMessage(orderMessages.label.invoiceEmail),
             formatMessage(orderMessages.label.invoicePhone),
@@ -145,6 +149,14 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
+              orderLog.gift_plans?.split('\\n').join('\n') || '',
+              orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.name : '',
+              orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.phone : '',
+              orderLog.shipping?.isOutsideTaiwanIsland === 'false'
+                ? `${orderLog.shipping?.city || ''}${orderLog.shipping?.district || ''}${
+                    orderLog.shipping?.address || ''
+                  }`
+                : '',
               orderLog.invoice_options?.name || '',
               orderLog.invoice_options?.email || '',
               orderLog.invoice_options?.phone || orderLog.invoice_options?.buyerPhone || '',
@@ -604,6 +616,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       order_executors
       shipping
       payment_gateway
+      gift_plans
     }
   }
 `

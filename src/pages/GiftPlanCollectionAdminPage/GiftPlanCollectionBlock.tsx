@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import { EmptyBlock } from '../../components/admin'
 import GiftPlanCollectionAdminModal from '../../components/gift/GiftPlanCollectionAdminModal'
 import GiftPlanDeleteAdminModal from '../../components/gift/GiftPlanDeleteAdminModal'
-import { GiftPlan } from '../../types/giftPlan'
+import { GiftPlanCollectionProps } from '../../types/giftPlan'
 import pageMessages from '../translation'
 import GiftPlanCollectionAdminPageMessages from './translation'
 
@@ -31,7 +31,7 @@ const DetailItem = styled(Menu.Item)`
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
 const GiftPlanCollectionBlock: React.VFC<{
-  giftPlanCollection: GiftPlan[]
+  giftPlanCollection: GiftPlanCollectionProps[]
   searchTitle: string
   onSearch?: (searchTitle: string) => void
   onRefetch?: () => void
@@ -45,7 +45,7 @@ const GiftPlanCollectionBlock: React.VFC<{
   }>()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  const columns: ColumnProps<GiftPlan>[] = [
+  const columns: ColumnProps<GiftPlanCollectionProps>[] = [
     {
       key: 'title',
       title: formatMessage(pageMessages['*'].title),
@@ -57,7 +57,7 @@ const GiftPlanCollectionBlock: React.VFC<{
             setIsModalVisible(true)
             setGiftPlanProps({
               id: record.id,
-              title: record.title,
+              title: record.title || '',
               giftPlanProductId: record.giftPlanProductIdList[0],
               giftId: record.giftIdList[0],
             })
@@ -131,7 +131,12 @@ const GiftPlanCollectionBlock: React.VFC<{
         <EmptyBlock>{formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}</EmptyBlock>
       ) : (
         <StyledDiv>
-          <Table<GiftPlan> loading={false} rowKey="id" columns={columns} dataSource={giftPlanCollection} />
+          <Table<GiftPlanCollectionProps>
+            loading={false}
+            rowKey="id"
+            columns={columns}
+            dataSource={giftPlanCollection}
+          />
         </StyledDiv>
       )}
     </>

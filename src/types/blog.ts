@@ -1,3 +1,5 @@
+import { MetaTag } from "./general"
+
 export type PostProps = {
   id: string
   title: string
@@ -21,4 +23,5 @@ export type PostProps = {
     pictureUrl: string | null
   }[]
   publishedAt: Date | null
+  metaTag: MetaTag
 }

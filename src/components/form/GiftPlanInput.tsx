@@ -17,7 +17,7 @@ const StyledDiv = styled.div`
 const GiftPlanInput: React.VFC<{ value?: boolean; onChange?: (event: any) => void }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
-  const { giftPlans, giftPlansLoading } = useGiftPlans(appId)
+  const { giftPlans } = useGiftPlans(appId)
 
   return (
     <>
@@ -46,7 +46,9 @@ const GiftPlanInput: React.VFC<{ value?: boolean; onChange?: (event: any) => voi
             {giftPlans ? (
               <Select placeholder={formatMessage(formMessages.GiftPlanInput.pleaseSelectAGiftPlan)}>
                 {giftPlans.map(giftPlan => (
-                  <Select.Option value={giftPlan.id}>{giftPlan.title}</Select.Option>
+                  <Select.Option key={giftPlan.id} value={giftPlan.id}>
+                    {giftPlan.title}
+                  </Select.Option>
                 ))}
               </Select>
             ) : (
