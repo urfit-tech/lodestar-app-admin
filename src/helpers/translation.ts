@@ -76,6 +76,7 @@ export const commonMessages = {
     creatorStudio: { id: 'common.ui.creatorStudio', defaultMessage: '創作者工作室' },
     set: { id: 'common.ui.set', defaultMessage: '設為' },
     discontinue: { id: 'common.ui.discontinue', defaultMessage: '下架' },
+    hasGiftPlan: { id: 'common.ui.hasGiftPlan', defaultMessage: '附贈品' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -260,6 +261,15 @@ export const commonMessages = {
     unPublished: { id: 'common.label.unPublished', defaultMessage: '停售' },
     externalLink: { id: 'common.label.externalLink', defaultMessage: '外部連結' },
     example: { id: 'common.label.example', defaultMessage: '範例' },
+    seoSettings: { id: 'common.label.seoSettings', defaultMessage: 'SEO Settings' },
+    openGraphSettings: { id: 'common.label.openGraphSettings', defaultMessage: 'Open Graph Settings' },
+    pageTitle: { id: 'common.label.pageTitle', defaultMessage: 'Page Title' },
+    seoDescription: { id: 'common.label.seoDescription', defaultMessage: 'description' },
+    keywords: { id: 'common.label.keywords', defaultMessage: 'keywords' },
+    ogTitle: { id: 'common.label.ogTitle', defaultMessage: 'og:title' },
+    ogDescription: { id: 'common.label.ogDescription', defaultMessage: 'og:description' },
+    ogImage: { id: 'common.label.ogImage', defaultMessage: 'og:image' },
+    ogImageAlt: { id: 'common.label.ogImageAlt', defaultMessage: 'og:image:alt' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -438,6 +448,10 @@ export const commonMessages = {
   }),
   placeholder: defineMessages({
     enterUrlLink: { id: 'common.placeholder.enterUrlLink', defaultMessage: '輸入網址連結' },
+    useCommaToSeparateKeywords: {
+      id: 'common.placeholder.useCommaToSeparateKeywords',
+      defaultMessage: 'Use comma to separate keywords',
+    },
   }),
 }
 
@@ -1189,6 +1203,11 @@ export const orderMessages = {
     invoiceId: { id: 'order.label.invoiceId', defaultMessage: '發票編號' },
     invoiceStatus: { id: 'order.label.invoiceStatus', defaultMessage: '發票狀態' },
     invoiceIssuedAt: { id: 'order.label.invoiceIssuedAt', defaultMessage: '發票開立時間' },
+    // gift
+    gift: { id: 'order.label.gift', defaultMessage: '贈品項目' },
+    recipientName: { id: 'order.label.recipientName', defaultMessage: '收件人' },
+    recipientPhone: { id: 'order.label.recipientPhone', defaultMessage: '收件電話' },
+    recipientAddress: { id: 'order.label.recipientAddress', defaultMessage: '收件地址' },
   }),
 }
 
@@ -1299,14 +1318,6 @@ export const craftPageMessages = {
     purchaseProduct: { id: 'craft.label.purchaseProduct', defaultMessage: '購買產品' },
     choiceProduct: { id: 'craft.label.choiceProduct', defaultMessage: '選擇產品' },
     generalSettings: { id: 'craft.label.generalSettings', defaultMessage: '一般設定' },
-    pageTitle: { id: 'craft.label.pageTitle', defaultMessage: 'Page Title' },
-    keywords: { id: 'craft.label.keywords', defaultMessage: 'keywords' },
-    seoSettings: { id: 'craft.label.seoSettings', defaultMessage: 'SEO 設定' },
-    openGraphSettings: { id: 'craft.label.openGraphSettings', defaultMessage: 'Open Graph 設定' },
-    ogTitle: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:title' },
-    ogDescription: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:description' },
-    ogImage: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image' },
-    ogImageAlt: { id: 'craft.label.openGraphSettings', defaultMessage: 'og:image:alt' },
   }),
   text: defineMessages({
     chooseCategories: {

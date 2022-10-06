@@ -4,27 +4,28 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { AdminBlock, AdminBlockTitle } from '../../components/admin'
-import { commonMessages, craftPageMessages } from '../../helpers/translation'
-import { useMutateAppPage } from '../../hooks/appPage'
-import { CraftPageAdminProps } from '../../types/craft'
+import { commonMessages } from '../../helpers/translation'
+import { MetaTag } from '../../types/general'
+import { AdminBlock, AdminBlockTitle } from '../admin'
 
 type FieldProps = {
   pageTitle: string
+  description: string
   keywords: string
 }
 
-const CraftPageSeoSettingBlock: React.VFC<{
-  pageAdmin: CraftPageAdminProps | null
+const SeoSettingsBlock: React.VFC<{
+  id?: string
+  metaTag?: MetaTag | null
+  updateMetaTag: (options?: any) => Promise<any>
   onRefetch?: () => void
-}> = ({ pageAdmin, onRefetch }) => {
+}> = ({ id, metaTag, updateMetaTag, onRefetch }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
-  const { updateAppPage } = useMutateAppPage()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
-  if (!pageAdmin) {
+  if (!id) {
     return <Skeleton active />
   }
 
@@ -32,10 +33,22 @@ const CraftPageSeoSettingBlock: React.VFC<{
     if (!currentMemberId) {
       return
     }
+    if (!id) {
+      message.error(formatMessage(commonMessages.event.failedSave))
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
-    updateAppPage({
-      pageId: pageAdmin.id,
-      metaTags: { ...pageAdmin.metaTags, seo: { pageTitle: values.pageTitle, keywords: values.keywords } },
+
+    updateMetaTag({
+      variables: {
+        id: id,
+        metaTag: {
+          ...metaTag,
+          seo: { pageTitle: values.pageTitle, description: values.description, keywords: values.keywords },
+        },
+      },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -47,7 +60,7 @@ const CraftPageSeoSettingBlock: React.VFC<{
 
   return (
     <AdminBlock>
-      <AdminBlockTitle>{formatMessage(craftPageMessages.label.seoSettings)}</AdminBlockTitle>
+      <AdminBlockTitle>{formatMessage(commonMessages.label.seoSettings)}</AdminBlockTitle>
       <Form
         form={form}
         colon={false}
@@ -56,16 +69,20 @@ const CraftPageSeoSettingBlock: React.VFC<{
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
-          pageTitle: pageAdmin?.metaTags?.seo?.pageTitle,
-          keywords: pageAdmin?.metaTags?.seo?.keywords,
+          pageTitle: metaTag?.seo?.pageTitle,
+          description: metaTag?.seo?.description,
+          keywords: metaTag?.seo?.keywords,
         }}
         onFinish={handleSubmit}
       >
-        <Form.Item name="pageTitle" label={formatMessage(craftPageMessages.label.pageTitle)}>
+        <Form.Item name="pageTitle" label={formatMessage(commonMessages.label.pageTitle)}>
           <Input />
         </Form.Item>
-        <Form.Item name="keywords" label={formatMessage(craftPageMessages.label.keywords)}>
+        <Form.Item name="description" label={formatMessage(commonMessages.label.seoDescription)}>
           <Input />
+        </Form.Item>
+        <Form.Item name="keywords" label={formatMessage(commonMessages.label.keywords)}>
+          <Input placeholder={formatMessage(commonMessages.placeholder.useCommaToSeparateKeywords)} />
         </Form.Item>
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button
@@ -85,4 +102,4 @@ const CraftPageSeoSettingBlock: React.VFC<{
   )
 }
 
-export default CraftPageSeoSettingBlock
+export default SeoSettingsBlock

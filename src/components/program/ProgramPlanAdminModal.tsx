@@ -5,6 +5,7 @@ import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useGiftPlanMutation } from 'lodestar-app-element/src/hooks/giftPlan'
 import moment, { Moment } from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -86,6 +87,7 @@ const ProgramPlanAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
+  const { permissions } = useAuth()
   const [upsertProgramPlan] = useMutation<hasura.UPSERT_PROGRAM_PLAN, hasura.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )
@@ -169,10 +171,10 @@ const ProgramPlanAdminModal: React.FC<
                   onRefetch?.()
                 })
                 .catch(err => console.log(err))
-            } else if (!values.hasGiftPlan && productGiftPlan?.productGiftPlanId) {
+            } else if (!values.hasGiftPlan && productGiftPlan?.id) {
               deleteProductGiftPlan({
                 variables: {
-                  productGiftPlanId: productGiftPlan.productGiftPlanId,
+                  productGiftPlanId: productGiftPlan.id,
                 },
               })
                 .then(() => {
@@ -247,9 +249,9 @@ const ProgramPlanAdminModal: React.FC<
           remindPeriod: { amount: programPlan?.remindPeriodAmount || 1, type: programPlan?.remindPeriodType || 'D' },
           description: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
           groupBuyingPeople: programPlan?.groupBuyingPeople || 1,
-          hasGiftPlan: productGiftPlan?.giftPlanId !== undefined ? true : false,
-          productGiftPlanId: productGiftPlan?.productGiftPlanId,
-          giftPlanProductId: productGiftPlan?.giftPlanId || undefined,
+          hasGiftPlan: productGiftPlan?.giftPlan.id !== undefined ? true : false,
+          productGiftPlanId: productGiftPlan?.id,
+          giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
         }}
@@ -295,13 +297,15 @@ const ProgramPlanAdminModal: React.FC<
             </Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item
-          label={formatMessage(formMessages.GiftPlanInput.whetherProvideGift)}
-          name="hasGiftPlan"
-          rules={[{ required: true }]}
-        >
-          <GiftPlanInput />
-        </Form.Item>
+        {!!enabledModules.gift && (Boolean(permissions.GIFT_PLAN_ADMIN) || Boolean(permissions.GIFT_PLAN_NORMAL)) && (
+          <Form.Item
+            label={formatMessage(formMessages.GiftPlanInput.whetherProvideGift)}
+            name="hasGiftPlan"
+            rules={[{ required: true }]}
+          >
+            <GiftPlanInput />
+          </Form.Item>
+        )}
         {withPeriod && (
           <Form.Item name="period" label={formatMessage(commonMessages.label.period)}>
             <PeriodSelector />

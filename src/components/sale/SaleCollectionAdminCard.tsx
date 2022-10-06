@@ -4,6 +4,7 @@ import { Button, Divider, Input, message, Switch, Table, Tooltip, Typography } f
 import { ColumnProps } from 'antd/lib/table'
 import ApolloClient from 'apollo-client'
 import gql from 'graphql-tag'
+import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -247,109 +248,193 @@ const SaleCollectionAdminCard: React.VFC<{
     totalPrice,
   }: OrderLog) => (
     <div>
-      {orderProducts.map(v => {
-        const isDelivered: boolean = !!v.deliveredAt
-        return (
-          <StyledRowWrapper key={v.id} isDelivered={isDelivered}>
-            <div className="row">
-              <div className="col-2">
-                <ProductTypeLabel productType={v.product.type} />
-              </div>
-              <div className="col-7">
-                <span>{v.name}</span>
+      {orderProducts
+        .filter(orderProduct => orderProduct.product.type !== 'Token')
+        .map(v => {
+          const isDelivered: boolean = !!v.deliveredAt
+          return (
+            <StyledRowWrapper key={v.id} isDelivered={isDelivered}>
+              <div className="row">
+                <div className="col-2">
+                  <ProductTypeLabel productType={v.product.type} />
+                </div>
+                <div className="col-7">
+                  <span>{v.name}</span>
 
-                {v.endedAt && v.product.type !== 'AppointmentPlan' && (
-                  <span className="ml-2">
-                    {`(${moment(v.endedAt).format('YYYY-MM-DD')} ${formatMessage(
-                      commonMessages.status.productExpired,
-                    )})`}
-                  </span>
-                )}
+                  {v.endedAt && v.product.type !== 'AppointmentPlan' && (
+                    <span className="ml-2">
+                      {`(${moment(v.endedAt).format('YYYY-MM-DD')} ${formatMessage(
+                        commonMessages.status.productExpired,
+                      )})`}
+                    </span>
+                  )}
 
-                {v.startedAt && v.endedAt && v.product.type === 'AppointmentPlan' && (
-                  <span>
-                    {`(${dateRangeFormatter({
-                      startedAt: v.startedAt,
-                      endedAt: v.endedAt,
-                      dateFormat: 'YYYY-MM-DD',
-                    })})`}
-                  </span>
-                )}
-                {v.quantity && <span>{` X ${v.quantity} `}</span>}
-              </div>
-              <div className="col-3 d-flex justify-content-between">
-                <div>
-                  {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
-                    <AdminModal
-                      title={
-                        v.deliveredAt
-                          ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
-                          : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
-                      }
-                      renderTrigger={({ setVisible }) => (
-                        <div className="d-flex align-items-center">
-                          <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}</span>
-                          <Switch checked={isDelivered} onChange={() => setVisible(true)} />
-                        </div>
-                      )}
-                      footer={null}
-                      renderFooter={({ setVisible }) => (
-                        <div className="mt-4">
-                          <Button className="mr-2" onClick={() => setVisible(false)}>
-                            {formatMessage(commonMessages.ui.cancel)}
-                          </Button>
-                          <Button
-                            type="primary"
-                            danger={isDelivered}
-                            loading={loadingOrderLogs}
-                            onClick={async () =>
-                              await updateOrderProductDeliver({
-                                variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
-                              })
-                                .then(() => {
-                                  setVisible(false)
-                                  refetchOrderLogs?.()
-                                  message.success(
-                                    formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
-                                  )
+                  {v.startedAt && v.endedAt && v.product.type === 'AppointmentPlan' && (
+                    <span>
+                      {`(${dateRangeFormatter({
+                        startedAt: v.startedAt,
+                        endedAt: v.endedAt,
+                        dateFormat: 'YYYY-MM-DD',
+                      })})`}
+                    </span>
+                  )}
+                  {v.quantity && <span>{` X ${v.quantity} `}</span>}
+                </div>
+                <div className="col-3 d-flex justify-content-between">
+                  <div>
+                    {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
+                      <AdminModal
+                        title={
+                          v.deliveredAt
+                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
+                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
+                        }
+                        renderTrigger={({ setVisible }) => (
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}</span>
+                            <Switch checked={isDelivered} onChange={() => setVisible(true)} />
+                          </div>
+                        )}
+                        footer={null}
+                        renderFooter={({ setVisible }) => (
+                          <div className="mt-4">
+                            <Button className="mr-2" onClick={() => setVisible(false)}>
+                              {formatMessage(commonMessages.ui.cancel)}
+                            </Button>
+                            <Button
+                              type="primary"
+                              danger={isDelivered}
+                              loading={loadingOrderLogs}
+                              onClick={async () =>
+                                await updateOrderProductDeliver({
+                                  variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
                                 })
-                                .catch(handleError)
-                            }
-                          >
-                            {v.deliveredAt
-                              ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
-                              : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
-                          </Button>
+                                  .then(() => {
+                                    setVisible(false)
+                                    refetchOrderLogs?.()
+                                    message.success(
+                                      formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
+                                    )
+                                  })
+                                  .catch(handleError)
+                              }
+                            >
+                              {v.deliveredAt
+                                ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
+                                : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
+                            </Button>
+                          </div>
+                        )}
+                      >
+                        <div>
+                          {v.deliveredAt
+                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
+                                productName: v.name,
+                              })
+                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
+                                productName: v.name,
+                              })}
                         </div>
-                      )}
-                    >
-                      <div>
-                        {v.deliveredAt
-                          ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
-                              productName: v.name,
-                            })
-                          : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
-                              productName: v.name,
-                            })}
-                      </div>
-                    </AdminModal>
-                  )}
-                </div>
-                <div>
-                  {currencyFormatter(
-                    v.product.type === 'MerchandiseSpec' && v.options.currencyId === 'LSC'
-                      ? v.options.currencyPrice
-                      : v.price,
-                    v.options?.currencyId,
-                    settings['coin.unit'],
-                  )}
+                      </AdminModal>
+                    )}
+                  </div>
+                  <div>
+                    {currencyFormatter(
+                      v.product.type === 'MerchandiseSpec' && v.options.currencyId === 'LSC'
+                        ? v.options.currencyPrice
+                        : v.price,
+                      v.options?.currencyId,
+                      settings['coin.unit'],
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-            <Divider />
-          </StyledRowWrapper>
-        )
-      })}
+              <Divider />
+            </StyledRowWrapper>
+          )
+        })}
+
+      {orderProducts
+        .filter(orderProduct => orderProduct.product.type === 'Token')
+        .map(orderProduct => {
+          const isDelivered: boolean = !!orderProduct.deliveredAt
+          return (
+            <StyledRowWrapper key={orderProduct.id} isDelivered={isDelivered}>
+              <div className="row">
+                <div className="col-2">
+                  <TokenTypeLabel tokenType="GiftPlan" />
+                </div>
+                <div className="col-7">
+                  <span>{orderProduct.name}</span>
+                </div>
+                <div className="col-3 d-flex justify-content-between">
+                  <div>
+                    {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
+                      <AdminModal
+                        title={
+                          orderProduct.deliveredAt
+                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
+                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
+                        }
+                        renderTrigger={({ setVisible }) => (
+                          <div className="d-flex align-items-center">
+                            <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}</span>
+                            <Switch checked={isDelivered} onChange={() => setVisible(true)} />
+                          </div>
+                        )}
+                        footer={null}
+                        renderFooter={({ setVisible }) => (
+                          <div className="mt-4">
+                            <Button className="mr-2" onClick={() => setVisible(false)}>
+                              {formatMessage(commonMessages.ui.cancel)}
+                            </Button>
+                            <Button
+                              type="primary"
+                              danger={isDelivered}
+                              loading={loadingOrderLogs}
+                              onClick={async () =>
+                                await updateOrderProductDeliver({
+                                  variables: {
+                                    orderProductId: orderProduct.id,
+                                    deliveredAt: orderProduct.deliveredAt ? null : new Date(),
+                                  },
+                                })
+                                  .then(() => {
+                                    setVisible(false)
+                                    refetchOrderLogs?.()
+                                    message.success(
+                                      formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
+                                    )
+                                  })
+                                  .catch(handleError)
+                              }
+                            >
+                              {orderProduct.deliveredAt
+                                ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
+                                : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
+                            </Button>
+                          </div>
+                        )}
+                      >
+                        <div>
+                          {orderProduct.deliveredAt
+                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
+                                productName: orderProduct.name,
+                              })
+                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
+                                productName: orderProduct.name,
+                              })}
+                        </div>
+                      </AdminModal>
+                    )}
+                  </div>
+                  <div>{currencyFormatter(orderProduct.price, orderProduct.options?.currencyId)}</div>
+                </div>
+                <Divider />
+              </div>
+            </StyledRowWrapper>
+          )
+        })}
 
       <div className="row">
         <div className="col-3" style={{ fontSize: '14px' }}>

@@ -32,8 +32,18 @@ const IssueReplyContentBlock = styled.div`
   transition: background-color 1s ease-in-out;
 `
 const StyledIssueReplyItem = styled.div`
+  position: relative;
   transition: background-color 1s ease-in-out;
 
+  &.isIssueDeleting::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    content: ' ';
+    background: rgba(256, 256, 256, 0.6);
+  }
   &.focus {
     background: ${props => rgba(props.theme['@primary-color'], 0.1)};
   }
@@ -61,7 +71,7 @@ const IssueReplyItem: React.FC<{
 }> = ({ programRoles, issueReplyId, content, reactedMemberIds, createdAt, memberId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const { currentMemberId, authToken } = useAuth()
+  const { currentMemberId, authToken, currentUserRole } = useAuth()
   const { id: appId } = useApp()
   const theme = useAppTheme()
 
@@ -81,6 +91,7 @@ const IssueReplyItem: React.FC<{
   )
 
   const [editing, setEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [focus, setFocus] = useState(qIssueReplyId === issueReplyId)
   const [contentState, setContentState] = useState(BraftEditor.createEditorState(content))
   const [reacted, setReacted] = useState(false)
@@ -105,9 +116,19 @@ const IssueReplyItem: React.FC<{
     onRefetch?.()
   }
 
+  const handleDeleteIssueReply = () => {
+    setIsDeleting(true)
+    deleteIssueReplyReaction({
+      variables: { issueReplyId },
+    })
+      .then(() => deleteIssueReply({ variables: { issueReplyId } }))
+      .then(() => onRefetch?.())
+      .finally(() => setIsDeleting(false))
+  }
+
   return (
     <StyledIssueReplyItem
-      className={focus ? 'focus' : ''}
+      className={focus ? 'focus' : '' + (isDeleting ? ' isIssueDeleting' : ' ')}
       ref={ref => {
         if (ref && focus) {
           ref.scrollIntoView()
@@ -145,16 +166,17 @@ const IssueReplyItem: React.FC<{
           </span>
         </div>
 
-        {memberId === currentMemberId && !editing && (
+        {(memberId === currentMemberId || currentUserRole === 'app-owner') && !editing && (
           <Dropdown
             placement="bottomRight"
             overlay={
               <Menu>
-                <Menu.Item onClick={() => setEditing(true)}>{formatMessage(commonMessages.ui.edit)}</Menu.Item>
+                {memberId === currentMemberId && (
+                  <Menu.Item onClick={() => setEditing(true)}>{formatMessage(commonMessages.ui.edit)}</Menu.Item>
+                )}
                 <Menu.Item
                   onClick={() =>
-                    window.confirm(formatMessage(commonMessages.label.cannotRecover)) &&
-                    deleteIssueReply({ variables: { issueReplyId } }).then(() => onRefetch?.())
+                    window.confirm(formatMessage(commonMessages.label.cannotRecover)) && handleDeleteIssueReply()
                   }
                 >
                   {formatMessage(commonMessages.ui.delete)}
@@ -230,7 +252,7 @@ const INSERT_ISSUE_REPLY_REACTION = gql`
 `
 
 const DELETE_ISSUE_REPLY_REACTION = gql`
-  mutation DELETE_ISSUE_REPLY_REACTION($memberId: String!, $issueReplyId: uuid!) {
+  mutation DELETE_ISSUE_REPLY_REACTION($issueReplyId: uuid!, $memberId: String) {
     delete_issue_reply_reaction(where: { member_id: { _eq: $memberId }, issue_reply_id: { _eq: $issueReplyId } }) {
       affected_rows
     }

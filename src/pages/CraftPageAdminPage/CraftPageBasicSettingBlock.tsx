@@ -8,12 +8,12 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, StyledTips } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
+import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
+import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
 import { handleError } from '../../helpers'
 import { commonMessages, craftPageMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { CraftPageAdminProps } from '../../types/craft'
-import CraftPageOpenGraphSettingBlock from './CraftPageOpenGraphSettingBlock'
-import CraftPageSeoSettingBlock from './CraftPageSeoSettingBlock'
 import { CraftSettingLabel } from './CraftSettingsPanel'
 
 type FieldProps = {
@@ -27,7 +27,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
 }> = ({ pageAdmin, onRefetch }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
-  const { updateAppPage } = useMutateAppPage()
+  const { updateAppPage, updateAppPageMetaTag } = useMutateAppPage()
   const [form] = useForm<FieldProps>()
   const [path, setPath] = useState(pageAdmin?.path || '')
   const [loading, setLoading] = useState(false)
@@ -138,8 +138,19 @@ const CraftPageBasicSettingBlock: React.VFC<{
           </Form.Item>
         </Form>
       </AdminBlock>
-      <CraftPageSeoSettingBlock pageAdmin={pageAdmin} onRefetch={onRefetch} />
-      <CraftPageOpenGraphSettingBlock pageAdmin={pageAdmin} onRefetch={onRefetch} />
+      <SeoSettingsBlock
+        id={pageAdmin.id}
+        metaTag={pageAdmin.metaTag}
+        updateMetaTag={updateAppPageMetaTag}
+        onRefetch={onRefetch}
+      />
+      <OpenGraphSettingsBlock
+        id={pageAdmin.id}
+        type="page"
+        metaTag={pageAdmin.metaTag}
+        updateMetaTag={updateAppPageMetaTag}
+        onRefetch={onRefetch}
+      />
       <AdminBlock>
         <AdminBlockTitle>{formatMessage(craftPageMessages.label.deletePage)}</AdminBlockTitle>
         <CraftPageDeletionAdminCard

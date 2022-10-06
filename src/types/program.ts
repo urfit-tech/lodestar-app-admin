@@ -1,6 +1,6 @@
 import { AttachmentSelectorValue } from '../components/common/AttachmentSelector'
 import { DisplayMode } from '../components/program/DisplayModeSelector'
-import { Attachment, CategoryProps } from './general'
+import { Attachment, CategoryProps, MetaTag } from './general'
 
 export type ProgramPlanType = 'subscribeFromNow' | 'subscribeAll' | 'unknown'
 export type ProgramPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
@@ -40,6 +40,7 @@ export type ProgramProps = {
   inAdvance: boolean
   isSoldOut: boolean | null
   supportLocales: string[]
+  metaTag: MetaTag
 
   isDeleted: boolean
   isPrivate: boolean

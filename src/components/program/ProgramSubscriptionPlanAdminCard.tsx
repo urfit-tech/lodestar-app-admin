@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useProductGiftPlan } from 'lodestar-app-element/src/hooks/giftPlan'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -31,12 +32,12 @@ const StyledPriceBlock = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
-
-const GiftPlanTag = styled(Tag)`
-  color: ${props => props.theme['@primary-color']};
-  border: 1px solid ${props => props.theme['@primary-color']};
-  border-radius: 4px;
+  .ant-tag {
+    color: ${props => props.theme['@primary-color']};
+    background-color: #fff;
+    border: 1px solid ${props => props.theme['@primary-color']};
+    border-radius: 4px;
+  }
 `
 
 const ProgramSubscriptionPlanAdminCard: React.FC<{
@@ -46,6 +47,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
+  const { permissions } = useAuth()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
   const { productGiftPlan, refetchProductGiftPlan } = useProductGiftPlan(`ProgramPlan_${programPlan?.id}`)
@@ -103,7 +105,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
           currencyId={currencyId}
           variant="full-detail"
         />
-        {productGiftPlan.productGiftPlanId && <GiftPlanTag>附贈品</GiftPlanTag>}
+        {!!enabledModules.gift &&
+          (Boolean(permissions.GIFT_PLAN_ADMIN) || Boolean(permissions.GIFT_PLAN_NORMAL)) &&
+          productGiftPlan.id && <Tag>{formatMessage(commonMessages.ui.hasGiftPlan)}</Tag>}
       </StyledPriceBlock>
       {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>
