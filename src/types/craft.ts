@@ -1,3 +1,5 @@
+import { MetaTag } from "./general"
+
 export type CraftPageAdminProps = {
   id: string
   title: string | null
@@ -6,10 +8,7 @@ export type CraftPageAdminProps = {
   editorId: string | null
   craftData: { [key: string]: string } | null
   options: { customStyle?: string } | null
-  metaTags?: {
-    seo?: { pageTitle?: string; keywords?: string }
-    openGraph?: { title?: string; description?: string; image?: string; imageAlt?: string }
-  } | null
+  metaTag?: MetaTag | null
 }
 
 export type CraftPageColumnProps = {

@@ -34,6 +34,7 @@ const StyledPriceBlock = styled.div`
   align-items: center;
   .ant-tag {
     color: ${props => props.theme['@primary-color']};
+    background-color: #fff;
     border: 1px solid ${props => props.theme['@primary-color']};
     border-radius: 4px;
   }

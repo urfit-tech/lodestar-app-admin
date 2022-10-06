@@ -21,9 +21,11 @@ import BlogPostPublishBlock from '../components/blog/BlogPostPublishBlock'
 import BlogPostSettingForm from '../components/blog/BlogPostSettingForm'
 import BlogPostVideoForm from '../components/blog/BlogPostVideoForm'
 import MetaProductDeletionBlock from '../components/common/MetaProductDeletionBlock'
+import OpenGraphSettingsBlock from '../components/form/OpenGraphSettingsBlock'
+import SeoSettingsBlock from '../components/form/SeoSettingsBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import { blogMessages, commonMessages } from '../helpers/translation'
-import { usePost } from '../hooks/blog'
+import { useMutatePost, usePost } from '../hooks/blog'
 import { usePublicMember } from '../hooks/member'
 
 const BlogAdminPage: React.FC = () => {
@@ -34,6 +36,7 @@ const BlogAdminPage: React.FC = () => {
 
   const { post, refetchPost } = usePost(postId)
   const { member } = usePublicMember(post?.creatorId || '')
+  const { updatePostMetaTag } = useMutatePost()
 
   return (
     <>
@@ -90,6 +93,21 @@ const BlogAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</AdminBlockTitle>
                 <BlogPostSettingForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
+
+              <SeoSettingsBlock
+                id={post?.id}
+                metaTag={post?.metaTag}
+                updateMetaTag={updatePostMetaTag}
+                onRefetch={refetchPost}
+              />
+
+              <OpenGraphSettingsBlock
+                id={post?.id}
+                type="post"
+                metaTag={post?.metaTag}
+                updateMetaTag={updatePostMetaTag}
+                onRefetch={refetchPost}
+              />
 
               <MetaProductDeletionBlock metaProductType="Post" targetId={postId} />
             </div>

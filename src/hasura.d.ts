@@ -2968,8 +2968,8 @@ export interface DELETE_ISSUE_REPLY_REACTION {
 }
 
 export interface DELETE_ISSUE_REPLY_REACTIONVariables {
-  memberId: string;
   issueReplyId: any;
+  memberId?: string | null;
 }
 
 /* tslint:disable */
@@ -8764,6 +8764,35 @@ export interface UPDATE_APP_PAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_APP_PAGE_META_TAG
+// ====================================================
+
+export interface UPDATE_APP_PAGE_META_TAG_update_app_page {
+  __typename: "app_page_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_PAGE_META_TAG {
+  /**
+   * update data of the table: "app_page"
+   */
+  update_app_page: UPDATE_APP_PAGE_META_TAG_update_app_page | null;
+}
+
+export interface UPDATE_APP_PAGE_META_TAGVariables {
+  id: any;
+  metaTag?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ATTEND
 // ====================================================
 
@@ -8903,6 +8932,7 @@ export interface GET_POST_post_by_pk {
   code_name: string | null;
   cover_url: string | null;
   published_at: any | null;
+  meta_tag: any | null;
   /**
    * An array relationship
    */
@@ -8940,6 +8970,35 @@ export interface GET_POST {
 
 export interface GET_POSTVariables {
   id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_POST_META_TAG
+// ====================================================
+
+export interface UPDATE_POST_META_TAG_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_META_TAG {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_META_TAG_update_post | null;
+}
+
+export interface UPDATE_POST_META_TAGVariables {
+  id: any;
+  metaTag?: any | null;
 }
 
 /* tslint:disable */
@@ -12807,6 +12866,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk {
   in_advance: boolean;
   is_sold_out: boolean | null;
   support_locales: any | null;
+  meta_tag: any | null;
   is_deleted: boolean;
   is_private: boolean;
   is_issues_open: boolean;
@@ -12945,6 +13005,35 @@ export interface GET_PROGRAMSVariables {
   contentCondition?: program_content_bool_exp | null;
   withContentSection: boolean;
   withContent: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_META_TAG
+// ====================================================
+
+export interface UPDATE_PROGRAM_META_TAG_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_META_TAG {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_META_TAG_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_META_TAGVariables {
+  id: any;
+  metaTag?: any | null;
 }
 
 /* tslint:disable */
@@ -13876,10 +13965,12 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_tags 
 
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
   __typename: "program_package";
+  id: any;
   title: string;
   cover_url: string | null;
   published_at: any | null;
   description: string | null;
+  meta_tag: any | null;
   /**
    * An array relationship
    */
@@ -13907,6 +13998,35 @@ export interface GET_PROGRAM_PACKAGE {
 
 export interface GET_PROGRAM_PACKAGEVariables {
   id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_META_TAG
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_META_TAG_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_META_TAG {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: UPDATE_PROGRAM_PACKAGE_META_TAG_update_program_package | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_META_TAGVariables {
+  id: any;
+  metaTag?: any | null;
 }
 
 /* tslint:disable */
