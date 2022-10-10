@@ -7121,7 +7121,9 @@ export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
   order_log_id: string | null;
   app_id: string | null;
   product_owner: string | null;
+  order_created_at: any | null;
   paid_at: any | null;
+  order_product_ended_at: any | null;
   product_id: string | null;
 }
 
