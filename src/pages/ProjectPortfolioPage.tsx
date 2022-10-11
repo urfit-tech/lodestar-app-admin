@@ -14,19 +14,19 @@ import { ReactComponent as ProjectIcon } from '../images/icon/project.svg'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
-const ProjectFundingPage: React.FC<{}> = () => {
+const ProjectPortfolioPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { currentMemberId, permissions } = useAuth()
   const { id: appId, enabledModules } = useApp()
   const { insertProject } = useProject()
 
   if (
     !enabledModules.project ||
     (Boolean(permissions.PROJECT_ADMIN) &&
-      Boolean(permissions.PROJECT_FUNDING_ADMIN) &&
+      Boolean(permissions.PROJECT_PORTFOLIO_ADMIN) &&
       Boolean(permissions.PROJECT_NORMAL) &&
-      Boolean(permissions.PROJECT_FUNDING_NORMAL))
+      Boolean(permissions.PROJECT_PORTFOLIO_NORMAL))
   ) {
     return <ForbiddenPage />
   }
@@ -35,25 +35,24 @@ const ProjectFundingPage: React.FC<{}> = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <ProjectIcon />} className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.projectFunding)}</span>
+        <span>{formatMessage(commonMessages.menu.projectPortfolio)}</span>
       </AdminPageTitle>
       {currentMemberId && (
         <div className="row mb-5">
           <div className="col-8">
             <ProductCreationModal
-              allowedPermission={'PROJECT_FUNDING_ADMIN'}
-              withCreatorSelector={currentUserRole === 'app-owner'}
-              creatorAppellation={formatMessage(pageMessages.ProjectFundingPage.sponsor)}
-              customTitle={formatMessage(pageMessages.ProjectFundingPage.projectTitle)}
-              customTitleDefault={formatMessage(pageMessages.ProjectFundingPage.unnamedProject)}
+              allowedPermission={'PROJECT_PORTFOLIO_ADMIN'}
+              customModalTitle={formatMessage(pageMessages.ProjectPortfolioPage.createPortfolio)}
+              customTitle={formatMessage(pageMessages.ProjectPortfolioPage.projectTitle)}
+              customTitleDefault={formatMessage(pageMessages.ProjectPortfolioPage.untitledPortfolio)}
               categoryClassType="project"
-              onCreate={({ title, creatorId, categoryIds }) =>
+              onCreate={({ title, categoryIds }) =>
                 insertProject({
                   variables: {
                     appId,
                     title,
-                    memberId: creatorId || currentMemberId,
-                    type: 'funding',
+                    memberId: currentMemberId,
+                    type: 'portfolio',
                     projectCategories:
                       categoryIds?.map((categoryId: string, index: number) => ({
                         category_id: categoryId,
@@ -71,9 +70,9 @@ const ProjectFundingPage: React.FC<{}> = () => {
           </div>
         </div>
       )}
-      <ProjectCollectionTabs projectType="funding" />
+      <ProjectCollectionTabs projectType="portfolio" />
     </AdminLayout>
   )
 }
 
-export default ProjectFundingPage
+export default ProjectPortfolioPage

@@ -2426,5 +2426,12 @@
   "common.label.ogDescription": "og:description",
   "common.label.ogImage": "og:image",
   "common.label.ogImageAlt": "og:image:alt",
-  "common.placeholder.useCommaToSeparateKeywords": "關鍵字需以「 , 」做為區隔"
+  "common.placeholder.useCommaToSeparateKeywords": "關鍵字需以「 , 」做為區隔",
+  "admin.AdminMenu.projectPortfolio": "作品專案",
+  "common.menu.projectPortfolio": "作品專案",
+  "page.ProjectPortfolioPage.createPortfolio": "建立作品",
+  "page.ProjectPortfolioPage.untitledPortfolio": "未命名的作品",
+  "page.ProjectPortfolioPage.projectTitle": "名稱",
+  "project.ProjectCollectionTable.title": "名稱",
+  "project.ProjectCollectionTable.author": "建立者"
 }

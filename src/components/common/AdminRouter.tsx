@@ -166,6 +166,11 @@ export const routesProps = {
     pageName: 'ProjectPreOrderPage',
     authenticated: true,
   },
+  project_portfolio_collection: {
+    path: '/project-portfolio',
+    pageName: 'ProjectPortfolioPage',
+    authenticated: true,
+  },
   // podcast program
   podcast_program_collection: {
     path: '/podcast-programs',

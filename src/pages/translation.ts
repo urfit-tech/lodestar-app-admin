@@ -87,6 +87,11 @@ const pageMessages = {
     sponsor: { id: 'page.ProjectPreOrderPage.sponsor', defaultMessage: '發起者' },
     unnamedProject: { id: 'page.ProjectPreOrderPage.unnamedProject', defaultMessage: '未命名專案' },
   }),
+  ProjectPortfolioPage: defineMessages({
+    projectTitle: { id: 'page.ProjectPortfolioPage.projectTitle', defaultMessage: 'Title' },
+    untitledPortfolio: { id: 'page.ProjectPortfolioPage.untitledPortfolio', defaultMessage: 'Untitled Portfolio' },
+    createPortfolio: { id: 'page.ProjectPortfolioPage.createPortfolio', defaultMessage: 'Create portfolio' },
+  }),
   ProgramProgressCollectionAdminPage: defineMessages({
     programProgress: { id: 'page.ProgramProgressCollectionAdminPage.programProgress', defaultMessage: '學習進度' },
   }),

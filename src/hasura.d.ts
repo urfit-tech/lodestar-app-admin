@@ -6560,6 +6560,12 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate {
   aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate | null;
 }
 
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
 export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate {
   __typename: "project_plan_enrollment_aggregate_fields";
   count: number;
@@ -6593,7 +6599,10 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project {
   expired_at: any | null;
   cover_url: string | null;
   preview_url: string | null;
-  creator_id: string | null;
+  /**
+   * An object relationship
+   */
+  creator: GET_PROJECT_PREVIEW_COLLECTION_project_creator | null;
   position: number;
   /**
    * image / video
@@ -14075,6 +14084,7 @@ export interface INSERT_PROJECTVariables {
   title: string;
   memberId: string;
   type: string;
+  projectCategories: project_category_insert_input[];
 }
 
 /* tslint:disable */

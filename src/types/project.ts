@@ -1,6 +1,7 @@
+import { CreatorProps } from './creator'
 import { CategoryProps } from './general'
 
-export type ProjectDataType = 'funding' | 'pre-order' | 'on-sale' | 'modular'
+export type ProjectDataType = 'funding' | 'pre-order' | 'on-sale' | 'modular' | 'portfolio'
 export type ProjectPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
 export type ProjectAdminProps = ProjectPreviewProps & {
   categories: CategoryProps[]
@@ -30,6 +31,7 @@ export type ProjectPreviewProps = {
   previewUrl: string | null
   coverType: string | null
   totalCount?: number
+  creator?: Pick<CreatorProps, | 'id' | 'name'> | null
 }
 
 export type ProjectPlanType = 'perpetual' | 'period' | 'subscription'

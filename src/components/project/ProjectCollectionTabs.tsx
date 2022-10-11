@@ -17,10 +17,12 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
   const creatorId = {
     _eq:
       (projectType === 'funding' && permissions.PROJECT_FUNDING_ADMIN) ||
-      (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_ADMIN)
+      (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_ADMIN) ||
+      (projectType === 'portfolio' && permissions.PROJECT_PORTFOLIO_ADMIN)
         ? undefined
         : (projectType === 'funding' && permissions.PROJECT_FUNDING_NORMAL) ||
-          (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_NORMAL)
+          (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_NORMAL) ||
+          (projectType === 'portfolio' && permissions.PROJECT_PORTFOLIO_NORMAL)
         ? currentMemberId
         : '',
   }
@@ -67,27 +69,29 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
 
   return (
     <Tabs defaultActiveKey="published">
-      {tabContents.map(tabContent => (
-        <Tabs.TabPane
-          key={tabContent.key}
-          tab={`${tabContent.tab} ${typeof counts[tabContent.key] === 'number' ? `(${counts[tabContent.key]})` : ''}`}
-        >
-          <ProjectCollectionBlock
-            appId={appId}
-            projectType={projectType}
-            condition={tabContent.condition}
-            orderBy={tabContent?.orderBy}
-            withSortingButton={tabContent.withSortingButton}
-            onReady={count =>
-              count !== counts[tabContent.key] &&
-              setCounts({
-                ...counts,
-                [tabContent.key]: count,
-              })
-            }
-          />
-        </Tabs.TabPane>
-      ))}
+      {tabContents
+        .filter(tabContent => (projectType === 'portfolio' && tabContent.key === 'finished') === false)
+        .map(tabContent => (
+          <Tabs.TabPane
+            key={tabContent.key}
+            tab={`${tabContent.tab} ${typeof counts[tabContent.key] === 'number' ? `(${counts[tabContent.key]})` : ''}`}
+          >
+            <ProjectCollectionBlock
+              appId={appId}
+              projectType={projectType}
+              condition={tabContent.condition}
+              orderBy={tabContent?.orderBy}
+              withSortingButton={tabContent.withSortingButton}
+              onReady={count =>
+                count !== counts[tabContent.key] &&
+                setCounts({
+                  ...counts,
+                  [tabContent.key]: count,
+                })
+              }
+            />
+          </Tabs.TabPane>
+        ))}
     </Tabs>
   )
 }

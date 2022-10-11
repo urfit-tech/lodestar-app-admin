@@ -367,6 +367,7 @@ export const commonMessages = {
     programPackageCategory: { id: 'common.menu.programPackageCategory', defaultMessage: '課程組合分類' },
     projectFunding: { id: 'common.menu.projectFunding', defaultMessage: '募資專案' },
     projectPreOrder: { id: 'common.menu.projectPreOrder', defaultMessage: '預購專案' },
+    projectPortfolio: { id: 'common.menu.projectPortfolio', defaultMessage: 'Portfolio Project' },
     podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
     podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
     podcastCategory: { id: 'common.menu.podcastCategory', defaultMessage: '廣播分類' },

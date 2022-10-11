@@ -37,6 +37,10 @@ const projectMessages = {
   ProjectBasicForm: defineMessages({
     tag: { id: 'project.ProjectBasicForm.tag', defaultMessage: '標籤' },
   }),
+  ProjectCollectionTable: defineMessages({
+    title: { id: 'project.ProjectCollectionTable.title', defaultMessage: 'Title' },
+    author: { id: 'project.ProjectCollectionTable.author', defaultMessage: 'Author' },
+  }),
 }
 
 export default projectMessages
