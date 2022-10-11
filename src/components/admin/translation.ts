@@ -21,6 +21,7 @@ const adminMessages = {
     projectFunding: { id: 'admin.AdminMenu.projectFunding', defaultMessage: '募資專案' },
     projectPreOrder: { id: 'admin.AdminMenu.projectPreOrder', defaultMessage: '預購專案' },
     projectPortfolio: { id: 'admin.AdminMenu.projectPortfolio', defaultMessage: 'Portfolio Project' },
+    projectCategory: { id: 'admin.AdminMenu.projectCategory', defaultMessage: 'Project Category' },
     projectOnSale: { id: 'admin.AdminMenu.projectOnSale', defaultMessage: '促銷專案' },
     podcastAdmin: { id: 'admin.AdminMenu.podcastAdmin', defaultMessage: '音頻廣播' },
     podcastPrograms: { id: 'admin.AdminMenu.podcastPrograms', defaultMessage: '廣播管理' },

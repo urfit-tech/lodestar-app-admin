@@ -2433,5 +2433,7 @@
   "page.ProjectPortfolioPage.untitledPortfolio": "未命名的作品",
   "page.ProjectPortfolioPage.projectTitle": "名稱",
   "project.ProjectCollectionTable.title": "名稱",
-  "project.ProjectCollectionTable.author": "建立者"
+  "project.ProjectCollectionTable.author": "建立者",
+  "admin.AdminMenu.projectCategory": "專案分類",
+  "common.menu.projectCategory": "專案分類"
 }
