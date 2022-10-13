@@ -6930,6 +6930,158 @@ export interface UPSERT_PROJECT_PLAN_PRODUCTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PORTFOLIO_PROJECT_BASIC
+// ====================================================
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_tag {
+  __typename: "project_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_tag {
+  __typename: "project_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PORTFOLIO_PROJECT_BASIC_update_project | null;
+  /**
+   * delete data from the table: "project_category"
+   */
+  delete_project_category: UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_category | null;
+  /**
+   * insert data into the table: "project_category"
+   */
+  insert_project_category: UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PORTFOLIO_PROJECT_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "project_tag"
+   */
+  delete_project_tag: UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_tag | null;
+  /**
+   * insert data into the table: "project_tag"
+   */
+  insert_project_tag: UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_tag | null;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASICVariables {
+  projectId: any;
+  title?: string | null;
+  projectCategories: project_category_insert_input[];
+  tags: tag_insert_input[];
+  projectTags: project_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PORTFOLIO_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_PROJECT_PORTFOLIO_DESCRIPTION_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PORTFOLIO_DESCRIPTION {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_PORTFOLIO_DESCRIPTION_update_project | null;
+}
+
+export interface UPDATE_PROJECT_PORTFOLIO_DESCRIPTIONVariables {
+  projectId: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PORTFOLIO_PROJECT_SETTINGS
+// ====================================================
+
+export interface UPDATE_PORTFOLIO_PROJECT_SETTINGS_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_SETTINGS {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PORTFOLIO_PROJECT_SETTINGS_update_project | null;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_SETTINGSVariables {
+  projectId: any;
+  previewUrl?: string | null;
+  coverUrl?: string | null;
+  coverType?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: PUBLISH_PROJECT
 // ====================================================
 
