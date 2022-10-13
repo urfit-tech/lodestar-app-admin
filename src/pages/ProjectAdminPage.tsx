@@ -19,6 +19,9 @@ import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import ProjectBasicForm from '../components/project/ProjectBasicForm'
 import ProjectIntroForm from '../components/project/ProjectIntroForm'
 import ProjectPlanAdminBlock from '../components/project/ProjectPlanAdminBlock'
+import ProjectPortfolioBasicForm from '../components/project/ProjectPortfolioBasicForm'
+import ProjectPortfolioDescriptionForm from '../components/project/ProjectPortfolioDescriptionForm'
+import ProjectPortfolioSettingsForm from '../components/project/ProjectPortfolioSettingsForm'
 import ProjectPublishAdminBlock from '../components/project/ProjectPublishAdminBlock'
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
@@ -41,6 +44,8 @@ const ProjectAdminPage: React.FC<{}> = () => {
               ? `/project-funding`
               : projectAdmin?.projectType === 'pre-order'
               ? `/project-pre-order`
+              : projectAdmin?.projectType === 'portfolio'
+              ? `/project-portfolio`
               : ''
           }
         >
@@ -68,35 +73,78 @@ const ProjectAdminPage: React.FC<{}> = () => {
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane key="settings" tab={formatMessage(pageMessages.ProjectAdminPage.settings)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(pageMessages.ProjectAdminPage.settings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                  <ProjectBasicForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
-                </AdminBlock>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(pageMessages.ProjectAdminPage.projectIntroduction)}</AdminBlockTitle>
-                  <ProjectIntroForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
+            {projectAdmin?.projectType === 'portfolio' ? (
+              <>
+                <Tabs.TabPane key="settings" tab={formatMessage(pageMessages.ProjectAdminPage.portfolioContent)}>
+                  <div className="container py-5">
+                    <AdminPaneTitle>{formatMessage(pageMessages.ProjectAdminPage.portfolioContent)}</AdminPaneTitle>
+                    <AdminBlock>
+                      <AdminBlockTitle>
+                        {formatMessage(pageMessages.ProjectAdminPage.portfolioSettings)}
+                      </AdminBlockTitle>
+                      <ProjectPortfolioSettingsForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
+                    </AdminBlock>
+                    <AdminBlock>
+                      <AdminBlockTitle>
+                        {formatMessage(pageMessages.ProjectAdminPage.portfolioDescription)}
+                      </AdminBlockTitle>
+                      <ProjectPortfolioDescriptionForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
+                    </AdminBlock>
+                  </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane key="management" tab={formatMessage(pageMessages.ProjectAdminPage.portfolioManagement)}>
+                  <div className="container py-5">
+                    <AdminPaneTitle>{formatMessage(pageMessages.ProjectAdminPage.portfolioManagement)}</AdminPaneTitle>
+                    <AdminBlock>
+                      <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                      <ProjectPortfolioBasicForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
+                    </AdminBlock>
+                  </div>
+                </Tabs.TabPane>
 
-            <Tabs.TabPane key="salesPlan" tab={formatMessage(commonMessages.label.salesPlan)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
-                <ProjectPlanAdminBlock projectId={projectId} project={projectAdmin} onRefetch={refetchProjectAdmin} />
-              </div>
-            </Tabs.TabPane>
-
-            <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <ProjectPublishAdminBlock type="funding" project={projectAdmin} onRefetch={refetchProjectAdmin} />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
+                <Tabs.TabPane key="role" tab={formatMessage(commonMessages.label.roleAdmin)}>
+                  <div className="container py-5">
+                    <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
+                  </div>
+                </Tabs.TabPane>
+              </>
+            ) : (
+              <>
+                <Tabs.TabPane key="settings" tab={formatMessage(pageMessages.ProjectAdminPage.settings)}>
+                  <div className="container py-5">
+                    <AdminPaneTitle>{formatMessage(pageMessages.ProjectAdminPage.settings)}</AdminPaneTitle>
+                    <AdminBlock>
+                      <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                      <ProjectBasicForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
+                    </AdminBlock>
+                    <AdminBlock>
+                      <AdminBlockTitle>
+                        {formatMessage(pageMessages.ProjectAdminPage.projectIntroduction)}
+                      </AdminBlockTitle>
+                      <ProjectIntroForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
+                    </AdminBlock>
+                  </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane key="salesPlan" tab={formatMessage(commonMessages.label.salesPlan)}>
+                  <div className="container py-5">
+                    <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
+                    <ProjectPlanAdminBlock
+                      projectId={projectId}
+                      project={projectAdmin}
+                      onRefetch={refetchProjectAdmin}
+                    />
+                  </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>
+                  <div className="container py-5">
+                    <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
+                    <AdminBlock>
+                      <ProjectPublishAdminBlock type="funding" project={projectAdmin} onRefetch={refetchProjectAdmin} />
+                    </AdminBlock>
+                  </div>
+                </Tabs.TabPane>
+              </>
+            )}
           </Tabs>
         </StyledLayoutContent>
       )}
