@@ -31,7 +31,7 @@ const StyledAuthorName = styled.span`
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-type ProjectCollectionProps = Pick<ProjectPreviewProps, 'id' | 'title' | 'coverUrl' | 'creator'>
+type ProjectCollectionProps = Pick<ProjectPreviewProps, 'id' | 'title' | 'previewUrl' | 'creator'>
 
 const ProjectCollectionTable: React.FC<{ projects: ProjectPreviewProps[]; onSearch: (search: string) => void }> = ({
   projects,
@@ -48,7 +48,7 @@ const ProjectCollectionTable: React.FC<{ projects: ProjectPreviewProps[]; onSear
       title: formatMessage(projectMessages.ProjectCollectionTable.title),
       render: (text, record, index) => (
         <div className="d-flex align-items-center justify-content-start">
-          <CustomRatioImage width="74px" ratio={9 / 16} src={record.coverUrl || EmptyCover} />
+          <CustomRatioImage width="74px" ratio={9 / 16} src={record.previewUrl || EmptyCover} />
           <StyledProjectTitle className="ml-3">{record.title}</StyledProjectTitle>
         </div>
       ),

@@ -34,7 +34,6 @@ const ProjectCollectionBlock: React.FC<{
       },
       orderBy,
     )
-  console.log(projectPreview)
 
   const { projectSorts, refetchProjectSorts } = useProjectSortCollection(condition)
   const [updatePositions] = useMutation<
