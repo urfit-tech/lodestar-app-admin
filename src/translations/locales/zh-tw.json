@@ -2433,7 +2433,18 @@
   "page.ProjectPortfolioPage.untitledPortfolio": "未命名的作品",
   "page.ProjectPortfolioPage.projectTitle": "名稱",
   "project.ProjectCollectionTable.title": "名稱",
-  "project.ProjectCollectionTable.author": "建立者",
+  "project.ProjectCollectionTable.author": "作者",
   "admin.AdminMenu.projectCategory": "專案分類",
-  "common.menu.projectCategory": "專案分類"
+  "common.menu.projectCategory": "專案分類",
+  "project.ProjectAdminPage.portfolioContent": "作品內容",
+  "project.ProjectAdminPage.portfolioManagement": "作品管理",
+  "project.ProjectAdminPage.publishSettings": "上架設定",
+  "project.ProjectPortfolioSettingsForm.cover": "封面",
+  "project.ProjectPortfolioSettingsForm.defaultImageTips": "建議圖片尺寸：1200*675px",
+  "project.ProjectPortfolioSettingsForm.videoUrl": "影片作品網址",
+  "project.ProjectAdminPage.portfolioSettings": "作品設定",
+  "project.ProjectAdminPage.portfolioDescription": "作品描述",
+  "project.ProjectPortfolioBasicForm.tag": "標籤",
+  "project.ProjectAdminPage.deletePortfolio": "刪除作品",
+  "project.*.portfolioTitle": "名稱"
 }

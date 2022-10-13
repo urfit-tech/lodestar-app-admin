@@ -19,6 +19,7 @@ const projectMessages = {
     editProject: { id: 'project.*.editProject', defaultMessage: '編輯方案' },
     noProject: { id: 'project.*.noProject', defaultMessage: '尚未有任何專案' },
     soldOutProjectCount: { id: 'project.*.soldOutProjectCount', defaultMessage: '已售 {count}' },
+    portfolioTitle: { id: 'project.*.portfolioTitle', defaultMessage: 'Title' },
   }),
   ProjectPlanAdminModal: defineMessages({
     deliverables: { id: 'project.ProjectPlanAdminModal.deliverables', defaultMessage: '交付項目' },
@@ -37,6 +38,24 @@ const projectMessages = {
   ProjectBasicForm: defineMessages({
     tag: { id: 'project.ProjectBasicForm.tag', defaultMessage: '標籤' },
   }),
+  ProjectPortfolioBasicForm: defineMessages({
+    tag: { id: 'project.ProjectPortfolioBasicForm.tag', defaultMessage: 'tag' },
+  }),
+  ProjectPortfolioSettingsForm: defineMessages({
+    cover: {
+      id: 'project.ProjectPortfolioSettingsForm.cover',
+      defaultMessage: 'cover',
+    },
+    defaultImageTips: {
+      id: 'project.ProjectPortfolioSettingsForm.defaultImageTips',
+      defaultMessage: 'Recommended image size: 1200*675px',
+    },
+    videoUrl: {
+      id: 'project.ProjectPortfolioSettingsForm.videoUrl',
+      defaultMessage: 'Portfolio video url',
+    },
+  }),
+  ProjectPortfolioDescriptionForm: defineMessages({}),
   ProjectCollectionTable: defineMessages({
     title: { id: 'project.ProjectCollectionTable.title', defaultMessage: 'Title' },
     author: { id: 'project.ProjectCollectionTable.author', defaultMessage: 'Author' },
