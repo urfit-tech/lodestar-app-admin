@@ -17,6 +17,8 @@ export type ProjectAdminProps = ProjectPreviewProps & {
   isParticipantsVisible: boolean
   isCountdownTimerVisible: boolean
   projectPlan: ProjectPlan[]
+  projectAuthorIdentityId: string | null
+  creator?: Pick<CreatorProps, | 'id' | 'name' | 'pictureUrl'> | null
 }
 
 export type ProjectPreviewProps = {
@@ -31,7 +33,7 @@ export type ProjectPreviewProps = {
   previewUrl: string | null
   coverType: string | null
   totalCount?: number
-  creator?: Pick<CreatorProps, | 'id' | 'name'> | null
+  author?: Pick<CreatorProps, | 'id' | 'name' | 'pictureUrl'> | null
 }
 
 export type ProjectPlanType = 'perpetual' | 'period' | 'subscription'

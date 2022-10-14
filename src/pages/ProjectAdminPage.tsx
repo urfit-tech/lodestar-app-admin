@@ -15,10 +15,12 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../components/admin'
+import RoleAdminBlock from '../components/admin/RoleAdminBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import ProjectBasicForm from '../components/project/ProjectBasicForm'
 import ProjectIntroForm from '../components/project/ProjectIntroForm'
 import ProjectPlanAdminBlock from '../components/project/ProjectPlanAdminBlock'
+import ProjectPortfolioAuthorBlock from '../components/project/ProjectPortfolioAuthorBlock'
 import ProjectPortfolioBasicForm from '../components/project/ProjectPortfolioBasicForm'
 import ProjectPortfolioDescriptionForm from '../components/project/ProjectPortfolioDescriptionForm'
 import ProjectPortfolioSettingsForm from '../components/project/ProjectPortfolioSettingsForm'
@@ -105,6 +107,18 @@ const ProjectAdminPage: React.FC<{}> = () => {
                 <Tabs.TabPane key="role" tab={formatMessage(commonMessages.label.roleAdmin)}>
                   <div className="container py-5">
                     <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
+                    <AdminBlock>
+                      <AdminBlockTitle>{formatMessage(commonMessages.label.owner)}</AdminBlockTitle>
+                      <RoleAdminBlock
+                        name={projectAdmin.creator?.name || ''}
+                        pictureUrl={projectAdmin.creator?.pictureUrl || ''}
+                      />
+                    </AdminBlock>
+
+                    <AdminBlock>
+                      <AdminBlockTitle>{formatMessage(commonMessages.label.author)}</AdminBlockTitle>
+                      <ProjectPortfolioAuthorBlock projectId={projectAdmin.id} />
+                    </AdminBlock>
                   </div>
                 </Tabs.TabPane>
               </>
@@ -226,6 +240,11 @@ const useProjectAdmin = (projectId: string) => {
               name
             }
           }
+          project_roles(where: { identity: { name: { _eq: "author" } } }) {
+            identity {
+              id
+            }
+          }
         }
       }
     `,
@@ -283,6 +302,12 @@ const useProjectAdmin = (projectId: string) => {
           })),
           categories: data.project_by_pk.project_categories.map(v => ({ id: v.category.id, name: v.category.name })),
           tags: data.project_by_pk.project_tags.map(projectTag => projectTag.tag?.name || projectTag.tag_name),
+          creator: {
+            id: data.project_by_pk.creator?.id || '',
+            name: data.project_by_pk.creator?.name || '',
+            pictureUrl: data.project_by_pk.creator?.picture_url || '',
+          },
+          projectAuthorIdentityId: data.project_by_pk.project_roles[0]?.identity?.id || null,
         }
 
   return {

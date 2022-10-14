@@ -133,8 +133,12 @@ const useProjectPreviewCollection = (
             id: v.id,
             title: v.title,
             abstract: v.abstract,
+            author: {
+              id: v.project_roles[0]?.member?.id,
+              name: v.project_roles[0]?.member?.name,
+              pictureUrl: v.project_roles[0]?.member?.picture_url,
+            },
             projectType: v.type as ProjectDataType,
-            creator: { id: v.creator?.id || '', name: v.creator?.name || '' },
             createdAt: v.created_at,
             publishedAt: v.published_at,
             expiredAt: v.expired_at,
@@ -218,10 +222,6 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
       expired_at
       cover_url
       preview_url
-      creator {
-        id
-        name
-      }
       position
       cover_type
       project_plans {
@@ -230,6 +230,13 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           aggregate {
             count
           }
+        }
+      }
+      project_roles(where: { identity: { name: { _eq: "author" } } }) {
+        member {
+          id
+          name
+          picture_url
         }
       }
     }

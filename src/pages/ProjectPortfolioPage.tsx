@@ -1,7 +1,7 @@
 import Icon from '@ant-design/icons'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../components/admin'
@@ -10,6 +10,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import ProjectCollectionTabs from '../components/project/ProjectCollectionTabs'
 import { commonMessages } from '../helpers/translation'
 import { useProject } from '../hooks/project'
+import { useRole } from '../hooks/role'
 import { ReactComponent as ProjectIcon } from '../images/icon/project.svg'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
@@ -19,7 +20,16 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
   const history = useHistory()
   const { currentMemberId, permissions } = useAuth()
   const { id: appId, enabledModules } = useApp()
-  const { insertProject } = useProject()
+  const { insertProject, insertProjectRole } = useProject()
+  const { useGetAuthorIdentityId, insertMetaProjectAuthorIdentity } = useRole()
+  const { authorIdentityId, authorIdentityIdLoading } = useGetAuthorIdentityId('Project')
+
+  // for initial project's author identity
+  useEffect(() => {
+    if (!authorIdentityIdLoading && !authorIdentityId) {
+      insertMetaProjectAuthorIdentity({ variables: { appId: appId, type: 'Project' } })
+    }
+  }, [appId, authorIdentityId, authorIdentityIdLoading, insertMetaProjectAuthorIdentity])
 
   if (
     !enabledModules.project ||
@@ -62,6 +72,14 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                 })
                   .then(({ data }) => {
                     const projectId = data?.insert_project?.returning[0]?.id
+                    let insertedIdentityId
+                    insertProjectRole({
+                      variables: {
+                        projectId: projectId,
+                        memberId: currentMemberId,
+                        identityId: insertedIdentityId || authorIdentityId,
+                      },
+                    })
                     projectId && history.push(`/projects/${projectId}`)
                   })
                   .catch(err => process.env.NODE_ENV === 'development' && console.error(err))

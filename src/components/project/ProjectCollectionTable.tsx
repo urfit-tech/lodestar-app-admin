@@ -31,7 +31,7 @@ const StyledAuthorName = styled.span`
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-type ProjectCollectionProps = Pick<ProjectPreviewProps, 'id' | 'title' | 'previewUrl' | 'creator'>
+type ProjectCollectionProps = Pick<ProjectPreviewProps, 'id' | 'title' | 'previewUrl' | 'author'>
 
 const ProjectCollectionTable: React.FC<{ projects: ProjectPreviewProps[]; onSearch: (search: string) => void }> = ({
   projects,
@@ -57,7 +57,7 @@ const ProjectCollectionTable: React.FC<{ projects: ProjectPreviewProps[]; onSear
       key: 'author',
       width: '20%',
       title: formatMessage(projectMessages.ProjectCollectionTable.author),
-      render: (text, record, index) => <StyledAuthorName>{record.creator?.name}</StyledAuthorName>,
+      render: (text, record, index) => <StyledAuthorName>{record.author?.name}</StyledAuthorName>,
     },
     {
       width: '10%',

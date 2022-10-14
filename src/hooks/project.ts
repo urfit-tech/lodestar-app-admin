@@ -27,7 +27,18 @@ export const useProject = () => {
       }
     }
   `)
+  const [insertProjectRole] = useMutation<hasura.INSERT_PROJECT_ROLE, hasura.INSERT_PROJECT_ROLEVariables>(gql`
+    mutation INSERT_PROJECT_ROLE($projectId: uuid!, $memberId: String!, $identityId: uuid!) {
+      insert_project_role(objects: { project_id: $projectId, member_id: $memberId, identity_id: $identityId }) {
+        affected_rows
+        returning {
+          id
+        }
+      }
+    }
+  `)
   return {
     insertProject,
+    insertProjectRole,
   }
 }
