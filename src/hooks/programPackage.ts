@@ -14,6 +14,7 @@ export const useProgramPackageCollection = () => {
         title
         cover_url
         published_at
+        is_private
       }
     }
   `)
@@ -42,6 +43,7 @@ export const useProgramPackageCollection = () => {
     coverUrl?: string | null
     publishedAt: string
     programPackageEnrollment: number
+    isPrivate: boolean
   }[] =
     loading || error || !data
       ? []
@@ -51,6 +53,7 @@ export const useProgramPackageCollection = () => {
           coverUrl: v?.cover_url || '',
           publishedAt: v.published_at,
           programPackageEnrollment: 0,
+          isPrivate: v.is_private,
         }))
 
   if (enrollmentData) {
@@ -371,7 +374,7 @@ export const useProgramPackage = (id: string) => {
     loading || error || !data || !data.program_package_by_pk
       ? null
       : {
-          id:  data.program_package_by_pk.id,
+          id: data.program_package_by_pk.id,
           title: data.program_package_by_pk.title || null,
           coverUrl: data.program_package_by_pk.cover_url || null,
           publishedAt: data.program_package_by_pk.published_at || null,

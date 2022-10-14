@@ -8143,6 +8143,7 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
   cover_url: string | null;
   title: string;
   published_at: any | null;
+  is_private: boolean;
   /**
    * An array relationship
    */
@@ -13656,6 +13657,7 @@ export interface GET_PROGRAM_PACKAGE_COLLECTION_program_package {
   title: string;
   cover_url: string | null;
   published_at: any | null;
+  is_private: boolean;
 }
 
 export interface GET_PROGRAM_PACKAGE_COLLECTION {
@@ -19056,6 +19058,7 @@ export enum activity_update_column {
   description = "description",
   id = "id",
   is_participants_visible = "is_participants_visible",
+  is_private = "is_private",
   organizer_id = "organizer_id",
   position = "position",
   published_at = "published_at",
@@ -21549,6 +21552,7 @@ export enum program_package_update_column {
   creator_id = "creator_id",
   description = "description",
   id = "id",
+  is_private = "is_private",
   meta_tag = "meta_tag",
   published_at = "published_at",
   title = "title",
@@ -22520,6 +22524,7 @@ export interface activity_bool_exp {
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
+  is_private?: Boolean_comparison_exp | null;
   organizer?: member_public_bool_exp | null;
   organizer_id?: String_comparison_exp | null;
   package_items?: package_item_bool_exp | null;
@@ -22636,6 +22641,7 @@ export interface activity_insert_input {
   description?: string | null;
   id?: any | null;
   is_participants_visible?: boolean | null;
+  is_private?: boolean | null;
   organizer?: member_public_obj_rel_insert_input | null;
   organizer_id?: string | null;
   package_items?: package_item_arr_rel_insert_input | null;
@@ -37069,6 +37075,7 @@ export interface program_package_bool_exp {
   creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_private?: Boolean_comparison_exp | null;
   meta_tag?: jsonb_comparison_exp | null;
   program_package_categories?: program_package_category_bool_exp | null;
   program_package_plans?: program_package_plan_bool_exp | null;
@@ -37134,6 +37141,7 @@ export interface program_package_insert_input {
   creator_id?: string | null;
   description?: string | null;
   id?: any | null;
+  is_private?: boolean | null;
   meta_tag?: any | null;
   program_package_categories?: program_package_category_arr_rel_insert_input | null;
   program_package_plans?: program_package_plan_arr_rel_insert_input | null;
