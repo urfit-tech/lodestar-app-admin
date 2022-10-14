@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -23,6 +24,10 @@ const messages = defineMessages({
     id: 'activity.text.publishedNotation',
     defaultMessage: '現在你的活動已經發佈，此活動會出現在頁面上。',
   },
+  privatelyPublishedNotation: {
+    id: 'activity.text.privatelyPublishedNotation',
+    defaultMessage: '你的活動已經私密發佈，此活動不會出現在頁面上，學生僅能透過連結進入瀏覽。',
+  },
 })
 
 const ActivityPublishAdminBlock: React.FC<{
@@ -30,6 +35,7 @@ const ActivityPublishAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [publishActivity] = useMutation<hasura.PUBLISH_ACTIVITY, hasura.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
 
   if (!activityAdmin) {
@@ -60,6 +66,8 @@ const ActivityPublishAdminBlock: React.FC<{
       ? [formatMessage(commonMessages.status.notComplete), formatMessage(messages.notCompleteNotation)]
       : publishStatus === 'ordinary'
       ? [formatMessage(commonMessages.status.unpublished), formatMessage(messages.unpublishedNotation)]
+      : publishStatus === 'success' && activityAdmin.isPrivate
+      ? [formatMessage(commonMessages.status.privatelyPublished), formatMessage(messages.privatelyPublishedNotation)]
       : publishStatus === 'success'
       ? [formatMessage(commonMessages.status.published), formatMessage(messages.publishedNotation)]
       : ['', '']
@@ -68,6 +76,7 @@ const ActivityPublishAdminBlock: React.FC<{
     publishActivity({
       variables: {
         activityId: activityAdmin.id,
+        isPrivate: values.isPrivate,
         publishedAt: values.publishedAt,
       },
     })
@@ -85,14 +94,15 @@ const ActivityPublishAdminBlock: React.FC<{
       title={title}
       description={description}
       checklist={checklist}
+      isPrivateEnabled={enabledModules.private_activity}
       onPublish={handlePublish}
     />
   )
 }
 
 const PUBLISH_ACTIVITY = gql`
-  mutation PUBLISH_ACTIVITY($activityId: uuid!, $publishedAt: timestamptz) {
-    update_activity(where: { id: { _eq: $activityId } }, _set: { published_at: $publishedAt }) {
+  mutation PUBLISH_ACTIVITY($activityId: uuid!, $isPrivate: Boolean!, $publishedAt: timestamptz) {
+    update_activity(where: { id: { _eq: $activityId } }, _set: { published_at: $publishedAt, is_private: $isPrivate }) {
       affected_rows
     }
   }

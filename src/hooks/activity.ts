@@ -108,6 +108,7 @@ export const useActivityAdmin = (activityId: string) => {
           organizer_id
           published_at
           support_locales
+          is_private
           activity_categories(order_by: { position: asc }) {
             id
             category {
@@ -190,6 +191,7 @@ export const useActivityAdmin = (activityId: string) => {
           isParticipantsVisible: data.activity[0]?.is_participants_visible,
           organizerId: data.activity[0]?.organizer_id,
           supportLocales: data.activity[0]?.support_locales || [],
+          isPrivate: data.activity[0]?.is_private || false,
           categories:
             data.activity[0]?.activity_categories.map(v => ({
               id: v.category.id,

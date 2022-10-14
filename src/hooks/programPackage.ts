@@ -313,6 +313,7 @@ export const useProgramPackage = (id: string) => {
           cover_url
           published_at
           description
+          is_private
           meta_tag
           program_package_programs(order_by: { position: asc }) {
             id
@@ -380,6 +381,7 @@ export const useProgramPackage = (id: string) => {
           publishedAt: data.program_package_by_pk.published_at || null,
           description: data.program_package_by_pk.description || null,
           metaTag: data.program_package_by_pk.meta_tag,
+          isPrivate: data.program_package_by_pk.is_private,
           programs: data.program_package_by_pk.program_package_programs.map(programPackageProgram => ({
             id: programPackageProgram.id,
             program: {

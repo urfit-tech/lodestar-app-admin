@@ -272,6 +272,7 @@ export interface PUBLISH_ACTIVITY {
 
 export interface PUBLISH_ACTIVITYVariables {
   activityId: any;
+  isPrivate: boolean;
   publishedAt?: any | null;
 }
 
@@ -6391,6 +6392,7 @@ export interface PUBLISH_PROGRAM_PACKAGE {
 
 export interface PUBLISH_PROGRAM_PACKAGEVariables {
   programPackageId: any;
+  isPrivate: boolean;
   publishedAt?: any | null;
 }
 
@@ -8336,6 +8338,7 @@ export interface GET_ACTIVITY_ADMIN_activity {
   organizer_id: string;
   published_at: any | null;
   support_locales: any | null;
+  is_private: boolean;
   /**
    * An array relationship
    */
@@ -13972,6 +13975,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
   cover_url: string | null;
   published_at: any | null;
   description: string | null;
+  is_private: boolean;
   meta_tag: any | null;
   /**
    * An array relationship
