@@ -8903,8 +8903,8 @@ export interface GET_POST_post_by_pk_post_merchandises {
 }
 
 export interface GET_POST_post_by_pk_post_roles_member {
-  __typename: "member_public";
-  name: string | null;
+  __typename: "member";
+  name: string;
   picture_url: string | null;
 }
 
@@ -8918,7 +8918,7 @@ export interface GET_POST_post_by_pk_post_roles {
   /**
    * An object relationship
    */
-  member: GET_POST_post_by_pk_post_roles_member | null;
+  member: GET_POST_post_by_pk_post_roles_member;
 }
 
 export interface GET_POST_post_by_pk {
@@ -9011,10 +9011,10 @@ export interface UPDATE_POST_META_TAGVariables {
 // ====================================================
 
 export interface GET_POSTS_post_post_roles_member {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
 }
 
 export interface GET_POSTS_post_post_roles {
@@ -9028,7 +9028,7 @@ export interface GET_POSTS_post_post_roles {
   /**
    * An object relationship
    */
-  member: GET_POSTS_post_post_roles_member | null;
+  member: GET_POSTS_post_post_roles_member;
 }
 
 export interface GET_POSTS_post {
@@ -19056,6 +19056,7 @@ export enum activity_update_column {
   description = "description",
   id = "id",
   is_participants_visible = "is_participants_visible",
+  is_private = "is_private",
   organizer_id = "organizer_id",
   position = "position",
   published_at = "published_at",
@@ -19782,6 +19783,24 @@ export enum file_update_column {
   uri = "uri",
   viewed_at = "viewed_at",
   viewed_count = "viewed_count",
+}
+
+/**
+ * unique or primary key constraints on table "identity"
+ */
+export enum identity_constraint {
+  identity_pkey = "identity_pkey",
+}
+
+/**
+ * update columns of table "identity"
+ */
+export enum identity_update_column {
+  app_id = "app_id",
+  id = "id",
+  name = "name",
+  position = "position",
+  type = "type",
 }
 
 /**
@@ -21549,6 +21568,7 @@ export enum program_package_update_column {
   creator_id = "creator_id",
   description = "description",
   id = "id",
+  is_private = "is_private",
   meta_tag = "meta_tag",
   published_at = "published_at",
   title = "title",
@@ -21777,6 +21797,23 @@ export enum project_plan_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "project_role"
+ */
+export enum project_role_constraint {
+  project_role_pkey = "project_role_pkey",
+}
+
+/**
+ * update columns of table "project_role"
+ */
+export enum project_role_update_column {
+  id = "id",
+  identity_id = "identity_id",
+  member_id = "member_id",
+  project_id = "project_id",
+}
+
+/**
  * unique or primary key constraints on table "project_section"
  */
 export enum project_section_constraint {
@@ -21840,6 +21877,7 @@ export enum project_update_column {
   title = "title",
   type = "type",
   updates = "updates",
+  views = "views",
 }
 
 /**
@@ -22520,6 +22558,7 @@ export interface activity_bool_exp {
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
+  is_private?: Boolean_comparison_exp | null;
   organizer?: member_public_bool_exp | null;
   organizer_id?: String_comparison_exp | null;
   package_items?: package_item_bool_exp | null;
@@ -22636,6 +22675,7 @@ export interface activity_insert_input {
   description?: string | null;
   id?: any | null;
   is_participants_visible?: boolean | null;
+  is_private?: boolean | null;
   organizer?: member_public_obj_rel_insert_input | null;
   organizer_id?: string | null;
   package_items?: package_item_arr_rel_insert_input | null;
@@ -27298,6 +27338,50 @@ export interface gift_plan_product_bool_exp {
 }
 
 /**
+ * Boolean expression to filter rows from the table "identity". All fields are combined with a logical 'AND'.
+ */
+export interface identity_bool_exp {
+  _and?: identity_bool_exp[] | null;
+  _not?: identity_bool_exp | null;
+  _or?: identity_bool_exp[] | null;
+  app_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  project_roles?: project_role_bool_exp | null;
+  type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "identity"
+ */
+export interface identity_insert_input {
+  app_id?: string | null;
+  id?: any | null;
+  name?: string | null;
+  position?: number | null;
+  project_roles?: project_role_arr_rel_insert_input | null;
+  type?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "identity"
+ */
+export interface identity_obj_rel_insert_input {
+  data: identity_insert_input;
+  on_conflict?: identity_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "identity"
+ */
+export interface identity_on_conflict {
+  constraint: identity_constraint;
+  update_columns: identity_update_column[];
+  where?: identity_bool_exp | null;
+}
+
+/**
  * order by aggregate values of table "invoice"
  */
 export interface invoice_aggregate_order_by {
@@ -28113,6 +28197,7 @@ export interface member_bool_exp {
   program_content_progresses?: program_content_progress_bool_exp | null;
   program_roles?: program_role_bool_exp | null;
   program_tempo_deliveries?: program_tempo_delivery_bool_exp | null;
+  project_roles?: project_role_bool_exp | null;
   refresh_token?: uuid_comparison_exp | null;
   reviews?: review_bool_exp | null;
   role?: String_comparison_exp | null;
@@ -28663,6 +28748,7 @@ export interface member_insert_input {
   program_content_progresses?: program_content_progress_arr_rel_insert_input | null;
   program_roles?: program_role_arr_rel_insert_input | null;
   program_tempo_deliveries?: program_tempo_delivery_arr_rel_insert_input | null;
+  project_roles?: project_role_arr_rel_insert_input | null;
   refresh_token?: any | null;
   reviews?: review_arr_rel_insert_input | null;
   role?: string | null;
@@ -29210,6 +29296,7 @@ export interface member_order_by {
   program_content_progresses_aggregate?: program_content_progress_aggregate_order_by | null;
   program_roles_aggregate?: program_role_aggregate_order_by | null;
   program_tempo_deliveries_aggregate?: program_tempo_delivery_aggregate_order_by | null;
+  project_roles_aggregate?: project_role_aggregate_order_by | null;
   refresh_token?: order_by | null;
   reviews_aggregate?: review_aggregate_order_by | null;
   role?: order_by | null;
@@ -31883,9 +31970,12 @@ export interface order_product_export_bool_exp {
   app_id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
+  order_created_at?: timestamptz_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
   order_log_id?: String_comparison_exp | null;
+  order_product_ended_at?: timestamptz_comparison_exp | null;
   order_product_id?: uuid_comparison_exp | null;
+  order_product_started_at?: timestamptz_comparison_exp | null;
   paid_at?: timestamptz_comparison_exp | null;
   price?: numeric_comparison_exp | null;
   product_id?: String_comparison_exp | null;
@@ -34525,7 +34615,7 @@ export interface post_role_bool_exp {
   _not?: post_role_bool_exp | null;
   _or?: post_role_bool_exp[] | null;
   id?: uuid_comparison_exp | null;
-  member?: member_public_bool_exp | null;
+  member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -34538,7 +34628,7 @@ export interface post_role_bool_exp {
  */
 export interface post_role_insert_input {
   id?: any | null;
-  member?: member_public_obj_rel_insert_input | null;
+  member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   position?: number | null;
@@ -37069,6 +37159,7 @@ export interface program_package_bool_exp {
   creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_private?: Boolean_comparison_exp | null;
   meta_tag?: jsonb_comparison_exp | null;
   program_package_categories?: program_package_category_bool_exp | null;
   program_package_plans?: program_package_plan_bool_exp | null;
@@ -37134,6 +37225,7 @@ export interface program_package_insert_input {
   creator_id?: string | null;
   description?: string | null;
   id?: any | null;
+  is_private?: boolean | null;
   meta_tag?: any | null;
   program_package_categories?: program_package_category_arr_rel_insert_input | null;
   program_package_plans?: program_package_plan_arr_rel_insert_input | null;
@@ -38347,6 +38439,7 @@ export interface project_bool_exp {
   preview_url?: String_comparison_exp | null;
   project_categories?: project_category_bool_exp | null;
   project_plans?: project_plan_bool_exp | null;
+  project_roles?: project_role_bool_exp | null;
   project_sales?: project_sales_bool_exp | null;
   project_sections?: project_section_bool_exp | null;
   project_tags?: project_tag_bool_exp | null;
@@ -38357,6 +38450,7 @@ export interface project_bool_exp {
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updates?: jsonb_comparison_exp | null;
+  views?: numeric_comparison_exp | null;
 }
 
 /**
@@ -38520,6 +38614,7 @@ export interface project_insert_input {
   preview_url?: string | null;
   project_categories?: project_category_arr_rel_insert_input | null;
   project_plans?: project_plan_arr_rel_insert_input | null;
+  project_roles?: project_role_arr_rel_insert_input | null;
   project_sales?: project_sales_obj_rel_insert_input | null;
   project_sections?: project_section_arr_rel_insert_input | null;
   project_tags?: project_tag_arr_rel_insert_input | null;
@@ -38530,6 +38625,7 @@ export interface project_insert_input {
   title?: string | null;
   type?: string | null;
   updates?: any | null;
+  views?: any | null;
 }
 
 /**
@@ -38573,6 +38669,7 @@ export interface project_order_by {
   preview_url?: order_by | null;
   project_categories_aggregate?: project_category_aggregate_order_by | null;
   project_plans_aggregate?: project_plan_aggregate_order_by | null;
+  project_roles_aggregate?: project_role_aggregate_order_by | null;
   project_sales?: project_sales_order_by | null;
   project_sections_aggregate?: project_section_aggregate_order_by | null;
   project_tags_aggregate?: project_tag_aggregate_order_by | null;
@@ -38583,6 +38680,7 @@ export interface project_order_by {
   title?: order_by | null;
   type?: order_by | null;
   updates?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -38936,6 +39034,81 @@ export interface project_plan_variance_order_by {
   period_amount?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+}
+
+/**
+ * order by aggregate values of table "project_role"
+ */
+export interface project_role_aggregate_order_by {
+  count?: order_by | null;
+  max?: project_role_max_order_by | null;
+  min?: project_role_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "project_role"
+ */
+export interface project_role_arr_rel_insert_input {
+  data: project_role_insert_input[];
+  on_conflict?: project_role_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_role". All fields are combined with a logical 'AND'.
+ */
+export interface project_role_bool_exp {
+  _and?: project_role_bool_exp[] | null;
+  _not?: project_role_bool_exp | null;
+  _or?: project_role_bool_exp[] | null;
+  id?: uuid_comparison_exp | null;
+  identity?: identity_bool_exp | null;
+  identity_id?: uuid_comparison_exp | null;
+  member?: member_public_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  project?: project_bool_exp | null;
+  project_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project_role"
+ */
+export interface project_role_insert_input {
+  id?: any | null;
+  identity?: identity_obj_rel_insert_input | null;
+  identity_id?: any | null;
+  member?: member_public_obj_rel_insert_input | null;
+  member_id?: string | null;
+  project?: project_obj_rel_insert_input | null;
+  project_id?: any | null;
+}
+
+/**
+ * order by max() on columns of table "project_role"
+ */
+export interface project_role_max_order_by {
+  id?: order_by | null;
+  identity_id?: order_by | null;
+  member_id?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_role"
+ */
+export interface project_role_min_order_by {
+  id?: order_by | null;
+  identity_id?: order_by | null;
+  member_id?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
+ * on_conflict condition type for table "project_role"
+ */
+export interface project_role_on_conflict {
+  constraint: project_role_constraint;
+  update_columns: project_role_update_column[];
+  where?: project_role_bool_exp | null;
 }
 
 /**
