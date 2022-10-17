@@ -134,9 +134,9 @@ const useProjectPreviewCollection = (
             title: v.title,
             abstract: v.abstract,
             author: {
-              id: v.project_roles[0]?.member?.id,
-              name: v.project_roles[0]?.member?.name,
-              pictureUrl: v.project_roles[0]?.member?.picture_url,
+              id: v.project_roles[0]?.member?.id || '',
+              name: v.project_roles[0]?.member?.name || '',
+              pictureUrl: v.project_roles[0]?.member?.picture_url || '',
             },
             projectType: v.type as ProjectDataType,
             createdAt: v.created_at,

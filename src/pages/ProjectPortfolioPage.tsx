@@ -1,7 +1,8 @@
 import Icon from '@ant-design/icons'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useEffect } from 'react'
+import { handleError } from 'lodestar-app-element/src/helpers'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../components/admin'
@@ -9,8 +10,8 @@ import ProductCreationModal from '../components/common/ProductCreationModal'
 import AdminLayout from '../components/layout/AdminLayout'
 import ProjectCollectionTabs from '../components/project/ProjectCollectionTabs'
 import { commonMessages } from '../helpers/translation'
+import { useIdentity } from '../hooks/identity'
 import { useProject } from '../hooks/project'
-import { useRole } from '../hooks/role'
 import { ReactComponent as ProjectIcon } from '../images/icon/project.svg'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
@@ -21,15 +22,8 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
   const { currentMemberId, permissions } = useAuth()
   const { id: appId, enabledModules } = useApp()
   const { insertProject, insertProjectRole } = useProject()
-  const { useGetAuthorIdentityId, insertMetaProjectAuthorIdentity } = useRole()
-  const { authorIdentityId, authorIdentityIdLoading } = useGetAuthorIdentityId('Project')
-
-  // for initial project's author identity
-  useEffect(() => {
-    if (!authorIdentityIdLoading && !authorIdentityId) {
-      insertMetaProjectAuthorIdentity({ variables: { appId: appId, type: 'Project' } })
-    }
-  }, [appId, authorIdentityId, authorIdentityIdLoading, insertMetaProjectAuthorIdentity])
+  const { getIdentity, insertMetaProjectAuthorIdentity } = useIdentity()
+  const { identityId } = getIdentity('Project', 'author')
 
   if (
     !enabledModules.project ||
@@ -72,15 +66,32 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                 })
                   .then(({ data }) => {
                     const projectId = data?.insert_project?.returning[0]?.id
-                    let insertedIdentityId
-                    insertProjectRole({
-                      variables: {
-                        projectId: projectId,
-                        memberId: currentMemberId,
-                        identityId: insertedIdentityId || authorIdentityId,
-                      },
-                    })
-                    projectId && history.push(`/projects/${projectId}`)
+                    if (!identityId) {
+                      insertMetaProjectAuthorIdentity({ variables: { appId: appId, type: 'Project' } })
+                        .then(res => {
+                          let insertedIdentityId = res.data?.insert_identity?.returning[0].id
+                          insertProjectRole({
+                            variables: {
+                              projectId: projectId,
+                              memberId: currentMemberId,
+                              identityId: insertedIdentityId,
+                            },
+                          })
+                            .then(() => projectId && history.push(`/projects/${projectId}`))
+                            .catch(handleError)
+                        })
+                        .catch(handleError)
+                    } else {
+                      insertProjectRole({
+                        variables: {
+                          projectId: projectId,
+                          memberId: currentMemberId,
+                          identityId: identityId,
+                        },
+                      })
+                        .then(() => projectId && history.push(`/projects/${projectId}`))
+                        .catch(handleError)
+                    }
                   })
                   .catch(err => process.env.NODE_ENV === 'development' && console.error(err))
               }
