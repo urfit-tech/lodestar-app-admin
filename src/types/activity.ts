@@ -11,6 +11,7 @@ export type ActivityProps = {
   description: string | null
   isParticipantsVisible: boolean
   organizerId: string
+  isPrivate?: boolean
   supportLocales: string[]
 }
 
