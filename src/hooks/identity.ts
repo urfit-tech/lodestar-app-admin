@@ -45,7 +45,7 @@ export const useIdentity = () => {
       }
 
       if (roleName) {
-        return { identityId: getIdentityData?.identity[0]?.id, identityLoading: loading }
+        return { identityId: getIdentityData?.identity[0]?.id, identityLoading: loading, identityListRefetch: refetch }
       }
 
       const identityList = getIdentityData?.identity

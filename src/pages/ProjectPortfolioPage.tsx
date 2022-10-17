@@ -23,7 +23,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
   const { id: appId, enabledModules } = useApp()
   const { insertProject, insertProjectRole } = useProject()
   const { getIdentity, insertMetaProjectAuthorIdentity } = useIdentity()
-  const { identityId } = getIdentity('Project', 'author')
+  const { identityId, identityListRefetch } = getIdentity('Project', 'author')
 
   if (
     !enabledModules.project ||
@@ -69,6 +69,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                     if (!identityId) {
                       insertMetaProjectAuthorIdentity({ variables: { appId: appId, type: 'Project' } })
                         .then(res => {
+                          identityListRefetch?.()
                           let insertedIdentityId = res.data?.insert_identity?.returning[0].id
                           insertProjectRole({
                             variables: {
@@ -77,7 +78,9 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                               identityId: insertedIdentityId,
                             },
                           })
-                            .then(() => projectId && history.push(`/projects/${projectId}`))
+                            .then(() => {
+                              projectId && history.push(`/projects/${projectId}`)
+                            })
                             .catch(handleError)
                         })
                         .catch(handleError)
