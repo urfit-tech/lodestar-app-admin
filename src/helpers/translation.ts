@@ -408,6 +408,7 @@ export const commonMessages = {
     podcastAlbum: { id: 'common.menu.podcastAlbum', defaultMessage: '音頻專輯' },
     podcastAlbumCategory: { id: 'common.menu.podcastAlbumCategory', defaultMessage: '音頻專輯分類' },
     projectCategory: { id: 'common.menu.projectCategory', defaultMessage: 'Project Category' },
+    roleManagement: { id: 'common.menu.roleManagement', defaultMessage: 'Role Management' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },

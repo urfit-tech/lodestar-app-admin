@@ -176,6 +176,11 @@ export const routesProps = {
     pageName: 'ProjectCategoryPage',
     authenticated: true,
   },
+  project_roles: {
+    path: '/project-roles',
+    pageName: 'ProjectRolePage',
+    authenticated: true,
+  },
   // podcast program
   podcast_program_collection: {
     path: '/podcast-programs',

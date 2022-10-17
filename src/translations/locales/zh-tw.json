@@ -2446,5 +2446,7 @@
   "project.ProjectAdminPage.portfolioDescription": "作品描述",
   "project.ProjectPortfolioBasicForm.tag": "標籤",
   "project.ProjectAdminPage.deletePortfolio": "刪除作品",
-  "project.*.portfolioTitle": "名稱"
+  "project.*.portfolioTitle": "名稱",
+  "admin.AdminMenu.projectRole": "角色管理",
+  "common.menu.roleManagement": "角色管理"
 }
