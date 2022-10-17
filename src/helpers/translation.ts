@@ -77,6 +77,8 @@ export const commonMessages = {
     set: { id: 'common.ui.set', defaultMessage: '設為' },
     discontinue: { id: 'common.ui.discontinue', defaultMessage: '下架' },
     hasGiftPlan: { id: 'common.ui.hasGiftPlan', defaultMessage: '附贈品' },
+    addParticipant: { id: 'common.ui.addParticipant', defaultMessage: 'Add participant' },
+    editParticipant: { id: 'common.ui.editParticipant', defaultMessage: 'Edit participant' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -269,6 +271,9 @@ export const commonMessages = {
     ogDescription: { id: 'common.label.ogDescription', defaultMessage: 'og:description' },
     ogImage: { id: 'common.label.ogImage', defaultMessage: 'og:image' },
     ogImageAlt: { id: 'common.label.ogImageAlt', defaultMessage: 'og:image:alt' },
+    participant: { id: 'common.label.participant', defaultMessage: 'participant' },
+    selectParticipant: { id: 'common.label.selectParticipant', defaultMessage: 'Select participant' },
+    participantPosition: { id: 'common.label.participantPosition', defaultMessage: 'Participant position' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },

@@ -1,52 +1,19 @@
-import { useLazyQuery, useMutation, useQuery } from '@apollo/react-hooks'
+import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import hasura from '../hasura'
 
 export const useIdentity = () => {
-  const [insertMetaProjectIdentity] = useMutation<
-    hasura.INSERT_META_PROJECT_IDENTITY,
-    hasura.INSERT_META_PROJECT_IDENTITYVariables
+  const [insertMetaProductIdentity] = useMutation<
+    hasura.INSERT_META_PRODUCT_IDENTITY,
+    hasura.INSERT_META_PRODUCT_IDENTITYVariables
   >(gql`
-    mutation INSERT_META_PROJECT_IDENTITY($appId: String!, $type: String!, $name: String, $position: Int) {
+    mutation INSERT_META_PRODUCT_IDENTITY($appId: String!, $type: String!, $name: String, $position: Int) {
       insert_identity(objects: { app_id: $appId, type: $type, name: $name, position: $position }) {
         affected_rows
         returning {
           id
         }
-      }
-    }
-  `)
-
-  const [updateMetaProjectIdentityName] = useMutation<
-    hasura.UPDATE_META_PROJECT_IDENTITY_NAME,
-    hasura.UPDATE_META_PROJECT_IDENTITY_NAMEVariables
-  >(gql`
-    mutation UPDATE_META_PROJECT_IDENTITY_NAME($identityId: uuid!, $name: String) {
-      update_identity(_set: { name: $name }, where: { id: { _eq: $identityId } }) {
-        affected_rows
-      }
-    }
-  `)
-
-  const [updateMetaProjectIdentityPosition] = useMutation<
-    hasura.UPDATE_META_PROJECT_IDENTITY_POSITION,
-    hasura.UPDATE_META_PROJECT_IDENTITY_POSITIONVariables
-  >(gql`
-    mutation UPDATE_META_PROJECT_IDENTITY_POSITION($data: [identity_insert_input!]!) {
-      insert_identity(objects: $data, on_conflict: { constraint: identity_pkey, update_columns: position }) {
-        affected_rows
-      }
-    }
-  `)
-
-  const [deleteMetaProjectIdentity] = useMutation<
-    hasura.DELETE_META_PROJECT_IDENTITY,
-    hasura.DELETE_META_PROJECT_IDENTITYVariables
-  >(gql`
-    mutation DELETE_META_PROJECT_IDENTITY($identityId: uuid!) {
-      delete_identity(where: { id: { _eq: $identityId } }) {
-        affected_rows
       }
     }
   `)
@@ -109,8 +76,45 @@ export const useIdentity = () => {
         identityListRefetch: refetch,
       }
     },
-    insertMetaProjectIdentity,
+    insertMetaProductIdentity,
     insertMetaProjectAuthorIdentity,
+  }
+}
+
+export const useProjectIdentity = () => {
+  const [updateMetaProjectIdentityName] = useMutation<
+    hasura.UPDATE_META_PROJECT_IDENTITY_NAME,
+    hasura.UPDATE_META_PROJECT_IDENTITY_NAMEVariables
+  >(gql`
+    mutation UPDATE_META_PROJECT_IDENTITY_NAME($identityId: uuid!, $name: String) {
+      update_identity(_set: { name: $name }, where: { id: { _eq: $identityId } }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [updateMetaProjectIdentityPosition] = useMutation<
+    hasura.UPDATE_META_PROJECT_IDENTITY_POSITION,
+    hasura.UPDATE_META_PROJECT_IDENTITY_POSITIONVariables
+  >(gql`
+    mutation UPDATE_META_PROJECT_IDENTITY_POSITION($data: [identity_insert_input!]!) {
+      insert_identity(objects: $data, on_conflict: { constraint: identity_pkey, update_columns: position }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [deleteMetaProjectIdentity] = useMutation<
+    hasura.DELETE_META_PROJECT_IDENTITY,
+    hasura.DELETE_META_PROJECT_IDENTITYVariables
+  >(gql`
+    mutation DELETE_META_PROJECT_IDENTITY($identityId: uuid!) {
+      delete_identity(where: { id: { _eq: $identityId } }) {
+        affected_rows
+      }
+    }
+  `)
+  return {
     updateMetaProjectIdentityName,
     updateMetaProjectIdentityPosition,
     deleteMetaProjectIdentity,

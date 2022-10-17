@@ -19,6 +19,7 @@ import RoleAdminBlock from '../components/admin/RoleAdminBlock'
 import { StyledLayoutContent } from '../components/layout/DefaultLayout'
 import ProjectBasicForm from '../components/project/ProjectBasicForm'
 import ProjectIntroForm from '../components/project/ProjectIntroForm'
+import ProjectParticipantBlock from '../components/project/ProjectParticipantBlock'
 import ProjectPlanAdminBlock from '../components/project/ProjectPlanAdminBlock'
 import ProjectPortfolioAuthorBlock from '../components/project/ProjectPortfolioAuthorBlock'
 import ProjectPortfolioBasicForm from '../components/project/ProjectPortfolioBasicForm'
@@ -114,10 +115,13 @@ const ProjectAdminPage: React.FC<{}> = () => {
                         pictureUrl={projectAdmin.creator?.pictureUrl || ''}
                       />
                     </AdminBlock>
-
                     <AdminBlock>
                       <AdminBlockTitle>{formatMessage(commonMessages.label.author)}</AdminBlockTitle>
                       <ProjectPortfolioAuthorBlock projectId={projectAdmin.id} />
+                    </AdminBlock>
+                    <AdminBlock>
+                      <AdminBlockTitle>{formatMessage(commonMessages.label.participant)}</AdminBlockTitle>
+                      <ProjectParticipantBlock projectId={projectAdmin.id} />
                     </AdminBlock>
                   </div>
                 </Tabs.TabPane>

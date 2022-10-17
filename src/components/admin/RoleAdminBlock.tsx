@@ -1,4 +1,4 @@
-import { DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import React from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../common/Image'
@@ -21,12 +21,14 @@ const StyledInstructorBlock = styled.div`
 const RoleAdminBlock: React.FC<{
   name: string | null
   pictureUrl: string | null
+  onEdit?: () => void
   onDelete?: () => void
-}> = ({ name, pictureUrl, onDelete }) => {
+}> = ({ name, pictureUrl, onEdit, onDelete }) => {
   return (
     <StyledInstructorBlock className="d-flex align-items-center justify-content-center">
       <AvatarImage size="36px" src={pictureUrl} className="mr-3" />
       <StyledName className="flex-grow-1">{name}</StyledName>
+      {onEdit && <EditOutlined className="mr-3" onClick={() => onEdit()} />}
       {onDelete && <DeleteOutlined onClick={() => onDelete()} />}
     </StyledInstructorBlock>
   )
