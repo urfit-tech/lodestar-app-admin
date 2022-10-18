@@ -22,6 +22,7 @@ import ImageUploader from '../common/ImageUploader'
 import projectMessages from './translation'
 
 const StyledVideoBlock = styled.div`
+  width: 100%;
   position: relative;
   padding-top: 56.25%;
   .react-player {
@@ -180,7 +181,22 @@ const ProjectPortfolioSettingsForm: React.FC<{
 
         {videoUrl && (
           <StyledVideoBlock>
-            <ReactPlayer className="react-player" url={videoUrl} width="100%" height="100%" autoPlay={false} />
+            <ReactPlayer
+              className="react-player"
+              url={videoUrl}
+              width="100%"
+              height="100%"
+              controls={true}
+              autoPlay={false}
+              config={{
+                facebook: {
+                  attributes: {
+                    'data-width': '790px',
+                    'data-height': '445px',
+                  },
+                },
+              }}
+            />
           </StyledVideoBlock>
         )}
       </Form.Item>
