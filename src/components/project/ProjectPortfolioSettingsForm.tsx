@@ -1,9 +1,10 @@
-import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import Icon, { QuestionCircleFilled } from '@ant-design/icons'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
+import { debounce } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
@@ -14,6 +15,7 @@ import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ProjectAdminProps } from '../../types/project'
 import { StyledTips } from '../admin'
 import ImageUploader from '../common/ImageUploader'
@@ -27,6 +29,18 @@ const StyledVideoBlock = styled.div`
     top: 0;
     left: 0;
   }
+`
+
+const ErrorBlock = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: rgba(255, 125, 98, 0.1);
+  color: var(--error);
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
 `
 
 type FieldProps = {
@@ -46,6 +60,7 @@ const ProjectPortfolioSettingsForm: React.FC<{
   const [loading, setLoading] = useState(false)
   const [coverImg, setCoverImg] = useState<File | null>(null)
   const [videoUrl, setVideoUrl] = useState<string>(project?.coverUrl || '')
+  const { hasSameOriginalSource } = usePortfolioVideoUrlCount(project?.id, videoUrl)
   const [updatePortfolioSettings] = useMutation<
     hasura.UPDATE_PORTFOLIO_PROJECT_SETTINGS,
     hasura.UPDATE_PORTFOLIO_PROJECT_SETTINGSVariables
@@ -55,8 +70,16 @@ const ProjectPortfolioSettingsForm: React.FC<{
     return <Skeleton active />
   }
 
+  const handleVideoUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVideoUrl(e.target.value)
+  }
+
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
+    if (hasSameOriginalSource) {
+      setLoading(false)
+      return message.error(formatMessage(commonMessages.event.failedSave))
+    }
     updatePortfolioSettings({
       variables: {
         projectId: project.id,
@@ -129,11 +152,32 @@ const ProjectPortfolioSettingsForm: React.FC<{
       >
         <ImageUploader file={coverImg} initialCoverUrl={project.previewUrl} onChange={file => setCoverImg(file)} />
       </Form.Item>
-
-      <Form.Item label={formatMessage(projectMessages.ProjectPortfolioSettingsForm.videoUrl)}>
+      <Form.Item
+        label={
+          <span className="d-flex align-items-center">
+            {formatMessage(projectMessages.ProjectPortfolioSettingsForm.videoUrl)}
+            <Tooltip
+              placement="top"
+              title={
+                <StyledTips>{formatMessage(projectMessages.ProjectPortfolioSettingsForm.defaultVideoTips)}</StyledTips>
+              }
+            >
+              <QuestionCircleFilled className="ml-2" />
+            </Tooltip>
+          </span>
+        }
+      >
         <Form.Item name="videoUrl">
-          <Input onChange={e => setVideoUrl(e.target.value)} />
+          <Input onChange={debounce(handleVideoUrlChange, 500)} />
         </Form.Item>
+
+        {hasSameOriginalSource && (
+          <ErrorBlock className="mb-3">
+            <Icon className="mr-1" component={() => <ExclamationCircleIcon />} />
+            {formatMessage(projectMessages.ProjectPortfolioSettingsForm.hasSameOriginalSource)}
+          </ErrorBlock>
+        )}
+
         {videoUrl && (
           <StyledVideoBlock>
             <ReactPlayer className="react-player" url={videoUrl} width="100%" height="100%" autoPlay={false} />
@@ -142,7 +186,13 @@ const ProjectPortfolioSettingsForm: React.FC<{
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button className="mr-2" onClick={() => form.resetFields()}>
+        <Button
+          className="mr-2"
+          onClick={() => {
+            setVideoUrl(project?.coverUrl || '')
+            form.resetFields()
+          }}
+        >
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
@@ -151,6 +201,40 @@ const ProjectPortfolioSettingsForm: React.FC<{
       </Form.Item>
     </Form>
   )
+}
+
+const usePortfolioVideoUrlCount = (projectId: string | undefined, videoUrl: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_PORTFOLIO_VIDEO_URL_COUNT,
+    hasura.GET_PORTFOLIO_VIDEO_URL_COUNTVariables
+  >(
+    gql`
+      query GET_PORTFOLIO_VIDEO_URL_COUNT($videoUrl: String) {
+        project_aggregate(
+          where: { type: { _eq: "portfolio" }, cover_type: { _eq: "video" }, cover_url: { _eq: $videoUrl } }
+        ) {
+          nodes {
+            id
+          }
+          aggregate {
+            count(columns: cover_url)
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        videoUrl,
+      },
+    },
+  )
+
+  const originalSourceProjectId = data?.project_aggregate.nodes[0]?.id
+
+  return {
+    hasSameOriginalSource:
+      originalSourceProjectId !== projectId && (data?.project_aggregate.aggregate?.count || 0) > 0 ? true : false,
+  }
 }
 
 const UPDATE_PORTFOLIO_PROJECT_SETTINGS = gql`

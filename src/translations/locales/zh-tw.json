@@ -2456,9 +2456,12 @@
   "common.ui.editParticipant": "編輯參與者",
   "common.label.portfolioPublishSettings": "上架設定",
   "project.ProjectPublishAdminBlock.noAuthor": "作者不可為空",
+  "project.ProjectPublishAdminBlock.noVideoUrl": "影片作品網址",
   "project.ProjectPublishAdminBlock.notCompletePortfolioNotation": "請填寫以下必填資料，填寫完畢即可由此發佈",
   "project.ProjectPublishAdminBlock.unpublishedPortfolioNotation": "你的作品未發佈，此作品並不會顯示在頁面上。",
   "project.ProjectPublishAdminBlock.publishedPortfolioNotation": "現在你的作品已發佈，此作品會出現在頁面上。",
   "project.ProjectPublishAdminBlock.activateNow": "立即發布",
-  "common.text.unpublishingWarning": "將下架且不會出現在列表，已擁有權益的會員仍然可以看到內容。"
+  "common.text.unpublishingWarning": "將下架且不會出現在列表，已擁有權益的會員仍然可以看到內容。",
+  "project.ProjectPortfolioSettingsForm.defaultVideoTips": "放入影片網址後，如未出現影片預覽，請確認網址是否正確",
+  "project.ProjectPortfolioSettingsForm.hasSameOriginalSource": "平台上已有相同來源的作品"
 }

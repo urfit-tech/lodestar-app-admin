@@ -7131,6 +7131,42 @@ export interface UPDATE_PROJECT_PORTFOLIO_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PORTFOLIO_VIDEO_URL_COUNT
+// ====================================================
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_nodes {
+  __typename: "project";
+  id: any;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_aggregate {
+  __typename: "project_aggregate_fields";
+  count: number;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate {
+  __typename: "project_aggregate";
+  nodes: GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_nodes[];
+  aggregate: GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_aggregate | null;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT {
+  /**
+   * fetch aggregated fields from the table: "project"
+   */
+  project_aggregate: GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNTVariables {
+  videoUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PORTFOLIO_PROJECT_SETTINGS
 // ====================================================
 

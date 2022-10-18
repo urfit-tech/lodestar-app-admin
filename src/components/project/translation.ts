@@ -50,9 +50,17 @@ const projectMessages = {
       id: 'project.ProjectPortfolioSettingsForm.defaultImageTips',
       defaultMessage: 'Recommended image size: 1200*675px',
     },
+    defaultVideoTips: {
+      id: 'project.ProjectPortfolioSettingsForm.defaultVideoTips',
+      defaultMessage: 'If video preview is not show in page, please check video url is correct',
+    },
     videoUrl: {
       id: 'project.ProjectPortfolioSettingsForm.videoUrl',
       defaultMessage: 'Portfolio video url',
+    },
+    hasSameOriginalSource: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSource',
+      defaultMessage: 'Has same original source',
     },
   }),
   ProjectPortfolioDescriptionForm: defineMessages({}),
