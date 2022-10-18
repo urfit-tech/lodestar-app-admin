@@ -57,12 +57,11 @@ const ProjectPortfolioSettingsForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    console.log(values)
     updatePortfolioSettings({
       variables: {
         projectId: project.id,
         previewUrl: project.previewUrl,
-        coverUrl: values.videoUrl || project.coverUrl,
+        coverUrl: values.videoUrl,
         coverType: values.videoUrl ? 'video' : 'image',
       },
     })
@@ -93,6 +92,8 @@ const ProjectPortfolioSettingsForm: React.FC<{
             })
             .catch(handleError)
         }
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .finally(() => setLoading(false))
   }

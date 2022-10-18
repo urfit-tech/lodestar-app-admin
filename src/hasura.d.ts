@@ -6560,12 +6560,6 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate {
   aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate | null;
 }
 
-export interface GET_PROJECT_PREVIEW_COLLECTION_project_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-}
-
 export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate {
   __typename: "project_plan_enrollment_aggregate_fields";
   count: number;
@@ -6585,6 +6579,21 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans {
   project_plan_enrollments_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate;
 }
 
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_roles {
+  __typename: "project_role";
+  /**
+   * An object relationship
+   */
+  member: GET_PROJECT_PREVIEW_COLLECTION_project_project_roles_member | null;
+}
+
 export interface GET_PROJECT_PREVIEW_COLLECTION_project {
   __typename: "project";
   id: any;
@@ -6599,10 +6608,6 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project {
   expired_at: any | null;
   cover_url: string | null;
   preview_url: string | null;
-  /**
-   * An object relationship
-   */
-  creator: GET_PROJECT_PREVIEW_COLLECTION_project_creator | null;
   position: number;
   /**
    * image / video
@@ -6612,6 +6617,10 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project {
    * An array relationship
    */
   project_plans: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans[];
+  /**
+   * An array relationship
+   */
+  project_roles: GET_PROJECT_PREVIEW_COLLECTION_project_project_roles[];
 }
 
 export interface GET_PROJECT_PREVIEW_COLLECTION {
@@ -6922,6 +6931,77 @@ export interface UPSERT_PROJECT_PLAN_PRODUCT {
 export interface UPSERT_PROJECT_PLAN_PRODUCTVariables {
   projectPlanId?: any | null;
   data: project_plan_product_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PORTFOLIO_AUTHOR
+// ====================================================
+
+export interface GET_PORTFOLIO_AUTHOR_project_role_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PORTFOLIO_AUTHOR_project_role_identity {
+  __typename: "identity";
+  id: any;
+}
+
+export interface GET_PORTFOLIO_AUTHOR_project_role {
+  __typename: "project_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PORTFOLIO_AUTHOR_project_role_member | null;
+  /**
+   * An object relationship
+   */
+  identity: GET_PORTFOLIO_AUTHOR_project_role_identity;
+}
+
+export interface GET_PORTFOLIO_AUTHOR {
+  /**
+   * fetch data from the table: "project_role"
+   */
+  project_role: GET_PORTFOLIO_AUTHOR_project_role[];
+}
+
+export interface GET_PORTFOLIO_AUTHORVariables {
+  projectId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PORTFOLIO_AUTHOR
+// ====================================================
+
+export interface UPDATE_PORTFOLIO_AUTHOR_update_project_role_by_pk {
+  __typename: "project_role";
+  member_id: string;
+}
+
+export interface UPDATE_PORTFOLIO_AUTHOR {
+  /**
+   * update single row of the table: "project_role"
+   */
+  update_project_role_by_pk: UPDATE_PORTFOLIO_AUTHOR_update_project_role_by_pk | null;
+}
+
+export interface UPDATE_PORTFOLIO_AUTHORVariables {
+  projectRoleId: any;
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -17925,6 +18005,11 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_tags {
   tag: GET_PROJECT_ADMIN_project_by_pk_project_tags_tag | null;
 }
 
+export interface GET_PROJECT_ADMIN_project_by_pk_project_roles {
+  __typename: "project_role";
+  member_id: string;
+}
+
 export interface GET_PROJECT_ADMIN_project_by_pk {
   __typename: "project";
   id: any;
@@ -17972,6 +18057,10 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
    * An array relationship
    */
   project_tags: GET_PROJECT_ADMIN_project_by_pk_project_tags[];
+  /**
+   * An array relationship
+   */
+  project_roles: GET_PROJECT_ADMIN_project_by_pk_project_roles[];
 }
 
 export interface GET_PROJECT_ADMIN {

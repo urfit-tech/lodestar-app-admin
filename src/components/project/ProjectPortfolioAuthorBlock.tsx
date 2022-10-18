@@ -26,7 +26,9 @@ type FieldPRops = {
 
 const ProjectPortfolioAuthorBlock: React.FC<{
   projectId: string
-}> = ({ projectId }) => {
+  publishedAt: Date | null
+  onRefetch?: () => void
+}> = ({ projectId, publishedAt, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldPRops>()
   const [updatePortfolioAuthor] = useMutation<hasura.UPDATE_PORTFOLIO_AUTHOR, hasura.UPDATE_PORTFOLIO_AUTHORVariables>(
@@ -52,6 +54,7 @@ const ProjectPortfolioAuthorBlock: React.FC<{
         message.success(formatMessage(commonMessages.event.successfullyDeleted))
         setVisible(false)
         authorDataRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -69,6 +72,7 @@ const ProjectPortfolioAuthorBlock: React.FC<{
         message.success(formatMessage(commonMessages.event.successfullySaved))
         setVisible(false)
         authorDataRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -81,7 +85,7 @@ const ProjectPortfolioAuthorBlock: React.FC<{
           key={authorData.member.id}
           name={authorData.member.name}
           pictureUrl={authorData.member.pictureUrl}
-          onDelete={() => handleDelete()}
+          onDelete={publishedAt ? undefined : () => handleDelete()}
         />
       )}
 

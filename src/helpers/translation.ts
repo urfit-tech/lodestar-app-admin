@@ -274,6 +274,7 @@ export const commonMessages = {
     participant: { id: 'common.label.participant', defaultMessage: 'participant' },
     selectParticipant: { id: 'common.label.selectParticipant', defaultMessage: 'Select participant' },
     participantPosition: { id: 'common.label.participantPosition', defaultMessage: 'Participant position' },
+    portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },

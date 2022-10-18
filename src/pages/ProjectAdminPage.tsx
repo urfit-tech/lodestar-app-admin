@@ -117,11 +117,27 @@ const ProjectAdminPage: React.FC<{}> = () => {
                     </AdminBlock>
                     <AdminBlock>
                       <AdminBlockTitle>{formatMessage(commonMessages.label.author)}</AdminBlockTitle>
-                      <ProjectPortfolioAuthorBlock projectId={projectAdmin.id} />
+                      <ProjectPortfolioAuthorBlock
+                        projectId={projectAdmin.id}
+                        publishedAt={projectAdmin.publishedAt}
+                        onRefetch={refetchProjectAdmin}
+                      />
                     </AdminBlock>
                     <AdminBlock>
                       <AdminBlockTitle>{formatMessage(commonMessages.label.participant)}</AdminBlockTitle>
                       <ProjectParticipantBlock projectId={projectAdmin.id} />
+                    </AdminBlock>
+                  </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.portfolioPublishSettings)}>
+                  <div className="container py-5">
+                    <AdminPaneTitle>{formatMessage(commonMessages.label.portfolioPublishSettings)}</AdminPaneTitle>
+                    <AdminBlock>
+                      <ProjectPublishAdminBlock
+                        type="portfolio"
+                        project={projectAdmin}
+                        onRefetch={refetchProjectAdmin}
+                      />
                     </AdminBlock>
                   </div>
                 </Tabs.TabPane>
@@ -245,9 +261,7 @@ const useProjectAdmin = (projectId: string) => {
             }
           }
           project_roles(where: { identity: { name: { _eq: "author" } } }) {
-            identity {
-              id
-            }
+            member_id
           }
         }
       }
@@ -311,7 +325,7 @@ const useProjectAdmin = (projectId: string) => {
             name: data.project_by_pk.creator?.name || '',
             pictureUrl: data.project_by_pk.creator?.picture_url || '',
           },
-          projectAuthorIdentityId: data.project_by_pk.project_roles[0]?.identity?.id || null,
+          authorId: data.project_by_pk.project_roles[0].member_id || null,
         }
 
   return {

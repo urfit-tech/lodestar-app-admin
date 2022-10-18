@@ -17,7 +17,7 @@ export type ProjectAdminProps = ProjectPreviewProps & {
   isParticipantsVisible: boolean
   isCountdownTimerVisible: boolean
   projectPlan: ProjectPlan[]
-  projectAuthorIdentityId: string | null
+  authorId: string | null
   creator?: Pick<CreatorProps, | 'id' | 'name' | 'pictureUrl'> | null
 }
 

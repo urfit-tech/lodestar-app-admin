@@ -60,6 +60,40 @@ const projectMessages = {
     title: { id: 'project.ProjectCollectionTable.title', defaultMessage: 'Title' },
     author: { id: 'project.ProjectCollectionTable.author', defaultMessage: 'Author' },
   }),
+  ProjectPublishAdminBlock: defineMessages({
+    notCompleteNotation: {
+      id: 'project.ProjectPublishAdminBlock.notCompleteNotation',
+      defaultMessage: 'Please fill required fields. Once completed, you can publish your project.',
+    },
+    notCompletePortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.notCompletePortfolioNotation',
+      defaultMessage: 'Please fill required fields. Once completed, you can publish from here.',
+    },
+    unpublishedNotation: {
+      id: 'project.ProjectPublishAdminBlock.unpublishedNotation',
+      defaultMessage: 'Your project is not published, it will not show in page.',
+    },
+    unpublishedPortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.unpublishedPortfolioNotation',
+      defaultMessage: 'Your portfolio is not published, it will not show in page.',
+    },
+    publishedNotation: {
+      id: 'project.ProjectPublishAdminBlock.publishedNotation',
+      defaultMessage: 'Your project is published now, it will show in page.',
+    },
+    publishedPortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.publishedPortfolioNotation',
+      defaultMessage: 'Your portfolio is published now, it will show in page.',
+    },
+    noTitle: { id: 'project.ProjectPublishAdminBlock.noShopTitle', defaultMessage: 'Project title has not been set' },
+    noFundingTerm: { id: 'project.text.noSalePlan', defaultMessage: 'Project sale plan has not been set' },
+    noSalePrice: { id: 'project.text.noSalePrice', defaultMessage: 'Sale price has not been set' },
+    activateProject: { id: 'project.ProjectPublishAdminBlock.activateShop', defaultMessage: 'Publish' },
+    activateNow: { id: 'project.ProjectPublishAdminBlock.activateNow', defaultMessage: 'Publish' },
+    closeProject: { id: 'project.ProjectPublishAdminBlock.closeShop', defaultMessage: 'Unpublish' },
+    noAuthor: { id: 'project.ProjectPublishAdminBlock.noAuthor', defaultMessage: 'Author has not been set' },
+    noVideoUrl: { id: 'project.ProjectPublishAdminBlock.noVideoUrl', defaultMessage: 'Video url has not been set' },
+  }),
 }
 
 export default projectMessages
