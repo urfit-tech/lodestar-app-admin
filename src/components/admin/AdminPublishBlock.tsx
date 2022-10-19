@@ -1,5 +1,5 @@
-import Icon, { RightOutlined } from '@ant-design/icons'
-import { Button, message } from 'antd'
+import Icon, { DownOutlined, RightOutlined, WarningOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu, message, Modal } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -51,6 +51,19 @@ const messages = defineMessages({
   goTo: { id: 'common.ui.goTo', defaultMessage: '前往填寫' },
   publishedSuccessfully: { id: 'common.event.publishedSuccessfully', defaultMessage: '發佈成功' },
   publishingFailed: { id: 'common.event.publishingFailed', defaultMessage: '發佈失敗' },
+  unpublishingTitle: { id: 'common.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
+  unpublishingWarning: {
+    id: 'common.text.unpublishingWarning',
+    defaultMessage: '將下架且不會出現在列表，已擁有權益的會員仍然可以看到內容。',
+  },
+  confirmPrivatelyPublishedTitle: {
+    id: 'common.confirmPrivatelyPublishedTitle',
+    defaultMessage: '確定要設為私密發佈？',
+  },
+  confirmPrivatelyPublishedNotation: {
+    id: 'common.confirmPrivatelyPublishedNotation',
+    defaultMessage: '將不會出現在列表，僅以私下提供連結的方式。',
+  },
 })
 
 export type PublishStatus = 'alert' | 'ordinary' | 'success'
@@ -62,6 +75,7 @@ export type ChecklistItemProps = {
 export type PublishEvent = {
   values: {
     publishedAt: Date | null
+    isPrivate: boolean
   }
   onSuccess?: () => void
   onError?: (error: Error) => void
@@ -74,11 +88,69 @@ const AdminPublishBlock: React.FC<{
   description?: string
   checklist?: ChecklistItemProps[]
   publishText?: string
+  privatelyPublishText?: string
   unPublishText?: string
+  isPrivateEnabled?: boolean
   onPublish?: (event: PublishEvent) => void
-}> = ({ type, title, description, checklist, publishText, unPublishText, onPublish }) => {
+}> = ({
+  type,
+  title,
+  description,
+  checklist,
+  publishText,
+  privatelyPublishText,
+  unPublishText,
+  isPrivateEnabled,
+  onPublish,
+}) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
+
+  const handlePublish = (isPrivate?: boolean) => {
+    if (type === 'alert') return
+    setLoading(true)
+    const publish = () =>
+      onPublish?.({
+        values: {
+          publishedAt: type === 'ordinary' ? new Date() : null,
+          isPrivate: Boolean(isPrivate),
+        },
+        onSuccess: () => message.success(formatMessage(commonMessages.event.successfullySaved)),
+        onError: () => message.error(formatMessage(messages.publishingFailed)),
+        onFinally: () => setLoading(false),
+      })
+
+    if (type === 'success') {
+      Modal.confirm({
+        title: formatMessage(messages.unpublishingTitle),
+        content: formatMessage(messages.unpublishingWarning),
+        onOk: publish,
+        onCancel: () => {},
+      })
+    } else if (isPrivate && isPrivateEnabled === true) {
+      Modal.confirm({
+        icon: <WarningOutlined />,
+        title: formatMessage(messages.confirmPrivatelyPublishedTitle),
+        content: formatMessage(messages.confirmPrivatelyPublishedNotation),
+        onOk: publish,
+        onCancel: () => {},
+      })
+    } else {
+      publish()
+    }
+  }
+  const mergedPrivatePublishText = privatelyPublishText || formatMessage(commonMessages.ui.privatelyPublished)
+  const nonPubliclyPublishedOverlay = (
+    <Menu>
+      {[mergedPrivatePublishText].map(publishText => (
+        <Menu.Item key={publishText}>
+          <Button type="link" onClick={() => handlePublish(publishText === mergedPrivatePublishText)}>
+            {publishText}
+          </Button>
+        </Menu.Item>
+      ))}
+    </Menu>
+  )
 
   return (
     <>
@@ -119,29 +191,27 @@ const AdminPublishBlock: React.FC<{
       )}
 
       <div className="text-center">
-        <Button
-          type={type === 'success' ? 'default' : 'primary'}
-          disabled={type === 'alert'}
-          loading={loading}
-          onClick={() => {
-            if (!onPublish) {
-              return
-            }
-            setLoading(true)
-            onPublish({
-              values: {
-                publishedAt: type === 'ordinary' ? new Date() : null,
-              },
-              onSuccess: () => message.success(formatMessage(commonMessages.event.successfullySaved)),
-              onError: () => message.error(formatMessage(messages.publishingFailed)),
-              onFinally: () => setLoading(false),
-            })
-          }}
-        >
-          {type === 'success'
-            ? unPublishText || formatMessage(commonMessages.ui.cancelPublishing)
-            : publishText || formatMessage(commonMessages.ui.publish)}
-        </Button>
+        {type === 'ordinary' && isPrivateEnabled ? (
+          <Dropdown.Button
+            type="primary"
+            icon={<DownOutlined />}
+            overlay={nonPubliclyPublishedOverlay}
+            onClick={() => handlePublish()}
+          >
+            {publishText || formatMessage(commonMessages.ui.publiclyPublished)}
+          </Dropdown.Button>
+        ) : (
+          <Button
+            type={type === 'success' ? 'default' : 'primary'}
+            disabled={type === 'alert'}
+            loading={loading}
+            onClick={() => handlePublish()}
+          >
+            {type === 'success'
+              ? unPublishText || formatMessage(commonMessages.ui.cancelPublishing)
+              : publishText || formatMessage(commonMessages.ui.publish)}
+          </Button>
+        )}
       </div>
     </>
   )

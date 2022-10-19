@@ -28,7 +28,12 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
     INSERT_PROGRAM_PACKAGE,
   )
 
-  const publishedQuantity = programPackages.filter(programPackage => !!programPackage.publishedAt === true).length
+  const publishedQuantity = programPackages.filter(
+    programPackage => !!programPackage.publishedAt === true && programPackage.isPrivate !== true,
+  ).length
+  const privatePublishedQuantity = programPackages.filter(
+    programPackage => !!programPackage.publishedAt === true && programPackage.isPrivate === true,
+  ).length
   const tabContents = [
     {
       key: 'published',
@@ -39,6 +44,13 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
       key: 'draft',
       tab: formatMessage(commonMessages.status.draft),
       isPublished: false,
+    },
+    {
+      key: 'privatelyPublish',
+      tab: `${formatMessage(commonMessages.status.privatelyPublish)} (${privatePublishedQuantity})`,
+      isPublished: true,
+      isPrivate: true,
+      hidden: !enabledModules.private_program_package,
     },
   ]
 
@@ -83,24 +95,30 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
       </div>
 
       <Tabs>
-        {tabContents.map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            <div className="row py-5">
-              {programPackages
-                .filter(programPackage => !!programPackage.publishedAt === tabContent.isPublished)
-                .map(programPackage => (
-                  <div key={programPackage.id} className="col-md-6 col-lg-4 col-12 mb-5">
-                    <ProgramPackageAdminCard
-                      id={programPackage.id}
-                      coverUrl={programPackage.coverUrl}
-                      title={programPackage.title}
-                      programPackageEnrollment={programPackage.programPackageEnrollment}
-                    />
-                  </div>
-                ))}
-            </div>
-          </Tabs.TabPane>
-        ))}
+        {tabContents
+          .filter(tabContent => !tabContent.hidden)
+          .map(tabContent => (
+            <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+              <div className="row py-5">
+                {programPackages
+                  .filter(
+                    programPackage =>
+                      !!programPackage.publishedAt === tabContent.isPublished &&
+                      programPackage.isPrivate === Boolean(tabContent.isPrivate),
+                  )
+                  .map(programPackage => (
+                    <div key={programPackage.id} className="col-md-6 col-lg-4 col-12 mb-5">
+                      <ProgramPackageAdminCard
+                        id={programPackage.id}
+                        coverUrl={programPackage.coverUrl}
+                        title={programPackage.title}
+                        programPackageEnrollment={programPackage.programPackageEnrollment}
+                      />
+                    </div>
+                  ))}
+              </div>
+            </Tabs.TabPane>
+          ))}
       </Tabs>
     </AdminLayout>
   )

@@ -125,7 +125,7 @@ const ActivityCollectionSelector: React.FC<{
 
 const GET_ACTIVITY_ID_LIST = gql`
   query GET_ACTIVITY_ID_LIST {
-    activity(where: { published_at: { _lt: "now()" } }) {
+    activity(where: { published_at: { _lt: "now()" }, is_private: { _eq: false } }) {
       id
       title
     }

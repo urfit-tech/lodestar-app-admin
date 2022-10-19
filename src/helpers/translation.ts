@@ -1166,6 +1166,7 @@ export const orderMessages = {
     productType: { id: 'order.label.productType', defaultMessage: '項目類別' },
     productQuantity: { id: 'order.label.productQuantity', defaultMessage: '項目數量' },
     productPrice: { id: 'order.label.productPrice', defaultMessage: '項目金額' },
+    productEndedAt: { id: 'order.label.productEndedAt', defaultMessage: '項目到期時間' },
     // order discount
     orderDiscountName: { id: 'order.label.orderDiscountName', defaultMessage: '折扣名稱' },
     orderDiscountTotalPrice: { id: 'order.label.orderDiscountTotalPrice', defaultMessage: '折扣總額' },

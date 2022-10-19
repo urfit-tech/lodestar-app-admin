@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -24,6 +25,14 @@ const messages = defineMessages({
     id: 'programPackage.status.publishedNotation',
     defaultMessage: '現在你的課程組合已發佈，此課程組合會出現在頁面上。',
   },
+  privatelyPublished: {
+    id: 'programPackage.privatelyPublished',
+    defaultMessage: '已私密發佈',
+  },
+  isPrivatelyPublishedNotation: {
+    id: 'programPackage.isPrivatelyPublishedNotation',
+    defaultMessage: '你的課程組合已經私密發佈，此課程組合不會出現在頁面上，學生僅能透過連結進入瀏覽。',
+  },
 })
 
 const ProgramPackagePublishBlock: React.FC<{
@@ -31,6 +40,7 @@ const ProgramPackagePublishBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [publishProgramPackage] = useMutation<hasura.PUBLISH_PROGRAM_PACKAGE, hasura.PUBLISH_PROGRAM_PACKAGEVariables>(
     PUBLISH_PROGRAM_PACKAGE,
   )
@@ -69,6 +79,11 @@ const ProgramPackagePublishBlock: React.FC<{
       formatMessage(commonMessages.status.unpublished),
       formatMessage(messages.unpublishedNotation),
     ]
+  if (publishStatus === 'success' && programPackage.isPrivate === true)
+    [title, description] = [
+      formatMessage(messages.privatelyPublished),
+      formatMessage(messages.isPrivatelyPublishedNotation),
+    ]
 
   return (
     <>
@@ -77,9 +92,10 @@ const ProgramPackagePublishBlock: React.FC<{
         type={publishStatus}
         title={title}
         description={description}
-        onPublish={({ values: { publishedAt }, onSuccess, onError, onFinally }) => {
+        isPrivateEnabled={enabledModules.private_program_package}
+        onPublish={({ values: { publishedAt, isPrivate }, onSuccess, onError, onFinally }) => {
           publishProgramPackage({
-            variables: { programPackageId: programPackage.id, publishedAt },
+            variables: { programPackageId: programPackage.id, isPrivate, publishedAt },
           })
             .then(() => {
               onRefetch?.()
@@ -94,8 +110,11 @@ const ProgramPackagePublishBlock: React.FC<{
 }
 
 const PUBLISH_PROGRAM_PACKAGE = gql`
-  mutation PUBLISH_PROGRAM_PACKAGE($programPackageId: uuid!, $publishedAt: timestamptz) {
-    update_program_package(where: { id: { _eq: $programPackageId } }, _set: { published_at: $publishedAt }) {
+  mutation PUBLISH_PROGRAM_PACKAGE($programPackageId: uuid!, $isPrivate: Boolean!, $publishedAt: timestamptz) {
+    update_program_package(
+      where: { id: { _eq: $programPackageId } }
+      _set: { published_at: $publishedAt, is_private: $isPrivate }
+    ) {
       affected_rows
     }
   }

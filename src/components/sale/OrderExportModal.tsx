@@ -243,11 +243,13 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         const data: string[][] = [
           [
             formatMessage(orderMessages.label.orderLogId),
+            formatMessage(orderMessages.label.orderLogCreatedAt), // TBC: Date or DateTime
             formatMessage(orderMessages.label.paymentLogPaidAt),
             formatMessage(orderMessages.label.productOwner),
             formatMessage(orderMessages.label.productType),
             formatMessage(commonMessages.label.orderProductId),
             formatMessage(orderMessages.label.orderProductName),
+            formatMessage(orderMessages.label.productEndedAt), // TBC: Date or DateTime
             formatMessage(orderMessages.label.productQuantity),
             formatMessage(orderMessages.label.productPrice),
             enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
@@ -255,6 +257,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           ...orderProducts.map(orderProduct =>
             [
               orderProduct.order_log_id,
+              orderProduct.order_created_at ? dateFormatter(orderProduct.order_created_at) : '',
               orderProduct.paid_at ? dateFormatter(orderProduct.paid_at) : '',
               orderProduct.product_owner || '',
               productTypeLabel[orderProduct.product_id?.split('_')[0] || ''] ||
@@ -262,6 +265,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               orderProduct.product_id?.split('_')[1]?.slice(0, -(orderProduct.product_id?.split('_')[1].length - 6)) ||
                 '',
               orderProduct.name,
+              orderProduct.order_product_ended_at ? dateFormatter(orderProduct.order_product_ended_at) : '',
               orderProduct.quantity,
               Math.max(orderProduct.price, 0),
               enabledModules.sharing_code ? orderProduct.options?.sharingCode || '' : undefined,
@@ -631,7 +635,9 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
       order_log_id
       app_id
       product_owner
+      order_created_at
       paid_at
+      order_product_ended_at
       product_id
     }
   }
