@@ -17,6 +17,7 @@ export const useActivityCollection = (memberId: string | null) => {
           cover_url
           title
           published_at
+          is_private
           activity_sessions {
             location
             online_link
@@ -58,6 +59,7 @@ export const useActivityCollection = (memberId: string | null) => {
     }
     startedAt: Date | null
     endedAt: Date | null
+    isPrivate: boolean
   }[] =
     loading || error || !data
       ? []
@@ -66,6 +68,7 @@ export const useActivityCollection = (memberId: string | null) => {
           coverUrl: activity.cover_url,
           title: activity.title,
           publishedAt: activity.published_at && new Date(activity.published_at),
+          isPrivate: activity.is_private,
           participantsCount: {
             online: sum(activity.session_ticket_enrollment_count.map(v => v.activity_online_session_ticket_count || 0)),
             offline: sum(
@@ -105,6 +108,7 @@ export const useActivityAdmin = (activityId: string) => {
           organizer_id
           published_at
           support_locales
+          is_private
           activity_categories(order_by: { position: asc }) {
             id
             category {
@@ -187,6 +191,7 @@ export const useActivityAdmin = (activityId: string) => {
           isParticipantsVisible: data.activity[0]?.is_participants_visible,
           organizerId: data.activity[0]?.organizer_id,
           supportLocales: data.activity[0]?.support_locales || [],
+          isPrivate: data.activity[0]?.is_private || false,
           categories:
             data.activity[0]?.activity_categories.map(v => ({
               id: v.category.id,

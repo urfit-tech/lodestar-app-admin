@@ -116,7 +116,7 @@ const ProgramPackageCollectionSelector: React.FC<{
 
 const GET_PROGRAM_PACKAGE_ID_LIST = gql`
   query GET_PROGRAM_PACKAGE_ID_LIST {
-    program_package(where: { published_at: { _lt: "now()" } }) {
+    program_package(where: { published_at: { _lt: "now()" }, is_private: { _eq: false } }) {
       id
       title
     }

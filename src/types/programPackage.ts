@@ -11,6 +11,7 @@ export type ProgramPackageProps = {
   plans: ProgramPackagePlanProps[]
   categories: CategoryProps[]
   tags: string[]
+  isPrivate: boolean
 }
 
 export type ProgramPackageProgramProps = {
