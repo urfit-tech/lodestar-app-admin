@@ -44,7 +44,7 @@ const MemberNoteColleactionBlock: React.FC<{ memberId: string; searchText: strin
   const { currentMemberId } = useAuth()
 
   const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
-    { created_at: 'desc' as hasura.order_by, id: 'asc' as hasura.order_by },
+    [{ created_at: 'desc' as hasura.order_by }, { id: 'asc' as hasura.order_by }],
     { member: memberId },
     searchText,
   )

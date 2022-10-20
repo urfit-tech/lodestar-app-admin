@@ -6638,7 +6638,7 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project {
   title: string;
   abstract: string | null;
   /**
-   * funding / pre-order / on-sale / modular
+   * funding / pre-order / on-sale / modular / portfolio
    */
   type: string;
   created_at: any;
@@ -6689,7 +6689,7 @@ export interface GET_PROJECT_SORT_COLLECTION_project {
   id: any;
   title: string;
   /**
-   * funding / pre-order / on-sale / modular
+   * funding / pre-order / on-sale / modular / portfolio
    */
   type: string;
 }
@@ -11396,7 +11396,7 @@ export interface GET_MEMBER_NOTES_ADMIN {
 }
 
 export interface GET_MEMBER_NOTES_ADMINVariables {
-  orderBy: member_note_order_by;
+  orderBy?: member_note_order_by[] | null;
   condition?: member_note_bool_exp | null;
 }
 
@@ -18687,7 +18687,7 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
    */
   target_unit: string;
   /**
-   * funding / pre-order / on-sale / modular
+   * funding / pre-order / on-sale / modular / portfolio
    */
   type: string;
   updates: any | null;
@@ -24067,6 +24067,23 @@ export enum project_plan_update_column {
   sale_price = "sale_price",
   sold_at = "sold_at",
   title = "title",
+}
+
+/**
+ * unique or primary key constraints on table "project_reaction"
+ */
+export enum project_reaction_constraint {
+  project_reaction_pkey = "project_reaction_pkey",
+}
+
+/**
+ * update columns of table "project_reaction"
+ */
+export enum project_reaction_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  project_id = "project_id",
 }
 
 /**
@@ -40712,6 +40729,7 @@ export interface project_bool_exp {
   preview_url?: String_comparison_exp | null;
   project_categories?: project_category_bool_exp | null;
   project_plans?: project_plan_bool_exp | null;
+  project_reactions?: project_reaction_bool_exp | null;
   project_roles?: project_role_bool_exp | null;
   project_sales?: project_sales_bool_exp | null;
   project_sections?: project_section_bool_exp | null;
@@ -40887,6 +40905,7 @@ export interface project_insert_input {
   preview_url?: string | null;
   project_categories?: project_category_arr_rel_insert_input | null;
   project_plans?: project_plan_arr_rel_insert_input | null;
+  project_reactions?: project_reaction_arr_rel_insert_input | null;
   project_roles?: project_role_arr_rel_insert_input | null;
   project_sales?: project_sales_obj_rel_insert_input | null;
   project_sections?: project_section_arr_rel_insert_input | null;
@@ -40942,6 +40961,7 @@ export interface project_order_by {
   preview_url?: order_by | null;
   project_categories_aggregate?: project_category_aggregate_order_by | null;
   project_plans_aggregate?: project_plan_aggregate_order_by | null;
+  project_reactions_aggregate?: project_reaction_aggregate_order_by | null;
   project_roles_aggregate?: project_role_aggregate_order_by | null;
   project_sales?: project_sales_order_by | null;
   project_sections_aggregate?: project_section_aggregate_order_by | null;
@@ -41307,6 +41327,79 @@ export interface project_plan_variance_order_by {
   period_amount?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+}
+
+/**
+ * order by aggregate values of table "project_reaction"
+ */
+export interface project_reaction_aggregate_order_by {
+  count?: order_by | null;
+  max?: project_reaction_max_order_by | null;
+  min?: project_reaction_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "project_reaction"
+ */
+export interface project_reaction_arr_rel_insert_input {
+  data: project_reaction_insert_input[];
+  on_conflict?: project_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface project_reaction_bool_exp {
+  _and?: project_reaction_bool_exp[] | null;
+  _not?: project_reaction_bool_exp | null;
+  _or?: project_reaction_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_public_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  project?: project_bool_exp | null;
+  project_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project_reaction"
+ */
+export interface project_reaction_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_public_obj_rel_insert_input | null;
+  member_id?: string | null;
+  project?: project_obj_rel_insert_input | null;
+  project_id?: any | null;
+}
+
+/**
+ * order by max() on columns of table "project_reaction"
+ */
+export interface project_reaction_max_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_reaction"
+ */
+export interface project_reaction_min_order_by {
+  created_at?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
+ * on_conflict condition type for table "project_reaction"
+ */
+export interface project_reaction_on_conflict {
+  constraint: project_reaction_constraint;
+  update_columns: project_reaction_update_column[];
+  where?: project_reaction_bool_exp | null;
 }
 
 /**
@@ -42747,6 +42840,7 @@ export interface tag_bool_exp {
   podcast_program_tags?: podcast_program_tag_bool_exp | null;
   post_tags?: post_tag_bool_exp | null;
   program_tags?: program_tag_bool_exp | null;
+  project_tags?: project_tag_bool_exp | null;
   search_tags?: search_tag_bool_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -42766,6 +42860,7 @@ export interface tag_insert_input {
   podcast_program_tags?: podcast_program_tag_arr_rel_insert_input | null;
   post_tags?: post_tag_arr_rel_insert_input | null;
   program_tags?: program_tag_arr_rel_insert_input | null;
+  project_tags?: project_tag_arr_rel_insert_input | null;
   search_tags?: search_tag_arr_rel_insert_input | null;
   type?: string | null;
   updated_at?: any | null;
