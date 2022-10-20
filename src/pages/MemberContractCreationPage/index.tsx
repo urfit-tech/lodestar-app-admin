@@ -113,7 +113,8 @@ type ContractItem = {
 
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
-  const { id: appId } = useApp()
+  const { id: appId, settings } = useApp()
+  const customSettingCondition = settings.custom ? JSON.parse(settings.custom)['contractProjectPlan'] : undefined
   const [form] = useForm<FieldProps>()
   const fieldValue = form.getFieldsValue()
 
@@ -127,7 +128,7 @@ const MemberContractCreationPage: React.VFC = () => {
     managers,
     coinExchangeRage,
     ...contractInfoStatus
-  } = usePrivateTeachContractInfo(appId, memberId)
+  } = usePrivateTeachContractInfo(appId, memberId, customSettingCondition)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
@@ -374,8 +375,13 @@ const MemberContractCreationPage: React.VFC = () => {
   )
 }
 
-const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
+const usePrivateTeachContractInfo = (
+  appId: string,
+  memberId: string,
+  customSettingCondition?: { title: string; id: string },
+) => {
   const { managers } = useManagers()
+
   const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
     gql`
       query GET_CONTRACT_INFO($appId: String!, $memberId: String!) {
@@ -406,7 +412,9 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           name
           options
         }
-        projectPrivateTeachPlan: project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
+        projectPrivateTeachPlan: project_plan(where: { title: { _like: "%${
+          customSettingCondition?.title || ''
+        }%" } }, order_by: { position: asc }) {
           id
           title
           period_amount
@@ -414,8 +422,8 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
         }
         products: project_plan(
           where: {
-            title: { _nlike: "%私塾方案%" }
-            project_id: { _eq: "50b678a6-14b0-4148-b706-724d7e834e20" }
+            title: { _nlike: "%${customSettingCondition?.title || ''}%" }
+            project_id: { _eq: "${customSettingCondition?.id || ''}" }
             published_at: { _is_null: false }
             project: { app_id: { _eq: $appId } }
           }
