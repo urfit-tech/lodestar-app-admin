@@ -145,7 +145,7 @@ const TraineesDayOffBlock: React.VFC = () => {
     }
 
     const updatedStartedAt = moment(startedAt.format('YYYY-MM-DD')).toISOString()
-    const updatedEndedAt = moment(endedAt.format('YYYY-MM-DD')).toISOString()
+    const updatedEndedAt = endedAt.endOf('day').toISOString()
 
     const orderProductsInput: hasura.UPDATE_ORDER_PRODUCTSVariables = {
       orderProductIds: checkedOrderProductIds,
@@ -225,7 +225,7 @@ const TraineesDayOffBlock: React.VFC = () => {
           <DatePicker value={startedAt} onChange={v => setStartedAt(v)} />
         </Form.Item>
         <Form.Item label="合約(會員卡)結束時間">
-          <DatePicker value={endedAt} onChange={v => setEndedAt(v?.endOf('day'))} />
+          <DatePicker value={endedAt} onChange={v => setEndedAt(v)} />
         </Form.Item>
         <Button type="primary" loading={isLoading} onClick={() => handleSubmit(setIsLoading)}>
           {formatMessage(commonMessages.ui.save)}
