@@ -365,7 +365,7 @@ export const useMemberNotesAdmin = (
     hasura.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
-      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+      query GET_MEMBER_NOTES_ADMIN($orderBy: [member_note_order_by!], $condition: member_note_bool_exp) {
         category {
           id
           name
@@ -378,7 +378,7 @@ export const useMemberNotesAdmin = (
             count
           }
         }
-        member_note(where: $condition, order_by: [$orderBy], limit: 10) {
+        member_note(where: $condition, order_by: $orderBy, limit: 10) {
           id
           created_at
           type
@@ -506,13 +506,14 @@ export const useMemberNotesAdmin = (
             variables: {
               orderBy,
               condition: {
-                ...condition,
-                created_at: orderBy.created_at
-                  ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
-                  : undefined,
-                duration: orderBy.duration
-                  ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
-                  : undefined,
+                _or: [
+                  { ...condition, created_at: { _lt: data?.member_note.slice(-1)[0]?.created_at } },
+                  {
+                    ...condition,
+                    created_at: { _eq: data?.member_note.slice(-1)[0]?.created_at },
+                    id: { _gt: data?.member_note.slice(-1)[0]?.id },
+                  },
+                ],
               },
             },
             updateQuery: (prev, { fetchMoreResult }) => {

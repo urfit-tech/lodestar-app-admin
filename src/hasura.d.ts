@@ -11399,7 +11399,7 @@ export interface GET_MEMBER_NOTES_ADMIN {
 }
 
 export interface GET_MEMBER_NOTES_ADMINVariables {
-  orderBy: member_note_order_by;
+  orderBy?: member_note_order_by[] | null;
   condition?: member_note_bool_exp | null;
 }
 
@@ -40790,7 +40790,7 @@ export interface project_reaction_bool_exp {
   _or?: project_reaction_bool_exp[] | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   project?: project_bool_exp | null;
   project_id?: uuid_comparison_exp | null;
@@ -40802,7 +40802,7 @@ export interface project_reaction_bool_exp {
 export interface project_reaction_insert_input {
   created_at?: any | null;
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
+  member?: member_public_obj_rel_insert_input | null;
   member_id?: string | null;
   project?: project_obj_rel_insert_input | null;
   project_id?: any | null;
