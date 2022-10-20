@@ -14,7 +14,8 @@ import AdminLayout from '../components/layout/AdminLayout'
 import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
 import { salesMessages } from '../helpers/translation'
-import { useSales, useSalesLeads } from '../hooks/sales'
+import { useManagers } from '../hooks'
+import { useSales, useManagerLeads } from '../hooks/sales'
 import ForbiddenPage from './ForbiddenPage'
 
 const StyledManagerBlock = styled.div`
@@ -68,7 +69,8 @@ const SalesLeadTabs: React.VFC<{
   onActiveKeyChanged?: (activeKey: string) => void
 }> = ({ activeKey, managerId, onActiveKeyChanged }) => {
   const { formatMessage } = useIntl()
-  const { sales } = useSales(managerId)
+  const { managers } = useManagers()
+  const manager = managers.find(manager => manager.id === managerId)
   const {
     loading,
     refetch,
@@ -81,13 +83,13 @@ const SalesLeadTabs: React.VFC<{
     presentedLeads,
     paidLeads,
     closedLeads,
-  } = useSalesLeads(managerId, lead => (sales ? lead.star !== Number(sales.telephone) : false))
+  } = useManagerLeads(managerId, lead => (manager ? lead.star !== Number(manager.telephone) : false))
 
-  if (loading || !sales) {
+  if (loading || !manager) {
     return <Skeleton active />
   }
 
-  const starredLeads = totalLeads.filter(lead => lead.star === Number(sales.telephone))
+  const starredLeads = totalLeads.filter(lead => lead.star === Number(manager.telephone))
 
   return (
     <Tabs
@@ -108,7 +110,7 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable variant="starred" sales={sales} leads={starredLeads} onRefetch={refetch} />}
+        {<SalesLeadTable variant="starred" manager={manager} leads={starredLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -120,7 +122,7 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={dedicatedLeads} onRefetch={refetch} />}
+        {<SalesLeadTable manager={manager} leads={dedicatedLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -132,7 +134,7 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={existedLeads} onRefetch={refetch} />}
+        {<SalesLeadTable manager={manager} leads={existedLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
       {/*       
       <Tabs.TabPane
@@ -144,7 +146,7 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={idledLeads} onRefetch={refetch} />}
+        {<SalesLeadTable manager={manager} leads={idledLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -156,10 +158,10 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={contactedLeads} onRefetch={refetch} />}
-      </Tabs.TabPane>
+        {<SalesLeadTable manager={manager} leads={contactedLeads} onRefetch={refetch} />}
+      </Tabs.TabPane> 
 
-      <Tabs.TabPane
+        <Tabs.TabPane
         key="invited"
         tab={
           <div>
@@ -168,7 +170,7 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={invitedLeads} onRefetch={refetch} />}
+        {<SalesLeadTable manager={manager} leads={invitedLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -180,7 +182,7 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={presentedLeads} onRefetch={refetch} />}
+        {<SalesLeadTable manager={manager} leads={presentedLeads} onRefetch={refetch} />}
       </Tabs.TabPane> */}
 
       <Tabs.TabPane
@@ -192,7 +194,7 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={paidLeads} onRefetch={refetch} />}
+        {<SalesLeadTable manager={manager} leads={paidLeads} onRefetch={refetch} />}
       </Tabs.TabPane>
 
       {closedLeads.length > 0 && (
@@ -205,7 +207,7 @@ const SalesLeadTabs: React.VFC<{
             </div>
           }
         >
-          {<SalesLeadTable sales={sales} leads={closedLeads} onRefetch={refetch} />}
+          {<SalesLeadTable manager={manager} leads={closedLeads} onRefetch={refetch} />}
         </Tabs.TabPane>
       )}
     </Tabs>

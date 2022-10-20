@@ -92,12 +92,13 @@ export const useSales = (salesId: string) => {
   }
 }
 
-export const useSalesLeads = (managerId: string, leadFilter?: (lead: LeadProps) => boolean) => {
+export const useManagerLeads = (managerId: string, leadFilter?: (lead: LeadProps) => boolean) => {
   const { id: appId } = useApp()
   const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
     GET_SALES_LEADS,
     { variables: { managerId } },
   )
+  console.log({ data })
   const convertToLead = (v: hasura.GET_SALES_LEADS_xuemi_lead_status): LeadProps | null => {
     return v.member && v.member.member_phones.length > 0
       ? {

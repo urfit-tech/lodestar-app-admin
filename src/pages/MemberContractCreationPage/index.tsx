@@ -11,6 +11,7 @@ import DefaultLayout from '../../components/layout/DefaultLayout'
 import { installmentPlans } from '../../constants'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
+import { useManagers } from '../../hooks'
 import LoadingPage from '../../pages/LoadingPage'
 import { PeriodType } from '../../types/general'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
@@ -93,7 +94,7 @@ type ContractInfo = {
     id: string | null
     name: string | null
   }[]
-  sales: {
+  managers: {
     id: string
     name: string
     username: string
@@ -123,7 +124,7 @@ const MemberContractCreationPage: React.VFC = () => {
     contracts,
     projectPlans,
     appointmentPlanCreators,
-    sales,
+    managers,
     coinExchangeRage,
     ...contractInfoStatus
   } = usePrivateTeachContractInfo(appId, memberId)
@@ -343,7 +344,7 @@ const MemberContractCreationPage: React.VFC = () => {
             products={products}
             contracts={contracts}
             projectPlans={projectPlans}
-            sales={sales}
+            managers={managers}
             appointmentPlanCreators={appointmentPlanCreators}
             totalPrice={totalPrice}
             rebateGift={contractsOptions?.['rebateGift']}
@@ -374,6 +375,7 @@ const MemberContractCreationPage: React.VFC = () => {
 }
 
 const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
+  const { managers } = useManagers()
   const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
     gql`
       query GET_CONTRACT_INFO($appId: String!, $memberId: String!) {
@@ -399,7 +401,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           name
           placeholder
         }
-        contract(where: { published_at: { _is_null: false }, app_id: { _eq: "xuemi" } }) {
+        contract(where: { published_at: { _is_null: false }, app_id: { _eq: $appId } }) {
           id
           name
           options
@@ -433,11 +435,6 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             name
           }
         }
-        xuemi_contractor {
-          id
-          name
-          username
-        }
         app_setting(where: { app_id: { _eq: $appId }, key: { _eq: "coin.exchange_rate" } }) {
           value
         }
@@ -458,7 +455,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
     projectPlans: [],
     products: [],
     appointmentPlanCreators: [],
-    sales: [],
+    managers: [],
     coinExchangeRage: 0,
   }
 
@@ -509,11 +506,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           : null,
       )
       .filter(notEmpty)
-    info.sales = data.xuemi_contractor.map(contractor => ({
-      id: contractor.id || '',
-      name: contractor.name || '',
-      username: contractor.username || '',
-    }))
+    info.managers = managers
     info.coinExchangeRage = Number(data.app_setting[0].value) || 0
   }
 

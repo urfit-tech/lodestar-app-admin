@@ -55,14 +55,14 @@ const MemberPropertyModal: React.FC<
       name: string
       categoryNames: string[]
     } | null
-    sales: {
+    manager: {
       id: string
       name: string
       email: string
     }
     onClose?: () => void
   }
-> = ({ member, sales, onClose, ...modalProps }) => {
+> = ({ member, manager, onClose, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { loadingProperties, properties } = useProperty()
@@ -119,7 +119,7 @@ const MemberPropertyModal: React.FC<
             insertMemberNote({
               variables: {
                 memberId: member.id,
-                authorId: sales.id,
+                authorId: manager.id,
                 status: values.note.status,
                 description: values.note.description,
                 duration: 0,

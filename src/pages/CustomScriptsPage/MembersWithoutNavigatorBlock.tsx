@@ -9,6 +9,7 @@ import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'
 import hasura from '../../hasura'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 const StyledMemberName = styled.div`
   color: var(--gray-darker);
@@ -100,29 +101,36 @@ const MembersWithoutNavigatorBlock: React.VFC = () => {
 }
 
 const useMemberWithoutNavigator = () => {
-  const { loading, error, data } = useQuery<hasura.GET_VALID_MEMBER_CONTRACT>(gql`
-    query GET_VALID_MEMBER_CONTRACT {
-      member_contract(
-        where: {
-          agreed_at: { _is_null: false }
-          revoked_at: { _is_null: true }
-          ended_at: { _gte: "now()" }
-          member: { app_id: { _eq: "xuemi" } }
-        }
-        order_by: { agreed_at: desc }
-      ) {
-        id
-        values
-        member {
+  const { id: appId } = useApp()
+  const { loading, error, data } = useQuery<
+    hasura.GET_VALID_MEMBER_CONTRACT,
+    hasura.GET_VALID_MEMBER_CONTRACTVariables
+  >(
+    gql`
+      query GET_VALID_MEMBER_CONTRACT($appId: String!) {
+        member_contract(
+          where: {
+            agreed_at: { _is_null: false }
+            revoked_at: { _is_null: true }
+            ended_at: { _gte: "now()" }
+            member: { app_id: { _eq: $appId } }
+          }
+          order_by: { agreed_at: desc }
+        ) {
           id
-          name
-          email
-          picture_url
+          values
+          member {
+            id
+            name
+            email
+            picture_url
+          }
+          agreed_at
         }
-        agreed_at
       }
-    }
-  `)
+    `,
+    { variables: { appId } },
+  )
 
   const contractMemberIds = data?.member_contract.map(v => v.member.id) || []
 
@@ -130,14 +138,14 @@ const useMemberWithoutNavigator = () => {
     loading: loadingMemberSpecificProperties,
     error: errorMemberSpecificProperties,
     data: memberSpecificProperties,
-  } = useQuery<hasura.GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY>(
+  } = useQuery<hasura.GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY, hasura.GET_MEMBER_WITH_NAVIGATOR_OR_ABILITYVariables>(
     gql`
-      query GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY($memberIds: [String!]!) {
+      query GET_MEMBER_WITH_NAVIGATOR_OR_ABILITY($appId: String!, $memberIds: [String!]!) {
         member_property(
           where: {
             property: { name: { _in: ["領航員", "學生程度"] } }
             member_id: { _in: $memberIds }
-            member: { app_id: { _eq: "xuemi" } }
+            member: { app_id: { _eq: $appId } }
           }
         ) {
           member_id
@@ -150,6 +158,7 @@ const useMemberWithoutNavigator = () => {
     `,
     {
       variables: {
+        appId,
         memberIds: contractMemberIds,
       },
     },

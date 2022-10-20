@@ -383,33 +383,39 @@ export const useMutateMemberContract = () => {
   return updateMemberContract
 }
 
-export const useXuemiSales = () => {
+export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_SALE_COLLECTION>(
     gql`
       query GET_SALE_COLLECTION {
-        xuemi_sales {
+        member_property(where: { property: { name: { _eq: "分機號碼" } } }) {
+          id
+          value
           member {
             id
             name
             username
+            email
           }
         }
       }
     `,
   )
 
-  const xuemiSales =
-    data?.xuemi_sales
-      ?.map(v => ({
-        id: v.member?.id || '',
-        name: v.member?.name || v.member?.username || '',
-      }))
-      .filter(v => v.id && v.name) || []
+  const managers =
+    data?.member_property
+      .filter(v => v.value)
+      .map(v => ({
+        id: v.member.id,
+        name: v.member.name,
+        username: v.member.username,
+        email: v.member.email,
+        telephone: v.value,
+      })) || []
 
   return {
     loading,
     error,
-    xuemiSales,
+    managers,
     refetch,
   }
 }

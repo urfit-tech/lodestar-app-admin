@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/react-hooks'
 import { Checkbox, DatePicker, Form, Skeleton, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { countBy, eqProps, filter, flatten, map, pipe, split, trim, unionWith, uniq } from 'ramda'
@@ -38,6 +39,7 @@ const count = pipe(
 )
 
 const SalesMaterialsPage: React.FC = () => {
+  const { id: appId } = useApp()
   const [range, setRange] = useState<[Moment, Moment]>([moment().startOf('month'), moment().endOf('month')])
   const [selectedSalesId, setSelectedSalesId] = useState('')
   const [isSelectedAllSales, setIsSelectedAllSales] = useState(false)
@@ -48,6 +50,7 @@ const SalesMaterialsPage: React.FC = () => {
     GET_SALES_MATERIALS,
     {
       variables: {
+        appId,
         startedAt: range[0].toDate(),
         endedAt: range[1].toDate(),
         sales: isSelectedAllSales ? {} : { _eq: selectedSalesId },
@@ -198,6 +201,7 @@ const SalesMaterialsPage: React.FC = () => {
 
 const GET_SALES_MATERIALS = gql`
   query GET_SALES_MATERIALS(
+    $appId: String!
     $startedAt: timestamptz!
     $endedAt: timestamptz!
     $sales: String_comparison_exp!
@@ -208,7 +212,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          app_id: { _eq: "xuemi" }
+          app_id: { _eq: $appId }
           manager_id: $sales
           member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" } }
         }
@@ -221,7 +225,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          app_id: { _eq: "xuemi" }
+          app_id: { _eq: $appId }
           manager_id: $sales
           member_notes: {
             author_id: $sales
@@ -240,7 +244,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          app_id: { _eq: "xuemi" }
+          app_id: { _eq: $appId }
           manager_id: $sales
           member_notes: {
             author_id: $sales
@@ -260,7 +264,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          app_id: { _eq: "xuemi" }
+          app_id: { _eq: $appId }
           manager_id: $sales
           member_notes: {
             author_id: $sales
@@ -278,7 +282,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          app_id: { _eq: "xuemi" }
+          app_id: { _eq: $appId }
           manager_id: $sales
           member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" } }
           member_contracts: { agreed_at: { _gt: $startedAt, _lt: $endedAt }, revoked_at: { _is_null: true } }
@@ -293,7 +297,7 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          app_id: { _eq: "xuemi" }
+          app_id: { _eq: $appId }
           manager_id: $sales
           member_notes: {
             author_id: $sales
