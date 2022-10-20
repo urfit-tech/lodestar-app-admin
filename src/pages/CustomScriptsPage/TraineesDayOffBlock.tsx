@@ -225,7 +225,7 @@ const TraineesDayOffBlock: React.VFC = () => {
           <DatePicker value={startedAt} onChange={v => setStartedAt(v)} />
         </Form.Item>
         <Form.Item label="合約(會員卡)結束時間">
-          <DatePicker value={endedAt} onChange={v => setEndedAt(v)} />
+          <DatePicker value={endedAt} onChange={v => setEndedAt(v?.endOf('day'))} />
         </Form.Item>
         <Button type="primary" loading={isLoading} onClick={() => handleSubmit(setIsLoading)}>
           {formatMessage(commonMessages.ui.save)}
