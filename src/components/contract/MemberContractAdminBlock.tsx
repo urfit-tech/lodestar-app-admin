@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
+import { useAppCustom } from '../../hooks'
 
 const messages = defineMessages({
   agreed: { id: 'contract.status.agreed', defaultMessage: '已簽署' },
@@ -53,8 +54,9 @@ const MemberContractAdminBlock: React.FC<{
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
   const [revokeLoading, setRevokeLoading] = useState(false)
+  const appCustom = useAppCustom()
 
-  const title = settings.custom ? JSON.parse(settings.custom)['contractProjectPlan']['title'] : ''
+  const title = appCustom.contractProjectPlan.title
 
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
@@ -84,8 +86,8 @@ const MemberContractAdminBlock: React.FC<{
               },
               coinLogIds: values?.coinLogs?.map((v: { id: string }) => v.id) || [],
               couponPlanId:
-                values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data?.coupon_plan).coupon_code.data
-                  .coupon_plan?.data.id || '',
+                values?.coupons?.find((v: Coupon) => !v.id && !!v.coupon_code?.data?.coupon_plan)?.coupon_code?.data
+                  ?.coupon_plan?.data?.id || undefined,
               // delete contract coupon
               contractCouponIds: values?.coupons?.map((v: Pick<Coupon, 'id'>) => v.id).filter(notEmpty) || [],
               contractCouponCodes:

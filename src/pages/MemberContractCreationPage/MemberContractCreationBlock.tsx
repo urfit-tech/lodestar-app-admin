@@ -10,9 +10,9 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { ContractInfo, ContractItem, FieldProps } from '.'
-import { paymentMethods } from '../../constants'
 import hasura from '../../hasura'
 import { currencyFormatter, notEmpty } from '../../helpers'
+import { useAppCustom } from '../../hooks'
 
 const StyledOrder = styled.div`
   border: 1px solid var(--gray-darker);
@@ -42,6 +42,8 @@ const MemberContractCreationBlock: React.FC<{
   totalPrice: number
   totalAppointments: number
   totalCoins: number
+  customContractCard?: { id: string; title: string } | null
+  customContractProduct?: { periodAmount: number; periodType: 'y' | 'm' | 'd' } | null
 }> = ({
   member,
   products,
@@ -59,7 +61,10 @@ const MemberContractCreationBlock: React.FC<{
   totalPrice,
   totalAppointments,
   totalCoins,
+  customContractCard,
+  customContractProduct,
 }) => {
+  const appCustom = useAppCustom()
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
@@ -119,14 +124,17 @@ const MemberContractCreationBlock: React.FC<{
             if (!product?.previews) {
               return null
             }
-
             return product.previews.map(v => ({
               product_id: v.productId,
               name: v.title,
               price: 0,
               started_at: serviceStartedAt,
               ended_at: serviceStartedAt
-                ? moment(serviceStartedAt).add(14, 'day').endOf('day').toDate().toISOString()
+                ? moment(serviceStartedAt)
+                    .add(customContractProduct?.periodAmount || 14, customContractProduct?.periodType || 'day')
+                    .endOf('day')
+                    .toDate()
+                    .toISOString()
                 : null,
               delivered_at: new Date(),
             }))
@@ -159,7 +167,7 @@ const MemberContractCreationBlock: React.FC<{
                     id: couponPlanId,
                     type: 2,
                     amount: 100,
-                    title: `學米諮詢券`,
+                    title: appCustom.contractCoupon.title,
                     description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
                     started_at: serviceStartedAt.toISOString(),
                     ended_at: serviceEndedAt?.toISOString(),
@@ -230,7 +238,7 @@ const MemberContractCreationBlock: React.FC<{
               totalPrice -
               Math.round(
                 totalPrice *
-                  (paymentMethods
+                  (appCustom.paymentMethods
                     .find(paymentMethod => paymentMethod.method === fieldValue.paymentMethod)
                     ?.feeWithInstallmentPlans.find(
                       feeWithInstallmentPlan => feeWithInstallmentPlan.installmentPlan === fieldValue.installmentPlan,
@@ -263,28 +271,33 @@ const MemberContractCreationBlock: React.FC<{
                     : null,
               })),
             ...[
-              totalAppointments &&
-                products.find(p => p.name === '業師諮詢') && {
-                  product_id: `ProjectPlan_${products.find(p => p.name === '業師諮詢')?.id}`,
-                  name: products.find(p => p.name === '業師諮詢')?.name,
-                  price: 0,
-                  started_at: serviceStartedAt.toISOString(),
-                  ended_at: serviceEndedAt?.toISOString(),
-                  delivered_at: new Date(),
-                  options: {
-                    quantity: totalAppointments,
-                  },
-                },
+              totalAppointments > 0
+                ? products.find(p => p.name === '業師諮詢') && {
+                    product_id: `ProjectPlan_${products.find(p => p.name === '業師諮詢')?.id}`,
+                    name: products.find(p => p.name === '業師諮詢')?.name,
+                    price: 0,
+                    started_at: serviceStartedAt.toISOString(),
+                    ended_at: serviceEndedAt?.toISOString(),
+                    delivered_at: new Date(),
+                    options: {
+                      quantity: totalAppointments,
+                    },
+                  }
+                : null,
             ].filter(notEmpty),
             ...previewProducts,
-            {
-              product_id: 'Card_1af57db9-1af3-4bfd-b4a1-0c8f781ffe96',
-              name: '學米 VIP 會員卡',
-              price: 0,
-              started_at: serviceStartedAt.toISOString(),
-              ended_at: serviceEndedAt?.toISOString(),
-              delivered_at: new Date(),
-            },
+            ...[
+              customContractCard
+                ? {
+                    product_id: `Card_${customContractCard.id}`,
+                    name: customContractCard.title,
+                    price: 0,
+                    started_at: serviceStartedAt.toISOString(),
+                    ended_at: serviceEndedAt?.toISOString(),
+                    delivered_at: new Date(),
+                  }
+                : null,
+            ].filter(notEmpty),
           ],
           orderDiscounts: [
             // ...contractCoupons.map(v => ({

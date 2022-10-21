@@ -567,6 +567,9 @@ export const useMutateMemberNote = () => {
       ) {
         id
       }
+      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_created: "now()" }) {
+        affected_rows
+      }
     }
   `)
 

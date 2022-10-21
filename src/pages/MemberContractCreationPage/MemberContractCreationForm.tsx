@@ -7,7 +7,8 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps } from '.'
 import { AdminBlockTitle } from '../../components/admin'
-import { installmentPlans, paymentMethods } from '../../constants'
+import { installmentPlans } from '../../constants'
+import { useAppCustom } from '../../hooks'
 import CertificationUploader from './CertificationUploader'
 import ReferralMemberSelector from './ReferralMemberSelector'
 
@@ -61,6 +62,7 @@ const MemberContractCreationForm: React.FC<
     form,
     ...formProps
   }) => {
+    const appCustom = useAppCustom()
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
 
@@ -252,7 +254,7 @@ const MemberContractCreationForm: React.FC<
           <Descriptions.Item label="付款方式" span={4}>
             <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
               <Select<string> style={{ width: 240 }}>
-                {paymentMethods
+                {appCustom.paymentMethods
                   .filter(paymentMethod => !paymentMethod.hidden)
                   .map(paymentMethod => (
                     <Select.Option key={paymentMethod.method} value={paymentMethod.method}>

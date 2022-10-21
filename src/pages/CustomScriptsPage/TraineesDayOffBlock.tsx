@@ -1,15 +1,15 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Form, notification, Select } from 'antd'
 import gql from 'graphql-tag'
-import { AllMemberSelector } from '../../components/form/MemberSelector'
-import { commonMessages } from '../../helpers/translation'
-import pageMessages from '../../pages/translation'
 import moment, { Moment } from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { AllMemberSelector } from '../../components/form/MemberSelector'
 import hasura from '../../hasura'
+import { commonMessages } from '../../helpers/translation'
+import pageMessages from '../../pages/translation'
 
 const StyledCheckbox = styled(Checkbox)`
   padding: 12px;
@@ -127,7 +127,7 @@ const TraineesDayOffBlock: React.VFC = () => {
     }
 
     if (!checkedOrderProductIds.includes(memberCardProductId)) {
-      errorNotification('請勾選學米 VIP 會員卡')
+      errorNotification('請勾選會員卡')
       setLoading(false)
       return
     }

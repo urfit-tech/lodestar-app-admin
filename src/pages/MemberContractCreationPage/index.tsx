@@ -11,7 +11,7 @@ import DefaultLayout from '../../components/layout/DefaultLayout'
 import { installmentPlans } from '../../constants'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
-import { useManagers } from '../../hooks'
+import { useAppCustom, useManagers } from '../../hooks'
 import LoadingPage from '../../pages/LoadingPage'
 import { PeriodType } from '../../types/general'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
@@ -114,7 +114,8 @@ type ContractItem = {
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const { id: appId, settings } = useApp()
-  const customSettingCondition = settings.custom ? JSON.parse(settings.custom)['contractProjectPlan'] : undefined
+  const appCustom = useAppCustom()
+
   const [form] = useForm<FieldProps>()
   const fieldValue = form.getFieldsValue()
 
@@ -128,7 +129,7 @@ const MemberContractCreationPage: React.VFC = () => {
     managers,
     coinExchangeRage,
     ...contractInfoStatus
-  } = usePrivateTeachContractInfo(appId, memberId, customSettingCondition)
+  } = usePrivateTeachContractInfo(appId, memberId, appCustom.contractProjectPlan)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
@@ -137,8 +138,12 @@ const MemberContractCreationPage: React.VFC = () => {
   if (contractInfoStatus.loading || !!contractInfoStatus.error || !member) {
     return <LoadingPage />
   }
-
-  const selectedProjectPlan = projectPlans.find(v => v.periodAmount === 1 && v.periodType === 'Y') || null
+  const selectedProjectPlan =
+    projectPlans.find(
+      v =>
+        v.periodAmount === appCustom.contractProjectPlan.periodAmount &&
+        v.periodType === appCustom.contractProjectPlan.periodType.toUpperCase(),
+    ) || null
 
   // calculate contract items results
   const selectedProducts = uniqBy(v => v.id, fieldValue.contractProducts || [])
@@ -283,20 +288,18 @@ const MemberContractCreationPage: React.VFC = () => {
     })
   }
   const totalPrice = sum([...contractProducts, ...contractDiscounts].map(v => v.price * v.amount))
-
-  const endedAt = moment(startedAt).add(1, 'year').subtract(1, 'second').toDate()
+  const endedAt = moment(startedAt)
+    .add(appCustom.contractProjectPlan.periodAmount, appCustom.contractProjectPlan.periodType)
+    .subtract(1, 'second')
+    .toDate()
   const serviceStartedAt = moment().toDate()
-  const serviceEndedAt = (
-    totalPrice > 250000
-      ? moment(endedAt).add(24, 'months')
-      : totalPrice > 200000
-      ? moment(endedAt).add(18, 'months')
-      : totalPrice > 150000
-      ? moment(endedAt).add(12, 'months')
-      : totalPrice > 90000
-      ? moment(endedAt).add(6, 'months')
-      : moment(endedAt)
-  ).toDate()
+  let serviceEndedAt = endedAt
+  for (const s of appCustom.serviceExtend.sort((a, b) => (a.threshold > b.threshold ? -1 : 1))) {
+    if (totalPrice > s.threshold) {
+      serviceEndedAt = moment(endedAt).add(s.periodAmount, s.periodType).toDate()
+      break
+    }
+  }
 
   // calculate rebateGift
   if (fieldValue.rebateGift) {
@@ -368,6 +371,8 @@ const MemberContractCreationPage: React.VFC = () => {
             totalPrice={totalPrice}
             totalAppointments={totalAppointments}
             totalCoins={totalCoins}
+            customContractCard={appCustom.contractCard}
+            customContractProduct={appCustom.contractProduct}
           />
         </AdminBlock>
       </div>
@@ -378,7 +383,7 @@ const MemberContractCreationPage: React.VFC = () => {
 const usePrivateTeachContractInfo = (
   appId: string,
   memberId: string,
-  customSettingCondition?: { title: string; id: string },
+  contractProjectPlan?: { title: string; id: string },
 ) => {
   const { managers } = useManagers()
 
@@ -413,7 +418,7 @@ const usePrivateTeachContractInfo = (
           options
         }
         projectPrivateTeachPlan: project_plan(where: { title: { _like: "%${
-          customSettingCondition?.title || ''
+          contractProjectPlan?.title || ''
         }%" } }, order_by: { position: asc }) {
           id
           title
@@ -422,8 +427,8 @@ const usePrivateTeachContractInfo = (
         }
         products: project_plan(
           where: {
-            title: { _nlike: "%${customSettingCondition?.title || ''}%" }
-            project_id: { _eq: "${customSettingCondition?.id || ''}" }
+            title: { _nlike: "%${contractProjectPlan?.title || ''}%" }
+            project_id: { _eq: "${contractProjectPlan?.id || ''}" }
             published_at: { _is_null: false }
             project: { app_id: { _eq: $appId } }
           }

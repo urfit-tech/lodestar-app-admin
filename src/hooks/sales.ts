@@ -125,6 +125,8 @@ export const useManagerLeads = (manager: Manager) => {
             .map(u => u.member_id)
             .includes(v.id)
         ? 'INVITED'
+        : v.last_member_note_created
+        ? 'CONTACTED'
         : 'IDLED'
     return {
       id: v.id,
@@ -141,7 +143,8 @@ export const useManagerLeads = (manager: Manager) => {
       })),
       status,
       assignedAt: v.assigned_at ? dayjs(v.assigned_at).toDate() : null,
-      notified: !data?.member_note.map(u => u.member_id).includes(v.id),
+      notified: !v.last_member_note_created,
+      recentContactedAt: v.last_member_note_created ? dayjs(v.last_member_note_created).toDate() : null,
     }
   }
   const totalLeads: LeadProps[] = sortBy(prop('id'))(data?.member.map(convertToLead).filter(notEmpty) || [])
@@ -161,9 +164,6 @@ export const useManagerLeads = (manager: Manager) => {
 
 const GET_SALES_LEADS = gql`
   query GET_SALES_LEADS($managerId: String!) {
-    member_note(where: { author_id: { _eq: $managerId } }) {
-      member_id
-    }
     member_task(where: { member: { manager_id: { _eq: $managerId } } }, distinct_on: [member_id]) {
       member_id
       status
@@ -175,6 +175,7 @@ const GET_SALES_LEADS = gql`
       star
       created_at
       assigned_at
+      last_member_note_created
       member_properties {
         property {
           id

@@ -13,6 +13,7 @@ import { AdminBlock, AdminBlockTitle } from '../../components/admin'
 import { AvatarImage } from '../../components/common/Image'
 import hasura from '../../hasura'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
+import { useAppCustom } from '../../hooks'
 
 const StyledMemberName = styled.div`
   color: var(--gray-darker);
@@ -192,7 +193,8 @@ const ResultBlock: React.VFC<{
 
 const useExpiringSoonMembers = (expiredAt: dayjs.Dayjs) => {
   const { settings } = useApp()
-  const title = settings.custom ? JSON.parse(settings.custom)['contractProjectPlan']['title'] : ''
+  const appCustom = useAppCustom()
+  const title = appCustom.contractProjectPlan.title
 
   const { data: contractProjectPlanData } = useQuery<hasura.GET_CONTRACT_PROJECT_PLAN>(gql`
     query GET_CONTRACT_PROJECT_PLAN {
@@ -238,7 +240,7 @@ const useExpiringSoonMembers = (expiredAt: dayjs.Dayjs) => {
               coupons_aggregate(
                 where: {
                   status: { outdated: { _eq: false }, used: { _eq: false } }
-                  coupon_code: { coupon_plan: { title: { _eq: "學米諮詢券" } } }
+                  coupon_code: { coupon_plan: { title: { _eq: "${appCustom.contractCoupon.title}" } } }
                 }
               ) {
                 aggregate {

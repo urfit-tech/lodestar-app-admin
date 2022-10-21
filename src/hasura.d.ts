@@ -11391,11 +11391,23 @@ export interface INSERT_MEMBER_NOTE_insert_member_note_one {
   id: string;
 }
 
+export interface INSERT_MEMBER_NOTE_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface INSERT_MEMBER_NOTE {
   /**
    * insert a single row into the table: "member_note"
    */
   insert_member_note_one: INSERT_MEMBER_NOTE_insert_member_note_one | null;
+  /**
+   * update data of the table: "member"
+   */
+  update_member: INSERT_MEMBER_NOTE_update_member | null;
 }
 
 export interface INSERT_MEMBER_NOTEVariables {
@@ -14458,11 +14470,6 @@ export interface GET_SALESVariables {
 // GraphQL query operation: GET_SALES_LEADS
 // ====================================================
 
-export interface GET_SALES_LEADS_member_note {
-  __typename: "member_note";
-  member_id: string | null;
-}
-
 export interface GET_SALES_LEADS_member_task {
   __typename: "member_task";
   member_id: string;
@@ -14520,6 +14527,7 @@ export interface GET_SALES_LEADS_member {
   star: any | null;
   created_at: any | null;
   assigned_at: any | null;
+  last_member_note_created: any | null;
   /**
    * An array relationship
    */
@@ -14539,10 +14547,6 @@ export interface GET_SALES_LEADS_member {
 }
 
 export interface GET_SALES_LEADS {
-  /**
-   * fetch data from the table: "member_note"
-   */
-  member_note: GET_SALES_LEADS_member_note[];
   /**
    * fetch data from the table: "member_task"
    */
@@ -21945,6 +21949,7 @@ export enum member_update_column {
   facebook_user_id = "facebook_user_id",
   google_user_id = "google_user_id",
   id = "id",
+  last_member_note_created = "last_member_note_created",
   line_user_id = "line_user_id",
   logined_at = "logined_at",
   manager_id = "manager_id",
@@ -29902,6 +29907,7 @@ export interface member_bool_exp {
   issue_replies?: issue_reply_bool_exp | null;
   issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
   issues?: issue_bool_exp | null;
+  last_member_note_created?: timestamptz_comparison_exp | null;
   line_user_id?: String_comparison_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
   manager?: member_bool_exp | null;
@@ -30453,6 +30459,7 @@ export interface member_insert_input {
   issue_replies?: issue_reply_arr_rel_insert_input | null;
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
+  last_member_note_created?: any | null;
   line_user_id?: string | null;
   logined_at?: any | null;
   manager?: member_obj_rel_insert_input | null;
@@ -30527,6 +30534,7 @@ export interface member_max_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
@@ -30555,6 +30563,7 @@ export interface member_min_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager_id?: order_by | null;
@@ -31001,6 +31010,7 @@ export interface member_order_by {
   issue_replies_aggregate?: issue_reply_aggregate_order_by | null;
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
+  last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
   manager?: member_order_by | null;

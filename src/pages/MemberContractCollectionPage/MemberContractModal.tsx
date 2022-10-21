@@ -1,12 +1,5 @@
 import Icon, { MinusCircleOutlined, UploadOutlined } from '@ant-design/icons'
 import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Select } from 'antd'
-import AdminModal, { AdminModalProps } from '../../components/admin/AdminModal'
-import FileItem from '../../components/common/FileItem'
-import FileUploader from '../../components/common/FileUploader'
-import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
-import { commonMessages, memberMessages, orderMessages } from '../../helpers/translation'
-import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
-import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
@@ -14,10 +7,16 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
+import AdminModal, { AdminModalProps } from '../../components/admin/AdminModal'
+import FileItem from '../../components/common/FileItem'
+import FileUploader from '../../components/common/FileUploader'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
-import { installmentPlans, paymentMethods } from '../../constants'
-import { memberContractMessages } from '../../helpers/translation'
-import { useMutateMemberContract, useManagers } from '../../hooks'
+import { installmentPlans } from '../../constants'
+import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
+import { commonMessages, memberContractMessages, memberMessages, orderMessages } from '../../helpers/translation'
+import { useAppCustom, useManagers, useMutateMemberContract } from '../../hooks'
+import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
+import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 
 const StyledAreaTitle = styled.h3`
@@ -122,6 +121,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   onSuccess,
   ...props
 }) => {
+  const appCustom = useAppCustom()
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
   const { id: appId } = useApp()
@@ -283,7 +283,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       purchasedItem.price -
       Math.round(
         purchasedItem.price *
-          (paymentMethods
+          (appCustom.paymentMethods
             .find(payment => payment.method === paymentMethod)
             ?.feeWithInstallmentPlans.find(
               feeWithInstallmentPlan => feeWithInstallmentPlan.installmentPlan === installmentPlan,
@@ -424,7 +424,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                     calculatedRecognize && form.setFieldsValue({ recognizePerformance: calculatedRecognize })
                   }}
                 >
-                  {paymentMethods.map(paymentMethod => (
+                  {appCustom.paymentMethods.map(paymentMethod => (
                     <Select.Option key={paymentMethod.method} value={paymentMethod.method}>
                       {paymentMethod.method}
                     </Select.Option>

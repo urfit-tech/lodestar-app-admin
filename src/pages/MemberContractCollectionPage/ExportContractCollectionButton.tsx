@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { commonMessages, memberContractMessages } from '../../helpers/translation'
-import { GET_MEMBER_PRIVATE_TEACH_CONTRACT } from '../../hooks'
+import { GET_MEMBER_PRIVATE_TEACH_CONTRACT, useAppCustom } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
 
 const ExportContractCollectionButton: React.FC<{
@@ -33,6 +33,7 @@ const ExportContractCollectionButton: React.FC<{
 }> = ({ visibleFields, columns, filter, sortOrder, isRevoked, authorId }) => {
   const { formatMessage } = useIntl()
   const apolloClient = useApolloClient()
+  const appCustom = useAppCustom()
   const [loading, setLoading] = useState(false)
 
   const handleDownload = async () => {
@@ -75,7 +76,7 @@ const ExportContractCollectionButton: React.FC<{
       const memberContracts: Omit<MemberContractProps, 'authorId'>[] =
         data?.xuemi_member_private_teach_contract.map(v => {
           const appointmentCouponPlanId: string | undefined = v.values?.coupons?.find(
-            (coupon: any) => coupon?.coupon_code?.data?.coupon_plan?.data?.title === '學米諮詢券',
+            (coupon: any) => coupon?.coupon_code?.data?.coupon_plan?.data?.title === appCustom.contractCoupon.title,
           )?.coupon_code.data.coupon_plan.data.id
 
           return {
@@ -128,7 +129,7 @@ const ExportContractCollectionButton: React.FC<{
               ? v.values.coupons?.filter(
                   (coupon: any) =>
                     coupon?.coupon_code?.data?.coupon_plan_id === appointmentCouponPlanId ||
-                    coupon?.coupon_code?.data?.coupon_plan?.data?.title === '學米諮詢券',
+                    coupon?.coupon_code?.data?.coupon_plan?.data?.title === appCustom.contractCoupon.title,
                 ).length || null
               : null,
             manager: v.member?.manager

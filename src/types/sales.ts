@@ -32,6 +32,7 @@ export type LeadProps = {
   assignedAt: Date | null
   status: LeadStatus
   notified: Boolean
+  recentContactedAt: Date | null
 }
 
 export type SalesProps = {

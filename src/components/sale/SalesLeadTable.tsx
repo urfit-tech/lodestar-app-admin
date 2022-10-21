@@ -315,11 +315,11 @@ const SalesLeadTable: React.VFC<{
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
     {
-      key: 'assignedAt',
-      dataIndex: 'assignedAt',
-      title: formatMessage(salesMessages.assignedAt),
-      sorter: (a, b) => (a.assignedAt?.getTime() || 0) - (b.assignedAt?.getTime() || 0),
-      render: assignedAt => assignedAt && <time>{moment(assignedAt).fromNow()}</time>,
+      key: 'recentContactedAt',
+      dataIndex: 'recentContactedAt',
+      title: formatMessage(salesMessages.recentContactedAt),
+      sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
+      render: recentContactedAt => recentContactedAt && <time>{moment(recentContactedAt).fromNow()}</time>,
     },
     // {
     //   key: 'recentTaskedAt',

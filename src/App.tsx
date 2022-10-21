@@ -49,7 +49,7 @@ const App: React.FC<{
                 {
                   permissionIsAllowed: true,
                   key: 'chailease_lookup',
-                  name: '學米報名表查詢',
+                  name: `${settings['name']}報名表查詢`,
                 },
               ],
             },
