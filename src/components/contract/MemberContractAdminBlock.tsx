@@ -138,14 +138,14 @@ const MemberContractAdminBlock: React.FC<{
                   })}
                 </div>
               )}
-              {contract.options.approvedAt && (
+              {contract.options?.approvedAt && (
                 <div>
                   {formatMessage(memberMessages.text.approvedAt, {
                     time: moment(contract.options.approvedAt).format('YYYY-MM-DD HH:mm:ss'),
                   })}
                 </div>
               )}
-              {contract.options.loanCanceledAt && (
+              {contract.options?.loanCanceledAt && (
                 <div>
                   {formatMessage(memberMessages.text.loanCanceledAt, {
                     time: moment(contract.options.loanCanceledAt).format('YYYY-MM-DD HH:mm:ss'),
@@ -159,7 +159,7 @@ const MemberContractAdminBlock: React.FC<{
                   })}
                 </div>
               )}
-              {contract.options.refundAppliedAt && (
+              {contract.options?.refundAppliedAt && (
                 <div>
                   {formatMessage(memberMessages.text.refundAppliedAt, {
                     time: moment(contract.options.refundAppliedAt).format('YYYY-MM-DD HH:mm:ss'),
