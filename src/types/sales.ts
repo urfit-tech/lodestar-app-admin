@@ -1,3 +1,25 @@
+export type LeadStatus =
+  | 'IDLED'
+  | 'CONTACTED'
+  | 'INVITED'
+  | 'PRESENTED'
+  | 'TODO'
+  | 'SIGNED'
+  | 'CLOSED'
+  | 'DEDICATED'
+  | 'EXISTED'
+  | 'DEAD'
+  | 'STARRED'
+export type Manager = {
+  id: string
+  avatarUrl: string | null
+  name: string
+  username: string
+  email: string
+  // disabled?: boolean
+  telephone: string
+}
+
 export type LeadProps = {
   id: string
   name: string
@@ -5,13 +27,11 @@ export type LeadProps = {
   phones: string[]
   categoryNames: string[]
   properties: { id: string; name: string; value: string }[]
-  paid: number
   star: number
   createdAt: Date
-  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'SIGNED' | 'CLOSED' | 'DEDICATED' | 'EXISTED'
+  assignedAt: Date | null
+  status: LeadStatus
   notified: Boolean
-  recentTaskedAt: Date | null
-  recentContactedAt: Date | null
 }
 
 export type SalesProps = {
@@ -84,19 +104,6 @@ export type SalesStatus = {
     }
   }[]
 }[]
-
-export type Lead = {
-  id: string
-  name: string
-  email: string
-  phones: string[]
-  categoryNames: string[]
-  paid: number
-  star: number
-  createdAt: Date
-  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'PAID' | 'CLOSED'
-  notified: Boolean
-}
 
 export type SalesMemberProps = {
   id: string

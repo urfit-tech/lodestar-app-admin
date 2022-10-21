@@ -9,7 +9,7 @@ import moment, { Moment } from 'moment'
 import { countBy, eqProps, filter, flatten, map, pipe, split, trim, unionWith, uniq } from 'ramda'
 import React, { useState } from 'react'
 import { AdminPageTitle } from '../../components/admin'
-import SalesMemberInput from '../../components/common/SalesMemberInput'
+import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import ForbiddenPage from '../ForbiddenPage'
@@ -138,7 +138,11 @@ const SalesMaterialsPage: React.FC = () => {
         <Form.Item label="業務">
           <div className="d-flex align-items-center justify-content-between">
             <div className="d-flex align-items-center" style={{ width: '400px' }}>
-              <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} disabled={isSelectedAllSales} />
+              <ManagerInput
+                value={selectedSalesId}
+                onChange={id => id && setSelectedSalesId(id)}
+                disabled={isSelectedAllSales}
+              />
               <Checkbox
                 checked={isSelectedAllSales}
                 onChange={e => setIsSelectedAllSales(e.target.checked)}

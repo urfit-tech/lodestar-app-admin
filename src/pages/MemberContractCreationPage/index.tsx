@@ -507,7 +507,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
       )
       .filter(notEmpty)
     info.managers = managers
-    info.coinExchangeRage = Number(data.app_setting[0].value) || 0
+    info.coinExchangeRage = Number(data.app_setting[0]?.value) || 1
   }
 
   return {

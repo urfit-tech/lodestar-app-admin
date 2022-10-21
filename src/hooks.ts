@@ -3,6 +3,7 @@ import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
 import hasura from './hasura'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
+import { Manager } from './types/sales'
 
 export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
   query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
@@ -39,6 +40,8 @@ export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
           id
           name
           username
+          email
+          picture_url
         }
       }
       status
@@ -185,7 +188,10 @@ export const useMemberContractCollection = ({
         manager: v.member?.manager
           ? {
               id: v.member.manager.id,
-              name: v.member.manager.name || v.member.manager.username,
+              name: v.member.manager.name,
+              username: v.member.manager.username,
+              email: v.member.manager.name,
+              avatarUrl: v.member.manager.picture_url,
             }
           : null,
         status: v.status as StatusType | null,
@@ -199,89 +205,11 @@ export const useMemberContractCollection = ({
       }
     }) || []
 
-  // const loadMoreMemberContracts =
-  //   (data?.xuemi_member_private_teach_contract_aggregate.aggregate?.count || 0) >= 10
-  //     ? () => {
-  //         const lastRecord =
-  //           data?.xuemi_member_private_teach_contract?.[data.xuemi_member_private_teach_contract.length - 1]
-
-  //         return fetchMore({
-  //           variables: {
-  //             orderBy,
-  //             condition: {
-  //               ...condition,
-  //               id: {
-  //                 _nin: data?.xuemi_member_private_teach_contract
-  //                   .filter(
-  //                     v =>
-  //                       v.agreed_at === lastRecord?.agreed_at ||
-  //                       v.revoked_at === lastRecord?.revoked_at ||
-  //                       v.started_at === lastRecord?.started_at,
-  //                   )
-  //                   .map(v => v.id),
-  //               },
-  //               agreed_at:
-  //                 sortOrder.agreedAt === 'descend'
-  //                   ? {
-  //                       _lte: lastRecord?.agreed_at,
-  //                       _gt: startedAt,
-  //                     }
-  //                   : sortOrder.agreedAt === 'ascend'
-  //                   ? {
-  //                       _gte: lastRecord?.agreed_at,
-  //                       _lt: endedAt,
-  //                     }
-  //                   : { _is_null: false },
-  //               revoked_at:
-  //                 sortOrder.revokedAt === 'descend'
-  //                   ? {
-  //                       _lte: lastRecord?.revoked_at,
-  //                       _gt: startedAt,
-  //                     }
-  //                   : sortOrder.revokedAt === 'ascend'
-  //                   ? {
-  //                       _gte: lastRecord?.revoked_at,
-  //                       _lt: endedAt,
-  //                     }
-  //                   : { _is_null: !isRevoked },
-  //               started_at:
-  //                 sortOrder.startedAt === 'descend'
-  //                   ? {
-  //                       _lte: lastRecord?.started_at,
-  //                       _gt: startedAt,
-  //                     }
-  //                   : sortOrder.startedAt === 'ascend'
-  //                   ? {
-  //                       _gte: lastRecord?.started_at,
-  //                       _lt: endedAt,
-  //                     }
-  //                   : undefined,
-  //             },
-  //             limit: 10,
-  //           },
-  //           updateQuery: (prev, { fetchMoreResult }) => {
-  //             if (!fetchMoreResult) {
-  //               return prev
-  //             }
-  //             return Object.assign({}, prev, {
-  //               xuemi_member_private_teach_contract_aggregate:
-  //                 fetchMoreResult.xuemi_member_private_teach_contract_aggregate,
-  //               xuemi_member_private_teach_contract: [
-  //                 ...prev.xuemi_member_private_teach_contract,
-  //                 ...fetchMoreResult.xuemi_member_private_teach_contract,
-  //               ],
-  //             })
-  //           },
-  //         })
-  //       }
-  //     : undefined
-
   return {
     loadingMemberContracts: loading,
     errorMemberContracts: error,
     memberContracts,
     refetchMemberContracts: refetch,
-    // loadMoreMemberContracts,
   }
 }
 export const useMemberContractPriceAmount = ({
@@ -384,15 +312,16 @@ export const useMutateMemberContract = () => {
 }
 
 export const useManagers = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_SALE_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
     gql`
-      query GET_SALE_COLLECTION {
+      query GET_MANAGER_COLLECTION {
         member_property(where: { property: { name: { _eq: "分機號碼" } } }) {
           id
           value
           member {
             id
             name
+            picture_url
             username
             email
           }
@@ -401,13 +330,14 @@ export const useManagers = () => {
     `,
   )
 
-  const managers =
+  const managers: Manager[] =
     data?.member_property
       .filter(v => v.value)
       .map(v => ({
         id: v.member.id,
         name: v.member.name,
         username: v.member.username,
+        avatarUrl: v.member.picture_url,
         email: v.member.email,
         telephone: v.value,
       })) || []

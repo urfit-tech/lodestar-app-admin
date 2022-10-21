@@ -24,7 +24,7 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
-import { LeadProps, SalesProps } from '../../types/sales'
+import { LeadProps, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
@@ -52,7 +52,7 @@ const TableWrapper = styled.div`
 
 const SalesLeadTable: React.VFC<{
   variant?: 'starred'
-  manager: { id: string; name: string; email: string; telephone: string }
+  manager: Manager
   leads: LeadProps[]
   onRefetch?: () => void
 }> = ({ variant, manager, leads, onRefetch }) => {
@@ -308,18 +308,18 @@ const SalesLeadTable: React.VFC<{
           .map((v, idx) => <div key={idx}>{v}</div>),
     },
     {
-      key: 'recentContactedAt',
-      dataIndex: 'recentContactedAt',
-      title: formatMessage(salesMessages.recentContactedAt),
-      sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
-      render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
-    },
-    {
       key: 'createdAt',
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
+    },
+    {
+      key: 'assignedAt',
+      dataIndex: 'assignedAt',
+      title: formatMessage(salesMessages.assignedAt),
+      sorter: (a, b) => (a.assignedAt?.getTime() || 0) - (b.assignedAt?.getTime() || 0),
+      render: assignedAt => assignedAt && <time>{moment(assignedAt).fromNow()}</time>,
     },
     // {
     //   key: 'recentTaskedAt',
@@ -327,12 +327,6 @@ const SalesLeadTable: React.VFC<{
     //   title: formatMessage(salesMessages.recentTaskedAt),
     //   sorter: (a, b) => (a.recentTaskedAt?.getTime() || 0) - (b.recentTaskedAt?.getTime() || 0),
     //   render: recentTaskedAt => <time>{recentTaskedAt && moment(recentTaskedAt).fromNow()}</time>,
-    // },
-    // {
-    //   key: 'paid',
-    //   dataIndex: 'paid',
-    //   title: formatMessage(salesMessages.paidPrice),
-    //   sorter: (a, b) => a.paid - b.paid,
     // },
   ]
 

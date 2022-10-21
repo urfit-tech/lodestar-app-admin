@@ -8,7 +8,7 @@ import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import CategoryInput from '../../components/common/CategoryInput'
-import SalesMemberInput from '../../components/common/SalesMemberInput'
+import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
@@ -120,7 +120,7 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.originalManager)}
         name="managerId"
       >
-        <SalesMemberInput />
+        <ManagerInput />
       </Form.Item>
       <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.field)} name="categoryIds">
         <CategoryInput categoryClass="member" />
@@ -292,7 +292,7 @@ const ConfirmSection: React.FC<{
           value={`${numDeliver} / ${filteredMemberIds.length}`}
         />
         <div className="mb-2">
-          <SalesMemberInput value={managerId} onChange={setManagerId} />
+          <ManagerInput value={managerId} onChange={setManagerId} />
         </div>
         {!isLoading && <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIds.length} />}
         <Button
