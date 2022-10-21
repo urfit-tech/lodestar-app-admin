@@ -6,12 +6,13 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import gql from 'graphql-tag'
-import { AdminBlock, AdminBlockTitle } from '../../components/admin'
-import { AvatarImage } from '../../components/common/Image'
-import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { AdminBlock, AdminBlockTitle } from '../../components/admin'
+import { AvatarImage } from '../../components/common/Image'
 import hasura from '../../hasura'
+import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 
 const StyledMemberName = styled.div`
   color: var(--gray-darker);
@@ -190,9 +191,12 @@ const ResultBlock: React.VFC<{
 }
 
 const useExpiringSoonMembers = (expiredAt: dayjs.Dayjs) => {
+  const { settings } = useApp()
+  const title = settings.custom ? JSON.parse(settings.custom)['contractProjectPlan']['title'] : ''
+
   const { data: contractProjectPlanData } = useQuery<hasura.GET_CONTRACT_PROJECT_PLAN>(gql`
     query GET_CONTRACT_PROJECT_PLAN {
-      project_plan(where: { title: { _like: "%私塾方案%" } }) {
+      project_plan(where: { title: { _like: "%${title}%" } }) {
         id
       }
     }
