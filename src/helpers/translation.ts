@@ -409,7 +409,7 @@ export const commonMessages = {
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
-    programPlan: { id: 'common.product.programPlan', defaultMessage: '訂閱課程' },
+    programPlan: { id: 'common.product.programPlan', defaultMessage: '課程方案' },
     programContent: { id: 'common.product.programContent', defaultMessage: '課程內容' },
     programPackagePlan: { id: 'common.product.programPackagePlan', defaultMessage: '課程組合' },
     projectPlan: { id: 'common.product.projectPlan', defaultMessage: '專案方案' },

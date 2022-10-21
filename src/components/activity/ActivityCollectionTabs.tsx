@@ -1,7 +1,8 @@
-import { Skeleton, Tabs } from 'antd'
+import { Button, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { commonMessages } from '../../helpers/translation'
 import { useActivityCollection } from '../../hooks/activity'
 import Activity from './Activity'
 
@@ -12,54 +13,85 @@ const messages = defineMessages({
   privateHolding: { id: 'activity.status.privateHolding', defaultMessage: '私密舉辦' },
 })
 
+type Tab = 'holding' | 'finished' | 'draft' | 'privateHolding'
+
 const ActivityCollectionTabs: React.FC<{
   memberId: string | null
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { loadingActivities, activities, refetchActivities } = useActivityCollection(memberId)
+  const [currentTab, setCurrentTab] = useState<Tab>('holding')
+  const [loading, setLoading] = useState(false)
+  const [counts, setCounts] = useState<{ [key: string]: number }>({})
+  const condition = {
+    holding: {
+      organizer_id: { _eq: memberId },
+      is_private: { _eq: false },
+      published_at: { _is_null: false },
+      activity_during_period: { ended_at: { _gt: 'now()' } },
+    },
+    finished: {
+      organizer_id: { _eq: memberId },
+      is_private: { _eq: false },
+      published_at: { _is_null: false },
+      activity_during_period: { ended_at: { _lt: 'now()' } },
+    },
+    draft: {
+      organizer_id: { _eq: memberId },
+      _or: [{ published_at: { _is_null: true } }, { activity_during_period: { ended_at: { _is_null: true } } }],
+    },
+    privateHolding: {
+      organizer_id: { _eq: memberId },
+      is_private: { _eq: true },
+      activity_during_period: { ended_at: { _gt: 'now()' } },
+    },
+  }
+  const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities, refetchActivities } =
+    useActivityCollection(condition[currentTab])
+
+  if (!loadingActivities && currentTabActivityCount && !counts[currentTab]) {
+    setCounts({
+      ...counts,
+      [currentTab]: currentTabActivityCount,
+    })
+  }
 
   const tabContents = [
     {
       key: 'holding',
       tab: formatMessage(messages.holding),
-      activities: activities.filter(
-        activity =>
-          activity.publishedAt && activity.endedAt && activity.endedAt.getTime() > Date.now() && !activity.isPrivate,
-      ),
     },
     {
       key: 'finished',
       tab: formatMessage(messages.finished),
-      activities: activities.filter(
-        activity => activity.publishedAt && activity.endedAt && activity.endedAt.getTime() < Date.now(),
-      ),
     },
     {
       key: 'draft',
       tab: formatMessage(messages.draft),
-      activities: activities.filter(activity => !activity.publishedAt || !activity.endedAt),
     },
     {
       key: 'privateHolding',
       tab: formatMessage(messages.privateHolding),
-      activities: activities.filter(
-        activity =>
-          activity.publishedAt && activity.endedAt && activity.endedAt.getTime() > Date.now() && activity.isPrivate,
-      ),
       hidden: !enabledModules.private_activity,
     },
   ]
 
   return (
-    <Tabs defaultActiveKey={'holding'} onChange={() => refetchActivities()}>
+    <Tabs
+      defaultActiveKey={'holding'}
+      onChange={() => refetchActivities()}
+      onTabClick={key => setCurrentTab(key as Tab)}
+    >
       {tabContents
         .filter(tabContent => !tabContent.hidden)
         .map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.activities.length})`}>
+          <Tabs.TabPane
+            key={tabContent.key}
+            tab={`${tabContent.tab} ${counts[tabContent.key] ? `(${counts[tabContent.key]})` : ''}`}
+          >
             <div className="row py-5">
               {loadingActivities && <Skeleton active />}
-              {tabContent.activities.map(activity => (
+              {activities.map(activity => (
                 <div key={activity.id} className="col-12 col-md-6 col-lg-4 mb-5">
                   <Activity
                     id={activity.id}
@@ -73,6 +105,19 @@ const ActivityCollectionTabs: React.FC<{
                 </div>
               ))}
             </div>
+            {loadMoreActivities && (
+              <div className="text-center mt-4">
+                <Button
+                  loading={loading}
+                  onClick={() => {
+                    setLoading(true)
+                    loadMoreActivities().then(() => setLoading(false))
+                  }}
+                >
+                  {formatMessage(commonMessages.ui.showMore)}
+                </Button>
+              </div>
+            )}
           </Tabs.TabPane>
         ))}
     </Tabs>
