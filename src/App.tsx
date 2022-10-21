@@ -15,11 +15,9 @@ import MemberContractCollectionPage from './pages/MemberContractCollectionPage'
 import MemberContractCreationPage from './pages/MemberContractCreationPage'
 import NoteCollectionPage from './pages/NoteCollectionPage'
 import SalesActivenessPage from './pages/SalesActivenessPage'
-import SalesCallPage from './pages/SalesCallPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
 import SalesStatusPage from './pages/SalesStatusPage'
-import TermsPtPage from './pages/TermsPtPage'
 
 const App: React.FC<{
   appId: string
@@ -140,11 +138,6 @@ const App: React.FC<{
           pageName: <NoteCollectionPage />,
           authenticated: true,
         },
-        sales_call: {
-          path: '/sales-call',
-          pageName: <SalesCallPage />,
-          authenticated: true,
-        },
         sales_status: {
           path: '/sales-status',
           pageName: <SalesStatusPage />,
@@ -174,11 +167,6 @@ const App: React.FC<{
           path: '/members/:memberId/new-contract',
           pageName: <MemberContractCreationPage />,
           authenticated: true,
-        },
-        terms: {
-          path: '/terms',
-          pageName: <TermsPtPage />,
-          authenticated: false,
         },
         chailease_lookup: {
           path: '/chailease-lookup',

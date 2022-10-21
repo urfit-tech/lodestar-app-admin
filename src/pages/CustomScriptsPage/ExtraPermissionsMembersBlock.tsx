@@ -9,6 +9,7 @@ import { downloadCSV, toCSV } from '../../helpers'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 type MemberProps = {
   id: string
@@ -91,8 +92,11 @@ const ExtraPermissionsMembersBlock: React.VFC = () => {
 }
 
 const useExtraPermissionsMembers = () => {
-  const { loading, error, data, refetch } =
-    useQuery<hasura.GET_EXTRA_PERMISSIONS_MEMBERS>(GET_EXTRA_PERMISSIONS_MEMBERS)
+  const { id: appId } = useApp()
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GET_EXTRA_PERMISSIONS_MEMBERS,
+    hasura.GET_EXTRA_PERMISSIONS_MEMBERSVariables
+  >(GET_EXTRA_PERMISSIONS_MEMBERS, { variables: { appId } })
 
   const members: MemberProps[] = data
     ? [...data.generalMember, ...data.contentCreator].map(v => ({
@@ -112,9 +116,9 @@ const useExtraPermissionsMembers = () => {
 }
 
 const GET_EXTRA_PERMISSIONS_MEMBERS = gql`
-  query GET_EXTRA_PERMISSIONS_MEMBERS {
+  query GET_EXTRA_PERMISSIONS_MEMBERS($appId: String!) {
     generalMember: member(
-      where: { app_id: { _eq: "xuemi" }, role: { _eq: "general-member" }, member_permission_extras: {} }
+      where: { app_id: { _eq: $appId }, role: { _eq: "general-member" }, member_permission_extras: {} }
       order_by: [{ email: asc }]
     ) {
       id
@@ -127,7 +131,7 @@ const GET_EXTRA_PERMISSIONS_MEMBERS = gql`
     }
     contentCreator: member(
       where: {
-        app_id: { _eq: "xuemi" }
+        app_id: { _eq: $appId }
         role: { _eq: "content-creator" }
         member_permission_extras: {
           permission_id: {

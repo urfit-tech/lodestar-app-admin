@@ -14,6 +14,7 @@ import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
 import ChaileaseApplyModal from './ChaileaseApplyModal'
 import MemberDataAdminModal from './MemberDataAdminModal'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 const StyledMemberName = styled.div`
   color: var(--gray-darker);
@@ -308,11 +309,12 @@ const ChaileaseInformationBlock: React.FC<{ email: string }> = ({ email }) => {
 }
 
 const useMember = (email: string) => {
+  const { id: appId } = useApp()
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBERS_BY_EMAIL, hasura.GET_MEMBERS_BY_EMAILVariables>(
     gql`
-      query GET_MEMBERS_BY_EMAIL($email: String!) {
+      query GET_MEMBERS_BY_EMAIL($appId: String!, $email: String!) {
         member(
-          where: { email: { _eq: $email }, app_id: { _eq: "xuemi" }, metadata: { _has_key: "profile" } }
+          where: { email: { _eq: $email }, app_id: { _eq: $appId }, metadata: { _has_key: "profile" } }
           limit: 1
         ) {
           id
@@ -328,6 +330,7 @@ const useMember = (email: string) => {
     `,
     {
       variables: {
+        appId,
         email,
       },
     },

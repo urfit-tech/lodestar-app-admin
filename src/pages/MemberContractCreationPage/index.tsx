@@ -11,6 +11,7 @@ import DefaultLayout from '../../components/layout/DefaultLayout'
 import { installmentPlans } from '../../constants'
 import hasura from '../../hasura'
 import { notEmpty } from '../../helpers'
+import { useManagers } from '../../hooks'
 import LoadingPage from '../../pages/LoadingPage'
 import { PeriodType } from '../../types/general'
 import MemberContractCreationBlock from './MemberContractCreationBlock'
@@ -93,7 +94,7 @@ type ContractInfo = {
     id: string | null
     name: string | null
   }[]
-  sales: {
+  managers: {
     id: string
     name: string
     username: string
@@ -112,7 +113,8 @@ type ContractItem = {
 
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
-  const { id: appId } = useApp()
+  const { id: appId, settings } = useApp()
+  const customSettingCondition = settings.custom ? JSON.parse(settings.custom)['contractProjectPlan'] : undefined
   const [form] = useForm<FieldProps>()
   const fieldValue = form.getFieldsValue()
 
@@ -123,10 +125,10 @@ const MemberContractCreationPage: React.VFC = () => {
     contracts,
     projectPlans,
     appointmentPlanCreators,
-    sales,
+    managers,
     coinExchangeRage,
     ...contractInfoStatus
-  } = usePrivateTeachContractInfo(appId, memberId)
+  } = usePrivateTeachContractInfo(appId, memberId, customSettingCondition)
 
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
   const [, setReRender] = useState(0)
@@ -343,7 +345,7 @@ const MemberContractCreationPage: React.VFC = () => {
             products={products}
             contracts={contracts}
             projectPlans={projectPlans}
-            sales={sales}
+            managers={managers}
             appointmentPlanCreators={appointmentPlanCreators}
             totalPrice={totalPrice}
             rebateGift={contractsOptions?.['rebateGift']}
@@ -373,7 +375,13 @@ const MemberContractCreationPage: React.VFC = () => {
   )
 }
 
-const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
+const usePrivateTeachContractInfo = (
+  appId: string,
+  memberId: string,
+  customSettingCondition?: { title: string; id: string },
+) => {
+  const { managers } = useManagers()
+
   const { loading, error, data } = useQuery<hasura.GET_CONTRACT_INFO, hasura.GET_CONTRACT_INFOVariables>(
     gql`
       query GET_CONTRACT_INFO($appId: String!, $memberId: String!) {
@@ -399,12 +407,14 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           name
           placeholder
         }
-        contract(where: { published_at: { _is_null: false }, app_id: { _eq: "xuemi" } }) {
+        contract(where: { published_at: { _is_null: false }, app_id: { _eq: $appId } }) {
           id
           name
           options
         }
-        projectPrivateTeachPlan: project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
+        projectPrivateTeachPlan: project_plan(where: { title: { _like: "%${
+          customSettingCondition?.title || ''
+        }%" } }, order_by: { position: asc }) {
           id
           title
           period_amount
@@ -412,8 +422,8 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
         }
         products: project_plan(
           where: {
-            title: { _nlike: "%私塾方案%" }
-            project_id: { _eq: "50b678a6-14b0-4148-b706-724d7e834e20" }
+            title: { _nlike: "%${customSettingCondition?.title || ''}%" }
+            project_id: { _eq: "${customSettingCondition?.id || ''}" }
             published_at: { _is_null: false }
             project: { app_id: { _eq: $appId } }
           }
@@ -432,11 +442,6 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
             id
             name
           }
-        }
-        xuemi_contractor {
-          id
-          name
-          username
         }
         app_setting(where: { app_id: { _eq: $appId }, key: { _eq: "coin.exchange_rate" } }) {
           value
@@ -458,7 +463,7 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
     projectPlans: [],
     products: [],
     appointmentPlanCreators: [],
-    sales: [],
+    managers: [],
     coinExchangeRage: 0,
   }
 
@@ -509,12 +514,8 @@ const usePrivateTeachContractInfo = (appId: string, memberId: string) => {
           : null,
       )
       .filter(notEmpty)
-    info.sales = data.xuemi_contractor.map(contractor => ({
-      id: contractor.id || '',
-      name: contractor.name || '',
-      username: contractor.username || '',
-    }))
-    info.coinExchangeRage = Number(data.app_setting[0].value) || 0
+    info.managers = managers
+    info.coinExchangeRage = Number(data.app_setting[0]?.value) || 1
   }
 
   return {

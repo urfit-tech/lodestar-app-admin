@@ -13,6 +13,7 @@ import { salesMessages } from '../../helpers/translation'
 import { GroupSettingProps, SalesStatus } from '../../types/sales'
 import CallStatusBlock from './CallStatusBlock'
 import TotalRevenueBlock from './TotalRevenueBlock'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 const SalesStatusPage: React.VFC = () => {
   const [today, setToday] = useState(moment().startOf('day'))
@@ -53,6 +54,7 @@ const GET_SALES_STATUS = gql`
 `
 
 const useSalesStatus = (today: moment.Moment): { loading: boolean; error: Error | undefined; data: SalesStatus } => {
+  const { id: appId } = useApp()
   const tomorrow = today.clone().add(1, 'day')
   const thisWeek = today.clone().startOf('week')
   const thisMonth = today.clone().startOf('month')
@@ -66,7 +68,7 @@ const useSalesStatus = (today: moment.Moment): { loading: boolean; error: Error 
       pollInterval: 10000,
     },
   )
-  const { groupSettings } = useSalesGroups(process.env.REACT_APP_ID || 'xuemi')
+  const { groupSettings } = useSalesGroups(appId)
 
   return {
     loading,

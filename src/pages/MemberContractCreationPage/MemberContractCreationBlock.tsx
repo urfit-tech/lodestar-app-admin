@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Alert, Button, message } from 'antd'
 import { FormInstance } from 'antd/lib/form'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { flatten, range, sum, uniqBy } from 'ramda'
@@ -62,7 +63,7 @@ const MemberContractCreationBlock: React.FC<{
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
     ADD_MEMBER_CONTRACT,
   )
-
+  const { id: appId, host } = useApp()
   const { currentMemberId } = useAuth()
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const fieldValue = form.getFieldsValue()
@@ -145,7 +146,7 @@ const MemberContractCreationBlock: React.FC<{
           code: moment().format('x') + v,
           count: 1,
           remaining: 0,
-          app_id: 'xuemi',
+          app_id: appId,
           coupon_plan_id: index !== 0 ? couponPlanId : undefined,
           coupon_plan:
             index === 0
@@ -179,7 +180,7 @@ const MemberContractCreationBlock: React.FC<{
         data: {
           coupon_plan_id: v.id,
           code: v4(),
-          app_id: 'xuemi',
+          app_id: appId,
           count: 0,
           remaining: 0,
         },
@@ -328,7 +329,7 @@ const MemberContractCreationBlock: React.FC<{
     })
       .then(({ data }) => {
         const contractId = data?.insert_member_contract_one?.id
-        setMemberContractUrl(`https://www.xuemi.co/members/${member.id}/contracts/${contractId}`)
+        setMemberContractUrl(`https://${host}/members/${member.id}/contracts/${contractId}`)
         message.success('成功產生合約')
       })
       .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))

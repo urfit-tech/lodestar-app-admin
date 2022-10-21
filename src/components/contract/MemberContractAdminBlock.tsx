@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Card, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -48,9 +49,12 @@ const MemberContractAdminBlock: React.FC<{
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const { permissions } = useAuth()
+  const { settings } = useApp()
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
   const [revokeLoading, setRevokeLoading] = useState(false)
+
+  const title = settings.custom ? JSON.parse(settings.custom)['contractProjectPlan']['title'] : ''
 
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
@@ -74,7 +78,7 @@ const MemberContractAdminBlock: React.FC<{
                   values?.projectPlanProductId ||
                   values?.orderProducts?.find(
                     (v: { name: string; product_id: string }) =>
-                      v.name.includes('私塾方案') && v.product_id.includes('ProjectPlan'),
+                      v.name.includes(title) && v.product_id.includes('ProjectPlan'),
                   )?.product_id ||
                   '',
               },

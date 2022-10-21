@@ -1,3 +1,5 @@
+import { Manager } from './sales'
+
 export type StatusType = 'pending' | 'approved' | 'refund-applied' | 'loan-canceled' | 'revoked'
 export type DateRangeType =
   | 'agreed_at'
@@ -56,10 +58,7 @@ export type MemberContractProps = {
       }[]
     | null
   appointmentCouponCount: number | null
-  manager: {
-    id: string
-    name: string
-  } | null
+  manager: Pick<Manager, 'id' | 'email' | 'username' | 'name' | 'avatarUrl'> | null
   status: StatusType | null
   lastActivity: string | null
   lastAdPackage: string | null

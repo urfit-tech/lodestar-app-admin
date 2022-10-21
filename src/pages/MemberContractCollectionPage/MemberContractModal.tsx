@@ -17,7 +17,7 @@ import styled, { css } from 'styled-components'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
 import { installmentPlans, paymentMethods } from '../../constants'
 import { memberContractMessages } from '../../helpers/translation'
-import { useMutateMemberContract, useXuemiSales } from '../../hooks'
+import { useMutateMemberContract, useManagers } from '../../hooks'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 
 const StyledAreaTitle = styled.h3`
@@ -139,7 +139,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       ratio: number
     }[]
   }>()
-  const { xuemiSales } = useXuemiSales()
+  const { managers } = useManagers()
   const [certification, setCertification] = useState<File[]>([])
   const [attachments, setAttachments] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -496,9 +496,9 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                         optionFilterProp="label"
                         disabled={!permissions.CONTRACT_REVENUE_SHARING_EDIT}
                       >
-                        {xuemiSales?.map(member => (
-                          <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
-                            {member.name}
+                        {managers?.map(manager => (
+                          <Select.Option key={manager.id} value={manager.id} label={`${manager.id} ${manager.name}`}>
+                            {manager.name}
                           </Select.Option>
                         ))}
                       </Select>

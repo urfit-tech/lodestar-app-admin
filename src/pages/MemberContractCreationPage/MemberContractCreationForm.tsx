@@ -31,7 +31,7 @@ const MemberContractCreationForm: React.FC<
     appointmentPlanCreators: ContractInfo['appointmentPlanCreators']
     memberId: string
     isAppointmentOnly: boolean
-    sales: ContractInfo['sales']
+    managers: ContractInfo['managers']
     totalPrice: number
     rebateGift?: {
       [rebatePrice: string]: {
@@ -55,7 +55,7 @@ const MemberContractCreationForm: React.FC<
     appointmentPlanCreators,
     memberId,
     isAppointmentOnly,
-    sales,
+    managers,
     totalPrice,
     rebateGift,
     form,
@@ -285,9 +285,9 @@ const MemberContractCreationForm: React.FC<
             <Space align="center" className="d-flex mb-3">
               <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
                 <Select<string> showSearch placeholder="承辦人" style={{ width: '250px' }} optionFilterProp="label">
-                  {sales.map(member => (
-                    <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
-                      {member.name}
+                  {managers.map(manager => (
+                    <Select.Option key={manager.id} value={manager.id} label={`${manager.id} ${manager.name}`}>
+                      {manager.name}
                     </Select.Option>
                   ))}
                 </Select>
@@ -315,9 +315,9 @@ const MemberContractCreationForm: React.FC<
                           style={{ width: '150px' }}
                           optionFilterProp="label"
                         >
-                          {sales.map(member => (
-                            <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
-                              {member.name}
+                          {managers.map(manager => (
+                            <Select.Option key={manager.id} value={manager.id} label={`${manager.id} ${manager.name}`}>
+                              {manager.name}
                             </Select.Option>
                           ))}
                         </Select>

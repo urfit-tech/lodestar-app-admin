@@ -3,13 +3,12 @@ import { Button } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
-import { downloadCSV, handleError, toCSV } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
 import moment from 'moment'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-import { memberContractMessages } from '../../helpers/translation'
+import { downloadCSV, handleError, toCSV } from '../../helpers'
+import { commonMessages, memberContractMessages } from '../../helpers/translation'
 import { GET_MEMBER_PRIVATE_TEACH_CONTRACT } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
 
@@ -135,7 +134,10 @@ const ExportContractCollectionButton: React.FC<{
             manager: v.member?.manager
               ? {
                   id: v.member.manager.id,
-                  name: v.member.manager.name || v.member.manager.username,
+                  name: v.member.manager.name,
+                  username: v.member.manager.username,
+                  email: v.member.manager.email,
+                  avatarUrl: v.member.manager.picture_url,
                 }
               : null,
             status: v.status as StatusType | null,

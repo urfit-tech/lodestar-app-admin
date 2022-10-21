@@ -145,7 +145,7 @@ const TraineesDayOffBlock: React.VFC = () => {
     }
 
     const updatedStartedAt = moment(startedAt.format('YYYY-MM-DD')).toISOString()
-    const updatedEndedAt = moment(endedAt.format('YYYY-MM-DD')).toISOString()
+    const updatedEndedAt = endedAt.endOf('day').toISOString()
 
     const orderProductsInput: hasura.UPDATE_ORDER_PRODUCTSVariables = {
       orderProductIds: checkedOrderProductIds,

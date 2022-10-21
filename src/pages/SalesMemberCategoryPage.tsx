@@ -3,15 +3,15 @@ import { BarChartOutlined, FunnelPlotFilled } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, DatePicker, message, Popover, Table } from 'antd'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from '../components/admin'
-import AdminCard from '../components/admin/AdminCard'
-import AdminLayout from '../components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import { filter, flatten, groupBy, length, map, split, sum, toPairs } from 'ramda'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { AdminPageTitle } from '../components/admin'
+import AdminCard from '../components/admin/AdminCard'
 import CategorySelector from '../components/common/CategorySelector'
+import AdminLayout from '../components/layout/AdminLayout'
 import hasura from '../hasura'
 import ForbiddenPage from './ForbiddenPage'
 
@@ -67,7 +67,7 @@ export default function SalesMemberCategoryPage() {
   const sales = groupBy<AssignedMemberProps>(({ manager: sale }) => `${sale.id}_${sale.name}`)(assignedMemberCollection)
 
   const dataSource = map(([sale, memberList]) => {
-    const [saleId, saleName] = split('_')(sale)
+    const [managerId, managerName] = split('_')(sale)
     const firstHandCount = length(
       filter(member => {
         return member.notes.length === 0
@@ -78,11 +78,11 @@ export default function SalesMemberCategoryPage() {
       type: string | null
       status: string | null
       duration: number
-    }) => note.authorId === saleId && note.type === 'outbound' && note.status === 'answered' && note.duration > 90
+    }) => note.authorId === managerId && note.type === 'outbound' && note.status === 'answered' && note.duration > 90
 
     return {
-      saleId,
-      saleName,
+      managerId,
+      managerName,
       memberCount: {
         total: length(memberList),
         firstHand: firstHandCount,
@@ -97,14 +97,14 @@ export default function SalesMemberCategoryPage() {
       ),
       notFirstRejectionCount: length(
         filter(member => {
-          const saleNotes = filter(note => note.authorId === saleId, member.notes)
+          const saleNotes = filter(note => note.authorId === managerId, member.notes)
 
           return length(saleNotes) > 0 && !saleNotes[0].rejectedAt
         }, memberList),
       ),
       contactingCount: length(
         filter(member => {
-          const saleNotes = filter(note => note.authorId === saleId, member.notes)
+          const saleNotes = filter(note => note.authorId === managerId, member.notes)
           const saleRejectedNotes = filter(note => !!note.rejectedAt, saleNotes)
 
           return length(saleNotes) >= 1 && length(saleRejectedNotes) === 0
@@ -119,7 +119,8 @@ export default function SalesMemberCategoryPage() {
             map(
               member =>
                 map(
-                  ({ price, orderExecutors }) => price * (orderExecutors.find(v => v.memberId === saleId)?.ratio || 0),
+                  ({ price, orderExecutors }) =>
+                    price * (orderExecutors.find(v => v.memberId === managerId)?.ratio || 0),
                   member.contracts,
                 ),
               memberList,
@@ -166,12 +167,12 @@ export default function SalesMemberCategoryPage() {
         <Table<RecordType>
           loading={assignedMemberCollectionState.loading}
           dataSource={dataSource}
-          rowKey="saleId"
+          rowKey="managerId"
           scroll={{ x: 1000, y: 400 }}
           bordered
           pagination={false}
         >
-          <Table.Column title="業務名稱" dataIndex="saleName" key="saleName" width="8rem" />
+          <Table.Column title="業務名稱" dataIndex="managerName" key="managerName" width="8rem" />
 
           <Table.ColumnGroup title="指派名單數">
             <Table.Column<Pick<RecordType, 'memberCount'>>

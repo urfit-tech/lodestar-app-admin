@@ -24,7 +24,7 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
-import { LeadProps, SalesProps } from '../../types/sales'
+import { LeadProps, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
@@ -52,10 +52,10 @@ const TableWrapper = styled.div`
 
 const SalesLeadTable: React.VFC<{
   variant?: 'starred'
-  sales: SalesProps
+  manager: Manager
   leads: LeadProps[]
   onRefetch?: () => void
-}> = ({ variant, sales, leads, onRefetch }) => {
+}> = ({ variant, manager, leads, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken } = useAuth()
@@ -265,7 +265,7 @@ const SalesLeadTable: React.VFC<{
                 appId,
                 authToken,
                 phone,
-                salesTelephone: sales.telephone || '',
+                salesTelephone: manager.telephone,
               })
             }}
           >
@@ -308,18 +308,18 @@ const SalesLeadTable: React.VFC<{
           .map((v, idx) => <div key={idx}>{v}</div>),
     },
     {
-      key: 'recentContactedAt',
-      dataIndex: 'recentContactedAt',
-      title: formatMessage(salesMessages.recentContactedAt),
-      sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
-      render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
-    },
-    {
       key: 'createdAt',
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
+    },
+    {
+      key: 'assignedAt',
+      dataIndex: 'assignedAt',
+      title: formatMessage(salesMessages.assignedAt),
+      sorter: (a, b) => (a.assignedAt?.getTime() || 0) - (b.assignedAt?.getTime() || 0),
+      render: assignedAt => assignedAt && <time>{moment(assignedAt).fromNow()}</time>,
     },
     // {
     //   key: 'recentTaskedAt',
@@ -327,12 +327,6 @@ const SalesLeadTable: React.VFC<{
     //   title: formatMessage(salesMessages.recentTaskedAt),
     //   sorter: (a, b) => (a.recentTaskedAt?.getTime() || 0) - (b.recentTaskedAt?.getTime() || 0),
     //   render: recentTaskedAt => <time>{recentTaskedAt && moment(recentTaskedAt).fromNow()}</time>,
-    // },
-    // {
-    //   key: 'paid',
-    //   dataIndex: 'paid',
-    //   title: formatMessage(salesMessages.paidPrice),
-    //   sorter: (a, b) => a.paid - b.paid,
     // },
   ]
 
@@ -344,10 +338,10 @@ const SalesLeadTable: React.VFC<{
           visible={propertyModalVisible}
           onCancel={() => setPropertyModalVisible(false)}
           member={selectedMember}
-          sales={{
-            id: sales.id,
-            name: sales.name,
-            email: sales.email,
+          manager={{
+            id: manager.id,
+            name: manager.name,
+            email: manager.email,
           }}
           onClose={() => {
             setPropertyModalVisible(false)
@@ -361,7 +355,7 @@ const SalesLeadTable: React.VFC<{
           onCancel={() => setTaskModalVisible(false)}
           title={formatMessage(memberMessages.ui.newTask)}
           initialMemberId={selectedMember.id}
-          initialExecutorId={sales.id}
+          initialExecutorId={manager.id}
           onRefetch={() => {
             setTaskModalVisible(false)
           }}
@@ -377,7 +371,7 @@ const SalesLeadTable: React.VFC<{
             insertMemberNote({
               variables: {
                 memberId: selectedMember.id,
-                authorId: sales.id,
+                authorId: manager.id,
                 type,
                 status,
                 duration,
@@ -409,8 +403,8 @@ const SalesLeadTable: React.VFC<{
                     updateLeads({
                       variables: {
                         memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: sales.id,
-                        newStar: Number(sales.telephone),
+                        newMemberId: manager.id,
+                        newStar: Number(manager.telephone),
                       },
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
@@ -434,7 +428,7 @@ const SalesLeadTable: React.VFC<{
                     updateLeads({
                       variables: {
                         memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: sales.id,
+                        newMemberId: manager.id,
                         newStar: 0,
                       },
                     }).then(({ data }) => {
@@ -460,7 +454,7 @@ const SalesLeadTable: React.VFC<{
                     variables: {
                       memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
                       newMemberId: null,
-                      newStar: -Number(sales.telephone),
+                      newStar: -Number(manager.telephone),
                     },
                   }).then(({ data }) => {
                     if (data?.update_member?.affected_rows) {
@@ -563,13 +557,13 @@ const SalesLeadTable: React.VFC<{
           className="mb-3"
         />
       </TableWrapper>
-      {sales && (
+      {
         <JitsiDemoModal
           member={selectedMember}
           salesMember={{
-            id: sales.id,
-            name: sales.name,
-            email: sales.email,
+            id: manager.id,
+            name: manager.name,
+            email: manager.email,
           }}
           visible={jitsiModalVisible}
           onCancel={() => setJitsiModalVisible(false)}
@@ -581,7 +575,7 @@ const SalesLeadTable: React.VFC<{
             insertMemberNote({
               variables: {
                 memberId: selectedMember.id,
-                authorId: sales.id,
+                authorId: manager.id,
                 type: 'demo',
                 status: 'answered',
                 duration: duration,
@@ -596,7 +590,7 @@ const SalesLeadTable: React.VFC<{
               .catch(handleError)
           }}
         />
-      )}
+      }
     </StyledAdminCard>
   )
 }
