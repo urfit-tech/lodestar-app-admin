@@ -400,12 +400,14 @@ export const useAppCustom = () => {
     paymentMethods: [],
   }
 
-  let customSettingCondition: typeof defaultCustomSettingCondition
-  try {
-    customSettingCondition = JSON.parse(settings.custom)
-  } catch (error) {
-    customSettingCondition = defaultCustomSettingCondition
-  }
-  customSettingCondition = { ...defaultCustomSettingCondition, ...customSettingCondition }
+  const customSettingCondition: typeof defaultCustomSettingCondition = useMemo(() => {
+    let custom
+    try {
+      custom = JSON.parse(settings.custom)
+    } catch (error) {
+      custom = defaultCustomSettingCondition
+    }
+    return { ...defaultCustomSettingCondition, ...custom }
+  }, [settings])
   return customSettingCondition
 }

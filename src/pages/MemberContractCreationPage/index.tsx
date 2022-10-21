@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
 import { sum, uniqBy } from 'ramda'
-import React, { useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
 import DefaultLayout from '../../components/layout/DefaultLayout'
@@ -461,72 +461,75 @@ const usePrivateTeachContractInfo = (
     },
   )
 
-  const info: ContractInfo = {
-    member: null,
-    properties: [],
-    contracts: [],
-    projectPlans: [],
-    products: [],
-    appointmentPlanCreators: [],
-    managers: [],
-    coinExchangeRage: 0,
-  }
+  const memorizedInfo = useMemo(() => {
+    const info: ContractInfo = {
+      member: null,
+      properties: [],
+      contracts: [],
+      projectPlans: [],
+      products: [],
+      appointmentPlanCreators: [],
+      managers: [],
+      coinExchangeRage: 0,
+    }
 
-  if (!loading && !error && data) {
-    info.member = data.member_by_pk
-      ? {
-          id: data.member_by_pk.id,
-          name: data.member_by_pk.name,
-          email: data.member_by_pk.email,
-          phones: data.member_by_pk.member_phones.map(v => v.phone),
-          properties: data.member_by_pk.member_properties.map(v => ({
-            id: v.id,
-            value: v.value,
-            propertyId: v.property.id,
-            name: v.property.name,
-          })),
-        }
-      : null
-    info.properties = data.property.map(v => ({
-      ...v,
-      placeholder: v.placeholder?.replace(/[()]/g, '').replace(/必填：/g, '') || null,
-    }))
-    info.contracts = data.contract
-    info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
-      id: v.id,
-      title: v.title,
-      periodAmount: v.period_amount || 0,
-      periodType: v.period_type as PeriodType | null,
-    }))
-    info.products = data.products.map(v => ({
-      id: v.id,
-      name: v.title,
-      price: v.list_price,
-      addonPrice: v.options?.addonPrice || 0,
-      appointments: v.options?.appointments || 0,
-      previews: v.options?.previews || [],
-      coins: v.options?.coins || 0,
-      periodAmount: v.period_amount || 0,
-      periodType: v.period_type as PeriodType | null,
-    }))
-    info.appointmentPlanCreators = data.appointment_plan
-      .map(v =>
-        v.creator
-          ? {
-              id: v.creator.id,
-              name: v.creator.name,
-            }
-          : null,
-      )
-      .filter(notEmpty)
-    info.managers = managers
-    info.coinExchangeRage = Number(data.app_setting[0]?.value) || 1
-  }
+    if (!loading && !error && data) {
+      info.member = data.member_by_pk
+        ? {
+            id: data.member_by_pk.id,
+            name: data.member_by_pk.name,
+            email: data.member_by_pk.email,
+            phones: data.member_by_pk.member_phones.map(v => v.phone),
+            properties: data.member_by_pk.member_properties.map(v => ({
+              id: v.id,
+              value: v.value,
+              propertyId: v.property.id,
+              name: v.property.name,
+            })),
+          }
+        : null
+      info.properties = data.property.map(v => ({
+        ...v,
+        placeholder: v.placeholder?.replace(/[()]/g, '').replace(/必填：/g, '') || null,
+      }))
+      info.contracts = data.contract
+      info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
+        id: v.id,
+        title: v.title,
+        periodAmount: v.period_amount || 0,
+        periodType: v.period_type as PeriodType | null,
+      }))
+      info.products = data.products.map(v => ({
+        id: v.id,
+        name: v.title,
+        price: v.list_price,
+        addonPrice: v.options?.addonPrice || 0,
+        appointments: v.options?.appointments || 0,
+        previews: v.options?.previews || [],
+        coins: v.options?.coins || 0,
+        periodAmount: v.period_amount || 0,
+        periodType: v.period_type as PeriodType | null,
+      }))
+      info.appointmentPlanCreators = data.appointment_plan
+        .map(v =>
+          v.creator
+            ? {
+                id: v.creator.id,
+                name: v.creator.name,
+              }
+            : null,
+        )
+        .filter(notEmpty)
+      info.managers = managers
+      info.coinExchangeRage = Number(data.app_setting[0]?.value) || 1
+    }
+    return info
+  }, [data])
 
   return {
     loading,
     error,
-    ...info,
+    ...memorizedInfo,
   }
 }
 
