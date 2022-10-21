@@ -14,7 +14,6 @@ const GiftPlanPublishAdminModal: React.VFC<{
 
   const handlePublish = (id: string, setVisible: (visible: boolean) => void) => {
     setLoading(true)
-    console.log(id)
     setLoading(false)
     setVisible(false)
   }
