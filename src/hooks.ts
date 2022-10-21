@@ -356,171 +356,48 @@ export const useManagers = () => {
     refetch,
   }
 }
+
+type CustomSettingCondition = {
+  paymentMethods: {
+    method: string
+    hidden: boolean
+    feeWithInstallmentPlans: { installmentPlan: number; fee: number }[]
+  }[]
+  serviceExtend: { threshold: number; periodAmount: number; periodType: 'y' | 'M' | 'd' }[]
+  contractProjectPlan: {
+    id: string
+    title: string
+    periodAmount: number
+    periodType: 'y' | 'M' | 'd'
+  }
+  contractProduct: {
+    periodAmount: number
+    periodType: 'y' | 'M' | 'd'
+  }
+  contractCoupon: {
+    title: string
+  }
+  contractCard: { id: string; title: string } | null
+}
 export const useAppCustom = () => {
   const { settings } = useApp()
-  const defaultCustomSettingCondition = {
+  const defaultCustomSettingCondition: CustomSettingCondition = {
     contractCard: null,
-    contractProjectPlan: { id: v4(), title: '', periodAmount: 1, periodType: 'y' as const },
-    contractProduct: null,
-    contractCoupon: {
-      title: '學米諮詢券',
+    contractProjectPlan: {
+      id: v4(),
+      title: '未知專案方案',
+      periodAmount: 1,
+      periodType: 'y' as const,
     },
-    serviceExtend: [
-      { threshold: 250000, periodAmount: 24, periodType: 'M' as const },
-      { threshold: 200000, periodAmount: 18, periodType: 'M' as const },
-      { threshold: 150000, periodAmount: 12, periodType: 'M' as const },
-      { threshold: 90000, periodAmount: 6, periodType: 'M' as const },
-    ],
-    paymentMethods: [
-      {
-        method: '學米仲信202208',
-        feeWithInstallmentPlans: [
-          { installmentPlan: 3, fee: 0.03 },
-          { installmentPlan: 6, fee: 0.0225 },
-          { installmentPlan: 12, fee: 0.0405 },
-          { installmentPlan: 18, fee: 0.0455 },
-          { installmentPlan: 24, fee: 0.0575 },
-          { installmentPlan: 30, fee: 0.0675 },
-          { installmentPlan: 36, fee: 0.0975 },
-        ],
-      },
-      {
-        method: '綠界科技',
-        feeWithInstallmentPlans: [
-          { installmentPlan: 1, fee: 0.0245 },
-          { installmentPlan: 3, fee: 0.025 },
-          { installmentPlan: 6, fee: 0.04 },
-          { installmentPlan: 12, fee: 0.07 },
-          { installmentPlan: 18, fee: 0.095 },
-          { installmentPlan: 24, fee: 0.11 },
-        ],
-      },
-      {
-        method: '藍新',
-        feeWithInstallmentPlans: [
-          { installmentPlan: 1, fee: 0.028 },
-          { installmentPlan: 3, fee: 0.03 },
-          { installmentPlan: 6, fee: 0.035 },
-          { installmentPlan: 12, fee: 0.07 },
-          { installmentPlan: 18, fee: 0.09 },
-          { installmentPlan: 24, fee: 0.12 },
-          { installmentPlan: 30, fee: 0.15 },
-        ],
-      },
-
-      { method: '富比世', feeWithInstallmentPlans: [] },
-      { method: '匯款', feeWithInstallmentPlans: [] },
-      { method: '現金', feeWithInstallmentPlans: [] },
-      {
-        method: '裕富',
-        feeWithInstallmentPlans: [
-          { installmentPlan: 6, fee: 0.035 },
-          { installmentPlan: 12, fee: 0.06 },
-          { installmentPlan: 18, fee: 0.09 },
-          { installmentPlan: 24, fee: 0.0975 },
-          { installmentPlan: 30, fee: 0.12 },
-          { installmentPlan: 36, fee: 0.14 },
-        ],
-      },
-      {
-        method: '遠信',
-        feeWithInstallmentPlans: [
-          { installmentPlan: 6, fee: 0.035 },
-          { installmentPlan: 12, fee: 0.043 },
-          { installmentPlan: 18, fee: 0.06 },
-          { installmentPlan: 24, fee: 0.075 },
-          { installmentPlan: 30, fee: 0.09 },
-          { installmentPlan: 36, fee: 0.1 },
-        ],
-      },
-      {
-        method: '萬事達',
-        feeWithInstallmentPlans: [
-          { installmentPlan: 1, fee: 0.028 },
-          { installmentPlan: 3, fee: 0.03 },
-          { installmentPlan: 6, fee: 0.04 },
-          { installmentPlan: 12, fee: 0.065 },
-        ],
-      },
-      // old used
-      {
-        method: '舊遠信',
-        hidden: true,
-        feeWithInstallmentPlans: [
-          { installmentPlan: 6, fee: 0.045 },
-          { installmentPlan: 12, fee: 0.045 },
-          { installmentPlan: 18, fee: 0.065 },
-          { installmentPlan: 24, fee: 0.085 },
-          { installmentPlan: 30, fee: 0.1 },
-          { installmentPlan: 36, fee: 0.14 },
-        ],
-      },
-      {
-        method: '新仲信',
-        hidden: true,
-        feeWithInstallmentPlans: [
-          { installmentPlan: 3, fee: 0.03 },
-          { installmentPlan: 6, fee: 0.03 },
-          { installmentPlan: 12, fee: 0.05 },
-          { installmentPlan: 18, fee: 0.07 },
-          { installmentPlan: 24, fee: 0.09 },
-          { installmentPlan: 30, fee: 0.1 },
-          { installmentPlan: 36, fee: 0.13 },
-        ],
-      },
-      {
-        method: '舊仲信',
-        hidden: true,
-        feeWithInstallmentPlans: [
-          { installmentPlan: 3, fee: 0.03 },
-          { installmentPlan: 6, fee: 0.04 },
-          { installmentPlan: 12, fee: 0.06 },
-          { installmentPlan: 18, fee: 0.09 },
-          { installmentPlan: 24, fee: 0.11 },
-          { installmentPlan: 30, fee: 0.13 },
-          { installmentPlan: 36, fee: 0.15 },
-        ],
-      },
-      {
-        method: '舊學米仲信',
-        hidden: true,
-        feeWithInstallmentPlans: [
-          { installmentPlan: 3, fee: 0.03 },
-          { installmentPlan: 6, fee: 0.03 },
-          { installmentPlan: 12, fee: 0.05 },
-          { installmentPlan: 18, fee: 0.055 },
-          { installmentPlan: 24, fee: 0.07 },
-          { installmentPlan: 30, fee: 0.085 },
-          { installmentPlan: 36, fee: 0.11 },
-        ],
-      },
-      {
-        method: '舊匠說仲信',
-        hidden: true,
-        feeWithInstallmentPlans: [
-          { installmentPlan: 3, fee: 0.03 },
-          { installmentPlan: 6, fee: 0.03 },
-          { installmentPlan: 12, fee: 0.05 },
-          { installmentPlan: 18, fee: 0.07 },
-          { installmentPlan: 24, fee: 0.09 },
-          { installmentPlan: 30, fee: 0.1 },
-          { installmentPlan: 36, fee: 0.13 },
-        ],
-      },
-      // no longer cooperate
-      {
-        method: '歐付寶',
-        hidden: true,
-        feeWithInstallmentPlans: [
-          { installmentPlan: 1, fee: 0.0245 },
-          { installmentPlan: 3, fee: 0.025 },
-          { installmentPlan: 6, fee: 0.04 },
-          { installmentPlan: 12, fee: 0.07 },
-          { installmentPlan: 18, fee: 0.095 },
-          { installmentPlan: 24, fee: 0.11 },
-        ],
-      },
-    ],
+    contractProduct: {
+      periodAmount: 14,
+      periodType: 'd' as const,
+    },
+    contractCoupon: {
+      title: '未知折價券',
+    },
+    serviceExtend: [],
+    paymentMethods: [],
   }
 
   let customSettingCondition: typeof defaultCustomSettingCondition

@@ -43,7 +43,7 @@ const MemberContractCreationBlock: React.FC<{
   totalAppointments: number
   totalCoins: number
   customContractCard?: { id: string; title: string } | null
-  customContractProduct?: { periodAmount: number; periodType: 'y' | 'm' | 'd' } | null
+  customContractProduct?: { periodAmount: number; periodType: 'y' | 'M' | 'd' } | null
 }> = ({
   member,
   products,
@@ -131,7 +131,7 @@ const MemberContractCreationBlock: React.FC<{
               started_at: serviceStartedAt,
               ended_at: serviceStartedAt
                 ? moment(serviceStartedAt)
-                    .add(customContractProduct?.periodAmount || 14, customContractProduct?.periodType || 'day')
+                    .add(customContractProduct?.periodAmount, customContractProduct?.periodType)
                     .endOf('day')
                     .toDate()
                     .toISOString()
