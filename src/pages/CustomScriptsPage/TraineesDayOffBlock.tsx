@@ -112,7 +112,7 @@ const TraineesDayOffBlock: React.VFC = () => {
       return
     }
 
-    const coinLogIds = contract.coinLogs.map((v: CoinLog) => v.id) || null
+    const coinLogIds = contract.coinLogs?.map((v: CoinLog) => v.id) || null
 
     if (coinLogIds === null) {
       errorNotification('請檢查此合約是否有coin_log')
