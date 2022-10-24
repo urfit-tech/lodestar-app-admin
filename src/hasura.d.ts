@@ -19919,16 +19919,16 @@ export interface GET_SALES_ACTIVE_LOGVariables {
 // GraphQL query operation: GET_LEAD_CANDIDATES
 // ====================================================
 
-export interface GET_LEAD_CANDIDATES_member {
-  __typename: "member";
-  id: string;
+export interface GET_LEAD_CANDIDATES_member_phone {
+  __typename: "member_phone";
+  member_id: string;
 }
 
 export interface GET_LEAD_CANDIDATES {
   /**
-   * fetch data from the table: "member"
+   * fetch data from the table: "member_phone"
    */
-  member: GET_LEAD_CANDIDATES_member[];
+  member_phone: GET_LEAD_CANDIDATES_member_phone[];
 }
 
 export interface GET_LEAD_CANDIDATESVariables {

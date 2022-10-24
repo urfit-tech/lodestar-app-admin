@@ -184,8 +184,8 @@ const ConfirmSection: React.FC<{
   >(
     gql`
       query GET_LEAD_CANDIDATES($condition: member_bool_exp) {
-        member(where: $condition) {
-          id
+        member_phone(where: { member: $condition }) {
+          member_id
         }
       }
     `,
@@ -262,7 +262,7 @@ const ConfirmSection: React.FC<{
     {
       fetchPolicy: 'no-cache',
       variables: {
-        memberIds: filter.assignedAtRange ? leadCandidatesData?.member.map(v => v.id) || [] : [],
+        memberIds: filter.assignedAtRange ? leadCandidatesData?.member_phone.map(v => v.member_id) || [] : [],
         assignedAtCondition: filter.assignedAtRange
           ? {
               _gte: moment(filter.assignedAtRange[0]).startOf('day'),
@@ -276,9 +276,9 @@ const ConfirmSection: React.FC<{
     const memberIds =
       (filter.assignedAtRange
         ? assignedLeadsData?.audit_log.map(v => v.member_id).filter(notEmpty)
-        : leadCandidatesData?.member.map(v => v.id)) || []
+        : leadCandidatesData?.member_phone.map(v => v.member_id)) || []
     return memberIds
-  }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member])
+  }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member_phone])
 
   const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
 
