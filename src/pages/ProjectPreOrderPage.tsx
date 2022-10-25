@@ -46,13 +46,19 @@ const ProjectPreOrderPage: React.FC<{}> = () => {
               creatorAppellation={formatMessage(pageMessages.ProjectPreOrderPage.sponsor)}
               customTitle={formatMessage(pageMessages.ProjectPreOrderPage.projectTitle)}
               customTitleDefault={formatMessage(pageMessages.ProjectPreOrderPage.unnamedProject)}
-              onCreate={({ title, creatorId }) =>
+              categoryClassType="project"
+              onCreate={({ title, creatorId, categoryIds }) =>
                 insertProject({
                   variables: {
                     appId,
                     title,
                     memberId: creatorId || currentMemberId,
                     type: 'pre-order',
+                    projectCategories:
+                      categoryIds?.map((categoryId: string, index: number) => ({
+                        category_id: categoryId,
+                        position: index,
+                      })) || [],
                   },
                 })
                   .then(({ data }) => {

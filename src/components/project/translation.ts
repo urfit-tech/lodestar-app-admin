@@ -19,6 +19,7 @@ const projectMessages = {
     editProject: { id: 'project.*.editProject', defaultMessage: '編輯方案' },
     noProject: { id: 'project.*.noProject', defaultMessage: '尚未有任何專案' },
     soldOutProjectCount: { id: 'project.*.soldOutProjectCount', defaultMessage: '已售 {count}' },
+    portfolioTitle: { id: 'project.*.portfolioTitle', defaultMessage: 'Title' },
   }),
   ProjectPlanAdminModal: defineMessages({
     deliverables: { id: 'project.ProjectPlanAdminModal.deliverables', defaultMessage: '交付項目' },
@@ -36,6 +37,70 @@ const projectMessages = {
   }),
   ProjectBasicForm: defineMessages({
     tag: { id: 'project.ProjectBasicForm.tag', defaultMessage: '標籤' },
+  }),
+  ProjectPortfolioBasicForm: defineMessages({
+    tag: { id: 'project.ProjectPortfolioBasicForm.tag', defaultMessage: 'tag' },
+  }),
+  ProjectPortfolioSettingsForm: defineMessages({
+    cover: {
+      id: 'project.ProjectPortfolioSettingsForm.cover',
+      defaultMessage: 'cover',
+    },
+    defaultImageTips: {
+      id: 'project.ProjectPortfolioSettingsForm.defaultImageTips',
+      defaultMessage: 'Recommended image size: 1200*675px',
+    },
+    defaultVideoTips: {
+      id: 'project.ProjectPortfolioSettingsForm.defaultVideoTips',
+      defaultMessage: 'If video preview is not show in page, please check video url is correct',
+    },
+    videoUrl: {
+      id: 'project.ProjectPortfolioSettingsForm.videoUrl',
+      defaultMessage: 'Portfolio video url',
+    },
+    hasSameOriginalSource: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSource',
+      defaultMessage: 'Has same original source',
+    },
+  }),
+  ProjectPortfolioDescriptionForm: defineMessages({}),
+  ProjectCollectionTable: defineMessages({
+    title: { id: 'project.ProjectCollectionTable.title', defaultMessage: 'Title' },
+    author: { id: 'project.ProjectCollectionTable.author', defaultMessage: 'Author' },
+  }),
+  ProjectPublishAdminBlock: defineMessages({
+    notCompleteNotation: {
+      id: 'project.ProjectPublishAdminBlock.notCompleteNotation',
+      defaultMessage: 'Please fill required fields. Once completed, you can publish your project.',
+    },
+    notCompletePortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.notCompletePortfolioNotation',
+      defaultMessage: 'Please fill required fields. Once completed, you can publish from here.',
+    },
+    unpublishedNotation: {
+      id: 'project.ProjectPublishAdminBlock.unpublishedNotation',
+      defaultMessage: 'Your project is not published, it will not show in page.',
+    },
+    unpublishedPortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.unpublishedPortfolioNotation',
+      defaultMessage: 'Your portfolio is not published, it will not show in page.',
+    },
+    publishedNotation: {
+      id: 'project.ProjectPublishAdminBlock.publishedNotation',
+      defaultMessage: 'Your project is published now, it will show in page.',
+    },
+    publishedPortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.publishedPortfolioNotation',
+      defaultMessage: 'Your portfolio is published now, it will show in page.',
+    },
+    noTitle: { id: 'project.ProjectPublishAdminBlock.noShopTitle', defaultMessage: 'Project title has not been set' },
+    noFundingTerm: { id: 'project.text.noSalePlan', defaultMessage: 'Project sale plan has not been set' },
+    noSalePrice: { id: 'project.text.noSalePrice', defaultMessage: 'Sale price has not been set' },
+    activateProject: { id: 'project.ProjectPublishAdminBlock.activateShop', defaultMessage: 'Publish' },
+    activateNow: { id: 'project.ProjectPublishAdminBlock.activateNow', defaultMessage: 'Publish' },
+    closeProject: { id: 'project.ProjectPublishAdminBlock.closeShop', defaultMessage: 'Unpublish' },
+    noAuthor: { id: 'project.ProjectPublishAdminBlock.noAuthor', defaultMessage: 'Author has not been set' },
+    noVideoUrl: { id: 'project.ProjectPublishAdminBlock.noVideoUrl', defaultMessage: 'Video url has not been set' },
   }),
 }
 

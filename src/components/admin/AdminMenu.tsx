@@ -205,6 +205,27 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(adminMessages.AdminMenu.projectPreOrder),
         },
         {
+          permissionIsAllowed:
+            !!enabledModules.project &&
+            (Boolean(permissions.PROJECT_ADMIN) ||
+              Boolean(permissions.PROJECT_PORTFOLIO_ADMIN) ||
+              Boolean(permissions.PROJECT_NORMAL) ||
+              Boolean(permissions.PROJECT_PORTFOLIO_NORMAL)),
+          key: 'project_portfolio_collection',
+          name: formatMessage(adminMessages.AdminMenu.projectPortfolio),
+        },
+        {
+          permissionIsAllowed: !!enabledModules.project && Boolean(permissions.PROJECT_CATEGORY_ADMIN),
+          key: 'project_category',
+          name: formatMessage(adminMessages.AdminMenu.projectCategory),
+        },
+        {
+          permissionIsAllowed:
+            !!enabledModules.project && !!enabledModules.project_role && Boolean(permissions.PROJECT_ROLE_ADMIN),
+          key: 'project_roles',
+          name: formatMessage(adminMessages.AdminMenu.projectRole),
+        },
+        {
           // Not yet applied
           permissionIsAllowed: false,
           key: 'project_on_sale_collection',
