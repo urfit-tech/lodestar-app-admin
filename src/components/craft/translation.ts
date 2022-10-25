@@ -28,6 +28,7 @@ const craftMessages = {
     bold: { id: 'craft.*.bold', defaultMessage: '粗' },
     advancedSetting: { id: 'craft.*.advancedSetting', defaultMessage: '進階設定' },
     className: { id: 'craft.*.className', defaultMessage: '類別名稱' },
+    all: { id: 'craft.*.all', defaultMessage: 'all' },
   }),
   ProgramCollectionSettings: defineMessages({
     programSectionId: { id: 'craft.ProgramCollectionSettings.programSectionId', defaultMessage: '課程區塊 ID' },
@@ -52,6 +53,9 @@ const craftMessages = {
   }),
   ProjectCollectionSettings: defineMessages({
     projectSectionId: { id: 'craft.ProjectCollectionSettings.projectSectionId', defaultMessage: '專案區塊 ID' },
+    fundingProject: { id: 'craft.ProjectCollectionSettings.fundingProject', defaultMessage: 'Funding Project' },
+    preOrderProject: { id: 'craft.ProjectCollectionSettings.preOrderProject', defaultMessage: 'Pre Order Project' },
+    portfolioProject: { id: 'craft.ProjectCollectionSettings.portfolioProject', defaultMessage: 'Portfolio Project' },
   }),
   ImageSettings: defineMessages({
     ratio: { id: 'craft.ImageSettings.ratio', defaultMessage: '比例' },
