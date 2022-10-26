@@ -325,7 +325,7 @@ const useProjectAdmin = (projectId: string) => {
             name: data.project_by_pk.creator?.name || '',
             pictureUrl: data.project_by_pk.creator?.picture_url || '',
           },
-          authorId: data.project_by_pk.project_roles[0].member_id || null,
+          authorId: data.project_by_pk.project_roles[0]?.member_id || null,
         }
 
   return {
