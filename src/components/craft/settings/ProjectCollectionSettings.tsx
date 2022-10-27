@@ -27,7 +27,7 @@ const ProjectCollectionSettings: CraftElementSettings<ProjectCollectionProps> = 
         form.validateFields()
       }}
     >
-      <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].collectionVariant)}</CraftSettingLabel>}>
+      <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].collectionType)}</CraftSettingLabel>}>
         <Select
           value={props.type || 'all'}
           onChange={collectionType =>

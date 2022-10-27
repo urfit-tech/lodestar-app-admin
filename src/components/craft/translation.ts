@@ -29,6 +29,7 @@ const craftMessages = {
     advancedSetting: { id: 'craft.*.advancedSetting', defaultMessage: '進階設定' },
     className: { id: 'craft.*.className', defaultMessage: '類別名稱' },
     all: { id: 'craft.*.all', defaultMessage: 'all' },
+    collectionType: { id: 'craft.*.collectionType', defaultMessage: 'type' },
   }),
   ProgramCollectionSettings: defineMessages({
     programSectionId: { id: 'craft.ProgramCollectionSettings.programSectionId', defaultMessage: '課程區塊 ID' },
