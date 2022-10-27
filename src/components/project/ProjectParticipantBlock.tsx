@@ -10,6 +10,7 @@ import { useIdentity } from '../../hooks/identity'
 import { useProject } from '../../hooks/project'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import { AllMemberSelector } from '../form/MemberSelector'
+import projectMessages from './translation'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -70,6 +71,7 @@ const ProjectParticipantBlock: React.FC<{
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
+            form.resetFields()
             setIsEdit(false)
             setVisible(false)
             participantListRefetch()
@@ -82,6 +84,7 @@ const ProjectParticipantBlock: React.FC<{
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullyCreated))
+            form.resetFields()
             setVisible(false)
             participantListRefetch()
           })
@@ -115,8 +118,8 @@ const ProjectParticipantBlock: React.FC<{
         onCancel={() => {
           if (isEdit) {
             setIsEdit(false)
-            form.resetFields()
           }
+          form.resetFields()
           setVisible(false)
         }}
       >
@@ -128,10 +131,28 @@ const ProjectParticipantBlock: React.FC<{
           <Form.Item label={formatMessage(commonMessages.label.selectParticipant)} name="projectRoleId" hidden>
             <Input />
           </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.label.selectParticipant)} name="memberId">
+          <Form.Item
+            label={formatMessage(commonMessages.label.selectParticipant)}
+            name="memberId"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(projectMessages.ProjectParticipantBlock.participantFieldRequired),
+              },
+            ]}
+          >
             <AllMemberSelector allowClear />
           </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.label.participantPosition)} name="participantTypeId">
+          <Form.Item
+            label={formatMessage(commonMessages.label.participantOccupation)}
+            name="participantTypeId"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(projectMessages.ProjectParticipantBlock.occupationFieldRequired),
+              },
+            ]}
+          >
             <Select>
               {identityList?.map(identity => (
                 <Select.Option key={identity.id} value={identity.id}>
@@ -146,8 +167,8 @@ const ProjectParticipantBlock: React.FC<{
               onClick={() => {
                 if (isEdit) {
                   setIsEdit(false)
-                  form.resetFields()
                 }
+                form.resetFields()
                 setVisible(false)
               }}
             >

@@ -102,6 +102,16 @@ const projectMessages = {
     noAuthor: { id: 'project.ProjectPublishAdminBlock.noAuthor', defaultMessage: 'Author has not been set' },
     noVideoUrl: { id: 'project.ProjectPublishAdminBlock.noVideoUrl', defaultMessage: 'Video url has not been set' },
   }),
+  ProjectParticipantBlock: defineMessages({
+    participantFieldRequired: {
+      id: 'project.ProjectParticipantBlock.participantFieldRequired',
+      defaultMessage: 'Please select a participant.',
+    },
+    occupationFieldRequired: {
+      id: 'project.ProjectParticipantBlock.occupationFieldRequired',
+      defaultMessage: 'Please select a occupation.',
+    },
+  }),
 }
 
 export default projectMessages
