@@ -30,6 +30,7 @@ export const CraftSettingLabel = styled.span`
   letter-spacing: 0.4px;
   font-weight: 500;
   margin-bottom: 4px;
+  text-transform: capitalize;
 `
 export const CraftSlider = styled(Slider)`
   .ant-slider-track {
