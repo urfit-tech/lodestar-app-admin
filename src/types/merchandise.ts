@@ -112,6 +112,7 @@ export type MemberShopProps = {
 export type ShippingProps = {
   name: string
   phone: string
+  zipCode?: string
   address: string
   shippingMethod: string
   specification: string
