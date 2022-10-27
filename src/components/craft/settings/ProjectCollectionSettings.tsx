@@ -27,6 +27,25 @@ const ProjectCollectionSettings: CraftElementSettings<ProjectCollectionProps> = 
         form.validateFields()
       }}
     >
+      <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].collectionType)}</CraftSettingLabel>}>
+        <Select
+          value={props.type || 'all'}
+          onChange={collectionType =>
+            onPropsChange?.({ ...props, type: collectionType === 'all' ? undefined : collectionType })
+          }
+        >
+          <Select.Option value="all">{formatMessage(craftMessages['*'].all)}</Select.Option>
+          <Select.Option value="funding">
+            {formatMessage(craftMessages.ProjectCollectionSettings.fundingProject)}
+          </Select.Option>
+          <Select.Option value="pre-order">
+            {formatMessage(craftMessages.ProjectCollectionSettings.preOrderProject)}
+          </Select.Option>
+          <Select.Option value="portfolio">
+            {formatMessage(craftMessages.ProjectCollectionSettings.portfolioProject)}
+          </Select.Option>
+        </Select>
+      </Form.Item>
       <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].collectionVariant)}</CraftSettingLabel>}>
         <Select
           value={props.collectionVariant || 'grid'}
