@@ -11,6 +11,7 @@ import { ProjectDataType, ProjectPreviewProps, ProjectSortProps } from '../../ty
 import { EmptyBlock } from '../admin'
 import ItemsSortingModal from '../common/ItemsSortingModal'
 import ProjectAdminCard from './ProjectAdminCard'
+import ProjectCollectionTable from './ProjectCollectionTable'
 import projectMessages from './translation'
 
 const ProjectCollectionBlock: React.FC<{
@@ -23,9 +24,16 @@ const ProjectCollectionBlock: React.FC<{
 }> = ({ appId, projectType, condition, orderBy, withSortingButton, onReady }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('')
 
   const { loadingProject, projectPreview, projectPreviewCount, refetchProject, loadMoreProjects } =
-    useProjectPreviewCollection(condition, orderBy)
+    useProjectPreviewCollection(
+      {
+        ...condition,
+        title: search ? { _like: `%${search}%` } : undefined,
+      },
+      orderBy,
+    )
 
   const { projectSorts, refetchProjectSorts } = useProjectSortCollection(condition)
   const [updatePositions] = useMutation<
@@ -33,16 +41,20 @@ const ProjectCollectionBlock: React.FC<{
     hasura.UPDATE_PROJECT_POSITION_COLLECTIONVariables
   >(UPDATE_PROJECT_POSITION_COLLECTION)
 
+  const handleSearch = (search: string) => {
+    setSearch(search)
+  }
+
   useEffect(() => {
     onReady?.(projectPreviewCount)
     refetchProject()
   }, [onReady, projectPreviewCount, refetchProject])
 
-  if (loadingProject) {
+  if (loadingProject && search === '') {
     return <Skeleton active />
   }
 
-  if (projectPreview.length === 0) {
+  if (projectPreview.length === 0 && search === '') {
     return <EmptyBlock>{formatMessage(projectMessages['*'].noProject)}</EmptyBlock>
   }
 
@@ -74,26 +86,30 @@ const ProjectCollectionBlock: React.FC<{
           />
         </div>
       )}
-      <div className="row py-3">
-        {projectPreview.map(project => (
-          <div key={project.id} className="col-12 col-md-6 col-lg-4 mb-5">
-            <ProjectAdminCard {...project} />
-          </div>
-        ))}
-        {loadMoreProjects && (
-          <div className="text-center" style={{ width: '100%' }}>
-            <Button
-              loading={loading}
-              onClick={() => {
-                setLoading(true)
-                loadMoreProjects()?.finally(() => setLoading(false))
-              }}
-            >
-              {formatMessage(commonMessages.ui.showMore)}
-            </Button>
-          </div>
-        )}
-      </div>
+      {projectType === 'portfolio' ? (
+        <ProjectCollectionTable projects={projectPreview} onSearch={handleSearch} />
+      ) : (
+        <div className="row py-3">
+          {projectPreview.map(project => (
+            <div key={project.id} className="col-12 col-md-6 col-lg-4 mb-5">
+              <ProjectAdminCard {...project} />
+            </div>
+          ))}
+          {loadMoreProjects && (
+            <div className="text-center" style={{ width: '100%' }}>
+              <Button
+                loading={loading}
+                onClick={() => {
+                  setLoading(true)
+                  loadMoreProjects()?.finally(() => setLoading(false))
+                }}
+              >
+                {formatMessage(commonMessages.ui.showMore)}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </>
   )
 }
@@ -117,6 +133,11 @@ const useProjectPreviewCollection = (
             id: v.id,
             title: v.title,
             abstract: v.abstract,
+            author: {
+              id: v.project_roles[0]?.member?.id || '',
+              name: v.project_roles[0]?.member?.name || '',
+              pictureUrl: v.project_roles[0]?.member?.picture_url || '',
+            },
             projectType: v.type as ProjectDataType,
             createdAt: v.created_at,
             publishedAt: v.published_at,
@@ -201,7 +222,6 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
       expired_at
       cover_url
       preview_url
-      creator_id
       position
       cover_type
       project_plans {
@@ -210,6 +230,13 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           aggregate {
             count
           }
+        }
+      }
+      project_roles(where: { identity: { name: { _eq: "author" } } }) {
+        member {
+          id
+          name
+          picture_url
         }
       }
     }

@@ -125,7 +125,9 @@ const AdminPublishBlock: React.FC<{
         title: formatMessage(messages.unpublishingTitle),
         content: formatMessage(messages.unpublishingWarning),
         onOk: publish,
-        onCancel: () => {},
+        onCancel: () => {
+          setLoading(false)
+        },
       })
     } else if (isPrivate && isPrivateEnabled === true) {
       Modal.confirm({
@@ -133,7 +135,9 @@ const AdminPublishBlock: React.FC<{
         title: formatMessage(messages.confirmPrivatelyPublishedTitle),
         content: formatMessage(messages.confirmPrivatelyPublishedNotation),
         onOk: publish,
-        onCancel: () => {},
+        onCancel: () => {
+          setLoading(false)
+        },
       })
     } else {
       publish()

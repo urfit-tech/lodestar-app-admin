@@ -76,7 +76,6 @@ export const useActivityCollection = (condition: hasura.GET_ACTIVITY_COLLECTION_
               limit,
             },
             updateQuery: (prev: hasura.GET_ACTIVITY_COLLECTION_ADMIN, { fetchMoreResult }) => {
-              console.log(fetchMoreResult?.activity)
               if (!fetchMoreResult) {
                 return prev
               }
