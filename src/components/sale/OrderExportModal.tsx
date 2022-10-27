@@ -153,9 +153,9 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.name : '',
               orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.phone : '',
               orderLog.shipping?.isOutsideTaiwanIsland === 'false'
-                ? `${orderLog.shipping?.city || ''}${orderLog.shipping?.district || ''}${
-                    orderLog.shipping?.address || ''
-                  }`
+                ? `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
+                    orderLog.shipping?.district || ''
+                  }${orderLog.shipping?.address || ''}`
                 : '',
               orderLog.invoice_options?.name || '',
               orderLog.invoice_options?.email || '',
