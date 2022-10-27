@@ -1305,6 +1305,7 @@ export const craftPageMessages = {
     role: { id: 'craft.label.role', defaultMessage: '依角色' },
     recentWatched: { id: 'craft.label.recentWatched', defaultMessage: '依最近觀看' },
     publishedAt: { id: 'craft.label.publishedAt', defaultMessage: '依上架日期' },
+    popular: { id: 'craft.label.popular', defaultMessage: 'popular' },
     currentPrice: { id: 'craft.label.currentPrice', defaultMessage: '依產品價錢' },
     custom: { id: 'craft.label.custom', defaultMessage: '自訂項目' },
     ruleOfSort: { id: 'craft.label.ruleOfSort', defaultMessage: '排序規則' },
