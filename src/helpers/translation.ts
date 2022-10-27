@@ -1147,7 +1147,7 @@ export const memberMessages = {
     searchNoteRecord: { id: 'member.text.searchNoteRecord', defaultMessage: '搜尋聯絡紀錄' },
     smsSucceed: { id: 'member.text.smsSucceed', defaultMessage: '簡訊寄送成功' },
     smsFailed: { id: 'member.text.smsFailed', defaultMessage: '簡訊寄送失敗: {errorMessage}' },
-    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數69字' },
+    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數{charactersLimit}字' },
   },
   placeholder: {
     smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過69字' },
