@@ -273,7 +273,7 @@ export const commonMessages = {
     ogImageAlt: { id: 'common.label.ogImageAlt', defaultMessage: 'og:image:alt' },
     participant: { id: 'common.label.participant', defaultMessage: 'participant' },
     selectParticipant: { id: 'common.label.selectParticipant', defaultMessage: 'Select participant' },
-    participantPosition: { id: 'common.label.participantPosition', defaultMessage: 'Participant position' },
+    participantOccupation: { id: 'common.label.participantOccupation', defaultMessage: 'Participant occupation' },
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
   }),
   text: defineMessages({
@@ -1147,7 +1147,7 @@ export const memberMessages = {
     searchNoteRecord: { id: 'member.text.searchNoteRecord', defaultMessage: '搜尋聯絡紀錄' },
     smsSucceed: { id: 'member.text.smsSucceed', defaultMessage: '簡訊寄送成功' },
     smsFailed: { id: 'member.text.smsFailed', defaultMessage: '簡訊寄送失敗: {errorMessage}' },
-    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數69字' },
+    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數{charactersLimit}字' },
   },
   placeholder: {
     smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過69字' },
@@ -1305,6 +1305,7 @@ export const craftPageMessages = {
     role: { id: 'craft.label.role', defaultMessage: '依角色' },
     recentWatched: { id: 'craft.label.recentWatched', defaultMessage: '依最近觀看' },
     publishedAt: { id: 'craft.label.publishedAt', defaultMessage: '依上架日期' },
+    popular: { id: 'craft.label.popular', defaultMessage: 'popular' },
     currentPrice: { id: 'craft.label.currentPrice', defaultMessage: '依產品價錢' },
     custom: { id: 'craft.label.custom', defaultMessage: '自訂項目' },
     ruleOfSort: { id: 'craft.label.ruleOfSort', defaultMessage: '排序規則' },
