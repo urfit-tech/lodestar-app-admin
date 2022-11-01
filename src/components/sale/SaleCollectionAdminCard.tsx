@@ -282,61 +282,64 @@ const SaleCollectionAdminCard: React.VFC<{
                 </div>
                 <div className="col-3 d-flex justify-content-between">
                   <div>
-                    {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
-                      <AdminModal
-                        title={
-                          v.deliveredAt
-                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
-                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
-                        }
-                        renderTrigger={({ setVisible }) => (
-                          <div className="d-flex align-items-center">
-                            <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}</span>
-                            <Switch checked={isDelivered} onChange={() => setVisible(true)} />
-                          </div>
-                        )}
-                        footer={null}
-                        renderFooter={({ setVisible }) => (
-                          <div className="mt-4">
-                            <Button className="mr-2" onClick={() => setVisible(false)}>
-                              {formatMessage(commonMessages.ui.cancel)}
-                            </Button>
-                            <Button
-                              type="primary"
-                              danger={isDelivered}
-                              loading={loadingOrderLogs}
-                              onClick={async () =>
-                                await updateOrderProductDeliver({
-                                  variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
-                                })
-                                  .then(() => {
-                                    setVisible(false)
-                                    refetchOrderLogs?.()
-                                    message.success(
-                                      formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
-                                    )
+                    {(currentUserRole === 'app-owner' || permissions['MODIFY_MEMBER_ORDER_EQUITY']) &&
+                      settings['feature.modify_order_status'] === 'enabled' && (
+                        <AdminModal
+                          title={
+                            v.deliveredAt
+                              ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
+                              : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
+                          }
+                          renderTrigger={({ setVisible }) => (
+                            <div className="d-flex align-items-center">
+                              <span className="mr-2">
+                                {formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}
+                              </span>
+                              <Switch checked={isDelivered} onChange={() => setVisible(true)} />
+                            </div>
+                          )}
+                          footer={null}
+                          renderFooter={({ setVisible }) => (
+                            <div className="mt-4">
+                              <Button className="mr-2" onClick={() => setVisible(false)}>
+                                {formatMessage(commonMessages.ui.cancel)}
+                              </Button>
+                              <Button
+                                type="primary"
+                                danger={isDelivered}
+                                loading={loadingOrderLogs}
+                                onClick={async () =>
+                                  await updateOrderProductDeliver({
+                                    variables: { orderProductId: v.id, deliveredAt: v.deliveredAt ? null : new Date() },
                                   })
-                                  .catch(handleError)
-                              }
-                            >
-                              {v.deliveredAt
-                                ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
-                                : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
-                            </Button>
+                                    .then(() => {
+                                      setVisible(false)
+                                      refetchOrderLogs?.()
+                                      message.success(
+                                        formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
+                                      )
+                                    })
+                                    .catch(handleError)
+                                }
+                              >
+                                {v.deliveredAt
+                                  ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
+                                  : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
+                              </Button>
+                            </div>
+                          )}
+                        >
+                          <div>
+                            {v.deliveredAt
+                              ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
+                                  productName: v.name,
+                                })
+                              : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
+                                  productName: v.name,
+                                })}
                           </div>
-                        )}
-                      >
-                        <div>
-                          {v.deliveredAt
-                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
-                                productName: v.name,
-                              })
-                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
-                                productName: v.name,
-                              })}
-                        </div>
-                      </AdminModal>
-                    )}
+                        </AdminModal>
+                      )}
                   </div>
                   <div>
                     {currencyFormatter(
@@ -369,64 +372,67 @@ const SaleCollectionAdminCard: React.VFC<{
                 </div>
                 <div className="col-3 d-flex justify-content-between">
                   <div>
-                    {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
-                      <AdminModal
-                        title={
-                          orderProduct.deliveredAt
-                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
-                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
-                        }
-                        renderTrigger={({ setVisible }) => (
-                          <div className="d-flex align-items-center">
-                            <span className="mr-2">{formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}</span>
-                            <Switch checked={isDelivered} onChange={() => setVisible(true)} />
-                          </div>
-                        )}
-                        footer={null}
-                        renderFooter={({ setVisible }) => (
-                          <div className="mt-4">
-                            <Button className="mr-2" onClick={() => setVisible(false)}>
-                              {formatMessage(commonMessages.ui.cancel)}
-                            </Button>
-                            <Button
-                              type="primary"
-                              danger={isDelivered}
-                              loading={loadingOrderLogs}
-                              onClick={async () =>
-                                await updateOrderProductDeliver({
-                                  variables: {
-                                    orderProductId: orderProduct.id,
-                                    deliveredAt: orderProduct.deliveredAt ? null : new Date(),
-                                  },
-                                })
-                                  .then(() => {
-                                    setVisible(false)
-                                    refetchOrderLogs?.()
-                                    message.success(
-                                      formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
-                                    )
+                    {(currentUserRole === 'app-owner' || permissions['MODIFY_MEMBER_ORDER_EQUITY']) &&
+                      settings['feature.modify_order_status'] === 'enabled' && (
+                        <AdminModal
+                          title={
+                            orderProduct.deliveredAt
+                              ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquity)
+                              : formatMessage(saleMessages.SaleCollectionAdminCard.openEquity)
+                          }
+                          renderTrigger={({ setVisible }) => (
+                            <div className="d-flex align-items-center">
+                              <span className="mr-2">
+                                {formatMessage(saleMessages.SaleCollectionAdminCard.deliver)}
+                              </span>
+                              <Switch checked={isDelivered} onChange={() => setVisible(true)} />
+                            </div>
+                          )}
+                          footer={null}
+                          renderFooter={({ setVisible }) => (
+                            <div className="mt-4">
+                              <Button className="mr-2" onClick={() => setVisible(false)}>
+                                {formatMessage(commonMessages.ui.cancel)}
+                              </Button>
+                              <Button
+                                type="primary"
+                                danger={isDelivered}
+                                loading={loadingOrderLogs}
+                                onClick={async () =>
+                                  await updateOrderProductDeliver({
+                                    variables: {
+                                      orderProductId: orderProduct.id,
+                                      deliveredAt: orderProduct.deliveredAt ? null : new Date(),
+                                    },
                                   })
-                                  .catch(handleError)
-                              }
-                            >
-                              {orderProduct.deliveredAt
-                                ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
-                                : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
-                            </Button>
+                                    .then(() => {
+                                      setVisible(false)
+                                      refetchOrderLogs?.()
+                                      message.success(
+                                        formatMessage(saleMessages.SaleCollectionAdminCard.updateEquitySuccessfully),
+                                      )
+                                    })
+                                    .catch(handleError)
+                                }
+                              >
+                                {orderProduct.deliveredAt
+                                  ? formatMessage(saleMessages.SaleCollectionAdminCard.remove)
+                                  : formatMessage(saleMessages.SaleCollectionAdminCard.open)}
+                              </Button>
+                            </div>
+                          )}
+                        >
+                          <div>
+                            {orderProduct.deliveredAt
+                              ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
+                                  productName: orderProduct.name,
+                                })
+                              : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
+                                  productName: orderProduct.name,
+                                })}
                           </div>
-                        )}
-                      >
-                        <div>
-                          {orderProduct.deliveredAt
-                            ? formatMessage(saleMessages.SaleCollectionAdminCard.removeEquityWarning, {
-                                productName: orderProduct.name,
-                              })
-                            : formatMessage(saleMessages.SaleCollectionAdminCard.openEquityWarning, {
-                                productName: orderProduct.name,
-                              })}
-                        </div>
-                      </AdminModal>
-                    )}
+                        </AdminModal>
+                      )}
                   </div>
                   <div>{currencyFormatter(orderProduct.price, orderProduct.options?.currencyId)}</div>
                 </div>
