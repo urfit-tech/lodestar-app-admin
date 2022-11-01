@@ -62,6 +62,25 @@ const projectMessages = {
       id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSource',
       defaultMessage: 'Has same original source',
     },
+    hasSameOriginalSourceNoticeTitle: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNoticeTitle',
+      defaultMessage: 'Possibility of portfolio from the same source:',
+    },
+    hasSameOriginalSourceNotice1: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice1',
+      defaultMessage:
+        '1. Other team members in the portfolio have uploaded, and you can go to the portfolio page to apply for being marked as one of the staff members.',
+    },
+    hasSameOriginalSourceNotice2: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice2',
+      defaultMessage:
+        '(2) The portfolio is likely to have been infringed, and you can report the portfolio and remove it from the shelves.',
+    },
+    creator: {
+      id: 'project.ProjectPortfolioSettingsForm.creator',
+      defaultMessage:
+        'creator: {name}',
+    },
   }),
   ProjectPortfolioDescriptionForm: defineMessages({}),
   ProjectCollectionTable: defineMessages({

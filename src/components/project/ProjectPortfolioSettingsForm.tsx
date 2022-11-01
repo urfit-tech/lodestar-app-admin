@@ -18,6 +18,7 @@ import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ProjectAdminProps } from '../../types/project'
 import { StyledTips } from '../admin'
+import { CustomRatioImage } from '../common/Image'
 import ImageUploader from '../common/ImageUploader'
 import projectMessages from './translation'
 
@@ -44,6 +45,28 @@ const ErrorBlock = styled.div`
   letter-spacing: 0.4px;
 `
 
+const NoticeBlock = styled.div`
+  color: var(--gray-darker);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.57;
+  letter-spacing: 0.18px;
+`
+
+const OriginalPortfolioBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  margin-top: 16px;
+  background-color: #f7f8f8;
+  .portfolio-title {
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 0.2px;
+  }
+`
+
 type FieldProps = {
   coverUrl: string
   videoUrl: string
@@ -61,7 +84,10 @@ const ProjectPortfolioSettingsForm: React.FC<{
   const [loading, setLoading] = useState(false)
   const [coverImg, setCoverImg] = useState<File | null>(null)
   const [videoUrl, setVideoUrl] = useState<string>(project?.coverUrl || '')
-  const { hasSameOriginalSource } = usePortfolioVideoUrlCount(project?.id, videoUrl)
+  const { originalSourceProject, hasSameOriginalSource, refetchHasSameOriginalSource } = usePortfolioVideoUrlCount(
+    project?.id,
+    videoUrl,
+  )
   const [updatePortfolioSettings] = useMutation<
     hasura.UPDATE_PORTFOLIO_PROJECT_SETTINGS,
     hasura.UPDATE_PORTFOLIO_PROJECT_SETTINGSVariables
@@ -73,14 +99,11 @@ const ProjectPortfolioSettingsForm: React.FC<{
 
   const handleVideoUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVideoUrl(e.target.value)
+    refetchHasSameOriginalSource()
   }
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    if (hasSameOriginalSource) {
-      setLoading(false)
-      return message.error(formatMessage(commonMessages.event.failedSave))
-    }
     updatePortfolioSettings({
       variables: {
         projectId: project.id,
@@ -112,7 +135,7 @@ const ProjectPortfolioSettingsForm: React.FC<{
           })
             .then(() => {
               message.success(formatMessage(commonMessages.event.successfullySaved))
-              onRefetch?.()
+              refetchHasSameOriginalSource().then(onRefetch)
             })
             .catch(handleError)
         }
@@ -199,6 +222,25 @@ const ProjectPortfolioSettingsForm: React.FC<{
             />
           </StyledVideoBlock>
         )}
+
+        {hasSameOriginalSource && (
+          <NoticeBlock className="mt-3">
+            <p>{formatMessage(projectMessages.ProjectPortfolioSettingsForm.hasSameOriginalSourceNoticeTitle)}</p>
+            <p>{formatMessage(projectMessages.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice1)}</p>
+            <p>{formatMessage(projectMessages.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice2)}</p>
+            <OriginalPortfolioBlock>
+              <div>
+                <p className="portfolio-title">{originalSourceProject.title}</p>
+                <p className="portfolio-creator">
+                  {formatMessage(projectMessages.ProjectPortfolioSettingsForm.creator, {
+                    name: originalSourceProject.creator.name,
+                  })}
+                </p>
+              </div>
+              <CustomRatioImage width="74px" ratio={3 / 4} src={originalSourceProject.coverUrl} />
+            </OriginalPortfolioBlock>
+          </NoticeBlock>
+        )}
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -211,7 +253,7 @@ const ProjectPortfolioSettingsForm: React.FC<{
         >
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button type="primary" htmlType="submit" loading={loading} disabled={hasSameOriginalSource}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
@@ -231,6 +273,12 @@ const usePortfolioVideoUrlCount = (projectId: string | undefined, videoUrl: stri
         ) {
           nodes {
             id
+            title
+            creator {
+              id
+              name
+            }
+            preview_url
           }
           aggregate {
             count(columns: cover_url)
@@ -245,11 +293,21 @@ const usePortfolioVideoUrlCount = (projectId: string | undefined, videoUrl: stri
     },
   )
 
-  const originalSourceProjectId = data?.project_aggregate.nodes[0]?.id
+  const originalSourceProject = {
+    id: data?.project_aggregate?.nodes[0]?.id,
+    title: data?.project_aggregate?.nodes[0]?.title,
+    creator: {
+      id: data?.project_aggregate?.nodes[0]?.creator?.id,
+      name: data?.project_aggregate?.nodes[0]?.creator?.name,
+    },
+    coverUrl: data?.project_aggregate?.nodes[0]?.preview_url,
+  }
 
   return {
+    originalSourceProject,
     hasSameOriginalSource:
-      originalSourceProjectId !== projectId && (data?.project_aggregate.aggregate?.count || 0) > 0 ? true : false,
+      originalSourceProject.id !== projectId && (data?.project_aggregate?.aggregate?.count || 0) > 0 ? true : false,
+    refetchHasSameOriginalSource: refetch,
   }
 }
 
