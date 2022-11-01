@@ -24,6 +24,9 @@ const StyledTotal = styled.div`
   font-size: 20px;
   text-align: right;
 `
+const StyledInstallment = styled(StyledTotal)`
+  font-size: 16px;
+`
 
 const MemberContractCreationBlock: React.FC<{
   member: NonNullable<ContractInfo['member']>
@@ -372,6 +375,15 @@ const MemberContractCreationBlock: React.FC<{
 
           <div className="col-6 text-right">
             <StyledTotal>{currencyFormatter(totalPrice)}</StyledTotal>
+            <StyledInstallment>
+              {totalPrice > 0 &&
+                fieldValue.installmentPlan &&
+                `(每月 NT$ ${Math.round(totalPrice / fieldValue.installmentPlan).toLocaleString('zh-TW', {
+                  style: 'currency',
+                  currency: 'NTD',
+                  minimumFractionDigits: 0,
+                })} / 共 ${fieldValue.installmentPlan} 期)`}
+            </StyledInstallment>
             <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
             <StyledTotal>{totalCoins} XP</StyledTotal>
           </div>
