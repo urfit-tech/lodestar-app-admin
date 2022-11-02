@@ -223,7 +223,7 @@ const formMessages = {
       defaultMessage: '個人預購專案功能',
     },
     PROJECT_PORTFOLIO_ADMIN: { id: 'form.PermissionGroup.PROJECT_PORTFOLIO_ADMIN', defaultMessage: '所有作品專案功能' },
-    PROJECT_PORTFOLIO_NORMAN: { id: 'form.PermissionGroup.PROJECT_PORTFOLIO_NORMAN', defaultMessage: '個人作品專案功能' },
+    PROJECT_PORTFOLIO_NORMAL: { id: 'form.PermissionGroup.PROJECT_PORTFOLIO_NORMAL', defaultMessage: '個人作品專案功能' },
     PROJECT_ROLE_ADMIN: { id: 'form.PermissionGroup.PROJECT_ROLE_ADMIN', defaultMessage: '角色管理' },
     
 
