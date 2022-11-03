@@ -65,6 +65,14 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         creator_id: creatorId,
       },
     },
+    {
+      key: 'marked',
+      tab: formatMessage(commonMessages.status.marked),
+      condition: {
+        type: { _eq: projectType },
+        project_roles: { member_id: { _eq: currentMemberId } },
+      },
+    },
   ]
 
   return (

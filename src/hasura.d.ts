@@ -6560,6 +6560,16 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate {
   aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate | null;
 }
 
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate_aggregate {
+  __typename: "project_role_aggregate_fields";
+  count: number;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate {
+  __typename: "project_role_aggregate";
+  aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate_aggregate | null;
+}
+
 export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate {
   __typename: "project_plan_enrollment_aggregate_fields";
   count: number;
@@ -6594,6 +6604,21 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_roles {
   member: GET_PROJECT_PREVIEW_COLLECTION_project_project_roles_member | null;
 }
 
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role_identity {
+  __typename: "identity";
+  id: any;
+  name: string;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role {
+  __typename: "project_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  identity: GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role_identity;
+}
+
 export interface GET_PROJECT_PREVIEW_COLLECTION_project {
   __typename: "project";
   id: any;
@@ -6621,6 +6646,10 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project {
    * An array relationship
    */
   project_roles: GET_PROJECT_PREVIEW_COLLECTION_project_project_roles[];
+  /**
+   * An array relationship
+   */
+  marked_project_role: GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role[];
 }
 
 export interface GET_PROJECT_PREVIEW_COLLECTION {
@@ -6629,6 +6658,10 @@ export interface GET_PROJECT_PREVIEW_COLLECTION {
    */
   project_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate;
   /**
+   * fetch aggregated fields from the table: "project_role"
+   */
+  project_role_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate;
+  /**
    * fetch data from the table: "project"
    */
   project: GET_PROJECT_PREVIEW_COLLECTION_project[];
@@ -6636,6 +6669,7 @@ export interface GET_PROJECT_PREVIEW_COLLECTION {
 
 export interface GET_PROJECT_PREVIEW_COLLECTIONVariables {
   condition: project_bool_exp;
+  memberId: string;
   orderBy?: project_order_by[] | null;
   limit: number;
 }

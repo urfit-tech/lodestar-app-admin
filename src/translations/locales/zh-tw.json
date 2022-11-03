@@ -2569,5 +2569,14 @@
   "project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice1": "(1)作品中的其他團隊成員已經上傳過作品，您可以至作品專頁申請標記成為工作人員之一。",
   "project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice2": "(2)該作品很有可能已經侵權，您可針對該作品進行檢舉下架。",
   "project.ProjectPortfolioSettingsForm.creator": "發佈者：{name}",
-  "common.text.ogImageTips": "建議圖片尺寸：1200*630px"
+  "common.text.ogImageTips": "建議圖片尺寸：1200*630px",
+  "common.status.marked": "被標記",
+  "project.ProjectCollectionTable.mark": "標記",
+  "common.ui.send": "送出",
+  "project.ProjectRejectMarkModal.rejectMark": "拒絕標記",
+  "project.ProjectRejectMarkModal.reason": "原因",
+  "project.ProjectRejectMarkModal.pleaseEnterAReasonForRejection": "請輸入拒絕原因",
+  "common.ui.reject": "拒絕",
+  "project.ProjectRejectMarkModal.hasRejectedMark": "已拒絕標記",
+  "project.*.noMarkedPortfolio": "尚未被任何作品標記"
 }

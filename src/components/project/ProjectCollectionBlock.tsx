@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -22,6 +23,7 @@ const ProjectCollectionBlock: React.FC<{
   withSortingButton?: boolean
   onReady?: (count: number) => void
 }> = ({ appId, projectType, condition, orderBy, withSortingButton, onReady }) => {
+  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
@@ -32,6 +34,7 @@ const ProjectCollectionBlock: React.FC<{
         ...condition,
         title: search ? { _like: `%${search}%` } : undefined,
       },
+      currentMemberId || '',
       orderBy,
     )
 
@@ -87,7 +90,12 @@ const ProjectCollectionBlock: React.FC<{
         </div>
       )}
       {projectType === 'portfolio' ? (
-        <ProjectCollectionTable projects={projectPreview} onSearch={handleSearch} />
+        <ProjectCollectionTable
+          projects={projectPreview}
+          onSearch={handleSearch}
+          type={condition.project_roles ? 'marked' : 'normal'}
+          onRefetch={refetchProject}
+        />
       ) : (
         <div className="row py-3">
           {projectPreview.map(project => (
@@ -116,6 +124,7 @@ const ProjectCollectionBlock: React.FC<{
 
 const useProjectPreviewCollection = (
   condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition'],
+  memberId: string,
   orderBy: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy'] = [
     { created_at: 'desc_nulls_last' as hasura.order_by },
   ],
@@ -123,7 +132,7 @@ const useProjectPreviewCollection = (
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_PROJECT_PREVIEW_COLLECTION,
     hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables
-  >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, orderBy, limit: 10 } })
+  >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, memberId, orderBy, limit: 10 } })
 
   const projectPreview: ProjectPreviewProps[] =
     loading || error || !data
@@ -146,6 +155,10 @@ const useProjectPreviewCollection = (
             previewUrl: v.preview_url,
             totalCount: sum(v.project_plans.map(w => w.project_plan_enrollments_aggregate.aggregate?.count || 0)),
             coverType: v.cover_type,
+            markedProjectRoles: v.marked_project_role.map(projectRole => ({
+              projectRoleId: projectRole.id,
+              identity: projectRole.identity,
+            })),
           }
         })
   const loadMoreProjects =
@@ -168,6 +181,7 @@ const useProjectPreviewCollection = (
               }
               return {
                 project_aggregate: prev.project_aggregate,
+                project_role_aggregate: prev.project_role_aggregate,
                 project: [...prev.project, ...fetchMoreResult.project],
               }
             },
@@ -176,7 +190,9 @@ const useProjectPreviewCollection = (
   return {
     loadingProject: loading,
     errorProject: error,
-    projectPreviewCount: data?.project_aggregate.aggregate?.count || 0,
+    projectPreviewCount: condition.project_roles
+      ? data?.project_role_aggregate.aggregate?.count || 0
+      : data?.project_aggregate.aggregate?.count || 0,
     projectPreview,
     refetchProject: refetch,
     loadMoreProjects,
@@ -206,8 +222,18 @@ const useProjectSortCollection = (condition: hasura.GET_PROJECT_SORT_COLLECTIONV
 }
 
 const GET_PROJECT_PREVIEW_COLLECTION = gql`
-  query GET_PROJECT_PREVIEW_COLLECTION($condition: project_bool_exp!, $orderBy: [project_order_by!], $limit: Int!) {
+  query GET_PROJECT_PREVIEW_COLLECTION(
+    $condition: project_bool_exp!
+    $memberId: String!
+    $orderBy: [project_order_by!]
+    $limit: Int!
+  ) {
     project_aggregate(where: $condition) {
+      aggregate {
+        count
+      }
+    }
+    project_role_aggregate(where: { member_id: { _eq: $memberId }, identity: { name: { _neq: "author" } } }) {
       aggregate {
         count
       }
@@ -237,6 +263,15 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           id
           name
           picture_url
+        }
+      }
+      marked_project_role: project_roles(
+        where: { member_id: { _eq: $memberId }, identity: { name: { _neq: "author" } } }
+      ) {
+        id
+        identity {
+          id
+          name
         }
       }
     }
