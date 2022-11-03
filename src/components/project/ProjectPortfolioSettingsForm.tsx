@@ -60,6 +60,7 @@ const OriginalPortfolioBlock = styled.div`
   padding: 16px 20px;
   margin-top: 16px;
   background-color: #f7f8f8;
+  border-radius: 4px;
   .portfolio-title {
     font-size: 20px;
     font-weight: bold;
