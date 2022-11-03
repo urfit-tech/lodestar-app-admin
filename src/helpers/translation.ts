@@ -179,6 +179,7 @@ export const commonMessages = {
     username: { id: 'common.label.username', defaultMessage: '使用者姓名或 Email' },
     phone: { id: 'common.label.phone', defaultMessage: '手機' },
     email: { id: 'common.label.email', defaultMessage: '信箱' },
+    emailForEnglish: { id: 'common.label.emailForEnglish', defaultMessage: 'Email' },
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
     funds: { id: 'common.label.funds', defaultMessage: '金額' },
     participants: { id: 'common.label.participants', defaultMessage: '人數' },

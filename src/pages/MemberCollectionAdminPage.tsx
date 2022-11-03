@@ -307,7 +307,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       ...getColumnSearchProps('name'),
     },
     {
-      title: 'Email',
+      title: formatMessage(commonMessages.label.emailForEnglish),
       dataIndex: 'email',
       key: 'email',
       ...getColumnSearchProps('email'),
