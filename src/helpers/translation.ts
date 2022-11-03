@@ -314,6 +314,10 @@ export const commonMessages = {
     },
     copiedToClipboard: { id: 'common.text.copiedToClipboard', defaultMessage: '已複製到剪貼簿' },
     unpublishingTitle: { id: 'common.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
+    ogImageTips: {
+      id: 'common.text.ogImageTips',
+      defaultMessage: 'Recommend image size: 1200*630px',
+    },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },

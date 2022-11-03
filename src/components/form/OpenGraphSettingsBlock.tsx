@@ -1,4 +1,5 @@
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { QuestionCircleFilled } from '@ant-design/icons'
+import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -7,7 +8,7 @@ import { handleError, uploadFile } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
-import { AdminBlock, AdminBlockTitle } from '../../components/admin'
+import { AdminBlock, AdminBlockTitle, StyledTips } from '../../components/admin'
 import ImageUploader from '../../components/common/ImageUploader'
 import { commonMessages } from '../../helpers/translation'
 import { MetaTag } from '../../types/general'
@@ -123,7 +124,20 @@ const OpenGraphSettingsBlock: React.VFC<{
         <Form.Item name="description" label={formatMessage(commonMessages.label.ogDescription)}>
           <Input />
         </Form.Item>
-        <Form.Item name="image" label={formatMessage(commonMessages.label.ogImage)}>
+        <Form.Item
+          name="image"
+          label={
+            <span className="d-flex align-items-center">
+              {formatMessage(commonMessages.label.ogImage)}
+              <Tooltip
+                placement="top"
+                title={<StyledTips>{formatMessage(commonMessages.text.ogImageTips)}</StyledTips>}
+              >
+                <QuestionCircleFilled className="ml-2" />
+              </Tooltip>
+            </span>
+          }
+        >
           <ImageUploader
             file={ogImage}
             initialCoverUrl={metaTag?.openGraph?.image}

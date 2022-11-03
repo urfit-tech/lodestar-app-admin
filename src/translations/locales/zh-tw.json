@@ -2564,5 +2564,10 @@
   "project.ProjectPortfolioSettingsForm.defaultVideoTips": "放入影片網址後，如未出現影片預覽，請確認網址是否正確",
   "project.ProjectPortfolioSettingsForm.hasSameOriginalSource": "平台上已有相同來源的作品",
   "project.ProjectParticipantBlock.participantFieldRequired": "請選擇參與者",
-  "project.ProjectParticipantBlock.occupationFieldRequired": "請選擇職位"
+  "project.ProjectParticipantBlock.occupationFieldRequired": "請選擇職位",
+  "project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNoticeTitle": "相同來源作品的可能性：",
+  "project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice1": "(1)作品中的其他團隊成員已經上傳過作品，您可以至作品專頁申請標記成為工作人員之一。",
+  "project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice2": "(2)該作品很有可能已經侵權，您可針對該作品進行檢舉下架。",
+  "project.ProjectPortfolioSettingsForm.creator": "發佈者：{name}",
+  "common.text.ogImageTips": "建議圖片尺寸：1200*630px"
 }
