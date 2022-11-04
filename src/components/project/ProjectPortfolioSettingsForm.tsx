@@ -238,7 +238,7 @@ const ProjectPortfolioSettingsForm: React.FC<{
                   })}
                 </p>
               </div>
-              <CustomRatioImage width="74px" ratio={3 / 4} src={originalSourceProject.coverUrl} />
+              <CustomRatioImage width="74px" ratio={3 / 4} shape="rounded" src={originalSourceProject.coverUrl} />
             </OriginalPortfolioBlock>
           </NoticeBlock>
         )}
