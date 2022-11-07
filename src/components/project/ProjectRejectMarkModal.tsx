@@ -19,7 +19,7 @@ const ProjectRejectMarkModal: React.VFC<{
   const [form] = useForm<RenameFieldProps>()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
-  const { deleteProjectRole } = useProject()
+  const { rejectProjectRole } = useProject()
 
   const handleSubmit = (projectRoleId: string, setVisible: (visible: boolean) => void) => {
     setLoading(true)
@@ -27,7 +27,7 @@ const ProjectRejectMarkModal: React.VFC<{
       .validateFields()
       .then(() => {
         const values = form.getFieldsValue()
-        deleteProjectRole({ variables: { projectRoleId: projectRoleId } })
+        rejectProjectRole({ variables: { projectRoleId: projectRoleId, rejectedReason: values.reason } })
           .then(() => {
             message.error(formatMessage(projectMessages.ProjectRejectMarkModal.hasRejectedMark))
             onRefetch?.()
