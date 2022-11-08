@@ -106,6 +106,18 @@ const SalesLeadTabs: React.VFC<{
       </Tabs.TabPane>
 
       <Tabs.TabPane
+        key="total"
+        tab={
+          <div>
+            {formatMessage(salesMessages.totalLead)}
+            <span>({totalLeads.length})</span>
+          </div>
+        }
+      >
+        {<SalesLeadTable manager={manager} leads={totalLeads} onRefetch={refetch} />}
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
         key="idled"
         tab={
           <div>

@@ -1392,6 +1392,7 @@ export const salesMessages = defineMessages({
   chaileaseLookup: { id: 'sales.label.chaileaseLookup', defaultMessage: '報名查詢' },
   chaileaseApply: { id: 'sales.label.chaileaseApply', defaultMessage: '申請資融' },
   autoStartCalls: { id: 'sales.label.autoStartCalls', defaultMessage: '自動撥號' },
+  totalLead: { id: 'sales.label.totalLead', defaultMessage: '全部' },
   starredLead: { id: 'sales.label.starredLead', defaultMessage: '收藏' },
   dedicatedLead: { id: 'sales.label.dedicatedLead', defaultMessage: '專屬名單' },
   existedLead: { id: 'sales.label.existedLead', defaultMessage: '既有名單' },
