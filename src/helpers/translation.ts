@@ -79,6 +79,8 @@ export const commonMessages = {
     hasGiftPlan: { id: 'common.ui.hasGiftPlan', defaultMessage: '附贈品' },
     addParticipant: { id: 'common.ui.addParticipant', defaultMessage: 'Add participant' },
     editParticipant: { id: 'common.ui.editParticipant', defaultMessage: 'Edit participant' },
+    send: { id: 'common.ui.send', defaultMessage: 'Send' },
+    reject: { id: 'common.ui.reject', defaultMessage: 'Reject' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -361,6 +363,7 @@ export const commonMessages = {
     invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
     orderPartialPaid: { id: 'common.status.orderPartialPaid', defaultMessage: '部分付款' },
     noAuthority: { id: 'common.status.noAuthority', defaultMessage: '無此權限' },
+    marked: { id: 'common.status.marked', defaultMessage: 'Marked' },
   }),
   menu: defineMessages({
     mediaLibrary: { id: 'common.menu.mediaLibrary', defaultMessage: '媒體庫' },
