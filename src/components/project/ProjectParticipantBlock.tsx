@@ -96,15 +96,17 @@ const ProjectParticipantBlock: React.FC<{
 
   return (
     <>
-      {participantList?.map(participant => (
-        <RoleAdminBlock
-          key={participant.projectRoleId}
-          name={`${participant.member.name} / ${participant.identity.name}`}
-          pictureUrl={participant.member.pictureUrl}
-          onEdit={() => handleEdit(participant.projectRoleId)}
-          onDelete={() => handleDelete(participant.projectRoleId)}
-        />
-      ))}
+      {participantList
+        ?.filter(participant => participant.agreedAt !== null)
+        .map(participant => (
+          <RoleAdminBlock
+            key={participant.projectRoleId}
+            name={`${participant.member.name} / ${participant.identity.name}`}
+            pictureUrl={participant.member.pictureUrl}
+            onEdit={() => handleEdit(participant.projectRoleId)}
+            onDelete={() => handleDelete(participant.projectRoleId)}
+          />
+        ))}
 
       <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
         {formatMessage(commonMessages.ui.addParticipant)}

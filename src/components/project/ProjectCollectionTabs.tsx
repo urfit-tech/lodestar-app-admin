@@ -3,6 +3,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ProjectDataType } from '../../types/project'
@@ -13,6 +14,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
   const { currentMemberId, permissions } = useAuth()
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
   const { id: appId } = useApp()
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   const creatorId = {
     _eq:
@@ -76,9 +78,22 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
   ]
 
   return (
-    <Tabs defaultActiveKey="published">
+    <Tabs
+      defaultActiveKey={projectType === 'portfolio' ? undefined : 'published'}
+      activeKey={projectType === 'portfolio' ? activeKey || 'published' : undefined}
+      onChange={key => {
+        if (projectType === 'portfolio') {
+          setActiveKey(key)
+        } else {
+          return undefined
+        }
+      }}
+    >
       {tabContents
-        .filter(tabContent => (projectType === 'portfolio' && tabContent.key === 'finished') === false)
+        .filter(
+          tabContent =>
+            (projectType === 'portfolio' ? tabContent.key === 'finished' : tabContent.key === 'marked') === false,
+        )
         .map(tabContent => (
           <Tabs.TabPane
             key={tabContent.key}

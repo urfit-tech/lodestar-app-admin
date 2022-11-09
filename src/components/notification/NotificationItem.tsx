@@ -1,4 +1,11 @@
-import { BookOutlined, DollarOutlined, HeartOutlined, MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import {
+  BookOutlined,
+  DollarOutlined,
+  HeartOutlined,
+  MessageOutlined,
+  QuestionCircleOutlined,
+  TagOutlined,
+} from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { List } from 'antd'
 import gql from 'graphql-tag'
@@ -73,6 +80,8 @@ const NotificationIcon: React.FC<{ type: string | null }> = ({ type }) => {
       return <BookOutlined />
     case 'reaction':
       return <HeartOutlined />
+    case 'mark':
+      return <TagOutlined />
     default:
       return <QuestionCircleOutlined />
   }

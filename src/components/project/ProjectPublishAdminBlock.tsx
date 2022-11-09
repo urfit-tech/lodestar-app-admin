@@ -5,6 +5,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
+import { useProject } from '../../hooks/project'
 import { ProjectAdminProps, ProjectDataType } from '../../types/project'
 import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 import projectMessages from './translation'
@@ -16,6 +17,7 @@ const ProjectPublishAdminBlock: React.FC<{
 }> = ({ project, type, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishProject] = useMutation<hasura.PUBLISH_PROJECT, hasura.PUBLISH_PROJECTVariables>(PUBLISH_PROJECT)
+  const { updateHasSendNotification } = useProject()
 
   if (!project) {
     return <Skeleton active />
@@ -92,8 +94,17 @@ const ProjectPublishAdminBlock: React.FC<{
       },
     })
       .then(() => {
-        onSuccess?.()
-        onRefetch?.()
+        if (type === 'portfolio') {
+          updateHasSendNotification({ variables: { projectId: project.id } })
+            .then(() => {
+              onSuccess?.()
+              onRefetch?.()
+            })
+            .catch(error => onError && onError(error))
+        } else {
+          onSuccess?.()
+          onRefetch?.()
+        }
       })
       .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())
