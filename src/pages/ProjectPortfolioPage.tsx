@@ -27,8 +27,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
 
   if (
     !enabledModules.portfolio_project ||
-    (enabledModules.portfolio_project &&
-      (!permissions.PROJECT_PORTFOLIO_ADMIN || !permissions.PROJECT_PORTFOLIO_NORMAL))
+    (enabledModules.portfolio_project && !permissions.PROJECT_PORTFOLIO_ADMIN && !permissions.PROJECT_PORTFOLIO_NORMAL)
   ) {
     return <ForbiddenPage />
   }
