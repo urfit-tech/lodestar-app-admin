@@ -28,7 +28,8 @@ type FieldProps = {
 
 const ProjectParticipantBlock: React.FC<{
   projectId: string
-}> = ({ projectId }) => {
+  publishAt: Date | null
+}> = ({ projectId, publishAt }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { getProjectParticipantData, insertProjectRole, updateProjectRole, deleteProjectRole } = useProject()
@@ -67,7 +68,12 @@ const ProjectParticipantBlock: React.FC<{
     form.validateFields().then(() => {
       if (isEdit) {
         updateProjectRole({
-          variables: { id: values.projectRoleId, memberId: values.memberId, identityId: values.participantTypeId },
+          variables: {
+            id: values.projectRoleId,
+            memberId: values.memberId,
+            identityId: values.participantTypeId,
+            hasSendedMarkedNotification: publishAt ? true : false,
+          },
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -80,7 +86,12 @@ const ProjectParticipantBlock: React.FC<{
           .finally(() => setLoading(false))
       } else {
         insertProjectRole({
-          variables: { projectId: projectId, memberId: values.memberId, identityId: values.participantTypeId },
+          variables: {
+            projectId: projectId,
+            memberId: values.memberId,
+            identityId: values.participantTypeId,
+            hasSendedMarkedNotification: publishAt ? true : false,
+          },
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullyCreated))
@@ -96,15 +107,17 @@ const ProjectParticipantBlock: React.FC<{
 
   return (
     <>
-      {participantList?.map(participant => (
-        <RoleAdminBlock
-          key={participant.projectRoleId}
-          name={`${participant.member.name} / ${participant.identity.name}`}
-          pictureUrl={participant.member.pictureUrl}
-          onEdit={() => handleEdit(participant.projectRoleId)}
-          onDelete={() => handleDelete(participant.projectRoleId)}
-        />
-      ))}
+      {participantList
+        ?.filter(participant => participant.agreedAt !== null)
+        .map(participant => (
+          <RoleAdminBlock
+            key={participant.projectRoleId}
+            name={`${participant.member.name} / ${participant.identity.name}`}
+            pictureUrl={participant.member.pictureUrl}
+            onEdit={() => handleEdit(participant.projectRoleId)}
+            onDelete={() => handleDelete(participant.projectRoleId)}
+          />
+        ))}
 
       <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
         {formatMessage(commonMessages.ui.addParticipant)}

@@ -20,6 +20,7 @@ const projectMessages = {
     noProject: { id: 'project.*.noProject', defaultMessage: '尚未有任何專案' },
     soldOutProjectCount: { id: 'project.*.soldOutProjectCount', defaultMessage: '已售 {count}' },
     portfolioTitle: { id: 'project.*.portfolioTitle', defaultMessage: 'Title' },
+    noMarkedPortfolio: { id: 'project.*.noMarkedPortfolio', defaultMessage: 'No marked portfolio' },
   }),
   ProjectPlanAdminModal: defineMessages({
     deliverables: { id: 'project.ProjectPlanAdminModal.deliverables', defaultMessage: '交付項目' },
@@ -86,6 +87,7 @@ const projectMessages = {
   ProjectCollectionTable: defineMessages({
     title: { id: 'project.ProjectCollectionTable.title', defaultMessage: 'Title' },
     author: { id: 'project.ProjectCollectionTable.author', defaultMessage: 'Author' },
+    mark: { id: 'project.ProjectCollectionTable.mark', defaultMessage: 'Mark' },
   }),
   ProjectPublishAdminBlock: defineMessages({
     notCompleteNotation: {
@@ -129,6 +131,24 @@ const projectMessages = {
     occupationFieldRequired: {
       id: 'project.ProjectParticipantBlock.occupationFieldRequired',
       defaultMessage: 'Please select a occupation.',
+    },
+  }),
+  ProjectRejectMarkModal: defineMessages({
+    rejectMark: {
+      id: 'project.ProjectRejectMarkModal.rejectMark',
+      defaultMessage: 'Reject Mark',
+    },
+    reason: {
+      id: 'project.ProjectRejectMarkModal.reason',
+      defaultMessage: 'Reason',
+    },
+    pleaseEnterAReasonForRejection: {
+      id: 'project.ProjectRejectMarkModal.pleaseEnterAReasonForRejection',
+      defaultMessage: 'Please enter a reason for rejection',
+    },
+    hasRejectedMark: {
+      id: 'project.ProjectRejectMarkModal.hasRejectedMark',
+      defaultMessage: 'Has rejected mark',
     },
   }),
 }

@@ -26,11 +26,8 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
   const { identityId, identityListRefetch } = getIdentity('Project', 'author')
 
   if (
-    !enabledModules.project ||
-    (Boolean(permissions.PROJECT_ADMIN) &&
-      Boolean(permissions.PROJECT_PORTFOLIO_ADMIN) &&
-      Boolean(permissions.PROJECT_NORMAL) &&
-      Boolean(permissions.PROJECT_PORTFOLIO_NORMAL))
+    !enabledModules.portfolio_project ||
+    (enabledModules.portfolio_project && !permissions.PROJECT_PORTFOLIO_ADMIN && !permissions.PROJECT_PORTFOLIO_NORMAL)
   ) {
     return <ForbiddenPage />
   }
@@ -76,6 +73,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                               projectId: projectId,
                               memberId: currentMemberId,
                               identityId: insertedIdentityId,
+                              hasSendedMarkedNotification: false,
                             },
                           })
                             .then(() => {
@@ -90,6 +88,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                           projectId: projectId,
                           memberId: currentMemberId,
                           identityId: identityId,
+                          hasSendedMarkedNotification: false,
                         },
                       })
                         .then(() => projectId && history.push(`/projects/${projectId}`))

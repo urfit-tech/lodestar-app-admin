@@ -29,8 +29,21 @@ export const useProject = () => {
   `)
 
   const [insertProjectRole] = useMutation<hasura.INSERT_PROJECT_ROLE, hasura.INSERT_PROJECT_ROLEVariables>(gql`
-    mutation INSERT_PROJECT_ROLE($projectId: uuid!, $memberId: String!, $identityId: uuid!) {
-      insert_project_role(objects: { project_id: $projectId, member_id: $memberId, identity_id: $identityId }) {
+    mutation INSERT_PROJECT_ROLE(
+      $projectId: uuid!
+      $memberId: String!
+      $identityId: uuid!
+      $hasSendedMarkedNotification: Boolean
+    ) {
+      insert_project_role(
+        objects: {
+          project_id: $projectId
+          member_id: $memberId
+          identity_id: $identityId
+          agreed_at: "now()"
+          has_sended_marked_notification: $hasSendedMarkedNotification
+        }
+      ) {
         affected_rows
         returning {
           id
@@ -40,10 +53,33 @@ export const useProject = () => {
   `)
 
   const [updateProjectRole] = useMutation<hasura.UPDATE_PROJECT_ROLE, hasura.UPDATE_PROJECT_ROLEVariables>(gql`
-    mutation UPDATE_PROJECT_ROLE($id: uuid!, $memberId: String!, $identityId: uuid!) {
-      update_project_role_by_pk(pk_columns: { id: $id }, _set: { member_id: $memberId, identity_id: $identityId }) {
+    mutation UPDATE_PROJECT_ROLE(
+      $id: uuid!
+      $memberId: String!
+      $identityId: uuid!
+      $hasSendedMarkedNotification: Boolean!
+    ) {
+      update_project_role_by_pk(
+        pk_columns: { id: $id }
+        _set: {
+          member_id: $memberId
+          identity_id: $identityId
+          has_sended_marked_notification: $hasSendedMarkedNotification
+        }
+      ) {
         member_id
         identity_id
+      }
+    }
+  `)
+
+  const [updateHasSendNotification] = useMutation<
+    hasura.UPDATE_HAS_SENDED_NOTIFICATION,
+    hasura.UPDATE_HAS_SENDED_NOTIFICATIONVariables
+  >(gql`
+    mutation UPDATE_HAS_SENDED_NOTIFICATION($projectId: uuid!) {
+      update_project_role(where: { project_id: { _eq: $projectId } }, _set: { has_sended_marked_notification: true }) {
+        affected_rows
       }
     }
   `)
@@ -56,13 +92,31 @@ export const useProject = () => {
     }
   `)
 
+  const [rejectProjectRole] = useMutation<hasura.REJECT_PROJECT_ROLE, hasura.REJECT_PROJECT_ROLEVariables>(gql`
+    mutation REJECT_PROJECT_ROLE($projectRoleId: uuid!, $rejectedReason: String) {
+      update_project_role_by_pk(
+        pk_columns: { id: $projectRoleId }
+        _set: { rejected_reason: $rejectedReason, rejected_at: "now()" }
+      ) {
+        id
+      }
+    }
+  `)
+
   const [loadProjectParticipant, { called, loading, data: getProjectParticipantData, refetch }] = useLazyQuery<
     hasura.GET_PROJECT_PARTICIPANT,
     hasura.GET_PROJECT_PARTICIPANTVariables
   >(gql`
     query GET_PROJECT_PARTICIPANT($projectId: uuid!) {
-      project_role(where: { project_id: { _eq: $projectId }, identity: { name: { _neq: "author" } } }) {
+      project_role(
+        where: {
+          project_id: { _eq: $projectId }
+          identity: { name: { _neq: "author" } }
+          rejected_at: { _is_null: true }
+        }
+      ) {
         id
+        agreed_at
         member {
           id
           name
@@ -90,6 +144,7 @@ export const useProject = () => {
           pictureUrl: projectRole.member?.picture_url || '',
         },
         identity: { id: projectRole.identity.id, name: projectRole.identity.name },
+        agreedAt: projectRole.agreed_at,
       }))
 
       return {
@@ -102,5 +157,7 @@ export const useProject = () => {
     insertProjectRole,
     updateProjectRole,
     deleteProjectRole,
+    rejectProjectRole,
+    updateHasSendNotification,
   }
 }
