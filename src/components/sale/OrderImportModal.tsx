@@ -22,7 +22,11 @@ type OrderImportModalProps = ModalProps & {
   renderTrigger?: (ctx: { show: () => void }) => React.ReactElement
 }
 type ResponseBody =
-  | { code: 'SUCCESS'; message: string; result: { total: number; success: number; failed: string[] } }
+  | {
+      code: 'SUCCESS'
+      message: string
+      result: { total: number; success: number; failed: { index: number; error: string }[] }
+    }
   | {
       code: string
       message: StringLiteral
@@ -97,7 +101,12 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
                         </div>
                         <div>
                           {formatMessage(messages.numFailed)}: {body.result?.failed.length}
-                          {body.result?.failed.length && <span>({body.result?.failed.join(',')})</span>}
+                          {body.result?.failed.length && (
+                            <span>
+                              ({body.result?.failed.map(f => `row ${f.index + 2} failed message: ${f.error}`).join(', ')}
+                              )
+                            </span>
+                          )}
                         </div>
                       </div>
                     }

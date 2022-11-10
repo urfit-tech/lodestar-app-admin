@@ -60,6 +60,7 @@ const OriginalPortfolioBlock = styled.div`
   padding: 16px 20px;
   margin-top: 16px;
   background-color: #f7f8f8;
+  border-radius: 4px;
   .portfolio-title {
     font-size: 20px;
     font-weight: bold;
@@ -237,7 +238,7 @@ const ProjectPortfolioSettingsForm: React.FC<{
                   })}
                 </p>
               </div>
-              <CustomRatioImage width="74px" ratio={3 / 4} src={originalSourceProject.coverUrl} />
+              <CustomRatioImage width="74px" ratio={3 / 4} shape="rounded" src={originalSourceProject.coverUrl} />
             </OriginalPortfolioBlock>
           </NoticeBlock>
         )}
