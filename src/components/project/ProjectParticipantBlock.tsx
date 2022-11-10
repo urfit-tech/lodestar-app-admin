@@ -28,7 +28,8 @@ type FieldProps = {
 
 const ProjectParticipantBlock: React.FC<{
   projectId: string
-}> = ({ projectId }) => {
+  publishAt: Date | null
+}> = ({ projectId, publishAt }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { getProjectParticipantData, insertProjectRole, updateProjectRole, deleteProjectRole } = useProject()
@@ -67,7 +68,12 @@ const ProjectParticipantBlock: React.FC<{
     form.validateFields().then(() => {
       if (isEdit) {
         updateProjectRole({
-          variables: { id: values.projectRoleId, memberId: values.memberId, identityId: values.participantTypeId },
+          variables: {
+            id: values.projectRoleId,
+            memberId: values.memberId,
+            identityId: values.participantTypeId,
+            hasSendedMarkedNotification: publishAt ? true : false,
+          },
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -80,7 +86,12 @@ const ProjectParticipantBlock: React.FC<{
           .finally(() => setLoading(false))
       } else {
         insertProjectRole({
-          variables: { projectId: projectId, memberId: values.memberId, identityId: values.participantTypeId },
+          variables: {
+            projectId: projectId,
+            memberId: values.memberId,
+            identityId: values.participantTypeId,
+            hasSendedMarkedNotification: publishAt ? true : false,
+          },
         })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullyCreated))

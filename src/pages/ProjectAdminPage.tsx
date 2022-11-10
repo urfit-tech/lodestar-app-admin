@@ -125,7 +125,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
                     </AdminBlock>
                     <AdminBlock>
                       <AdminBlockTitle>{formatMessage(commonMessages.label.participant)}</AdminBlockTitle>
-                      <ProjectParticipantBlock projectId={projectAdmin.id} />
+                      <ProjectParticipantBlock projectId={projectAdmin.id} publishAt={projectAdmin.publishedAt} />
                     </AdminBlock>
                   </div>
                 </Tabs.TabPane>

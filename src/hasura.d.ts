@@ -14644,6 +14644,7 @@ export interface INSERT_PROJECT_ROLEVariables {
   projectId: any;
   memberId: string;
   identityId: any;
+  hasSendedMarkedNotification?: boolean | null;
 }
 
 /* tslint:disable */
@@ -14672,6 +14673,7 @@ export interface UPDATE_PROJECT_ROLEVariables {
   id: any;
   memberId: string;
   identityId: any;
+  hasSendedMarkedNotification: boolean;
 }
 
 /* tslint:disable */

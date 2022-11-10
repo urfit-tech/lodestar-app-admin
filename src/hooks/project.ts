@@ -29,8 +29,21 @@ export const useProject = () => {
   `)
 
   const [insertProjectRole] = useMutation<hasura.INSERT_PROJECT_ROLE, hasura.INSERT_PROJECT_ROLEVariables>(gql`
-    mutation INSERT_PROJECT_ROLE($projectId: uuid!, $memberId: String!, $identityId: uuid!) {
-      insert_project_role(objects: { project_id: $projectId, member_id: $memberId, identity_id: $identityId, agreed_at: "now()" }) {
+    mutation INSERT_PROJECT_ROLE(
+      $projectId: uuid!
+      $memberId: String!
+      $identityId: uuid!
+      $hasSendedMarkedNotification: Boolean
+    ) {
+      insert_project_role(
+        objects: {
+          project_id: $projectId
+          member_id: $memberId
+          identity_id: $identityId
+          agreed_at: "now()"
+          has_sended_marked_notification: $hasSendedMarkedNotification
+        }
+      ) {
         affected_rows
         returning {
           id
@@ -40,8 +53,20 @@ export const useProject = () => {
   `)
 
   const [updateProjectRole] = useMutation<hasura.UPDATE_PROJECT_ROLE, hasura.UPDATE_PROJECT_ROLEVariables>(gql`
-    mutation UPDATE_PROJECT_ROLE($id: uuid!, $memberId: String!, $identityId: uuid!) {
-      update_project_role_by_pk(pk_columns: { id: $id }, _set: { member_id: $memberId, identity_id: $identityId }) {
+    mutation UPDATE_PROJECT_ROLE(
+      $id: uuid!
+      $memberId: String!
+      $identityId: uuid!
+      $hasSendedMarkedNotification: Boolean!
+    ) {
+      update_project_role_by_pk(
+        pk_columns: { id: $id }
+        _set: {
+          member_id: $memberId
+          identity_id: $identityId
+          has_sended_marked_notification: $hasSendedMarkedNotification
+        }
+      ) {
         member_id
         identity_id
       }
@@ -119,7 +144,7 @@ export const useProject = () => {
           pictureUrl: projectRole.member?.picture_url || '',
         },
         identity: { id: projectRole.identity.id, name: projectRole.identity.name },
-        agreedAt: projectRole.agreed_at
+        agreedAt: projectRole.agreed_at,
       }))
 
       return {
