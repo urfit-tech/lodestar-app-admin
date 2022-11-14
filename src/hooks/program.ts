@@ -307,7 +307,7 @@ export const useProgramContentBody = (programContentId: string) => {
 }
 
 export const usePrograms = (options?: {
-  allowContentType?: string
+  allowContentTypes?: string[]
   memberId?: string
   isPublished?: boolean
   withContentSection?: boolean
@@ -319,7 +319,7 @@ export const usePrograms = (options?: {
     app_id: { _eq: appId },
     published_at: options?.isPublished ? { _is_null: false } : undefined,
     program_content_sections: {
-      program_contents: { program_content_type: { type: { _eq: options?.allowContentType } } },
+      program_contents: { program_content_type: { type: { _in: options?.allowContentTypes } } },
     },
     editors: { member_id: { _eq: options?.memberId } },
   }

@@ -7,7 +7,7 @@ import { programMessages } from '../../helpers/translation'
 import { usePrograms } from '../../hooks/program'
 
 type ProgramSelectorProps = {
-  allowContentType?: string
+  allowContentTypes?: string[]
   memberId?: string
 }
 
@@ -59,10 +59,10 @@ export const EditableProgramSelector: React.FC<ProgramSelectorProps & SelectProp
 
 export const ProgramTreeSelector: React.FC<
   ProgramSelectorProps & TreeSelectProps<string> & { treeNodeSelectable?: boolean }
-> = ({ allowContentType, memberId, treeNodeSelectable, ...selectProps }) => {
+> = ({ allowContentTypes, memberId, treeNodeSelectable, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { loadingPrograms, programs } = usePrograms({
-    allowContentType,
+    allowContentTypes,
     memberId,
     isPublished: false,
     withContentSection: true,
