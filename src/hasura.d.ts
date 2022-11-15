@@ -6362,8 +6362,7 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
   programs: program_package_program_insert_input[];
-  program_package_id: any;
-  delete_programs_id: any[];
+  delete_program_package_programs_id: any[];
 }
 
 /* tslint:disable */
