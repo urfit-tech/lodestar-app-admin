@@ -11614,7 +11614,7 @@ export interface GET_MEMBER_NOTES_ADMIN {
 }
 
 export interface GET_MEMBER_NOTES_ADMINVariables {
-  orderBy: member_note_order_by;
+  orderBy: member_note_order_by[];
   condition?: member_note_bool_exp | null;
 }
 
