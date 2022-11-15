@@ -289,7 +289,7 @@ export const useMemberAdmin = (memberId: string) => {
 }
 
 export const useMemberNotesAdmin = (
-  orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy'],
+  orderBy: hasura.member_note_order_by,
   filters?: {
     range?: [Moment, Moment]
     author?: string
@@ -300,6 +300,7 @@ export const useMemberNotesAdmin = (
   },
   keyword?: string,
 ) => {
+  const splitedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({ [key as keyof Partial<hasura.member_note_order_by>]: value }))
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     deleted_at: { _is_null: true },
@@ -365,7 +366,7 @@ export const useMemberNotesAdmin = (
     hasura.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
-      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+      query GET_MEMBER_NOTES_ADMIN($orderBy: [member_note_order_by!]!, $condition: member_note_bool_exp) {
         category {
           id
           name
@@ -378,7 +379,7 @@ export const useMemberNotesAdmin = (
             count
           }
         }
-        member_note(where: $condition, order_by: [$orderBy], limit: 10) {
+        member_note(where: $condition, order_by: $orderBy, limit: 10) {
           id
           created_at
           type
@@ -440,7 +441,7 @@ export const useMemberNotesAdmin = (
         }
       }
     `,
-    { variables: { condition, orderBy } },
+    { variables: { condition, orderBy: splitedOrderBy } },
   )
 
   const allMemberCategories: {
@@ -504,7 +505,7 @@ export const useMemberNotesAdmin = (
       ? () =>
           fetchMore({
             variables: {
-              orderBy,
+              orderBy: splitedOrderBy,
               condition: {
                 ...condition,
                 created_at: orderBy.created_at
