@@ -85,7 +85,7 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null,
       query GET_PROGRAM_PACKAGE_PLAN_COLLECTION($programPackageIds: [uuid!], $isTempoDelivery: Boolean) {
         program_package_plan(
           where: { program_package_id: { _in: $programPackageIds }, is_tempo_delivery: { _eq: $isTempoDelivery } }
-          order_by: { position: asc, published_at: desc }
+          order_by: [{ position: asc }, { published_at: desc }]
         ) {
           id
           title

@@ -18,7 +18,7 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
       query GET_MERCHANDISE_COLLECTION($isNotPublished: Boolean) {
         merchandise(
           where: { is_deleted: { _eq: false }, published_at: { _is_null: $isNotPublished } }
-          order_by: { position: asc, published_at: desc, updated_at: desc }
+          order_by: [{ position: asc }, { published_at: desc }, { updated_at: desc }]
         ) {
           id
           title
@@ -277,7 +277,7 @@ export const useMemberShop = (shopId: string) => {
           }
           merchandises(
             where: { is_deleted: { _eq: false } }
-            order_by: { position: asc, published_at: desc, updated_at: desc }
+            order_by: [{ position: asc }, { published_at: desc }, { updated_at: desc }]
           ) {
             id
             title

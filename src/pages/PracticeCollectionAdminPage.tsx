@@ -61,7 +61,7 @@ const PracticeCollectionAdminPage: React.FC = () => {
           <div className="col-12 col-sm-5 mb-2 mb-sm-0 px-0 pr-sm-3">
             <ProgramTreeSelector
               treeNodeSelectable
-              allowContentType="practice"
+              allowContentTypes={['practice']}
               memberId={permissions.PRACTICE_NORMAL && currentMemberId ? currentMemberId : undefined}
               onSelect={(value, option) => {
                 setSelectedId({ [option.group]: value })
