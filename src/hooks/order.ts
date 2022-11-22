@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import hasura from '../hasura'
 import { prop, sum } from 'ramda'
-import { OrderLog } from '../types/general'
+import { OrderLog, PaymentLog } from '../types/general'
 
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
@@ -22,6 +22,53 @@ export const useOrderStatuses = () => {
           value.status && !accumulator.includes(value.status) ? [...accumulator, value.status] : accumulator,
         [] as string[],
       ) || [],
+  }
+}
+
+export const usePaymentLogs = (filters?: { orderLogId?: string | null; status?: string | null }) => {
+  const condition: hasura.GET_PAYMENT_LOGSVariables['condition'] = {
+    order_id: filters?.orderLogId ? { _eq: filters.orderLogId } : undefined,
+    status: filters?.status ? { _eq: filters.status } : undefined,
+  }
+  const limit = 20
+  const { loading, error, data } = useQuery<hasura.GET_PAYMENT_LOGS, hasura.GET_PAYMENT_LOGSVariables>(
+    gql`
+      query GET_PAYMENT_LOGS($condition: payment_log_bool_exp, $limit: Int) {
+        payment_log(where: $condition, limit: $limit) {
+          no
+          created_at
+          status
+          price
+          gateway
+          paid_at
+          method
+          custom_no
+        }
+      }
+    `,
+    {
+      variables: {
+        condition,
+        limit,
+      },
+    },
+  )
+  const paymentLogs: PaymentLog[] =
+    data?.payment_log.map(v => ({
+      no: v.no,
+      createdAt: v.created_at && new Date(v.created_at),
+      status: v.status || '',
+      price: v.price,
+      gateway: v.gateway || '',
+      paidAt: v.paid_at && new Date(v.paid_at),
+      method: v.method || '',
+      customNo: v.custom_no,
+    })) || []
+
+  return {
+    loading,
+    error,
+    paymentLogs,
   }
 }
 
@@ -82,6 +129,9 @@ export const useOrderLogs = (
           status
           shipping
           expired_at
+          options
+          invoice_options
+          invoice_issued_at
 
           member {
             name
@@ -115,6 +165,7 @@ export const useOrderLogs = (
             options
           }
           order_executors {
+            ratio
             member {
               name
             }
@@ -177,7 +228,10 @@ export const useOrderLogs = (
       name: v.member.name,
       email: v.member.email,
       paymentMethod: v.payment_logs[0]?.gateway,
-      orderExecutors: v.order_executors.map(w => w.member.name),
+      options: v.options,
+      invoiceOptions: v.invoice_options,
+      invoiceIssuedAt: v.invoice_issued_at,
+      orderExecutors: v.order_executors.map(w => ({ ratio: w.ratio, name: w.member.name })),
 
       orderProducts: v.order_products.map(w => ({
         id: w.id,
@@ -214,5 +268,27 @@ export const useOrderLogs = (
     orderLogs,
     refetch,
     loadMoreOrderLogs,
+  }
+}
+
+export const useSharingCodes = (paths: string[]) => {
+  const { loading, error, data } = useQuery<hasura.GET_SHARING_CODE, hasura.GET_SHARING_CODEVariables>(
+    gql`
+      query GET_SHARING_CODE($paths: [String!]) {
+        sharing_code(where: { path: { _in: $paths } }) {
+          id
+          path
+          code
+          note
+        }
+      }
+    `,
+    { variables: { paths } },
+  )
+  const sharingCodes = data?.sharing_code
+  return {
+    loading,
+    error,
+    sharingCodes,
   }
 }
