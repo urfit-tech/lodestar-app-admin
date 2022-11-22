@@ -7412,6 +7412,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   shipping: any | null;
   payment_gateway: string | null;
   gift_plans: string | null;
+  country: string | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {
@@ -7449,6 +7450,7 @@ export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
   paid_at: any | null;
   order_product_ended_at: any | null;
   product_id: string | null;
+  country: string | null;
 }
 
 export interface GET_ORDER_PRODUCT_EXPORT {
@@ -7479,6 +7481,7 @@ export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
    * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
    */
   invoice_options: any;
+  options: any | null;
 }
 
 export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
@@ -36399,6 +36402,7 @@ export interface order_log_export_bool_exp {
   _not?: order_log_export_bool_exp | null;
   _or?: order_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   gift_plans?: String_comparison_exp | null;
   invoice_issued_at?: String_comparison_exp | null;
@@ -36431,6 +36435,7 @@ export interface order_log_export_bool_exp {
  */
 export interface order_log_export_order_by {
   app_id?: order_by | null;
+  country?: order_by | null;
   created_at?: order_by | null;
   gift_plans?: order_by | null;
   invoice_issued_at?: order_by | null;
@@ -36804,6 +36809,7 @@ export interface order_product_export_bool_exp {
   _not?: order_product_export_bool_exp | null;
   _or?: order_product_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   order_created_at?: timestamptz_comparison_exp | null;
@@ -37496,6 +37502,7 @@ export interface payment_log_export_bool_exp {
   _not?: payment_log_export_bool_exp | null;
   _or?: payment_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
   invoice_options?: jsonb_comparison_exp | null;
