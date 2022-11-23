@@ -1,4 +1,5 @@
 import { MemberBriefProps } from './member'
+import { InvoiceProps } from './merchandise'
 
 export type Device = 'desktop' | 'tablet' | 'mobile'
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
@@ -88,7 +89,22 @@ export type OrderLog = {
   paymentMethod: string | null
   orderProducts: OrderProduct[]
   orderDiscounts: OrderDiscount[]
-  orderExecutors: string[]
+  orderExecutors: { ratio: string; name: string }[]
+  options?: { ip?: string; country?: string }
+  invoiceOptions?: InvoiceProps
+  invoiceIssuedAt?: Date
+}
+
+export type PaymentLog = {
+  no: string
+  createdAt: Date | null
+  status: string
+  price: number
+  gateway: string
+  paidAt: Date | null
+  method: string
+  customNo: string | null
+  invoice_options?: InvoiceProps
 }
 
 export type PermissionGroupProps = {
