@@ -4516,6 +4516,36 @@ export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM_AGGREGATE
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate_aggregate {
+  __typename: "podcast_program_enrollment_aggregate_fields";
+  count: number;
+}
+
+export interface GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate {
+  __typename: "podcast_program_enrollment_aggregate";
+  aggregate: GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate_aggregate | null;
+}
+
+export interface GET_PODCAST_PROGRAM_AGGREGATE {
+  /**
+   * fetch aggregated fields from the table: "podcast_program_enrollment"
+   */
+  podcast_program_enrollment_aggregate: GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate;
+}
+
+export interface GET_PODCAST_PROGRAM_AGGREGATEVariables {
+  id?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
 // ====================================================
 
@@ -12833,16 +12863,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
   member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member | null;
 }
 
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate {
-  __typename: "podcast_program_enrollment_aggregate_fields";
-  count: number;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate {
-  __typename: "podcast_program_enrollment_aggregate";
-  aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate | null;
-}
-
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
   __typename: "podcast_program";
   id: any;
@@ -12865,10 +12885,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
    * An array relationship
    */
   podcast_program_roles: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles[];
-  /**
-   * An aggregate relationship
-   */
-  podcast_program_enrollments_aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
@@ -36399,6 +36415,7 @@ export interface order_log_export_bool_exp {
   _not?: order_log_export_bool_exp | null;
   _or?: order_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   gift_plans?: String_comparison_exp | null;
   invoice_issued_at?: String_comparison_exp | null;
@@ -36431,6 +36448,7 @@ export interface order_log_export_bool_exp {
  */
 export interface order_log_export_order_by {
   app_id?: order_by | null;
+  country?: order_by | null;
   created_at?: order_by | null;
   gift_plans?: order_by | null;
   invoice_issued_at?: order_by | null;
@@ -36804,6 +36822,7 @@ export interface order_product_export_bool_exp {
   _not?: order_product_export_bool_exp | null;
   _or?: order_product_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   order_created_at?: timestamptz_comparison_exp | null;
@@ -37496,6 +37515,7 @@ export interface payment_log_export_bool_exp {
   _not?: payment_log_export_bool_exp | null;
   _or?: payment_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
   invoice_options?: jsonb_comparison_exp | null;

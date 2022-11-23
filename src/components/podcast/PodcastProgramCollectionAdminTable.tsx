@@ -1,10 +1,13 @@
 import { SearchOutlined } from '@ant-design/icons'
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramCollection } from '../../hooks/podcast'
@@ -62,7 +65,6 @@ export type PodcastProgramColumnProps = {
   instructorName: string
   listPrice: number
   salePrice?: number
-  salesCount: number
   isPublished: boolean
 }
 
@@ -186,8 +188,8 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'salesCount',
       width: '7rem',
       align: 'center',
-      render: (text, record, index) => <StyledText>{text}</StyledText>,
-      sorter: (a, b) => b.salesCount - a.salesCount,
+      render: (text, record, index) => <SalesCount id={record.id} />,
+      // sorter: (a, b) => b.salesCount - a.salesCount,
       sortDirections: ['ascend', 'descend'],
     },
     {
@@ -229,6 +231,29 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       })}
     />
   )
+}
+
+const SalesCount: React.FC<{ id: string }> = ({ id }) => {
+  const { data } = useQuery<hasura.GET_PODCAST_PROGRAM_AGGREGATE, hasura.GET_PODCAST_PROGRAM_AGGREGATEVariables>(
+    gql`
+      query GET_PODCAST_PROGRAM_AGGREGATE($id: uuid!) {
+        podcast_program_enrollment_aggregate(where: { podcast_program_id: { _eq: $id } }) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: { id },
+    },
+  )
+
+  const salesCount = data?.podcast_program_enrollment_aggregate.aggregate
+    ? data.podcast_program_enrollment_aggregate.aggregate.count || 0
+    : 0
+
+  return <>{salesCount}</>
 }
 
 export default PodcastProgramCollectionAdminTable

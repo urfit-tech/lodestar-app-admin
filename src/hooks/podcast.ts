@@ -52,18 +52,16 @@ export const usePodcastProgramCollection = (memberId?: string) => {
               username
             }
           }
-          podcast_program_enrollments_aggregate {
-            aggregate {
-              count
-            }
-          }
         }
       }
     `,
     { variables: { memberId } },
   )
 
-  const podcastPrograms: PodcastProgramColumnProps[] =
+  const podcastPrograms: Pick<
+    PodcastProgramColumnProps,
+    'id' | 'coverUrl' | 'title' | 'instructorName' | 'listPrice' | 'salePrice' | 'isPublished'
+  >[] =
     loading || error || !data
       ? []
       : data.podcast_program.map(podcastProgram => ({
@@ -80,9 +78,6 @@ export const usePodcastProgramCollection = (memberId?: string) => {
             podcastProgram.sold_at && new Date(podcastProgram.sold_at).getTime() > Date.now()
               ? podcastProgram.sale_price || 0
               : undefined,
-          salesCount: podcastProgram.podcast_program_enrollments_aggregate.aggregate
-            ? podcastProgram.podcast_program_enrollments_aggregate.aggregate.count || 0
-            : 0,
           isPublished: !!podcastProgram.published_at,
         }))
 
