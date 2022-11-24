@@ -1166,6 +1166,7 @@ export const orderMessages = {
   label: defineMessages({
     // order log
     orderLogId: { id: 'order.label.orderLogId', defaultMessage: '訂單編號' },
+    orderCountry: { id: 'order.label.orderCountry', defaultMessage: '下單國家' },
     orderLogStatus: { id: 'order.label.orderLogStatus', defaultMessage: '訂單狀態' },
     orderLogCreatedAt: { id: 'order.label.orderCreatedAt', defaultMessage: '訂單建立時間' },
     orderLogUpdatedAt: { id: 'order.label.orderLogUpdatedAt', defaultMessage: '訂單更新時間' },

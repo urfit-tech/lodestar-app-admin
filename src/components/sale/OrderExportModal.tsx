@@ -91,6 +91,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             formatMessage(orderMessages.label.orderLogStatus),
             formatMessage(orderMessages.label.paymentLogGateway),
             formatMessage(orderMessages.label.paymentLogDetails),
+            formatMessage(orderMessages.label.orderCountry),
             formatMessage(orderMessages.label.orderLogCreatedAt),
             formatMessage(orderMessages.label.paymentLogPaidAt),
             formatMessage(orderMessages.label.memberName),
@@ -128,6 +129,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               orderLog.status,
               orderLog.payment_gateway,
               orderLog.payment_options?.split('\\n').join('\n') || '',
+              orderLog.country || '',
               dateFormatter(orderLog.created_at),
               orderLog.paid_at
                 ?.split('\\n')
@@ -243,6 +245,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         const data: string[][] = [
           [
             formatMessage(orderMessages.label.orderLogId),
+            formatMessage(orderMessages.label.orderCountry),
             formatMessage(orderMessages.label.orderLogCreatedAt), // TBC: Date or DateTime
             formatMessage(orderMessages.label.paymentLogPaidAt),
             formatMessage(orderMessages.label.productOwner),
@@ -257,6 +260,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           ...orderProducts.map(orderProduct =>
             [
               orderProduct.order_log_id,
+              orderProduct.country || '',
               orderProduct.order_created_at ? dateFormatter(orderProduct.order_created_at) : '',
               orderProduct.paid_at ? dateFormatter(orderProduct.paid_at) : '',
               orderProduct.product_owner || '',
@@ -310,12 +314,14 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         const data: string[][] = [
           [
             formatMessage(commonMessages.label.orderLogId),
+            formatMessage(orderMessages.label.orderCountry),
             formatMessage(commonMessages.label.orderDiscountId),
             formatMessage(commonMessages.label.orderDiscountName),
             formatMessage(commonMessages.label.orderDiscountPrice),
           ],
           ...orderDiscounts.map(orderDiscount => [
             orderDiscount.order_log.id,
+            orderDiscount.order_log.options.country || '',
             orderDiscount.id,
             orderDiscount.name,
             orderDiscount.price,
@@ -621,6 +627,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       shipping
       payment_gateway
       gift_plans
+      country
     }
   }
 `
@@ -639,6 +646,7 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
       paid_at
       order_product_ended_at
       product_id
+      country
     }
   }
 `
@@ -649,6 +657,7 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
       order_log {
         id
         invoice_options
+        options
       }
       type
       target

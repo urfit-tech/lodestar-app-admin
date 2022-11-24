@@ -131,4 +131,6 @@ export type InvoiceProps = {
   postCode?: string
   address?: string
   status?: string
+  invoiceNumber?: string
+  referrerEmail?: string
 }

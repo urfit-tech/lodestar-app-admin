@@ -7442,6 +7442,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   shipping: any | null;
   payment_gateway: string | null;
   gift_plans: string | null;
+  country: string | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {
@@ -7479,6 +7480,7 @@ export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
   paid_at: any | null;
   order_product_ended_at: any | null;
   product_id: string | null;
+  country: string | null;
 }
 
 export interface GET_ORDER_PRODUCT_EXPORT {
@@ -7509,6 +7511,7 @@ export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
    * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
    */
   invoice_options: any;
+  options: any | null;
 }
 
 export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
@@ -12583,6 +12586,48 @@ export interface GET_ORDER_LOG_STATUS {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PAYMENT_LOGS
+// ====================================================
+
+export interface GET_PAYMENT_LOGS_payment_log {
+  __typename: "payment_log";
+  no: string;
+  /**
+   * merchant order number 
+   */
+  created_at: any;
+  status: string | null;
+  price: any | null;
+  /**
+   * spgateway, tappay, ezfund,paypal
+   */
+  gateway: string | null;
+  paid_at: any | null;
+  /**
+   * arise from order_log payment_model
+   */
+  method: string | null;
+  custom_no: string | null;
+}
+
+export interface GET_PAYMENT_LOGS {
+  /**
+   * fetch data from the table: "payment_log"
+   */
+  payment_log: GET_PAYMENT_LOGS_payment_log[];
+}
+
+export interface GET_PAYMENT_LOGSVariables {
+  condition?: payment_log_bool_exp | null;
+  limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDER_LOGS
 // ====================================================
 
@@ -12658,6 +12703,7 @@ export interface GET_ORDER_LOGS_order_log_order_executors_member {
 
 export interface GET_ORDER_LOGS_order_log_order_executors {
   __typename: "order_executor";
+  ratio: any;
   /**
    * An object relationship
    */
@@ -12677,6 +12723,12 @@ export interface GET_ORDER_LOGS_order_log {
    * expired order cannot be paid
    */
   expired_at: any | null;
+  options: any | null;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
+   */
+  invoice_options: any;
+  invoice_issued_at: any | null;
   /**
    * An object relationship
    */
@@ -12713,6 +12765,34 @@ export interface GET_ORDER_LOGS {
 export interface GET_ORDER_LOGSVariables {
   condition?: order_log_bool_exp | null;
   limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SHARING_CODE
+// ====================================================
+
+export interface GET_SHARING_CODE_sharing_code {
+  __typename: "sharing_code";
+  id: any;
+  path: string;
+  code: string;
+  note: string | null;
+}
+
+export interface GET_SHARING_CODE {
+  /**
+   * fetch data from the table: "sharing_code"
+   */
+  sharing_code: GET_SHARING_CODE_sharing_code[];
+}
+
+export interface GET_SHARING_CODEVariables {
+  paths?: string[] | null;
 }
 
 /* tslint:disable */
