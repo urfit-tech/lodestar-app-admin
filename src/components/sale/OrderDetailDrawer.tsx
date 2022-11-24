@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
@@ -37,7 +38,8 @@ const StyledTitle = styled.p`
 const OrderDetailDrawer: React.FC<{
   orderLogId: string | null
   onClose: () => void
-}> = ({ orderLogId, onClose }) => {
+  renderTrigger?: React.FC
+}> = ({ orderLogId, onClose, renderTrigger }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, permissions } = useAuth()
   const { orderLogs } = useOrderLogs(
@@ -53,6 +55,7 @@ const OrderDetailDrawer: React.FC<{
   const isOpen = Boolean(orderLogId)
   return (
     <>
+      {renderTrigger?.({})}
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
         <DrawerOverlay />
         <DrawerContent>

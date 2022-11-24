@@ -12,7 +12,14 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import hasura from '../../hasura'
-import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin, handleError } from '../../helpers'
+import {
+  currencyFormatter,
+  dateFormatter,
+  dateRangeFormatter,
+  desktopViewMixin,
+  handleError,
+  rgba,
+} from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLogs } from '../../hooks/order'
 import { OrderLog } from '../../types/general'
@@ -59,6 +66,20 @@ const StyledCell = styled.div`
     }
   `)}
 `
+
+const StyledDrawerButton = styled(Button)`
+  && {
+    background: ${props => rgba(props.theme['@primary-color'], 0.1)};
+    color: ${props => props.theme['@primary-color']};
+
+    &:hover {
+      border-color: ${props => rgba(props.theme['@primary-color'], 0.9)};
+      background: ${props => rgba(props.theme['@primary-color'], 0.4)};
+      color: ${props => props.theme['@primary-color']};
+    }
+  }
+`
+
 const SaleCollectionAdminCard: React.VFC<{
   memberId?: string
 }> = ({ memberId }) => {
@@ -493,6 +514,24 @@ const SaleCollectionAdminCard: React.VFC<{
       </div>
 
       <div className="row col-12 align-items-center pt-3">
+        <OrderDetailDrawer
+          orderLogId={currentOrderLogId}
+          onClose={() => {
+            setCurrentOrderLogId(null)
+          }}
+          renderTrigger={() => (
+            <StyledDrawerButton
+              size="middle"
+              className="mr-2"
+              onClick={() => {
+                setCurrentOrderLogId(orderLogId)
+              }}
+            >
+              {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
+            </StyledDrawerButton>
+          )}
+        />
+
         {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
           <ModifyOrderStatusModal
             orderLogId={orderLogId}
@@ -525,15 +564,6 @@ const SaleCollectionAdminCard: React.VFC<{
               onRefetch={refetchOrderLogs}
             />
           ))}
-
-        <Button
-          size="middle"
-          onClick={() => {
-            setCurrentOrderLogId(orderLogId)
-          }}
-        >
-          {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
-        </Button>
       </div>
     </div>
   )
@@ -556,12 +586,7 @@ const SaleCollectionAdminCard: React.VFC<{
           pagination={false}
           onChange={(_, filters) => setStatuses(filters.status as string[])}
         />
-        <OrderDetailDrawer
-          orderLogId={currentOrderLogId}
-          onClose={() => {
-            setCurrentOrderLogId(null)
-          }}
-        />
+
         {loadMoreOrderLogs && (
           <div className="text-center mt-4">
             <Button
