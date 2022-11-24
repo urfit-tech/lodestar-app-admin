@@ -1,19 +1,17 @@
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { useIntl } from 'react-intl'
-import { HStack, CloseButton, Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody } from '@chakra-ui/react'
-import { useOrderLogs, usePaymentLogs, useSharingCodes } from '../../hooks/order'
-import saleMessages from './translation'
-import styled from 'styled-components'
-import OrderCard from './OrderCard'
-import OrderOtherInfoCard from './OrderOtherInfoCard'
-import InvoiceCard from './InvoiceCard'
-import PaymentCard from './PaymentCard'
+import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
-import gql from 'graphql-tag'
-import { useCallback } from 'preact/hooks'
+import { useOrderLogs, usePaymentLogs, useSharingCodes } from '../../hooks/order'
+import InvoiceCard from './InvoiceCard'
+import OrderCard from './OrderCard'
+import OrderOtherInfoCard from './OrderOtherInfoCard'
+import PaymentCard from './PaymentCard'
+import saleMessages from './translation'
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
@@ -50,7 +48,7 @@ const OrderDetailDrawer: React.FC<{
   const { paymentLogs } = usePaymentLogs({ orderLogId })
   const orderLog = orderLogs[0]
   const { sharingCodes } = useSharingCodes(
-    orderLog?.orderProducts.map(orderProduct => orderProduct.options.from).filter(path => path !== '') || [],
+    orderLog?.orderProducts.map(orderProduct => orderProduct.options?.from).filter(path => path !== '') || [],
   )
   const isOpen = Boolean(orderLogId)
   return (
@@ -86,7 +84,7 @@ const OrderDetailDrawer: React.FC<{
                 sharingNote={sharingCodes?.map(c => c.note).join(', ') || ''}
                 orderLogExecutor={orderLog.orderExecutors.map(v => `${v.name} - ${v.ratio}`).join('\\') || ''}
                 giftPlan={orderLog.orderProducts.reduce(
-                  (accu, orderProduct) => (orderProduct.options.type === 'gift' ? accu + orderProduct.name : accu),
+                  (accu, orderProduct) => (orderProduct.options?.type === 'gift' ? accu + orderProduct.name : accu),
                   '',
                 )}
                 recipientName={orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.name : ''}
