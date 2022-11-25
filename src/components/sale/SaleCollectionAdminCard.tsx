@@ -21,6 +21,7 @@ import AdminModal from '../admin/AdminModal'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
 import ModifyOrderStatusModal from './ModifyOrderStatusModal'
+import OrderDetailDrawer from './OrderDetailDrawer'
 import OrderStatusTag from './OrderStatusTag'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
 import saleMessages from './translation'
@@ -71,6 +72,7 @@ const SaleCollectionAdminCard: React.VFC<{
   const [orderId, setOrderId] = useState<string | null>(null)
   const [memberNameAndEmail, setMemberNameAndEmail] = useState<string | null>(null)
   const [tmpOrderLogStatus, setTmpOrderLogStatus] = useState<{ [OrderId in string]?: string }>({})
+  const [currentOrderLogId, setCurrentOrderLogId] = useState<string | null>(null)
 
   const {
     totalCount,
@@ -445,7 +447,7 @@ const SaleCollectionAdminCard: React.VFC<{
       <div className="row">
         <div className="col-3" style={{ fontSize: '14px' }}>
           {orderExecutors.length !== 0 && permissions['SALES_RECORDS_DETAILS'] && (
-            <div>承辦人：{orderExecutors.join('、')}</div>
+            <div>承辦人：{orderExecutors.map(v => v.ratio).join('、')}</div>
           )}
           {paymentMethod && permissions['SALES_RECORDS_DETAILS'] && <div>付款方式：{paymentMethod}</div>}
           {expiredAt && permissions['SALES_RECORDS_DETAILS'] && (
@@ -529,6 +531,15 @@ const SaleCollectionAdminCard: React.VFC<{
               onRefetch={refetchOrderLogs}
             />
           ))}
+
+        <Button
+          size="middle"
+          onClick={() => {
+            setCurrentOrderLogId(orderLogId)
+          }}
+        >
+          {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
+        </Button>
       </div>
     </div>
   )
@@ -551,7 +562,12 @@ const SaleCollectionAdminCard: React.VFC<{
           pagination={false}
           onChange={(_, filters) => setStatuses(filters.status as string[])}
         />
-
+        <OrderDetailDrawer
+          orderLogId={currentOrderLogId}
+          onClose={() => {
+            setCurrentOrderLogId(null)
+          }}
+        />
         {loadMoreOrderLogs && (
           <div className="text-center mt-4">
             <Button

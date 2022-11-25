@@ -173,13 +173,15 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        !!enabledModules.project &&
-        (Boolean(permissions.PROJECT_ADMIN) ||
-          Boolean(permissions.PROJECT_FUNDING_ADMIN) ||
-          Boolean(permissions.PROJECT_PRE_ORDER_ADMIN) ||
-          Boolean(permissions.PROJECT_NORMAL) ||
-          Boolean(permissions.PROJECT_FUNDING_NORMAL) ||
-          Boolean(permissions.PROJECT_PRE_ORDER_NORMAL)),
+        (!!enabledModules.project &&
+          (Boolean(permissions.PROJECT_ADMIN) ||
+            Boolean(permissions.PROJECT_FUNDING_ADMIN) ||
+            Boolean(permissions.PROJECT_PRE_ORDER_ADMIN) ||
+            Boolean(permissions.PROJECT_NORMAL) ||
+            Boolean(permissions.PROJECT_FUNDING_NORMAL) ||
+            Boolean(permissions.PROJECT_PRE_ORDER_NORMAL))) ||
+        (!!enabledModules.portfolio_project &&
+          (Boolean(permissions.PROJECT_PORTFOLIO_ADMIN) || Boolean(permissions.PROJECT_PORTFOLIO_NORMAL))),
       key: 'project_admin',
       icon: () => <ProjectIcon />,
       name: formatMessage(adminMessages.AdminMenu.projectAdmin),
@@ -203,6 +205,24 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
               Boolean(permissions.PROJECT_PRE_ORDER_NORMAL)),
           key: 'project_pre_order_collection',
           name: formatMessage(adminMessages.AdminMenu.projectPreOrder),
+        },
+        {
+          permissionIsAllowed:
+            !!enabledModules.portfolio_project &&
+            (Boolean(permissions.PROJECT_PORTFOLIO_ADMIN) || Boolean(permissions.PROJECT_PORTFOLIO_NORMAL)),
+          key: 'project_portfolio_collection',
+          name: formatMessage(adminMessages.AdminMenu.projectPortfolio),
+        },
+        {
+          permissionIsAllowed: !!enabledModules.project && Boolean(permissions.PROJECT_CATEGORY_ADMIN),
+          key: 'project_category',
+          name: formatMessage(adminMessages.AdminMenu.projectCategory),
+        },
+        {
+          permissionIsAllowed:
+            !!enabledModules.project && !!enabledModules.project_role && Boolean(permissions.PROJECT_ROLE_ADMIN),
+          key: 'project_roles',
+          name: formatMessage(adminMessages.AdminMenu.projectRole),
         },
         {
           // Not yet applied

@@ -76,6 +76,12 @@ const pageMessages = {
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
     projectIntroduction: { id: 'project.ProjectAdminPage.projectIntroduction', defaultMessage: '專案介紹' },
+    portfolioContent: { id: 'project.ProjectAdminPage.portfolioContent', defaultMessage: 'Portfolio content' },
+    portfolioSettings: { id: 'project.ProjectAdminPage.portfolioSettings', defaultMessage: 'Portfolio settings' },
+    portfolioDescription: { id: 'project.ProjectAdminPage.portfolioDescription', defaultMessage: 'Portfolio description' },
+    portfolioManagement: { id: 'project.ProjectAdminPage.portfolioManagement', defaultMessage: 'Portfolio management' },
+    publishSettings: { id: 'project.ProjectAdminPage.publishSettings', defaultMessage: 'Publish settings' },
+    deletePortfolio: { id: 'project.ProjectAdminPage.deletePortfolio', defaultMessage: 'Delete portfolio' },
   }),
   ProjectFundingPage: defineMessages({
     projectTitle: { id: 'page.ProjectFundingPage.projectTitle', defaultMessage: '專案名稱' },
@@ -86,6 +92,11 @@ const pageMessages = {
     projectTitle: { id: 'page.ProjectPreOrderPage.projectTitle', defaultMessage: '專案名稱' },
     sponsor: { id: 'page.ProjectPreOrderPage.sponsor', defaultMessage: '發起者' },
     unnamedProject: { id: 'page.ProjectPreOrderPage.unnamedProject', defaultMessage: '未命名專案' },
+  }),
+  ProjectPortfolioPage: defineMessages({
+    projectTitle: { id: 'page.ProjectPortfolioPage.projectTitle', defaultMessage: 'Title' },
+    untitledPortfolio: { id: 'page.ProjectPortfolioPage.untitledPortfolio', defaultMessage: 'Untitled Portfolio' },
+    createPortfolio: { id: 'page.ProjectPortfolioPage.createPortfolio', defaultMessage: 'Create portfolio' },
   }),
   ProgramProgressCollectionAdminPage: defineMessages({
     programProgress: { id: 'page.ProgramProgressCollectionAdminPage.programProgress', defaultMessage: '學習進度' },

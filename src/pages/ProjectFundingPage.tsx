@@ -46,13 +46,19 @@ const ProjectFundingPage: React.FC<{}> = () => {
               creatorAppellation={formatMessage(pageMessages.ProjectFundingPage.sponsor)}
               customTitle={formatMessage(pageMessages.ProjectFundingPage.projectTitle)}
               customTitleDefault={formatMessage(pageMessages.ProjectFundingPage.unnamedProject)}
-              onCreate={({ title, creatorId }) =>
+              categoryClassType="project"
+              onCreate={({ title, creatorId, categoryIds }) =>
                 insertProject({
                   variables: {
                     appId,
                     title,
                     memberId: creatorId || currentMemberId,
                     type: 'funding',
+                    projectCategories:
+                      categoryIds?.map((categoryId: string, index: number) => ({
+                        category_id: categoryId,
+                        position: index,
+                      })) || [],
                   },
                 })
                   .then(({ data }) => {

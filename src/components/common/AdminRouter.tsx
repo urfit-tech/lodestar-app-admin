@@ -165,6 +165,21 @@ export const routesProps = {
     pageName: 'ProjectPreOrderPage',
     authenticated: true,
   },
+  project_portfolio_collection: {
+    path: '/project-portfolio',
+    pageName: 'ProjectPortfolioPage',
+    authenticated: true,
+  },
+  project_category: {
+    path: '/project-category',
+    pageName: 'ProjectCategoryPage',
+    authenticated: true,
+  },
+  project_roles: {
+    path: '/project-roles',
+    pageName: 'ProjectRolePage',
+    authenticated: true,
+  },
   // podcast program
   podcast_program_collection: {
     path: '/podcast-programs',

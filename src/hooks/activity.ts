@@ -5,19 +5,21 @@ import hasura from '../hasura'
 import { notEmpty } from '../helpers'
 import { ActivityAdminProps, ActivityTicketSessionType } from '../types/activity'
 
-export const useActivityCollection = (memberId: string | null) => {
-  const { loading, error, data, refetch } = useQuery<
+export const useActivityCollection = (condition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition']) => {
+  const limit = 20
+  const { loading, error, data, fetchMore, refetch } = useQuery<
     hasura.GET_ACTIVITY_COLLECTION_ADMIN,
     hasura.GET_ACTIVITY_COLLECTION_ADMINVariables
   >(
     gql`
-      query GET_ACTIVITY_COLLECTION_ADMIN($memberId: String) {
-        activity(where: { organizer_id: { _eq: $memberId }, deleted_at: { _is_null: true } }) {
+      query GET_ACTIVITY_COLLECTION_ADMIN($condition: activity_bool_exp, $limit: Int) {
+        activity(where: $condition, order_by: { created_at: desc_nulls_last }, limit: $limit) {
           id
           cover_url
           title
           published_at
           is_private
+          created_at
           activity_sessions {
             location
             online_link
@@ -42,10 +44,49 @@ export const useActivityCollection = (memberId: string | null) => {
             activity_offline_session_ticket_count
           }
         }
+        activity_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
       }
     `,
-    { variables: { memberId } },
+    { variables: { condition, limit } },
   )
+
+  const loadMoreActivities =
+    (data?.activity_aggregate.aggregate?.count || 0) > limit
+      ? () => {
+          const lastActivity = data?.activity[data.activity.length - 1]
+          return fetchMore({
+            variables: {
+              condition: {
+                _and: [
+                  condition,
+                  {
+                    created_at: {
+                      _lte: lastActivity?.created_at,
+                    },
+                    id: {
+                      _nin: data?.activity.filter(v => v.created_at === lastActivity?.created_at).map(v => v.id) || [],
+                    },
+                  },
+                ],
+              },
+              limit,
+            },
+            updateQuery: (prev: hasura.GET_ACTIVITY_COLLECTION_ADMIN, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return {
+                activity_aggregate: fetchMoreResult.activity_aggregate,
+                activity: [...prev.activity, ...fetchMoreResult.activity],
+              }
+            },
+          })
+        }
+      : undefined
 
   const activities: {
     id: string
@@ -91,7 +132,9 @@ export const useActivityCollection = (memberId: string | null) => {
     loadingActivities: loading,
     errorActivities: error,
     activities,
+    currentTabActivityCount: data?.activity_aggregate.aggregate?.count,
     refetchActivities: refetch,
+    loadMoreActivities,
   }
 }
 

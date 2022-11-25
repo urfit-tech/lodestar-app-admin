@@ -4540,6 +4540,36 @@ export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM_AGGREGATE
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate_aggregate {
+  __typename: "podcast_program_enrollment_aggregate_fields";
+  count: number;
+}
+
+export interface GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate {
+  __typename: "podcast_program_enrollment_aggregate";
+  aggregate: GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate_aggregate | null;
+}
+
+export interface GET_PODCAST_PROGRAM_AGGREGATE {
+  /**
+   * fetch aggregated fields from the table: "podcast_program_enrollment"
+   */
+  podcast_program_enrollment_aggregate: GET_PODCAST_PROGRAM_AGGREGATE_podcast_program_enrollment_aggregate;
+}
+
+export interface GET_PODCAST_PROGRAM_AGGREGATEVariables {
+  id?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
 // ====================================================
 
@@ -6386,8 +6416,7 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
   programs: program_package_program_insert_input[];
-  program_package_id: any;
-  delete_programs_id: any[];
+  delete_program_package_programs_id: any[];
 }
 
 /* tslint:disable */
@@ -6584,6 +6613,16 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate {
   aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate | null;
 }
 
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate_aggregate {
+  __typename: "project_role_aggregate_fields";
+  count: number;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate {
+  __typename: "project_role_aggregate";
+  aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate_aggregate | null;
+}
+
 export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate {
   __typename: "project_plan_enrollment_aggregate_fields";
   count: number;
@@ -6603,6 +6642,36 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans {
   project_plan_enrollments_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate;
 }
 
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_roles {
+  __typename: "project_role";
+  /**
+   * An object relationship
+   */
+  member: GET_PROJECT_PREVIEW_COLLECTION_project_project_roles_member | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role_identity {
+  __typename: "identity";
+  id: any;
+  name: string;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role {
+  __typename: "project_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  identity: GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role_identity;
+}
+
 export interface GET_PROJECT_PREVIEW_COLLECTION_project {
   __typename: "project";
   id: any;
@@ -6617,7 +6686,6 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project {
   expired_at: any | null;
   cover_url: string | null;
   preview_url: string | null;
-  creator_id: string | null;
   position: number;
   /**
    * image / video
@@ -6627,6 +6695,14 @@ export interface GET_PROJECT_PREVIEW_COLLECTION_project {
    * An array relationship
    */
   project_plans: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans[];
+  /**
+   * An array relationship
+   */
+  project_roles: GET_PROJECT_PREVIEW_COLLECTION_project_project_roles[];
+  /**
+   * An array relationship
+   */
+  marked_project_role: GET_PROJECT_PREVIEW_COLLECTION_project_marked_project_role[];
 }
 
 export interface GET_PROJECT_PREVIEW_COLLECTION {
@@ -6635,6 +6711,10 @@ export interface GET_PROJECT_PREVIEW_COLLECTION {
    */
   project_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate;
   /**
+   * fetch aggregated fields from the table: "project_role"
+   */
+  project_role_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_role_aggregate;
+  /**
    * fetch data from the table: "project"
    */
   project: GET_PROJECT_PREVIEW_COLLECTION_project[];
@@ -6642,6 +6722,7 @@ export interface GET_PROJECT_PREVIEW_COLLECTION {
 
 export interface GET_PROJECT_PREVIEW_COLLECTIONVariables {
   condition: project_bool_exp;
+  memberId: string;
   orderBy?: project_order_by[] | null;
   limit: number;
 }
@@ -6945,6 +7026,277 @@ export interface UPSERT_PROJECT_PLAN_PRODUCTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PORTFOLIO_AUTHOR
+// ====================================================
+
+export interface GET_PORTFOLIO_AUTHOR_project_role_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PORTFOLIO_AUTHOR_project_role_identity {
+  __typename: "identity";
+  id: any;
+}
+
+export interface GET_PORTFOLIO_AUTHOR_project_role {
+  __typename: "project_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PORTFOLIO_AUTHOR_project_role_member | null;
+  /**
+   * An object relationship
+   */
+  identity: GET_PORTFOLIO_AUTHOR_project_role_identity;
+}
+
+export interface GET_PORTFOLIO_AUTHOR {
+  /**
+   * fetch data from the table: "project_role"
+   */
+  project_role: GET_PORTFOLIO_AUTHOR_project_role[];
+}
+
+export interface GET_PORTFOLIO_AUTHORVariables {
+  projectId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PORTFOLIO_AUTHOR
+// ====================================================
+
+export interface UPDATE_PORTFOLIO_AUTHOR_update_project_role_by_pk {
+  __typename: "project_role";
+  member_id: string;
+}
+
+export interface UPDATE_PORTFOLIO_AUTHOR {
+  /**
+   * update single row of the table: "project_role"
+   */
+  update_project_role_by_pk: UPDATE_PORTFOLIO_AUTHOR_update_project_role_by_pk | null;
+}
+
+export interface UPDATE_PORTFOLIO_AUTHORVariables {
+  projectRoleId: any;
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PORTFOLIO_PROJECT_BASIC
+// ====================================================
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_tag {
+  __typename: "project_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_tag {
+  __typename: "project_tag_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASIC {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PORTFOLIO_PROJECT_BASIC_update_project | null;
+  /**
+   * delete data from the table: "project_category"
+   */
+  delete_project_category: UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_category | null;
+  /**
+   * insert data into the table: "project_category"
+   */
+  insert_project_category: UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PORTFOLIO_PROJECT_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "project_tag"
+   */
+  delete_project_tag: UPDATE_PORTFOLIO_PROJECT_BASIC_delete_project_tag | null;
+  /**
+   * insert data into the table: "project_tag"
+   */
+  insert_project_tag: UPDATE_PORTFOLIO_PROJECT_BASIC_insert_project_tag | null;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_BASICVariables {
+  projectId: any;
+  title?: string | null;
+  projectCategories: project_category_insert_input[];
+  tags: tag_insert_input[];
+  projectTags: project_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PORTFOLIO_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_PROJECT_PORTFOLIO_DESCRIPTION_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PORTFOLIO_DESCRIPTION {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_PORTFOLIO_DESCRIPTION_update_project | null;
+}
+
+export interface UPDATE_PROJECT_PORTFOLIO_DESCRIPTIONVariables {
+  projectId: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PORTFOLIO_VIDEO_URL_COUNT
+// ====================================================
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_nodes_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_nodes {
+  __typename: "project";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_nodes_creator | null;
+  preview_url: string | null;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_aggregate {
+  __typename: "project_aggregate_fields";
+  count: number;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate {
+  __typename: "project_aggregate";
+  nodes: GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_nodes[];
+  aggregate: GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate_aggregate | null;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNT {
+  /**
+   * fetch aggregated fields from the table: "project"
+   */
+  project_aggregate: GET_PORTFOLIO_VIDEO_URL_COUNT_project_aggregate;
+}
+
+export interface GET_PORTFOLIO_VIDEO_URL_COUNTVariables {
+  videoUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PORTFOLIO_PROJECT_SETTINGS
+// ====================================================
+
+export interface UPDATE_PORTFOLIO_PROJECT_SETTINGS_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_SETTINGS {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PORTFOLIO_PROJECT_SETTINGS_update_project | null;
+}
+
+export interface UPDATE_PORTFOLIO_PROJECT_SETTINGSVariables {
+  projectId: any;
+  previewUrl?: string | null;
+  coverUrl?: string | null;
+  coverType?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: PUBLISH_PROJECT
 // ====================================================
 
@@ -7114,6 +7466,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   shipping: any | null;
   payment_gateway: string | null;
   gift_plans: string | null;
+  country: string | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {
@@ -7151,6 +7504,7 @@ export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
   paid_at: any | null;
   order_product_ended_at: any | null;
   product_id: string | null;
+  country: string | null;
 }
 
 export interface GET_ORDER_PRODUCT_EXPORT {
@@ -7181,6 +7535,7 @@ export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
    * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
    */
   invoice_options: any;
+  options: any | null;
 }
 
 export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
@@ -8436,6 +8791,7 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
   title: string;
   published_at: any | null;
   is_private: boolean;
+  created_at: any | null;
   /**
    * An array relationship
    */
@@ -8454,15 +8810,30 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
   session_ticket_enrollment_count: GET_ACTIVITY_COLLECTION_ADMIN_activity_session_ticket_enrollment_count[];
 }
 
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_aggregate_aggregate {
+  __typename: "activity_aggregate_fields";
+  count: number;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_aggregate {
+  __typename: "activity_aggregate";
+  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_aggregate_aggregate | null;
+}
+
 export interface GET_ACTIVITY_COLLECTION_ADMIN {
   /**
    * fetch data from the table: "activity"
    */
   activity: GET_ACTIVITY_COLLECTION_ADMIN_activity[];
+  /**
+   * fetch aggregated fields from the table: "activity"
+   */
+  activity_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_aggregate;
 }
 
 export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
-  memberId?: string | null;
+  condition?: activity_bool_exp | null;
+  limit?: number | null;
 }
 
 /* tslint:disable */
@@ -10862,6 +11233,196 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_META_PRODUCT_IDENTITY
+// ====================================================
+
+export interface INSERT_META_PRODUCT_IDENTITY_insert_identity_returning {
+  __typename: "identity";
+  id: any;
+}
+
+export interface INSERT_META_PRODUCT_IDENTITY_insert_identity {
+  __typename: "identity_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_META_PRODUCT_IDENTITY_insert_identity_returning[];
+}
+
+export interface INSERT_META_PRODUCT_IDENTITY {
+  /**
+   * insert data into the table: "identity"
+   */
+  insert_identity: INSERT_META_PRODUCT_IDENTITY_insert_identity | null;
+}
+
+export interface INSERT_META_PRODUCT_IDENTITYVariables {
+  appId: string;
+  type: string;
+  name?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_META_PROJECT_AUTHOR_IDENTITY
+// ====================================================
+
+export interface INSERT_META_PROJECT_AUTHOR_IDENTITY_insert_identity_returning {
+  __typename: "identity";
+  id: any;
+}
+
+export interface INSERT_META_PROJECT_AUTHOR_IDENTITY_insert_identity {
+  __typename: "identity_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_META_PROJECT_AUTHOR_IDENTITY_insert_identity_returning[];
+}
+
+export interface INSERT_META_PROJECT_AUTHOR_IDENTITY {
+  /**
+   * insert data into the table: "identity"
+   */
+  insert_identity: INSERT_META_PROJECT_AUTHOR_IDENTITY_insert_identity | null;
+}
+
+export interface INSERT_META_PROJECT_AUTHOR_IDENTITYVariables {
+  appId: string;
+  type: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_IDENTITY
+// ====================================================
+
+export interface GET_IDENTITY_identity {
+  __typename: "identity";
+  id: any;
+  name: string;
+  position: number;
+}
+
+export interface GET_IDENTITY {
+  /**
+   * fetch data from the table: "identity"
+   */
+  identity: GET_IDENTITY_identity[];
+}
+
+export interface GET_IDENTITYVariables {
+  condition: identity_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_META_PROJECT_IDENTITY_NAME
+// ====================================================
+
+export interface UPDATE_META_PROJECT_IDENTITY_NAME_update_identity {
+  __typename: "identity_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_META_PROJECT_IDENTITY_NAME {
+  /**
+   * update data of the table: "identity"
+   */
+  update_identity: UPDATE_META_PROJECT_IDENTITY_NAME_update_identity | null;
+}
+
+export interface UPDATE_META_PROJECT_IDENTITY_NAMEVariables {
+  identityId: any;
+  name?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_META_PROJECT_IDENTITY_POSITION
+// ====================================================
+
+export interface UPDATE_META_PROJECT_IDENTITY_POSITION_insert_identity {
+  __typename: "identity_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_META_PROJECT_IDENTITY_POSITION {
+  /**
+   * insert data into the table: "identity"
+   */
+  insert_identity: UPDATE_META_PROJECT_IDENTITY_POSITION_insert_identity | null;
+}
+
+export interface UPDATE_META_PROJECT_IDENTITY_POSITIONVariables {
+  data: identity_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_META_PROJECT_IDENTITY
+// ====================================================
+
+export interface DELETE_META_PROJECT_IDENTITY_delete_identity {
+  __typename: "identity_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_META_PROJECT_IDENTITY {
+  /**
+   * delete data from the table: "identity"
+   */
+  delete_identity: DELETE_META_PROJECT_IDENTITY_delete_identity | null;
+}
+
+export interface DELETE_META_PROJECT_IDENTITYVariables {
+  identityId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -11373,7 +11934,7 @@ export interface GET_MEMBER_NOTES_ADMIN {
 }
 
 export interface GET_MEMBER_NOTES_ADMINVariables {
-  orderBy?: member_note_order_by[] | null;
+  orderBy: member_note_order_by[];
   condition?: member_note_bool_exp | null;
 }
 
@@ -12325,6 +12886,48 @@ export interface GET_ORDER_LOG_STATUS {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PAYMENT_LOGS
+// ====================================================
+
+export interface GET_PAYMENT_LOGS_payment_log {
+  __typename: "payment_log";
+  no: string;
+  /**
+   * merchant order number 
+   */
+  created_at: any;
+  status: string | null;
+  price: any | null;
+  /**
+   * spgateway, tappay, ezfund,paypal
+   */
+  gateway: string | null;
+  paid_at: any | null;
+  /**
+   * arise from order_log payment_model
+   */
+  method: string | null;
+  custom_no: string | null;
+}
+
+export interface GET_PAYMENT_LOGS {
+  /**
+   * fetch data from the table: "payment_log"
+   */
+  payment_log: GET_PAYMENT_LOGS_payment_log[];
+}
+
+export interface GET_PAYMENT_LOGSVariables {
+  condition?: payment_log_bool_exp | null;
+  limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDER_LOGS
 // ====================================================
 
@@ -12400,6 +13003,7 @@ export interface GET_ORDER_LOGS_order_log_order_executors_member {
 
 export interface GET_ORDER_LOGS_order_log_order_executors {
   __typename: "order_executor";
+  ratio: any;
   /**
    * An object relationship
    */
@@ -12419,6 +13023,12 @@ export interface GET_ORDER_LOGS_order_log {
    * expired order cannot be paid
    */
   expired_at: any | null;
+  options: any | null;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber | status | invoiceNumber | invoiceTransNo
+   */
+  invoice_options: any;
+  invoice_issued_at: any | null;
   /**
    * An object relationship
    */
@@ -12455,6 +13065,34 @@ export interface GET_ORDER_LOGS {
 export interface GET_ORDER_LOGSVariables {
   condition?: order_log_bool_exp | null;
   limit?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SHARING_CODE
+// ====================================================
+
+export interface GET_SHARING_CODE_sharing_code {
+  __typename: "sharing_code";
+  id: any;
+  path: string;
+  code: string;
+  note: string | null;
+}
+
+export interface GET_SHARING_CODE {
+  /**
+   * fetch data from the table: "sharing_code"
+   */
+  sharing_code: GET_SHARING_CODE_sharing_code[];
+}
+
+export interface GET_SHARING_CODEVariables {
+  paths?: string[] | null;
 }
 
 /* tslint:disable */
@@ -12605,16 +13243,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
   member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member | null;
 }
 
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate {
-  __typename: "podcast_program_enrollment_aggregate_fields";
-  count: number;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate {
-  __typename: "podcast_program_enrollment_aggregate";
-  aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate | null;
-}
-
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
   __typename: "podcast_program";
   id: any;
@@ -12637,10 +13265,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
    * An array relationship
    */
   podcast_program_roles: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles[];
-  /**
-   * An aggregate relationship
-   */
-  podcast_program_enrollments_aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
@@ -14375,6 +14999,205 @@ export interface INSERT_PROJECTVariables {
   title: string;
   memberId: string;
   type: string;
+  projectCategories: project_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROJECT_ROLE
+// ====================================================
+
+export interface INSERT_PROJECT_ROLE_insert_project_role_returning {
+  __typename: "project_role";
+  id: any;
+}
+
+export interface INSERT_PROJECT_ROLE_insert_project_role {
+  __typename: "project_role_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data from the rows affected by the mutation
+   */
+  returning: INSERT_PROJECT_ROLE_insert_project_role_returning[];
+}
+
+export interface INSERT_PROJECT_ROLE {
+  /**
+   * insert data into the table: "project_role"
+   */
+  insert_project_role: INSERT_PROJECT_ROLE_insert_project_role | null;
+}
+
+export interface INSERT_PROJECT_ROLEVariables {
+  projectId: any;
+  memberId: string;
+  identityId: any;
+  hasSendedMarkedNotification?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_ROLE
+// ====================================================
+
+export interface UPDATE_PROJECT_ROLE_update_project_role_by_pk {
+  __typename: "project_role";
+  member_id: string;
+  identity_id: any;
+}
+
+export interface UPDATE_PROJECT_ROLE {
+  /**
+   * update single row of the table: "project_role"
+   */
+  update_project_role_by_pk: UPDATE_PROJECT_ROLE_update_project_role_by_pk | null;
+}
+
+export interface UPDATE_PROJECT_ROLEVariables {
+  id: any;
+  memberId: string;
+  identityId: any;
+  hasSendedMarkedNotification: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_HAS_SENDED_NOTIFICATION
+// ====================================================
+
+export interface UPDATE_HAS_SENDED_NOTIFICATION_update_project_role {
+  __typename: "project_role_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_HAS_SENDED_NOTIFICATION {
+  /**
+   * update data of the table: "project_role"
+   */
+  update_project_role: UPDATE_HAS_SENDED_NOTIFICATION_update_project_role | null;
+}
+
+export interface UPDATE_HAS_SENDED_NOTIFICATIONVariables {
+  projectId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROJECT_ROLE
+// ====================================================
+
+export interface DELETE_PROJECT_ROLE_delete_project_role {
+  __typename: "project_role_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROJECT_ROLE {
+  /**
+   * delete data from the table: "project_role"
+   */
+  delete_project_role: DELETE_PROJECT_ROLE_delete_project_role | null;
+}
+
+export interface DELETE_PROJECT_ROLEVariables {
+  projectRoleId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: REJECT_PROJECT_ROLE
+// ====================================================
+
+export interface REJECT_PROJECT_ROLE_update_project_role_by_pk {
+  __typename: "project_role";
+  id: any;
+}
+
+export interface REJECT_PROJECT_ROLE {
+  /**
+   * update single row of the table: "project_role"
+   */
+  update_project_role_by_pk: REJECT_PROJECT_ROLE_update_project_role_by_pk | null;
+}
+
+export interface REJECT_PROJECT_ROLEVariables {
+  projectRoleId: any;
+  rejectedReason?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_PARTICIPANT
+// ====================================================
+
+export interface GET_PROJECT_PARTICIPANT_project_role_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PROJECT_PARTICIPANT_project_role_identity {
+  __typename: "identity";
+  id: any;
+  name: string;
+}
+
+export interface GET_PROJECT_PARTICIPANT_project_role {
+  __typename: "project_role";
+  id: any;
+  agreed_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_PROJECT_PARTICIPANT_project_role_member | null;
+  /**
+   * An object relationship
+   */
+  identity: GET_PROJECT_PARTICIPANT_project_role_identity;
+}
+
+export interface GET_PROJECT_PARTICIPANT {
+  /**
+   * fetch data from the table: "project_role"
+   */
+  project_role: GET_PROJECT_PARTICIPANT_project_role[];
+}
+
+export interface GET_PROJECT_PARTICIPANTVariables {
+  projectId: any;
 }
 
 /* tslint:disable */
@@ -18674,6 +19497,11 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_tags {
   tag: GET_PROJECT_ADMIN_project_by_pk_project_tags_tag | null;
 }
 
+export interface GET_PROJECT_ADMIN_project_by_pk_project_roles {
+  __typename: "project_role";
+  member_id: string;
+}
+
 export interface GET_PROJECT_ADMIN_project_by_pk {
   __typename: "project";
   id: any;
@@ -18721,6 +19549,10 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
    * An array relationship
    */
   project_tags: GET_PROJECT_ADMIN_project_by_pk_project_tags[];
+  /**
+   * An array relationship
+   */
+  project_roles: GET_PROJECT_ADMIN_project_by_pk_project_roles[];
 }
 
 export interface GET_PROJECT_ADMIN {
@@ -37362,6 +38194,7 @@ export interface order_log_export_bool_exp {
   _not?: order_log_export_bool_exp | null;
   _or?: order_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   gift_plans?: String_comparison_exp | null;
   invoice_issued_at?: String_comparison_exp | null;
@@ -37394,6 +38227,7 @@ export interface order_log_export_bool_exp {
  */
 export interface order_log_export_order_by {
   app_id?: order_by | null;
+  country?: order_by | null;
   created_at?: order_by | null;
   gift_plans?: order_by | null;
   invoice_issued_at?: order_by | null;
@@ -37767,6 +38601,7 @@ export interface order_product_export_bool_exp {
   _not?: order_product_export_bool_exp | null;
   _or?: order_product_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   order_created_at?: timestamptz_comparison_exp | null;
@@ -38459,6 +39294,7 @@ export interface payment_log_export_bool_exp {
   _not?: payment_log_export_bool_exp | null;
   _or?: payment_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
+  country?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
   invoice_issued_at?: timestamptz_comparison_exp | null;
   invoice_options?: jsonb_comparison_exp | null;

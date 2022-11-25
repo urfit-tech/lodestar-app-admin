@@ -19,6 +19,8 @@ const projectMessages = {
     editProject: { id: 'project.*.editProject', defaultMessage: '編輯方案' },
     noProject: { id: 'project.*.noProject', defaultMessage: '尚未有任何專案' },
     soldOutProjectCount: { id: 'project.*.soldOutProjectCount', defaultMessage: '已售 {count}' },
+    portfolioTitle: { id: 'project.*.portfolioTitle', defaultMessage: 'Title' },
+    noMarkedPortfolio: { id: 'project.*.noMarkedPortfolio', defaultMessage: 'No marked portfolio' },
   }),
   ProjectPlanAdminModal: defineMessages({
     deliverables: { id: 'project.ProjectPlanAdminModal.deliverables', defaultMessage: '交付項目' },
@@ -36,6 +38,118 @@ const projectMessages = {
   }),
   ProjectBasicForm: defineMessages({
     tag: { id: 'project.ProjectBasicForm.tag', defaultMessage: '標籤' },
+  }),
+  ProjectPortfolioBasicForm: defineMessages({
+    tag: { id: 'project.ProjectPortfolioBasicForm.tag', defaultMessage: 'tag' },
+  }),
+  ProjectPortfolioSettingsForm: defineMessages({
+    cover: {
+      id: 'project.ProjectPortfolioSettingsForm.cover',
+      defaultMessage: 'cover',
+    },
+    defaultImageTips: {
+      id: 'project.ProjectPortfolioSettingsForm.defaultImageTips',
+      defaultMessage: 'Recommended image size: 1200*675px',
+    },
+    defaultVideoTips: {
+      id: 'project.ProjectPortfolioSettingsForm.defaultVideoTips',
+      defaultMessage: 'If video preview is not show in page, please check video url is correct',
+    },
+    videoUrl: {
+      id: 'project.ProjectPortfolioSettingsForm.videoUrl',
+      defaultMessage: 'Portfolio video url',
+    },
+    hasSameOriginalSource: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSource',
+      defaultMessage: 'Has same original source',
+    },
+    hasSameOriginalSourceNoticeTitle: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNoticeTitle',
+      defaultMessage: 'Possibility of portfolio from the same source:',
+    },
+    hasSameOriginalSourceNotice1: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice1',
+      defaultMessage:
+        '1. Other team members in the portfolio have uploaded, and you can go to the portfolio page to apply for being marked as one of the staff members.',
+    },
+    hasSameOriginalSourceNotice2: {
+      id: 'project.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice2',
+      defaultMessage:
+        '(2) The portfolio is likely to have been infringed, and you can report the portfolio and remove it from the shelves.',
+    },
+    creator: {
+      id: 'project.ProjectPortfolioSettingsForm.creator',
+      defaultMessage:
+        'creator: {name}',
+    },
+  }),
+  ProjectPortfolioDescriptionForm: defineMessages({}),
+  ProjectCollectionTable: defineMessages({
+    title: { id: 'project.ProjectCollectionTable.title', defaultMessage: 'Title' },
+    author: { id: 'project.ProjectCollectionTable.author', defaultMessage: 'Author' },
+    mark: { id: 'project.ProjectCollectionTable.mark', defaultMessage: 'Mark' },
+  }),
+  ProjectPublishAdminBlock: defineMessages({
+    notCompleteNotation: {
+      id: 'project.ProjectPublishAdminBlock.notCompleteNotation',
+      defaultMessage: 'Please fill required fields. Once completed, you can publish your project.',
+    },
+    notCompletePortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.notCompletePortfolioNotation',
+      defaultMessage: 'Please fill required fields. Once completed, you can publish from here.',
+    },
+    unpublishedNotation: {
+      id: 'project.ProjectPublishAdminBlock.unpublishedNotation',
+      defaultMessage: 'Your project is not published, it will not show in page.',
+    },
+    unpublishedPortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.unpublishedPortfolioNotation',
+      defaultMessage: 'Your portfolio is not published, it will not show in page.',
+    },
+    publishedNotation: {
+      id: 'project.ProjectPublishAdminBlock.publishedNotation',
+      defaultMessage: 'Your project is published now, it will show in page.',
+    },
+    publishedPortfolioNotation: {
+      id: 'project.ProjectPublishAdminBlock.publishedPortfolioNotation',
+      defaultMessage: 'Your portfolio is published now, it will show in page.',
+    },
+    noTitle: { id: 'project.ProjectPublishAdminBlock.noShopTitle', defaultMessage: 'Project title has not been set' },
+    noFundingTerm: { id: 'project.text.noSalePlan', defaultMessage: 'Project sale plan has not been set' },
+    noSalePrice: { id: 'project.text.noSalePrice', defaultMessage: 'Sale price has not been set' },
+    activateProject: { id: 'project.ProjectPublishAdminBlock.activateShop', defaultMessage: 'Publish' },
+    activateNow: { id: 'project.ProjectPublishAdminBlock.activateNow', defaultMessage: 'Publish' },
+    closeProject: { id: 'project.ProjectPublishAdminBlock.closeShop', defaultMessage: 'Unpublish' },
+    noAuthor: { id: 'project.ProjectPublishAdminBlock.noAuthor', defaultMessage: 'Author has not been set' },
+    noVideoUrl: { id: 'project.ProjectPublishAdminBlock.noVideoUrl', defaultMessage: 'Video url has not been set' },
+  }),
+  ProjectParticipantBlock: defineMessages({
+    participantFieldRequired: {
+      id: 'project.ProjectParticipantBlock.participantFieldRequired',
+      defaultMessage: 'Please select a participant.',
+    },
+    occupationFieldRequired: {
+      id: 'project.ProjectParticipantBlock.occupationFieldRequired',
+      defaultMessage: 'Please select a occupation.',
+    },
+  }),
+  ProjectRejectMarkModal: defineMessages({
+    rejectMark: {
+      id: 'project.ProjectRejectMarkModal.rejectMark',
+      defaultMessage: 'Reject Mark',
+    },
+    reason: {
+      id: 'project.ProjectRejectMarkModal.reason',
+      defaultMessage: 'Reason',
+    },
+    pleaseEnterAReasonForRejection: {
+      id: 'project.ProjectRejectMarkModal.pleaseEnterAReasonForRejection',
+      defaultMessage: 'Please enter a reason for rejection',
+    },
+    hasRejectedMark: {
+      id: 'project.ProjectRejectMarkModal.hasRejectedMark',
+      defaultMessage: 'Has rejected mark',
+    },
   }),
 }
 

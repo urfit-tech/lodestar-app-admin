@@ -148,7 +148,7 @@ const useProductSelections = () => {
             }
           }
         }
-        podcast_program(order_by: { published_at: desc_nulls_last, updated_at: desc_nulls_last }) {
+        podcast_program(order_by: [{ published_at: desc_nulls_last }, { updated_at: desc_nulls_last }]) {
           id
           title
           published_at

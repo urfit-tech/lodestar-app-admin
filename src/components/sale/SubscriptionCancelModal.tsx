@@ -82,7 +82,7 @@ const SubscriptionCancelModal: React.FC<{
       width="384px"
       bodyStyle={{ padding: '32px 32px 0px 32px', height: '223px' }}
       renderTrigger={({ setVisible }) => (
-        <Button size="middle" onClick={() => setVisible(true)}>
+        <Button size="middle" className="mr-2" onClick={() => setVisible(true)}>
           {formatMessage(messages.cancelSubscription)}
         </Button>
       )}

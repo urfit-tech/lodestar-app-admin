@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Skeleton } from 'antd'
 import gql from 'graphql-tag'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -11,6 +12,7 @@ import { ProjectDataType, ProjectPreviewProps, ProjectSortProps } from '../../ty
 import { EmptyBlock } from '../admin'
 import ItemsSortingModal from '../common/ItemsSortingModal'
 import ProjectAdminCard from './ProjectAdminCard'
+import ProjectCollectionTable from './ProjectCollectionTable'
 import projectMessages from './translation'
 
 const ProjectCollectionBlock: React.FC<{
@@ -21,11 +23,20 @@ const ProjectCollectionBlock: React.FC<{
   withSortingButton?: boolean
   onReady?: (count: number) => void
 }> = ({ appId, projectType, condition, orderBy, withSortingButton, onReady }) => {
+  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('')
 
   const { loadingProject, projectPreview, projectPreviewCount, refetchProject, loadMoreProjects } =
-    useProjectPreviewCollection(condition, orderBy)
+    useProjectPreviewCollection(
+      {
+        ...condition,
+        title: search ? { _like: `%${search}%` } : undefined,
+      },
+      currentMemberId || '',
+      orderBy,
+    )
 
   const { projectSorts, refetchProjectSorts } = useProjectSortCollection(condition)
   const [updatePositions] = useMutation<
@@ -33,16 +44,20 @@ const ProjectCollectionBlock: React.FC<{
     hasura.UPDATE_PROJECT_POSITION_COLLECTIONVariables
   >(UPDATE_PROJECT_POSITION_COLLECTION)
 
+  const handleSearch = (search: string) => {
+    setSearch(search)
+  }
+
   useEffect(() => {
     onReady?.(projectPreviewCount)
     refetchProject()
   }, [onReady, projectPreviewCount, refetchProject])
 
-  if (loadingProject) {
+  if (loadingProject && search === '') {
     return <Skeleton active />
   }
 
-  if (projectPreview.length === 0) {
+  if (projectPreview.length === 0 && search === '') {
     return <EmptyBlock>{formatMessage(projectMessages['*'].noProject)}</EmptyBlock>
   }
 
@@ -74,32 +89,42 @@ const ProjectCollectionBlock: React.FC<{
           />
         </div>
       )}
-      <div className="row py-3">
-        {projectPreview.map(project => (
-          <div key={project.id} className="col-12 col-md-6 col-lg-4 mb-5">
-            <ProjectAdminCard {...project} />
-          </div>
-        ))}
-        {loadMoreProjects && (
-          <div className="text-center" style={{ width: '100%' }}>
-            <Button
-              loading={loading}
-              onClick={() => {
-                setLoading(true)
-                loadMoreProjects()?.finally(() => setLoading(false))
-              }}
-            >
-              {formatMessage(commonMessages.ui.showMore)}
-            </Button>
-          </div>
-        )}
-      </div>
+      {projectType === 'portfolio' ? (
+        <ProjectCollectionTable
+          projects={projectPreview}
+          onSearch={handleSearch}
+          type={condition.project_roles ? 'marked' : 'normal'}
+          onRefetch={refetchProject}
+        />
+      ) : (
+        <div className="row py-3">
+          {projectPreview.map(project => (
+            <div key={project.id} className="col-12 col-md-6 col-lg-4 mb-5">
+              <ProjectAdminCard {...project} />
+            </div>
+          ))}
+          {loadMoreProjects && (
+            <div className="text-center" style={{ width: '100%' }}>
+              <Button
+                loading={loading}
+                onClick={() => {
+                  setLoading(true)
+                  loadMoreProjects()?.finally(() => setLoading(false))
+                }}
+              >
+                {formatMessage(commonMessages.ui.showMore)}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </>
   )
 }
 
 const useProjectPreviewCollection = (
   condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition'],
+  memberId: string,
   orderBy: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy'] = [
     { created_at: 'desc_nulls_last' as hasura.order_by },
   ],
@@ -107,7 +132,7 @@ const useProjectPreviewCollection = (
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_PROJECT_PREVIEW_COLLECTION,
     hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables
-  >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, orderBy, limit: 10 } })
+  >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, memberId, orderBy, limit: 10 } })
 
   const projectPreview: ProjectPreviewProps[] =
     loading || error || !data
@@ -117,6 +142,11 @@ const useProjectPreviewCollection = (
             id: v.id,
             title: v.title,
             abstract: v.abstract,
+            author: {
+              id: v.project_roles[0]?.member?.id || '',
+              name: v.project_roles[0]?.member?.name || '',
+              pictureUrl: v.project_roles[0]?.member?.picture_url || '',
+            },
             projectType: v.type as ProjectDataType,
             createdAt: v.created_at,
             publishedAt: v.published_at,
@@ -125,6 +155,10 @@ const useProjectPreviewCollection = (
             previewUrl: v.preview_url,
             totalCount: sum(v.project_plans.map(w => w.project_plan_enrollments_aggregate.aggregate?.count || 0)),
             coverType: v.cover_type,
+            markedProjectRoles: v.marked_project_role.map(projectRole => ({
+              projectRoleId: projectRole.id,
+              identity: projectRole.identity,
+            })),
           }
         })
   const loadMoreProjects =
@@ -147,6 +181,7 @@ const useProjectPreviewCollection = (
               }
               return {
                 project_aggregate: prev.project_aggregate,
+                project_role_aggregate: prev.project_role_aggregate,
                 project: [...prev.project, ...fetchMoreResult.project],
               }
             },
@@ -155,7 +190,9 @@ const useProjectPreviewCollection = (
   return {
     loadingProject: loading,
     errorProject: error,
-    projectPreviewCount: data?.project_aggregate.aggregate?.count || 0,
+    projectPreviewCount: condition.project_roles
+      ? data?.project_role_aggregate.aggregate?.count || 0
+      : data?.project_aggregate.aggregate?.count || 0,
     projectPreview,
     refetchProject: refetch,
     loadMoreProjects,
@@ -185,8 +222,25 @@ const useProjectSortCollection = (condition: hasura.GET_PROJECT_SORT_COLLECTIONV
 }
 
 const GET_PROJECT_PREVIEW_COLLECTION = gql`
-  query GET_PROJECT_PREVIEW_COLLECTION($condition: project_bool_exp!, $orderBy: [project_order_by!], $limit: Int!) {
+  query GET_PROJECT_PREVIEW_COLLECTION(
+    $condition: project_bool_exp!
+    $memberId: String!
+    $orderBy: [project_order_by!]
+    $limit: Int!
+  ) {
     project_aggregate(where: $condition) {
+      aggregate {
+        count
+      }
+    }
+    project_role_aggregate(
+      where: {
+        member_id: { _eq: $memberId }
+        identity: { name: { _neq: "author" } }
+        rejected_at: { _is_null: true }
+        has_sended_marked_notification: { _eq: true }
+      }
+    ) {
       aggregate {
         count
       }
@@ -201,7 +255,6 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
       expired_at
       cover_url
       preview_url
-      creator_id
       position
       cover_type
       project_plans {
@@ -210,6 +263,27 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           aggregate {
             count
           }
+        }
+      }
+      project_roles(where: { identity: { name: { _eq: "author" } } }) {
+        member {
+          id
+          name
+          picture_url
+        }
+      }
+      marked_project_role: project_roles(
+        where: {
+          member_id: { _eq: $memberId }
+          identity: { name: { _neq: "author" } }
+          rejected_at: { _is_null: true }
+          has_sended_marked_notification: { _eq: true }
+        }
+      ) {
+        id
+        identity {
+          id
+          name
         }
       }
     }

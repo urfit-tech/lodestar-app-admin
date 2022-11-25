@@ -49,10 +49,9 @@ const ProgramPackageProgramConnectionModal: React.FC<{
               program_id: programId,
               position: index,
             })),
-            delete_programs_id: programs
+            delete_program_package_programs_id: programs
               .filter(program => !programsId.includes(program.id))
               .map(program => program.programPackageProgramId),
-            program_package_id: programPackageId,
           },
         })
           .then(() => {
@@ -181,13 +180,12 @@ const useGetAvailableProgramCollection = (appId: string) => {
 const INSERT_PROGRAM_PACKAGE_PROGRAM = gql`
   mutation INSERT_PROGRAM_PACKAGE_PROGRAM(
     $programs: [program_package_program_insert_input!]!
-    $program_package_id: uuid!
-    $delete_programs_id: [uuid!]!
+    $delete_program_package_programs_id: [uuid!]!
   ) {
-    delete_program_tempo_delivery(where: { program_package_program_id: { _in: $delete_programs_id } }) {
+    delete_program_tempo_delivery(where: { program_package_program_id: { _in: $delete_program_package_programs_id } }) {
       affected_rows
     }
-    delete_program_package_program(where: { program_package_id: { _eq: $program_package_id } }) {
+    delete_program_package_program(where: { id: { _in: $delete_program_package_programs_id } }) {
       affected_rows
     }
     insert_program_package_program(

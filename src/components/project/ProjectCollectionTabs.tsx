@@ -3,6 +3,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { StringParam, useQueryParam } from 'use-query-params'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ProjectDataType } from '../../types/project'
@@ -13,14 +14,17 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
   const { currentMemberId, permissions } = useAuth()
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
   const { id: appId } = useApp()
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   const creatorId = {
     _eq:
       (projectType === 'funding' && permissions.PROJECT_FUNDING_ADMIN) ||
-      (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_ADMIN)
+      (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_ADMIN) ||
+      (projectType === 'portfolio' && permissions.PROJECT_PORTFOLIO_ADMIN)
         ? undefined
         : (projectType === 'funding' && permissions.PROJECT_FUNDING_NORMAL) ||
-          (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_NORMAL)
+          (projectType === 'pre-order' && permissions.PROJECT_PRE_ORDER_NORMAL) ||
+          (projectType === 'portfolio' && permissions.PROJECT_PORTFOLIO_NORMAL)
         ? currentMemberId
         : '',
   }
@@ -63,31 +67,54 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         creator_id: creatorId,
       },
     },
+    {
+      key: 'marked',
+      tab: formatMessage(commonMessages.status.marked),
+      condition: {
+        type: { _eq: projectType },
+        project_roles: { member_id: { _eq: currentMemberId } },
+      },
+    },
   ]
 
   return (
-    <Tabs defaultActiveKey="published">
-      {tabContents.map(tabContent => (
-        <Tabs.TabPane
-          key={tabContent.key}
-          tab={`${tabContent.tab} ${typeof counts[tabContent.key] === 'number' ? `(${counts[tabContent.key]})` : ''}`}
-        >
-          <ProjectCollectionBlock
-            appId={appId}
-            projectType={projectType}
-            condition={tabContent.condition}
-            orderBy={tabContent?.orderBy}
-            withSortingButton={tabContent.withSortingButton}
-            onReady={count =>
-              count !== counts[tabContent.key] &&
-              setCounts({
-                ...counts,
-                [tabContent.key]: count,
-              })
-            }
-          />
-        </Tabs.TabPane>
-      ))}
+    <Tabs
+      defaultActiveKey={projectType === 'portfolio' ? undefined : 'published'}
+      activeKey={projectType === 'portfolio' ? activeKey || 'published' : undefined}
+      onChange={key => {
+        if (projectType === 'portfolio') {
+          setActiveKey(key)
+        } else {
+          return undefined
+        }
+      }}
+    >
+      {tabContents
+        .filter(
+          tabContent =>
+            (projectType === 'portfolio' ? tabContent.key === 'finished' : tabContent.key === 'marked') === false,
+        )
+        .map(tabContent => (
+          <Tabs.TabPane
+            key={tabContent.key}
+            tab={`${tabContent.tab} ${typeof counts[tabContent.key] === 'number' ? `(${counts[tabContent.key]})` : ''}`}
+          >
+            <ProjectCollectionBlock
+              appId={appId}
+              projectType={projectType}
+              condition={tabContent.condition}
+              orderBy={tabContent?.orderBy}
+              withSortingButton={tabContent.withSortingButton}
+              onReady={count =>
+                count !== counts[tabContent.key] &&
+                setCounts({
+                  ...counts,
+                  [tabContent.key]: count,
+                })
+              }
+            />
+          </Tabs.TabPane>
+        ))}
     </Tabs>
   )
 }

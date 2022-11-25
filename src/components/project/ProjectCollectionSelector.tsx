@@ -27,6 +27,9 @@ const ProjectCollectionSelector: React.FC<{
               case 'publishedAt':
                 onChange?.({ from, limit: 4 })
                 break
+              case 'popular':
+                onChange?.({ from, limit: 4 })
+                break
               case 'custom':
                 onChange?.({ from, idList: [] })
                 break
@@ -41,12 +44,15 @@ const ProjectCollectionSelector: React.FC<{
           <Select.Option key="publishedAt" value="publishedAt">
             {formatMessage(craftPageMessages.label.publishedAt)}
           </Select.Option>
+          <Select.Option key="popular" value="popular">
+            {formatMessage(craftPageMessages.label.popular)}
+          </Select.Option>
           <Select.Option key="custom" value="custom">
             {formatMessage(craftPageMessages.label.custom)}
           </Select.Option>
         </Select>
       </Form.Item>
-      {value?.from === 'publishedAt' && (
+      {(value?.from === 'publishedAt' || value?.from === 'popular') && (
         <>
           <Form.Item label={<CraftSettingLabel>{formatMessage(craftPageMessages.label.sort)}</CraftSettingLabel>}>
             <Select value={value.asc ? 'asc' : 'desc'} onChange={v => onChange?.({ ...value, asc: v === 'asc' })}>

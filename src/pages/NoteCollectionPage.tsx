@@ -91,7 +91,7 @@ const NoteCollectionPage: React.FC = () => {
   const { authToken, permissions } = useAuth()
 
   const { enabledModules } = useApp()
-  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy']>({
+  const [orderBy, setOrderBy] = useState<hasura.member_note_order_by>({
     created_at: 'desc' as hasura.order_by,
   })
   const [filters, setFilters] = useState<FiltersProps>({

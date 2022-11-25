@@ -77,6 +77,10 @@ export const commonMessages = {
     set: { id: 'common.ui.set', defaultMessage: '設為' },
     discontinue: { id: 'common.ui.discontinue', defaultMessage: '下架' },
     hasGiftPlan: { id: 'common.ui.hasGiftPlan', defaultMessage: '附贈品' },
+    addParticipant: { id: 'common.ui.addParticipant', defaultMessage: 'Add participant' },
+    editParticipant: { id: 'common.ui.editParticipant', defaultMessage: 'Edit participant' },
+    send: { id: 'common.ui.send', defaultMessage: 'Send' },
+    reject: { id: 'common.ui.reject', defaultMessage: 'Reject' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -271,6 +275,10 @@ export const commonMessages = {
     ogDescription: { id: 'common.label.ogDescription', defaultMessage: 'og:description' },
     ogImage: { id: 'common.label.ogImage', defaultMessage: 'og:image' },
     ogImageAlt: { id: 'common.label.ogImageAlt', defaultMessage: 'og:image:alt' },
+    participant: { id: 'common.label.participant', defaultMessage: 'participant' },
+    selectParticipant: { id: 'common.label.selectParticipant', defaultMessage: 'Select participant' },
+    participantOccupation: { id: 'common.label.participantOccupation', defaultMessage: 'Participant occupation' },
+    portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -310,6 +318,10 @@ export const commonMessages = {
     },
     copiedToClipboard: { id: 'common.text.copiedToClipboard', defaultMessage: '已複製到剪貼簿' },
     unpublishingTitle: { id: 'common.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
+    ogImageTips: {
+      id: 'common.text.ogImageTips',
+      defaultMessage: 'Recommend image size: 1200*630px',
+    },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
@@ -353,6 +365,7 @@ export const commonMessages = {
     invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
     orderPartialPaid: { id: 'common.status.orderPartialPaid', defaultMessage: '部分付款' },
     noAuthority: { id: 'common.status.noAuthority', defaultMessage: '無此權限' },
+    marked: { id: 'common.status.marked', defaultMessage: 'Marked' },
   }),
   menu: defineMessages({
     mediaLibrary: { id: 'common.menu.mediaLibrary', defaultMessage: '媒體庫' },
@@ -369,6 +382,7 @@ export const commonMessages = {
     programPackageCategory: { id: 'common.menu.programPackageCategory', defaultMessage: '課程組合分類' },
     projectFunding: { id: 'common.menu.projectFunding', defaultMessage: '募資專案' },
     projectPreOrder: { id: 'common.menu.projectPreOrder', defaultMessage: '預購專案' },
+    projectPortfolio: { id: 'common.menu.projectPortfolio', defaultMessage: 'Portfolio Project' },
     podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
     podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
     podcastCategory: { id: 'common.menu.podcastCategory', defaultMessage: '廣播分類' },
@@ -408,10 +422,12 @@ export const commonMessages = {
     menuSetup: { id: 'common.menu.menuSetup', defaultMessage: '選單設定' },
     podcastAlbum: { id: 'common.menu.podcastAlbum', defaultMessage: '音頻專輯' },
     podcastAlbumCategory: { id: 'common.menu.podcastAlbumCategory', defaultMessage: '音頻專輯分類' },
+    projectCategory: { id: 'common.menu.projectCategory', defaultMessage: 'Project Category' },
+    roleManagement: { id: 'common.menu.roleManagement', defaultMessage: 'Role Management' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
-    programPlan: { id: 'common.product.programPlan', defaultMessage: '訂閱課程' },
+    programPlan: { id: 'common.product.programPlan', defaultMessage: '課程方案' },
     programContent: { id: 'common.product.programContent', defaultMessage: '課程內容' },
     programPackagePlan: { id: 'common.product.programPackagePlan', defaultMessage: '課程組合' },
     projectPlan: { id: 'common.product.projectPlan', defaultMessage: '專案方案' },
@@ -1152,7 +1168,7 @@ export const memberMessages = {
     searchNoteRecord: { id: 'member.text.searchNoteRecord', defaultMessage: '搜尋聯絡紀錄' },
     smsSucceed: { id: 'member.text.smsSucceed', defaultMessage: '簡訊寄送成功' },
     smsFailed: { id: 'member.text.smsFailed', defaultMessage: '簡訊寄送失敗: {errorMessage}' },
-    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數69字' },
+    smsTooLong: { id: 'member.text.smsTooLong', defaultMessage: '*已超出字數{charactersLimit}字' },
   },
   placeholder: {
     smsContent: { id: 'member.placeholder.smsContent', defaultMessage: '請輸入訊息內容，單封字數勿超過69字' },
@@ -1164,6 +1180,7 @@ export const orderMessages = {
   label: defineMessages({
     // order log
     orderLogId: { id: 'order.label.orderLogId', defaultMessage: '訂單編號' },
+    orderCountry: { id: 'order.label.orderCountry', defaultMessage: '下單國家' },
     orderLogStatus: { id: 'order.label.orderLogStatus', defaultMessage: '訂單狀態' },
     orderLogCreatedAt: { id: 'order.label.orderCreatedAt', defaultMessage: '訂單建立時間' },
     orderLogUpdatedAt: { id: 'order.label.orderLogUpdatedAt', defaultMessage: '訂單更新時間' },
@@ -1310,6 +1327,7 @@ export const craftPageMessages = {
     role: { id: 'craft.label.role', defaultMessage: '依角色' },
     recentWatched: { id: 'craft.label.recentWatched', defaultMessage: '依最近觀看' },
     publishedAt: { id: 'craft.label.publishedAt', defaultMessage: '依上架日期' },
+    popular: { id: 'craft.label.popular', defaultMessage: 'popular' },
     currentPrice: { id: 'craft.label.currentPrice', defaultMessage: '依產品價錢' },
     custom: { id: 'craft.label.custom', defaultMessage: '自訂項目' },
     ruleOfSort: { id: 'craft.label.ruleOfSort', defaultMessage: '排序規則' },
