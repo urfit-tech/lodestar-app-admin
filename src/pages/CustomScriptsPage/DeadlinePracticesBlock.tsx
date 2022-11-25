@@ -27,7 +27,7 @@ const DeadlinePracticesBlock: React.VFC = () => {
     <AdminBlock>
       <AdminBlockTitle>實戰營作業</AdminBlockTitle>
       <ProgramTreeSelector
-        allowContentType="practice"
+        allowContentTypes={["practice"]}
         treeNodeSelectable={false}
         className="mb-4"
         value={programContentId}
