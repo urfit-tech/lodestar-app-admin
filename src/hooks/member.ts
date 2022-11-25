@@ -289,7 +289,7 @@ export const useMemberAdmin = (memberId: string) => {
 }
 
 export const useMemberNotesAdmin = (
-  orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy'],
+  orderBy: hasura.member_note_order_by,
   filters?: {
     range?: [Moment, Moment]
     author?: string
