@@ -2460,6 +2460,56 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_card {
   title: string;
 }
 
+export interface GET_PRODUCT_SELECTION_COLLECTION_merchandise_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_specs: GET_PRODUCT_SELECTION_COLLECTION_merchandise_merchandise_specs[];
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_coupon_plan {
+  __typename: "coupon_plan";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  title: string;
+}
+
 export interface GET_PRODUCT_SELECTION_COLLECTION {
   /**
    * fetch data from the table: "program_plan"
@@ -2481,6 +2531,30 @@ export interface GET_PRODUCT_SELECTION_COLLECTION {
    * fetch data from the table: "card"
    */
   card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+  /**
+   * fetch data from the table: "merchandise"
+   */
+  merchandise: GET_PRODUCT_SELECTION_COLLECTION_merchandise[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PRODUCT_SELECTION_COLLECTION_project_plan[];
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_PRODUCT_SELECTION_COLLECTION_appointment_plan[];
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_PRODUCT_SELECTION_COLLECTION_podcast_plan[];
+  /**
+   * fetch data from the table: "coupon_plan"
+   */
+  coupon_plan: GET_PRODUCT_SELECTION_COLLECTION_coupon_plan[];
+  /**
+   * fetch data from the table: "voucher_plan"
+   */
+  voucher_plan: GET_PRODUCT_SELECTION_COLLECTION_voucher_plan[];
 }
 
 /* tslint:disable */
