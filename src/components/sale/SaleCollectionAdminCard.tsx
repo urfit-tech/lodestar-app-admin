@@ -12,14 +12,7 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import hasura from '../../hasura'
-import {
-  currencyFormatter,
-  dateFormatter,
-  dateRangeFormatter,
-  desktopViewMixin,
-  handleError,
-  rgba,
-} from '../../helpers'
+import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useOrderLogs } from '../../hooks/order'
 import { OrderLog } from '../../types/general'
@@ -65,19 +58,6 @@ const StyledCell = styled.div`
       margin-right: 0.5rem;
     }
   `)}
-`
-
-const StyledDrawerButton = styled(Button)`
-  && {
-    background: ${props => rgba(props.theme['@primary-color'], 0.1)};
-    color: ${props => props.theme['@primary-color']};
-
-    &:hover {
-      border-color: ${props => rgba(props.theme['@primary-color'], 0.9)};
-      background: ${props => rgba(props.theme['@primary-color'], 0.4)};
-      color: ${props => props.theme['@primary-color']};
-    }
-  }
 `
 
 const SaleCollectionAdminCard: React.VFC<{
@@ -520,7 +500,8 @@ const SaleCollectionAdminCard: React.VFC<{
             setCurrentOrderLogId(null)
           }}
           renderTrigger={() => (
-            <StyledDrawerButton
+            <Button
+              type="primary"
               size="middle"
               className="mr-2"
               onClick={() => {
@@ -528,7 +509,7 @@ const SaleCollectionAdminCard: React.VFC<{
               }}
             >
               {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
-            </StyledDrawerButton>
+            </Button>
           )}
         />
 
