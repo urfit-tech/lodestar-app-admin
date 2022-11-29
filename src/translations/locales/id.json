@@ -583,6 +583,7 @@
   "common.label.orderLogPrice": "Harga Pesanan",
   "common.label.orderLogPriceTotal": "Total Pesanan",
   "common.label.orderLogStatus": "Status Pesanan",
+  "common.label.orderLogCategory": "Order Category",
   "common.label.orderLogUpdatedDate": "Tanggal Diperbarui",
   "common.label.orderProductAmount": "Jumlah Barang",
   "common.label.orderProductAutoRenew": "Perpanjangan Otomatis",

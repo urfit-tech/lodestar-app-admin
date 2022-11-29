@@ -583,6 +583,7 @@
   "common.label.orderLogPrice": "Giá đặt hàng",
   "common.label.orderLogPriceTotal": "Tổng số đơn đặt hàng",
   "common.label.orderLogStatus": "Trạng thái Đơn hàng",
+  "common.label.orderLogCategory": "Order Category",
   "common.label.orderLogUpdatedDate": " Ngày cập nhật ",
   "common.label.orderProductAmount": " Số lượng mặt hàng ",
   "common.label.orderProductAutoRenew": "Tự động gia hạn",

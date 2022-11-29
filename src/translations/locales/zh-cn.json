@@ -583,6 +583,7 @@
   "common.label.orderLogPrice": "订单金额",
   "common.label.orderLogPriceTotal": "订单总额",
   "common.label.orderLogStatus": "订单状态",
+  "common.label.orderLogCategory": "訂單項目",
   "common.label.orderLogUpdatedDate": "更新日期",
   "common.label.orderProductAmount": "项目数量",
   "common.label.orderProductAutoRenew": "自动续订",
