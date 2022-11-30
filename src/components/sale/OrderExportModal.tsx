@@ -648,6 +648,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           if (values.selectedField === 'lastPaidAt') {
             form.setFieldsValue({ orderStatuses: values.orderStatuses.filter(v => v !== 'UNPAID' && v !== 'FAILED') })
           }
+          if (selectedSpeicfy !== values.orderSpecify) {
+            form.setFieldsValue({
+              ...form.getFieldsValue(),
+              specifiedCategories: [],
+            })
+          }
           setSelectedSpecify(values.orderSpecify)
         }}
       >
