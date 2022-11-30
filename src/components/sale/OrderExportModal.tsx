@@ -74,9 +74,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
     startedAt: Date,
     endedAt: Date,
     orderStatuses: string[],
+    specified: OrderSpecify,
     specifiedCategories: { id: string; title: string; children?: any[] }[],
   ) => Promise<string[][]> = useCallback(
-    async (startedAt, endedAt, orderStatuses, specifiedCategories) => {
+    async (startedAt, endedAt, orderStatuses, specified, specifiedCategories) => {
       const orderLogExportResult = await client.query<
         hasura.GET_ORDER_LOG_EXPORT,
         hasura.GET_ORDER_LOG_EXPORTVariables
@@ -84,11 +85,11 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         query: GET_ORDER_LOG_EXPORT,
         variables: {
           condition: {
-            ...(selectedSpeicfy !== 'ALL' && {
+            ...(specified !== 'ALL' && {
               _or: [
                 ...specifiedCategories
                   .filter(({ id }) => id.startsWith('Merchandise'))
-                  .map(({ title, children }) => ({
+                  .map(({ title }) => ({
                     order_products: { _like: `${title}%` },
                   })),
                 ...specifiedCategories
@@ -97,13 +98,16 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                       !id.startsWith('Merchandise') && !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'),
                   )
                   .map(({ title }) => ({ order_products: { _like: `${title}%` } })),
-                {
-                  order_discounts: {
-                    _in: specifiedCategories
-                      .filter(({ id }) => id.startsWith('CouponPlan') || id.startsWith('VoucherPlan'))
-                      .map(({ title }) => title),
-                  },
-                },
+                ...specifiedCategories
+                  .filter(({ id }) => id.startsWith('VoucherPlan'))
+                  .map(({ title }) => ({
+                    order_discounts: { _like: `【兌換券】${title} %` },
+                  })),
+                ...specifiedCategories
+                  .filter(({ id }) => id.startsWith('CouponPlan'))
+                  .map(({ title }) => ({
+                    order_discounts: { _like: `【折價券】${title} %` },
+                  })),
               ],
             }),
             status: {
@@ -236,9 +240,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
     startedAt: Date,
     endedAt: Date,
     orderStatuses: string[],
+    specified: OrderSpecify,
     specifiedCategories: { id: string; title: string; children?: any[] }[],
   ) => Promise<string[][]> = useCallback(
-    async (startedAt, endedAt, orderStatuses, specifiedCategories) => {
+    async (startedAt, endedAt, orderStatuses, specified, specifiedCategories) => {
       const orderProductExportResult = await client.query<
         hasura.GET_ORDER_PRODUCT_EXPORT,
         hasura.GET_ORDER_PRODUCT_EXPORTVariables
@@ -254,7 +259,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 _gte: startedAt,
                 _lte: endedAt,
               },
-              ...(selectedSpeicfy !== 'ALL' && {
+              ...(specified !== 'ALL' && {
                 _or: [
                   {
                     order_products: {
@@ -262,7 +267,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                         _in: [
                           ...specifiedCategories
                             .filter(({ id }) => id.startsWith('Merchandise'))
-                            .map(({ title, children }) => children!.map(each => `MerchandiseSpec_${each}`))
+                            .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
                             .flat(),
                           ...specifiedCategories
                             .filter(
@@ -274,6 +279,18 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                             .map(({ id }) => id),
                         ],
                       },
+                    },
+                  },
+                  {
+                    order_discounts: {
+                      _or: [
+                        ...specifiedCategories
+                          .filter(({ id }) => id.startsWith('CouponPlan'))
+                          .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } })),
+                        ...specifiedCategories
+                          .filter(({ id }) => id.startsWith('VoucherPlan'))
+                          .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } })),
+                      ],
                     },
                   },
                 ],
@@ -347,9 +364,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
     startedAt: Date,
     endedAt: Date,
     orderStatuses: string[],
+    specified: OrderSpecify,
     specifiedCategories: { id: string; title: string; children?: any[] }[],
   ) => Promise<string[][]> = useCallback(
-    async (startedAt, endedAt, orderStatuses, specifiedCategories) => {
+    async (startedAt, endedAt, orderStatuses, specified, specifiedCategories) => {
       const orderDiscountResult = await client.query<
         hasura.GET_ORDER_DISCOUNT_COLLECTION,
         hasura.GET_ORDER_DISCOUNT_COLLECTIONVariables
@@ -365,7 +383,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 _gte: startedAt,
                 _lte: endedAt,
               },
-              ...(selectedSpeicfy !== 'ALL' && {
+              ...(specified !== 'ALL' && {
                 _or: [
                   {
                     order_products: {
@@ -373,7 +391,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                         _in: [
                           ...specifiedCategories
                             .filter(({ id }) => id.startsWith('Merchandise'))
-                            .map(({ title, children }) => children!.map(each => `MerchandiseSpec_${each}`))
+                            .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
                             .flat(),
                           ...specifiedCategories
                             .filter(
@@ -390,6 +408,16 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 ],
               }),
             },
+            ...(specified !== 'ALL' && {
+              _or: [
+                ...specifiedCategories
+                  .filter(({ id }) => id.startsWith('CouponPlan'))
+                  .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } })),
+                ...specifiedCategories
+                  .filter(({ id }) => id.startsWith('VoucherPlan'))
+                  .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } })),
+              ],
+            }),
           },
           orderBy: {
             [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: 'asc_nulls_last' as hasura.order_by,
@@ -410,7 +438,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         ],
         ...orderDiscounts.map(orderDiscount => [
           orderDiscount.order_log.id,
-          orderDiscount.order_log.options.country || '',
+          (orderDiscount.order_log.options !== null && orderDiscount.order_log.options.country) || '',
           orderDiscount.id,
           orderDiscount.name,
           orderDiscount.price,
@@ -525,6 +553,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               ) || []),
             ]
           : values.orderStatuses
+        const specified = values.orderSpecify as OrderSpecify
 
         let fileName = 'untitled.csv'
         let content: string[][] = []
@@ -532,17 +561,17 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         switch (exportTarget) {
           case 'orderLog':
             fileName = 'orders'
-            content = await getOrderLogContent(startedAt, endedAt, orderStatuses, selectedProducts)
+            content = await getOrderLogContent(startedAt, endedAt, orderStatuses, specified, selectedProducts)
             break
 
           case 'orderProduct':
             fileName = 'items'
-            content = await getOrderProductContent(startedAt, endedAt, orderStatuses, selectedProducts)
+            content = await getOrderProductContent(startedAt, endedAt, orderStatuses, specified, selectedProducts)
             break
 
           case 'orderDiscount':
             fileName = 'discounts'
-            content = await getOrderDiscountContent(startedAt, endedAt, orderStatuses, selectedProducts)
+            content = await getOrderDiscountContent(startedAt, endedAt, orderStatuses, specified, selectedProducts)
             break
 
           case 'paymentLog':

@@ -217,10 +217,16 @@ const useProductSelections = () => {
         coupon_plan {
           id
           title
+          coupon_codes {
+            id
+          }
         }
         voucher_plan {
           id
           title
+          voucher_codes {
+            id
+          }
         }
       }
     `,
@@ -334,6 +340,7 @@ const useProductSelections = () => {
         data?.coupon_plan.map(v => ({
           id: `CouponPlan_${v.id}`,
           title: v.title,
+          children: v.coupon_codes.map(({ id }) => id),
         })) || [],
     },
     {
@@ -342,6 +349,7 @@ const useProductSelections = () => {
         data?.voucher_plan.map(v => ({
           id: `VoucherPlan_${v.id}`,
           title: v.title,
+          children: v.voucher_codes.map(({ id }) => id),
         })) || [],
     },
   ]
