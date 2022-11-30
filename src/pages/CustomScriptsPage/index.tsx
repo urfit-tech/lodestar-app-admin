@@ -1,12 +1,13 @@
 import { ExportOutlined } from '@ant-design/icons'
 import { Form, Select } from 'antd'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import React, { useEffect, useState } from 'react'
+import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import LoadingPage from '../../pages/LoadingPage'
 import NotFoundPage from '../../pages/NotFoundPage'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import React, { useEffect, useState } from 'react'
-import { StringParam, useQueryParam } from 'use-query-params'
+import CoinUsageBlock from './CoinUsageBlock'
 import DeadlinePracticesBlock from './DeadlinePracticesBlock'
 import ExpiringSoonMembersBlock from './ExpiringSoonMembersBlock'
 import ExtraPermissionsMembersBlock from './ExtraPermissionsMembersBlock'
@@ -53,6 +54,7 @@ const CustomScriptsPage: React.VFC = () => {
           <Select.Option value="extra-permissions-members">擁有其他權限的會員</Select.Option>
           <Select.Option value="members-without-navigator">沒有領航員的學員</Select.Option>
           <Select.Option value="trainees-day-off">學員請假</Select.Option>
+          <Select.Option value="coin-usage">學米私塾代幣使用情況</Select.Option>
         </Select>
       </Form.Item>
 
@@ -61,6 +63,7 @@ const CustomScriptsPage: React.VFC = () => {
       {selectedScript === 'extra-permissions-members' && <ExtraPermissionsMembersBlock />}
       {selectedScript === 'members-without-navigator' && <MembersWithoutNavigatorBlock />}
       {selectedScript === 'trainees-day-off' && <TraineesDayOffBlock />}
+      {selectedScript === 'coin-usage' && <CoinUsageBlock />}
     </AdminLayout>
   )
 }
