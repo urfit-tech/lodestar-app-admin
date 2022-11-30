@@ -584,6 +584,7 @@
   "common.label.orderLogPriceTotal": "訂單總額",
   "common.label.orderLogStatus": "訂單狀態",
   "common.label.orderLogCategory": "訂單項目",
+  "common.label.otherSpecifyCategories": "其他特定項目",
   "common.label.orderLogUpdatedDate": "更新日期",
   "common.label.orderProductAmount": "項目數量",
   "common.label.orderProductAutoRenew": "自動續訂",

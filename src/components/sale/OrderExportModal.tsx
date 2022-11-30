@@ -742,7 +742,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         </Form.Item>
 
         {selectedSpeicfy !== 'ALL' && (
-          <Form.Item label="asd" name="specifiedCategories">
+          <Form.Item
+            label={selectedSpeicfy === 'SPECIFY' ? formatMessage(commonMessages.label.otherSpecifyCategories) : ''}
+            name="specifiedCategories"
+          >
             <ProductSelector
               multiple
               allowTypes={

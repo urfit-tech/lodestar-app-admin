@@ -584,6 +584,7 @@
   "common.label.orderLogPriceTotal": "Order Total",
   "common.label.orderLogStatus": "Order Status",
   "common.label.orderLogCategory": "Order Category",
+  "common.label.otherSpecifyCategories": "Other Specify Categories",
   "common.label.orderLogUpdatedDate": "Updated Date",
   "common.label.orderProductAmount": "Item Amount",
   "common.label.orderProductAutoRenew": "Auto Renew",
