@@ -118,6 +118,8 @@ export const commonMessages = {
     orderLogCreatedDate: { id: 'common.label.orderLogCreatedDate', defaultMessage: '建立日期' },
     orderLogPrice: { id: 'common.label.orderLogPrice', defaultMessage: '訂單金額' },
     orderLogStatus: { id: 'common.label.orderLogStatus', defaultMessage: '訂單狀態' },
+    orderLogCategory: { id: 'common.label.orderLogCategory', defeaultMessage: '訂單項目' },
+    otherSpecifyCategories: { id: 'common.label.otherSpecifyCategories', defeaultMessage: '其他特定項目' },
     orderProductPriceTotal: { id: 'common.label.orderProductPriceTotal', defaultMessage: '項目總額' },
     orderDiscountPriceTotal: { id: 'common.label.orderDiscountPriceTotal', defaultMessage: '折扣總額' },
     orderLogPriceTotal: { id: 'common.label.orderLogPriceTotal', defaultMessage: '訂單總額' },
@@ -157,7 +159,12 @@ export const commonMessages = {
     allMembershipCard: { id: 'common.label.allMembershipCard', defaultMessage: '所有會員卡' },
     allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
+    allProjectPlan: { id: 'common.label.allProjectPlan', defaultMessage: '全部專案' },
+    allAppointmentPlan: { id: 'common.label.allAppointmentPlan', defaultMessage: '全部預約' },
+    allPodcastPlan: { id: 'common.label.allPodcastPlan', defaultMessage: '全部廣播訂閱頻道' },
     allPodcastProgram: { id: 'common.label.allPodcastProgram', defaultMessage: '所有廣播' },
+    allCouponPlan: { id: 'common.label.allCouponPlan', defaultMessage: '所有折價方案' },
+    allVocherPlan: { id: 'common.label.allVocherPlan', defaultMessage: '所有兌換方案' },
     allGiftPlan: { id: 'common.label.allGiftPlan', defaultMessage: '所有贈品方案' },
     publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
     publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
@@ -228,6 +235,7 @@ export const commonMessages = {
     endedAt: { id: 'common.label.endedAt', defaultMessage: '結束時間' },
     timeRange: { id: 'common.label.timeRange', defaultMessage: '日期範圍' },
     orderStatus: { id: 'common.label.orderStatus', defaultMessage: '訂單狀態' },
+    orderCategory: { id: 'common.label.orderCategory', defaultMessage: '訂單項目' },
     listPrice: { id: 'common.label.listPrice', defaultMessage: '定價' },
     currency: { id: 'common.label.currency', defaultMessage: '幣值' },
     password: { id: 'common.label.password', defaultMessage: '密碼' },
@@ -468,6 +476,12 @@ export const commonMessages = {
       defaultMessage: 'Use comma to separate keywords',
     },
   }),
+  category: defineMessages({
+    all: { id: 'common.category.all', defaultMessage: '全部產品' },
+    specify: { id: 'common.category.specify', defaultMessage: '指定產品' },
+    specifyCouponPlan: { id: 'common.category.specifyCouponPlan', defaultMessage: '指定折價方案' },
+    specifyVoucherPlan: { id: 'common.category.specifyVoucherPlan', defaultMessage: '指定兌換方案' },
+  }),
 }
 
 export const errorMessages = {
@@ -683,7 +697,7 @@ export const promotionMessages = {
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
     used: { id: 'promotion.status.used', defaultMessage: '已使用' },
-  }),
+  })
 }
 
 export const checkoutMessages = {
