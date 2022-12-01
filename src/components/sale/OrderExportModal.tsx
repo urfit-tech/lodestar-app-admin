@@ -383,30 +383,31 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 _gte: startedAt,
                 _lte: endedAt,
               },
-              ...(specified !== 'ALL' && {
-                _or: [
-                  {
-                    order_products: {
-                      product_id: {
-                        _in: [
-                          ...specifiedCategories
-                            .filter(({ id }) => id.startsWith('Merchandise'))
-                            .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
-                            .flat(),
-                          ...specifiedCategories
-                            .filter(
-                              ({ id }) =>
-                                !id.startsWith('Merchandise') &&
-                                !id.startsWith('CouponPlan') &&
-                                !id.startsWith('VoucherPlan'),
-                            )
-                            .map(({ id }) => id),
-                        ],
+              ...(specified !== 'ALL' &&
+                specifiedCategories.find(({ id }) => id.startsWith('Merchandise')) !== undefined && {
+                  _or: [
+                    {
+                      order_products: {
+                        product_id: {
+                          _in: [
+                            ...specifiedCategories
+                              .filter(({ id }) => id.startsWith('Merchandise'))
+                              .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
+                              .flat(),
+                            ...specifiedCategories
+                              .filter(
+                                ({ id }) =>
+                                  !id.startsWith('Merchandise') &&
+                                  !id.startsWith('CouponPlan') &&
+                                  !id.startsWith('VoucherPlan'),
+                              )
+                              .map(({ id }) => id),
+                          ],
+                        },
                       },
                     },
-                  },
-                ],
-              }),
+                  ],
+                }),
             },
             ...(specified !== 'ALL' && {
               _or: [
