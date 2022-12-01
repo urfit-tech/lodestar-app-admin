@@ -26,7 +26,7 @@ type CoinUsageExport = {
 }
 
 const CoinUsageBlock: React.VFC = () => {
-  const { data, loading, error, refetch } = useCoinUsage()
+  const { data, loading, error } = useCoinUsage()
 
   return (
     <>
@@ -78,9 +78,6 @@ const CoinUsageBlock: React.VFC = () => {
         loading={loading}
       >
         匯出資料
-      </Button>
-      <Button disabled={loading || Boolean(error)} loading={loading} onClick={refetch}>
-        刷新
       </Button>
       {error && (
         <div style={{ color: 'red' }}>
