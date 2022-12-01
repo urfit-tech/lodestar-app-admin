@@ -63,7 +63,7 @@ const CoinUsageBlock: React.VFC = () => {
                 `${data[i].unTaxedPrice}`,
                 `${data[i].price}`,
                 `${data[i].totalCoin}`,
-                ...data[0].coinUsageLog.map(c => `${c.amount}`),
+                ...data[i].coinUsageLog.map(c => `${c.amount}`),
                 `${data[i].totalCoinUsage}`,
                 `${data[i].achievedUnTaxedIncome}`,
                 `${data[i].unAchievedUnTaxedIncome}`,
