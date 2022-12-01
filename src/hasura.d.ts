@@ -4561,7 +4561,7 @@ export interface GET_PODCAST_PROGRAM_AGGREGATE {
 }
 
 export interface GET_PODCAST_PROGRAM_AGGREGATEVariables {
-  id?: string | null;
+  id: any;
 }
 
 /* tslint:disable */
@@ -16435,6 +16435,37 @@ export interface CHECK_APP_PAGE_PATH {
 
 export interface CHECK_APP_PAGE_PATHVariables {
   path?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_COIN_USAGE_EXPORT
+// ====================================================
+
+export interface GET_COIN_USAGE_EXPORT_coin_usage_export {
+  __typename: "coin_usage_export";
+  member_contract_id: any | null;
+  invoice_issued_at: any | null;
+  invoice_number: string | null;
+  member_id: string | null;
+  email: string | null;
+  name: string | null;
+  started_at: any | null;
+  ended_at: any | null;
+  price: any | null;
+  coin_log: any | null;
+  discount_log: any | null;
+}
+
+export interface GET_COIN_USAGE_EXPORT {
+  /**
+   * fetch data from the table: "coin_usage_export"
+   */
+  coin_usage_export: GET_COIN_USAGE_EXPORT_coin_usage_export[];
 }
 
 /* tslint:disable */
