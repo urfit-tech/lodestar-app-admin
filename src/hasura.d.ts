@@ -16454,8 +16454,7 @@ export interface GET_COIN_USAGE_EXPORT_coin_usage_export {
   member_id: string | null;
   email: string | null;
   name: string | null;
-  started_at: any | null;
-  ended_at: any | null;
+  agreed_at: any | null;
   price: any | null;
   coin_log: any | null;
   discount_log: any | null;

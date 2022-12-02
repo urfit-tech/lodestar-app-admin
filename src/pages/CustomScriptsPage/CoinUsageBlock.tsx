@@ -13,8 +13,7 @@ type CoinUsageExport = {
   memberId: string
   email: string
   name: string
-  startedAt: string | null
-  endedAt: string | null
+  agreedAt: string | null
   price: number
   unTaxedPrice: number
   totalCoin: number
@@ -39,8 +38,7 @@ const CoinUsageBlock: React.VFC = () => {
               '會員ID',
               '會員信箱',
               '會員姓名',
-              '服務起始日',
-              '服務結束日',
+              '合約簽署日',
               '當年合約金額(未稅)',
               '當年合約金額(含稅)',
               '總代幣數量',
@@ -58,8 +56,7 @@ const CoinUsageBlock: React.VFC = () => {
                 `${data[i].memberId}`,
                 `${data[i].email}`,
                 `${data[i].name}`,
-                `${data[i].startedAt}`,
-                `${data[i].endedAt}`,
+                `${data[i].agreedAt}`,
                 `${data[i].unTaxedPrice}`,
                 `${data[i].price}`,
                 `${data[i].totalCoin}`,
@@ -99,8 +96,7 @@ const useCoinUsage = () => {
         member_id
         email
         name
-        started_at
-        ended_at
+        agreed_at
         price
         coin_log
         discount_log
@@ -117,10 +113,12 @@ const useCoinUsage = () => {
           const month = `${(i % 12) + 1 < 10 ? 0 : ''}${(i % 12) + 1}`
           coinUsageLog.push({
             date: `${year}年${month}月`,
-            amount: c.discount_log
-              .filter((d: any) => d.created_at.indexOf(`${year + 1911}-${month}`) !== -1)
-              .map((f: any) => f.options.coins)
-              .reduce((a: any, b: any) => a + b, 0),
+            amount: c.discount_log[0]
+              ? c.discount_log
+                  ?.filter((d: any) => d.created_at.indexOf(`${year + 1911}-${month}`) !== -1)
+                  ?.map((f: any) => f.options.coins)
+                  ?.reduce((a: any, b: any) => a + b, 0) || 0
+              : 0,
           })
         }
         const unTaxedPrice = Math.round(Number(c.price) / 1.05) || 0
@@ -134,8 +132,7 @@ const useCoinUsage = () => {
           memberId: c.member_id || '',
           email: c.email || '',
           name: c.name || '',
-          startedAt: moment(c.started_at).format('YYYY-MM-DD HH:mm:ss'),
-          endedAt: moment(c.ended_at).format('YYYY-MM-DD HH:mm:ss'),
+          agreedAt: moment(c.agreed_at).format('YYYY-MM-DD HH:mm:ss'),
           price: Number(c.price) || 0,
           unTaxedPrice: unTaxedPrice,
           totalCoin: totalCoin,
