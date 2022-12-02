@@ -115,8 +115,8 @@ const useCoinUsage = () => {
             date: `${year}年${month}月`,
             amount: c.discount_log[0]
               ? c.discount_log
-                  ?.filter((d: any) => d.created_at.indexOf(`${year + 1911}-${month}`) !== -1)
-                  ?.map((f: any) => f.options.coins)
+                  ?.filter((d: any) => d?.created_at?.indexOf(`${year + 1911}-${month}`) !== -1)
+                  ?.map((f: any) => f?.options?.coins)
                   ?.reduce((a: any, b: any) => a + b, 0) || 0
               : 0,
           })
