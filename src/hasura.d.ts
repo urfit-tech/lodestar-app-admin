@@ -2498,34 +2498,16 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_plan {
   published_at: any | null;
 }
 
-export interface GET_PRODUCT_SELECTION_COLLECTION_coupon_plan_coupon_codes {
-  __typename: "coupon_code";
-  id: any;
-}
-
 export interface GET_PRODUCT_SELECTION_COLLECTION_coupon_plan {
   __typename: "coupon_plan";
   id: any;
   title: string;
-  /**
-   * An array relationship
-   */
-  coupon_codes: GET_PRODUCT_SELECTION_COLLECTION_coupon_plan_coupon_codes[];
-}
-
-export interface GET_PRODUCT_SELECTION_COLLECTION_voucher_plan_voucher_codes {
-  __typename: "voucher_code";
-  id: any;
 }
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_voucher_plan {
   __typename: "voucher_plan";
   id: any;
   title: string;
-  /**
-   * An array relationship
-   */
-  voucher_codes: GET_PRODUCT_SELECTION_COLLECTION_voucher_plan_voucher_codes[];
 }
 
 export interface GET_PRODUCT_SELECTION_COLLECTION {
