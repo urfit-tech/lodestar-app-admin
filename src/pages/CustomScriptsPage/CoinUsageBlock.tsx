@@ -98,8 +98,14 @@ const useCoinUsage = () => {
         name
         agreed_at
         price
-        coin_log
         discount_log
+        coin_log_aggregate {
+          aggregate {
+            sum {
+              amount
+            }
+          }
+        }
       }
     }
   `)
@@ -123,7 +129,7 @@ const useCoinUsage = () => {
         }
         const unTaxedPrice = Math.round(Number(c.price) / 1.05) || 0
         const totalCoinUsage = coinUsageLog.map(c => c.amount).reduce((a: any, b: any) => a + b, 0)
-        const totalCoin = c.coin_log.map((c: any) => c?.amount || 0).reduce((a: any, b: any) => a + b, 0)
+        const totalCoin = c.coin_log_aggregate.aggregate?.sum?.amount || 0
         const achievedUnTaxedIncome = totalCoinUsage * (unTaxedPrice / totalCoin)
         return {
           memberContractId: c.member_contract_id,

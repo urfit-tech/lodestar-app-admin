@@ -16446,6 +16446,21 @@ export interface CHECK_APP_PAGE_PATHVariables {
 // GraphQL query operation: GET_COIN_USAGE_EXPORT
 // ====================================================
 
+export interface GET_COIN_USAGE_EXPORT_coin_usage_export_coin_log_aggregate_aggregate_sum {
+  __typename: "coin_log_sum_fields";
+  amount: any | null;
+}
+
+export interface GET_COIN_USAGE_EXPORT_coin_usage_export_coin_log_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  sum: GET_COIN_USAGE_EXPORT_coin_usage_export_coin_log_aggregate_aggregate_sum | null;
+}
+
+export interface GET_COIN_USAGE_EXPORT_coin_usage_export_coin_log_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_COIN_USAGE_EXPORT_coin_usage_export_coin_log_aggregate_aggregate | null;
+}
+
 export interface GET_COIN_USAGE_EXPORT_coin_usage_export {
   __typename: "coin_usage_export";
   member_contract_id: any | null;
@@ -16456,8 +16471,11 @@ export interface GET_COIN_USAGE_EXPORT_coin_usage_export {
   name: string | null;
   agreed_at: any | null;
   price: any | null;
-  coin_log: any | null;
   discount_log: any | null;
+  /**
+   * fetch aggregated fields from the table: "coin_log"
+   */
+  coin_log_aggregate: GET_COIN_USAGE_EXPORT_coin_usage_export_coin_log_aggregate;
 }
 
 export interface GET_COIN_USAGE_EXPORT {
