@@ -5,6 +5,7 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { ProductType } from 'lodestar-app-element/src/types/product'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -57,15 +58,8 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
   const { data: allOrderStatuses } = useOrderStatuses()
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
   const [selectedSpeicfy, setSelectedSpecify] = useState<OrderSpecify>('ALL')
-  const [selectedProducts, setSelectedProducts] = useState<
-    {
-      id: string
-      title: string
-      publishedAt?: Date | null
-      tag?: string
-      children?: any[]
-    }[]
-  >([])
+  const [fullSelected, setFullSelectedProducts] = useState<(ProductType | 'CouponPlan')[]>([])
+  const [selectedProducts, setSelectedProducts] = useState<{ id: string; title: string; children?: any[] }[]>([])
   const [loading, setLoading] = useState(false)
 
   const ableToExport = permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_NORMAL
@@ -75,9 +69,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
     endedAt: Date,
     orderStatuses: string[],
     specified: OrderSpecify,
+    fullSelected: (ProductType | 'CouponPlan')[],
     specifiedCategories: { id: string; title: string; children?: any[] }[],
   ) => Promise<string[][]> = useCallback(
-    async (startedAt, endedAt, orderStatuses, specified, specifiedCategories) => {
+    async (startedAt, endedAt, orderStatuses, specified, fullSelected, specifiedCategories) => {
       const orderLogExportResult = await client.query<
         hasura.GET_ORDER_LOG_EXPORT,
         hasura.GET_ORDER_LOG_EXPORTVariables
@@ -85,31 +80,40 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         query: GET_ORDER_LOG_EXPORT,
         variables: {
           condition: {
-            ...(specified !== 'ALL' && {
-              _or: [
-                ...specifiedCategories
-                  .filter(({ id }) => id.startsWith('Merchandise'))
-                  .map(({ title }) => ({
-                    order_products: { _like: `${title}%` },
-                  })),
-                ...specifiedCategories
-                  .filter(
-                    ({ id }) =>
-                      !id.startsWith('Merchandise') && !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'),
-                  )
-                  .map(({ title }) => ({ order_products: { _like: `${title}%` } })),
-                ...specifiedCategories
-                  .filter(({ id }) => id.startsWith('VoucherPlan'))
-                  .map(({ title }) => ({
-                    order_discounts: { _like: `【兌換券】${title} %` },
-                  })),
-                ...specifiedCategories
-                  .filter(({ id }) => id.startsWith('CouponPlan'))
-                  .map(({ title }) => ({
-                    order_discounts: { _like: `【折價券】${title} %` },
-                  })),
-              ],
-            }),
+            ...(specified !== 'ALL' &&
+              specifiedCategories.length > 0 && {
+                _or: [
+                  ...specifiedCategories
+                    .filter(({ id }) => id.startsWith('Merchandise'))
+                    .map(({ title }) => ({
+                      order_products: { _like: `${title}%` },
+                    })),
+                  ...specifiedCategories
+                    .filter(
+                      ({ id }) =>
+                        !id.startsWith('Merchandise') && !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'),
+                    )
+                    .map(({ title }) => ({ order_products: { _like: `${title}%` } })),
+                  ...(fullSelected.includes('CouponPlan')
+                    ? [
+                        {
+                          order_discounts: { _like: '【折價券】%' },
+                        },
+                      ]
+                    : specifiedCategories
+                        .filter(({ id }) => id.startsWith('CouponPlan'))
+                        .map(({ title }) => ({ order_discounts: { _like: `【折價券】${title}%` } }))),
+                  ...(fullSelected.includes('VoucherPlan')
+                    ? [
+                        {
+                          order_discounts: { _like: '【兌換券】%' },
+                        },
+                      ]
+                    : specifiedCategories
+                        .filter(({ id }) => id.startsWith('VoucherPlan'))
+                        .map(({ title }) => ({ order_discounts: { _like: `【兌換券】${title}%` } }))),
+                ],
+              }),
             status: {
               _in: orderStatuses,
             },
@@ -241,9 +245,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
     endedAt: Date,
     orderStatuses: string[],
     specified: OrderSpecify,
+    fullSelected: (ProductType | 'CouponPlan')[],
     specifiedCategories: { id: string; title: string; children?: any[] }[],
   ) => Promise<string[][]> = useCallback(
-    async (startedAt, endedAt, orderStatuses, specified, specifiedCategories) => {
+    async (startedAt, endedAt, orderStatuses, specified, fullSelected, specifiedCategories) => {
       const orderProductExportResult = await client.query<
         hasura.GET_ORDER_PRODUCT_EXPORT,
         hasura.GET_ORDER_PRODUCT_EXPORTVariables
@@ -261,38 +266,56 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               },
               ...(specified !== 'ALL' && {
                 _or: [
-                  {
-                    order_products: {
-                      product_id: {
-                        _in: [
-                          ...specifiedCategories
-                            .filter(({ id }) => id.startsWith('Merchandise'))
-                            .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
-                            .flat(),
-                          ...specifiedCategories
-                            .filter(
-                              ({ id }) =>
-                                !id.startsWith('Merchandise') &&
-                                !id.startsWith('CouponPlan') &&
-                                !id.startsWith('VoucherPlan'),
-                            )
-                            .map(({ id }) => id),
-                        ],
-                      },
-                    },
-                  },
-                  {
-                    order_discounts: {
-                      _or: [
-                        ...specifiedCategories
-                          .filter(({ id }) => id.startsWith('CouponPlan'))
-                          .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } })),
-                        ...specifiedCategories
-                          .filter(({ id }) => id.startsWith('VoucherPlan'))
-                          .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } })),
-                      ],
-                    },
-                  },
+                  specifiedCategories.filter(({ id }) => !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'))
+                    .length > 0
+                    ? {
+                        order_products: {
+                          product_id: {
+                            _in: [
+                              ...specifiedCategories
+                                .filter(({ id }) => id.startsWith('Merchandise'))
+                                .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
+                                .flat(),
+                              ...specifiedCategories
+                                .filter(
+                                  ({ id }) =>
+                                    !id.startsWith('Merchandise') &&
+                                    !id.startsWith('CouponPlan') &&
+                                    !id.startsWith('VoucherPlan'),
+                                )
+                                .map(({ id }) => id),
+                            ],
+                          },
+                        },
+                      }
+                    : {},
+                  specifiedCategories.filter(({ id }) => id.startsWith('CouponPlan') || id.startsWith('VoucherPlan'))
+                    .length > 0
+                    ? {
+                        order_discounts: {
+                          _or: [
+                            ...(fullSelected.includes('CouponPlan')
+                              ? [
+                                  {
+                                    name: { _like: '【折價券】%' },
+                                  },
+                                ]
+                              : specifiedCategories
+                                  .filter(({ id }) => id.startsWith('CouponPlan'))
+                                  .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } }))),
+                            ...(fullSelected.includes('VoucherPlan')
+                              ? [
+                                  {
+                                    name: { _like: '【兌換券】%' },
+                                  },
+                                ]
+                              : specifiedCategories
+                                  .filter(({ id }) => id.startsWith('VoucherPlan'))
+                                  .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } }))),
+                          ],
+                        },
+                      }
+                    : {},
                 ],
               }),
             },
@@ -365,9 +388,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
     endedAt: Date,
     orderStatuses: string[],
     specified: OrderSpecify,
+    fullSelected: (ProductType | 'CouponPlan')[],
     specifiedCategories: { id: string; title: string; children?: any[] }[],
   ) => Promise<string[][]> = useCallback(
-    async (startedAt, endedAt, orderStatuses, specified, specifiedCategories) => {
+    async (startedAt, endedAt, orderStatuses, specified, fullSelected, specifiedCategories) => {
       const orderDiscountResult = await client.query<
         hasura.GET_ORDER_DISCOUNT_COLLECTION,
         hasura.GET_ORDER_DISCOUNT_COLLECTIONVariables
@@ -384,7 +408,8 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 _lte: endedAt,
               },
               ...(specified !== 'ALL' &&
-                specifiedCategories.find(({ id }) => id.startsWith('Merchandise')) !== undefined && {
+                specifiedCategories.filter(({ id }) => !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'))
+                  .length > 0 && {
                   _or: [
                     {
                       order_products: {
@@ -409,16 +434,30 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                   ],
                 }),
             },
-            ...(specified !== 'ALL' && {
-              _or: [
-                ...specifiedCategories
-                  .filter(({ id }) => id.startsWith('CouponPlan'))
-                  .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } })),
-                ...specifiedCategories
-                  .filter(({ id }) => id.startsWith('VoucherPlan'))
-                  .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } })),
-              ],
-            }),
+            ...(specified !== 'ALL' &&
+              specifiedCategories.filter(({ id }) => id.startsWith('CouponPlan') || id.startsWith('VoucherPlan'))
+                .length > 0 && {
+                _or: [
+                  ...(fullSelected.includes('CouponPlan')
+                    ? [
+                        {
+                          name: { _like: '【折價券】%' },
+                        },
+                      ]
+                    : specifiedCategories
+                        .filter(({ id }) => id.startsWith('CouponPlan'))
+                        .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } }))),
+                  ...(fullSelected.includes('VoucherPlan')
+                    ? [
+                        {
+                          name: { _like: '【兌換券】%' },
+                        },
+                      ]
+                    : specifiedCategories
+                        .filter(({ id }) => id.startsWith('VoucherPlan'))
+                        .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } }))),
+                ],
+              }),
           },
           orderBy: {
             [selectedField === 'createdAt' ? 'created_at' : 'last_paid_at']: 'asc_nulls_last' as hasura.order_by,
@@ -562,17 +601,38 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         switch (exportTarget) {
           case 'orderLog':
             fileName = 'orders'
-            content = await getOrderLogContent(startedAt, endedAt, orderStatuses, specified, selectedProducts)
+            content = await getOrderLogContent(
+              startedAt,
+              endedAt,
+              orderStatuses,
+              specified,
+              fullSelected,
+              selectedProducts,
+            )
             break
 
           case 'orderProduct':
             fileName = 'items'
-            content = await getOrderProductContent(startedAt, endedAt, orderStatuses, specified, selectedProducts)
+            content = await getOrderProductContent(
+              startedAt,
+              endedAt,
+              orderStatuses,
+              specified,
+              fullSelected,
+              selectedProducts,
+            )
             break
 
           case 'orderDiscount':
             fileName = 'discounts'
-            content = await getOrderDiscountContent(startedAt, endedAt, orderStatuses, specified, selectedProducts)
+            content = await getOrderDiscountContent(
+              startedAt,
+              endedAt,
+              orderStatuses,
+              specified,
+              fullSelected,
+              selectedProducts,
+            )
             break
 
           case 'paymentLog':
@@ -772,6 +832,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                       'VoucherPlan',
                     ]
               }
+              onFullSelected={value => setFullSelectedProducts(value)}
               onProductChange={value => setSelectedProducts(value)}
             />
           </Form.Item>

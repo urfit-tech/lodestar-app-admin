@@ -57,7 +57,8 @@ const ProductSelector: React.FC<{
       children?: any[]
     }[],
   ) => void
-}> = ({ allowTypes, multiple, value, onChange, onProductChange }) => {
+  onFullSelected?: (types: (ProductType | 'CouponPlan')[]) => void
+}> = ({ allowTypes, multiple, value, onChange, onProductChange, onFullSelected }) => {
   const { formatMessage } = useIntl()
   const { loading, error, productSelections } = useProductSelections()
 
@@ -106,6 +107,7 @@ const ProductSelector: React.FC<{
             return v.includes('_') ? products.find(({ id }) => v === id)! : products
           })
           .flat()
+        onFullSelected?.(value.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat())
         onChange?.(
           value
             .map(
