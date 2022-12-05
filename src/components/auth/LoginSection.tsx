@@ -5,7 +5,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { AiOutlineLock, AiOutlineUser } from 'react-icons/ai'
+import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlineUser } from 'react-icons/ai'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -40,6 +40,7 @@ const LoginSection: React.VFC<{
   const { login } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
+  const [passwordShow, setPasswordShow] = useState(false)
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       account: '',
@@ -124,12 +125,20 @@ const LoginSection: React.VFC<{
 
           <InputGroup className="mb-3">
             <Input
-              type="password"
+              type={passwordShow ? 'text' : 'password'}
               name="password"
               ref={register({ required: formatMessage(authMessages.LoginSection.password) })}
               placeholder={formatMessage(authMessages.LoginSection.password)}
             />
-            <InputRightElement children={<Icon as={AiOutlineLock} />} />
+            <InputRightElement
+              children={
+                <Icon
+                  className="cursor-pointer"
+                  as={passwordShow ? AiOutlineEye : AiOutlineEyeInvisible}
+                  onClick={() => setPasswordShow(!passwordShow)}
+                />
+              }
+            />
           </InputGroup>
 
           <ForgetPassword>
