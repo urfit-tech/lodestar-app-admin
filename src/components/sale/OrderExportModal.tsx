@@ -3,6 +3,7 @@ import { useApolloClient } from '@apollo/react-hooks'
 import { Button, DatePicker, Dropdown, Form, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
+import { isNull } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { ProductType } from 'lodestar-app-element/src/types/product'
@@ -178,7 +179,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             orderLog.status,
             orderLog.payment_gateway,
             orderLog.payment_options?.split('\\n').join('\n') || '',
-            orderLog.country || '',
+            (orderLog.country && orderLog.country_code && `${orderLog.country}(${orderLog.country_code})`) || '',
             dateFormatter(orderLog.created_at),
             orderLog.paid_at
               ?.split('\\n')
@@ -361,7 +362,10 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         ...orderProducts.map(orderProduct =>
           [
             orderProduct.order_log_id,
-            orderProduct.country || '',
+            (orderProduct.country &&
+              orderProduct.country_code &&
+              `${orderProduct.country}(${orderProduct.country_code})`) ||
+              '',
             orderProduct.order_created_at ? dateFormatter(orderProduct.order_created_at) : '',
             orderProduct.paid_at ? dateFormatter(orderProduct.paid_at) : '',
             orderProduct.product_owner || '',
@@ -476,13 +480,22 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           formatMessage(commonMessages.label.orderDiscountName),
           formatMessage(commonMessages.label.orderDiscountPrice),
         ],
-        ...orderDiscounts.map(orderDiscount => [
-          orderDiscount.order_log.id,
-          (orderDiscount.order_log.options !== null && orderDiscount.order_log.options.country) || '',
-          orderDiscount.id,
-          orderDiscount.name,
-          orderDiscount.price,
-        ]),
+        ...orderDiscounts.map(({ id, name, price, order_log }) => {
+          const { id: logId, options } = order_log
+          return [
+            logId,
+            (!isNull(options) &&
+              !isNull(options.country) &&
+              !isNull(options.countryCode) &&
+              options.country !== '' &&
+              options.countryCode !== '' &&
+              `${options.country}(${options.countryCode})`) ||
+              '',
+            id,
+            name,
+            price,
+          ]
+        }),
       ]
 
       return data
@@ -870,6 +883,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       payment_gateway
       gift_plans
       country
+      country_code
     }
   }
 `
@@ -889,6 +903,7 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
       order_product_ended_at
       product_id
       country
+      country_code
     }
   }
 `
