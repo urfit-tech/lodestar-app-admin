@@ -17,6 +17,10 @@ import { AuthModalContext, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton, LineLoginButton, ParentingLoginButton } from './SocialLoginButton'
 import authMessages from './translation'
 
+const StyledContainer = styled.div`
+  user-select: none;
+`
+
 const ForgetPassword = styled.div`
   margin-bottom: 1.5rem;
   font-size: 14px;
@@ -82,7 +86,7 @@ const LoginSection: React.VFC<{
   )
 
   return (
-    <>
+    <StyledContainer>
       {renderTitle ? renderTitle() : <StyledTitle>{formatMessage(authMessages.LoginSection.login)}</StyledTitle>}
 
       {!!settings['auth.parenting.client_id'] && (
@@ -150,7 +154,7 @@ const LoginSection: React.VFC<{
           </Button>
         </>
       )}
-    </>
+    </StyledContainer>
   )
 }
 
