@@ -90,7 +90,7 @@ export type OrderLog = {
   orderProducts: OrderProduct[]
   orderDiscounts: OrderDiscount[]
   orderExecutors: { ratio: string; name: string }[]
-  options?: { ip?: string; country?: string }
+  options?: { ip?: string; country?: string; countryCode?: string }
   invoiceOptions?: InvoiceProps
   invoiceIssuedAt?: Date
 }

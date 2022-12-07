@@ -81,7 +81,9 @@ const OrderDetailDrawer: React.FC<{
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.otherInfo)}</StyledTitle>
             {orderLog && (
               <OrderOtherInfoCard
-                country={orderLog.options?.country || ''}
+                country={`${orderLog.options?.country || ''}${
+                  (orderLog.options?.countryCode && `(${orderLog.options?.countryCode})`) || ''
+                }`}
                 referrer={orderLog.invoiceOptions?.referrerEmail || ''}
                 sharingCode={sharingCodes?.map(c => c.code).join(', ') || ''}
                 sharingNote={sharingCodes?.map(c => c.note).join(', ') || ''}
