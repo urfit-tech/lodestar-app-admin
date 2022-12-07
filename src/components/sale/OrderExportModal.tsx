@@ -250,6 +250,52 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
     specifiedCategories: { id: string; title: string; children?: any[] }[],
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses, specified, fullSelected, specifiedCategories) => {
+      const orderProductsCondition = [
+        {
+          order_products: {
+            product_id: {
+              _in: [
+                ...specifiedCategories
+                  .filter(({ id }) => id.startsWith('Merchandise'))
+                  .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
+                  .flat(),
+                ...specifiedCategories
+                  .filter(
+                    ({ id }) =>
+                      !id.startsWith('Merchandise') && !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'),
+                  )
+                  .map(({ id }) => id),
+              ],
+            },
+          },
+        },
+      ]
+      const orderDiscountCondition = [
+        {
+          order_discounts: {
+            _or: [
+              ...(fullSelected.includes('CouponPlan')
+                ? [
+                    {
+                      name: { _like: '【折價券】%' },
+                    },
+                  ]
+                : specifiedCategories
+                    .filter(({ id }) => id.startsWith('CouponPlan'))
+                    .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } }))),
+              ...(fullSelected.includes('VoucherPlan')
+                ? [
+                    {
+                      name: { _like: '【兌換券】%' },
+                    },
+                  ]
+                : specifiedCategories
+                    .filter(({ id }) => id.startsWith('VoucherPlan'))
+                    .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } }))),
+            ],
+          },
+        },
+      ]
       const orderProductExportResult = await client.query<
         hasura.GET_ORDER_PRODUCT_EXPORT,
         hasura.GET_ORDER_PRODUCT_EXPORTVariables
@@ -267,56 +313,16 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               },
               ...(specified !== 'ALL' && {
                 _or: [
-                  specifiedCategories.filter(({ id }) => !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'))
-                    .length > 0
-                    ? {
-                        order_products: {
-                          product_id: {
-                            _in: [
-                              ...specifiedCategories
-                                .filter(({ id }) => id.startsWith('Merchandise'))
-                                .map(({ children }) => children!.map(each => `MerchandiseSpec_${each}`))
-                                .flat(),
-                              ...specifiedCategories
-                                .filter(
-                                  ({ id }) =>
-                                    !id.startsWith('Merchandise') &&
-                                    !id.startsWith('CouponPlan') &&
-                                    !id.startsWith('VoucherPlan'),
-                                )
-                                .map(({ id }) => id),
-                            ],
-                          },
-                        },
-                      }
-                    : {},
-                  specifiedCategories.filter(({ id }) => id.startsWith('CouponPlan') || id.startsWith('VoucherPlan'))
-                    .length > 0
-                    ? {
-                        order_discounts: {
-                          _or: [
-                            ...(fullSelected.includes('CouponPlan')
-                              ? [
-                                  {
-                                    name: { _like: '【折價券】%' },
-                                  },
-                                ]
-                              : specifiedCategories
-                                  .filter(({ id }) => id.startsWith('CouponPlan'))
-                                  .map(({ title }) => ({ name: { _like: `【折價券】${title}%` } }))),
-                            ...(fullSelected.includes('VoucherPlan')
-                              ? [
-                                  {
-                                    name: { _like: '【兌換券】%' },
-                                  },
-                                ]
-                              : specifiedCategories
-                                  .filter(({ id }) => id.startsWith('VoucherPlan'))
-                                  .map(({ title }) => ({ name: { _like: `【兌換券】${title}%` } }))),
-                          ],
-                        },
-                      }
-                    : {},
+                  ...(specifiedCategories.filter(
+                    ({ id }) => !id.startsWith('CouponPlan') && !id.startsWith('VoucherPlan'),
+                  ).length > 0
+                    ? orderProductsCondition
+                    : []),
+                  ...(specifiedCategories.filter(
+                    ({ id }) => id.startsWith('CouponPlan') || id.startsWith('VoucherPlan'),
+                  ).length > 0
+                    ? orderDiscountCondition
+                    : []),
                 ],
               }),
             },
