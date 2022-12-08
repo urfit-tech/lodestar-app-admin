@@ -2484,6 +2484,56 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_card {
   title: string;
 }
 
+export interface GET_PRODUCT_SELECTION_COLLECTION_merchandise_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_specs: GET_PRODUCT_SELECTION_COLLECTION_merchandise_merchandise_specs[];
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_coupon_plan {
+  __typename: "coupon_plan";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  title: string;
+}
+
 export interface GET_PRODUCT_SELECTION_COLLECTION {
   /**
    * fetch data from the table: "program_plan"
@@ -2505,6 +2555,30 @@ export interface GET_PRODUCT_SELECTION_COLLECTION {
    * fetch data from the table: "card"
    */
   card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+  /**
+   * fetch data from the table: "merchandise"
+   */
+  merchandise: GET_PRODUCT_SELECTION_COLLECTION_merchandise[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PRODUCT_SELECTION_COLLECTION_project_plan[];
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_PRODUCT_SELECTION_COLLECTION_appointment_plan[];
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_PRODUCT_SELECTION_COLLECTION_podcast_plan[];
+  /**
+   * fetch data from the table: "coupon_plan"
+   */
+  coupon_plan: GET_PRODUCT_SELECTION_COLLECTION_coupon_plan[];
+  /**
+   * fetch data from the table: "voucher_plan"
+   */
+  voucher_plan: GET_PRODUCT_SELECTION_COLLECTION_voucher_plan[];
 }
 
 /* tslint:disable */
@@ -7467,6 +7541,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   payment_gateway: string | null;
   gift_plans: string | null;
   country: string | null;
+  country_code: string | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {
@@ -7505,6 +7580,7 @@ export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
   order_product_ended_at: any | null;
   product_id: string | null;
   country: string | null;
+  country_code: string | null;
 }
 
 export interface GET_ORDER_PRODUCT_EXPORT {
@@ -38243,6 +38319,7 @@ export interface order_log_export_bool_exp {
   _or?: order_log_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
   country?: String_comparison_exp | null;
+  country_code?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   gift_plans?: String_comparison_exp | null;
   invoice_issued_at?: String_comparison_exp | null;
@@ -38276,6 +38353,7 @@ export interface order_log_export_bool_exp {
 export interface order_log_export_order_by {
   app_id?: order_by | null;
   country?: order_by | null;
+  country_code?: order_by | null;
   created_at?: order_by | null;
   gift_plans?: order_by | null;
   invoice_issued_at?: order_by | null;
@@ -38650,6 +38728,7 @@ export interface order_product_export_bool_exp {
   _or?: order_product_export_bool_exp[] | null;
   app_id?: String_comparison_exp | null;
   country?: String_comparison_exp | null;
+  country_code?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   options?: jsonb_comparison_exp | null;
   order_created_at?: timestamptz_comparison_exp | null;
