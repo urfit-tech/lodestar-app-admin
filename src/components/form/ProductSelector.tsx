@@ -22,6 +22,18 @@ const productTypeLabel = (productType: string) => {
       return commonMessages.label.allActivityTicket
     case 'PodcastProgram':
       return commonMessages.label.allPodcastProgram
+    case 'Merchandise':
+      return commonMessages.label.allMerchandise
+    case 'ProjectPlan':
+      return commonMessages.label.allProjectPlan
+    case 'AppointmentPlan':
+      return commonMessages.label.allAppointmentPlan
+    case 'PodcastPlan':
+      return commonMessages.label.allPodcastPlan
+    case 'CouponPlan':
+      return commonMessages.label.allCouponPlan
+    case 'VoucherPlan':
+      return commonMessages.label.allVocherPlan
     default:
       return commonMessages.label.unknownProduct
   }
@@ -32,11 +44,21 @@ const messages = defineMessages({
 })
 
 const ProductSelector: React.FC<{
-  allowTypes: ProductType[]
+  allowTypes: (ProductType | 'CouponPlan')[]
   multiple?: boolean
   value?: string[]
   onChange?: (value: string[]) => void
-}> = ({ allowTypes, multiple, value, onChange }) => {
+  onProductChange?: (
+    value: {
+      id: string
+      title: string
+      publishedAt?: Date | null
+      tag?: string
+      children?: any[]
+    }[],
+  ) => void
+  onFullSelected?: (types: (ProductType | 'CouponPlan')[]) => void
+}> = ({ allowTypes, multiple, value, onChange, onProductChange, onFullSelected }) => {
   const { formatMessage } = useIntl()
   const { loading, error, productSelections } = useProductSelections()
 
@@ -78,6 +100,14 @@ const ProductSelector: React.FC<{
       value={value}
       onChange={selectedValue => {
         const value = multiple ? selectedValue : [selectedValue]
+        const found = value
+          .map(v => {
+            const productType = (v.includes('_') ? v.slice(0, v.indexOf('_')) : v) as ProductType | 'CouponPlan'
+            const products = productSelections.find(({ productType: type }) => type === productType)!.products
+            return v.includes('_') ? products.find(({ id }) => v === id)! : products
+          })
+          .flat()
+        onFullSelected?.(value.map(v => (v.includes('_') ? [] : (v as ProductType | 'CouponPlan'))).flat())
         onChange?.(
           value
             .map(
@@ -88,6 +118,7 @@ const ProductSelector: React.FC<{
             )
             .flat(),
         )
+        onProductChange?.(found)
       }}
       treeData={treeData}
       treeCheckable={multiple}
@@ -95,7 +126,7 @@ const ProductSelector: React.FC<{
       placeholder={formatMessage(messages.selectProducts)}
       treeNodeFilterProp="name"
       dropdownStyle={{
-        maxHeight: '30vh',
+        maxHeight: '40vh',
       }}
     />
   )
@@ -161,18 +192,51 @@ const useProductSelections = () => {
           id
           title
         }
+        merchandise {
+          id
+          title
+          published_at
+          merchandise_specs {
+            id
+            title
+          }
+        }
+        project_plan(order_by: { published_at: desc_nulls_last }) {
+          id
+          title
+          published_at
+        }
+        appointment_plan(order_by: { published_at: desc_nulls_last }) {
+          id
+          title
+          published_at
+        }
+        podcast_plan(order_by: { published_at: desc_nulls_last }) {
+          id
+          title
+          published_at
+        }
+        coupon_plan {
+          id
+          title
+        }
+        voucher_plan {
+          id
+          title
+        }
       }
     `,
     { fetchPolicy: 'no-cache' },
   )
 
   const productSelections: {
-    productType: 'ProgramPlan' | 'ProgramPackagePlan' | 'ActivityTicket' | 'PodcastProgram' | 'Card'
+    productType: ProductType | 'CouponPlan'
     products: {
       id: string
       title: string
       publishedAt?: Date | null
       tag?: string
+      children?: any[]
     }[]
   }[] = [
     {
@@ -226,6 +290,59 @@ const useProductSelections = () => {
       products:
         data?.card.map(v => ({
           id: `Card_${v.id}`,
+          title: v.title,
+        })) || [],
+    },
+    {
+      productType: 'Merchandise',
+      products:
+        data?.merchandise.map(v => ({
+          id: `Merchandise_${v.id}`,
+          title: v.title,
+          publishedAt: v.published_at ? new Date(v.published_at) : null,
+          children: v.merchandise_specs.map(({ id }) => id),
+        })) || [],
+    },
+    {
+      productType: 'ProjectPlan',
+      products:
+        data?.project_plan.map(v => ({
+          id: `ProjectPlan_${v.id}`,
+          title: v.title,
+          publishedAt: v.published_at ? new Date(v.published_at) : null,
+        })) || [],
+    },
+    {
+      productType: 'AppointmentPlan',
+      products:
+        data?.appointment_plan.map(v => ({
+          id: `AppointmentPlan_${v.id}`,
+          title: v.title,
+          publishedAt: v.published_at ? new Date(v.published_at) : null,
+        })) || [],
+    },
+    {
+      productType: 'PodcastPlan',
+      products:
+        data?.podcast_plan.map(v => ({
+          id: `PodcastProgram_${v.id}`,
+          title: v.title,
+          publishedAt: v.published_at ? new Date(v.published_at) : null,
+        })) || [],
+    },
+    {
+      productType: 'CouponPlan',
+      products:
+        data?.coupon_plan.map(v => ({
+          id: `CouponPlan_${v.id}`,
+          title: v.title,
+        })) || [],
+    },
+    {
+      productType: 'VoucherPlan',
+      products:
+        data?.voucher_plan.map(v => ({
+          id: `VoucherPlan_${v.id}`,
           title: v.title,
         })) || [],
     },

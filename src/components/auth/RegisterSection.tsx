@@ -1,4 +1,4 @@
-import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
+import { EyeInvisibleOutlined, EyeOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -23,6 +23,7 @@ const RegisterSection: React.FC<{
   const { register } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
+  const [passwordShow, setPasswordShow] = useState(false)
 
   const handleRegister = (values: FieldProps) => {
     if (!register) {
@@ -78,7 +79,17 @@ const RegisterSection: React.FC<{
             },
           ]}
         >
-          <Input type="password" placeholder={formatMessage(commonMessages.label.password)} suffix={<LockOutlined />} />
+          <Input
+            type={passwordShow ? 'text' : 'password'}
+            placeholder={formatMessage(commonMessages.label.password)}
+            suffix={
+              passwordShow ? (
+                <EyeOutlined onClick={() => setPasswordShow(!passwordShow)} />
+              ) : (
+                <EyeInvisibleOutlined onClick={() => setPasswordShow(!passwordShow)} />
+              )
+            }
+          />
         </Form.Item>
 
         <Form.Item>

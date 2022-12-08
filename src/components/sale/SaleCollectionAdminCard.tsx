@@ -59,6 +59,7 @@ const StyledCell = styled.div`
     }
   `)}
 `
+
 const SaleCollectionAdminCard: React.VFC<{
   memberId?: string
 }> = ({ memberId }) => {
@@ -493,6 +494,25 @@ const SaleCollectionAdminCard: React.VFC<{
       </div>
 
       <div className="row col-12 align-items-center pt-3">
+        <OrderDetailDrawer
+          orderLogId={currentOrderLogId}
+          onClose={() => {
+            setCurrentOrderLogId(null)
+          }}
+          renderTrigger={() => (
+            <Button
+              type="primary"
+              size="middle"
+              className="mr-2"
+              onClick={() => {
+                setCurrentOrderLogId(orderLogId)
+              }}
+            >
+              {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
+            </Button>
+          )}
+        />
+
         {currentUserRole === 'app-owner' && settings['feature.modify_order_status'] === 'enabled' && (
           <ModifyOrderStatusModal
             orderLogId={orderLogId}
@@ -525,15 +545,6 @@ const SaleCollectionAdminCard: React.VFC<{
               onRefetch={refetchOrderLogs}
             />
           ))}
-
-        <Button
-          size="middle"
-          onClick={() => {
-            setCurrentOrderLogId(orderLogId)
-          }}
-        >
-          {formatMessage(saleMessages.OrderDetailDrawer.orderDetail)}
-        </Button>
       </div>
     </div>
   )
@@ -556,12 +567,7 @@ const SaleCollectionAdminCard: React.VFC<{
           pagination={false}
           onChange={(_, filters) => setStatuses(filters.status as string[])}
         />
-        <OrderDetailDrawer
-          orderLogId={currentOrderLogId}
-          onClose={() => {
-            setCurrentOrderLogId(null)
-          }}
-        />
+
         {loadMoreOrderLogs && (
           <div className="text-center mt-4">
             <Button
