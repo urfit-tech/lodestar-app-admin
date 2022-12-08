@@ -1,6 +1,6 @@
 import { DownloadOutlined } from '@ant-design/icons'
 import { Button, Modal, Tabs } from 'antd'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { downloadCSV, toCSV } from '../../helpers'
@@ -51,17 +51,13 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
 
   const [activeKey, setActiveKey] = useState('codes')
 
-  const mergedVoucherCodes = useMemo(
-    () =>
-      voucherCodes.map(voucherCode => ({
-        ...voucherCode,
-        vouchers: voucherCode.vouchers.map(voucher => ({
-          ...voucher,
-          used: vouchersStatus.data.find(voucherStatusVoucher => voucherStatusVoucher.id === voucher.id)?.used ?? false,
-        })),
-      })),
-    [voucherCodes, vouchersStatus.data],
-  )
+  const mergedVoucherCodes = voucherCodes.map(voucherCode => ({
+    ...voucherCode,
+    vouchers: voucherCode.vouchers.map(voucher => ({
+      ...voucher,
+      used: vouchersStatus.data.find(voucherStatusVoucher => voucherStatusVoucher.id === voucher.id)?.used ?? false,
+    })),
+  }))
 
   const exportCodes = () => {
     const data: string[][] = [
