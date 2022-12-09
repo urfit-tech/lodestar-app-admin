@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { useVoucherCode } from '../../hooks/checkout'
+import { useVoucherCode, useVouchersStatus } from '../../hooks/checkout'
 
 const StyledTriggerText = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -47,14 +47,24 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ id, tit
 const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }> = ({ title, voucherPlanId }) => {
   const { formatMessage } = useIntl()
   const { loadingVoucherCodes, errorVoucherCodes, voucherCodes } = useVoucherCode(voucherPlanId)
+  const vouchersStatus = useVouchersStatus(voucherPlanId)
+
   const [activeKey, setActiveKey] = useState('codes')
+
+  const mergedVoucherCodes = voucherCodes.map(voucherCode => ({
+    ...voucherCode,
+    vouchers: voucherCode.vouchers.map(voucher => ({
+      ...voucher,
+      used: vouchersStatus.data.find(voucherStatusVoucher => voucherStatusVoucher.id === voucher.id)?.used ?? false,
+    })),
+  }))
 
   const exportCodes = () => {
     const data: string[][] = [
       [formatMessage(promotionMessages.label.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
     ]
 
-    voucherCodes.forEach(voucherCode => {
+    mergedVoucherCodes.forEach(voucherCode => {
       voucherCode.vouchers.forEach(voucher => {
         data.push([voucherCode.code, voucher.used ? 'v' : '', voucher.memberEmail])
       })
@@ -78,14 +88,14 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
         icon={<DownloadOutlined />}
         className="mb-4"
         onClick={exportCodes}
-        loading={!!(loadingVoucherCodes || errorVoucherCodes)}
+        loading={!!(loadingVoucherCodes || errorVoucherCodes || vouchersStatus.loading || vouchersStatus.error)}
       >
         {formatMessage(promotionMessages.ui.exportCodes)}
       </Button>
 
       <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
         <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.label.voucherCode)} className="pt-4">
-          {voucherCodes.map(voucherCode => (
+          {mergedVoucherCodes.map(voucherCode => (
             <StyledVoucherCode
               key={voucherCode.code}
               className="d-flex justify-content-between mb-2"

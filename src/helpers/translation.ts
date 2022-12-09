@@ -81,6 +81,7 @@ export const commonMessages = {
     editParticipant: { id: 'common.ui.editParticipant', defaultMessage: 'Edit participant' },
     send: { id: 'common.ui.send', defaultMessage: 'Send' },
     reject: { id: 'common.ui.reject', defaultMessage: 'Reject' },
+    agree: { id: 'common.ui.agree', defaultMessage: 'Agree' },
   }),
   label: defineMessages({
     program: { id: 'common.label.program', defaultMessage: '課程' },
@@ -154,10 +155,10 @@ export const commonMessages = {
     allProgram: { id: 'common.label.allProgram', defaultMessage: '所有單次課程' },
     allProgramPackage: { id: 'common.label.allProgramPackage', defaultMessage: '所有課程組合' },
     allProgramPackagePlan: { id: 'common.label.allProgramPackagePlan', defaultMessage: '所有課程組合方案' },
-    allProgramPlan: { id: 'common.label.allProgramPlan', defaultMessage: '所有訂閱方案' },
+    allProgramPlan: { id: 'common.label.allProgramPlan', defaultMessage: '所有課程方案' },
     allProgramContent: { id: 'common.label.allProgramContent', defaultMessage: '所有課程內容' },
     allMembershipCard: { id: 'common.label.allMembershipCard', defaultMessage: '所有會員卡' },
-    allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
+    allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
     allProjectPlan: { id: 'common.label.allProjectPlan', defaultMessage: '全部專案' },
     allAppointmentPlan: { id: 'common.label.allAppointmentPlan', defaultMessage: '全部預約' },
@@ -285,6 +286,7 @@ export const commonMessages = {
     selectParticipant: { id: 'common.label.selectParticipant', defaultMessage: 'Select participant' },
     participantOccupation: { id: 'common.label.participantOccupation', defaultMessage: 'Participant occupation' },
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
+    reason: { id: 'common.label.reason', defaultMessage: 'reason' },
   }),
   text: defineMessages({
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
@@ -328,6 +330,7 @@ export const commonMessages = {
       id: 'common.text.ogImageTips',
       defaultMessage: 'Recommend image size: 1200*630px',
     },
+    applyingProjectRole: { id: 'common.text.applyingProjectRole', defaultMessage: '{name} 申請標成為「{identity}」' },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
@@ -475,6 +478,7 @@ export const commonMessages = {
       id: 'common.placeholder.useCommaToSeparateKeywords',
       defaultMessage: 'Use comma to separate keywords',
     },
+    rejectedReason: { id: 'common.placeholder.rejectedReason', defaultMessage: 'please enter reject reason' },
   }),
   category: defineMessages({
     all: { id: 'common.category.all', defaultMessage: '全部產品' },
@@ -697,7 +701,7 @@ export const promotionMessages = {
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
     used: { id: 'promotion.status.used', defaultMessage: '已使用' },
-  })
+  }),
 }
 
 export const checkoutMessages = {
