@@ -292,11 +292,9 @@ export const useVouchersStatus = (voucherPlanId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_VOUCHER_STATUS, hasura.GET_VOUCHER_STATUSVariables>(
     gql`
       query GET_VOUCHER_STATUS($voucherPlanId: uuid!) {
-        voucher(where: { voucher_code: { voucher_plan: { id: { _eq: $voucherPlanId } } } }) {
-          id
-          status {
-            used
-          }
+        voucher_status(where: { voucher: { voucher_code: { voucher_plan_id: { _eq: $voucherPlanId } } } }) {
+          used
+          voucher_id
         }
       }
     `,
@@ -308,9 +306,9 @@ export const useVouchersStatus = (voucherPlanId: string) => {
   )
 
   const vouchersStatus: VoucherProps[] =
-    data?.voucher.map(voucher => ({
-      id: voucher.id,
-      used: !!voucher.status?.used,
+    data?.voucher_status.map(voucherStatus => ({
+      id: voucherStatus.voucher_id,
+      used: !!voucherStatus?.used,
     })) || []
 
   return {

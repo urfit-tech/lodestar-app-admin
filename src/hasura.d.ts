@@ -9824,22 +9824,14 @@ export interface GET_VOUCHER_CODES_AGGREGATEVariables {
 export interface GET_VOUCHER_STATUS_voucher_status {
   __typename: "voucher_status";
   used: boolean | null;
-}
-
-export interface GET_VOUCHER_STATUS_voucher {
-  __typename: "voucher";
-  id: any;
-  /**
-   * An object relationship
-   */
-  status: GET_VOUCHER_STATUS_voucher_status | null;
+  voucher_id: any | null;
 }
 
 export interface GET_VOUCHER_STATUS {
   /**
-   * fetch data from the table: "voucher"
+   * fetch data from the table: "voucher_status"
    */
-  voucher: GET_VOUCHER_STATUS_voucher[];
+  voucher_status: GET_VOUCHER_STATUS_voucher_status[];
 }
 
 export interface GET_VOUCHER_STATUSVariables {
