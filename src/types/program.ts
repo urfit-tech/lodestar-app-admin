@@ -145,6 +145,7 @@ export type ProgramPlan = {
   publishedAt: Date | null
   isCountdownTimerVisible?: boolean
   groupBuyingPeople?: number | null
+  isParticipantsVisible: boolean
 }
 
 export type ProgramRoleProps = {

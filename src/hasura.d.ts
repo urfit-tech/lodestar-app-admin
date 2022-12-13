@@ -6059,6 +6059,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   publishedAt?: any | null;
   isCountdownTimerVisible: boolean;
   groupBuyingPeople?: any | null;
+  isParticipantsVisible: boolean;
 }
 
 /* tslint:disable */
@@ -13527,6 +13528,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_plans {
   is_countdown_timer_visible: boolean;
   published_at: any | null;
   group_buying_people: any | null;
+  is_participants_visible: boolean;
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_categories_category {
