@@ -103,6 +103,7 @@ type FieldProps = {
   videoAttachment: AttachmentSelectorValue | null
   externalLink?: string
   displayMode: DisplayMode
+  contentBodyType: string
 }
 
 type VideoPipeline = 'attachment' | 'externalLink'
@@ -146,6 +147,7 @@ const ProgramContentAdminModal: React.FC<{
   const [uploadProgress, setUploadProgress] = useState<{
     [key: string]: number
   }>({})
+  const [contentType, setContentType] = useState<string>(programContent.programContentType || 'video')
 
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
@@ -238,7 +240,7 @@ const ProgramContentAdminModal: React.FC<{
         variables: {
           programContentId: programContent.id,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
-          type: values.videoAttachment || values.externalLink ? 'video' : 'text',
+          type: values.contentBodyType,
           data: {},
         },
       })
@@ -305,6 +307,7 @@ const ProgramContentAdminModal: React.FC<{
               videoPipeline: 'attachment',
               selectedSource: 'youtube',
               displayMode: programContent.displayMode,
+              contentBodyType: programContent.programContentType,
             }}
             onValuesChange={(values: Partial<FieldProps>) => {
               form.setFieldsValue({
@@ -315,6 +318,19 @@ const ProgramContentAdminModal: React.FC<{
           >
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center">
+                <Form.Item name="contentBodyType" className="mb-0 mr-2">
+                  <Select
+                    onChange={v => {
+                      if (typeof v === 'string') {
+                        setContentType(v)
+                      }
+                    }}
+                  >
+                    <Select.Option value="video">影片內容</Select.Option>
+                    <Select.Option value="text">圖片內容</Select.Option>
+                  </Select>
+                </Form.Item>
+
                 {programContent.displayMode && (
                   <DisplayModeSelector contentType="program" displayMode={programContent.displayMode} />
                 )}
@@ -368,89 +384,98 @@ const ProgramContentAdminModal: React.FC<{
               <ProgramPlanSelector programId={programId} placeholder={formatMessage(messages.contentPlan)} />
             </Form.Item>
 
-            {enabledModules.program_content_external_file ? (
-              <Form.Item label={formatMessage(commonMessages.label.video)} name="videoPipeline">
-                <Radio.Group value={videoPipeline} onChange={e => setVideoPipeline(e.target.value)}>
-                  <div className={`d-flex align-items-center mb-3`}>
-                    <StyledRadio value="attachment">{formatMessage(commonMessages.menu.mediaLibrary)}</StyledRadio>
-                    <div className={` ${videoPipeline === 'attachment' ? '' : 'd-none'}`}>
-                      <Form.Item className={`mb-0`} name="videoAttachment" noStyle>
-                        <AttachmentSelector contentType="video/*" />
-                      </Form.Item>
-                    </div>
-                  </div>
-
-                  <div className="d-flex align-items-center">
-                    <StyledRadio value="externalLink">{formatMessage(commonMessages.label.externalLink)}</StyledRadio>
-                    <div className={`${videoPipeline === 'externalLink' ? '' : 'd-none'}`}>
-                      <div className="d-lg-flex align-items-center">
-                        <Form.Item name="selectedSource" noStyle>
-                          <Select
-                            style={{ width: '110px' }}
-                            onChange={value =>
-                              setExternalVideoInfo({
-                                status: externalVideoInfo.status,
-                                source: value.toString(),
-                              })
-                            }
-                          >
-                            <Select.Option key="youtube" value="youtube">
-                              YouTube
-                            </Select.Option>
-                          </Select>
+            {contentType === 'video' ? (
+              enabledModules.program_content_external_file ? (
+                <Form.Item label={formatMessage(commonMessages.label.video)} name="videoPipeline">
+                  <Radio.Group value={videoPipeline} onChange={e => setVideoPipeline(e.target.value)}>
+                    <div className={`d-flex align-items-center mb-3`}>
+                      <StyledRadio value="attachment">{formatMessage(commonMessages.menu.mediaLibrary)}</StyledRadio>
+                      <div className={` ${videoPipeline === 'attachment' ? '' : 'd-none'}`}>
+                        <Form.Item className={`mb-0`} name="videoAttachment" noStyle>
+                          <AttachmentSelector contentType="video/*" />
                         </Form.Item>
-                        <Form.Item name="externalLink" className="mb-0">
-                          <StyledInput
-                            status={externalVideoInfo?.status}
-                            placeholder={formatMessage(commonMessages.placeholder.enterUrlLink)}
-                            onChange={async e => {
-                              const id = getVideoIDByURL(e.target.value, externalVideoInfo?.source || '')
-                              const url = generateUrlWithID(id || '', externalVideoInfo?.source || '')
-                              const res = await axios.get(`https://noembed.com/embed?url=${url}`)
-                              if (e.target.value === '') {
-                                setExternalVideoInfo({ status: 'idle', source: externalVideoInfo.source })
-                              } else if (e.target.value !== '' && res.data.error) {
-                                setExternalVideoInfo({
-                                  status: 'error',
-                                  source: externalVideoInfo.source,
-                                  url: e.target.value,
-                                })
-                              } else if (id && url) {
-                                form.setFieldsValue({ externalLink: url })
-                                setExternalVideoInfo({
-                                  id: id,
-                                  status: 'success',
-                                  source: externalVideoInfo.source,
-                                  thumbnailUrl: res.data?.thumbnail_url,
-                                  url: e.target.value,
-                                  title: res.data?.title,
-                                })
-                              }
-                            }}
-                          />
-                        </Form.Item>
-
-                        {externalVideoInfo?.status === 'error' ? (
-                          <StyledError>{formatMessage(errorMessages.text.invalidUrl)}</StyledError>
-                        ) : externalVideoInfo?.status === 'success' ? (
-                          <StyledExternalLinkTitle>
-                            <span>{externalVideoInfo.title}</span>
-                          </StyledExternalLinkTitle>
-                        ) : null}
                       </div>
                     </div>
-                  </div>
-                </Radio.Group>
-              </Form.Item>
-            ) : (
-              <Form.Item label={formatMessage(commonMessages.label.video)} name="videoAttachment">
-                <AttachmentSelector contentType="video/*" />
+
+                    <div className="d-flex align-items-center">
+                      <StyledRadio value="externalLink">{formatMessage(commonMessages.label.externalLink)}</StyledRadio>
+                      <div className={`${videoPipeline === 'externalLink' ? '' : 'd-none'}`}>
+                        <div className="d-lg-flex align-items-center">
+                          <Form.Item name="selectedSource" noStyle>
+                            <Select
+                              style={{ width: '110px' }}
+                              onChange={value =>
+                                setExternalVideoInfo({
+                                  status: externalVideoInfo.status,
+                                  source: value.toString(),
+                                })
+                              }
+                            >
+                              <Select.Option key="youtube" value="youtube">
+                                YouTube
+                              </Select.Option>
+                            </Select>
+                          </Form.Item>
+                          <Form.Item name="externalLink" className="mb-0">
+                            <StyledInput
+                              status={externalVideoInfo?.status}
+                              placeholder={formatMessage(commonMessages.placeholder.enterUrlLink)}
+                              onChange={async e => {
+                                const id = getVideoIDByURL(e.target.value, externalVideoInfo?.source || '')
+                                const url = generateUrlWithID(id || '', externalVideoInfo?.source || '')
+                                const res = await axios.get(`https://noembed.com/embed?url=${url}`)
+                                if (e.target.value === '') {
+                                  setExternalVideoInfo({ status: 'idle', source: externalVideoInfo.source })
+                                } else if (e.target.value !== '' && res.data.error) {
+                                  setExternalVideoInfo({
+                                    status: 'error',
+                                    source: externalVideoInfo.source,
+                                    url: e.target.value,
+                                  })
+                                } else if (id && url) {
+                                  form.setFieldsValue({ externalLink: url })
+                                  setExternalVideoInfo({
+                                    id: id,
+                                    status: 'success',
+                                    source: externalVideoInfo.source,
+                                    thumbnailUrl: res.data?.thumbnail_url,
+                                    url: e.target.value,
+                                    title: res.data?.title,
+                                  })
+                                }
+                              }}
+                            />
+                          </Form.Item>
+
+                          {externalVideoInfo?.status === 'error' ? (
+                            <StyledError>{formatMessage(errorMessages.text.invalidUrl)}</StyledError>
+                          ) : externalVideoInfo?.status === 'success' ? (
+                            <StyledExternalLinkTitle>
+                              <span>{externalVideoInfo.title}</span>
+                            </StyledExternalLinkTitle>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  </Radio.Group>
+                </Form.Item>
+              ) : (
+                <Form.Item label={formatMessage(commonMessages.label.video)} name="videoAttachment">
+                  <AttachmentSelector contentType="video/*" />
+                </Form.Item>
+              )
+            ) : null}
+
+            {contentType === 'video' && (
+              <Form.Item label={formatMessage(messages.duration)} name="duration">
+                <InputNumber
+                  min={0}
+                  formatter={v => Math.ceil(Number(v) / 60).toString()}
+                  parser={v => Number(v) * 60}
+                />
               </Form.Item>
             )}
 
-            <Form.Item label={formatMessage(messages.duration)} name="duration">
-              <InputNumber min={0} formatter={v => Math.ceil(Number(v) / 60).toString()} parser={v => Number(v) * 60} />
-            </Form.Item>
             {enabledModules.program_content_material && (
               <Form.Item label={formatMessage(commonMessages.label.material)}>
                 <FileUploader

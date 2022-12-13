@@ -4,25 +4,14 @@ import { Button, Dropdown, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { ProgramContentSectionProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
-
-const messages = defineMessages({
-  deleteSectionWarning: {
-    id: 'program.text.deleteSectionWarning',
-    defaultMessage: '此區塊內的所有內容將被刪除，此動作無法還原',
-  },
-  deleteSection: { id: 'program.ui.deleteSection', defaultMessage: '刪除區塊' },
-  createContent: { id: 'program.ui.createContent', defaultMessage: '新增內容' },
-  programContent: { id: 'program.ui.programContent', defaultMessage: '課程內容' },
-  programPractice: { id: 'program.ui.practiceContent', defaultMessage: '作業練習' },
-  programExercise: { id: 'program.ui.programExercise', defaultMessage: '隨堂測驗' },
-})
+import programMessages from './translation'
 
 const StyledMenuItem = styled(Menu.Item)`
   font-size: 14px;
@@ -82,7 +71,7 @@ const ProgramContentSectionAdminCard: React.FC<{
             <Menu>
               <Menu.Item
                 onClick={() =>
-                  window.confirm(formatMessage(messages.deleteSectionWarning)) &&
+                  window.confirm(formatMessage(programMessages.ProgramContentSectionAdminCard.deleteSectionWarning)) &&
                   deleteProgramContentSection({
                     variables: { programContentSectionId: programContentSection.id },
                   })
@@ -90,7 +79,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                     .catch(handleError)
                 }
               >
-                {formatMessage(messages.deleteSection)}
+                {formatMessage(programMessages.ProgramContentSectionAdminCard.deleteSection)}
               </Menu.Item>
             </Menu>
           }
@@ -121,6 +110,24 @@ const ProgramContentSectionAdminCard: React.FC<{
                     programContentSectionId: programContentSection.id,
                     title: 'untitled',
                     position: programContentSection.programContents.length,
+                    programContentType: 'video',
+                    publishedAt: isProgramPublished ? new Date() : null,
+                    displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
+                  },
+                })
+                  .then(() => onRefetch?.())
+                  .catch(handleError)
+              }
+            >
+              {formatMessage(programMessages.ProgramContentSectionAdminCard.videoContent)}
+            </StyledMenuItem>
+            <StyledMenuItem
+              onClick={() =>
+                createProgramContent({
+                  variables: {
+                    programContentSectionId: programContentSection.id,
+                    title: 'untitled',
+                    position: programContentSection.programContents.length,
                     programContentType: 'text',
                     publishedAt: isProgramPublished ? new Date() : null,
                     displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
@@ -130,7 +137,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                   .catch(handleError)
               }
             >
-              {formatMessage(messages.programContent)}
+              {formatMessage(programMessages.ProgramContentSectionAdminCard.articleContent)}
             </StyledMenuItem>
             {enabledModules.practice && (
               <StyledMenuItem
@@ -149,7 +156,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                     .catch(handleError)
                 }
               >
-                {formatMessage(messages.programPractice)}
+                {formatMessage(programMessages.ProgramContentSectionAdminCard.programPractice)}
               </StyledMenuItem>
             )}
             {enabledModules.exam && (
@@ -173,7 +180,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                   onRefetch?.()
                 }}
               >
-                {formatMessage(messages.programExercise)}
+                {formatMessage(programMessages.ProgramContentSectionAdminCard.programExercise)}
               </StyledMenuItem>
             )}
           </Menu>
@@ -181,7 +188,7 @@ const ProgramContentSectionAdminCard: React.FC<{
         placement="topCenter"
       >
         <Button type="link" icon={<PlusOutlined />}>
-          {formatMessage(messages.createContent)}
+          {formatMessage(programMessages.ProgramContentSectionAdminCard.createContent)}
         </Button>
       </Dropdown>
     </AdminBlock>

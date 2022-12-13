@@ -146,6 +146,18 @@ const programMessages = {
     pointPerQuestion: { id: 'program.ExamQuestionSettingForm.pointPerQuestion', defaultMessage: '每題分數' },
     passingScore: { id: 'program.ExamQuestionSettingForm.passingScore', defaultMessage: '及格分數' },
   }),
+  ProgramContentSectionAdminCard: defineMessages({
+    deleteSectionWarning: {
+      id: 'program.ProgramContentSectionAdminCard.deleteSectionWarning',
+      defaultMessage: '此區塊內的所有內容將被刪除，此動作無法還原',
+    },
+    deleteSection: { id: 'program.ProgramContentSectionAdminCard.deleteSection', defaultMessage: 'Delete section' },
+    createContent: { id: 'program.ProgramContentSectionAdminCard.createContent', defaultMessage: 'Create content' },
+    videoContent: { id: 'program.ProgramContentSectionAdminCard.videoContent', defaultMessage: 'Video content' },
+    articleContent: { id: 'program.ProgramContentSectionAdminCard.articleContent', defaultMessage: 'Article content' },
+    programPractice: { id: 'program.ProgramContentSectionAdminCard.practiceContent', defaultMessage: 'Practice content' },
+    programExercise: { id: 'program.ProgramContentSectionAdminCard.programExercise', defaultMessage: 'Program exercise' },
+  }),
 }
 
 export default programMessages
