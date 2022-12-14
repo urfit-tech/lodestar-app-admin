@@ -2129,6 +2129,8 @@
   "program.text.videoPlaceholder": "video url",
   "program.ui.checkProgramContent": "Check program content",
   "program.ui.chooseFile": "Choose File",
+  "program.ui.videoContent": "Video content",
+  "program.ui.articleContent": "Article content",
   "program.ProgramContentSectionAdminCard.createContent": "Add Content",
   "program.ui.createExerciseChoice": "Add option",
   "program.ui.createExerciseQuestion": "Add Question",

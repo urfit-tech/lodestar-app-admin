@@ -2129,6 +2129,8 @@
   "program.text.videoPlaceholder": "url video",
   "program.ui.checkProgramContent": "Kiểm tra nội dung chương trình",
   "program.ui.chooseFile": " Chọn tệp ",
+  "program.ui.videoContent": "Nội dung video",
+  "program.ui.articleContent": "Nội dung bài viết",
   "program.ProgramContentSectionAdminCard.createContent": "Thêm nội dung",
   "program.ui.createExerciseChoice": " Thêm tùy chọn ",
   "program.ui.createExerciseQuestion": " Thêm câu hỏi ",

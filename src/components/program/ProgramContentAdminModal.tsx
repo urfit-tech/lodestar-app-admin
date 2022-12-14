@@ -326,8 +326,8 @@ const ProgramContentAdminModal: React.FC<{
                       }
                     }}
                   >
-                    <Select.Option value="video">影片內容</Select.Option>
-                    <Select.Option value="text">圖片內容</Select.Option>
+                    <Select.Option value="video">{formatMessage(programMessages.ui.videoContent)}</Select.Option>
+                    <Select.Option value="text">{formatMessage(programMessages.ui.articleContent)}</Select.Option>
                   </Select>
                 </Form.Item>
 

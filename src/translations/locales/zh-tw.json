@@ -2133,6 +2133,8 @@
   "program.text.videoPlaceholder": "貼上影片網址",
   "program.ui.checkProgramContent": "查看課程內容",
   "program.ui.chooseFile": "選擇檔案",
+  "program.ui.videoContent": "影片內容",
+  "program.ui.articleContent": "圖文內容",
   "program.ProgramContentSectionAdminCard.createContent": "新增內容",
   "program.ui.createExerciseChoice": "新增選項",
   "program.ui.createExerciseQuestion": "新增題目",

@@ -2129,6 +2129,8 @@
   "program.text.videoPlaceholder": "贴上影片网址",
   "program.ui.checkProgramContent": "查看课程内容",
   "program.ui.chooseFile": "选择档案",
+  "program.ui.videoContent": "视频内容",
+  "program.ui.articleContent": "图文内容",
   "program.ProgramContentSectionAdminCard.createContent": "新增内容",
   "program.ui.createExerciseChoice": "新增选项",
   "program.ui.createExerciseQuestion": "新增题目",

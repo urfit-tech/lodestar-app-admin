@@ -2129,6 +2129,8 @@
   "program.text.videoPlaceholder": "url video",
   "program.ui.checkProgramContent": "Periksa konten program",
   "program.ui.chooseFile": "Pilih File",
+  "program.ui.videoContent": "Konten video",
+  "program.ui.articleContent": "Konten artikel",
   "program.ProgramContentSectionAdminCard.createContent": "Tambahkan Konten",
   "program.ui.createExerciseChoice": "Tambahkan opsi",
   "program.ui.createExerciseQuestion": "Tambahkan Pertanyaan",
