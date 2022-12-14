@@ -37,48 +37,46 @@ const VoucherPlanCollectionBlock: React.VFC<{
         <EmptyBlock>{formatMessage(pageMessages.VoucherPlanCollectionBlock.emptyVoucherPlan)}</EmptyBlock>
       ) : (
         <div className="row">
-          {voucherPlans
-            .filter(v => (available ? v : v.remaining <= 0))
-            .map(voucherPlan => (
-              <div key={voucherPlan.id} className="col-12 col-lg-6">
-                <VoucherPlanCard
-                  id={voucherPlan.id}
-                  title={voucherPlan.title}
-                  startedAt={voucherPlan.startedAt}
-                  endedAt={voucherPlan.endedAt}
-                  productQuantityLimit={voucherPlan.productQuantityLimit}
-                  available={available}
-                  isTransferable={voucherPlan.isTransferable}
-                  count={voucherPlan.count}
-                  remaining={voucherPlan.remaining}
-                  renderEditDropdown={
-                    <Dropdown
-                      trigger={['click']}
-                      overlay={
-                        <Menu>
-                          <Menu.Item>
-                            <VoucherPlanAdminModal
-                              renderTrigger={({ setVisible }) => (
-                                <span onClick={() => setVisible(true)}>
-                                  {formatMessage(pageMessages.VoucherPlanCollectionBlock.edit)}
-                                </span>
-                              )}
-                              icon={<EditOutlined />}
-                              title={formatMessage(pageMessages.VoucherPlanCollectionBlock.editVoucherPlan)}
-                              voucherPlan={voucherPlan}
-                              onRefetch={refetch}
-                            />
-                          </Menu.Item>
-                        </Menu>
-                      }
-                      placement="bottomRight"
-                    >
-                      <MoreOutlined className="cursor-pointer" />
-                    </Dropdown>
-                  }
-                />
-              </div>
-            ))}
+          {voucherPlans.map(voucherPlan => (
+            <div key={voucherPlan.id} className="col-12 col-lg-6">
+              <VoucherPlanCard
+                id={voucherPlan.id}
+                title={voucherPlan.title}
+                startedAt={voucherPlan.startedAt}
+                endedAt={voucherPlan.endedAt}
+                productQuantityLimit={voucherPlan.productQuantityLimit}
+                available={available}
+                isTransferable={voucherPlan.isTransferable}
+                count={voucherPlan.count}
+                remaining={voucherPlan.remaining}
+                renderEditDropdown={
+                  <Dropdown
+                    trigger={['click']}
+                    overlay={
+                      <Menu>
+                        <Menu.Item>
+                          <VoucherPlanAdminModal
+                            renderTrigger={({ setVisible }) => (
+                              <span onClick={() => setVisible(true)}>
+                                {formatMessage(pageMessages.VoucherPlanCollectionBlock.edit)}
+                              </span>
+                            )}
+                            icon={<EditOutlined />}
+                            title={formatMessage(pageMessages.VoucherPlanCollectionBlock.editVoucherPlan)}
+                            voucherPlan={voucherPlan}
+                            onRefetch={refetch}
+                          />
+                        </Menu.Item>
+                      </Menu>
+                    }
+                    placement="bottomRight"
+                  >
+                    <MoreOutlined className="cursor-pointer" />
+                  </Dropdown>
+                }
+              />
+            </div>
+          ))}
 
           {loadMoreVoucherPlans && (
             <div className="text-center" style={{ width: '100%' }}>
