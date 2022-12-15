@@ -40,6 +40,7 @@ const StyledNotation = styled.div`
 type FieldProps = {
   title: string
   isPublished: boolean
+  isParticipantsVisible: boolean
   period: { type: PeriodType; amount: number }
   remindPeriod: { type: PeriodType; amount: number }
   currencyId?: string
@@ -143,6 +144,7 @@ const ProgramPlanAdminModal: React.FC<
             publishedAt: values.isPublished ? new Date() : null,
             isCountdownTimerVisible: !!values.sale?.isTimerVisible,
             groupBuyingPeople: values.groupBuyingPeople,
+            isParticipantsVisible: values.isParticipantsVisible,
           },
         })
           .catch(handleError)
@@ -234,6 +236,7 @@ const ProgramPlanAdminModal: React.FC<
         initialValues={{
           title: programPlan?.title,
           isPublished: !!programPlan?.publishedAt,
+          isParticipantsVisible: !!programPlan?.isParticipantsVisible,
           currencyId: programPlan?.currencyId,
           listPrice: programPlan?.listPrice || 0,
           sale: programPlan?.soldAt
@@ -277,6 +280,19 @@ const ProgramPlanAdminModal: React.FC<
             </Radio>
             <Radio value={false} className="d-block">
               {formatMessage(programMessages.ProgramPlanAdminModal.unpublished)}
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item
+          label={formatMessage(programMessages.ProgramPlanAdminModal.isParticipantsVisible)}
+          name="isParticipantsVisible"
+        >
+          <Radio.Group>
+            <Radio value={false} className="d-block">
+              {formatMessage(programMessages.ProgramPlanAdminModal.invisible)}
+            </Radio>
+            <Radio value={true} className="d-block">
+              {formatMessage(programMessages.ProgramPlanAdminModal.visible)}
             </Radio>
           </Radio.Group>
         </Form.Item>
@@ -408,6 +424,7 @@ const UPSERT_PROGRAM_PLAN = gql`
     $publishedAt: timestamptz
     $isCountdownTimerVisible: Boolean!
     $groupBuyingPeople: numeric
+    $isParticipantsVisible: Boolean!
   ) {
     insert_program_plan(
       objects: {
@@ -429,6 +446,7 @@ const UPSERT_PROGRAM_PLAN = gql`
         published_at: $publishedAt
         is_countdown_timer_visible: $isCountdownTimerVisible
         group_buying_people: $groupBuyingPeople
+        is_participants_visible: $isParticipantsVisible
       }
       on_conflict: {
         constraint: program_plan_pkey
@@ -449,6 +467,7 @@ const UPSERT_PROGRAM_PLAN = gql`
           published_at
           is_countdown_timer_visible
           group_buying_people
+          is_participants_visible
         ]
       }
     ) {

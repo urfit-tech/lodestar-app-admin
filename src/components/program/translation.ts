@@ -35,6 +35,9 @@ const programMessages = {
     isPublished: { id: 'program.ProgramPlanAdminModal.isPublished', defaultMessage: '是否顯示方案' },
     published: { id: 'program.ProgramPlanAdminModal.published', defaultMessage: '發售，上架後立即開賣' },
     unpublished: { id: 'program.ProgramPlanAdminModal.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
+    isParticipantsVisible: { id: 'program.ProgramPlanAdminModal.isParticipantsVisible', defaultMessage: 'Participants visible' },
+    visible: { id: 'program.ProgramPlanAdminModal.visible', defaultMessage: 'visible' },
+    invisible: { id: 'program.ProgramPlanAdminModal.invisible', defaultMessage: 'invisible' },
     subscriptionPlan: { id: 'program.ProgramPlanAdminModal.subscriptionPlan', defaultMessage: '訂閱付費方案' },
     permissionType: { id: 'program.ProgramPlanAdminModal.permissionType', defaultMessage: '選擇內容觀看權限' },
     availableForPastContent: {
