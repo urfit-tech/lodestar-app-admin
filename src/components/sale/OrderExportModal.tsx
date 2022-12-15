@@ -16,6 +16,7 @@ import { commonMessages, errorMessages, orderMessages } from '../../helpers/tran
 import { useOrderStatuses } from '../../hooks/order'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ProductSelector from '../form/ProductSelector'
+import saleMessages from './translation'
 
 const messages = defineMessages({
   exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
@@ -171,6 +172,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
           enabledModules.invoice ? formatMessage(orderMessages.label.invoiceIssuedAt) : undefined,
           formatMessage(orderMessages.label.invoiceStatus),
+          formatMessage(saleMessages.OrderExportModal.send),
         ].filter(v => typeof v !== 'undefined'),
         ...orderLogs.map(orderLog =>
           [
@@ -202,13 +204,16 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
             enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
             orderLog.gift_plans?.split('\\n').join('\n') || '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.name : '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.phone : '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'false'
-              ? `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+              ? formatMessage(saleMessages.OrderExportModal.no)
+              : formatMessage(saleMessages.OrderExportModal.yes),
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name,
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone,
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+              ? ''
+              : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
                   orderLog.shipping?.district || ''
-                }${orderLog.shipping?.address || ''}`
-              : '',
+                }${orderLog.shipping?.address || ''}`,
             orderLog.invoice_options?.name || '',
             orderLog.invoice_options?.email || '',
             orderLog.invoice_options?.phone || orderLog.invoice_options?.buyerPhone || '',

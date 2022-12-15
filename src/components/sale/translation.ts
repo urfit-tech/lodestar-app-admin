@@ -75,6 +75,7 @@ const saleMessages = {
     price: { id: 'sale.PaymentCard.price', defaultMessage: '金額' },
     gateway: { id: 'sale.PaymentCard.gateway', defaultMessage: '交易渠道' },
   }),
+    send: { id: 'sale.OrderExportModal.send', defaultMessage: '寄送' },
 }
 
 export default saleMessages
