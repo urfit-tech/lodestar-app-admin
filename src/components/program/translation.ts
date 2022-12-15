@@ -35,6 +35,9 @@ const programMessages = {
     isPublished: { id: 'program.ProgramPlanAdminModal.isPublished', defaultMessage: '是否顯示方案' },
     published: { id: 'program.ProgramPlanAdminModal.published', defaultMessage: '發售，上架後立即開賣' },
     unpublished: { id: 'program.ProgramPlanAdminModal.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
+    isParticipantsVisible: { id: 'program.ProgramPlanAdminModal.isParticipantsVisible', defaultMessage: 'Participants visible' },
+    visible: { id: 'program.ProgramPlanAdminModal.visible', defaultMessage: 'visible' },
+    invisible: { id: 'program.ProgramPlanAdminModal.invisible', defaultMessage: 'invisible' },
     subscriptionPlan: { id: 'program.ProgramPlanAdminModal.subscriptionPlan', defaultMessage: '訂閱付費方案' },
     permissionType: { id: 'program.ProgramPlanAdminModal.permissionType', defaultMessage: '選擇內容觀看權限' },
     availableForPastContent: {
@@ -145,6 +148,18 @@ const programMessages = {
     examScore: { id: 'program.ExamQuestionSettingForm.examScore', defaultMessage: '測驗分數' },
     pointPerQuestion: { id: 'program.ExamQuestionSettingForm.pointPerQuestion', defaultMessage: '每題分數' },
     passingScore: { id: 'program.ExamQuestionSettingForm.passingScore', defaultMessage: '及格分數' },
+  }),
+  ProgramContentSectionAdminCard: defineMessages({
+    deleteSectionWarning: {
+      id: 'program.ProgramContentSectionAdminCard.deleteSectionWarning',
+      defaultMessage: '此區塊內的所有內容將被刪除，此動作無法還原',
+    },
+    deleteSection: { id: 'program.ProgramContentSectionAdminCard.deleteSection', defaultMessage: 'Delete section' },
+    createContent: { id: 'program.ProgramContentSectionAdminCard.createContent', defaultMessage: 'Create content' },
+    videoContent: { id: 'program.ProgramContentSectionAdminCard.videoContent', defaultMessage: 'Video content' },
+    articleContent: { id: 'program.ProgramContentSectionAdminCard.articleContent', defaultMessage: 'Article content' },
+    programPractice: { id: 'program.ProgramContentSectionAdminCard.practiceContent', defaultMessage: 'Practice content' },
+    programExercise: { id: 'program.ProgramContentSectionAdminCard.programExercise', defaultMessage: 'Program exercise' },
   }),
 }
 

@@ -824,6 +824,8 @@ export const programMessages = {
     deleteQuestion: { id: 'program.ui.deleteQuestion', defaultMessage: '刪除題目' },
     deleteChoice: { id: 'program.ui.deleteChoice', defaultMessage: '刪除選項' },
     checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
+    videoContent: { id: 'program.ui.videoContent', defaultMessage: 'Video content' },
+    articleContent: { id: 'program.ui.articleContent', defaultMessage: 'Article content' },
   }),
 }
 
