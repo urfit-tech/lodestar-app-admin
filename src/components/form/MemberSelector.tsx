@@ -72,11 +72,7 @@ const MemberSelector: React.FC<{
 
 let timeout: NodeJS.Timeout | null
 
-export const AllMemberSelector: React.FC<SelectProps<string | string[]> & { allowUnregistered?: boolean }> = ({
-  value,
-  onChange,
-  ...props
-}) => {
+export const AllMemberSelector: React.FC<SelectProps<string | string[]>> = ({ value, onChange, ...props }) => {
   const [search, setSearch] = useState(value || '')
   const { members } = useAllMemberCollection(Array.isArray(search) ? search[0] : search)
 
@@ -89,10 +85,6 @@ export const AllMemberSelector: React.FC<SelectProps<string | string[]> & { allo
     timeout = setTimeout(() => {
       setSearch(value)
     }, 300)
-
-    if (true && value && members.length === 0) {
-      console.log(value)
-    }
   }
 
   return (
