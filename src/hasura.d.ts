@@ -6083,6 +6083,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   publishedAt?: any | null;
   isCountdownTimerVisible: boolean;
   groupBuyingPeople?: any | null;
+  isParticipantsVisible: boolean;
 }
 
 /* tslint:disable */
@@ -10106,6 +10107,32 @@ export interface GET_VOUCHER_CODES_AGGREGATEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_VOUCHER_STATUS
+// ====================================================
+
+export interface GET_VOUCHER_STATUS_voucher_status {
+  __typename: "voucher_status";
+  used: boolean | null;
+  voucher_id: any | null;
+}
+
+export interface GET_VOUCHER_STATUS {
+  /**
+   * fetch data from the table: "voucher_status"
+   */
+  voucher_status: GET_VOUCHER_STATUS_voucher_status[];
+}
+
+export interface GET_VOUCHER_STATUSVariables {
+  voucherPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_VOUCHER_PLAN
 // ====================================================
 
@@ -10216,11 +10243,6 @@ export interface GET_VOUCHER_CODE_voucher_code_vouchers_member {
   email: string;
 }
 
-export interface GET_VOUCHER_CODE_voucher_code_vouchers_status {
-  __typename: "voucher_status";
-  used: boolean | null;
-}
-
 export interface GET_VOUCHER_CODE_voucher_code_vouchers {
   __typename: "voucher";
   id: any;
@@ -10228,10 +10250,6 @@ export interface GET_VOUCHER_CODE_voucher_code_vouchers {
    * An object relationship
    */
   member: GET_VOUCHER_CODE_voucher_code_vouchers_member;
-  /**
-   * An object relationship
-   */
-  status: GET_VOUCHER_CODE_voucher_code_vouchers_status | null;
 }
 
 export interface GET_VOUCHER_CODE_voucher_code {
@@ -13810,6 +13828,7 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_plans {
   is_countdown_timer_visible: boolean;
   published_at: any | null;
   group_buying_people: any | null;
+  is_participants_visible: boolean;
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_categories_category {
@@ -15200,6 +15219,31 @@ export interface DELETE_PROJECT_ROLE {
 }
 
 export interface DELETE_PROJECT_ROLEVariables {
+  projectRoleId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: AGREE_PROJECT_ROLE
+// ====================================================
+
+export interface AGREE_PROJECT_ROLE_update_project_role_by_pk {
+  __typename: "project_role";
+  id: any;
+}
+
+export interface AGREE_PROJECT_ROLE {
+  /**
+   * update single row of the table: "project_role"
+   */
+  update_project_role_by_pk: AGREE_PROJECT_ROLE_update_project_role_by_pk | null;
+}
+
+export interface AGREE_PROJECT_ROLEVariables {
   projectRoleId: any;
 }
 
