@@ -43,6 +43,14 @@ const ProgramAdminPageMessages = {
       id: 'ProgramAdminPage.ProgramCoverForm.thumbnailImageTips',
       defaultMessage: '建議圖片尺寸：600*338px',
     },
+    showOriginSize: {
+      id: 'ProgramAdminPage.ProgramCoverForm.showOriginSize',
+      defaultMessage: '以原圖尺寸顯示',
+    },
+    notUploaded: {
+      id: 'ProgramAdminPage.ProgramCoverForm.notUploaded',
+      defaultMessage: '*尚未上傳',
+    },
   }),
   ProgramApprovalHistory: defineMessages({
     sentApproval: { id: 'ProgramAdminPage.ProgramApprovalHistory.sentApproval', defaultMessage: '{date} 送審' },

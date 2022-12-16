@@ -1,19 +1,22 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton, Tabs } from 'antd'
+import { Button, Checkbox, Form, Input, message, Skeleton, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import React, { useState } from 'react'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { uploadFile } from 'lodestar-app-element/src/helpers'
+import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
+import { getImageSizedUrl, handleError, isImageUrlResized } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ProjectAdminProps } from '../../types/project'
+import ImageUploader from '../common/ImageUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
-import ImageInput from '../form/ImageInput'
 import VideoInput from '../form/VideoInput'
 import projectMessages from './translation'
 
@@ -34,6 +37,13 @@ const StyledNotice = styled.div`
   padding: 0 0 8px 0;
 `
 
+const StyledUploadWarning = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  height: 100%;
+`
+
 type FieldProps = {
   coverUrl: string
   abstract: string
@@ -48,6 +58,18 @@ const ProjectIntroForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
+  const { authToken } = useAuth()
+  const uploadCanceler = useRef<Canceler>()
+  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
+    project?.coverUrl === '' || !project?.coverUrl ? false : !isImageUrlResized(project?.coverUrl),
+  )
+
+  alert(
+    `condition result: ${
+      project?.coverUrl === '' || !project?.coverUrl ? false : !isImageUrlResized(project?.coverUrl)
+    }, status: ${isUseOriginSizeCoverImage}`,
+  )
   const [updateProjectCover] = useMutation<hasura.UPDATE_PROJECT_COVER, hasura.UPDATE_PROJECT_COVERVariables>(
     UPDATE_PROJECT_COVER,
   )
@@ -56,26 +78,10 @@ const ProjectIntroForm: React.FC<{
   )
   const [loading, setLoading] = useState(false)
   const coverId = uuid()
+  const coverUrl = project?.previewUrl || ''
 
   if (!project) {
     return <Skeleton active />
-  }
-
-  const handleUpdateCover = () => {
-    setLoading(true)
-    updateProjectCover({
-      variables: {
-        projectId: project.id,
-        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`,
-      },
-    })
-      .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
-      })
-      .catch(handleError)
-      .finally(() => setLoading(false))
   }
 
   const handleSubmit = (values: FieldProps) => {
@@ -92,7 +98,34 @@ const ProjectIntroForm: React.FC<{
         coverType: values.coverUrl ? 'video' : 'image',
       },
     })
+      .then(async () => {
+        if (coverImage) {
+          try {
+            await uploadFile(`project_covers/${appId}/${project.id}/${coverId}`, coverImage, authToken, {
+              cancelToken: new axios.CancelToken(canceler => {
+                uploadCanceler.current = canceler
+              }),
+            })
+          } catch (error) {
+            process.env.NODE_ENV === 'development' && console.log(error)
+          }
+        }
+        const uploadCoverUrl = getImageSizedUrl(
+          isUseOriginSizeCoverImage,
+          coverImage
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}/${coverId}`
+            : coverUrl,
+        )
+        await updateProjectCover({
+          variables: {
+            projectId: project.id,
+            previewUrl: uploadCoverUrl,
+            coverUrl: uploadCoverUrl,
+          },
+        })
+      })
       .then(() => {
+        setCoverImage(null)
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
       })
@@ -106,7 +139,7 @@ const ProjectIntroForm: React.FC<{
       colon={false}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
-      wrapperCol={{ md: { span: 10 } }}
+      wrapperCol={{ md: { span: 13 } }}
       initialValues={{
         coverUrl: project.coverType === 'video' ? project.coverUrl : null,
         abstract: project.abstract,
@@ -116,16 +149,21 @@ const ProjectIntroForm: React.FC<{
       onFinish={handleSubmit}
     >
       <Form.Item label={<span>{formatMessage(projectMessages['*'].projectCover)}</span>}>
-        <ImageInput
-          path={`project_covers/${appId}/${project.id}/${coverId}`}
-          image={{
-            width: '160px',
-            ratio: 9 / 16,
-            shape: 'rounded',
-          }}
-          value={project.previewUrl}
-          onChange={() => handleUpdateCover()}
-        />
+        <div className="d-flex align-items-center">
+          <ImageUploader file={coverImage} initialCoverUrl={coverUrl} onChange={file => setCoverImage(file)} />
+          {(coverUrl || coverImage) && (
+            <Checkbox
+              className="ml-2"
+              checked={isUseOriginSizeCoverImage}
+              onChange={e => {
+                setIsUseOriginSizeCoverImage(e.target.checked)
+              }}
+            >
+              以原圖尺寸上傳
+            </Checkbox>
+          )}
+          {coverImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+        </div>
       </Form.Item>
 
       <Form.Item label={formatMessage(commonMessages.label.introductionVideo)} name="coverUrl">

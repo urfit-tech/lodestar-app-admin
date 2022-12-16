@@ -5,6 +5,7 @@ import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
+import { isEmpty } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
@@ -12,7 +13,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
-import { handleError, uploadFile } from '../../helpers'
+import { getImageSizedUrl, handleError, isImageUrlResized, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 import { ProjectPlan, ProjectPlanProduct, ProjectPlanType } from '../../types/project'
@@ -33,6 +34,13 @@ const StyledNotation = styled.div`
   font-weight: 500;
   color: #9b9b9b;
   white-space: pre-line;
+`
+
+const StyledUploadWarning = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  height: 100%;
 `
 
 const messages = defineMessages({
@@ -93,9 +101,13 @@ const ProjectPlanAdminModal: React.FC<
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!projectPlan?.discountDownPrice)
   const [loading, setLoading] = useState(false)
   const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
+    projectPlan?.coverUrl === '' || !projectPlan?.coverUrl ? false : !isImageUrlResized(projectPlan.coverUrl),
+  )
 
   const withPeriod = projectPlanType === 'period' || projectPlanType === 'subscription'
   const withAutoRenewed = projectPlanType === 'subscription'
+  const coverUrl = projectPlan?.coverUrl || ''
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -121,7 +133,7 @@ const ProjectPlanAdminModal: React.FC<
               sold_at: values.sale?.soldAt || null,
               discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
               description: values.description.toRAW(),
-              cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
+              cover_url: coverUrl ? coverUrl : null,
             },
           },
         })
@@ -143,8 +155,8 @@ const ProjectPlanAdminModal: React.FC<
                 process.env.NODE_ENV === 'development' && console.log(error)
               }
             }
+            const coverId = uuid()
             if (coverImage) {
-              const coverId = uuid()
               try {
                 await uploadFile(
                   `project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
@@ -159,13 +171,19 @@ const ProjectPlanAdminModal: React.FC<
               } catch (error) {
                 process.env.NODE_ENV === 'development' && console.log(error)
               }
-              await updateProjectPlanCoverUrl({
-                variables: {
-                  id: projectPlanId,
-                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
-                },
-              })
             }
+            const uploadCoverUrl = getImageSizedUrl(
+              isUseOriginSizeCoverImage,
+              coverImage
+                ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`
+                : coverUrl,
+            )
+            await updateProjectPlanCoverUrl({
+              variables: {
+                id: projectPlanId,
+                coverUrl: uploadCoverUrl,
+              },
+            })
           })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -251,11 +269,25 @@ const ProjectPlanAdminModal: React.FC<
         </Form.Item>
 
         <Form.Item label={<span>{formatMessage(projectMessages['*'].projectCover)}</span>}>
-          <ImageUploader
-            file={coverImage}
-            initialCoverUrl={projectPlan ? projectPlan?.coverUrl : null}
-            onChange={file => setCoverImage(file)}
-          />
+          <div className="d-flex align-items-center">
+            <ImageUploader
+              file={coverImage}
+              initialCoverUrl={projectPlan ? coverUrl : null}
+              onChange={file => setCoverImage(file)}
+            />
+            {(!isEmpty(coverUrl) || coverImage) && (
+              <Checkbox
+                className="ml-2"
+                checked={isUseOriginSizeCoverImage}
+                onChange={e => {
+                  setIsUseOriginSizeCoverImage(e.target.checked)
+                }}
+              >
+                以原圖尺寸上傳
+              </Checkbox>
+            )}
+            {coverImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+          </div>
         </Form.Item>
 
         <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">
