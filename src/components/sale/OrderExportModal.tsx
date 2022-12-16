@@ -5,28 +5,16 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { isNull } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
-import { commonMessages, errorMessages, orderMessages } from '../../helpers/translation'
 import { useOrderStatuses } from '../../hooks/order'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ProductSelector from '../form/ProductSelector'
-
-const messages = defineMessages({
-  exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
-  exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出總表' },
-  exportOrderProduct: { id: 'common.ui.exportOrderProduct', defaultMessage: '訂單明細' },
-  exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
-  exportPaymentLog: { id: 'common.ui.exportPaymentLog', defaultMessage: '交易明細' },
-  invoiceSuccess: { id: 'payment.status.invoiceSuccess', defaultMessage: '開立成功' },
-  invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
-  invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
-})
+import saleMessages from './translation'
 
 const fieldOrderStatuses = [
   'UNPAID',
@@ -55,15 +43,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
   const { enabledModules } = useApp()
-  const { permissions } = useAuth()
   const { data: allOrderStatuses } = useOrderStatuses()
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
   const [selectedSpeicfy, setSelectedSpecify] = useState<OrderSpecify>('ALL')
   const [fullSelected, setFullSelectedProducts] = useState<(ProductType | 'CouponPlan')[]>([])
   const [selectedProducts, setSelectedProducts] = useState<{ id: string; title: string; children?: any[] }[]>([])
   const [loading, setLoading] = useState(false)
-
-  const ableToExport = permissions.SALES_RECORDS_ADMIN || permissions.SALES_RECORDS_NORMAL
 
   const getOrderLogContent: (
     startedAt: Date,
@@ -136,41 +121,42 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
 
       const data: string[][] = [
         [
-          formatMessage(orderMessages.label.orderLogId),
-          formatMessage(orderMessages.label.paymentLogNo),
-          formatMessage(orderMessages.label.orderLogStatus),
-          formatMessage(orderMessages.label.paymentLogGateway),
-          formatMessage(orderMessages.label.paymentLogDetails),
-          formatMessage(orderMessages.label.orderCountry),
-          formatMessage(orderMessages.label.orderLogCreatedAt),
-          formatMessage(orderMessages.label.paymentLogPaidAt),
-          formatMessage(orderMessages.label.memberName),
-          formatMessage(orderMessages.label.memberEmail),
-          formatMessage(orderMessages.label.orderProductName),
-          formatMessage(orderMessages.label.orderDiscountName),
-          formatMessage(orderMessages.label.orderProductCount),
-          formatMessage(orderMessages.label.orderProductTotalPrice),
-          formatMessage(orderMessages.label.orderDiscountTotalPrice),
-          formatMessage(orderMessages.label.orderLogTotalPrice),
-          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
-          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingNote) : undefined,
-          enabledModules.member_assignment ? formatMessage(orderMessages.label.orderLogExecutor) : undefined,
-          formatMessage(orderMessages.label.gift),
-          formatMessage(orderMessages.label.recipientName),
-          formatMessage(orderMessages.label.recipientPhone),
-          formatMessage(orderMessages.label.recipientAddress),
-          formatMessage(orderMessages.label.invoiceName),
-          formatMessage(orderMessages.label.invoiceEmail),
-          formatMessage(orderMessages.label.invoicePhone),
-          formatMessage(orderMessages.label.invoiceTarget),
-          formatMessage(orderMessages.label.invoiceDonationCode),
-          formatMessage(orderMessages.label.invoiceCarrier),
-          formatMessage(orderMessages.label.invoiceUniformNumber),
-          formatMessage(orderMessages.label.invoiceUniformTitle),
-          formatMessage(orderMessages.label.invoiceAddress),
-          enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
-          enabledModules.invoice ? formatMessage(orderMessages.label.invoiceIssuedAt) : undefined,
-          formatMessage(orderMessages.label.invoiceStatus),
+          formatMessage(saleMessages.OrderExportModal.orderLogId),
+          formatMessage(saleMessages.OrderExportModal.paymentLogNo),
+          formatMessage(saleMessages.OrderExportModal.orderLogStatus),
+          formatMessage(saleMessages.OrderExportModal.paymentLogGateway),
+          formatMessage(saleMessages.OrderExportModal.paymentLogDetails),
+          formatMessage(saleMessages.OrderExportModal.orderCountry),
+          formatMessage(saleMessages.OrderExportModal.orderLogCreatedAt),
+          formatMessage(saleMessages.OrderExportModal.paymentLogPaidAt),
+          formatMessage(saleMessages.OrderExportModal.memberName),
+          formatMessage(saleMessages.OrderExportModal.memberEmail),
+          formatMessage(saleMessages.OrderExportModal.orderProductName),
+          formatMessage(saleMessages.OrderExportModal.orderDiscountName),
+          formatMessage(saleMessages.OrderExportModal.orderProductCount),
+          formatMessage(saleMessages.OrderExportModal.orderProductTotalPrice),
+          formatMessage(saleMessages.OrderExportModal.orderDiscountTotalPrice),
+          formatMessage(saleMessages.OrderExportModal.orderLogTotalPrice),
+          enabledModules.sharing_code ? formatMessage(saleMessages.OrderExportModal.sharingCode) : undefined,
+          enabledModules.sharing_code ? formatMessage(saleMessages.OrderExportModal.sharingNote) : undefined,
+          enabledModules.member_assignment ? formatMessage(saleMessages.OrderExportModal.orderLogExecutor) : undefined,
+          formatMessage(saleMessages.OrderExportModal.gift),
+          formatMessage(saleMessages.OrderExportModal.send),
+          formatMessage(saleMessages.OrderExportModal.recipientName),
+          formatMessage(saleMessages.OrderExportModal.recipientPhone),
+          formatMessage(saleMessages.OrderExportModal.recipientAddress),
+          formatMessage(saleMessages.OrderExportModal.invoiceName),
+          formatMessage(saleMessages.OrderExportModal.invoiceEmail),
+          formatMessage(saleMessages.OrderExportModal.invoicePhone),
+          formatMessage(saleMessages.OrderExportModal.invoiceTarget),
+          formatMessage(saleMessages.OrderExportModal.invoiceDonationCode),
+          formatMessage(saleMessages.OrderExportModal.invoiceCarrier),
+          formatMessage(saleMessages.OrderExportModal.invoiceUniformNumber),
+          formatMessage(saleMessages.OrderExportModal.invoiceUniformTitle),
+          formatMessage(saleMessages.OrderExportModal.invoiceAddress),
+          enabledModules.invoice ? formatMessage(saleMessages.OrderExportModal.invoiceId) : undefined,
+          enabledModules.invoice ? formatMessage(saleMessages.OrderExportModal.invoiceIssuedAt) : undefined,
+          formatMessage(saleMessages.OrderExportModal.invoiceStatus),
         ].filter(v => typeof v !== 'undefined'),
         ...orderLogs.map(orderLog =>
           [
@@ -202,13 +188,16 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
             enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
             orderLog.gift_plans?.split('\\n').join('\n') || '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.name : '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.phone : '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'false'
-              ? `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+              ? formatMessage(saleMessages.OrderExportModal.no)
+              : formatMessage(saleMessages.OrderExportModal.yes),
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name,
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone,
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+              ? ''
+              : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
                   orderLog.shipping?.district || ''
-                }${orderLog.shipping?.address || ''}`
-              : '',
+                }${orderLog.shipping?.address || ''}`,
             orderLog.invoice_options?.name || '',
             orderLog.invoice_options?.email || '',
             orderLog.invoice_options?.phone || orderLog.invoice_options?.buyerPhone || '',
@@ -228,10 +217,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               ? (orderLog.invoice_issued_at && dateFormatter(orderLog.invoice_issued_at)) || ''
               : undefined,
             !orderLog.invoice_options?.status
-              ? formatMessage(messages.invoicePending)
+              ? formatMessage(saleMessages.OrderExportModal.invoicePending)
               : orderLog.invoice_options?.status === 'SUCCESS'
-              ? formatMessage(messages.invoiceSuccess)
-              : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice_options?.status }),
+              ? formatMessage(saleMessages.OrderExportModal.invoiceSuccess)
+              : formatMessage(saleMessages.OrderExportModal.invoiceFailed, {
+                  errorCode: orderLog.invoice_options?.status,
+                }),
           ].filter(v => typeof v !== 'undefined'),
         ),
       ]
@@ -334,17 +325,17 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
       })
 
       const productTypeLabel: { [key: string]: string } = {
-        Program: formatMessage(commonMessages.product.program),
-        ProgramPlan: formatMessage(commonMessages.product.programPlan),
-        ProgramContent: formatMessage(commonMessages.product.programContent),
-        ProgramPackagePlan: formatMessage(commonMessages.product.programPackagePlan),
-        ProjectPlan: formatMessage(commonMessages.product.projectPlan),
-        Card: formatMessage(commonMessages.product.card),
-        ActivityTicket: formatMessage(commonMessages.product.activityTicket),
-        MerchandiseSpec: formatMessage(commonMessages.product.merchandiseSpec),
-        PodcastProgram: formatMessage(commonMessages.product.podcastProgram),
-        PodcastPlan: formatMessage(commonMessages.product.podcastPlan),
-        AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
+        Program: formatMessage(saleMessages['*'].program),
+        ProgramPlan: formatMessage(saleMessages['*'].programPlan),
+        ProgramContent: formatMessage(saleMessages['*'].programContent),
+        ProgramPackagePlan: formatMessage(saleMessages['*'].programPackagePlan),
+        ProjectPlan: formatMessage(saleMessages['*'].projectPlan),
+        Card: formatMessage(saleMessages['*'].card),
+        ActivityTicket: formatMessage(saleMessages['*'].activityTicket),
+        MerchandiseSpec: formatMessage(saleMessages['*'].merchandiseSpec),
+        PodcastProgram: formatMessage(saleMessages['*'].podcastProgram),
+        PodcastPlan: formatMessage(saleMessages['*'].podcastPlan),
+        AppointmentPlan: formatMessage(saleMessages['*'].appointmentPlan),
       }
 
       const orderProducts: hasura.GET_ORDER_PRODUCT_EXPORT['order_product_export'] =
@@ -352,18 +343,18 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
 
       const data: string[][] = [
         [
-          formatMessage(orderMessages.label.orderLogId),
-          formatMessage(orderMessages.label.orderCountry),
-          formatMessage(orderMessages.label.orderLogCreatedAt), // TBC: Date or DateTime
-          formatMessage(orderMessages.label.paymentLogPaidAt),
-          formatMessage(orderMessages.label.productOwner),
-          formatMessage(orderMessages.label.productType),
-          formatMessage(commonMessages.label.orderProductId),
-          formatMessage(orderMessages.label.orderProductName),
-          formatMessage(orderMessages.label.productEndedAt), // TBC: Date or DateTime
-          formatMessage(orderMessages.label.productQuantity),
-          formatMessage(orderMessages.label.productPrice),
-          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
+          formatMessage(saleMessages.OrderExportModal.orderLogId),
+          formatMessage(saleMessages.OrderExportModal.orderCountry),
+          formatMessage(saleMessages.OrderExportModal.orderLogCreatedAt), // TBC: Date or DateTime
+          formatMessage(saleMessages.OrderExportModal.paymentLogPaidAt),
+          formatMessage(saleMessages.OrderExportModal.productOwner),
+          formatMessage(saleMessages.OrderExportModal.productType),
+          formatMessage(saleMessages.OrderExportModal.orderProductId),
+          formatMessage(saleMessages.OrderExportModal.orderProductName),
+          formatMessage(saleMessages.OrderExportModal.productEndedAt), // TBC: Date or DateTime
+          formatMessage(saleMessages.OrderExportModal.productQuantity),
+          formatMessage(saleMessages.OrderExportModal.productPrice),
+          enabledModules.sharing_code ? formatMessage(saleMessages.OrderExportModal.sharingCode) : undefined,
         ].filter(v => typeof v !== 'undefined'),
         ...orderProducts.map(orderProduct =>
           [
@@ -376,7 +367,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             orderProduct.paid_at ? dateFormatter(orderProduct.paid_at) : '',
             orderProduct.product_owner || '',
             productTypeLabel[orderProduct.product_id?.split('_')[0] || ''] ||
-              formatMessage(commonMessages.product.unknownType),
+              formatMessage(saleMessages.OrderExportModal.unknownType),
             orderProduct.product_id?.split('_')[1]?.slice(0, -(orderProduct.product_id?.split('_')[1].length - 6)) ||
               '',
             orderProduct.name,
@@ -480,11 +471,11 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
 
       const data: string[][] = [
         [
-          formatMessage(commonMessages.label.orderLogId),
-          formatMessage(orderMessages.label.orderCountry),
-          formatMessage(commonMessages.label.orderDiscountId),
-          formatMessage(commonMessages.label.orderDiscountName),
-          formatMessage(commonMessages.label.orderDiscountPrice),
+          formatMessage(saleMessages.OrderExportModal.orderLogId),
+          formatMessage(saleMessages.OrderExportModal.orderCountry),
+          formatMessage(saleMessages.OrderExportModal.orderDiscountId),
+          formatMessage(saleMessages.OrderExportModal.orderDiscountName),
+          formatMessage(saleMessages.OrderExportModal.orderDiscountPrice),
         ],
         ...orderDiscounts.map(({ id, name, price, order_log }) => {
           const { id: logId, options } = order_log
@@ -540,20 +531,20 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
 
         const data: string[][] = [
           [
-            formatMessage(orderMessages.label.orderLogId),
-            formatMessage(orderMessages.label.paymentLogNo),
-            enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
-            enabledModules.invoice ? formatMessage(orderMessages.label.invoiceIssuedAt) : undefined,
-            formatMessage(orderMessages.label.orderLogStatus),
-            formatMessage(orderMessages.label.orderProductName),
-            formatMessage(orderMessages.label.memberName),
-            formatMessage(orderMessages.label.memberEmail),
-            formatMessage(orderMessages.label.paymentLogPaidAt),
-            formatMessage(orderMessages.label.orderProductCount),
-            formatMessage(orderMessages.label.orderProductTotalPrice),
-            formatMessage(orderMessages.label.orderDiscountTotalPrice),
-            formatMessage(orderMessages.label.orderLogTotalPrice),
-            formatMessage(orderMessages.label.invoiceStatus),
+            formatMessage(saleMessages.OrderExportModal.orderLogId),
+            formatMessage(saleMessages.OrderExportModal.paymentLogNo),
+            enabledModules.invoice ? formatMessage(saleMessages.OrderExportModal.invoiceId) : undefined,
+            enabledModules.invoice ? formatMessage(saleMessages.OrderExportModal.invoiceIssuedAt) : undefined,
+            formatMessage(saleMessages.OrderExportModal.orderLogStatus),
+            formatMessage(saleMessages.OrderExportModal.orderProductName),
+            formatMessage(saleMessages.OrderExportModal.memberName),
+            formatMessage(saleMessages.OrderExportModal.memberEmail),
+            formatMessage(saleMessages.OrderExportModal.paymentLogPaidAt),
+            formatMessage(saleMessages.OrderExportModal.orderProductCount),
+            formatMessage(saleMessages.OrderExportModal.orderProductTotalPrice),
+            formatMessage(saleMessages.OrderExportModal.orderDiscountTotalPrice),
+            formatMessage(saleMessages.OrderExportModal.orderLogTotalPrice),
+            formatMessage(saleMessages.OrderExportModal.invoiceStatus),
           ].filter(v => typeof v !== 'undefined'),
           ...paymentLogs.map(paymentLog =>
             [
@@ -583,10 +574,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 0,
               ),
               !paymentLog.invoice_options?.status
-                ? formatMessage(messages.invoicePending)
+                ? formatMessage(saleMessages.OrderExportModal.invoicePending)
                 : paymentLog.invoice_options?.status === 'SUCCESS'
-                ? formatMessage(messages.invoiceSuccess)
-                : formatMessage(messages.invoiceFailed, { errorCode: paymentLog.invoice_options?.status }),
+                ? formatMessage(saleMessages.OrderExportModal.invoiceSuccess)
+                : formatMessage(saleMessages.OrderExportModal.invoiceFailed, {
+                    errorCode: paymentLog.invoice_options?.status,
+                  }),
             ].filter(v => typeof v !== 'undefined'),
           ),
         ]
@@ -672,12 +665,12 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
   return (
     <AdminModal
       renderTrigger={renderTrigger}
-      title={formatMessage(messages.exportOrder)}
+      title={formatMessage(saleMessages.OrderExportModal.exportOrder)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
+            {formatMessage(saleMessages['*'].cancel)}
           </Button>
           <Dropdown.Button
             type="primary"
@@ -687,24 +680,19 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               <Menu>
                 <Menu.Item key="order-product" onClick={() => handleExport('orderProduct')}>
                   <Button type="link" size="small">
-                    {formatMessage(messages.exportOrderProduct)}
+                    {formatMessage(saleMessages.OrderExportModal.exportOrderProduct)}
                   </Button>
                 </Menu.Item>
                 <Menu.Item key="order-discount" onClick={() => handleExport('orderDiscount')}>
                   <Button type="link" size="small">
-                    {formatMessage(messages.exportOrderDiscount)}
+                    {formatMessage(saleMessages.OrderExportModal.exportOrderDiscount)}
                   </Button>
                 </Menu.Item>
-                {/* <Menu.Item key="payment-log" onClick={() => handleExport('paymentLog')}>
-                  <Button type="link" size="small">
-                    {formatMessage(messages.exportPaymentLog)}
-                  </Button>
-                </Menu.Item> */}
               </Menu>
             }
             onClick={() => !loading && handleExport('orderLog')}
           >
-            {loading ? <LoadingOutlined /> : <div>{formatMessage(messages.exportOrderLog)}</div>}
+            {loading ? <LoadingOutlined /> : <div>{formatMessage(saleMessages.OrderExportModal.exportOrderLog)}</div>}
           </Dropdown.Button>
         </>
       )}
@@ -737,16 +725,16 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           setSelectedSpecify(values.orderSpecify)
         }}
       >
-        <Form.Item label={formatMessage(commonMessages.label.dateRange)}>
+        <Form.Item label={formatMessage(saleMessages.OrderExportModal.dateRange)}>
           <div className="d-flex">
             <div className="flex-shrink-0">
               <Form.Item name="selectedField" noStyle>
                 <Select>
                   <Select.Option value="createdAt">
-                    {formatMessage(commonMessages.label.orderLogCreatedDate)}
+                    {formatMessage(saleMessages.OrderExportModal.orderLogCreatedDate)}
                   </Select.Option>
                   <Select.Option value="lastPaidAt">
-                    {formatMessage(commonMessages.label.orderLogPaymentDate)}
+                    {formatMessage(saleMessages.OrderExportModal.orderLogPaymentDate)}
                   </Select.Option>
                 </Select>
               </Form.Item>
@@ -757,8 +745,8 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
                 rules={[
                   {
                     required: true,
-                    message: formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.label.timeRange),
+                    message: formatMessage(saleMessages['*'].isRequired, {
+                      field: formatMessage(saleMessages.OrderExportModal.timeRange),
                     }),
                   },
                 ]}
@@ -771,65 +759,67 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         </Form.Item>
 
         <Form.Item
-          label={formatMessage(commonMessages.label.orderLogStatus)}
+          label={formatMessage(saleMessages.OrderExportModal.orderLogStatus)}
           name="orderStatuses"
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.label.orderStatus),
+              message: formatMessage(saleMessages['*'].isRequired, {
+                field: formatMessage(saleMessages.OrderExportModal.orderStatus),
               }),
             },
           ]}
         >
-          <Select mode="multiple" placeholder={formatMessage(commonMessages.label.orderLogStatus)}>
+          <Select mode="multiple" placeholder={formatMessage(saleMessages.OrderExportModal.orderLogStatus)}>
             <Select.Option value="UNPAID" disabled={selectedField === 'lastPaidAt'}>
-              {formatMessage(commonMessages.status.orderUnpaid)}
+              {formatMessage(saleMessages.OrderExportModal.orderUnpaid)}
             </Select.Option>
-            <Select.Option value="PARTIAL_PAID">{formatMessage(commonMessages.status.orderPartialPaid)}</Select.Option>
-            <Select.Option value="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
+            <Select.Option value="PARTIAL_PAID">
+              {formatMessage(saleMessages.OrderExportModal.orderPartialPaid)}
+            </Select.Option>
+            <Select.Option value="SUCCESS">{formatMessage(saleMessages.OrderExportModal.orderSuccess)}</Select.Option>
             <Select.Option value="PAYING" disabled={selectedField === 'lastPaidAt'}>
-              {formatMessage(commonMessages.status.orderPaying)}
+              {formatMessage(saleMessages.OrderExportModal.orderPaying)}
             </Select.Option>
             <Select.Option value="FAILED" disabled={selectedField === 'lastPaidAt'}>
-              {formatMessage(commonMessages.status.orderFailed)}
+              {formatMessage(saleMessages.OrderExportModal.orderFailed)}
             </Select.Option>
             <Select.Option value="PARTIAL_REFUND">
-              {formatMessage(commonMessages.status.orderPartialRefund)}
+              {formatMessage(saleMessages.OrderExportModal.orderPartialRefund)}
             </Select.Option>
-            <Select.Option value="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
-            <Select.Option value="DELETED">{formatMessage(commonMessages.status.orderDeleted)}</Select.Option>
-            <Select.Option value="EXPIRED">{formatMessage(commonMessages.status.orderExpired)}</Select.Option>
+            <Select.Option value="REFUND">{formatMessage(saleMessages.OrderExportModal.orderRefund)}</Select.Option>
+            <Select.Option value="DELETED">{formatMessage(saleMessages.OrderExportModal.orderDeleted)}</Select.Option>
+            <Select.Option value="EXPIRED">{formatMessage(saleMessages.OrderExportModal.orderExpired)}</Select.Option>
           </Select>
         </Form.Item>
-
         <Form.Item
-          label={formatMessage(commonMessages.label.orderLogCategory)}
+          label={formatMessage(saleMessages.OrderExportModal.orderLogCategory)}
           name="orderSpecify"
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.label.orderCategory),
+              message: formatMessage(saleMessages['*'].isRequired, {
+                field: formatMessage(saleMessages.OrderExportModal.orderCategory),
               }),
             },
           ]}
         >
           <Select>
-            <Select.Option value="ALL">{formatMessage(commonMessages.category.all)}</Select.Option>
-            <Select.Option value="SPECIFY">{formatMessage(commonMessages.category.specify)}</Select.Option>
+            <Select.Option value="ALL">{formatMessage(saleMessages.OrderExportModal.all)}</Select.Option>
+            <Select.Option value="SPECIFY">{formatMessage(saleMessages.OrderExportModal.specify)}</Select.Option>
             <Select.Option value="SPECIFY_COUPON_PLAN">
-              {formatMessage(commonMessages.category.specifyCouponPlan)}
+              {formatMessage(saleMessages.OrderExportModal.specifyCouponPlan)}
             </Select.Option>
             <Select.Option value="SPECIFY_VOUCHER_PLAN">
-              {formatMessage(commonMessages.category.specifyVoucherPlan)}
+              {formatMessage(saleMessages.OrderExportModal.specifyVoucherPlan)}
             </Select.Option>
           </Select>
         </Form.Item>
-
         {selectedSpeicfy !== 'ALL' && (
           <Form.Item
-            label={selectedSpeicfy === 'SPECIFY' ? formatMessage(commonMessages.label.otherSpecifyCategories) : ''}
+            label={
+              selectedSpeicfy === 'SPECIFY' ? formatMessage(saleMessages.OrderExportModal.otherSpecifyCategories) : ''
+            }
             name="specifiedCategories"
           >
             <ProductSelector
