@@ -141,7 +141,7 @@ const saleMessages = {
     orderRefund: { id: 'sale.OrderExportModal.orderRefund', defaultMessage: '已退款' },
     orderDeleted: { id: 'sale.OrderExportModal.orderDeleted', defaultMessage: '已刪除' },
     orderExpired: { id: 'sale.OrderExportModal.orderExpired', defaultMessage: '已失效' },
-    orderLogCategory: { id: 'sale.OrderExportModal.orderLogCategory', defeaultMessage: '訂單項目' },
+    orderLogCategory: { id: 'sale.OrderExportModal.orderLogCategory', defaultMessage: '訂單項目' },
     orderCategory: { id: 'sale.OrderExportModal.orderCategory', defaultMessage: '訂單項目' },
     all: { id: 'sale.OrderExportModal.all', defaultMessage: '全部產品' },
     specify: { id: 'sale.OrderExportModal.specify', defaultMessage: '指定產品' },
