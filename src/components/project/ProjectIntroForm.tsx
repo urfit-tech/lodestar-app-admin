@@ -145,7 +145,14 @@ const ProjectIntroForm: React.FC<{
     >
       <Form.Item label={<span>{formatMessage(projectMessages['*'].projectCover)}</span>}>
         <div className="d-flex align-items-center">
-          <ImageUploader file={coverImage} initialCoverUrl={coverUrl} onChange={file => setCoverImage(file)} />
+          <ImageUploader
+            file={coverImage}
+            initialCoverUrl={coverUrl}
+            onChange={file => {
+              setCoverImage(file)
+              setIsUseOriginSizeCoverImage(false)
+            }}
+          />
           {(coverUrl || coverImage) && (
             <Checkbox
               className="ml-2"

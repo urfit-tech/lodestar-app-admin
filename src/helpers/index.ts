@@ -364,6 +364,7 @@ export const isHTMLString = (str: string) =>
     .trim()
 
 export const getImageSizedUrl = (isUseOriginSize: boolean, imageUrl: string) => {
+  if (imageUrl === '') return imageUrl
   let uploadUrl: string
   const isImageResized = isImageUrlResized(imageUrl)
   if (isImageResized && isUseOriginSize) {

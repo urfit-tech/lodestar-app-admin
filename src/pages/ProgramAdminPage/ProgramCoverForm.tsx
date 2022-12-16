@@ -174,7 +174,14 @@ const ProgramCoverForm: React.VFC<{
           }
         >
           <div className="d-flex align-items-center">
-            <ImageUploader file={coverImage} initialCoverUrl={coverDefaultUrl} onChange={file => setCoverImage(file)} />
+            <ImageUploader
+              file={coverImage}
+              initialCoverUrl={coverDefaultUrl}
+              onChange={file => {
+                setCoverImage(file)
+                setIsUseOriginSizeCoverImage(false)
+              }}
+            />
             {(!isEmpty(coverDefaultUrl) || coverImage) && (
               <Checkbox
                 className="ml-2"

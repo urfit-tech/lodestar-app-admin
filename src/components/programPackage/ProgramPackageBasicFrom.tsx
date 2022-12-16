@@ -157,7 +157,14 @@ const ProgramPackageBasicForm: React.FC<{
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.cover)}>
         <div className="d-flex align-items-center">
-          <ImageUploader file={coverImage} initialCoverUrl={coverUrl} onChange={file => setCoverImage(file)} />
+          <ImageUploader
+            file={coverImage}
+            initialCoverUrl={coverUrl}
+            onChange={file => {
+              setCoverImage(file)
+              setIsUseOriginSizeCoverImage(false)
+            }}
+          />
           {(!isEmpty(coverUrl) || coverImage) && (
             <Checkbox
               className="ml-2"

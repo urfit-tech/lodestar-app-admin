@@ -191,7 +191,7 @@ const ProjectPlanAdminModal: React.FC<
             onRefetch?.()
             onRefetchProjectPlanSorts?.()
             isCreated && form.resetFields()
-            isCreated && setCoverImage(null)
+            setCoverImage(null)
           })
           .catch(handleError)
           .finally(() => {
@@ -273,7 +273,10 @@ const ProjectPlanAdminModal: React.FC<
             <ImageUploader
               file={coverImage}
               initialCoverUrl={projectPlan ? coverUrl : null}
-              onChange={file => setCoverImage(file)}
+              onChange={file => {
+                setCoverImage(file)
+                setIsUseOriginSizeCoverImage(false)
+              }}
             />
             {(!isEmpty(coverUrl) || coverImage) && (
               <Checkbox
