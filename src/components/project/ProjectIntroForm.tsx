@@ -65,11 +65,6 @@ const ProjectIntroForm: React.FC<{
     project?.coverUrl === '' || !project?.coverUrl ? false : !isImageUrlResized(project?.coverUrl),
   )
 
-  alert(
-    `condition result: ${
-      project?.coverUrl === '' || !project?.coverUrl ? false : !isImageUrlResized(project?.coverUrl)
-    }, status: ${isUseOriginSizeCoverImage}`,
-  )
   const [updateProjectCover] = useMutation<hasura.UPDATE_PROJECT_COVER, hasura.UPDATE_PROJECT_COVERVariables>(
     UPDATE_PROJECT_COVER,
   )

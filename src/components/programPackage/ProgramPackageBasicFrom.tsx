@@ -56,11 +56,6 @@ const ProgramPackageBasicForm: React.FC<{
     programPackage?.coverUrl === '' || !programPackage?.coverUrl ? false : !isImageUrlResized(programPackage.coverUrl),
   )
 
-  alert(
-    `condition result: ${
-      programPackage?.coverUrl === '' || !programPackage?.coverUrl ? false : !isImageUrlResized(programPackage.coverUrl)
-    }, state: ${isUseOriginSizeCoverImage}`,
-  )
   const coverId = uuid()
   const coverUrl = programPackage?.coverUrl || ''
 
