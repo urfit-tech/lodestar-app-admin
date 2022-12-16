@@ -9,7 +9,7 @@ import { isEmpty } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
@@ -42,15 +42,6 @@ const StyledUploadWarning = styled.div`
   letter-spacing: 0.4px;
   height: 100%;
 `
-
-const messages = defineMessages({
-  isPublished: { id: 'project.label.isPublished', defaultMessage: '是否開賣' },
-  published: { id: 'project.label.published', defaultMessage: '發售，專案上架後立即開賣' },
-  unPublished: { id: 'project.label.unPublished', defaultMessage: '停售，此方案暫停對外銷售，並從專案中隱藏' },
-  isParticipantsVisible: { id: 'project.label.isParticipantsVisible', defaultMessage: '購買人數' },
-  planDescription: { id: 'project.label.planDescription', defaultMessage: '方案描述' },
-  saveProjectPlan: { id: 'project.ui.saveProjectPlan', defaultMessage: '儲存方案' },
-})
 
 type FieldProps = {
   title: string
@@ -212,7 +203,7 @@ const ProjectPlanAdminModal: React.FC<
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-            {formatMessage(messages.saveProjectPlan)}
+            {formatMessage(projectMessages.ProjectPlanAdminModal.saveProjectPlan)}
           </Button>
         </>
       )}
@@ -286,25 +277,32 @@ const ProjectPlanAdminModal: React.FC<
                   setIsUseOriginSizeCoverImage(e.target.checked)
                 }}
               >
-                以原圖尺寸上傳
+                {formatMessage(projectMessages.ProjectPlanAdminModal.showOriginSize)}
               </Checkbox>
             )}
-            {coverImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+            {coverImage && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(projectMessages.ProjectPlanAdminModal.notUploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">
+        <Form.Item label={formatMessage(projectMessages.ProjectPlanAdminModal.isPublished)} name="isPublished">
           <Radio.Group>
             <Radio value={true} className="d-block">
-              {formatMessage(messages.published)}
+              {formatMessage(projectMessages.ProjectPlanAdminModal.published)}
             </Radio>
             <Radio value={false} className="d-block">
-              {formatMessage(messages.unPublished)}
+              {formatMessage(projectMessages.ProjectPlanAdminModal.unPublished)}
             </Radio>
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.isParticipantsVisible)} name="isParticipantsVisible">
+        <Form.Item
+          label={formatMessage(projectMessages.ProjectPlanAdminModal.isParticipantsVisible)}
+          name="isParticipantsVisible"
+        >
           <Radio.Group>
             <Radio value={true} className="d-block">
               {formatMessage(commonMessages.status.visible)}
@@ -380,7 +378,7 @@ const ProjectPlanAdminModal: React.FC<
             <ProjectPlanProductSelector />
           </Form.Item>
         )}
-        <Form.Item label={formatMessage(messages.planDescription)} name="description">
+        <Form.Item label={formatMessage(projectMessages.ProjectPlanAdminModal.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
       </Form>

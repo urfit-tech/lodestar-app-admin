@@ -173,10 +173,14 @@ const ProgramPackageBasicForm: React.FC<{
                 setIsUseOriginSizeCoverImage(e.target.checked)
               }}
             >
-              以原圖尺寸上傳
+              {formatMessage(programPackageMessages.ProgramPackageBasicFrom.showOriginSize)}
             </Checkbox>
           )}
-          {coverImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+          {coverImage && (
+            <StyledUploadWarning className="ml-2">
+              {formatMessage(programPackageMessages.ProgramPackageBasicFrom.notUploaded)}
+            </StyledUploadWarning>
+          )}
         </div>
       </Form.Item>
 

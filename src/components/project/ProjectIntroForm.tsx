@@ -8,7 +8,7 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { uploadFile } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
@@ -19,17 +19,6 @@ import ImageUploader from '../common/ImageUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import VideoInput from '../form/VideoInput'
 import projectMessages from './translation'
-
-const messages = defineMessages({
-  introductionDefaultNotice: {
-    id: 'project.text.introductionDefaultNotice',
-    defaultMessage: '預設顯示在手機版與電腦版的圖文內容',
-  },
-  introductionDesktopNotice: {
-    id: 'project.text.introductionDesktopNotice',
-    defaultMessage: '優先顯示在電腦版的圖文內容，若與「預設」一樣可留空',
-  },
-})
 
 const StyledNotice = styled.div`
   font-size: 12px;
@@ -161,10 +150,14 @@ const ProjectIntroForm: React.FC<{
                 setIsUseOriginSizeCoverImage(e.target.checked)
               }}
             >
-              以原圖尺寸上傳
+              {formatMessage(projectMessages.ProjectIntroForm.showOriginSize)}
             </Checkbox>
           )}
-          {coverImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+          {coverImage && (
+            <StyledUploadWarning className="ml-2">
+              {formatMessage(projectMessages.ProjectIntroForm.notUploaded)}
+            </StyledUploadWarning>
+          )}
         </div>
       </Form.Item>
 
@@ -179,13 +172,13 @@ const ProjectIntroForm: React.FC<{
       <Form.Item label={formatMessage(projectMessages['*'].projectContent)} wrapperCol={{ md: { span: 20 } }}>
         <Tabs defaultActiveKey="default">
           <Tabs.TabPane key="default" tab={formatMessage(commonMessages.label.default)}>
-            <StyledNotice>{formatMessage(messages.introductionDefaultNotice)}</StyledNotice>
+            <StyledNotice>{formatMessage(projectMessages.ProjectIntroForm.introductionDefaultNotice)}</StyledNotice>
             <Form.Item name="introduction">
               <AdminBraftEditor />
             </Form.Item>
           </Tabs.TabPane>
           <Tabs.TabPane key="desktop" tab={formatMessage(commonMessages.label.desktop)}>
-            <StyledNotice>{formatMessage(messages.introductionDesktopNotice)}</StyledNotice>
+            <StyledNotice>{formatMessage(projectMessages.ProjectIntroForm.introductionDesktopNotice)}</StyledNotice>
             <Form.Item name="introductionDesktop">
               <AdminBraftEditor />
             </Form.Item>
