@@ -117,7 +117,7 @@ const MemberContractCreationBlock: React.FC<{
       return
     }
 
-    const previewProducts = uniqBy(
+    const projectProducts = uniqBy(
       v => v.product_id,
       flatten(
         selectedProducts
@@ -198,6 +198,7 @@ const MemberContractCreationBlock: React.FC<{
       },
     }))
 
+    const projectProductCoins = projectProducts.map(projectProduct => projectProduct.price)
     addMemberContract({
       variables: {
         memberId: member.id,
@@ -213,7 +214,7 @@ const MemberContractCreationBlock: React.FC<{
             //   member_id: member.id,
             //   title: '學習禮包',
             //   description: '搶先看學習禮包',
-            //   amount: Math.ceil(sum(previewProducts.map(v => v.price)) / coinExchangeRage),
+            //   amount: Math.ceil(sum(projectProducts.map(v => v.price)) / coinExchangeRage),
             //   started_at: null,
             //   ended_at: serviceEndedAt?.toISOString(),
             // },
@@ -223,6 +224,15 @@ const MemberContractCreationBlock: React.FC<{
               title: `${selectedProjectPlan?.title}`,
               description: '私塾課代幣',
               amount: totalCoins,
+              started_at: serviceStartedAt.toISOString(),
+              ended_at: serviceEndedAt?.toISOString(),
+            },
+            {
+              id: v4(),
+              member_id: member.id,
+              title: `${selectedProjectPlan?.title}`,
+              description: '課程預排',
+              amount: -projectProductCoins,
               started_at: serviceStartedAt.toISOString(),
               ended_at: serviceEndedAt?.toISOString(),
             },
@@ -249,6 +259,7 @@ const MemberContractCreationBlock: React.FC<{
               ),
           },
           orderProducts: [
+            // main project
             {
               product_id: `ProjectPlan_${selectedProjectPlan?.id}`,
               name: selectedProjectPlan?.title,
@@ -257,6 +268,7 @@ const MemberContractCreationBlock: React.FC<{
               ended_at: serviceEndedAt?.toISOString(),
               delivered_at: new Date(),
             },
+            // each subject project plan
             ...contractProducts
               .filter(v => v.name !== '業師諮詢')
               .map(v => ({
@@ -273,6 +285,7 @@ const MemberContractCreationBlock: React.FC<{
                       }
                     : null,
               })),
+            // xuemi-only: consultant
             ...[
               totalAppointments > 0
                 ? products.find(p => p.name === '業師諮詢') && {
@@ -288,7 +301,8 @@ const MemberContractCreationBlock: React.FC<{
                   }
                 : null,
             ].filter(notEmpty),
-            ...previewProducts,
+            // products from subject project plan
+            ...projectProducts,
             ...[
               customContractCard
                 ? {
@@ -309,7 +323,7 @@ const MemberContractCreationBlock: React.FC<{
             //   type: 'Coupon',
             //   target: v.id,
             // })),
-            // ...previewProducts.map(v => ({
+            // ...projectProducts.map(v => ({
             //   name: `【代幣折抵】${v.name}`,
             //   price: 0,
             //   type: 'Coin',

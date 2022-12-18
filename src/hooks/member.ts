@@ -300,7 +300,9 @@ export const useMemberNotesAdmin = (
   },
   keyword?: string,
 ) => {
-  const splitedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({ [key as keyof Partial<hasura.member_note_order_by>]: value }))
+  const splitedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({
+    [key as keyof Partial<hasura.member_note_order_by>]: value,
+  }))
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     deleted_at: { _is_null: true },
@@ -1130,11 +1132,11 @@ export const useMemberPropertyCollection = (memberId: string) => {
 
 export const useMutateMemberProperty = () => {
   const [updateMemberProperty] = useMutation<hasura.UPDATE_MEMBER_PROPERTY, hasura.UPDATE_MEMBER_PROPERTYVariables>(gql`
-    mutation UPDATE_MEMBER_PROPERTY($memberId: String!, $memberProperties: [member_property_insert_input!]!) {
-      delete_member_property(where: { member_id: { _eq: $memberId } }) {
-        affected_rows
-      }
-      insert_member_property(objects: $memberProperties) {
+    mutation UPDATE_MEMBER_PROPERTY($memberProperties: [member_property_insert_input!]!) {
+      insert_member_property(
+        objects: $memberProperties
+        on_conflict: { constraint: member_property_member_id_property_id_key, update_columns: [value] }
+      ) {
         affected_rows
       }
     }

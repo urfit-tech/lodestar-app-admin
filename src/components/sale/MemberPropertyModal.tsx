@@ -99,7 +99,6 @@ const MemberPropertyModal: React.FC<
         return Promise.allSettled([
           updateMemberProperty({
             variables: {
-              memberId: member.id,
               memberProperties: properties.map(property => {
                 const displayPropertiesName = displayProperties.map(displayProperty => displayProperty.name)
                 if (displayPropertiesName.includes(property.name)) {

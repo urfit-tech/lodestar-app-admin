@@ -12520,14 +12520,6 @@ export interface GET_MEMBER_PROPERTY_COLLECTIONVariables {
 // GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
 // ====================================================
 
-export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
-  __typename: "member_property_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
   __typename: "member_property_mutation_response";
   /**
@@ -12538,17 +12530,12 @@ export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
 
 export interface UPDATE_MEMBER_PROPERTY {
   /**
-   * delete data from the table: "member_property"
-   */
-  delete_member_property: UPDATE_MEMBER_PROPERTY_delete_member_property | null;
-  /**
    * insert data into the table: "member_property"
    */
   insert_member_property: UPDATE_MEMBER_PROPERTY_insert_member_property | null;
 }
 
 export interface UPDATE_MEMBER_PROPERTYVariables {
-  memberId: string;
   memberProperties: member_property_insert_input[];
 }
 
