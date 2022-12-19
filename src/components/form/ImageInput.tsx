@@ -22,6 +22,7 @@ const StyledSingleUploader = styled(SingleUploader)`
   }
 `
 
+// deprecated: use ImageUploader instead
 const ImageInput: React.FC<{
   path: string
   value?: string | null
