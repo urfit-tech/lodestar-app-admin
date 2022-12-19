@@ -104,7 +104,7 @@ const AppSettingCard: React.FC<
             .map(key => ({
               app_id: appId,
               key,
-              value: trim(String(values[key as keyof FieldProps])),
+              value: values[key as keyof FieldProps] ? trim(String(values[key as keyof FieldProps])) : '',
             })),
         },
       })
