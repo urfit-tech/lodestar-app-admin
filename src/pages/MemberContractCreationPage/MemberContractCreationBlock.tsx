@@ -198,7 +198,6 @@ const MemberContractCreationBlock: React.FC<{
       },
     }))
 
-    const projectProductCoins = projectProducts.map(projectProduct => projectProduct.price)
     addMemberContract({
       variables: {
         memberId: member.id,
@@ -224,15 +223,6 @@ const MemberContractCreationBlock: React.FC<{
               title: `${selectedProjectPlan?.title}`,
               description: '私塾課代幣',
               amount: totalCoins,
-              started_at: serviceStartedAt.toISOString(),
-              ended_at: serviceEndedAt?.toISOString(),
-            },
-            {
-              id: v4(),
-              member_id: member.id,
-              title: `${selectedProjectPlan?.title}`,
-              description: '課程預排',
-              amount: -projectProductCoins,
               started_at: serviceStartedAt.toISOString(),
               ended_at: serviceEndedAt?.toISOString(),
             },
