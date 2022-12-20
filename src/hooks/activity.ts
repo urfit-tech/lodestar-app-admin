@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { sum } from 'ramda'
+import { prop, sortBy, sum } from 'ramda'
 import hasura from '../hasura'
 import { notEmpty } from '../helpers'
 import { ActivityAdminProps, ActivityTicketSessionType } from '../types/activity'
+import { Category } from '../types/general'
 
 export const useActivityCollection = (condition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition']) => {
   const limit = 20
@@ -296,4 +297,28 @@ export const useActivityAdmin = (activityId: string) => {
     activityAdmin,
     refetchActivityAdmin: refetch,
   }
+}
+
+
+export const useCategroyCollection = (condition: hasura.GET_ACTIVITIES_CATEGORIESVariables['condition']) => {
+  const { loading, error, data } = useQuery<
+    hasura.GET_ACTIVITIES_CATEGORIES,
+    hasura.GET_ACTIVITIES_CATEGORIESVariables
+  >(
+    gql`
+      query GET_ACTIVITIES_CATEGORIES($condition: activity_bool_exp) {
+        category(where: {activity_categories: {
+          activity: $condition
+        }}) {
+          id
+          name
+          position
+        }
+      }
+    `,
+    { variables: { condition } },
+  )
+  const categories: Category[] | null =
+  loading || error || !data ? null : sortBy(prop('position'))(data.category,)
+  return { loadingCategories: loading, errorCategories: error, categories }
 }

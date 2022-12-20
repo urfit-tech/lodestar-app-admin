@@ -8860,6 +8860,33 @@ export interface GET_ACTIVITY_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ACTIVITIES_CATEGORIES
+// ====================================================
+
+export interface GET_ACTIVITIES_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+  position: number;
+}
+
+export interface GET_ACTIVITIES_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_ACTIVITIES_CATEGORIES_category[];
+}
+
+export interface GET_ACTIVITIES_CATEGORIESVariables {
+  condition?: activity_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
 // ====================================================
 
