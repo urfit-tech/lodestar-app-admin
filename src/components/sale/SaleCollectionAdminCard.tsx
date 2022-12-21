@@ -343,7 +343,7 @@ const SaleCollectionAdminCard: React.VFC<{
                   </div>
                   <div>
                     {currencyFormatter(
-                      v.product.type === 'MerchandiseSpec' && v.options.currencyId === 'LSC'
+                      v.product.type === 'MerchandiseSpec' && v.options?.currencyId === 'LSC'
                         ? v.options.currencyPrice
                         : v.price,
                       v.options?.currencyId,
@@ -472,8 +472,8 @@ const SaleCollectionAdminCard: React.VFC<{
                 {currencyFormatter(
                   orderProducts.length === 1 &&
                     orderProducts[0].product.type === 'MerchandiseSpec' &&
-                    orderProducts[0].options.currencyId === 'LSC'
-                    ? orderDiscount.options.coins
+                    orderProducts[0].options?.currencyId === 'LSC'
+                    ? orderDiscount.options?.coins
                     : orderDiscount.price,
                   orderProducts.length === 1 &&
                     orderProducts[0].product.type === 'MerchandiseSpec' &&
