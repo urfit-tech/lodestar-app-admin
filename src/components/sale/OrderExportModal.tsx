@@ -188,11 +188,17 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
             enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
             orderLog.gift_plans?.split('\\n').join('\n') || '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'true'
-              ? formatMessage(saleMessages.OrderExportModal.no)
-              : formatMessage(saleMessages.OrderExportModal.yes),
-            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name,
-            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone,
+            orderLog.shipping?.isOutsideTaiwanIsland
+              ? orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+                ? formatMessage(saleMessages.OrderExportModal.no)
+                : orderLog.shipping?.isOutsideTaiwanIsland === 'false'
+                ? formatMessage(saleMessages.OrderExportModal.yes)
+                : ''
+              : !!orderLog.shipping?.name && !!orderLog.shipping?.phone && !!orderLog.shipping?.address
+              ? formatMessage(saleMessages.OrderExportModal.yes)
+              : '',
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name || '',
+            orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone || '',
             orderLog.shipping?.isOutsideTaiwanIsland === 'true'
               ? ''
               : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
