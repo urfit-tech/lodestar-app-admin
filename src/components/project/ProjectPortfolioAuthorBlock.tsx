@@ -9,6 +9,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useIdentity } from '../../hooks/identity'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
@@ -31,12 +32,17 @@ const ProjectPortfolioAuthorBlock: React.FC<{
 }> = ({ projectId, publishedAt, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldPRops>()
-  const [updatePortfolioAuthor] = useMutation<hasura.UPDATE_PORTFOLIO_AUTHOR, hasura.UPDATE_PORTFOLIO_AUTHORVariables>(
-    UPDATE_PORTFOLIO_AUTHOR,
+  const [insertPortfolioAuthor] = useMutation<hasura.INSERT_PORTFOLIO_AUTHOR, hasura.INSERT_PORTFOLIO_AUTHORVariables>(
+    INSERT_PORTFOLIO_AUTHOR,
+  )
+  const [deletePortfolioAuthor] = useMutation<hasura.DELETE_PORTFOLIO_AUTHOR, hasura.DELETE_PORTFOLIO_AUTHORVariables>(
+    DELETE_PORTFOLIO_AUTHOR,
   )
   const [isVisible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const { authorData, authorDataRefetch } = usePortfolioAuthor(projectId)
+  const { getIdentity } = useIdentity()
+  const { identityId } = getIdentity('Project', 'author')
 
   if (!projectId) {
     return <Skeleton active />
@@ -44,10 +50,9 @@ const ProjectPortfolioAuthorBlock: React.FC<{
 
   const handleDelete = () => {
     setLoading(true)
-    updatePortfolioAuthor({
+    deletePortfolioAuthor({
       variables: {
         projectRoleId: authorData.projectRoleId,
-        memberId: '',
       },
     })
       .then(() => {
@@ -62,12 +67,21 @@ const ProjectPortfolioAuthorBlock: React.FC<{
 
   const handleSubmit = (values: FieldPRops) => {
     setLoading(true)
-    updatePortfolioAuthor({
-      variables: {
-        projectRoleId: authorData.projectRoleId,
-        memberId: values.memberId,
-      },
+    new Promise<void>((resolve, reject) => {
+      if (!identityId) {
+        return reject(new Error('no author identity id provided'))
+      }
+      return resolve()
     })
+      .then(() =>
+        insertPortfolioAuthor({
+          variables: {
+            projectId,
+            memberId: values.memberId,
+            identityId,
+          },
+        }),
+      )
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
         setVisible(false)
@@ -152,10 +166,20 @@ const GET_PORTFOLIO_AUTHOR = gql`
   }
 `
 
-const UPDATE_PORTFOLIO_AUTHOR = gql`
-  mutation UPDATE_PORTFOLIO_AUTHOR($projectRoleId: uuid!, $memberId: String!) {
-    update_project_role_by_pk(pk_columns: { id: $projectRoleId }, _set: { member_id: $memberId }) {
-      member_id
+const INSERT_PORTFOLIO_AUTHOR = gql`
+  mutation INSERT_PORTFOLIO_AUTHOR($projectId: uuid!, $memberId: String!, $identityId: uuid!) {
+    insert_project_role(
+      objects: [{ project_id: $projectId, member_id: $memberId, identity_id: $identityId, agreed_at: "now()" }]
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const DELETE_PORTFOLIO_AUTHOR = gql`
+  mutation DELETE_PORTFOLIO_AUTHOR($projectRoleId: uuid!) {
+    delete_project_role(where: { id: { _eq: $projectRoleId } }) {
+      affected_rows
     }
   }
 `

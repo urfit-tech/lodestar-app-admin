@@ -1,8 +1,9 @@
 import { ArrowLeftOutlined, FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Tabs } from 'antd'
+import { Button, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -36,7 +37,8 @@ const ProgramPackageAdminPage: React.FC = () => {
   const { programPackageId } = useParams<{ programPackageId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
-  const { programPackage, refetch } = useProgramPackage(programPackageId)
+  const { isAuthenticating } = useAuth()
+  const { loading, programPackage, refetch } = useProgramPackage(programPackageId)
   const [updateProgramPosition] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables
@@ -46,6 +48,8 @@ const ProgramPackageAdminPage: React.FC = () => {
     hasura.UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITIONVariables
   >(UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION)
   const { updateProgramPackageMetaTag } = useMutateProgramPackage()
+
+  if (loading || isAuthenticating) return <Skeleton active />
 
   return (
     <>

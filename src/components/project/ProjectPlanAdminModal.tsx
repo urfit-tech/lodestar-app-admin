@@ -5,14 +5,15 @@ import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
+import { isEmpty } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
-import { handleError, uploadFile } from '../../helpers'
+import { getImageSizedUrl, handleError, isImageUrlResized, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 import { ProjectPlan, ProjectPlanProduct, ProjectPlanType } from '../../types/project'
@@ -35,14 +36,12 @@ const StyledNotation = styled.div`
   white-space: pre-line;
 `
 
-const messages = defineMessages({
-  isPublished: { id: 'project.label.isPublished', defaultMessage: '是否開賣' },
-  published: { id: 'project.label.published', defaultMessage: '發售，專案上架後立即開賣' },
-  unPublished: { id: 'project.label.unPublished', defaultMessage: '停售，此方案暫停對外銷售，並從專案中隱藏' },
-  isParticipantsVisible: { id: 'project.label.isParticipantsVisible', defaultMessage: '購買人數' },
-  planDescription: { id: 'project.label.planDescription', defaultMessage: '方案描述' },
-  saveProjectPlan: { id: 'project.ui.saveProjectPlan', defaultMessage: '儲存方案' },
-})
+const StyledUploadWarning = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  height: 100%;
+`
 
 type FieldProps = {
   title: string
@@ -93,9 +92,13 @@ const ProjectPlanAdminModal: React.FC<
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!projectPlan?.discountDownPrice)
   const [loading, setLoading] = useState(false)
   const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
+    projectPlan?.coverUrl === '' || !projectPlan?.coverUrl ? false : !isImageUrlResized(projectPlan.coverUrl),
+  )
 
   const withPeriod = projectPlanType === 'period' || projectPlanType === 'subscription'
   const withAutoRenewed = projectPlanType === 'subscription'
+  const coverUrl = projectPlan?.coverUrl || ''
 
   const handleSubmit = (onSuccess: () => void) => {
     form
@@ -121,7 +124,7 @@ const ProjectPlanAdminModal: React.FC<
               sold_at: values.sale?.soldAt || null,
               discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
               description: values.description.toRAW(),
-              cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
+              cover_url: coverUrl ? coverUrl : null,
             },
           },
         })
@@ -143,8 +146,8 @@ const ProjectPlanAdminModal: React.FC<
                 process.env.NODE_ENV === 'development' && console.log(error)
               }
             }
+            const coverId = uuid()
             if (coverImage) {
-              const coverId = uuid()
               try {
                 await uploadFile(
                   `project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
@@ -159,13 +162,19 @@ const ProjectPlanAdminModal: React.FC<
               } catch (error) {
                 process.env.NODE_ENV === 'development' && console.log(error)
               }
-              await updateProjectPlanCoverUrl({
-                variables: {
-                  id: projectPlanId,
-                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`,
-                },
-              })
             }
+            const uploadCoverUrl = getImageSizedUrl(
+              isUseOriginSizeCoverImage,
+              coverImage
+                ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}/${coverId}`
+                : coverUrl,
+            )
+            await updateProjectPlanCoverUrl({
+              variables: {
+                id: projectPlanId,
+                coverUrl: uploadCoverUrl,
+              },
+            })
           })
           .then(() => {
             message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -173,7 +182,7 @@ const ProjectPlanAdminModal: React.FC<
             onRefetch?.()
             onRefetchProjectPlanSorts?.()
             isCreated && form.resetFields()
-            isCreated && setCoverImage(null)
+            setCoverImage(null)
           })
           .catch(handleError)
           .finally(() => {
@@ -194,7 +203,7 @@ const ProjectPlanAdminModal: React.FC<
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
-            {formatMessage(messages.saveProjectPlan)}
+            {formatMessage(projectMessages.ProjectPlanAdminModal.saveProjectPlan)}
           </Button>
         </>
       )}
@@ -251,25 +260,49 @@ const ProjectPlanAdminModal: React.FC<
         </Form.Item>
 
         <Form.Item label={<span>{formatMessage(projectMessages['*'].projectCover)}</span>}>
-          <ImageUploader
-            file={coverImage}
-            initialCoverUrl={projectPlan ? projectPlan?.coverUrl : null}
-            onChange={file => setCoverImage(file)}
-          />
+          <div className="d-flex align-items-center">
+            <ImageUploader
+              file={coverImage}
+              initialCoverUrl={projectPlan ? coverUrl : null}
+              onChange={file => {
+                setCoverImage(file)
+                setIsUseOriginSizeCoverImage(false)
+              }}
+            />
+            {(!isEmpty(coverUrl) || coverImage) && (
+              <Checkbox
+                className="ml-2"
+                checked={isUseOriginSizeCoverImage}
+                onChange={e => {
+                  setIsUseOriginSizeCoverImage(e.target.checked)
+                }}
+              >
+                {formatMessage(projectMessages.ProjectPlanAdminModal.showOriginSize)}
+              </Checkbox>
+            )}
+            {coverImage && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(projectMessages.ProjectPlanAdminModal.notUploaded)}
+              </StyledUploadWarning>
+            )}
+          </div>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">
+        <Form.Item label={formatMessage(projectMessages.ProjectPlanAdminModal.isPublished)} name="isPublished">
           <Radio.Group>
             <Radio value={true} className="d-block">
-              {formatMessage(messages.published)}
+              {formatMessage(projectMessages.ProjectPlanAdminModal.published)}
             </Radio>
             <Radio value={false} className="d-block">
-              {formatMessage(messages.unPublished)}
+              {formatMessage(projectMessages.ProjectPlanAdminModal.unPublished)}
             </Radio>
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.isParticipantsVisible)} name="isParticipantsVisible">
+        <Form.Item
+          label={formatMessage(projectMessages.ProjectPlanAdminModal.isParticipantsVisible)}
+          name="isParticipantsVisible"
+        >
           <Radio.Group>
             <Radio value={true} className="d-block">
               {formatMessage(commonMessages.status.visible)}
@@ -345,7 +378,7 @@ const ProjectPlanAdminModal: React.FC<
             <ProjectPlanProductSelector />
           </Form.Item>
         )}
-        <Form.Item label={formatMessage(messages.planDescription)} name="description">
+        <Form.Item label={formatMessage(projectMessages.ProjectPlanAdminModal.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
       </Form>
