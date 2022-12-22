@@ -24,6 +24,23 @@ const projectMessages = {
   }),
   ProjectPlanAdminModal: defineMessages({
     deliverables: { id: 'project.ProjectPlanAdminModal.deliverables', defaultMessage: '交付項目' },
+    isPublished: { id: 'project.ProjectPlanAdminModal.isPublished', defaultMessage: '是否開賣' },
+    published: { id: 'project.ProjectPlanAdminModal.published', defaultMessage: '發售，專案上架後立即開賣' },
+    unPublished: {
+      id: 'project.ProjectPlanAdminModal.unPublished',
+      defaultMessage: '停售，此方案暫停對外銷售，並從專案中隱藏',
+    },
+    isParticipantsVisible: { id: 'project.ProjectPlanAdminModal.isParticipantsVisible', defaultMessage: '購買人數' },
+    planDescription: { id: 'project.ProjectPlanAdminModal.planDescription', defaultMessage: '方案描述' },
+    saveProjectPlan: { id: 'project.ProjectPlanAdminModal.saveProjectPlan', defaultMessage: '儲存方案' },
+    showOriginSize: {
+      id: 'project.ProjectPlanAdminModal.showOriginSize',
+      defaultMessage: '以原圖尺寸顯示',
+    },
+    notUploaded: {
+      id: 'project.ProjectPlanAdminModal.notUploaded',
+      defaultMessage: '*尚未上傳',
+    },
   }),
   ProjectPlanCard: defineMessages({
     onSale: { id: 'project.ProjectPlanCard.onSale', defaultMessage: '發售中' },
@@ -35,6 +52,24 @@ const projectMessages = {
     sku: { id: 'project.ProjectPlanProductSelector.sku', defaultMessage: '料號（SKU）' },
     recognizePrice: { id: 'project.ProjectPlanProductSelector.recognizePrice', defaultMessage: '認列金額' },
     addDeliverables: { id: 'project.ProjectPlanProductSelector.addDeliverables', defaultMessage: '新增項目' },
+  }),
+  ProjectIntroForm: defineMessages({
+    introductionDefaultNotice: {
+      id: 'project.ProjectIntroForm.introductionDefaultNotice',
+      defaultMessage: '預設顯示在手機版與電腦版的圖文內容',
+    },
+    introductionDesktopNotice: {
+      id: 'project.ProjectIntroForm.introductionDesktopNotice',
+      defaultMessage: '優先顯示在電腦版的圖文內容，若與「預設」一樣可留空',
+    },
+    showOriginSize: {
+      id: 'project.ProjectIntroForm.showOriginSize',
+      defaultMessage: '以原圖尺寸顯示',
+    },
+    notUploaded: {
+      id: 'project.ProjectIntroForm.notUploaded',
+      defaultMessage: '*尚未上傳',
+    },
   }),
   ProjectBasicForm: defineMessages({
     tag: { id: 'project.ProjectBasicForm.tag', defaultMessage: '標籤' },
@@ -79,8 +114,7 @@ const projectMessages = {
     },
     creator: {
       id: 'project.ProjectPortfolioSettingsForm.creator',
-      defaultMessage:
-        'creator: {name}',
+      defaultMessage: 'creator: {name}',
     },
   }),
   ProjectPortfolioDescriptionForm: defineMessages({}),

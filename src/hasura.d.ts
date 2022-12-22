@@ -7146,24 +7146,56 @@ export interface GET_PORTFOLIO_AUTHORVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PORTFOLIO_AUTHOR
+// GraphQL mutation operation: INSERT_PORTFOLIO_AUTHOR
 // ====================================================
 
-export interface UPDATE_PORTFOLIO_AUTHOR_update_project_role_by_pk {
-  __typename: "project_role";
-  member_id: string;
-}
-
-export interface UPDATE_PORTFOLIO_AUTHOR {
+export interface INSERT_PORTFOLIO_AUTHOR_insert_project_role {
+  __typename: "project_role_mutation_response";
   /**
-   * update single row of the table: "project_role"
+   * number of rows affected by the mutation
    */
-  update_project_role_by_pk: UPDATE_PORTFOLIO_AUTHOR_update_project_role_by_pk | null;
+  affected_rows: number;
 }
 
-export interface UPDATE_PORTFOLIO_AUTHORVariables {
-  projectRoleId: any;
+export interface INSERT_PORTFOLIO_AUTHOR {
+  /**
+   * insert data into the table: "project_role"
+   */
+  insert_project_role: INSERT_PORTFOLIO_AUTHOR_insert_project_role | null;
+}
+
+export interface INSERT_PORTFOLIO_AUTHORVariables {
+  projectId: any;
   memberId: string;
+  identityId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PORTFOLIO_AUTHOR
+// ====================================================
+
+export interface DELETE_PORTFOLIO_AUTHOR_delete_project_role {
+  __typename: "project_role_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PORTFOLIO_AUTHOR {
+  /**
+   * delete data from the table: "project_role"
+   */
+  delete_project_role: DELETE_PORTFOLIO_AUTHOR_delete_project_role | null;
+}
+
+export interface DELETE_PORTFOLIO_AUTHORVariables {
+  projectRoleId: any;
 }
 
 /* tslint:disable */

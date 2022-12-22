@@ -1,19 +1,31 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Checkbox, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { isEmpty } from 'ramda'
 import React, { useState } from 'react'
+import { useRef } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import TagSelector from '../../components/form/TagSelector'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
+import { getImageSizedUrl, handleError, isImageUrlResized, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ProgramPackageProps } from '../../types/programPackage'
+import ImageUploader from '../common/ImageUploader'
 import CategorySelector from '../form/CategorySelector'
-import ImageInput from '../form/ImageInput'
 import programPackageMessages from './translation'
+
+const StyledUploadWarning = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+  height: 100%;
+`
 
 type FieldProps = {
   title: string
@@ -28,6 +40,8 @@ const ProgramPackageBasicForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
+  const { authToken } = useAuth()
+  const uploadCanceler = useRef<Canceler>()
   const [updateProgramPackageBasic] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_BASIC,
     hasura.UPDATE_PROGRAM_PACKAGE_BASICVariables
@@ -37,26 +51,16 @@ const ProgramPackageBasicForm: React.FC<{
     hasura.UPDATE_PROGRAM_PACKAGE_COVERVariables
   >(UPDATE_PROGRAM_PACKAGE_COVER)
   const [loading, setLoading] = useState(false)
+  const [coverImage, setCoverImage] = useState<File | null>(null)
+  const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
+    programPackage?.coverUrl === '' || !programPackage?.coverUrl ? false : !isImageUrlResized(programPackage.coverUrl),
+  )
+
   const coverId = uuid()
+  const coverUrl = programPackage?.coverUrl || ''
 
   if (!programPackage) {
     return <Skeleton active />
-  }
-
-  const handleUpload = () => {
-    setLoading(true)
-    updateProgramPackageCover({
-      variables: {
-        programPackageId: programPackage.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}/${coverId}/1080`,
-      },
-    })
-      .then(() => {
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
-      })
-      .catch(handleError)
-      .finally(() => setLoading(false))
   }
 
   const handleSubmit = (values: FieldProps) => {
@@ -81,8 +85,34 @@ const ProgramPackageBasicForm: React.FC<{
         })),
       },
     })
+      .then(async () => {
+        if (coverImage) {
+          try {
+            await uploadFile(`program_package_covers/${appId}/${programPackage.id}/${coverId}`, coverImage, authToken, {
+              cancelToken: new axios.CancelToken(canceler => {
+                uploadCanceler.current = canceler
+              }),
+            })
+          } catch (error) {
+            process.env.NODE_ENV === 'development' && console.log(error)
+          }
+        }
+        const uploadImageUrl = getImageSizedUrl(
+          isUseOriginSizeCoverImage,
+          coverImage
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}/${coverId}`
+            : coverUrl,
+        )
+        await updateProgramPackageCover({
+          variables: {
+            programPackageId: programPackage.id,
+            coverUrl: uploadImageUrl,
+          },
+        })
+      })
       .then(() => {
         onRefetch?.()
+        setCoverImage(null)
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -96,7 +126,7 @@ const ProgramPackageBasicForm: React.FC<{
       colon={false}
       hideRequiredMark
       labelCol={{ md: { span: 4 } }}
-      wrapperCol={{ md: { span: 8 } }}
+      wrapperCol={{ md: { span: 11 } }}
       initialValues={{
         title: programPackage.title,
         categoryIds: programPackage.categories.map(category => category.id),
@@ -126,16 +156,32 @@ const ProgramPackageBasicForm: React.FC<{
         <TagSelector />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.label.cover)}>
-        <ImageInput
-          path={`program_package_covers/${appId}/${programPackage.id}/${coverId}`}
-          image={{
-            width: '160px',
-            ratio: 9 / 16,
-            shape: 'rounded',
-          }}
-          value={programPackage.coverUrl}
-          onChange={() => handleUpload()}
-        />
+        <div className="d-flex align-items-center">
+          <ImageUploader
+            file={coverImage}
+            initialCoverUrl={coverUrl}
+            onChange={file => {
+              setCoverImage(file)
+              setIsUseOriginSizeCoverImage(false)
+            }}
+          />
+          {(!isEmpty(coverUrl) || coverImage) && (
+            <Checkbox
+              className="ml-2"
+              checked={isUseOriginSizeCoverImage}
+              onChange={e => {
+                setIsUseOriginSizeCoverImage(e.target.checked)
+              }}
+            >
+              {formatMessage(programPackageMessages.ProgramPackageBasicFrom.showOriginSize)}
+            </Checkbox>
+          )}
+          {coverImage && (
+            <StyledUploadWarning className="ml-2">
+              {formatMessage(programPackageMessages.ProgramPackageBasicFrom.notUploaded)}
+            </StyledUploadWarning>
+          )}
+        </div>
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>

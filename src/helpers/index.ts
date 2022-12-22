@@ -373,3 +373,21 @@ export const periodTypeConverter: (type: PeriodType) => MomentPeriodType = type 
 
   return type as MomentPeriodType
 }
+
+export const getImageSizedUrl = (isUseOriginSize: boolean, imageUrl: string) => {
+  if (imageUrl === '') return imageUrl
+  let uploadUrl: string
+  const isImageResized = isImageUrlResized(imageUrl)
+  if (isImageResized && isUseOriginSize) {
+    uploadUrl = imageUrl.replace(/\/\d{1,5}$/, '')
+  } else if (!isImageResized && !isUseOriginSize) {
+    uploadUrl = imageUrl + '/1080'
+  } else {
+    uploadUrl = imageUrl
+  }
+  return uploadUrl
+}
+
+export const isImageUrlResized = (imageUrl: string) => {
+  return /\/\d{1,5}$/.test(imageUrl)
+}
