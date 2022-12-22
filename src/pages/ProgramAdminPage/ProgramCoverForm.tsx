@@ -1,11 +1,12 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, message, Skeleton, Tooltip } from 'antd'
+import { Button, Checkbox, Form, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { isEmpty } from 'ramda'
 import { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -13,7 +14,7 @@ import { v4 as uuid } from 'uuid'
 import { StyledTips } from '../../components/admin'
 import ImageUploader from '../../components/common/ImageUploader'
 import hasura from '../../hasura'
-import { handleError, uploadFile } from '../../helpers'
+import { getImageSizedUrl, handleError, isImageUrlResized, uploadFile } from '../../helpers'
 import ProgramAdminPageMessages from './translation'
 
 type FieldProps = {
@@ -58,6 +59,16 @@ const ProgramCoverForm: React.VFC<{
   const [coverMobileImage, setCoverMobileImage] = useState<File | null>(null)
   const [coverThumbnailImage, setCoverThumbnailImage] = useState<File | null>(null)
 
+  const [isUseOriginSizeCoverImage, setIsUseOriginSizeCoverImage] = useState(
+    isEmpty(coverDefaultUrl) ? false : !isImageUrlResized(coverDefaultUrl),
+  )
+  const [isUseOriginSizeCoverMobileImage, setIsUseOriginSizeCoverMobileImage] = useState(
+    isEmpty(coverMobileUrl) ? false : !isImageUrlResized(coverMobileUrl),
+  )
+  const [isUseOriginSizeCoverThumbnailImage, setIsUseOriginSizeCoverThumbnailImage] = useState(
+    isEmpty(coverThumbnailUrl) ? false : !isImageUrlResized(coverThumbnailUrl),
+  )
+
   if (!programId) return <Skeleton active />
 
   const handleSubmit = async (values: FieldProps) => {
@@ -93,18 +104,31 @@ const ProgramCoverForm: React.VFC<{
       return error
     }
 
+    const uploadCoverUrl = getImageSizedUrl(
+      isUseOriginSizeCoverImage,
+      coverImage
+        ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${defaultCoverId}`
+        : coverDefaultUrl,
+    )
+    const uploadMobileUrl = getImageSizedUrl(
+      isUseOriginSizeCoverMobileImage,
+      coverMobileImage
+        ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${mobileCoverId}`
+        : coverMobileUrl,
+    )
+    const uploadThumbnailUrl = getImageSizedUrl(
+      isUseOriginSizeCoverThumbnailImage,
+      coverThumbnailImage
+        ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${thumbnailCoverId}`
+        : coverThumbnailUrl,
+    )
+
     await updateProgramCover({
       variables: {
         programId: programId,
-        coverDefaultUrl: coverImage
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${defaultCoverId}/1080`
-          : coverDefaultUrl,
-        coverMobileUrl: coverMobileImage
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${mobileCoverId}/1080`
-          : coverMobileUrl,
-        coverThumbnailUrl: coverThumbnailImage
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}/${thumbnailCoverId}/1080`
-          : coverThumbnailUrl,
+        coverDefaultUrl: uploadCoverUrl,
+        coverMobileUrl: uploadMobileUrl,
+        coverThumbnailUrl: uploadThumbnailUrl,
       },
     })
       .then(() => {
@@ -125,7 +149,7 @@ const ProgramCoverForm: React.VFC<{
         colon={false}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
-        wrapperCol={{ md: { span: 10 } }}
+        wrapperCol={{ md: { span: 13 } }}
         initialValues={{
           defaultCoverDefaultUrl: coverDefaultUrl,
           coverMobileUrl: coverMobileUrl,
@@ -150,8 +174,30 @@ const ProgramCoverForm: React.VFC<{
           }
         >
           <div className="d-flex align-items-center">
-            <ImageUploader file={coverImage} initialCoverUrl={coverDefaultUrl} onChange={file => setCoverImage(file)} />
-            {coverImage && <StyledUploadWarning className="ml-2">* 尚未上傳</StyledUploadWarning>}
+            <ImageUploader
+              file={coverImage}
+              initialCoverUrl={coverDefaultUrl}
+              onChange={file => {
+                setCoverImage(file)
+                setIsUseOriginSizeCoverImage(false)
+              }}
+            />
+            {(!isEmpty(coverDefaultUrl) || coverImage) && (
+              <Checkbox
+                className="ml-2"
+                checked={isUseOriginSizeCoverImage}
+                onChange={e => {
+                  setIsUseOriginSizeCoverImage(e.target.checked)
+                }}
+              >
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.showOriginSize)}
+              </Checkbox>
+            )}
+            {coverImage && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
@@ -168,7 +214,22 @@ const ProgramCoverForm: React.VFC<{
               initialCoverUrl={coverMobileUrl}
               onChange={file => setCoverMobileImage(file)}
             />
-            {coverMobileImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+            {(!isEmpty(coverMobileUrl) || coverMobileImage) && (
+              <Checkbox
+                className="ml-2"
+                checked={isUseOriginSizeCoverMobileImage}
+                onChange={e => {
+                  setIsUseOriginSizeCoverMobileImage(e.target.checked)
+                }}
+              >
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.showOriginSize)}
+              </Checkbox>
+            )}
+            {coverMobileImage && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
@@ -193,7 +254,22 @@ const ProgramCoverForm: React.VFC<{
               initialCoverUrl={coverThumbnailUrl}
               onChange={file => setCoverThumbnailImage(file)}
             />
-            {coverThumbnailImage && <StyledUploadWarning className="ml-2">*尚未上傳</StyledUploadWarning>}
+            {(!isEmpty(coverThumbnailUrl) || coverThumbnailImage) && (
+              <Checkbox
+                className="ml-2"
+                checked={isUseOriginSizeCoverThumbnailImage}
+                onChange={e => {
+                  setIsUseOriginSizeCoverThumbnailImage(e.target.checked)
+                }}
+              >
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.showOriginSize)}
+              </Checkbox>
+            )}
+            {coverThumbnailImage && (
+              <StyledUploadWarning className="ml-2">
+                {formatMessage(ProgramAdminPageMessages.ProgramCoverForm.notUploaded)}
+              </StyledUploadWarning>
+            )}
           </div>
         </Form.Item>
 
