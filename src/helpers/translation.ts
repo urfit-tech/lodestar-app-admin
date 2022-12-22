@@ -1199,6 +1199,7 @@ export const orderMessages = {
     invoiceUniformTitle: { id: 'order.label.invoiceUniformTitle', defaultMessage: '發票抬頭' },
     invoiceAddress: { id: 'order.label.invoiceAddress', defaultMessage: '發票地址' },
     invoiceId: { id: 'order.label.invoiceId', defaultMessage: '發票編號' },
+    paymentLogDetails: { id: 'order.label.paymentLogDetails', defaultMessage: '付款方式' },
   }),
 }
 
