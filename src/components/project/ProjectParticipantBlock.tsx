@@ -1,6 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Modal, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios from 'axios'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -9,8 +12,8 @@ import { commonMessages } from '../../helpers/translation'
 import { useIdentity } from '../../hooks/identity'
 import { useProject } from '../../hooks/project'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
-import ApplyingRoleAdminBlock from './ApplyingRoleAdminBlock'
 import { AllMemberSelector } from '../form/MemberSelector'
+import ApplyingRoleAdminBlock from './ApplyingRoleAdminBlock'
 import projectMessages from './translation'
 
 const StyledModalTitle = styled.div`
@@ -28,8 +31,9 @@ const StyledTextArea = styled(Input.TextArea)`
 
 type FieldProps = {
   projectRoleId: string
-  memberId: string
+  participant: string // uuid | email string
   participantTypeId: string
+  participantName?: string
 }
 
 type RejectFormFieldProps = {
@@ -41,6 +45,8 @@ const ProjectParticipantBlock: React.FC<{
   projectId: string
   publishAt: Date | null
 }> = ({ projectId, publishAt }) => {
+  const { id: appId } = useApp()
+  const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [rejectForm] = useForm<RejectFormFieldProps>()
@@ -54,12 +60,13 @@ const ProjectParticipantBlock: React.FC<{
   } = useProject()
   const { participantList, participantListRefetch } = getProjectParticipantData(projectId)
   const { getIdentity } = useIdentity()
-  const { identityList, identityListLoading, identityListRefetch } = getIdentity('Project')
+  const { identityList } = getIdentity('Project')
   const [loading, setLoading] = useState(false)
   const [isVisible, setVisible] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false)
   const [rejectModalLoading, setRejectModalLoading] = useState(false)
+  const [isUnregistered, setIsUnregistered] = useState(false)
 
   const handleAgree = (projectRoleId: string) => {
     agreeProjectRole({ variables: { projectRoleId } })
@@ -111,7 +118,7 @@ const ProjectParticipantBlock: React.FC<{
       if (participant.projectRoleId === editId) {
         form.setFieldsValue({
           projectRoleId: participant.projectRoleId,
-          memberId: participant.member.id,
+          participant: participant.member.id,
           participantTypeId: participant.identity.id,
         })
         setIsEdit(true)
@@ -123,11 +130,26 @@ const ProjectParticipantBlock: React.FC<{
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     form.validateFields().then(() => {
-      if (isEdit) {
+      if (isUnregistered) {
+        axios.post(
+          `${process.env.REACT_APP_API_BASE_ROOT}/register-project-participant`,
+          {
+            appId,
+            name: values.participantName,
+            email: values.participant,
+            identityId: values.participantTypeId,
+            projectId: projectId,
+          },
+          {
+            headers: { authorization: `Bearer ${authToken}` },
+          },
+        )
+        setLoading(false)
+      } else if (isEdit) {
         updateProjectRole({
           variables: {
             id: values.projectRoleId,
-            memberId: values.memberId,
+            memberId: values.participant,
             identityId: values.participantTypeId,
             hasSendedMarkedNotification: publishAt ? true : false,
           },
@@ -145,7 +167,7 @@ const ProjectParticipantBlock: React.FC<{
         insertProjectRole({
           variables: {
             projectId: projectId,
-            memberId: values.memberId,
+            memberId: values.participant,
             identityId: values.participantTypeId,
             hasSendedMarkedNotification: publishAt ? true : false,
           },
@@ -203,29 +225,43 @@ const ProjectParticipantBlock: React.FC<{
             setIsEdit(false)
           }
           form.resetFields()
+          setIsUnregistered(false)
           setVisible(false)
         }}
       >
         <StyledModalTitle className="mb-4">
           {formatMessage(isEdit ? commonMessages.ui.editParticipant : commonMessages.ui.addParticipant)}
         </StyledModalTitle>
-
         <Form form={form} layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item label={formatMessage(commonMessages.label.selectParticipant)} name="projectRoleId" hidden>
             <Input />
           </Form.Item>
           <Form.Item
             label={formatMessage(commonMessages.label.selectParticipant)}
-            name="memberId"
+            name="participant"
             rules={[
               {
-                required: true,
+                required: !isUnregistered,
                 message: formatMessage(projectMessages.ProjectParticipantBlock.participantFieldRequired),
               },
             ]}
           >
-            <AllMemberSelector allowClear />
+            <AllMemberSelector allowClear isAllowAddUnregistered={true} setIsUnregistered={setIsUnregistered} />
           </Form.Item>
+          {isUnregistered ? (
+            <Form.Item
+              label={formatMessage(projectMessages.ProjectParticipantBlock.participantName)}
+              name="participantName"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(projectMessages.ProjectParticipantBlock.enterParticipantNamePlease),
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          ) : null}
           <Form.Item
             label={formatMessage(commonMessages.label.participantOccupation)}
             name="participantTypeId"

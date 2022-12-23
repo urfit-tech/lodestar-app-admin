@@ -62,6 +62,7 @@ export type MemberOptionProps = {
   username: string
   email?: string
   disabled?: boolean
+  status?: string | null
 }
 
 export type MemberBriefProps = {

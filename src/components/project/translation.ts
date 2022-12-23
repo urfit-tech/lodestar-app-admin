@@ -166,6 +166,14 @@ const projectMessages = {
       id: 'project.ProjectParticipantBlock.occupationFieldRequired',
       defaultMessage: 'Please select a occupation.',
     },
+    participantName: {
+      id: 'project.ProjectParticipantBlock.participantName',
+      defaultMessage: '參與者姓名',
+    },
+    enterParticipantNamePlease: {
+      id: 'project.ProjectParticipantBlock.participantName',
+      defaultMessage: '請填寫參與者姓名',
+    },
   }),
   ProjectRejectMarkModal: defineMessages({
     rejectMark: {
