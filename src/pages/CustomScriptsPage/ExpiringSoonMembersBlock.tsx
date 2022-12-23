@@ -7,6 +7,7 @@ import 'dayjs/locale/zh-tw'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { groupBy, values } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { AdminBlock, AdminBlockTitle } from '../../components/admin'
@@ -212,79 +213,65 @@ const useExpiringSoonMembers = (expiredAt: dayjs.Dayjs) => {
   >(
     gql`
       query GET_EXPIRING_SOON_MEMBERS($orderProducts: [String!]!, $expiredAt: timestamptz!) {
-        order_product(
+        member_order_status(
           where: {
             product_id: { _in: $orderProducts }
-            delivered_at: { _lte: "now()" }
-            ended_at: { _gte: "now()", _lte: $expiredAt }
+            order_product_delivered_at: { _lte: "now()" }
+            order_product_ended_at: { _gte: "now()", _lte: $expiredAt }
           }
-          order_by: { ended_at: asc }
+          order_by: { order_product_ended_at: asc }
         ) {
-          id
-          ended_at
-          order_log {
-            id
-            member {
-              id
-              name
-              username
-              email
-              picture_url
-              coin_statuses_aggregate {
-                aggregate {
-                  sum {
-                    remaining
-                  }
-                }
-              }
-              coupons_aggregate(
-                where: {
-                  status: { outdated: { _eq: false }, used: { _eq: false } }
-                  coupon_code: { coupon_plan: { title: { _eq: "${appCustom.contractCoupon.title}" } } }
-                }
-              ) {
-                aggregate {
-                  count
-                }
-              }
-              member_notes(order_by: [{ created_at: desc }], limit: 1) {
-                id
-                author {
-                  id
-                  name
-                  email
-                }
-                created_at
-              }
-            }
-          }
+          author_email
+          author_id
+          author_name
+          coin_remaining
+          coupon_count
+          coupon_plan_title
+          member_email
+          member_id
+          member_name
+          member_note_created_at
+          member_note_id
+          order_id
+          order_product_delivered_at
+          order_product_ended_at
+          order_product_id
+          member_picture_url
+          product_id
+          member_username
         }
       }
     `,
     { variables: { orderProducts: contractProjectPlanIDs, expiredAt } },
   )
-
-  const members: EnrolledMemberProps[] =
-    data?.order_product.map(v => ({
-      id: v.order_log.member?.id || '',
-      name: v.order_log.member?.name || v.order_log.member?.username || '',
-      email: v.order_log.member?.email || '',
-      pictureUrl: v.order_log.member?.picture_url || null,
-      remainingCoins: v.order_log.member?.coin_statuses_aggregate.aggregate?.sum?.remaining || 0,
-      availableCouponsCount: v.order_log.member?.coupons_aggregate.aggregate?.count || 0,
-      lastMemberNote: v.order_log.member?.member_notes[0]
-        ? {
-            id: v.order_log.member.member_notes[0].id,
-            author: {
-              id: v.order_log.member.member_notes[0].author.id,
-              name: v.order_log.member.member_notes[0].author.name,
-              email: v.order_log.member.member_notes[0].author.email,
-            },
-            createdAt: new Date(v.order_log.member.member_notes[0].created_at),
-          }
-        : null,
-      endedAt: new Date(v.ended_at),
-    })) || []
+  const members: EnrolledMemberProps[] = values(groupBy(v => v.order_product_id, data?.member_order_status || [])).map(
+    v =>
+      v.reduce((accu, curr) => {
+        return {
+          id: curr.member_id || '',
+          name: curr.member_name || curr.member_username || '',
+          email: curr.member_email || '',
+          pictureUrl: curr.member_picture_url || null,
+          remainingCoins: curr.coin_remaining || 0,
+          availableCouponsCount:
+            (curr.coupon_plan_title === appCustom.contractCoupon.title
+              ? curr.coupon_count
+              : accu?.availableCouponsCount) || 0,
+          lastMemberNote: !!curr.member_note_id
+            ? {
+                id: curr.member_note_id,
+                author: {
+                  id: curr.author_id || '',
+                  name: curr.author_name || '',
+                  email: curr.author_email || '',
+                },
+                createdAt: new Date(curr.member_note_created_at),
+              }
+            : null,
+          endedAt: new Date(curr.order_product_ended_at),
+        }
+      }, {} as EnrolledMemberProps),
+  )
 
   return {
     loadingMembers: loading,
