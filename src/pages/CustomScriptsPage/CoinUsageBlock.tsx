@@ -110,11 +110,14 @@ const useCoinUsage = () => {
     }
   `)
 
-  const cointUsageExport: CoinUsageExport[] | null = data
+  const coinUsageExport: CoinUsageExport[] | null = data
     ? data.coin_usage_export.map(c => {
         let coinUsageLog: { date: string; amount: number }[] = []
-        const DEFAULTYEAR = 111
-        for (let i = 0; i < 60; i++) {
+        const DEFAULTYEAR = 109
+        for (let i = 0; i < 96; i++) {
+          if (i < 7) {
+            continue
+          }
           const year = DEFAULTYEAR + Math.floor(i / 12)
           const month = `${(i % 12) + 1 < 10 ? 0 : ''}${(i % 12) + 1}`
           coinUsageLog.push({
@@ -154,7 +157,7 @@ const useCoinUsage = () => {
   return {
     loading,
     error,
-    data: cointUsageExport,
+    data: coinUsageExport,
     refetch,
   }
 }
