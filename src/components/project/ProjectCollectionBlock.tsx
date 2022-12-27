@@ -94,6 +94,16 @@ const ProjectCollectionBlock: React.FC<{
           projects={projectPreview}
           onSearch={handleSearch}
           type={condition.project_roles ? 'marked' : 'normal'}
+          onLoadMoreProjects={setLoadMoreLoading => {
+            if (loadMoreProjects) {
+              loadMoreProjects?.()
+                ?.catch(handleError)
+                .finally(() => setLoadMoreLoading(false))
+              return true
+            } else {
+              return false
+            }
+          }}
           onRefetch={refetchProject}
         />
       ) : (

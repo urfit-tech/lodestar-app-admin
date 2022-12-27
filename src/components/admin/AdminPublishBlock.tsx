@@ -91,6 +91,7 @@ const AdminPublishBlock: React.FC<{
   privatelyPublishText?: string
   unPublishText?: string
   isPrivateEnabled?: boolean
+  unpublishingWarningText?: string
   onPublish?: (event: PublishEvent) => void
 }> = ({
   type,
@@ -101,6 +102,7 @@ const AdminPublishBlock: React.FC<{
   privatelyPublishText,
   unPublishText,
   isPrivateEnabled,
+  unpublishingWarningText,
   onPublish,
 }) => {
   const { formatMessage } = useIntl()
@@ -123,7 +125,7 @@ const AdminPublishBlock: React.FC<{
     if (type === 'success') {
       Modal.confirm({
         title: formatMessage(messages.unpublishingTitle),
-        content: formatMessage(messages.unpublishingWarning),
+        content: unpublishingWarningText || formatMessage(messages.unpublishingWarning),
         onOk: publish,
         onCancel: () => {
           setLoading(false)
