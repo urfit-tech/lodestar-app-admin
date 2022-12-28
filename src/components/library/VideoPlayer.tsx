@@ -34,7 +34,7 @@ const VideoPlayer: React.VFC<{ videoId: string; animated?: boolean } & Partial<S
           }
         })
   }, [authToken, videoId])
-  return isAuthenticating ? (
+  return isAuthenticating && !authToken ? (
     <div className="text-center">Authenticating...</div>
   ) : !authToken ? (
     <div>{commonMessages.status.noAuthority}</div>
