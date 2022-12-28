@@ -48,7 +48,7 @@ const MemberShopCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { enabledModules } = useApp()
-  const { currentMemberId, permissions, isAuthenticating } = useAuth()
+  const { currentMemberId, permissions, isAuthenticating, authToken } = useAuth()
   const { loadingMemberShops, memberShops } = useMemberShopCollection(
     permissions.MERCHANDISE_ADMIN ? undefined : permissions.MERCHANDISE_NORMAL ? currentMemberId || '' : '',
   )
@@ -85,7 +85,7 @@ const MemberShopCollectionAdminPage: React.FC = () => {
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
             <div className="row py-3">
-              {isAuthenticating || loadingMemberShops ? (
+              {(isAuthenticating && !authToken) || loadingMemberShops ? (
                 <Skeleton active />
               ) : (
                 tabContent.memberShops.map(memberShop => (

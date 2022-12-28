@@ -22,10 +22,10 @@ const messages = defineMessages({
 const CreatorCollectionAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { loading, enabledModules } = useApp()
-  const { isAuthenticating, currentUserRole } = useAuth()
+  const { isAuthenticating, currentUserRole, authToken } = useAuth()
   const { creators, refetchCreators } = useCreator()
 
-  if (loading || isAuthenticating) {
+  if (loading || (isAuthenticating && !authToken)) {
     return <LoadingPage />
   }
 

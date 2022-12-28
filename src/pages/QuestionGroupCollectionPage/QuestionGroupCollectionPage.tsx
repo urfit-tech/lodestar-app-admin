@@ -11,10 +11,10 @@ import QuestionGroupCollectionTable from './QuestionGroupCollectionTable'
 
 const QuestionLibraryCollectionPage: React.VFC = () => {
   const { enabledModules, id: appId } = useApp()
-  const { isAuthenticating, currentMemberId } = useAuth()
+  const { isAuthenticating, currentMemberId, authToken } = useAuth()
   const { formatMessage } = useIntl()
 
-  if (isAuthenticating || Object.keys(enabledModules).length === 0) {
+  if ((isAuthenticating && !authToken) || Object.keys(enabledModules).length === 0) {
     return <LoadingPage />
   }
 
