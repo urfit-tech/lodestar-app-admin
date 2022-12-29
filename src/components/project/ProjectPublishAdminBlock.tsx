@@ -122,6 +122,11 @@ const ProjectPublishAdminBlock: React.FC<{
           : formatMessage(projectMessages.ProjectPublishAdminBlock.activateProject)
       }
       unPublishText={formatMessage(projectMessages.ProjectPublishAdminBlock.closeProject)}
+      unpublishingWarningText={
+        type === 'portfolio'
+          ? formatMessage(projectMessages.ProjectPublishAdminBlock.portfolioUnpublishingWarningText)
+          : undefined
+      }
       onPublish={handlePublish}
     />
   )

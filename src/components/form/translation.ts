@@ -223,9 +223,11 @@ const formMessages = {
       defaultMessage: '個人預購專案功能',
     },
     PROJECT_PORTFOLIO_ADMIN: { id: 'form.PermissionGroup.PROJECT_PORTFOLIO_ADMIN', defaultMessage: '所有作品專案功能' },
-    PROJECT_PORTFOLIO_NORMAL: { id: 'form.PermissionGroup.PROJECT_PORTFOLIO_NORMAL', defaultMessage: '個人作品專案功能' },
+    PROJECT_PORTFOLIO_NORMAL: {
+      id: 'form.PermissionGroup.PROJECT_PORTFOLIO_NORMAL',
+      defaultMessage: '個人作品專案功能',
+    },
     PROJECT_ROLE_ADMIN: { id: 'form.PermissionGroup.PROJECT_ROLE_ADMIN', defaultMessage: '角色管理' },
-    
 
     // practice
     PRACTICE_ADMIN: { id: 'form.PermissionGroup.PRACTICE_ADMIN', defaultMessage: '所有作業功能' },
@@ -335,6 +337,11 @@ const formMessages = {
     whetherProvideGift: { id: 'form.GiftPlanInput.whetherProvideGift', defaultMessage: '是否有提供贈品' },
     selectGiftPlan: { id: 'form.GiftPlanInput.selectGiftPlan', defaultMessage: '選擇贈品方案' },
     pleaseCreateGiftPlan: { id: 'form.GiftPlanInput.pleaseCreateGiftPlan', message: '請新增贈品方案' },
+  }),
+  MemberSelector: defineMessages({
+    memberSelect: { id: 'form.MemberSelector.memberSelect', defaultMessage: '請輸入帳號或 Email' },
+    memberIsUnregistered: { id: 'form.MemberSelector.memberIsUnregistered', defaultMessage: '非站上註冊會員' },
+    memberIsInvited: { id: 'form.MemberSelector.memberIsInvited', defaultMessage: '會員邀請中' },
   }),
 }
 export default formMessages

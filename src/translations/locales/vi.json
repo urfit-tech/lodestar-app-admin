@@ -2603,5 +2603,6 @@
   "voucher.status.redeemable": "Có thể đổi ",
   "voucher.text.fromNow": " Từ bây giờ ",
   "voucher.text.items": "mặt hàng",
-  "voucher.text.noUsePeriod": "Không useperiod"
+  "voucher.text.noUsePeriod": "Không useperiod",
+  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "Danh mục đầu tư sẽ không được xuất bản và không hiển thị trong danh sách."
 }

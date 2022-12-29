@@ -2343,6 +2343,10 @@ export interface GET_ALL_MEMBER_COLLECTION_member {
   name: string;
   username: string;
   email: string;
+  /**
+   * invited | verified | activated | engaged
+   */
+  status: string | null;
 }
 
 export interface GET_ALL_MEMBER_COLLECTION {

@@ -42,7 +42,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
-  const { enabledModules } = useApp()
+  const { enabledModules, settings } = useApp()
   const { data: allOrderStatuses } = useOrderStatuses()
   const [selectedField, setSelectedField] = useState<'createdAt' | 'lastPaidAt'>('createdAt')
   const [selectedSpeicfy, setSelectedSpecify] = useState<OrderSpecify>('ALL')
@@ -199,11 +199,13 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
               : '',
             orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name || '',
             orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone || '',
-            orderLog.shipping?.isOutsideTaiwanIsland === 'true'
-              ? ''
-              : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
-                  orderLog.shipping?.district || ''
-                }${orderLog.shipping?.address || ''}`,
+            !!Number(settings['checkout.taiwan_shipping_selector'])
+              ? orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+                ? ''
+                : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
+                    orderLog.shipping?.district || ''
+                  }${orderLog.shipping?.address || ''}`
+              : orderLog.shipping?.address || '',
             orderLog.invoice_options?.name || '',
             orderLog.invoice_options?.email || '',
             orderLog.invoice_options?.phone || orderLog.invoice_options?.buyerPhone || '',
