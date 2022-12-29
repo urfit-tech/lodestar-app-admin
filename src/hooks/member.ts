@@ -300,7 +300,9 @@ export const useMemberNotesAdmin = (
   },
   keyword?: string,
 ) => {
-  const splitedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({ [key as keyof Partial<hasura.member_note_order_by>]: value }))
+  const splitedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({
+    [key as keyof Partial<hasura.member_note_order_by>]: value,
+  }))
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     deleted_at: { _is_null: true },

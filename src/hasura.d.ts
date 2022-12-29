@@ -2319,6 +2319,10 @@ export interface GET_ALL_MEMBER_COLLECTION_member {
   name: string;
   username: string;
   email: string;
+  /**
+   * invited | verified | activated | engaged
+   */
+  status: string | null;
 }
 
 export interface GET_ALL_MEMBER_COLLECTION {
@@ -22077,6 +22081,7 @@ export enum member_select_column {
   role = "role",
   roles_deprecated = "roles_deprecated",
   star = "star",
+  status = "status",
   title = "title",
   username = "username",
   youtube_channel_ids = "youtube_channel_ids",
@@ -22284,6 +22289,7 @@ export enum member_update_column {
   role = "role",
   roles_deprecated = "roles_deprecated",
   star = "star",
+  status = "status",
   title = "title",
   username = "username",
   youtube_channel_ids = "youtube_channel_ids",
@@ -23575,6 +23581,7 @@ export enum podcast_program_select_column {
   abstract = "abstract",
   content_type = "content_type",
   cover_url = "cover_url",
+  created_at = "created_at",
   creator_id = "creator_id",
   duration = "duration",
   duration_second = "duration_second",
@@ -23625,6 +23632,7 @@ export enum podcast_program_update_column {
   abstract = "abstract",
   content_type = "content_type",
   cover_url = "cover_url",
+  created_at = "created_at",
   creator_id = "creator_id",
   duration = "duration",
   duration_second = "duration_second",
@@ -32850,6 +32858,7 @@ export interface member_bool_exp {
   role?: String_comparison_exp | null;
   roles_deprecated?: jsonb_comparison_exp | null;
   star?: numeric_comparison_exp | null;
+  status?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
@@ -33447,6 +33456,7 @@ export interface member_insert_input {
   role?: string | null;
   roles_deprecated?: any | null;
   star?: any | null;
+  status?: string | null;
   title?: string | null;
   username?: string | null;
   vouchers?: voucher_arr_rel_insert_input | null;
@@ -33478,6 +33488,7 @@ export interface member_max_order_by {
   refresh_token?: order_by | null;
   role?: order_by | null;
   star?: order_by | null;
+  status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -33507,6 +33518,7 @@ export interface member_min_order_by {
   refresh_token?: order_by | null;
   role?: order_by | null;
   star?: order_by | null;
+  status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -34032,6 +34044,7 @@ export interface member_order_by {
   role?: order_by | null;
   roles_deprecated?: order_by | null;
   star?: order_by | null;
+  status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
   vouchers_aggregate?: voucher_aggregate_order_by | null;
@@ -38984,6 +38997,7 @@ export interface podcast_program_bool_exp {
   abstract?: String_comparison_exp | null;
   content_type?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
@@ -39117,6 +39131,7 @@ export interface podcast_program_insert_input {
   abstract?: string | null;
   content_type?: string | null;
   cover_url?: string | null;
+  created_at?: any | null;
   creator?: member_public_obj_rel_insert_input | null;
   creator_id?: string | null;
   duration?: any | null;
@@ -39149,6 +39164,7 @@ export interface podcast_program_max_order_by {
   abstract?: order_by | null;
   content_type?: order_by | null;
   cover_url?: order_by | null;
+  created_at?: order_by | null;
   creator_id?: order_by | null;
   duration?: order_by | null;
   duration_second?: order_by | null;
@@ -39170,6 +39186,7 @@ export interface podcast_program_min_order_by {
   abstract?: order_by | null;
   content_type?: order_by | null;
   cover_url?: order_by | null;
+  created_at?: order_by | null;
   creator_id?: order_by | null;
   duration?: order_by | null;
   duration_second?: order_by | null;

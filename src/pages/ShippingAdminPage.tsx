@@ -26,7 +26,7 @@ const messages = defineMessages({
 const ShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { isAuthenticating, currentMemberId, permissions } = useAuth()
+  const { isAuthenticating, currentMemberId, permissions, authToken } = useAuth()
   const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog(
     permissions.SHIPPING_ADMIN ? undefined : permissions.SHIPPING_NORMAL ? currentMemberId || '' : '',
   )
@@ -170,7 +170,7 @@ const ShippingAdminPage: React.FC = () => {
       <Tabs onChange={key => setActiveKey(key)}>
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.orderPhysicalProductLogs.length})`}>
-            {loading || isAuthenticating ? (
+            {loading || (isAuthenticating && !authToken) ? (
               <Skeleton active />
             ) : tabContent.orderPhysicalProductLogs.length === 0 ? (
               formatMessage(messages.noMerchandiseOrder)

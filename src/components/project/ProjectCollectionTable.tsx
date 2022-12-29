@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Input, Table } from 'antd'
+import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
@@ -41,12 +41,15 @@ type MarkedProjectCollectionProps = ProjectCollectionProps & {
 const ProjectCollectionTable: React.FC<{
   projects: ProjectPreviewProps[]
   type: 'normal' | 'marked'
+  onLoadMoreProjects: (setLoadMoreLoading: (loading: boolean) => void) => boolean
   onSearch: (search: string) => void
   onRefetch?: () => void
-}> = ({ projects, type, onSearch, onRefetch }) => {
+}> = ({ projects, type, onLoadMoreProjects, onSearch, onRefetch }) => {
   const { host } = useApp()
   const { formatMessage } = useIntl()
   const history = useHistory()
+  const [loading, setLoading] = useState(false)
+  const [loadMoreEnable, setLoadMoreEnable] = useState(true)
   const [search, setSearch] = useState<string | null>(null)
 
   const markedProject: MarkedProjectCollectionProps[] = []
@@ -159,6 +162,25 @@ const ProjectCollectionTable: React.FC<{
           loading={false}
           columns={columns}
           dataSource={projects}
+          pagination={false}
+          footer={
+            loadMoreEnable
+              ? data => (
+                  <div className="text-center" style={{ width: '100%' }}>
+                    <Button
+                      loading={loading}
+                      onClick={() => {
+                        setLoading(true)
+                        const loadMoreEnable = onLoadMoreProjects(setLoading)
+                        setLoadMoreEnable(loadMoreEnable)
+                      }}
+                    >
+                      {formatMessage(commonMessages.ui.showMore)}
+                    </Button>
+                  </div>
+                )
+              : undefined
+          }
           onRow={record => ({
             onClick: () => history.push(`/projects/${record.id}`),
           })}
@@ -170,6 +192,25 @@ const ProjectCollectionTable: React.FC<{
           loading={false}
           columns={markedColumns}
           dataSource={markedProject}
+          pagination={false}
+          footer={
+            loadMoreEnable
+              ? data => (
+                  <div className="text-center" style={{ width: '100%' }}>
+                    <Button
+                      loading={loading}
+                      onClick={() => {
+                        setLoading(true)
+                        const loadMoreEnable = onLoadMoreProjects(setLoading)
+                        setLoadMoreEnable(loadMoreEnable)
+                      }}
+                    >
+                      {formatMessage(commonMessages.ui.showMore)}
+                    </Button>
+                  </div>
+                )
+              : undefined
+          }
         />
       )}
     </AdminPageBlock>

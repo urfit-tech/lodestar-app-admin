@@ -14,9 +14,9 @@ import LoadingPage from './LoadingPage'
 const CreatorCategoryAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { loading, enabledModules } = useApp()
-  const { isAuthenticating, currentUserRole } = useAuth()
+  const { isAuthenticating, currentUserRole, authToken } = useAuth()
 
-  if (loading || isAuthenticating) {
+  if (loading || (isAuthenticating && !authToken)) {
     return <LoadingPage />
   }
 
