@@ -10,19 +10,20 @@ import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { AdminPageTitle } from '../components/admin'
-import AdminLayout from '../components/layout/AdminLayout'
+import { AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
 import {
   CaptionUploadButton,
   DeleteButton,
   PreviewButton,
   ReUploadButton,
-} from '../components/library/VideoLibraryItem'
-import { commonMessages } from '../helpers/translation'
-import { useAttachments } from '../hooks/data'
-import ForbiddenPage from './ForbiddenPage'
+} from '../../components/library/VideoLibraryItem'
+import { commonMessages } from '../../helpers/translation'
+import { useAttachments } from '../../hooks/data'
+import ForbiddenPage from '../ForbiddenPage'
+import MediaLibraryUsageCard from './MediaLibraryUsageCard'
 
-const MediaLibrary: React.FC = () => {
+const MediaLibraryPage: React.FC = () => {
   const { settings } = useApp()
   const [uppy, setUppy] = useState<Uppy>()
   const [searchText, setSearchText] = useState('')
@@ -158,22 +159,13 @@ const MediaLibrary: React.FC = () => {
   if (!permissions.MEDIA_LIBRARY_ADMIN) {
     return <ForbiddenPage />
   }
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <DatabaseOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.mediaLibrary)}</span>
       </AdminPageTitle>
-      <div>
-        <div>
-          Size: {Math.ceil(totalSize / 1024 / 1024)}MB / {settings['quota.storage']}MB (Maximum:{' '}
-          {Math.ceil(maxSize / 1024 / 1024)}MB)
-        </div>
-        <div>
-          Duration: {Math.ceil(totalDuration / 60)}minutes / {settings['quota.duration']}minutes (Maximum:{' '}
-          {Math.ceil(maxDuration / 60)}minutes)
-        </div>
-      </div>
       <Tabs activeKey={activeTabKey || 'video'} onChange={key => setActiveTabKey(key)}>
         <Tabs.TabPane tab={formatMessage(commonMessages.ui.video)} key="video">
           <div className="d-flex justify-content-between">
@@ -203,6 +195,7 @@ const MediaLibrary: React.FC = () => {
             />
           </div>
         </Tabs.TabPane>
+
         {/* <Tabs.TabPane tab={formatMessage(commonMessages.ui.image)} key="image">
           Content of Tab Pane 2
         </Tabs.TabPane> */}
@@ -210,6 +203,8 @@ const MediaLibrary: React.FC = () => {
           Content of Tab Pane 3
         </Tabs.TabPane> */}
       </Tabs>
+      <MediaLibraryUsageCard />
+
       {uppy && (
         <DashboardModal
           uppy={uppy}
@@ -222,4 +217,4 @@ const MediaLibrary: React.FC = () => {
   )
 }
 
-export default MediaLibrary
+export default MediaLibraryPage
