@@ -74,6 +74,7 @@ type OrderLogProps = {
   member: MemberBriefProps
   title: string
   amount: number
+  createdAt: Date
 }
 
 const StyledDescription = styled.div`
@@ -762,6 +763,7 @@ const useOrderLogWithCoinsCollection = (filter?: {
           },
           title: orderLog.order_discounts[0]?.name || '',
           amount: sum(orderLog.order_discounts.map(v => v.price / (v.options?.exchangeRate || 1))),
+          createdAt: orderLog.created_at,
         }))
 
   const loadMoreOrderLogs = () =>

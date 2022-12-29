@@ -2603,5 +2603,6 @@
   "voucher.status.redeemable": "Redeemable",
   "voucher.text.fromNow": "From now on",
   "voucher.text.items": "items",
-  "voucher.text.noUsePeriod": "No UsePeriod"
+  "voucher.text.noUsePeriod": "No UsePeriod",
+  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "Portfolio will unpublish and not display in list."
 }

@@ -1,12 +1,13 @@
 import { useQuery } from '@apollo/react-hooks'
 import Select, { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import React, { useEffect, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { MemberOptionProps } from '../../types/member'
 import { AvatarImage } from '../common/Image'
+import formMessages from './translation'
 
 const StyledText = styled.span`
   color: var(--gray-darker);
@@ -17,10 +18,6 @@ const StyledTextSecondary = styled.span`
   color: var(--gray-dark);
   letter-spacing: 0.2px;
 `
-
-const messages = defineMessages({
-  memberSelect: { id: 'member.text.memberSelect', defaultMessage: '請輸入帳號或 Email' },
-})
 
 const MemberSelector: React.FC<{
   members: MemberOptionProps[]
@@ -37,7 +34,7 @@ const MemberSelector: React.FC<{
   return (
     <Select<string | string[]>
       mode={mode}
-      placeholder={formatMessage(messages.memberSelect)}
+      placeholder={formatMessage(formMessages.MemberSelector.memberSelect)}
       optionLabelProp="title"
       optionFilterProp="data-source"
       value={value}
@@ -72,7 +69,13 @@ const MemberSelector: React.FC<{
 
 let timeout: NodeJS.Timeout | null
 
-export const AllMemberSelector: React.FC<SelectProps<string | string[]>> = ({ value, onChange, ...props }) => {
+export const AllMemberSelector: React.FC<
+  SelectProps<string | string[]> & {
+    isAllowAddUnregistered?: boolean
+    setIsUnregistered?: React.Dispatch<React.SetStateAction<boolean>>
+  }
+> = ({ value, onChange, isAllowAddUnregistered, setIsUnregistered }) => {
+  const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
   const { members } = useAllMemberCollection(Array.isArray(search) ? search[0] : search)
 
@@ -87,6 +90,12 @@ export const AllMemberSelector: React.FC<SelectProps<string | string[]>> = ({ va
     }, 300)
   }
 
+  useEffect(() => {
+    if (isAllowAddUnregistered && search && members.length === 0 && !members.find(v => v.email === search)) {
+      setIsUnregistered?.(true)
+    }
+  }, [isAllowAddUnregistered, setIsUnregistered, members, search])
+
   return (
     <Select<string | string[]>
       showSearch
@@ -94,11 +103,41 @@ export const AllMemberSelector: React.FC<SelectProps<string | string[]>> = ({ va
       defaultActiveFirstOption={false}
       showArrow={false}
       filterOption={false}
-      onChange={onChange}
+      onChange={(value, option) => onChange?.(value, option)}
       onSearch={handleSearch}
       notFoundContent={null}
-      {...props}
+      allowClear
+      onClear={() => {
+        setSearch('')
+        setIsUnregistered?.(false)
+      }}
     >
+      {isAllowAddUnregistered &&
+      ((search !== '' && members.length === 0 && !members.find(v => v.email === search)) ||
+        members.find(v => v.email === search)?.status === 'invited') ? (
+        <Select.Option
+          key="unknown"
+          value={Array.isArray(search) ? search[0] : search}
+          title={Array.isArray(search) ? search[0] : search}
+          data-source={`${Array.isArray(search) ? search[0] : search}} 'unknown' 'unknown' ${
+            Array.isArray(search) ? search[0] : search
+          }`}
+          data-email={Array.isArray(search) ? search[0] : search}
+        >
+          <div className="d-flex align-items-center justify-content-start">
+            <AvatarImage size="28px" className="mr-2 flex-shrink-0" />
+            <StyledText className="mr-2">{Array.isArray(search) ? search[0] : search}</StyledText>
+            <StyledTextSecondary>
+              (
+              {members.find(v => v.email === search)?.status === 'invited'
+                ? formatMessage(formMessages.MemberSelector.memberIsInvited)
+                : formatMessage(formMessages.MemberSelector.memberIsUnregistered)}
+              )
+            </StyledTextSecondary>
+          </div>
+        </Select.Option>
+      ) : null}
+
       {members.map(member => (
         <Select.Option
           key={member.id}
@@ -139,6 +178,7 @@ const useAllMemberCollection = (search: string) => {
           name
           username
           email
+          status
         }
       }
     `,
@@ -152,6 +192,7 @@ const useAllMemberCollection = (search: string) => {
       name: member.name || member.username,
       username: member.username,
       email: member.email,
+      status: member.status,
     })) || []
 
   return {

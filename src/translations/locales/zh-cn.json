@@ -2603,5 +2603,6 @@
   "voucher.status.redeemable": "可兑换",
   "voucher.text.fromNow": "即日起",
   "voucher.text.items": "个项目",
-  "voucher.text.noUsePeriod": "无使用期限"
+  "voucher.text.noUsePeriod": "无使用期限",
+  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "作品将下架且不会出现在列表。"
 }

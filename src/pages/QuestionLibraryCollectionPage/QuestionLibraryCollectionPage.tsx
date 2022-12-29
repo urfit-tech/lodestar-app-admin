@@ -28,7 +28,7 @@ type FieldProps = {
 const QuestionLibraryCollectionPage: React.VFC = () => {
   const history = useHistory()
   const { enabledModules, id: appId } = useApp()
-  const { isAuthenticating, currentMemberId } = useAuth()
+  const { isAuthenticating, currentMemberId, authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
@@ -50,7 +50,7 @@ const QuestionLibraryCollectionPage: React.VFC = () => {
     })
   }
 
-  if (isAuthenticating || Object.keys(enabledModules).length === 0) {
+  if ((isAuthenticating && !authToken) || Object.keys(enabledModules).length === 0) {
     return <LoadingPage />
   }
 

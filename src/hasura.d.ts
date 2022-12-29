@@ -2343,6 +2343,10 @@ export interface GET_ALL_MEMBER_COLLECTION_member {
   name: string;
   username: string;
   email: string;
+  /**
+   * invited | verified | activated | engaged
+   */
+  status: string | null;
 }
 
 export interface GET_ALL_MEMBER_COLLECTION {
@@ -16721,93 +16725,33 @@ export interface GET_CONTRACT_PROJECT_PLAN {
 // GraphQL query operation: GET_EXPIRING_SOON_MEMBERS
 // ====================================================
 
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate_sum {
-  __typename: "coin_status_sum_fields";
-  remaining: any | null;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate {
-  __typename: "coin_status_aggregate_fields";
-  sum: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate_sum | null;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate {
-  __typename: "coin_status_aggregate";
-  aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate_aggregate | null;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate_aggregate {
-  __typename: "coupon_aggregate_fields";
-  count: number;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate {
-  __typename: "coupon_aggregate";
-  aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate_aggregate | null;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes_author {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes {
-  __typename: "member_note";
-  id: string;
-  /**
-   * An object relationship
-   */
-  author: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes_author;
-  created_at: any;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  picture_url: string | null;
-  /**
-   * An aggregate relationship
-   */
-  coin_statuses_aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coin_statuses_aggregate;
-  /**
-   * An aggregate relationship
-   */
-  coupons_aggregate: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_coupons_aggregate;
-  /**
-   * An array relationship
-   */
-  member_notes: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member_member_notes[];
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product_order_log {
-  __typename: "order_log";
-  id: string;
-  /**
-   * An object relationship
-   */
-  member: GET_EXPIRING_SOON_MEMBERS_order_product_order_log_member;
-}
-
-export interface GET_EXPIRING_SOON_MEMBERS_order_product {
-  __typename: "order_product";
-  id: any;
-  ended_at: any | null;
-  /**
-   * An object relationship
-   */
-  order_log: GET_EXPIRING_SOON_MEMBERS_order_product_order_log;
+export interface GET_EXPIRING_SOON_MEMBERS_member_order_status {
+  __typename: "member_order_status";
+  author_email: string | null;
+  author_id: string | null;
+  author_name: string | null;
+  coin_remaining: any | null;
+  coupon_count: any | null;
+  coupon_plan_title: string | null;
+  member_email: string | null;
+  member_id: string | null;
+  member_name: string | null;
+  member_note_created_at: any | null;
+  member_note_id: string | null;
+  order_id: string | null;
+  order_product_delivered_at: any | null;
+  order_product_ended_at: any | null;
+  order_product_id: any | null;
+  member_picture_url: string | null;
+  product_id: string | null;
+  member_username: string | null;
 }
 
 export interface GET_EXPIRING_SOON_MEMBERS {
   /**
-   * fetch data from the table: "order_product"
+   * fetch data from the table: "member_order_status"
    */
-  order_product: GET_EXPIRING_SOON_MEMBERS_order_product[];
+  member_order_status: GET_EXPIRING_SOON_MEMBERS_member_order_status[];
 }
 
 export interface GET_EXPIRING_SOON_MEMBERSVariables {
@@ -23811,6 +23755,7 @@ export enum member_select_column {
   role = "role",
   roles_deprecated = "roles_deprecated",
   star = "star",
+  status = "status",
   title = "title",
   username = "username",
   youtube_channel_ids = "youtube_channel_ids",
@@ -23993,6 +23938,49 @@ export enum member_task_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "member_tracking_log"
+ */
+export enum member_tracking_log_constraint {
+  member_tracking_log_pkey = "member_tracking_log_pkey",
+}
+
+/**
+ * select columns of table "member_tracking_log"
+ */
+export enum member_tracking_log_select_column {
+  adgroup = "adgroup",
+  adname = "adname",
+  brand = "brand",
+  campaign = "campaign",
+  content = "content",
+  created_at = "created_at",
+  id = "id",
+  landing = "landing",
+  medium = "medium",
+  member_id = "member_id",
+  referrer = "referrer",
+  source = "source",
+}
+
+/**
+ * update columns of table "member_tracking_log"
+ */
+export enum member_tracking_log_update_column {
+  adgroup = "adgroup",
+  adname = "adname",
+  brand = "brand",
+  campaign = "campaign",
+  content = "content",
+  created_at = "created_at",
+  id = "id",
+  landing = "landing",
+  medium = "medium",
+  member_id = "member_id",
+  referrer = "referrer",
+  source = "source",
+}
+
+/**
  * update columns of table "member"
  */
 export enum member_update_column {
@@ -24018,6 +24006,7 @@ export enum member_update_column {
   role = "role",
   roles_deprecated = "roles_deprecated",
   star = "star",
+  status = "status",
   title = "title",
   username = "username",
   youtube_channel_ids = "youtube_channel_ids",
@@ -25309,6 +25298,7 @@ export enum podcast_program_select_column {
   abstract = "abstract",
   content_type = "content_type",
   cover_url = "cover_url",
+  created_at = "created_at",
   creator_id = "creator_id",
   duration = "duration",
   duration_second = "duration_second",
@@ -25359,6 +25349,7 @@ export enum podcast_program_update_column {
   abstract = "abstract",
   content_type = "content_type",
   cover_url = "cover_url",
+  created_at = "created_at",
   creator_id = "creator_id",
   duration = "duration",
   duration_second = "duration_second",
@@ -34533,6 +34524,8 @@ export interface member_bool_exp {
   member_tags_aggregate?: member_tag_aggregate_bool_exp | null;
   member_tasks?: member_task_bool_exp | null;
   member_tasks_aggregate?: member_task_aggregate_bool_exp | null;
+  member_tracking_logs?: member_tracking_log_bool_exp | null;
+  member_tracking_logs_aggregate?: member_tracking_log_aggregate_bool_exp | null;
   members?: member_bool_exp | null;
   members_aggregate?: member_aggregate_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
@@ -34584,6 +34577,7 @@ export interface member_bool_exp {
   role?: String_comparison_exp | null;
   roles_deprecated?: jsonb_comparison_exp | null;
   star?: numeric_comparison_exp | null;
+  status?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
@@ -35151,6 +35145,7 @@ export interface member_insert_input {
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   member_tasks?: member_task_arr_rel_insert_input | null;
+  member_tracking_logs?: member_tracking_log_arr_rel_insert_input | null;
   members?: member_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -35181,6 +35176,7 @@ export interface member_insert_input {
   role?: string | null;
   roles_deprecated?: any | null;
   star?: any | null;
+  status?: string | null;
   title?: string | null;
   username?: string | null;
   vouchers?: voucher_arr_rel_insert_input | null;
@@ -35212,6 +35208,7 @@ export interface member_max_order_by {
   refresh_token?: order_by | null;
   role?: order_by | null;
   star?: order_by | null;
+  status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -35241,6 +35238,7 @@ export interface member_min_order_by {
   refresh_token?: order_by | null;
   role?: order_by | null;
   star?: order_by | null;
+  status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -35736,6 +35734,7 @@ export interface member_order_by {
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   member_tags_aggregate?: member_tag_aggregate_order_by | null;
   member_tasks_aggregate?: member_task_aggregate_order_by | null;
+  member_tracking_logs_aggregate?: member_tracking_log_aggregate_order_by | null;
   members_aggregate?: member_aggregate_order_by | null;
   merchandises_aggregate?: merchandise_aggregate_order_by | null;
   metadata?: order_by | null;
@@ -35766,6 +35765,7 @@ export interface member_order_by {
   role?: order_by | null;
   roles_deprecated?: order_by | null;
   star?: order_by | null;
+  status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
   vouchers_aggregate?: voucher_aggregate_order_by | null;
@@ -36894,6 +36894,118 @@ export interface member_task_on_conflict {
   constraint: member_task_constraint;
   update_columns: member_task_update_column[];
   where?: member_task_bool_exp | null;
+}
+
+export interface member_tracking_log_aggregate_bool_exp {
+  count?: member_tracking_log_aggregate_bool_exp_count | null;
+}
+
+export interface member_tracking_log_aggregate_bool_exp_count {
+  arguments?: member_tracking_log_select_column[] | null;
+  distinct?: boolean | null;
+  filter?: member_tracking_log_bool_exp | null;
+  predicate: Int_comparison_exp;
+}
+
+/**
+ * order by aggregate values of table "member_tracking_log"
+ */
+export interface member_tracking_log_aggregate_order_by {
+  count?: order_by | null;
+  max?: member_tracking_log_max_order_by | null;
+  min?: member_tracking_log_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_tracking_log"
+ */
+export interface member_tracking_log_arr_rel_insert_input {
+  data: member_tracking_log_insert_input[];
+  on_conflict?: member_tracking_log_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_tracking_log". All fields are combined with a logical 'AND'.
+ */
+export interface member_tracking_log_bool_exp {
+  _and?: member_tracking_log_bool_exp[] | null;
+  _not?: member_tracking_log_bool_exp | null;
+  _or?: member_tracking_log_bool_exp[] | null;
+  adgroup?: String_comparison_exp | null;
+  adname?: String_comparison_exp | null;
+  brand?: String_comparison_exp | null;
+  campaign?: String_comparison_exp | null;
+  content?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  landing?: String_comparison_exp | null;
+  medium?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  referrer?: String_comparison_exp | null;
+  source?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_tracking_log"
+ */
+export interface member_tracking_log_insert_input {
+  adgroup?: string | null;
+  adname?: string | null;
+  brand?: string | null;
+  campaign?: string | null;
+  content?: string | null;
+  created_at?: any | null;
+  id?: string | null;
+  landing?: string | null;
+  medium?: string | null;
+  member_id?: string | null;
+  referrer?: string | null;
+  source?: string | null;
+}
+
+/**
+ * order by max() on columns of table "member_tracking_log"
+ */
+export interface member_tracking_log_max_order_by {
+  adgroup?: order_by | null;
+  adname?: order_by | null;
+  brand?: order_by | null;
+  campaign?: order_by | null;
+  content?: order_by | null;
+  created_at?: order_by | null;
+  id?: order_by | null;
+  landing?: order_by | null;
+  medium?: order_by | null;
+  member_id?: order_by | null;
+  referrer?: order_by | null;
+  source?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "member_tracking_log"
+ */
+export interface member_tracking_log_min_order_by {
+  adgroup?: order_by | null;
+  adname?: order_by | null;
+  brand?: order_by | null;
+  campaign?: order_by | null;
+  content?: order_by | null;
+  created_at?: order_by | null;
+  id?: order_by | null;
+  landing?: order_by | null;
+  medium?: order_by | null;
+  member_id?: order_by | null;
+  referrer?: order_by | null;
+  source?: order_by | null;
+}
+
+/**
+ * on_conflict condition type for table "member_tracking_log"
+ */
+export interface member_tracking_log_on_conflict {
+  constraint: member_tracking_log_constraint;
+  update_columns: member_tracking_log_update_column[];
+  where?: member_tracking_log_bool_exp | null;
 }
 
 /**
@@ -40718,6 +40830,7 @@ export interface podcast_program_bool_exp {
   abstract?: String_comparison_exp | null;
   content_type?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
@@ -40851,6 +40964,7 @@ export interface podcast_program_insert_input {
   abstract?: string | null;
   content_type?: string | null;
   cover_url?: string | null;
+  created_at?: any | null;
   creator?: member_public_obj_rel_insert_input | null;
   creator_id?: string | null;
   duration?: any | null;
@@ -40883,6 +40997,7 @@ export interface podcast_program_max_order_by {
   abstract?: order_by | null;
   content_type?: order_by | null;
   cover_url?: order_by | null;
+  created_at?: order_by | null;
   creator_id?: order_by | null;
   duration?: order_by | null;
   duration_second?: order_by | null;
@@ -40904,6 +41019,7 @@ export interface podcast_program_min_order_by {
   abstract?: order_by | null;
   content_type?: order_by | null;
   cover_url?: order_by | null;
+  created_at?: order_by | null;
   creator_id?: order_by | null;
   duration?: order_by | null;
   duration_second?: order_by | null;
@@ -48739,13 +48855,20 @@ export interface token_bool_exp {
   _and?: token_bool_exp[] | null;
   _not?: token_bool_exp | null;
   _or?: token_bool_exp[] | null;
+  abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   currency_id?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   is_deliverable?: Boolean_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  plan?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  tag?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -48755,13 +48878,20 @@ export interface token_bool_exp {
  * input type for inserting data into table "token"
  */
 export interface token_insert_input {
+  abstract?: string | null;
   app_id?: string | null;
   cover_url?: string | null;
   created_at?: any | null;
   currency_id?: string | null;
+  description?: string | null;
   id?: any | null;
+  is_deleted?: boolean | null;
   is_deliverable?: boolean | null;
+  options?: any | null;
+  plan?: string | null;
   price?: any | null;
+  sale_price?: any | null;
+  tag?: string | null;
   title?: string | null;
   type?: string | null;
   updated_at?: any | null;

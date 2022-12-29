@@ -21,7 +21,7 @@ const CertificateCollectionPage: React.VFC = () => {
   const history = useHistory()
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId } = useApp()
-  const { isAuthenticating, currentMemberId } = useAuth()
+  const { isAuthenticating, currentMemberId, authToken } = useAuth()
   const [createCertificate] = useMutation<hasura.INSERT_CERTIFICATE, hasura.INSERT_CERTIFICATEVariables>(
     INSERT_CERTIFICATE,
   )
@@ -46,7 +46,7 @@ const CertificateCollectionPage: React.VFC = () => {
     },
   ]
 
-  if (isAuthenticating || Object.keys(enabledModules).length === 0) {
+  if ((isAuthenticating && !authToken) || Object.keys(enabledModules).length === 0) {
     return <LoadingPage />
   }
 

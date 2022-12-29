@@ -2603,5 +2603,6 @@
   "voucher.status.redeemable": "Dapat ditukarkan",
   "voucher.text.fromNow": "Mulai sekarang",
   "voucher.text.items": "barang",
-  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan "
+  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan ",
+  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "Portofolio akan dibatalkan publikasinya dan tidak ditampilkan dalam daftar."
 }

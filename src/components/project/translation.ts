@@ -156,6 +156,10 @@ const projectMessages = {
     closeProject: { id: 'project.ProjectPublishAdminBlock.closeShop', defaultMessage: 'Unpublish' },
     noAuthor: { id: 'project.ProjectPublishAdminBlock.noAuthor', defaultMessage: 'Author has not been set' },
     noVideoUrl: { id: 'project.ProjectPublishAdminBlock.noVideoUrl', defaultMessage: 'Video url has not been set' },
+    portfolioUnpublishingWarningText: {
+      id: 'project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText',
+      defaultMessage: 'Portfolio will unpublish and not display in list',
+    },
   }),
   ProjectParticipantBlock: defineMessages({
     participantFieldRequired: {
@@ -165,6 +169,14 @@ const projectMessages = {
     occupationFieldRequired: {
       id: 'project.ProjectParticipantBlock.occupationFieldRequired',
       defaultMessage: 'Please select a occupation.',
+    },
+    participantName: {
+      id: 'project.ProjectParticipantBlock.participantName',
+      defaultMessage: '參與者姓名',
+    },
+    enterParticipantNamePlease: {
+      id: 'project.ProjectParticipantBlock.participantName',
+      defaultMessage: '請填寫參與者姓名',
     },
   }),
   ProjectRejectMarkModal: defineMessages({
