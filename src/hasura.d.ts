@@ -2322,7 +2322,7 @@ export interface GET_ALL_MEMBER_COLLECTION_member {
   /**
    * invited | verified | activated | engaged
    */
-  status: string | null;
+  status: string;
 }
 
 export interface GET_ALL_MEMBER_COLLECTION {
@@ -16341,6 +16341,43 @@ export interface GET_LEARNING_REPORTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APP_USAGE
+// ====================================================
+
+export interface GET_APP_USAGE_app_usage {
+  __typename: "app_usage";
+  date_hour: string;
+  video_duration: any;
+  watched_seconds: any;
+}
+
+export interface GET_APP_USAGE_last_app_usage {
+  __typename: "app_usage";
+  video_duration: any;
+}
+
+export interface GET_APP_USAGE {
+  /**
+   * fetch data from the table: "app_usage"
+   */
+  app_usage: GET_APP_USAGE_app_usage[];
+  /**
+   * fetch data from the table: "app_usage"
+   */
+  last_app_usage: GET_APP_USAGE_last_app_usage[];
+}
+
+export interface GET_APP_USAGEVariables {
+  startedDateHour: string;
+  endedDateHour: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MEMBER_NOTE_REJECTED_AT
 // ====================================================
 
@@ -22264,6 +22301,49 @@ export enum member_task_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "member_tracking_log"
+ */
+export enum member_tracking_log_constraint {
+  member_tracking_log_pkey = "member_tracking_log_pkey",
+}
+
+/**
+ * select columns of table "member_tracking_log"
+ */
+export enum member_tracking_log_select_column {
+  adgroup = "adgroup",
+  adname = "adname",
+  brand = "brand",
+  campaign = "campaign",
+  content = "content",
+  created_at = "created_at",
+  id = "id",
+  landing = "landing",
+  medium = "medium",
+  member_id = "member_id",
+  referrer = "referrer",
+  source = "source",
+}
+
+/**
+ * update columns of table "member_tracking_log"
+ */
+export enum member_tracking_log_update_column {
+  adgroup = "adgroup",
+  adname = "adname",
+  brand = "brand",
+  campaign = "campaign",
+  content = "content",
+  created_at = "created_at",
+  id = "id",
+  landing = "landing",
+  medium = "medium",
+  member_id = "member_id",
+  referrer = "referrer",
+  source = "source",
+}
+
+/**
  * update columns of table "member"
  */
 export enum member_update_column {
@@ -23839,6 +23919,7 @@ export enum post_select_column {
   id = "id",
   is_deleted = "is_deleted",
   meta_tag = "meta_tag",
+  pinned_at = "pinned_at",
   position = "position",
   published_at = "published_at",
   source = "source",
@@ -23902,6 +23983,7 @@ export enum post_update_column {
   id = "id",
   is_deleted = "is_deleted",
   meta_tag = "meta_tag",
+  pinned_at = "pinned_at",
   position = "position",
   published_at = "published_at",
   source = "source",
@@ -32807,6 +32889,8 @@ export interface member_bool_exp {
   member_tags_aggregate?: member_tag_aggregate_bool_exp | null;
   member_tasks?: member_task_bool_exp | null;
   member_tasks_aggregate?: member_task_aggregate_bool_exp | null;
+  member_tracking_logs?: member_tracking_log_bool_exp | null;
+  member_tracking_logs_aggregate?: member_tracking_log_aggregate_bool_exp | null;
   members?: member_bool_exp | null;
   members_aggregate?: member_aggregate_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
@@ -33426,6 +33510,7 @@ export interface member_insert_input {
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   member_tasks?: member_task_arr_rel_insert_input | null;
+  member_tracking_logs?: member_tracking_log_arr_rel_insert_input | null;
   members?: member_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -34014,6 +34099,7 @@ export interface member_order_by {
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   member_tags_aggregate?: member_tag_aggregate_order_by | null;
   member_tasks_aggregate?: member_task_aggregate_order_by | null;
+  member_tracking_logs_aggregate?: member_tracking_log_aggregate_order_by | null;
   members_aggregate?: member_aggregate_order_by | null;
   merchandises_aggregate?: merchandise_aggregate_order_by | null;
   metadata?: order_by | null;
@@ -35173,6 +35259,118 @@ export interface member_task_on_conflict {
   constraint: member_task_constraint;
   update_columns: member_task_update_column[];
   where?: member_task_bool_exp | null;
+}
+
+export interface member_tracking_log_aggregate_bool_exp {
+  count?: member_tracking_log_aggregate_bool_exp_count | null;
+}
+
+export interface member_tracking_log_aggregate_bool_exp_count {
+  arguments?: member_tracking_log_select_column[] | null;
+  distinct?: boolean | null;
+  filter?: member_tracking_log_bool_exp | null;
+  predicate: Int_comparison_exp;
+}
+
+/**
+ * order by aggregate values of table "member_tracking_log"
+ */
+export interface member_tracking_log_aggregate_order_by {
+  count?: order_by | null;
+  max?: member_tracking_log_max_order_by | null;
+  min?: member_tracking_log_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_tracking_log"
+ */
+export interface member_tracking_log_arr_rel_insert_input {
+  data: member_tracking_log_insert_input[];
+  on_conflict?: member_tracking_log_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_tracking_log". All fields are combined with a logical 'AND'.
+ */
+export interface member_tracking_log_bool_exp {
+  _and?: member_tracking_log_bool_exp[] | null;
+  _not?: member_tracking_log_bool_exp | null;
+  _or?: member_tracking_log_bool_exp[] | null;
+  adgroup?: String_comparison_exp | null;
+  adname?: String_comparison_exp | null;
+  brand?: String_comparison_exp | null;
+  campaign?: String_comparison_exp | null;
+  content?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  landing?: String_comparison_exp | null;
+  medium?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  referrer?: String_comparison_exp | null;
+  source?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_tracking_log"
+ */
+export interface member_tracking_log_insert_input {
+  adgroup?: string | null;
+  adname?: string | null;
+  brand?: string | null;
+  campaign?: string | null;
+  content?: string | null;
+  created_at?: any | null;
+  id?: string | null;
+  landing?: string | null;
+  medium?: string | null;
+  member_id?: string | null;
+  referrer?: string | null;
+  source?: string | null;
+}
+
+/**
+ * order by max() on columns of table "member_tracking_log"
+ */
+export interface member_tracking_log_max_order_by {
+  adgroup?: order_by | null;
+  adname?: order_by | null;
+  brand?: order_by | null;
+  campaign?: order_by | null;
+  content?: order_by | null;
+  created_at?: order_by | null;
+  id?: order_by | null;
+  landing?: order_by | null;
+  medium?: order_by | null;
+  member_id?: order_by | null;
+  referrer?: order_by | null;
+  source?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "member_tracking_log"
+ */
+export interface member_tracking_log_min_order_by {
+  adgroup?: order_by | null;
+  adname?: order_by | null;
+  brand?: order_by | null;
+  campaign?: order_by | null;
+  content?: order_by | null;
+  created_at?: order_by | null;
+  id?: order_by | null;
+  landing?: order_by | null;
+  medium?: order_by | null;
+  member_id?: order_by | null;
+  referrer?: order_by | null;
+  source?: order_by | null;
+}
+
+/**
+ * on_conflict condition type for table "member_tracking_log"
+ */
+export interface member_tracking_log_on_conflict {
+  constraint: member_tracking_log_constraint;
+  update_columns: member_tracking_log_update_column[];
+  where?: member_tracking_log_bool_exp | null;
 }
 
 /**
@@ -39768,6 +39966,7 @@ export interface post_bool_exp {
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   meta_tag?: jsonb_comparison_exp | null;
+  pinned_at?: timestamptz_comparison_exp | null;
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
   post_categories_aggregate?: post_category_aggregate_bool_exp | null;
@@ -39858,6 +40057,7 @@ export interface post_insert_input {
   id?: any | null;
   is_deleted?: boolean | null;
   meta_tag?: any | null;
+  pinned_at?: any | null;
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
   post_issue?: post_issue_arr_rel_insert_input | null;
@@ -39925,6 +40125,7 @@ export interface post_max_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
+  pinned_at?: order_by | null;
   position?: order_by | null;
   published_at?: order_by | null;
   source?: order_by | null;
@@ -40000,6 +40201,7 @@ export interface post_min_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
+  pinned_at?: order_by | null;
   position?: order_by | null;
   published_at?: order_by | null;
   source?: order_by | null;
@@ -47022,13 +47224,20 @@ export interface token_bool_exp {
   _and?: token_bool_exp[] | null;
   _not?: token_bool_exp | null;
   _or?: token_bool_exp[] | null;
+  abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   currency_id?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   is_deliverable?: Boolean_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  plan?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  tag?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -47038,13 +47247,20 @@ export interface token_bool_exp {
  * input type for inserting data into table "token"
  */
 export interface token_insert_input {
+  abstract?: string | null;
   app_id?: string | null;
   cover_url?: string | null;
   created_at?: any | null;
   currency_id?: string | null;
+  description?: string | null;
   id?: any | null;
+  is_deleted?: boolean | null;
   is_deliverable?: boolean | null;
+  options?: any | null;
+  plan?: string | null;
   price?: any | null;
+  sale_price?: any | null;
+  tag?: string | null;
   title?: string | null;
   type?: string | null;
   updated_at?: any | null;
