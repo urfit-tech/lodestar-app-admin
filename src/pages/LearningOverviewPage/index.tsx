@@ -137,7 +137,7 @@ const useLearningReport = (appId: string) => {
       data?.exercise
         .filter(v => {
           const gainedScore = sum(v.answer.map((ans: { gainedScore: number }) => ans.gainedScore))
-          return gainedScore >= v.program_content.metadata.passingScore
+          return gainedScore >= v.program_content.metadata?.passingScore
         })
         .map(v => v.member_id) || [],
     ),
