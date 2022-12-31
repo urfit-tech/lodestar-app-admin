@@ -6,8 +6,12 @@ import { notEmpty } from '../helpers'
 import { ActivityAdminProps, ActivityTicketSessionType } from '../types/activity'
 import { Category } from '../types/general'
 
-export const useActivityCollection = (condition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition']) => {
+export const useActivityCollection = (basicCondition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition'], categoryId: string | null) => {
   const limit = 20
+  const condition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition'] = categoryId ? {
+    ...basicCondition,
+    activity_categories: {category_id: { _eq: categoryId } },
+  } : basicCondition
   const { loading, error, data, fetchMore, refetch } = useQuery<
     hasura.GET_ACTIVITY_COLLECTION_ADMIN,
     hasura.GET_ACTIVITY_COLLECTION_ADMINVariables

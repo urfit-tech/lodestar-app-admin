@@ -59,7 +59,7 @@ const ActivityCollectionTabs: React.FC<{
     },
   }
   const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities, refetchActivities } =
-    useActivityCollection(condition[currentTab])
+    useActivityCollection(condition[currentTab], selectedCategoryId)
   const { categories } = useCategroyCollection(condition[currentTab])
 
   if (!loadingActivities && currentTabActivityCount && !counts[currentTab]) {
