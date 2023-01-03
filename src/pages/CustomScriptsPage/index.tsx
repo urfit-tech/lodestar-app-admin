@@ -15,7 +15,7 @@ import MembersWithoutNavigatorBlock from './MembersWithoutNavigatorBlock'
 import TraineesDayOffBlock from './TraineesDayOffBlock'
 
 const CustomScriptsPage: React.VFC = () => {
-  const { isAuthenticating, currentUserRole, permissions, authToken } = useAuth()
+  const { isAuthenticating, currentUserRole, permissions } = useAuth()
   const [selectedScript, setSelectedScript] = useState('')
   const [script] = useQueryParam('script', StringParam)
 
@@ -23,7 +23,7 @@ const CustomScriptsPage: React.VFC = () => {
     script && setSelectedScript(script)
   }, [script])
 
-  if (isAuthenticating && !authToken) {
+  if (isAuthenticating) {
     return <LoadingPage />
   }
 

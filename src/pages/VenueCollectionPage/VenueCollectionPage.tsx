@@ -21,10 +21,10 @@ const VenueCollectionPage: React.VFC = () => {
   const history = useHistory()
   const { formatMessage } = useIntl()
   const { enabledModules, id: appId } = useApp()
-  const { isAuthenticating, currentMemberId, authToken } = useAuth()
+  const { isAuthenticating, currentMemberId } = useAuth()
   const [createVenue] = useMutation<hasura.INSERT_VENUE, hasura.INSERT_VENUEVariables>(INSERT_VENUE)
 
-  if ((isAuthenticating && !authToken) || Object.keys(enabledModules).length === 0) {
+  if (isAuthenticating || Object.keys(enabledModules).length === 0) {
     return <LoadingPage />
   }
 
