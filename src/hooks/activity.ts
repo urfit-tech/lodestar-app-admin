@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { prop, sortBy, sum } from 'ramda'
+import { sum } from 'ramda'
 import hasura from '../hasura'
 import { notEmpty } from '../helpers'
 import { ActivityAdminProps, ActivityTicketSessionType } from '../types/activity'
@@ -311,9 +311,10 @@ export const useCategroyCollection = (condition: hasura.GET_ACTIVITIES_CATEGORIE
   >(
     gql`
       query GET_ACTIVITIES_CATEGORIES($condition: activity_bool_exp) {
-        category(where: {activity_categories: {
-          activity: $condition
-        }}) {
+        category(
+          where: { activity_categories: { activity: $condition } }
+          order_by: [ { position: asc } ]
+        ) {
           id
           name
           position
@@ -322,7 +323,6 @@ export const useCategroyCollection = (condition: hasura.GET_ACTIVITIES_CATEGORIE
     `,
     { variables: { condition } },
   )
-  const categories: Category[] | null =
-  loading || error || !data ? null : sortBy(prop('position'))(data.category,)
+  const categories: Category[] | null = loading || error || !data ? null : data.category
   return { loadingCategories: loading, errorCategories: error, categories }
 }
