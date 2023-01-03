@@ -37,7 +37,7 @@ const ProgramPackageAdminPage: React.FC = () => {
   const { programPackageId } = useParams<{ programPackageId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
-  const { isAuthenticating, authToken } = useAuth()
+  const { isAuthenticating } = useAuth()
   const { loading, programPackage, refetch } = useProgramPackage(programPackageId)
   const [updateProgramPosition] = useMutation<
     hasura.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
@@ -49,7 +49,7 @@ const ProgramPackageAdminPage: React.FC = () => {
   >(UPDATE_PROGRAM_PACKAGE_PLAN_COLLECTION_POSITION)
   const { updateProgramPackageMetaTag } = useMutateProgramPackage()
 
-  if (loading || (isAuthenticating && !authToken)) return <Skeleton active />
+  if (loading || isAuthenticating) return <Skeleton active />
 
   return (
     <>

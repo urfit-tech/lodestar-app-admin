@@ -25,7 +25,7 @@ const CraftPageCollectionPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { loadingAppPages, appPages, refetchAppPages } = useAppPageCollection()
   const [isModalVisible, setIsModalVisible] = useState(query.action === 'create')
-  const { isAuthenticating, permissions, authToken } = useAuth()
+  const { isAuthenticating, permissions } = useAuth()
   const { enabledModules } = useApp()
 
   const tabContents = [
@@ -60,7 +60,7 @@ const CraftPageCollectionPage: React.VFC = () => {
     },
   ]
 
-  if (isAuthenticating && !authToken) {
+  if (isAuthenticating) {
     return <LoadingPage />
   }
 
