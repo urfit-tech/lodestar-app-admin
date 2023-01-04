@@ -2,15 +2,26 @@ import { Button, Skeleton, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { useActivityCollection } from '../../hooks/activity'
+import { useActivityCollection, useCategroyCollection } from '../../hooks/activity'
 import Activity from './Activity'
+
+const StyledButton = styled(Button)`
+  && {
+    height: 36px;
+    font-size: 14px;
+    padding: 6px 20px;
+    border-radius: 30px;
+  }
+`
 
 const messages = defineMessages({
   holding: { id: 'activity.status.holding', defaultMessage: '正在舉辦' },
   finished: { id: 'activity.status.finished', defaultMessage: '已結束' },
   draft: { id: 'activity.status.draft', defaultMessage: '未上架' },
   privateHolding: { id: 'activity.status.privateHolding', defaultMessage: '私密舉辦' },
+  allCategory: { id: 'activity.ui.allCategory', defaultMessage: '全部分類' },
 })
 
 type Tab = 'holding' | 'finished' | 'draft' | 'privateHolding'
@@ -21,6 +32,7 @@ const ActivityCollectionTabs: React.FC<{
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
   const [currentTab, setCurrentTab] = useState<Tab>('holding')
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
   const condition = {
@@ -47,7 +59,8 @@ const ActivityCollectionTabs: React.FC<{
     },
   }
   const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities, refetchActivities } =
-    useActivityCollection(condition[currentTab])
+    useActivityCollection(condition[currentTab], selectedCategoryId)
+  const { categories } = useCategroyCollection(condition[currentTab])
 
   if (!loadingActivities && currentTabActivityCount && !counts[currentTab]) {
     setCounts({
@@ -80,7 +93,10 @@ const ActivityCollectionTabs: React.FC<{
     <Tabs
       defaultActiveKey={'holding'}
       onChange={() => refetchActivities()}
-      onTabClick={key => setCurrentTab(key as Tab)}
+      onTabClick={key => {
+        setCurrentTab(key as Tab)
+        setSelectedCategoryId(null)
+      }}
     >
       {tabContents
         .filter(tabContent => !tabContent.hidden)
@@ -89,6 +105,28 @@ const ActivityCollectionTabs: React.FC<{
             key={tabContent.key}
             tab={`${tabContent.tab} ${counts[tabContent.key] ? `(${counts[tabContent.key]})` : ''}`}
           >
+            <>
+              <StyledButton
+                type={selectedCategoryId === null ? 'primary' : 'default'}
+                className="mb-2"
+                onClick={() => setSelectedCategoryId(null)}
+              >
+                {formatMessage(messages.allCategory)}
+              </StyledButton>
+              {categories &&
+                categories
+                  .filter(category => category.id !== undefined)
+                  .map(category => (
+                    <StyledButton
+                      key={category.id}
+                      type={selectedCategoryId === category.id ? 'primary' : 'default'}
+                      className="ml-2 mb-2"
+                      onClick={() => setSelectedCategoryId(category.id)}
+                    >
+                      {category.name}
+                    </StyledButton>
+                  ))}
+            </>
             <div className="row py-5">
               {loadingActivities && <Skeleton active />}
               {activities.map(activity => (
