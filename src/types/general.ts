@@ -19,12 +19,6 @@ export type ClassType =
 export type Category = {
   id: string
   name: string
-  position?: number
-}
-  
-export type CategoryProps = {
-  id: string
-  name: string
 }
 
 export type IssueProps = {

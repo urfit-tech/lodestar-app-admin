@@ -6,12 +6,17 @@ import { notEmpty } from '../helpers'
 import { ActivityAdminProps, ActivityTicketSessionType } from '../types/activity'
 import { Category } from '../types/general'
 
-export const useActivityCollection = (basicCondition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition'], categoryId: string | null) => {
+export const useActivityCollection = (
+  basicCondition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition'],
+  categoryId: string | null,
+) => {
   const limit = 20
-  const condition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition'] = categoryId ? {
-    ...basicCondition,
-    activity_categories: {category_id: { _eq: categoryId } },
-  } : basicCondition
+  const condition: hasura.GET_ACTIVITY_COLLECTION_ADMINVariables['condition'] = categoryId
+    ? {
+        ...basicCondition,
+        activity_categories: { category_id: { _eq: categoryId } },
+      }
+    : basicCondition
   const { loading, error, data, fetchMore, refetch } = useQuery<
     hasura.GET_ACTIVITY_COLLECTION_ADMIN,
     hasura.GET_ACTIVITY_COLLECTION_ADMINVariables
@@ -303,26 +308,29 @@ export const useActivityAdmin = (activityId: string) => {
   }
 }
 
-
-export const useCategroyCollection = (condition: hasura.GET_ACTIVITIES_CATEGORIESVariables['condition']) => {
+export const useCategoryCollection = (condition: hasura.GET_ACTIVITIES_CATEGORIESVariables['condition']) => {
   const { loading, error, data } = useQuery<
     hasura.GET_ACTIVITIES_CATEGORIES,
     hasura.GET_ACTIVITIES_CATEGORIESVariables
   >(
     gql`
       query GET_ACTIVITIES_CATEGORIES($condition: activity_bool_exp) {
-        category(
-          where: { activity_categories: { activity: $condition } }
-          order_by: [ { position: asc } ]
-        ) {
+        category(where: { activity_categories: { activity: $condition } }, order_by: [{ position: asc }]) {
           id
           name
-          position
         }
       }
     `,
     { variables: { condition } },
   )
-  const categories: Category[] | null = loading || error || !data ? null : data.category
+  const categories: Category[] =
+    loading || error || !data
+      ? []
+      : data.category
+          .filter(category => category.id)
+          .map(category => ({
+            id: category.id,
+            name: category.name,
+          }))
   return { loadingCategories: loading, errorCategories: error, categories }
 }

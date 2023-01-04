@@ -8867,7 +8867,6 @@ export interface GET_ACTIVITIES_CATEGORIES_category {
   __typename: "category";
   id: string;
   name: string;
-  position: number;
 }
 
 export interface GET_ACTIVITIES_CATEGORIES {

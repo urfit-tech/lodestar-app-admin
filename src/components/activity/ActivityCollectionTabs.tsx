@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { useActivityCollection, useCategroyCollection } from '../../hooks/activity'
+import { useActivityCollection, useCategoryCollection } from '../../hooks/activity'
 import Activity from './Activity'
 
 const StyledButton = styled(Button)`
@@ -60,7 +60,7 @@ const ActivityCollectionTabs: React.FC<{
   }
   const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities, refetchActivities } =
     useActivityCollection(condition[currentTab], selectedCategoryId)
-  const { categories } = useCategroyCollection(condition[currentTab])
+  const { categories } = useCategoryCollection(condition[currentTab])
 
   if (!loadingActivities && currentTabActivityCount && !counts[currentTab]) {
     setCounts({
@@ -113,19 +113,16 @@ const ActivityCollectionTabs: React.FC<{
               >
                 {formatMessage(messages.allCategory)}
               </StyledButton>
-              {categories &&
-                categories
-                  .filter(category => category.id !== undefined)
-                  .map(category => (
-                    <StyledButton
-                      key={category.id}
-                      type={selectedCategoryId === category.id ? 'primary' : 'default'}
-                      className="ml-2 mb-2"
-                      onClick={() => setSelectedCategoryId(category.id)}
-                    >
-                      {category.name}
-                    </StyledButton>
-                  ))}
+              {categories.map(category => (
+                <StyledButton
+                  key={category.id}
+                  type={selectedCategoryId === category.id ? 'primary' : 'default'}
+                  className="ml-2 mb-2"
+                  onClick={() => setSelectedCategoryId(category.id)}
+                >
+                  {category.name}
+                </StyledButton>
+              ))}
             </>
             <div className="row py-5">
               {loadingActivities && <Skeleton active />}

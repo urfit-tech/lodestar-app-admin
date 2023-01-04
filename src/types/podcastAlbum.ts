@@ -1,4 +1,4 @@
-import { CategoryProps } from './general'
+import { Category } from './general'
 
 export type PodcastAlbumPodcastProgram = {
   id: string
@@ -23,5 +23,5 @@ export type PodcastAlbum = {
   isDeleted: boolean
   publishedAt: Date | null
   podcastPrograms: PodcastAlbumPodcastProgram[]
-  categories: CategoryProps[]
+  categories: Category[]
 }

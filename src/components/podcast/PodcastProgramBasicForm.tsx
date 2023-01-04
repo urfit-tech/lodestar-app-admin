@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import { CategoryProps } from '../../types/general'
+import { Category } from '../../types/general'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
@@ -26,7 +26,7 @@ type FieldProps = {
 const PodcastProgramBasicForm: React.FC<{
   podcastProgramAdmin:
     | (PodcastProgramAdminProps & {
-        categories: CategoryProps[]
+        categories: Category[]
         tags: string[]
       })
     | null
