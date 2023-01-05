@@ -178,6 +178,10 @@ const projectMessages = {
       id: 'project.ProjectParticipantBlock.enterParticipantNamePlease',
       defaultMessage: '請填寫參與者姓名',
     },
+    remainingDays: {
+      id: 'project.ProjectParticipantBlock.remainingDays',
+      defaultMessage: '(剩 {remainingDays} 天到期)',
+    },
   }),
   ProjectRejectMarkModal: defineMessages({
     rejectMark: {

@@ -14990,31 +14990,6 @@ export interface DELETE_PROJECT_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: AGREE_PROJECT_ROLE
-// ====================================================
-
-export interface AGREE_PROJECT_ROLE_update_project_role_by_pk {
-  __typename: "project_role";
-  id: any;
-}
-
-export interface AGREE_PROJECT_ROLE {
-  /**
-   * update single row of the table: "project_role"
-   */
-  update_project_role_by_pk: AGREE_PROJECT_ROLE_update_project_role_by_pk | null;
-}
-
-export interface AGREE_PROJECT_ROLEVariables {
-  projectRoleId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: REJECT_PROJECT_ROLE
 // ====================================================
 
@@ -15049,6 +15024,7 @@ export interface GET_PROJECT_PARTICIPANT_project_role_member {
   id: string | null;
   name: string | null;
   picture_url: string | null;
+  created_at: any | null;
 }
 
 export interface GET_PROJECT_PARTICIPANT_project_role_identity {
@@ -25009,6 +24985,7 @@ export enum program_select_column {
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
+  views = "views",
 }
 
 /**
@@ -25129,6 +25106,7 @@ export enum program_update_column {
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
+  views = "views",
 }
 
 /**
@@ -41617,6 +41595,7 @@ export interface program_avg_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -41686,6 +41665,7 @@ export interface program_bool_exp {
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+  views?: numeric_comparison_exp | null;
 }
 
 export interface program_category_aggregate_bool_exp {
@@ -43108,6 +43088,7 @@ export interface program_insert_input {
   support_locales?: any | null;
   title?: string | null;
   updated_at?: any | null;
+  views?: any | null;
 }
 
 /**
@@ -43130,6 +43111,7 @@ export interface program_max_order_by {
   sold_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -43152,6 +43134,7 @@ export interface program_min_order_by {
   sold_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -43221,6 +43204,7 @@ export interface program_order_by {
   support_locales?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
+  views?: order_by | null;
 }
 
 export interface program_package_aggregate_bool_exp {
@@ -44408,6 +44392,7 @@ export interface program_stddev_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44417,6 +44402,7 @@ export interface program_stddev_pop_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44426,6 +44412,7 @@ export interface program_stddev_samp_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44435,6 +44422,7 @@ export interface program_sum_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 export interface program_tag_aggregate_bool_exp {
@@ -44676,6 +44664,7 @@ export interface program_var_pop_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44685,6 +44674,7 @@ export interface program_var_samp_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44694,6 +44684,7 @@ export interface program_variance_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
