@@ -1,6 +1,6 @@
 import { AttachmentSelectorValue } from '../components/common/AttachmentSelector'
 import { DisplayMode } from '../components/program/DisplayModeSelector'
-import { Attachment, CategoryProps, MetaTag } from './general'
+import { Attachment, Category, MetaTag } from './general'
 
 export type ProgramPlanType = 'subscribeFromNow' | 'subscribeAll' | 'unknown'
 export type ProgramPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
@@ -54,7 +54,7 @@ export type ProgramAdminProps = ProgramProps & {
   contentSections: ProgramContentSectionProps[]
   plans: ProgramPlan[]
   roles: ProgramRoleProps[]
-  categories: CategoryProps[]
+  categories: Category[]
   tags: string[]
   approvals: ProgramApprovalProps[]
 }

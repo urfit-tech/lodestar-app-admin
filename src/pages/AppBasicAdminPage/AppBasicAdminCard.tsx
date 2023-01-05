@@ -31,7 +31,7 @@ const AppBasicAdminCard: React.VFC<AppBasicAdminCardProps> = ({ ...cardProps }) 
     setUploading(true)
     const timestamp = Date.now()
     const key = `images/${appId}/logo_${timestamp}${extname(file.name)}`
-    const logoUrl = `https://${process.env.REACT_APP_S3_BUCKET}/${key}/120?v=${timestamp}`
+    const logoUrl = `https://${process.env.REACT_APP_S3_BUCKET}/${key}/240?v=${timestamp}`
     uploadFile(key, file, authToken)
       .then(() =>
         updateLogo({
@@ -70,7 +70,9 @@ const AppBasicAdminCard: React.VFC<AppBasicAdminCardProps> = ({ ...cardProps }) 
             {uploading ? 'Uploading' : 'Start Upload'}
           </Button>
         </div>
-        <img src={settings['logo']} alt="logo" height={64} />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', maxWidth: 320 }}>
+          <img src={settings['logo']} alt="logo" style={{ width: '100%' }} />
+        </div>
       </div>
     </AdminCard>
   )

@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { useMemo } from 'react'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
 import hasura from '../hasura'
-import { CategoryProps, PeriodType } from '../types/general'
+import { Category, PeriodType } from '../types/general'
 import {
   PodcastPlanProps,
   PodcastProgram,
@@ -151,7 +151,7 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
   const podcastProgramAdmin = useMemo<
     | (PodcastProgram & {
         audios: PodcastProgramAudio[]
-        categories: CategoryProps[]
+        categories: Category[]
         tags: string[]
       })
     | null

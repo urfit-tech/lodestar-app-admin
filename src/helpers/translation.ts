@@ -2,6 +2,7 @@ import { defineMessages } from 'react-intl'
 
 export const commonMessages = {
   ui: defineMessages({
+    usage: { id: 'common.ui.usage', defaultMessage: '用量' },
     video: { id: 'common.ui.video', defaultMessage: '影片' },
     image: { id: 'common.ui.image', defaultMessage: '圖片' },
     other: { id: 'common.ui.other', defaultMessage: '其他' },

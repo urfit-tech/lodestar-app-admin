@@ -16,7 +16,7 @@ export type ClassType =
   | 'creator'
   | 'podcastAlbum'
 
-export type CategoryProps = {
+export type Category = {
   id: string
   name: string
 }
