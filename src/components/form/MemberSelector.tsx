@@ -74,7 +74,7 @@ export const AllMemberSelector: React.FC<
     isAllowAddUnregistered?: boolean
     setIsUnregistered?: React.Dispatch<React.SetStateAction<boolean>>
   }
-> = ({ value, onChange, isAllowAddUnregistered, setIsUnregistered }) => {
+> = ({ value, onChange, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
   const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
   const { members } = useAllMemberCollection(Array.isArray(search) ? search[0] : search)
@@ -104,6 +104,7 @@ export const AllMemberSelector: React.FC<
       showArrow={false}
       filterOption={false}
       onChange={(value, option) => onChange?.(value, option)}
+      onSelect={onSelect}
       onSearch={handleSearch}
       notFoundContent={null}
       allowClear

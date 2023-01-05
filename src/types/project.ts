@@ -1,10 +1,10 @@
 import { CreatorProps } from './creator'
-import { CategoryProps } from './general'
+import { Category } from './general'
 
 export type ProjectDataType = 'funding' | 'pre-order' | 'on-sale' | 'modular' | 'portfolio'
 export type ProjectPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
 export type ProjectAdminProps = ProjectPreviewProps & {
-  categories: CategoryProps[]
+  categories: Category[]
   tags: string[]
   introduction: string | null
   introductionDesktop: string | null

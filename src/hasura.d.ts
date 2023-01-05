@@ -2346,7 +2346,7 @@ export interface GET_ALL_MEMBER_COLLECTION_member {
   /**
    * invited | verified | activated | engaged
    */
-  status: string | null;
+  status: string;
 }
 
 export interface GET_ALL_MEMBER_COLLECTION {
@@ -9140,6 +9140,32 @@ export interface GET_ACTIVITY_ADMIN {
 
 export interface GET_ACTIVITY_ADMINVariables {
   activityId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITIES_CATEGORIES
+// ====================================================
+
+export interface GET_ACTIVITIES_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_ACTIVITIES_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_ACTIVITIES_CATEGORIES_category[];
+}
+
+export interface GET_ACTIVITIES_CATEGORIESVariables {
+  condition?: activity_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -17266,6 +17292,43 @@ export interface GET_LEARNING_REPORT {
 
 export interface GET_LEARNING_REPORTVariables {
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP_USAGE
+// ====================================================
+
+export interface GET_APP_USAGE_app_usage {
+  __typename: "app_usage";
+  date_hour: string;
+  video_duration: any;
+  watched_seconds: any;
+}
+
+export interface GET_APP_USAGE_last_app_usage {
+  __typename: "app_usage";
+  video_duration: any;
+}
+
+export interface GET_APP_USAGE {
+  /**
+   * fetch data from the table: "app_usage"
+   */
+  app_usage: GET_APP_USAGE_app_usage[];
+  /**
+   * fetch data from the table: "app_usage"
+   */
+  last_app_usage: GET_APP_USAGE_last_app_usage[];
+}
+
+export interface GET_APP_USAGEVariables {
+  startedDateHour: string;
+  endedDateHour: string;
 }
 
 /* tslint:disable */
@@ -25556,6 +25619,7 @@ export enum post_select_column {
   id = "id",
   is_deleted = "is_deleted",
   meta_tag = "meta_tag",
+  pinned_at = "pinned_at",
   position = "position",
   published_at = "published_at",
   source = "source",
@@ -25619,6 +25683,7 @@ export enum post_update_column {
   id = "id",
   is_deleted = "is_deleted",
   meta_tag = "meta_tag",
+  pinned_at = "pinned_at",
   position = "position",
   published_at = "published_at",
   source = "source",
@@ -41601,6 +41666,7 @@ export interface post_bool_exp {
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   meta_tag?: jsonb_comparison_exp | null;
+  pinned_at?: timestamptz_comparison_exp | null;
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
   post_categories_aggregate?: post_category_aggregate_bool_exp | null;
@@ -41691,6 +41757,7 @@ export interface post_insert_input {
   id?: any | null;
   is_deleted?: boolean | null;
   meta_tag?: any | null;
+  pinned_at?: any | null;
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
   post_issue?: post_issue_arr_rel_insert_input | null;
@@ -41758,6 +41825,7 @@ export interface post_max_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
+  pinned_at?: order_by | null;
   position?: order_by | null;
   published_at?: order_by | null;
   source?: order_by | null;
@@ -41833,6 +41901,7 @@ export interface post_min_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
+  pinned_at?: order_by | null;
   position?: order_by | null;
   published_at?: order_by | null;
   source?: order_by | null;

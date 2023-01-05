@@ -179,6 +179,7 @@
   "activity.ui.downloadList": "Download",
   "activity.ui.participantsList": "Participants",
   "activity.ui.threshold": "At least",
+  "activity.ui.allCategory": "All Category",
   "admin.AdminMenu.activities": "Activities",
   "admin.AdminMenu.activityAdmin": "Activity",
   "admin.AdminMenu.activityCategory": "Category",

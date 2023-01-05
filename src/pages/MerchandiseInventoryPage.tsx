@@ -29,7 +29,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
   const [selectedMemberShop, setSelectedMemberShop] = useState<string>('all')
   const [merchandiseSearch, setMerchandiseSearch] = useState<string | undefined>(undefined)
   const { enabledModules } = useApp()
-  const { isAuthenticating, currentMemberId, permissions, authToken } = useAuth()
+  const { isAuthenticating, currentMemberId, permissions } = useAuth()
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     merchandiseSearch,
     isLimited: true,
@@ -116,7 +116,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
       <Tabs defaultActiveKey="selling">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.merchandiseSpecs.length})`}>
-            {(isAuthenticating && !authToken) || loadingMerchandiseSpecs ? (
+            {isAuthenticating || loadingMerchandiseSpecs ? (
               <Skeleton active />
             ) : tabContent.merchandiseSpecs.length === 0 ? (
               <StyledNoMatching>

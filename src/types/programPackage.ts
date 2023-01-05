@@ -1,4 +1,4 @@
-import { PeriodType, CategoryProps, MetaTag } from './general'
+import { PeriodType, Category, MetaTag } from './general'
 
 export type ProgramPackageProps = {
   id: string
@@ -9,7 +9,7 @@ export type ProgramPackageProps = {
   metaTag: MetaTag
   programs: ProgramPackageProgramProps[]
   plans: ProgramPackagePlanProps[]
-  categories: CategoryProps[]
+  categories: Category[]
   tags: string[]
   isPrivate: boolean
 }

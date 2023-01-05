@@ -74,7 +74,7 @@ const Activity: React.VFC<{
             <UserOutlined className="mr-2" />
             {enabledModules.activity_online ? (
               includeSessionTypes.map(sessionType => (
-                <span className="mr-1">
+                <span className="mr-1" key={sessionType}>
                   {formatMessage(activityMessages.label[sessionType])} {participantsCount[sessionType]}
                 </span>
               ))

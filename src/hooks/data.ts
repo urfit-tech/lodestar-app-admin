@@ -10,7 +10,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
-import { Attachment, CategoryProps, ClassType, ProductInventoryLogProps } from '../types/general'
+import { Attachment, Category, ClassType, ProductInventoryLogProps } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
 import { CouponProps } from '../types/checkout'
@@ -64,7 +64,7 @@ export const useCategory = (classType: ClassType) => {
     },
   )
 
-  const categories: (CategoryProps & {
+  const categories: (Category & {
     position: number
   })[] =
     loading || error || !data
