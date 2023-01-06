@@ -182,6 +182,10 @@ const projectMessages = {
       id: 'project.ProjectParticipantBlock.remainingDays',
       defaultMessage: '(剩 {remainingDays} 天到期)',
     },
+    deleteWarnText: {
+      id: 'project.ProjectParticipantBlock.deleteWarnText',
+      defaultMessage: '刪除不可恢復，確定要刪除嗎？',
+    },
   }),
   ProjectRejectMarkModal: defineMessages({
     rejectMark: {

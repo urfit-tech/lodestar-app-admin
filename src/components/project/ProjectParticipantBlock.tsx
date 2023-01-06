@@ -88,12 +88,13 @@ const ProjectParticipantBlock: React.FC<{
   }
 
   const handleDelete = (deleteId: string) => {
-    deleteProjectRole({ variables: { projectRoleId: deleteId } })
-      .then(() => {
-        participantListRefetch()
-        message.success(formatMessage(commonMessages.event.successfullyDeleted))
-      })
-      .catch(handleError)
+    window.confirm(formatMessage(projectMessages.ProjectParticipantBlock.deleteWarnText)) &&
+      deleteProjectRole({ variables: { projectRoleId: deleteId } })
+        .then(() => {
+          participantListRefetch()
+          message.success(formatMessage(commonMessages.event.successfullyDeleted))
+        })
+        .catch(handleError)
   }
 
   const handleEdit = (editId: string) => {
