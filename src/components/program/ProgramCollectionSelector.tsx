@@ -4,6 +4,7 @@ import gql from 'graphql-tag'
 import { ProgramCollectionProps } from 'lodestar-app-element/src/components/collections/ProgramCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
+import { craftPageMessages } from '../../helpers/translation'
 import { CraftSettingLabel } from '../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import ProgramCategorySelect from './ProgramCategorySelect'
 import ProgramTagSelect from './ProgramTagSelect'
@@ -32,6 +33,9 @@ const ProgramCollectionSelector: React.FC<{
               case 'publishedAt':
                 onChange?.({ from, limit: 4 })
                 break
+              case 'popular':
+                onChange?.({ from, limit: 4 })
+                break
               case 'currentPrice':
                 onChange?.({ from, limit: 4 })
                 break
@@ -52,6 +56,9 @@ const ProgramCollectionSelector: React.FC<{
           <Select.Option key="publishedAt" value="publishedAt">
             {formatMessage(programMessages.ProgramCollectionSelector.publishedAt)}
           </Select.Option>
+          <Select.Option key="popular" value="popular">
+            {formatMessage(craftPageMessages.label.popular)}
+          </Select.Option>
           <Select.Option key="currentPrice" value="currentPrice">
             {formatMessage(programMessages.ProgramCollectionSelector.currentPrice)}
           </Select.Option>
@@ -63,7 +70,10 @@ const ProgramCollectionSelector: React.FC<{
           </Select.Option>
         </Select>
       </Form.Item>
-      {(value?.from === 'recentWatched' || value?.from === 'publishedAt' || value?.from === 'currentPrice') && (
+      {(value?.from === 'recentWatched' ||
+        value?.from === 'publishedAt' ||
+        value?.from === 'currentPrice' ||
+        value?.from === 'popular') && (
         <>
           <Form.Item
             label={
