@@ -12,9 +12,10 @@ import programMessages from './translation'
 
 type ProgramSourceOptions = ProgramCollectionProps['source']
 const ProgramCollectionSelector: React.FC<{
+  withOrderSelector?: boolean
   value?: ProgramSourceOptions
   onChange?: (value: ProgramSourceOptions) => void
-}> = ({ value = { from: 'publishedAt' }, onChange }) => {
+}> = ({ withOrderSelector, value = { from: 'publishedAt' }, onChange }) => {
   const { formatMessage } = useIntl()
   const { data } = useQuery<hasura.GET_PROGRAM_ID_LIST>(GET_PROGRAM_ID_LIST)
   const programOptions = data?.program.map(p => ({ id: p.id, title: p.title })) || []
@@ -53,21 +54,25 @@ const ProgramCollectionSelector: React.FC<{
               : true
           }
         >
-          <Select.Option key="publishedAt" value="publishedAt">
-            {formatMessage(programMessages.ProgramCollectionSelector.publishedAt)}
-          </Select.Option>
           <Select.Option key="popular" value="popular">
             {formatMessage(craftPageMessages.label.popular)}
+          </Select.Option>
+          <Select.Option key="publishedAt" value="publishedAt">
+            {formatMessage(programMessages.ProgramCollectionSelector.publishedAt)}
           </Select.Option>
           <Select.Option key="currentPrice" value="currentPrice">
             {formatMessage(programMessages.ProgramCollectionSelector.currentPrice)}
           </Select.Option>
-          <Select.Option key="recentWatched" value="recentWatched">
-            {formatMessage(programMessages.ProgramCollectionSelector.recentWatched)}
-          </Select.Option>
-          <Select.Option key="custom" value="custom">
-            {formatMessage(programMessages.ProgramCollectionSelector.custom)}
-          </Select.Option>
+          {!withOrderSelector && (
+            <Select.Option key="recentWatched" value="recentWatched">
+              {formatMessage(programMessages.ProgramCollectionSelector.recentWatched)}
+            </Select.Option>
+          )}
+          {!withOrderSelector && (
+            <Select.Option key="custom" value="custom">
+              {formatMessage(programMessages.ProgramCollectionSelector.custom)}
+            </Select.Option>
+          )}
         </Select>
       </Form.Item>
       {(value?.from === 'recentWatched' ||
