@@ -116,6 +116,7 @@ export const useProject = () => {
         }
       ) {
         id
+        created_at
         agreed_at
         member {
           id
@@ -143,10 +144,10 @@ export const useProject = () => {
           id: projectRole.member?.id || '',
           name: projectRole.member?.name || '',
           pictureUrl: projectRole.member?.picture_url || '',
-          createdAt: projectRole.member?.created_at ? new Date(projectRole.member.created_at) : new Date(),
         },
         identity: { id: projectRole.identity.id, name: projectRole.identity.name },
         agreedAt: projectRole.agreed_at,
+        createdAt: projectRole.created_at,
       }))
 
       return {

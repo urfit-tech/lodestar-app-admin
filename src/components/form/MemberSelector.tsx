@@ -113,9 +113,7 @@ export const AllMemberSelector: React.FC<
         setIsUnregistered?.(false)
       }}
     >
-      {isAllowAddUnregistered &&
-      ((search !== '' && members.length === 0 && !members.find(v => v.email === search)) ||
-        members.find(v => v.email === search)?.status === 'invited') ? (
+      {isAllowAddUnregistered && search !== '' && members.length === 0 ? (
         <Select.Option
           key="unknown"
           value={Array.isArray(search) ? search[0] : search}
@@ -129,11 +127,7 @@ export const AllMemberSelector: React.FC<
             <AvatarImage size="28px" className="mr-2 flex-shrink-0" />
             <StyledText className="mr-2">{Array.isArray(search) ? search[0] : search}</StyledText>
             <StyledTextSecondary>
-              (
-              {members.find(v => v.email === search)?.status === 'invited'
-                ? formatMessage(formMessages.MemberSelector.memberIsInvited)
-                : formatMessage(formMessages.MemberSelector.memberIsUnregistered)}
-              )
+              ({formatMessage(formMessages.MemberSelector.memberIsUnregistered)})
             </StyledTextSecondary>
           </div>
         </Select.Option>
@@ -151,7 +145,10 @@ export const AllMemberSelector: React.FC<
           <div className="d-flex align-items-center justify-content-start">
             <AvatarImage size="28px" src={member.avatarUrl} className="mr-2 flex-shrink-0" />
             <StyledText className="mr-2">{member.name}</StyledText>
-            <StyledTextSecondary>{member.email}</StyledTextSecondary>
+            <StyledTextSecondary>
+              {member.status === 'invited' ? ` (${formatMessage(formMessages.MemberSelector.memberIsInvited)}) ` : null}
+              {member.email}
+            </StyledTextSecondary>
           </div>
         </Select.Option>
       ))}

@@ -190,7 +190,7 @@ const ProjectParticipantBlock: React.FC<{
             name={`${participant.member.name} / ${participant.identity.name}`}
             pictureUrl={participant.member.pictureUrl}
             remainingDays={formatMessage(projectMessages.ProjectParticipantBlock.remainingDays, {
-              remainingDays: dayjs(participant.member.createdAt).add(90, 'day').diff(new Date(), 'day'),
+              remainingDays: dayjs(participant.createdAt).add(90, 'day').diff(new Date(), 'day'),
             })}
             onDelete={() => handleDelete(participant.projectRoleId)}
           />
