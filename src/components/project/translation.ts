@@ -175,7 +175,7 @@ const projectMessages = {
       defaultMessage: '參與者姓名',
     },
     enterParticipantNamePlease: {
-      id: 'project.ProjectParticipantBlock.participantName',
+      id: 'project.ProjectParticipantBlock.enterParticipantNamePlease',
       defaultMessage: '請填寫參與者姓名',
     },
   }),
