@@ -2577,5 +2577,12 @@
   "voucher.status.redeemable": "可兑换",
   "voucher.text.fromNow": "即日起",
   "voucher.text.items": "个项目",
-  "voucher.text.noUsePeriod": "无使用期限"
+  "voucher.text.noUsePeriod": "无使用期限",
+  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "作品将下架且不会出现在列表。",
+  "program.ProgramContentSectionAdminCard.audioContent": "音频内容",
+  "program.ui.audioContent": "音频内容",
+  "program.ui.uploadAudioFile": "上传音频",
+  "program.text.audioFileLimit": "档案大小超过250MB，请重新选择档案上传",
+  "program.text.audioFileTips": "建议格式：MP3\n档案大小限制：250MB",
+  "program.label.audioFile": "音频"
 }

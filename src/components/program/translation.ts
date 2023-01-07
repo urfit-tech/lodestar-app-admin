@@ -167,14 +167,9 @@ const programMessages = {
     createContent: { id: 'program.ProgramContentSectionAdminCard.createContent', defaultMessage: 'Create content' },
     videoContent: { id: 'program.ProgramContentSectionAdminCard.videoContent', defaultMessage: 'Video content' },
     articleContent: { id: 'program.ProgramContentSectionAdminCard.articleContent', defaultMessage: 'Article content' },
-    programPractice: {
-      id: 'program.ProgramContentSectionAdminCard.practiceContent',
-      defaultMessage: 'Practice content',
-    },
-    programExercise: {
-      id: 'program.ProgramContentSectionAdminCard.programExercise',
-      defaultMessage: 'Program exercise',
-    },
+    audioContent: { id: 'program.ProgramContentSectionAdminCard.audioContent', defaultMessage: 'Audio content' },
+    programPractice: { id: 'program.ProgramContentSectionAdminCard.practiceContent', defaultMessage: 'Practice content' },
+    programExercise: { id: 'program.ProgramContentSectionAdminCard.programExercise', defaultMessage: 'Program exercise' },
   }),
 }
 

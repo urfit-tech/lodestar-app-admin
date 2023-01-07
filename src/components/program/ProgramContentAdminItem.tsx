@@ -5,6 +5,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { MicrophoneIcon } from '../../images/icon'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
@@ -73,6 +74,8 @@ const ProgramContentAdminItem: React.FC<{
                   <FileTextOutlined />
                 ) : programContent.programContentType === 'video' ? (
                   <VideoIcon />
+                ) : programContent.programContentType === 'audio' ? (
+                  <MicrophoneIcon />
                 ) : programContent.programContentType === 'practice' ? (
                   <PracticeIcon />
                 ) : //TODO: remove exercise

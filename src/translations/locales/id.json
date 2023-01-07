@@ -2577,5 +2577,12 @@
   "voucher.status.redeemable": "Dapat ditukarkan",
   "voucher.text.fromNow": "Mulai sekarang",
   "voucher.text.items": "barang",
-  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan "
+  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan ",
+  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "Portofolio akan dibatalkan publikasinya dan tidak ditampilkan dalam daftar.",
+  "program.ProgramContentSectionAdminCard.audioContent": "konten audio",
+  "program.ui.audioContent": "konten audio",
+  "program.ui.uploadAudioFile": "Unggah file audio",
+  "program.text.audioFileLimit": "Ukuran file melebihi 250MB , silakan pilih kembali file yang akan diunggah",
+  "program.text.audioFileTips": "Terima format: .mp3\nUkuran file: 250MB",
+  "program.label.audioFile": "berkas audio"
 }
