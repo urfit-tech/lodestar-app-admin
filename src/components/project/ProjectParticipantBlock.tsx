@@ -46,7 +46,7 @@ const ProjectParticipantBlock: React.FC<{
   publishAt: Date | null
 }> = ({ projectId, publishAt }) => {
   const { id: appId } = useApp()
-  const { authToken } = useAuth()
+  const { authToken, currentMember } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [rejectForm] = useForm<RejectFormFieldProps>()
@@ -115,20 +115,24 @@ const ProjectParticipantBlock: React.FC<{
     setLoading(true)
     form.validateFields().then(() => {
       if (isUnregistered) {
-        axios.post(
-          `${process.env.REACT_APP_API_BASE_ROOT}/register-project-participant`,
-          {
-            appId,
-            name: values.participantName,
-            email: values.participant,
-            identityId: values.participantTypeId,
-            projectId: projectId,
-          },
-          {
-            headers: { authorization: `Bearer ${authToken}` },
-          },
-        )
-        setLoading(false)
+        axios
+          .post(
+            `${process.env.REACT_APP_API_BASE_ROOT}/register-project-portfolio-participant`,
+            {
+              appId,
+              executorName: currentMember?.name || '',
+              invitee: values.participantName,
+              email: values.participant,
+              identityId: values.participantTypeId,
+              projectId: projectId,
+            },
+            {
+              headers: { authorization: `Bearer ${authToken}` },
+            },
+          )
+          .then(() => {})
+          .catch(handleError)
+          .finally(() => setLoading(false))
       } else if (isEdit) {
         updateProjectRole({
           variables: {
