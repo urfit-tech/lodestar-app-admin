@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import Select, { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -90,12 +90,6 @@ export const AllMemberSelector: React.FC<
     }, 300)
   }
 
-  useEffect(() => {
-    if (isAllowAddUnregistered && search && members.length === 0 && !members.find(v => v.email === search)) {
-      setIsUnregistered?.(true)
-    }
-  }, [isAllowAddUnregistered, setIsUnregistered, members, search])
-
   return (
     <Select<string | string[]>
       showSearch
@@ -104,7 +98,17 @@ export const AllMemberSelector: React.FC<
       showArrow={false}
       filterOption={false}
       onChange={(value, option) => onChange?.(value, option)}
-      onSelect={onSelect}
+      onSelect={(value, option) => {
+        if (
+          isAllowAddUnregistered &&
+          (members.length === 0 || members.find(v => v.name === option.name || v.id === value)?.status === 'invited')
+        ) {
+          setIsUnregistered?.(true)
+        } else {
+          setIsUnregistered?.(false)
+        }
+        onSelect?.(value, option)
+      }}
       onSearch={handleSearch}
       notFoundContent={null}
       allowClear
