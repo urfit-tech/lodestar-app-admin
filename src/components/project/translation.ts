@@ -186,6 +186,10 @@ const projectMessages = {
       id: 'project.ProjectParticipantBlock.deleteWarnText',
       defaultMessage: '刪除不可恢復，確定要刪除嗎？',
     },
+    inviteSuccessfully: {
+      id: 'project.ProjectParticipantBlock.invitedSuccessfully',
+      defaultMessage: '邀請成功',
+    },
   }),
   ProjectRejectMarkModal: defineMessages({
     rejectMark: {

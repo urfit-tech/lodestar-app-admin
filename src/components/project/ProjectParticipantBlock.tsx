@@ -130,7 +130,12 @@ const ProjectParticipantBlock: React.FC<{
               headers: { authorization: `Bearer ${authToken}` },
             },
           )
-          .then(() => {})
+          .then(() => {
+            message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
+            form.resetFields()
+            setVisible(false)
+            participantListRefetch()
+          })
           .catch(handleError)
           .finally(() => {
             setLoading(false)
