@@ -132,7 +132,10 @@ const ProjectParticipantBlock: React.FC<{
           )
           .then(() => {})
           .catch(handleError)
-          .finally(() => setLoading(false))
+          .finally(() => {
+            setLoading(false)
+            setIsUnregistered(false)
+          })
       } else if (isEdit) {
         updateProjectRole({
           variables: {
@@ -277,6 +280,7 @@ const ProjectParticipantBlock: React.FC<{
                   setIsEdit(false)
                 }
                 form.resetFields()
+                setIsUnregistered(false)
                 setVisible(false)
               }}
             >
