@@ -17,7 +17,7 @@ const programMessages = {
     publishedAt: { id: 'program.ProgramCollectionSelector.publishedAt', defaultMessage: '依上架日期' },
     currentPrice: { id: 'program.ProgramCollectionSelector.currentPrice', defaultMessage: '依產品價錢' },
     custom: { id: 'program.ProgramCollectionSelector.newest', defaultMessage: '自訂項目' },
-    ruleOfSort: { id: 'program.ProgramCollectionSelector.ruleOfSort', defaultMessage: '排序規則' },
+    ruleOfSort: { id: 'program.ProgramCollectionSelector.ruleOfSort', defaultMessage: '預設排序' },
     choiceData: { id: 'program.ProgramCollectionSelector.choiceData', defaultMessage: '選擇資料' },
     sort: { id: 'program.ProgramCollectionSelector.sort', defaultMessage: '排序方式' },
     sortAsc: { id: 'program.ProgramCollectionSelector.sortAsc', defaultMessage: '正序' },
@@ -35,7 +35,10 @@ const programMessages = {
     isPublished: { id: 'program.ProgramPlanAdminModal.isPublished', defaultMessage: '是否顯示方案' },
     published: { id: 'program.ProgramPlanAdminModal.published', defaultMessage: '發售，上架後立即開賣' },
     unpublished: { id: 'program.ProgramPlanAdminModal.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
-    isParticipantsVisible: { id: 'program.ProgramPlanAdminModal.isParticipantsVisible', defaultMessage: 'Participants visible' },
+    isParticipantsVisible: {
+      id: 'program.ProgramPlanAdminModal.isParticipantsVisible',
+      defaultMessage: 'Participants visible',
+    },
     visible: { id: 'program.ProgramPlanAdminModal.visible', defaultMessage: 'visible' },
     invisible: { id: 'program.ProgramPlanAdminModal.invisible', defaultMessage: 'invisible' },
     subscriptionPlan: { id: 'program.ProgramPlanAdminModal.subscriptionPlan', defaultMessage: '訂閱付費方案' },
@@ -48,9 +51,15 @@ const programMessages = {
       id: 'program.ProgramPlanAdminModal.unavailableForPastContent',
       defaultMessage: '僅可看指定方案未來內容',
     },
-    availableForAllContent: { id: 'program.ProgramPlanAdminModal.availableForAllContent', defaultMessage: '可看課程所有內容' },
+    availableForAllContent: {
+      id: 'program.ProgramPlanAdminModal.availableForAllContent',
+      defaultMessage: '可看課程所有內容',
+    },
     subscriptionPeriodType: { id: 'program.ProgramPlanAdminModal.subscriptionPeriodType', defaultMessage: '訂閱週期' },
-    programExpirationNotice: { id: 'program.ProgramPlanAdminModal.programExpirationNotice', defaultMessage: '課程到期通知' },
+    programExpirationNotice: {
+      id: 'program.ProgramPlanAdminModal.programExpirationNotice',
+      defaultMessage: '課程到期通知',
+    },
     planDescription: { id: 'program.ProgramPlanAdminModal.planDescription', defaultMessage: '方案描述' },
     planTitle: { id: 'program.ProgramPlanAdminModal.planTitle', defaultMessage: '方案名稱' },
   }),
@@ -158,8 +167,14 @@ const programMessages = {
     createContent: { id: 'program.ProgramContentSectionAdminCard.createContent', defaultMessage: 'Create content' },
     videoContent: { id: 'program.ProgramContentSectionAdminCard.videoContent', defaultMessage: 'Video content' },
     articleContent: { id: 'program.ProgramContentSectionAdminCard.articleContent', defaultMessage: 'Article content' },
-    programPractice: { id: 'program.ProgramContentSectionAdminCard.practiceContent', defaultMessage: 'Practice content' },
-    programExercise: { id: 'program.ProgramContentSectionAdminCard.programExercise', defaultMessage: 'Program exercise' },
+    programPractice: {
+      id: 'program.ProgramContentSectionAdminCard.practiceContent',
+      defaultMessage: 'Practice content',
+    },
+    programExercise: {
+      id: 'program.ProgramContentSectionAdminCard.programExercise',
+      defaultMessage: 'Program exercise',
+    },
   }),
 }
 

@@ -92,14 +92,16 @@ const OrderDetailDrawer: React.FC<{
                   (accu, orderProduct) => (orderProduct.options?.type === 'gift' ? accu + orderProduct.name : accu),
                   '',
                 )}
-                recipientName={orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.name : ''}
-                recipientPhone={orderLog.shipping?.isOutsideTaiwanIsland === 'false' ? orderLog.shipping?.phone : ''}
+                recipientName={orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.name || ''}
+                recipientPhone={
+                  orderLog.shipping?.isOutsideTaiwanIsland === 'true' ? '' : orderLog.shipping?.phone || ''
+                }
                 recipientAddress={
-                  orderLog.shipping?.isOutsideTaiwanIsland === 'false'
-                    ? `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
+                  orderLog.shipping?.isOutsideTaiwanIsland === 'true'
+                    ? ''
+                    : `${orderLog.shipping?.zipCode || ''}${orderLog.shipping?.city || ''}${
                         orderLog.shipping?.district || ''
                       }${orderLog.shipping?.address || ''}`
-                    : ''
                 }
               />
             )}
