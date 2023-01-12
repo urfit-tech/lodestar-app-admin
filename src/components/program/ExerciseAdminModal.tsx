@@ -539,7 +539,10 @@ const useQuestionExam = (examId: string) => {
     id: data?.exam_by_pk?.id.toString(),
     point: Number(data?.exam_by_pk?.point),
     passingScore: Number(data?.exam_by_pk?.passing_score),
-    questionGroupIds: flatten(data?.exam_by_pk?.exam_question_group.map(v => v.question_group?.id) || []),
+    questionGroupIds: flatten(
+      data?.exam_by_pk?.exam_question_group.map(v => v.question_group?.id).filter(v => v === null
+        ) || [],
+    ),
   }
 
   return { loading, error, questionExam, refetch }

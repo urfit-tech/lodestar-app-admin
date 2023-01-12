@@ -45,8 +45,23 @@ const ProgramCollectionSettings: CraftElementSettings<ProgramCollectionProps> = 
           <Select.Option value="secondary">{formatMessage(craftMessages['*'].secondary)}</Select.Option>
         </Select>
       </Form.Item>
+      <Form.Item
+        valuePropName="checked"
+        label={<CraftSettingLabel>{formatMessage(craftMessages['*'].orderSelectorEnabled)}</CraftSettingLabel>}
+      >
+        <Switch
+          checked={props.withOrderSelector}
+          onChange={withOrderSelector =>
+            onPropsChange?.({ ...props, source: { from: 'popular', limit: 4 }, withOrderSelector })
+          }
+        />
+      </Form.Item>
       <Form.Item className="mb-0">
-        <ProgramCollectionSelector value={props.source} onChange={source => onPropsChange?.({ ...props, source })} />
+        <ProgramCollectionSelector
+          withOrderSelector={props.withOrderSelector}
+          value={props.source}
+          onChange={source => onPropsChange?.({ ...props, source })}
+        />
       </Form.Item>
       <Form.Item
         valuePropName="checked"

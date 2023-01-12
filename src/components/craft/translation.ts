@@ -2,6 +2,10 @@ import { defineMessages } from 'react-intl'
 
 const craftMessages = {
   '*': defineMessages({
+    orderSelectorEnabled: {
+      id: 'craft.*.orderSelectorEnabled',
+      defaultMessage: '啟用排序選擇器',
+    },
     categorySelectorEnabled: { id: 'craft.*.categorySelectorEnabled', defaultMessage: '啟用分類選擇器' },
     primary: { id: 'craft.*.primary', defaultMessage: '樣式一' },
     secondary: { id: 'craft.*.secondary', defaultMessage: '樣式二' },

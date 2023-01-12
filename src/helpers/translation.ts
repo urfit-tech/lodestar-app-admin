@@ -1289,7 +1289,7 @@ export const craftPageMessages = {
     popular: { id: 'craft.label.popular', defaultMessage: 'popular' },
     currentPrice: { id: 'craft.label.currentPrice', defaultMessage: '依產品價錢' },
     custom: { id: 'craft.label.custom', defaultMessage: '自訂項目' },
-    ruleOfSort: { id: 'craft.label.ruleOfSort', defaultMessage: '排序規則' },
+    ruleOfSort: { id: 'craft.label.ruleOfSort', defaultMessage: '預設排序' },
     boundary: { id: 'craft.label.boundary', defaultMessage: '邊界' },
     borderSpacing: { id: 'craft.label.borderSpacing', defaultMessage: '邊框間距' },
     deletePage: { id: 'craft.label.deletePage', defaultMessage: '刪除頁面' },
