@@ -65,7 +65,7 @@
     "@types/react-responsive": "^8.0.2",
     "@types/react-router-dom": "^5.1.5",
     "@types/react-star-rating-component": "^1.4.0",
-    "@types/styled-components": "^5.1.9",
+    "@types/styled-components": "5.1.14",
     "@types/uuid": "^8.3.0",
     "@types/wavesurfer.js": "^3.3.1",
     "@uppy/core": "2.1.6",
