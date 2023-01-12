@@ -1073,12 +1073,17 @@ export const blogMessages = {
   }),
   label: defineMessages({
     title: { id: 'blog.label.title', defaultMessage: '標題' },
+    publicAt: { id: 'blog.publicAt', defaultMessage: '發布日期' },
     source: { id: 'blog.label.source', defaultMessage: '說明備註' },
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
     codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
     merchandises: { id: 'blog.label.merchandises', defaultMessage: '相關商品' },
     deletePost: { id: 'blog.label.deletePost', defaultMessage: '刪除文章' },
+    views: { id: 'blog.label.views', defaultMessage: '瀏覽數量' },
+    pinnedAt: { id: 'blog.label.pinnedAt', defaultMessage: '置頂' },
+    pinnedAtUpdate: { id: 'blog.label.pinnedAtUpdate', defaultMessage: '設定置頂' },
+    pinnedAtDelete: { id: 'blog.label.pinnedAtDelete', defaultMessage: '取消置頂' },
   }),
   text: defineMessages({
     pasteVideoUrl: { id: 'blog.text.pasteVideoUrl', defaultMessage: '貼上影片網址' },
@@ -1086,6 +1091,7 @@ export const blogMessages = {
     suggestedPictureSize: { id: 'blog.text.suggestedPictureSize', defaultMessage: '建議圖片尺寸：1200*675px' },
     uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
+    uploadPinnedAtLimmited: { id: 'blog.text.uploadPinnedAtLimmited', defaultMessage: '置頂上限為三則' },
   }),
 }
 

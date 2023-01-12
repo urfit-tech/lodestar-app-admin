@@ -130,6 +130,10 @@ export const usePostCollection = () => {
           title
           cover_url
           video_url
+          pinned_at
+          post_merchandises {
+            id
+          }
           post_roles {
             id
             name
@@ -158,7 +162,9 @@ export const usePostCollection = () => {
     views: number | null
     publishedAt: Date | null
     authorName?: string | null
+    pinned_at: string | null
     roles: { name: string; memberId?: string | null }[]
+    postMerchandises: { id: string }[]
   }[] =
     loading || error || !data
       ? []
@@ -168,11 +174,15 @@ export const usePostCollection = () => {
           coverUrl: post.cover_url,
           videoUrl: post.video_url,
           views: post.views,
+          pinned_at: post.pinned_at,
           publishedAt: post.published_at,
           authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
           roles: post.post_roles.map(role => ({
             name: role.name,
             memberId: role.member?.id,
+          })),
+          postMerchandises: post.post_merchandises.map(role => ({
+            id: role.id,
           })),
         }))
 
