@@ -117,7 +117,7 @@ const ProjectParticipantBlock: React.FC<{
       if (isUnregistered) {
         axios
           .post(
-            `${process.env.REACT_APP_API_BASE_ROOT}/register-project-portfolio-participant`,
+            `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
             {
               appId,
               executorName: currentMember?.name || '',
