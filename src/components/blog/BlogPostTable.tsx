@@ -21,7 +21,6 @@ const StyledDiv = styled.div`
 `
 const StyledCover = styled.div<{ src: string }>`
   position: relative;
-  // padding-top: ${900 / 16}%;
   min-width: 100px;
   height: 60px;
   background-image: url(${props => props.src});
