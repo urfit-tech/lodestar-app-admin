@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import Select, { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -90,12 +90,6 @@ export const AllMemberSelector: React.FC<
     }, 300)
   }
 
-  useEffect(() => {
-    if (isAllowAddUnregistered && search && members.length === 0 && !members.find(v => v.email === search)) {
-      setIsUnregistered?.(true)
-    }
-  }, [isAllowAddUnregistered, setIsUnregistered, members, search])
-
   return (
     <Select<string | string[]>
       showSearch
@@ -104,7 +98,17 @@ export const AllMemberSelector: React.FC<
       showArrow={false}
       filterOption={false}
       onChange={(value, option) => onChange?.(value, option)}
-      onSelect={onSelect}
+      onSelect={(value, option) => {
+        if (
+          isAllowAddUnregistered &&
+          (members.length === 0 || members.find(v => v.name === option.name || v.id === value)?.status === 'invited')
+        ) {
+          setIsUnregistered?.(true)
+        } else {
+          setIsUnregistered?.(false)
+        }
+        onSelect?.(value, option)
+      }}
       onSearch={handleSearch}
       notFoundContent={null}
       allowClear
@@ -113,9 +117,7 @@ export const AllMemberSelector: React.FC<
         setIsUnregistered?.(false)
       }}
     >
-      {isAllowAddUnregistered &&
-      ((search !== '' && members.length === 0 && !members.find(v => v.email === search)) ||
-        members.find(v => v.email === search)?.status === 'invited') ? (
+      {isAllowAddUnregistered && search !== '' && members.length === 0 ? (
         <Select.Option
           key="unknown"
           value={Array.isArray(search) ? search[0] : search}
@@ -129,11 +131,7 @@ export const AllMemberSelector: React.FC<
             <AvatarImage size="28px" className="mr-2 flex-shrink-0" />
             <StyledText className="mr-2">{Array.isArray(search) ? search[0] : search}</StyledText>
             <StyledTextSecondary>
-              (
-              {members.find(v => v.email === search)?.status === 'invited'
-                ? formatMessage(formMessages.MemberSelector.memberIsInvited)
-                : formatMessage(formMessages.MemberSelector.memberIsUnregistered)}
-              )
+              ({formatMessage(formMessages.MemberSelector.memberIsUnregistered)})
             </StyledTextSecondary>
           </div>
         </Select.Option>
@@ -151,7 +149,10 @@ export const AllMemberSelector: React.FC<
           <div className="d-flex align-items-center justify-content-start">
             <AvatarImage size="28px" src={member.avatarUrl} className="mr-2 flex-shrink-0" />
             <StyledText className="mr-2">{member.name}</StyledText>
-            <StyledTextSecondary>{member.email}</StyledTextSecondary>
+            <StyledTextSecondary>
+              {member.status === 'invited' ? ` (${formatMessage(formMessages.MemberSelector.memberIsInvited)}) ` : null}
+              {member.email}
+            </StyledTextSecondary>
           </div>
         </Select.Option>
       ))}

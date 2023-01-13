@@ -2,6 +2,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import { Button, Form, Input, message, Modal, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
+import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -13,7 +14,6 @@ import { useIdentity } from '../../hooks/identity'
 import { useProject } from '../../hooks/project'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import { AllMemberSelector } from '../form/MemberSelector'
-import ApplyingRoleAdminBlock from './ApplyingRoleAdminBlock'
 import projectMessages from './translation'
 
 const StyledModalTitle = styled.div`
@@ -46,18 +46,12 @@ const ProjectParticipantBlock: React.FC<{
   publishAt: Date | null
 }> = ({ projectId, publishAt }) => {
   const { id: appId } = useApp()
-  const { authToken } = useAuth()
+  const { authToken, currentMember } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [rejectForm] = useForm<RejectFormFieldProps>()
-  const {
-    getProjectParticipantData,
-    insertProjectRole,
-    updateProjectRole,
-    deleteProjectRole,
-    agreeProjectRole,
-    rejectProjectRole,
-  } = useProject()
+  const { getProjectParticipantData, insertProjectRole, updateProjectRole, deleteProjectRole, rejectProjectRole } =
+    useProject()
   const { participantList, participantListRefetch } = getProjectParticipantData(projectId)
   const { getIdentity } = useIdentity()
   const { identityList } = getIdentity('Project')
@@ -67,17 +61,6 @@ const ProjectParticipantBlock: React.FC<{
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false)
   const [rejectModalLoading, setRejectModalLoading] = useState(false)
   const [isUnregistered, setIsUnregistered] = useState(false)
-
-  const handleAgree = (projectRoleId: string) => {
-    agreeProjectRole({ variables: { projectRoleId } })
-      .then(() => participantListRefetch())
-      .catch(handleError)
-  }
-
-  const handleReject = (projectRoleId: string) => {
-    rejectForm.setFieldsValue({ projectRoleId })
-    setIsRejectModalVisible(true)
-  }
 
   const handleSubmitRejectProjectRole = (values: RejectFormFieldProps) => {
     setRejectModalLoading(true)
@@ -105,12 +88,13 @@ const ProjectParticipantBlock: React.FC<{
   }
 
   const handleDelete = (deleteId: string) => {
-    deleteProjectRole({ variables: { projectRoleId: deleteId } })
-      .then(() => {
-        participantListRefetch()
-        message.success(formatMessage(commonMessages.event.successfullyDeleted))
-      })
-      .catch(handleError)
+    window.confirm(formatMessage(projectMessages.ProjectParticipantBlock.deleteWarnText)) &&
+      deleteProjectRole({ variables: { projectRoleId: deleteId } })
+        .then(() => {
+          participantListRefetch()
+          message.success(formatMessage(commonMessages.event.successfullyDeleted))
+        })
+        .catch(handleError)
   }
 
   const handleEdit = (editId: string) => {
@@ -131,20 +115,32 @@ const ProjectParticipantBlock: React.FC<{
     setLoading(true)
     form.validateFields().then(() => {
       if (isUnregistered) {
-        axios.post(
-          `${process.env.REACT_APP_API_BASE_ROOT}/register-project-participant`,
-          {
-            appId,
-            name: values.participantName,
-            email: values.participant,
-            identityId: values.participantTypeId,
-            projectId: projectId,
-          },
-          {
-            headers: { authorization: `Bearer ${authToken}` },
-          },
-        )
-        setLoading(false)
+        axios
+          .post(
+            `${process.env.REACT_APP_API_BASE_ROOT}/register-project-portfolio-participant`,
+            {
+              appId,
+              executorName: currentMember?.name || '',
+              invitee: values.participantName,
+              email: values.participant,
+              identityId: values.participantTypeId,
+              projectId: projectId,
+            },
+            {
+              headers: { authorization: `Bearer ${authToken}` },
+            },
+          )
+          .then(() => {
+            message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
+            form.resetFields()
+            setVisible(false)
+            participantListRefetch()
+          })
+          .catch(handleError)
+          .finally(() => {
+            setLoading(false)
+            setIsUnregistered(false)
+          })
       } else if (isEdit) {
         updateProjectRole({
           variables: {
@@ -187,19 +183,6 @@ const ProjectParticipantBlock: React.FC<{
   return (
     <>
       {participantList
-        ?.filter(participant => participant.agreedAt === null)
-        .map(participant => (
-          <ApplyingRoleAdminBlock
-            key={participant.projectRoleId}
-            name={participant.member.name}
-            identity={participant.identity.name}
-            pictureUrl={participant.member.pictureUrl}
-            onAgree={() => handleAgree(participant.projectRoleId)}
-            onReject={() => handleReject(participant.projectRoleId)}
-          />
-        ))}
-
-      {participantList
         ?.filter(participant => participant.agreedAt !== null)
         .map(participant => (
           <RoleAdminBlock
@@ -207,6 +190,20 @@ const ProjectParticipantBlock: React.FC<{
             name={`${participant.member.name} / ${participant.identity.name}`}
             pictureUrl={participant.member.pictureUrl}
             onEdit={() => handleEdit(participant.projectRoleId)}
+            onDelete={() => handleDelete(participant.projectRoleId)}
+          />
+        ))}
+
+      {participantList
+        ?.filter(participant => participant.agreedAt === null)
+        .map(participant => (
+          <RoleAdminBlock
+            key={participant.projectRoleId}
+            name={`${participant.member.name} / ${participant.identity.name}`}
+            pictureUrl={participant.member.pictureUrl}
+            remainingDays={formatMessage(projectMessages.ProjectParticipantBlock.remainingDays, {
+              remainingDays: dayjs(participant.createdAt).add(90, 'day').diff(new Date(), 'day'),
+            })}
             onDelete={() => handleDelete(participant.projectRoleId)}
           />
         ))}
@@ -288,6 +285,7 @@ const ProjectParticipantBlock: React.FC<{
                   setIsEdit(false)
                 }
                 form.resetFields()
+                setIsUnregistered(false)
                 setVisible(false)
               }}
             >
