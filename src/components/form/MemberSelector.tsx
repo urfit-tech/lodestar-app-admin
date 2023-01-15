@@ -92,6 +92,7 @@ export const AllMemberSelector: React.FC<
 
   return (
     <Select<string | string[]>
+      style={{ width: '100%' }}
       showSearch
       value={value}
       defaultActiveFirstOption={false}
