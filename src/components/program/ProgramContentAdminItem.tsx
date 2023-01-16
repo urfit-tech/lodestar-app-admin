@@ -108,11 +108,19 @@ const ProgramContentAdminItem: React.FC<{
           </StyledDisplayModeTag>
         ) : programContent.displayMode === 'trial' ? (
           <StyledDisplayModeTag className="mr-3">
-            {formatMessage(programMessages.DisplayModeSelector.trial)}
+            {formatMessage(
+              programContent.programContentType === 'audio'
+                ? programMessages.DisplayModeSelector.audioTrial
+                : programMessages.DisplayModeSelector.trial,
+            )}
           </StyledDisplayModeTag>
         ) : programContent.displayMode === 'loginToTrial' ? (
           <StyledDisplayModeTag className="mr-3">
-            {formatMessage(programMessages.DisplayModeSelector.loginToTrial)}
+            {formatMessage(
+              programContent.programContentType === 'audio'
+                ? programMessages.DisplayModeSelector.loginToAudioTrial
+                : programMessages.DisplayModeSelector.loginToTrial,
+            )}
           </StyledDisplayModeTag>
         ) : null}
 

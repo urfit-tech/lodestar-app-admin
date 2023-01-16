@@ -2578,11 +2578,13 @@
   "voucher.text.fromNow": "From now on",
   "voucher.text.items": "items",
   "voucher.text.noUsePeriod": "No UsePeriod",
-  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "Portfolio will unpublish and not display in list.",
   "program.ProgramContentSectionAdminCard.audioContent": "Audio content",
   "program.ui.audioContent": "Audio content",
   "program.ui.uploadAudioFile": "Upload audio file",
   "program.text.audioFileLimit": "The file size exceeds 250MB , please re-select the file to upload",
   "program.text.audioFileTips": "Accept format: .mp3\nFile size: 250MB",
-  "program.label.audioFile": "Audio file"
+  "program.label.audioFile": "Audio file",
+  "program.DisplayModeSelector.audioTrial": "Audio trial",
+  "program.DisplayModeSelector.loginToAudioTrial": "Login to audio trial",
+  "program.DisplayModeSelector.payToListen": "Pay to listen"
 }

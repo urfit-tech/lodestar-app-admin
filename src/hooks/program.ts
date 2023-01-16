@@ -642,6 +642,9 @@ export const useMutateProgramContent = () => {
         delete_program_content_video(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
+        delete_program_content_audio(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
         delete_program_content_material(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }

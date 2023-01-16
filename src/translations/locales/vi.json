@@ -2578,11 +2578,13 @@
   "voucher.text.fromNow": " Từ bây giờ ",
   "voucher.text.items": "mặt hàng",
   "voucher.text.noUsePeriod": "Không useperiod",
-  "project.ProjectPublishAdminBlock.portfolioUnpublishingWarningText": "Danh mục đầu tư sẽ không được xuất bản và không hiển thị trong danh sách.",
   "program.ProgramContentSectionAdminCard.audioContent": "nội dung âm thanh",
   "program.ui.audioContent": "nội dung âm thanh",
   "program.ui.uploadAudioFile": "Tải lên tệp âm thanh",
   "program.text.audioFileLimit": "Kích thước tệp vượt quá 250MB , vui lòng chọn lại tệp để tải lên",
   "program.text.audioFileTips": "Chấp nhận định dạng: .mp3 \nKích thước tập tin: 250MB",
-  "program.label.audioFile": "Tập tin âm thanh"
+  "program.label.audioFile": "Tập tin âm thanh",
+  "program.DisplayModeSelector.audioTrial": "dùng thử âm thanh",
+  "program.DisplayModeSelector.loginToAudioTrial": "Đăng nhập để dùng thử âm thanh",
+  "program.DisplayModeSelector.payToListen": "trả tiền để nghe"
 }

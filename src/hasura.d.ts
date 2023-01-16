@@ -14071,6 +14071,14 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content_video {
   affected_rows: number;
 }
 
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_audio {
+  __typename: "program_content_audio_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT_delete_program_content_material {
   __typename: "program_content_material_mutation_response";
   /**
@@ -14120,6 +14128,10 @@ export interface DELETE_PROGRAM_CONTENT {
    * delete data from the table: "program_content_video"
    */
   delete_program_content_video: DELETE_PROGRAM_CONTENT_delete_program_content_video | null;
+  /**
+   * delete data from the table: "program_content_audio"
+   */
+  delete_program_content_audio: DELETE_PROGRAM_CONTENT_delete_program_content_audio | null;
   /**
    * delete data from the table: "program_content_material"
    */
@@ -47425,6 +47437,7 @@ export interface token_bool_exp {
   _or?: token_bool_exp[] | null;
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
+  clicks?: Int_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   currency_id?: String_comparison_exp | null;
@@ -47440,6 +47453,7 @@ export interface token_bool_exp {
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+  views?: Int_comparison_exp | null;
 }
 
 /**
@@ -47448,6 +47462,7 @@ export interface token_bool_exp {
 export interface token_insert_input {
   abstract?: string | null;
   app_id?: string | null;
+  clicks?: number | null;
   cover_url?: string | null;
   created_at?: any | null;
   currency_id?: string | null;
@@ -47463,6 +47478,7 @@ export interface token_insert_input {
   title?: string | null;
   type?: string | null;
   updated_at?: any | null;
+  views?: number | null;
 }
 
 /**

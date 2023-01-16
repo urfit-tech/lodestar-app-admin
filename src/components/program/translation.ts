@@ -66,8 +66,11 @@ const programMessages = {
   DisplayModeSelector: defineMessages({
     conceal: { id: 'program.DisplayModeSelector.conceal', defaultMessage: '隱藏' },
     trial: { id: 'program.DisplayModeSelector.trial', defaultMessage: '試看' },
+    audioTrial: { id: 'program.DisplayModeSelector.audioTrial', defaultMessage: 'Audio trial' },
     loginToTrial: { id: 'program.DisplayModeSelector.loginToTrial', defaultMessage: '登入試看' },
+    loginToAudioTrial: { id: 'program.DisplayModeSelector.loginToAudioTrial', defaultMessage: 'Login to audio trial' },
     payToWatch: { id: 'program.DisplayModeSelector.payToWatch', defaultMessage: '付費觀看' },
+    payToListen: { id: 'program.DisplayModeSelector.payToListen', defaultMessage: 'Pay to listen' },
   }),
   ProgramContentAdminItem: defineMessages({
     privatePractice: { id: 'program.ProgramContentAdminItem.privatePractice', defaultMessage: '私密作業' },

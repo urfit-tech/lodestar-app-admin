@@ -176,7 +176,6 @@ const ProgramContentAdminModal: React.FC<{
     const uploadError: typeof isUploadFailed = {}
 
     let updatedProgramContentBodyId = programContentBody.id
-    let audioDuration = values.duration
 
     // upload audio files
     const newAudioFiles = audioFiles.filter(
@@ -185,6 +184,9 @@ const ProgramContentAdminModal: React.FC<{
           audio => audio.data.name === file.name && audio.data.lastModified === file.lastModified,
         ),
     )
+
+    let audioDuration = newAudioFiles.length === 0 && audioFiles.length > 0 ? values.duration : 0
+
     if (newAudioFiles.length > 0) {
       for (const file of newAudioFiles) {
         await uploadFile(`audios/${appId}/${programId}/${programContent.id}`, file, authToken, {
@@ -198,6 +200,9 @@ const ProgramContentAdminModal: React.FC<{
         })
         audioDuration += await getFileDuration(file)
       }
+    }
+    if (contentType === 'audio') {
+      form.setFieldsValue({ duration: audioDuration })
     }
     // upload materials
     const newMaterialFiles = materialFiles.filter(
@@ -281,7 +286,7 @@ const ProgramContentAdminModal: React.FC<{
       if (!uploadError.materials) {
         await updateMaterials(materialFiles)
       }
-      if (!uploadError.audio && newAudioFiles.length > 0) {
+      if (!uploadError.audio) {
         await updateAudios(audioFiles)
       }
       if (Object.values(uploadError).some(v => v)) {
@@ -369,7 +374,7 @@ const ProgramContentAdminModal: React.FC<{
                 </Form.Item>
 
                 {programContent.displayMode && (
-                  <DisplayModeSelector contentType="program" displayMode={programContent.displayMode} />
+                  <DisplayModeSelector contentType={programContentBody.type} displayMode={programContent.displayMode} />
                 )}
 
                 <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">

@@ -7,7 +7,7 @@ import programMessages from './translation'
 export type DisplayMode = 'conceal' | 'trial' | 'loginToTrial' | 'payToWatch'
 
 const DisplayModeSelector: React.VFC<{
-  contentType: 'program' | 'exercise' | 'practice' | 'exam'
+  contentType: string | null
   displayMode: DisplayMode
 }> = ({ contentType, displayMode }) => {
   const { formatMessage } = useIntl()
@@ -20,18 +20,30 @@ const DisplayModeSelector: React.VFC<{
           <Select.Option key="conceal" value="conceal">
             {formatMessage(programMessages.DisplayModeSelector.conceal)}
           </Select.Option>
-          {contentType === 'program' ? (
+          {contentType && ['video', 'text', 'audio'].includes(contentType) ? (
             <>
               <Select.Option key="trial" value="trial">
-                {formatMessage(programMessages.DisplayModeSelector.trial)}
+                {formatMessage(
+                  contentType === 'audio'
+                    ? programMessages.DisplayModeSelector.audioTrial
+                    : programMessages.DisplayModeSelector.trial,
+                )}
               </Select.Option>
               <Select.Option key="loginToTrial" value="loginToTrial">
-                {formatMessage(programMessages.DisplayModeSelector.loginToTrial)}
+                {formatMessage(
+                  contentType === 'audio'
+                    ? programMessages.DisplayModeSelector.loginToAudioTrial
+                    : programMessages.DisplayModeSelector.loginToTrial,
+                )}
               </Select.Option>
             </>
           ) : null}
           <Select.Option key="payToWatch" value="payToWatch">
-            {formatMessage(programMessages.DisplayModeSelector.payToWatch)}
+            {formatMessage(
+              contentType === 'audio'
+                ? programMessages.DisplayModeSelector.payToListen
+                : programMessages.DisplayModeSelector.payToWatch,
+            )}
           </Select.Option>
         </Select>
       </Form.Item>
