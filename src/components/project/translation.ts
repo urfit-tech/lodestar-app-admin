@@ -190,6 +190,10 @@ const projectMessages = {
       id: 'project.ProjectParticipantBlock.invitedSuccessfully',
       defaultMessage: '邀請成功',
     },
+    invalidEmail: {
+      id: 'project.ProjectRejectMarkModal.invalidEmail',
+      defaultMessage: '無效的信箱',
+    },
   }),
   ProjectRejectMarkModal: defineMessages({
     rejectMark: {

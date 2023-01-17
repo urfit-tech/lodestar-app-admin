@@ -8,7 +8,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { handleError } from '../../helpers'
+import { handleError, isValidEmail } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useIdentity } from '../../hooks/identity'
 import { useProject } from '../../hooks/project'
@@ -115,32 +115,37 @@ const ProjectParticipantBlock: React.FC<{
     setLoading(true)
     form.validateFields().then(() => {
       if (isUnregistered) {
-        axios
-          .post(
-            `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
-            {
-              appId,
-              executorName: currentMember?.name || '',
-              invitee: values.participantName,
-              email: values.participant,
-              identityId: values.participantTypeId,
-              projectId: projectId,
-            },
-            {
-              headers: { authorization: `Bearer ${authToken}` },
-            },
-          )
-          .then(() => {
-            message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
-            form.resetFields()
-            setVisible(false)
-            participantListRefetch()
-          })
-          .catch(handleError)
-          .finally(() => {
-            setLoading(false)
-            setIsUnregistered(false)
-          })
+        if (isValidEmail(values.participant)) {
+          axios
+            .post(
+              `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
+              {
+                appId,
+                executorName: currentMember?.name || '',
+                invitee: values.participantName,
+                email: values.participant,
+                identityId: values.participantTypeId,
+                projectId: projectId,
+              },
+              {
+                headers: { authorization: `Bearer ${authToken}` },
+              },
+            )
+            .then(() => {
+              message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
+              form.resetFields()
+              setVisible(false)
+              participantListRefetch()
+            })
+            .catch(handleError)
+            .finally(() => {
+              setLoading(false)
+              setIsUnregistered(false)
+            })
+        } else {
+          setLoading(false)
+          return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+        }
       } else if (isEdit) {
         updateProjectRole({
           variables: {
