@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Input, Menu, message, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -48,7 +48,7 @@ const StyledTitle = styled.div`
   overflow: hidden;
 `
 
-const DetailItem = styled(Menu.Item)`
+const StyledDetailItem = styled(Menu.Item)`
   padding: 0.5rem 1rem;
 `
 
@@ -62,7 +62,7 @@ type BlogPostListColumn = {
   title: string
   views?: number | null
   publishedAt: Date | null
-  pinned_at: string | null
+  pinnedAt: string | null
   roles?: {
     name: string | null | undefined
     memberId?: string | null | undefined
@@ -81,10 +81,10 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
       UPDATE_POST_PINNED_AT,
     )
 
-    const blogPostPinatNumber = blogPostData.filter(post => !!post.pinned_at).length
+    const blogPostPinatNumber = blogPostData.filter(post => !!post.pinnedAt).length
 
-    const handleUpload = (id: String | null, updateTime: Date | null, status: String) => {
-      if (blogPostPinatNumber === 3 && status === 'update') {
+    const handleUpload = (id: String | null, updateTime: Date | null = null, status: String | null = null) => {
+      if (blogPostPinatNumber === 3 && status) {
         return message.warning(formatMessage(blogMessages.text.uploadPinnedAtLimmited))
       }
       setDetailLoading(true)
@@ -102,18 +102,10 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
         .catch(handleError)
         .finally(() => setDetailLoading(false))
     }
-
-    useEffect(() => {
-      let result
-      if (searchTitle === '' && searchAuthor === '') {
-        result = blogPostData
-      } else {
-        result = blogPostData.filter(
-          post => post.title?.includes(searchTitle) && post.authorName?.includes(searchAuthor),
-        )
-      }
-      setBlogDisplayData(result)
-    }, [searchTitle, searchAuthor, blogPostData])
+    const filteredBlogPost =
+      searchTitle === '' && searchAuthor === ''
+        ? blogPostData
+        : blogPostData.filter(post => post.title?.includes(searchTitle) && post.authorName?.includes(searchAuthor))
     const columns: ColumnProps<BlogPostListColumn>[] = [
       {
         key: 'picture',
@@ -193,17 +185,17 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
         width: '20%',
         defaultSortOrder: 'descend',
         sorter: (a, b) => {
-          if (!!a.pinned_at && !!b.pinned_at) {
-            return new Date(a.pinned_at).getTime() - new Date(b.pinned_at).getTime()
+          if (!!a.pinnedAt && !!b.pinnedAt) {
+            return new Date(a.pinnedAt).getTime() - new Date(b.pinnedAt).getTime()
           } else {
-            let set1 = a.pinned_at ? 1 : 0
-            let set2 = b.pinned_at ? 1 : 0
+            let set1 = a.pinnedAt ? 1 : 0
+            let set2 = b.pinnedAt ? 1 : 0
             return set1 - set2
           }
         },
         render: (_, record) => (
           <div>
-            {record.pinned_at ? <Tag color={'volcano'}>{formatMessage(blogMessages.label.pinnedAt)}</Tag> : ''}
+            {record.pinnedAt ? <Tag color={'volcano'}>{formatMessage(blogMessages.label.pinnedAt)}</Tag> : ''}
             {record.postMerchandises.length > 0 ? <Tag>{formatMessage(blogMessages.label.merchandises)}</Tag> : ''}
           </div>
         ),
@@ -217,17 +209,17 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
             placement="bottomRight"
             overlay={
               <Menu>
-                <DetailItem>
-                  {!record.pinned_at ? (
+                <StyledDetailItem>
+                  {!record.pinnedAt ? (
                     <Button onClick={() => handleUpload(record.id, new Date(), 'update')}>
                       {formatMessage(blogMessages.label.pinnedAtUpdate)}
                     </Button>
                   ) : (
-                    <Button onClick={() => handleUpload(record.id, null, 'remove')}>
+                    <Button onClick={() => handleUpload(record.id)}>
                       {formatMessage(blogMessages.label.pinnedAtDelete)}
                     </Button>
                   )}
-                </DetailItem>
+                </StyledDetailItem>
               </Menu>
             }
             trigger={['click']}
@@ -239,9 +231,6 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
     ]
     let displayColumns = postTableType === 'draft' ? columns.filter(items => items.key !== 'button') : columns
 
-    // if (error) {
-    //   return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
-    // }
     if (blogPostData.length > 0) {
       return (
         <StyledDiv>
@@ -249,19 +238,13 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
             loading={detailLoading}
             rowKey="id"
             columns={displayColumns}
-            dataSource={blogDisplayData}
+            dataSource={filteredBlogPost}
           />
         </StyledDiv>
       )
     } else {
       return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
     }
-
-    // return searchTitle !== null ? (
-
-    // ) : (
-    //   <NoQuestionGroupBlock>{formatMessage(questionLibraryMessage.label.noQuestionGroup)}</NoQuestionGroupBlock>
-    // )
   }
 
 export default BlogPostTable

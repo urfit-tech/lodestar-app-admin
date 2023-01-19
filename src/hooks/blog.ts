@@ -162,7 +162,7 @@ export const usePostCollection = () => {
     views: number | null
     publishedAt: Date | null
     authorName?: string | null
-    pinned_at: string | null
+    pinnedAt: string | null
     roles: { name: string; memberId?: string | null }[]
     postMerchandises: { id: string }[]
   }[] =
@@ -174,7 +174,7 @@ export const usePostCollection = () => {
           coverUrl: post.cover_url,
           videoUrl: post.video_url,
           views: post.views,
-          pinned_at: post.pinned_at,
+          pinnedAt: post.pinned_at,
           publishedAt: post.published_at,
           authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
           roles: post.post_roles.map(role => ({

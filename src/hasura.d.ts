@@ -22186,6 +22186,7 @@ export enum member_select_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -22437,6 +22438,7 @@ export enum member_update_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -33059,6 +33061,7 @@ export interface member_bool_exp {
   status?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
+  verified_emails?: jsonb_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
   vouchers_aggregate?: voucher_aggregate_bool_exp | null;
   youtube_channel_ids?: jsonb_comparison_exp | null;
@@ -33658,6 +33661,7 @@ export interface member_insert_input {
   status?: string | null;
   title?: string | null;
   username?: string | null;
+  verified_emails?: any | null;
   vouchers?: voucher_arr_rel_insert_input | null;
   youtube_channel_ids?: any | null;
   zoom_user_id_deprecate?: string | null;
@@ -34247,6 +34251,7 @@ export interface member_order_by {
   status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
+  verified_emails?: order_by | null;
   vouchers_aggregate?: voucher_aggregate_order_by | null;
   youtube_channel_ids?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -34702,6 +34707,7 @@ export interface member_public_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
+  has_backstage_enter_permission?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_specialities_aggregate?: member_speciality_aggregate_bool_exp | null;
@@ -34726,6 +34732,7 @@ export interface member_public_insert_input {
   created_at?: any | null;
   description?: string | null;
   email?: string | null;
+  has_backstage_enter_permission?: number | null;
   id?: string | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -34756,6 +34763,7 @@ export interface member_public_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   email?: order_by | null;
+  has_backstage_enter_permission?: order_by | null;
   id?: order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
