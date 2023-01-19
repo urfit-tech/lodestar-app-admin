@@ -391,3 +391,7 @@ export const getImageSizedUrl = (isUseOriginSize: boolean, imageUrl: string) => 
 export const isImageUrlResized = (imageUrl: string) => {
   return /\/\d{1,5}$/.test(imageUrl)
 }
+
+export const isValidEmail = (email: string) => {
+  return /^\w+((-\w+)|(\.\w+))*@\w+((\.|-)\w+)*\.[A-Za-z]+$/.test(email)
+}

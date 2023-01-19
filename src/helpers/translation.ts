@@ -276,7 +276,10 @@ export const commonMessages = {
     ogImage: { id: 'common.label.ogImage', defaultMessage: 'og:image' },
     ogImageAlt: { id: 'common.label.ogImageAlt', defaultMessage: 'og:image:alt' },
     participant: { id: 'common.label.participant', defaultMessage: 'participant' },
-    selectParticipant: { id: 'common.label.selectParticipant', defaultMessage: 'Select participant' },
+    selectParticipant: {
+      id: 'common.label.selectParticipant',
+      defaultMessage: 'Select participant（If cannot search any member,please enter email）',
+    },
     participantOccupation: { id: 'common.label.participantOccupation', defaultMessage: 'Participant occupation' },
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
