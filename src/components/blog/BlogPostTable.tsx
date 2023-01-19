@@ -77,7 +77,7 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
     const [searchAuthor, setSearchAuthor] = useState<string>('')
     const [detailLoading, setDetailLoading] = useState(false)
     const [blogDisplayData, setBlogDisplayData] = useState<BlogPostListColumn[]>([])
-    const [updatePostPinned] = useMutation<hasura.UPDATE_POST_PINNED_AT, hasura.UPDATE_POST_PINNED_ATVariables>(
+    const [updatePostPinnedAt] = useMutation<hasura.UPDATE_POST_PINNED_AT, hasura.UPDATE_POST_PINNED_ATVariables>(
       UPDATE_POST_PINNED_AT,
     )
 
@@ -89,7 +89,7 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
       }
       setDetailLoading(true)
 
-      updatePostPinned({
+      updatePostPinnedAt({
         variables: {
           postId: id,
           pinnedAt: updateTime,
