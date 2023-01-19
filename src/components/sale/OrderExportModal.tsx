@@ -234,7 +234,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           ].filter(v => typeof v !== 'undefined'),
         ),
       ]
-
+      debugger
       return data
     },
     [client, enabledModules, formatMessage, selectedField],
@@ -386,7 +386,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           ].filter(v => typeof v !== 'undefined'),
         ),
       ]
-
+      debugger
       return data
     },
     [client, enabledModules, formatMessage, selectedField],
@@ -502,7 +502,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           ]
         }),
       ]
-
+      debugger
       return data
     },
     [client, formatMessage, selectedField],
@@ -591,7 +591,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             ].filter(v => typeof v !== 'undefined'),
           ),
         ]
-
+        debugger
         return data
       },
       [client, enabledModules, formatMessage, selectedField],
@@ -660,7 +660,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             content = await getPaymentLogContent(startedAt, endedAt, orderStatuses)
             break
         }
-
+        console.log(content, 'testcontent')
         downloadCSV(
           `${fileName}_${moment(startedAt).format('YYYYMMDD')}_${moment(endedAt).format('YYYYMMDD')}.csv`,
           toCSV(content),

@@ -1103,6 +1103,17 @@ export const blogMessages = {
     uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
     uploadPinnedAtLimmited: { id: 'blog.text.uploadPinnedAtLimmited', defaultMessage: '置頂上限為三則' },
+    exportButton: { id: 'blog.text.exportButton', defaultMessage: '資料輸出' },
+  }),
+  BlogExportModal: defineMessages({
+    title: { id: 'blog.BlogExportModal.title', defaultMessage: '文章名稱' },
+    postTags: { id: 'blog.BlogExportModal.postTags', defaultMessage: '標籤' },
+    category: { id: 'blog.BlogExportModal.category', defaultMessage: '分類' },
+    publicAt: { id: 'blog.BlogExportModal.publicAt', defaultMessage: '發布日期' },
+    author: { id: 'blog.BlogExportModal.author', defaultMessage: '文章作者' },
+    likes: { id: 'blog.BlogExportModal.likes', defaultMessage: '愛心數' },
+    comments: { id: 'blog.BlogExportModal.comments', defaultMessage: '留言數' },
+    views: { id: 'blog.BlogExportModal.views', defaultMessage: '瀏覽數量' },
   }),
 }
 

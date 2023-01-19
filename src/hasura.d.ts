@@ -1120,6 +1120,106 @@ export interface GET_APPOINTMENT_PLAN_SCHEDULESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_BLOG_LOG_EXPORT
+// ====================================================
+
+export interface GET_BLOG_LOG_EXPORT_post_post_tags {
+  __typename: "post_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_categories {
+  __typename: "post_category";
+  id: any;
+  post_id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_BLOG_LOG_EXPORT_post_post_categories_category;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_roles {
+  __typename: "post_role";
+  id: any;
+  /**
+   * creator | author
+   */
+  name: string;
+  /**
+   * An object relationship
+   */
+  member: GET_BLOG_LOG_EXPORT_post_post_roles_member | null;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_reaction {
+  __typename: "post_reaction";
+  post_id: any;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_issue {
+  __typename: "post_issue";
+  post_id: any | null;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post {
+  __typename: "post";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  post_tags: GET_BLOG_LOG_EXPORT_post_post_tags[];
+  /**
+   * An array relationship
+   */
+  post_categories: GET_BLOG_LOG_EXPORT_post_post_categories[];
+  pinned_at: any | null;
+  /**
+   * An array relationship
+   */
+  post_roles: GET_BLOG_LOG_EXPORT_post_post_roles[];
+  published_at: any | null;
+  views: number;
+  /**
+   * An array relationship
+   */
+  post_reaction: GET_BLOG_LOG_EXPORT_post_post_reaction[];
+  /**
+   * An array relationship
+   */
+  post_issue: GET_BLOG_LOG_EXPORT_post_post_issue[];
+}
+
+export interface GET_BLOG_LOG_EXPORT {
+  /**
+   * fetch data from the table: "post"
+   */
+  post: GET_BLOG_LOG_EXPORT_post[];
+}
+
+export interface GET_BLOG_LOG_EXPORTVariables {
+  startedAt?: any | null;
+  endedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_ROLE
 // ====================================================
 
