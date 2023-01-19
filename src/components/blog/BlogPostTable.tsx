@@ -77,19 +77,19 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
     const [searchAuthor, setSearchAuthor] = useState<string>('')
     const [detailLoading, setDetailLoading] = useState(false)
     const [blogDisplayData, setBlogDisplayData] = useState<BlogPostListColumn[]>([])
-    const [updatePostPinat] = useMutation<hasura.UPDATE_POST_PINNED_AT, hasura.UPDATE_POST_PINNED_ATVariables>(
+    const [updatePostPinned] = useMutation<hasura.UPDATE_POST_PINNED_AT, hasura.UPDATE_POST_PINNED_ATVariables>(
       UPDATE_POST_PINNED_AT,
     )
 
     const blogPostPinatNumber = blogPostData.filter(post => !!post.pinnedAt).length
 
-    const handleUpload = (id: String | null, updateTime: Date | null = null, status: String | null = null) => {
-      if (blogPostPinatNumber === 3 && status) {
+    const handleUpload = (id: String | null, updateTime: Date | null = null) => {
+      if (blogPostPinatNumber === 3 && updateTime) {
         return message.warning(formatMessage(blogMessages.text.uploadPinnedAtLimmited))
       }
       setDetailLoading(true)
 
-      updatePostPinat({
+      updatePostPinned({
         variables: {
           postId: id,
           pinnedAt: updateTime,
@@ -211,7 +211,7 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
               <Menu>
                 <StyledDetailItem>
                   {!record.pinnedAt ? (
-                    <Button onClick={() => handleUpload(record.id, new Date(), 'update')}>
+                    <Button onClick={() => handleUpload(record.id, new Date())}>
                       {formatMessage(blogMessages.label.pinnedAtUpdate)}
                     </Button>
                   ) : (
