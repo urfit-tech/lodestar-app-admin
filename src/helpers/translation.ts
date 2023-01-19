@@ -4,6 +4,7 @@ export const commonMessages = {
   ui: defineMessages({
     usage: { id: 'common.ui.usage', defaultMessage: '用量' },
     video: { id: 'common.ui.video', defaultMessage: '影片' },
+    audio: { id: 'common.ui.audio', defaultMessage: 'audio' },
     image: { id: 'common.ui.image', defaultMessage: '圖片' },
     other: { id: 'common.ui.other', defaultMessage: '其他' },
     comma: { id: 'common.ui.comma', defaultMessage: '、' },
@@ -736,7 +737,6 @@ export const programMessages = {
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
-
     practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
     show: { id: 'program.label.show', defaultMessage: '顯示' },
     notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
@@ -750,6 +750,7 @@ export const programMessages = {
     contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.label.description', defaultMessage: '內文' },
     score: { id: 'program.label.score', defaultMessage: '分數' },
+    audioFile: { id: 'program.label.audioFile', defaultMessage: 'Audio File' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -798,6 +799,11 @@ export const programMessages = {
     searchExerciseMember: { id: 'program.text. searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
     searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
     emptyPractice: { id: 'practice.text.emptyPractice', defaultMessage: '尚未有任何作業' },
+    audioFileLimit: {
+      id: 'program.text.audioFileLimit',
+      defaultMessage: 'The file size exceeds 250MB , please re-select the file to upload',
+    },
+    audioFileTips: { id: 'program.text.audioFileTips', defaultMessage: 'Accept format: .mp3\nFile size: 250MB' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -814,6 +820,8 @@ export const programMessages = {
     checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
     videoContent: { id: 'program.ui.videoContent', defaultMessage: 'Video content' },
     articleContent: { id: 'program.ui.articleContent', defaultMessage: 'Article content' },
+    audioContent: { id: 'program.ui.audioContent', defaultMessage: 'Audio content' },
+    uploadAudioFile: { id: 'program.ui.uploadAudioFile', defaultMessage: 'Upload audio file' },
   }),
 }
 

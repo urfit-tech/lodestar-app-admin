@@ -13498,6 +13498,12 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   attachment: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos_attachment;
 }
 
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_audios {
+  __typename: "program_content_audio";
+  id: any;
+  data: any;
+}
+
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents {
   __typename: "program_content";
   id: any;
@@ -13535,6 +13541,10 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
    * An array relationship
    */
   program_content_videos: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos[];
+  /**
+   * An array relationship
+   */
+  program_content_audios: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_audios[];
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections {
@@ -14061,6 +14071,14 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content_video {
   affected_rows: number;
 }
 
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_audio {
+  __typename: "program_content_audio_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT_delete_program_content_material {
   __typename: "program_content_material_mutation_response";
   /**
@@ -14110,6 +14128,10 @@ export interface DELETE_PROGRAM_CONTENT {
    * delete data from the table: "program_content_video"
    */
   delete_program_content_video: DELETE_PROGRAM_CONTENT_delete_program_content_video | null;
+  /**
+   * delete data from the table: "program_content_audio"
+   */
+  delete_program_content_audio: DELETE_PROGRAM_CONTENT_delete_program_content_audio | null;
   /**
    * delete data from the table: "program_content_material"
    */
@@ -14426,6 +14448,47 @@ export interface UPDATE_PROGRAM_CONTENT_VIDEOS {
 export interface UPDATE_PROGRAM_CONTENT_VIDEOSVariables {
   programContentId: any;
   programContentVideos: program_content_video_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_AUDIOS
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOS_delete_program_content_audio {
+  __typename: "program_content_audio_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOS_insert_program_content_audio {
+  __typename: "program_content_audio_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOS {
+  /**
+   * delete data from the table: "program_content_audio"
+   */
+  delete_program_content_audio: UPDATE_PROGRAM_CONTENT_AUDIOS_delete_program_content_audio | null;
+  /**
+   * insert data into the table: "program_content_audio"
+   */
+  insert_program_content_audio: UPDATE_PROGRAM_CONTENT_AUDIOS_insert_program_content_audio | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOSVariables {
+  programContentId: any;
+  audios: program_content_audio_insert_input[];
 }
 
 /* tslint:disable */
@@ -47374,6 +47437,7 @@ export interface token_bool_exp {
   _or?: token_bool_exp[] | null;
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
+  clicks?: Int_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   currency_id?: String_comparison_exp | null;
@@ -47389,6 +47453,7 @@ export interface token_bool_exp {
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+  views?: Int_comparison_exp | null;
 }
 
 /**
@@ -47397,6 +47462,7 @@ export interface token_bool_exp {
 export interface token_insert_input {
   abstract?: string | null;
   app_id?: string | null;
+  clicks?: number | null;
   cover_url?: string | null;
   created_at?: any | null;
   currency_id?: string | null;
@@ -47412,6 +47478,7 @@ export interface token_insert_input {
   title?: string | null;
   type?: string | null;
   updated_at?: any | null;
+  views?: number | null;
 }
 
 /**

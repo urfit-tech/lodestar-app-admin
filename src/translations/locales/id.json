@@ -2558,5 +2558,14 @@
   "voucher.status.redeemable": "Dapat ditukarkan",
   "voucher.text.fromNow": "Mulai sekarang",
   "voucher.text.items": "barang",
-  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan "
+  "voucher.text.noUsePeriod": "Tidak Ada Periode Penggunaan ",
+  "program.ProgramContentSectionAdminCard.audioContent": "konten audio",
+  "program.ui.audioContent": "konten audio",
+  "program.ui.uploadAudioFile": "Unggah file audio",
+  "program.text.audioFileLimit": "Ukuran file melebihi 250MB , silakan pilih kembali file yang akan diunggah",
+  "program.text.audioFileTips": "Terima format: .mp3\nUkuran file: 250MB",
+  "program.label.audioFile": "berkas audio",
+  "program.DisplayModeSelector.audioTrial": "Uji coba audio",
+  "program.DisplayModeSelector.loginToAudioTrial": "Masuk ke uji coba audio",
+  "program.DisplayModeSelector.payToListen": "Bayar untuk mendengarkan"
 }
