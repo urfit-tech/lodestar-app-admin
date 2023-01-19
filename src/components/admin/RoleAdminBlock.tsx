@@ -18,16 +18,24 @@ const StyledInstructorBlock = styled.div`
     margin-bottom: 2rem;
   }
 `
+const StyledRemainingDays = styled.div`
+  color: var(--gray-dark);
+`
+
 const RoleAdminBlock: React.FC<{
   name: string | null
   pictureUrl: string | null
+  remainingDays?: string
   onEdit?: () => void
   onDelete?: () => void
-}> = ({ name, pictureUrl, onEdit, onDelete }) => {
+}> = ({ name, pictureUrl, remainingDays, onEdit, onDelete }) => {
   return (
     <StyledInstructorBlock className="d-flex align-items-center justify-content-center">
       <AvatarImage size="36px" src={pictureUrl} className="mr-3" />
-      <StyledName className="flex-grow-1">{name}</StyledName>
+      <div className="d-flex flex-grow-1">
+        <StyledName>{name}</StyledName>
+        <StyledRemainingDays className="ml-3">{remainingDays}</StyledRemainingDays>
+      </div>
       {onEdit && <EditOutlined className="mr-3" onClick={() => onEdit()} />}
       {onDelete && <DeleteOutlined onClick={() => onDelete()} />}
     </StyledInstructorBlock>

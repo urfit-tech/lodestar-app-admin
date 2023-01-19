@@ -33,13 +33,9 @@ const ProjectRejectMarkModal: React.VFC<{
             onRefetch?.()
           })
           .catch(handleError)
-          .finally(() => {
-            setVisible(false)
-          })
+          .finally(() => setVisible(false))
       })
-      .finally(() => {
-        setLoading(false)
-      })
+      .finally(() => setLoading(false))
   }
 
   return (

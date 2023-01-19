@@ -14990,31 +14990,6 @@ export interface DELETE_PROJECT_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: AGREE_PROJECT_ROLE
-// ====================================================
-
-export interface AGREE_PROJECT_ROLE_update_project_role_by_pk {
-  __typename: "project_role";
-  id: any;
-}
-
-export interface AGREE_PROJECT_ROLE {
-  /**
-   * update single row of the table: "project_role"
-   */
-  update_project_role_by_pk: AGREE_PROJECT_ROLE_update_project_role_by_pk | null;
-}
-
-export interface AGREE_PROJECT_ROLEVariables {
-  projectRoleId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: REJECT_PROJECT_ROLE
 // ====================================================
 
@@ -15049,6 +15024,7 @@ export interface GET_PROJECT_PARTICIPANT_project_role_member {
   id: string | null;
   name: string | null;
   picture_url: string | null;
+  created_at: any | null;
 }
 
 export interface GET_PROJECT_PARTICIPANT_project_role_identity {
@@ -15060,6 +15036,7 @@ export interface GET_PROJECT_PARTICIPANT_project_role_identity {
 export interface GET_PROJECT_PARTICIPANT_project_role {
   __typename: "project_role";
   id: any;
+  created_at: any;
   agreed_at: any | null;
   /**
    * An object relationship
@@ -24324,6 +24301,35 @@ export enum program_content_attachment_select_column {
 }
 
 /**
+ * unique or primary key constraints on table "program_content_audio"
+ */
+export enum program_content_audio_constraint {
+  program_content_audio_pkey = "program_content_audio_pkey",
+}
+
+/**
+ * select columns of table "program_content_audio"
+ */
+export enum program_content_audio_select_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  program_content_id = "program_content_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * update columns of table "program_content_audio"
+ */
+export enum program_content_audio_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  program_content_id = "program_content_id",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "program_content_body"
  */
 export enum program_content_body_constraint {
@@ -25009,6 +25015,7 @@ export enum program_select_column {
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
+  views = "views",
 }
 
 /**
@@ -25129,6 +25136,7 @@ export enum program_update_column {
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
+  views = "views",
 }
 
 /**
@@ -25327,6 +25335,7 @@ export enum project_role_constraint {
  */
 export enum project_role_select_column {
   agreed_at = "agreed_at",
+  created_at = "created_at",
   has_sended_marked_notification = "has_sended_marked_notification",
   id = "id",
   identity_id = "identity_id",
@@ -25355,6 +25364,7 @@ export enum project_role_select_column_project_role_aggregate_bool_exp_bool_or_a
  */
 export enum project_role_update_column {
   agreed_at = "agreed_at",
+  created_at = "created_at",
   has_sended_marked_notification = "has_sended_marked_notification",
   id = "id",
   identity_id = "identity_id",
@@ -25466,11 +25476,26 @@ export enum property_select_column {
   app_id = "app_id",
   created_at = "created_at",
   id = "id",
+  is_editable = "is_editable",
   name = "name",
   placeholder = "placeholder",
   position = "position",
   type = "type",
   updated_at = "updated_at",
+}
+
+/**
+ * select "property_aggregate_bool_exp_bool_and_arguments_columns" columns of table "property"
+ */
+export enum property_select_column_property_aggregate_bool_exp_bool_and_arguments_columns {
+  is_editable = "is_editable",
+}
+
+/**
+ * select "property_aggregate_bool_exp_bool_or_arguments_columns" columns of table "property"
+ */
+export enum property_select_column_property_aggregate_bool_exp_bool_or_arguments_columns {
+  is_editable = "is_editable",
 }
 
 /**
@@ -25480,6 +25505,7 @@ export enum property_update_column {
   app_id = "app_id",
   created_at = "created_at",
   id = "id",
+  is_editable = "is_editable",
   name = "name",
   placeholder = "placeholder",
   position = "position",
@@ -34622,6 +34648,7 @@ export interface member_public_bool_exp {
   picture_url?: String_comparison_exp | null;
   role?: String_comparison_exp | null;
   roles?: jsonb_comparison_exp | null;
+  status?: String_comparison_exp | null;
   tag_names?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
@@ -34644,6 +34671,7 @@ export interface member_public_insert_input {
   picture_url?: string | null;
   role?: string | null;
   roles?: any | null;
+  status?: string | null;
   tag_names?: any | null;
   title?: string | null;
   username?: string | null;
@@ -34673,6 +34701,7 @@ export interface member_public_order_by {
   picture_url?: order_by | null;
   role?: order_by | null;
   roles?: order_by | null;
+  status?: order_by | null;
   tag_names?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
@@ -41617,6 +41646,7 @@ export interface program_avg_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -41686,6 +41716,7 @@ export interface program_bool_exp {
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+  views?: numeric_comparison_exp | null;
 }
 
 export interface program_category_aggregate_bool_exp {
@@ -41922,6 +41953,61 @@ export interface program_content_attachment_insert_input {
   updated_at?: any | null;
 }
 
+export interface program_content_audio_aggregate_bool_exp {
+  count?: program_content_audio_aggregate_bool_exp_count | null;
+}
+
+export interface program_content_audio_aggregate_bool_exp_count {
+  arguments?: program_content_audio_select_column[] | null;
+  distinct?: boolean | null;
+  filter?: program_content_audio_bool_exp | null;
+  predicate: Int_comparison_exp;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_content_audio"
+ */
+export interface program_content_audio_arr_rel_insert_input {
+  data: program_content_audio_insert_input[];
+  on_conflict?: program_content_audio_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_audio". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_audio_bool_exp {
+  _and?: program_content_audio_bool_exp[] | null;
+  _not?: program_content_audio_bool_exp | null;
+  _or?: program_content_audio_bool_exp[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_content_audio"
+ */
+export interface program_content_audio_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  program_content?: program_content_obj_rel_insert_input | null;
+  program_content_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on_conflict condition type for table "program_content_audio"
+ */
+export interface program_content_audio_on_conflict {
+  constraint: program_content_audio_constraint;
+  update_columns: program_content_audio_update_column[];
+  where?: program_content_audio_bool_exp | null;
+}
+
 /**
  * Boolean expression to filter rows from the table "program_content_body". All fields are combined with a logical 'AND'.
  */
@@ -41995,6 +42081,8 @@ export interface program_content_bool_exp {
   practices_aggregate?: practice_aggregate_bool_exp | null;
   program_content_attachments?: program_content_attachment_bool_exp | null;
   program_content_attachments_aggregate?: program_content_attachment_aggregate_bool_exp | null;
+  program_content_audios?: program_content_audio_bool_exp | null;
+  program_content_audios_aggregate?: program_content_audio_aggregate_bool_exp | null;
   program_content_body?: program_content_body_bool_exp | null;
   program_content_materials?: program_content_material_bool_exp | null;
   program_content_materials_aggregate?: program_content_material_aggregate_bool_exp | null;
@@ -42110,6 +42198,7 @@ export interface program_content_insert_input {
   position?: number | null;
   practices?: practice_arr_rel_insert_input | null;
   program_content_attachments?: program_content_attachment_arr_rel_insert_input | null;
+  program_content_audios?: program_content_audio_arr_rel_insert_input | null;
   program_content_body?: program_content_body_obj_rel_insert_input | null;
   program_content_materials?: program_content_material_arr_rel_insert_input | null;
   program_content_plans?: program_content_plan_arr_rel_insert_input | null;
@@ -43108,6 +43197,7 @@ export interface program_insert_input {
   support_locales?: any | null;
   title?: string | null;
   updated_at?: any | null;
+  views?: any | null;
 }
 
 /**
@@ -43130,6 +43220,7 @@ export interface program_max_order_by {
   sold_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -43152,6 +43243,7 @@ export interface program_min_order_by {
   sold_at?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -43221,6 +43313,7 @@ export interface program_order_by {
   support_locales?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
+  views?: order_by | null;
 }
 
 export interface program_package_aggregate_bool_exp {
@@ -44408,6 +44501,7 @@ export interface program_stddev_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44417,6 +44511,7 @@ export interface program_stddev_pop_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44426,6 +44521,7 @@ export interface program_stddev_samp_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44435,6 +44531,7 @@ export interface program_sum_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 export interface program_tag_aggregate_bool_exp {
@@ -44676,6 +44773,7 @@ export interface program_var_pop_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44685,6 +44783,7 @@ export interface program_var_samp_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -44694,6 +44793,7 @@ export interface program_variance_order_by {
   list_price?: order_by | null;
   position?: order_by | null;
   sale_price?: order_by | null;
+  views?: order_by | null;
 }
 
 /**
@@ -45527,6 +45627,7 @@ export interface project_role_bool_exp {
   _not?: project_role_bool_exp | null;
   _or?: project_role_bool_exp[] | null;
   agreed_at?: timestamptz_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   has_sended_marked_notification?: Boolean_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   identity?: identity_bool_exp | null;
@@ -45544,6 +45645,7 @@ export interface project_role_bool_exp {
  */
 export interface project_role_insert_input {
   agreed_at?: any | null;
+  created_at?: any | null;
   has_sended_marked_notification?: boolean | null;
   id?: any | null;
   identity?: identity_obj_rel_insert_input | null;
@@ -45561,6 +45663,7 @@ export interface project_role_insert_input {
  */
 export interface project_role_max_order_by {
   agreed_at?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   identity_id?: order_by | null;
   member_id?: order_by | null;
@@ -45574,6 +45677,7 @@ export interface project_role_max_order_by {
  */
 export interface project_role_min_order_by {
   agreed_at?: order_by | null;
+  created_at?: order_by | null;
   id?: order_by | null;
   identity_id?: order_by | null;
   member_id?: order_by | null;
@@ -45925,7 +46029,23 @@ export interface project_tag_variance_order_by {
 }
 
 export interface property_aggregate_bool_exp {
+  bool_and?: property_aggregate_bool_exp_bool_and | null;
+  bool_or?: property_aggregate_bool_exp_bool_or | null;
   count?: property_aggregate_bool_exp_count | null;
+}
+
+export interface property_aggregate_bool_exp_bool_and {
+  arguments: property_select_column_property_aggregate_bool_exp_bool_and_arguments_columns;
+  distinct?: boolean | null;
+  filter?: property_bool_exp | null;
+  predicate: Boolean_comparison_exp;
+}
+
+export interface property_aggregate_bool_exp_bool_or {
+  arguments: property_select_column_property_aggregate_bool_exp_bool_or_arguments_columns;
+  distinct?: boolean | null;
+  filter?: property_bool_exp | null;
+  predicate: Boolean_comparison_exp;
 }
 
 export interface property_aggregate_bool_exp_count {
@@ -45978,6 +46098,7 @@ export interface property_bool_exp {
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_editable?: Boolean_comparison_exp | null;
   member_properties?: member_property_bool_exp | null;
   member_properties_aggregate?: member_property_aggregate_bool_exp | null;
   name?: String_comparison_exp | null;
@@ -45995,6 +46116,7 @@ export interface property_insert_input {
   app_id?: string | null;
   created_at?: any | null;
   id?: any | null;
+  is_editable?: boolean | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   name?: string | null;
   placeholder?: string | null;
