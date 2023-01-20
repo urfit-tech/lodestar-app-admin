@@ -8,7 +8,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../components/admin'
-import BlogPostCard from '../components/blog/BlogPostCard'
+import BlogPostTable from '../components/blog/BlogPostTable'
 import ProductCreationModal from '../components/common/ProductCreationModal'
 import AdminLayout from '../components/layout/AdminLayout'
 import hasura from '../hasura'
@@ -16,7 +16,6 @@ import { handleError } from '../helpers'
 import { blogMessages, commonMessages } from '../helpers/translation'
 import { usePostCollection } from '../hooks/blog'
 import ForbiddenPage from './ForbiddenPage'
-
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -94,23 +93,14 @@ const BlogAdminCollectionPage: React.FC = () => {
       </div>
 
       <Tabs defaultActiveKey="published">
-        {tabContents.map(tabContent => (
+        {tabContents.map((tabContent, index) => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            <div className="row py-5">
-              {tabContent.posts.map(post => (
-                <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                  <BlogPostCard
-                    title={post.title}
-                    coverUrl={post.coverUrl}
-                    videoUrl={post.videoUrl}
-                    views={post.views}
-                    memberName={post.authorName}
-                    publishedAt={post.publishedAt}
-                    link={`/blog/${post.id}`}
-                  />
-                </div>
-              ))}
-            </div>
+            <BlogPostTable
+              blogPostData={tabContent.posts || []}
+              key={index}
+              postTableType={tabContent.key}
+              onRefetch={refetchPosts}
+            />
           </Tabs.TabPane>
         ))}
       </Tabs>

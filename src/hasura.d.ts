@@ -1396,6 +1396,35 @@ export interface UPDATE_POST_MERCHANDISE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_PINNED_AT
+// ====================================================
+
+export interface UPDATE_POST_PINNED_AT_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_PINNED_AT {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_PINNED_AT_update_post | null;
+}
+
+export interface UPDATE_POST_PINNED_ATVariables {
+  postId?: any | null;
+  pinnedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_VIDEO_URL
 // ====================================================
 
@@ -9526,6 +9555,11 @@ export interface UPDATE_POST_META_TAGVariables {
 // GraphQL query operation: GET_POSTS
 // ====================================================
 
+export interface GET_POSTS_post_post_merchandises {
+  __typename: "post_merchandise";
+  id: any;
+}
+
 export interface GET_POSTS_post_post_roles_member {
   __typename: "member_public";
   id: string | null;
@@ -9553,6 +9587,11 @@ export interface GET_POSTS_post {
   title: string;
   cover_url: string | null;
   video_url: string | null;
+  pinned_at: any | null;
+  /**
+   * An array relationship
+   */
+  post_merchandises: GET_POSTS_post_post_merchandises[];
   /**
    * An array relationship
    */
@@ -22187,6 +22226,7 @@ export enum member_select_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -22438,6 +22478,7 @@ export enum member_update_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -33060,6 +33101,7 @@ export interface member_bool_exp {
   status?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
+  verified_emails?: jsonb_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
   vouchers_aggregate?: voucher_aggregate_bool_exp | null;
   youtube_channel_ids?: jsonb_comparison_exp | null;
@@ -33659,6 +33701,7 @@ export interface member_insert_input {
   status?: string | null;
   title?: string | null;
   username?: string | null;
+  verified_emails?: any | null;
   vouchers?: voucher_arr_rel_insert_input | null;
   youtube_channel_ids?: any | null;
   zoom_user_id_deprecate?: string | null;
@@ -34248,6 +34291,7 @@ export interface member_order_by {
   status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
+  verified_emails?: order_by | null;
   vouchers_aggregate?: voucher_aggregate_order_by | null;
   youtube_channel_ids?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -34703,6 +34747,7 @@ export interface member_public_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
+  has_backstage_enter_permission?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_specialities_aggregate?: member_speciality_aggregate_bool_exp | null;
@@ -34727,6 +34772,7 @@ export interface member_public_insert_input {
   created_at?: any | null;
   description?: string | null;
   email?: string | null;
+  has_backstage_enter_permission?: number | null;
   id?: string | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -34757,6 +34803,7 @@ export interface member_public_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   email?: order_by | null;
+  has_backstage_enter_permission?: order_by | null;
   id?: order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
