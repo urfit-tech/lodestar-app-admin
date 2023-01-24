@@ -395,3 +395,13 @@ export const isImageUrlResized = (imageUrl: string) => {
 export const isValidEmail = (email: string) => {
   return /^\w+((-\w+)|(\.\w+))*@\w+((\.|-)\w+)*\.[A-Za-z]+$/.test(email)
 }
+
+export const fuzzySearch = (searchText: string, targetText: string) => {
+  const searchWords = searchText.split(' ')
+  for (const searchWord of searchWords) {
+    if (!targetText.includes(searchWord)) {
+      return false
+    }
+  }
+  return true
+}

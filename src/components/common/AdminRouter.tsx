@@ -391,6 +391,11 @@ export const routesProps = {
     pageName: 'MemberAdminPage',
     authenticated: true,
   },
+  member_timetable_admin: {
+    path: '/members/:memberId/timetable',
+    pageName: 'MemberAdminPage',
+    authenticated: true,
+  },
   member_coupon_admin: {
     path: '/members/:memberId/coupon',
     pageName: 'MemberAdminPage',

@@ -20,6 +20,7 @@ import { commonMessages, memberMessages, promotionMessages } from '../../helpers
 import { useMemberAdmin } from '../../hooks/member'
 import MemberAdminLayout from './MemberAdminLayout'
 import MemberHistoryAdminBlock from './MemberHistoryAdminBlock'
+import MemberTimetableAdminBlock from './MemberTimetableAdminBlock'
 
 const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -67,6 +68,11 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
+        <Tabs.TabPane key="timetable" tab={formatMessage(memberMessages.label.timetable)}>
+          <div className="p-5">
+            <MemberTimetableAdminBlock memberId={memberId} />
+          </div>
+        </Tabs.TabPane>,
         <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
           <div className="p-5">
             <MemberCouponAdminBlock coupons={memberAdmin.coupons} />

@@ -17405,6 +17405,172 @@ export interface GET_HISTORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_TIMETABLE
+// ====================================================
+
+export interface GET_PROGRAM_TIMETABLE_program_program_package_programs_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_program_package_programs {
+  __typename: "program_package_program";
+  /**
+   * An object relationship
+   */
+  program_package: GET_PROGRAM_TIMETABLE_program_program_package_programs_program_package;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_program_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_program_categories {
+  __typename: "program_category";
+  /**
+   * An object relationship
+   */
+  category: GET_PROGRAM_TIMETABLE_program_program_categories_category;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_package_programs: GET_PROGRAM_TIMETABLE_program_program_package_programs[];
+  /**
+   * An array relationship
+   */
+  program_categories: GET_PROGRAM_TIMETABLE_program_program_categories[];
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_content_enrollment {
+  __typename: "program_content_enrollment";
+  program_id: any | null;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs {
+  __typename: "program_package_program";
+  /**
+   * An object relationship
+   */
+  program_package: GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs_program_package;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories {
+  __typename: "program_category";
+  /**
+   * An object relationship
+   */
+  category: GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories_category;
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_timetable_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  program_package_programs: GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs[];
+  /**
+   * An array relationship
+   */
+  program_categories: GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories[];
+}
+
+export interface GET_PROGRAM_TIMETABLE_program_timetable {
+  __typename: "program_timetable";
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_TIMETABLE_program_timetable_program;
+  time: any;
+  position: number;
+}
+
+export interface GET_PROGRAM_TIMETABLE {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_TIMETABLE_program[];
+  /**
+   * fetch data from the table: "program_content_enrollment"
+   */
+  program_content_enrollment: GET_PROGRAM_TIMETABLE_program_content_enrollment[];
+  /**
+   * fetch data from the table: "program_timetable"
+   */
+  program_timetable: GET_PROGRAM_TIMETABLE_program_timetable[];
+}
+
+export interface GET_PROGRAM_TIMETABLEVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_TIMETABLE
+// ====================================================
+
+export interface UPDATE_PROGRAM_TIMETABLE_delete_program_timetable {
+  __typename: "program_timetable_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_TIMETABLE_insert_program_timetable {
+  __typename: "program_timetable_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_TIMETABLE {
+  /**
+   * delete data from the table: "program_timetable"
+   */
+  delete_program_timetable: UPDATE_PROGRAM_TIMETABLE_delete_program_timetable | null;
+  /**
+   * insert data into the table: "program_timetable"
+   */
+  insert_program_timetable: UPDATE_PROGRAM_TIMETABLE_insert_program_timetable | null;
+}
+
+export interface UPDATE_PROGRAM_TIMETABLEVariables {
+  memberId: string;
+  programTimetableInsertInput: program_timetable_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_SALES_NAMES
 // ====================================================
 
@@ -23798,6 +23964,7 @@ export enum member_select_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -24049,6 +24216,7 @@ export enum member_update_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -34671,6 +34839,7 @@ export interface member_bool_exp {
   status?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
+  verified_emails?: jsonb_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
   vouchers_aggregate?: voucher_aggregate_bool_exp | null;
   youtube_channel_ids?: jsonb_comparison_exp | null;
@@ -35270,6 +35439,7 @@ export interface member_insert_input {
   status?: string | null;
   title?: string | null;
   username?: string | null;
+  verified_emails?: any | null;
   vouchers?: voucher_arr_rel_insert_input | null;
   youtube_channel_ids?: any | null;
   zoom_user_id_deprecate?: string | null;
@@ -35859,6 +36029,7 @@ export interface member_order_by {
   status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
+  verified_emails?: order_by | null;
   vouchers_aggregate?: voucher_aggregate_order_by | null;
   youtube_channel_ids?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -36314,6 +36485,7 @@ export interface member_public_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
+  has_backstage_enter_permission?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_specialities_aggregate?: member_speciality_aggregate_bool_exp | null;
@@ -36338,6 +36510,7 @@ export interface member_public_insert_input {
   created_at?: any | null;
   description?: string | null;
   email?: string | null;
+  has_backstage_enter_permission?: number | null;
   id?: string | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -36368,6 +36541,7 @@ export interface member_public_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   email?: order_by | null;
+  has_backstage_enter_permission?: order_by | null;
   id?: order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
@@ -46441,6 +46615,20 @@ export interface program_tempo_delivery_on_conflict {
 }
 
 /**
+ * input type for inserting data into table "program_timetable"
+ */
+export interface program_timetable_insert_input {
+  created_at?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  position?: number | null;
+  program?: program_obj_rel_insert_input | null;
+  program_id?: any | null;
+  time?: any | null;
+  updated_at?: any | null;
+}
+
+/**
  * order by var_pop() on columns of table "program"
  */
 export interface program_var_pop_order_by {
@@ -49048,6 +49236,7 @@ export interface token_bool_exp {
   _or?: token_bool_exp[] | null;
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
+  clicks?: Int_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   currency_id?: String_comparison_exp | null;
@@ -49063,6 +49252,7 @@ export interface token_bool_exp {
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+  views?: Int_comparison_exp | null;
 }
 
 /**
@@ -49071,6 +49261,7 @@ export interface token_bool_exp {
 export interface token_insert_input {
   abstract?: string | null;
   app_id?: string | null;
+  clicks?: number | null;
   cover_url?: string | null;
   created_at?: any | null;
   currency_id?: string | null;
@@ -49086,6 +49277,7 @@ export interface token_insert_input {
   title?: string | null;
   type?: string | null;
   updated_at?: any | null;
+  views?: number | null;
 }
 
 /**
