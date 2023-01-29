@@ -13,7 +13,14 @@ import { Link, useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { v4 as uuid } from 'uuid'
-import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
+import {
+  AdminBlock,
+  AdminBlockTitle,
+  AdminHeader,
+  AdminHeaderTitle,
+  AdminPaneTitle,
+  AdminTabBarWrapper,
+} from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import TreeTransfer from '../../components/common/TreeTransfer'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'

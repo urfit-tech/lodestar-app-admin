@@ -12,7 +12,12 @@ import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
-import { CaptionUploadButton, DeleteButton, PreviewButton, ReUploadButton } from '../../components/library/VideoLibraryItem'
+import {
+  CaptionUploadButton,
+  DeleteButton,
+  PreviewButton,
+  ReUploadButton,
+} from '../../components/library/VideoLibraryItem'
 import { commonMessages } from '../../helpers/translation'
 import { useAttachments } from '../../hooks/data'
 import ForbiddenPage from '../ForbiddenPage'

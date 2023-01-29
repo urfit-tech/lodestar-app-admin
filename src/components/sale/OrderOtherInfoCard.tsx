@@ -53,7 +53,11 @@ const OrderOtherInfoCard: React.FC<{
       message: orderLogExecutor,
       isRender: enabledModules.member_assignment,
     },
-    { title: formatMessage(saleMessages.OrderOtherInfoCard.referrer), message: referrer, isRender: enabledModules.referrer },
+    {
+      title: formatMessage(saleMessages.OrderOtherInfoCard.referrer),
+      message: referrer,
+      isRender: enabledModules.referrer,
+    },
     {
       title: formatMessage(saleMessages.OrderOtherInfoCard.sharingCode),
       message: sharingCode,

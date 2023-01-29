@@ -103,7 +103,8 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
                           {formatMessage(messages.numFailed)}: {body.result?.failed.length}
                           {body.result?.failed.length && (
                             <span>
-                              ({body.result?.failed.map(f => `row ${f.index + 2} failed message: ${f.error}`).join(', ')}
+                              (
+                              {body.result?.failed.map(f => `row ${f.index + 2} failed message: ${f.error}`).join(', ')}
                               )
                             </span>
                           )}

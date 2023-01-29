@@ -1,5 +1,19 @@
 import Icon, { EditOutlined, MoreOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Radio, Select, Skeleton, Tooltip } from 'antd'
+import {
+  Button,
+  Checkbox,
+  Dropdown,
+  Form,
+  Input,
+  InputNumber,
+  Menu,
+  message,
+  Modal,
+  Radio,
+  Select,
+  Skeleton,
+  Tooltip,
+} from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
@@ -11,7 +25,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
-import { contentTypeFormat, generateUrlWithID, getFileDuration, getVideoIDByURL, handleError, uploadFile } from '../../helpers'
+import {
+  contentTypeFormat,
+  generateUrlWithID,
+  getFileDuration,
+  getVideoIDByURL,
+  handleError,
+  uploadFile,
+} from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment } from '../../hooks/data'
 import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'

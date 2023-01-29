@@ -5,7 +5,16 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { AdminBlock, AdminBlockSubTitle, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneDescription, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
+import {
+  AdminBlock,
+  AdminBlockSubTitle,
+  AdminBlockTitle,
+  AdminHeader,
+  AdminHeaderTitle,
+  AdminPaneDescription,
+  AdminPaneTitle,
+  AdminTabBarWrapper,
+} from '../../components/admin'
 import MetaProductDeletionBlock from '../../components/common/MetaProductDeletionBlock'
 import OpenGraphSettingsBlock from '../../components/form/OpenGraphSettingsBlock'
 import SeoSettingsBlock from '../../components/form/SeoSettingsBlock'
