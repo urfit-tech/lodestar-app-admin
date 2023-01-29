@@ -9,22 +9,7 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
-import {
-  BookIcon,
-  CalendarAltIcon,
-  CertificateIcon,
-  DiscountIcon,
-  MicrophoneIcon,
-  MoneyCircleIcon,
-  PageIcon,
-  PhoneIcon,
-  PointIcon,
-  ProjectIcon,
-  QuestionLibraryIcon,
-  ShopIcon,
-  UserIcon,
-  UsersIcon,
-} from '../../images/icon'
+import { BookIcon, CalendarAltIcon, CertificateIcon, DiscountIcon, MicrophoneIcon, MoneyCircleIcon, PageIcon, PhoneIcon, PointIcon, ProjectIcon, QuestionLibraryIcon, ShopIcon, UserIcon, UsersIcon } from '../../images/icon'
 import { routesMap, routesProps } from '../common/AdminRouter'
 import adminMessages from './translation'
 

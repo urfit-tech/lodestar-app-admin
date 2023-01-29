@@ -1,13 +1,4 @@
-import {
-  CheckSquareOutlined,
-  DeleteOutlined,
-  FileAddOutlined,
-  SearchOutlined,
-  StarOutlined,
-  StopOutlined,
-  SwapOutlined,
-  SyncOutlined,
-} from '@ant-design/icons'
+import { CheckSquareOutlined, DeleteOutlined, FileAddOutlined, SearchOutlined, StarOutlined, StopOutlined, SwapOutlined, SyncOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'

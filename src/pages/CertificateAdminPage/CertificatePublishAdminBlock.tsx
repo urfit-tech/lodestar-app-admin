@@ -3,11 +3,7 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import AdminPublishBlock, {
-  ChecklistItemProps,
-  PublishEvent,
-  PublishStatus,
-} from '../../components/admin/AdminPublishBlock'
+import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import hasura from '../../hasura'
 import { commonMessages, craftPageMessages } from '../../helpers/translation'
 import { Certificate } from '../../types/certificate'

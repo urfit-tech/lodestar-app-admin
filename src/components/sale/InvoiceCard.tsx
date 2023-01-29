@@ -1,7 +1,7 @@
-import styled from 'styled-components'
-import { useIntl } from 'react-intl'
-import saleMessages from './translation'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import saleMessages from './translation'
 
 const StyledCard = styled.div`
   padding: 16px;
