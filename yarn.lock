@@ -12550,13 +12550,14 @@ lodash.xorby@^4.7.0:
 
 lodestar-app-element@urfit-tech/lodestar-app-element#feature/post-collection:
   version "0.1.0"
-  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/238178ef2593c2f38d7f392cfcb1006f7c2a4ed3"
+  resolved "https://codeload.github.com/urfit-tech/lodestar-app-element/tar.gz/64415eeeb50bbdb28fc334b3b89d6584292381df"
   dependencies:
     "@apollo/react-hooks" "3.1.5"
     "@bobthered/tailwindcss-palette-generator" "2.0.0"
     "@chakra-ui/icons" "1.0.0"
     "@chakra-ui/react" "1.1.2"
     "@craftjs/core" "0.1.0-beta.20"
+    "@emotion/core" "^11.0.0"
     "@emotion/react" "11"
     "@emotion/styled" "11"
     "@fingerprintjs/fingerprintjs" "^3.3.6"

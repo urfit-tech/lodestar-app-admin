@@ -47,6 +47,12 @@ export const useResolver = () => {
       settings: withResponsive(CraftSetting.ProjectCollectionSettings),
     },
   }
+  CraftElement.CraftPostCollection.craft = {
+    displayName: formatMessage({ id: 'craft.resolver.PostCollectionSettings', defaultMessage: '文章' }),
+    related: {
+      settings: withResponsive(CraftSetting.PostCollectionSettings),
+    },
+  }
   CraftElement.CraftSection.craft = {
     displayName: formatMessage({ id: 'craft.resolver.SectionSettings', defaultMessage: '區塊' }),
     related: {
