@@ -12234,6 +12234,7 @@ export interface GET_PROPERTY_property {
   id: any;
   name: string;
   placeholder: string | null;
+  is_editable: boolean;
 }
 
 export interface GET_PROPERTY {
@@ -16808,6 +16809,35 @@ export interface UPDATE_PROPERTY {
 export interface UPDATE_PROPERTYVariables {
   propertyId: any;
   name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROPERTY_ISEDITABLE
+// ====================================================
+
+export interface UPDATE_PROPERTY_ISEDITABLE_update_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROPERTY_ISEDITABLE {
+  /**
+   * update data of the table: "property"
+   */
+  update_property: UPDATE_PROPERTY_ISEDITABLE_update_property | null;
+}
+
+export interface UPDATE_PROPERTY_ISEDITABLEVariables {
+  propertyId: any;
+  isEditable: boolean;
 }
 
 /* tslint:disable */
