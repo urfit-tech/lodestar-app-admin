@@ -18,6 +18,12 @@ const StyledDiv = styled.div`
   .ant-table-content {
     padding: 0.25rem 1.5rem 2.5rem;
   }
+  .ant-table-thead th.ant-table-column-has-sorters {
+    display: none;
+  }
+  .td.ant-table-column-sort {
+    background: transparent;
+  }
 `
 const StyledCover = styled.div<{ src: string }>`
   position: relative;
@@ -49,7 +55,7 @@ const StyledTitle = styled.div`
 `
 
 const StyledDetailItem = styled(Menu.Item)`
-  padding: 0.5rem 1rem;
+  padding: 0;
 `
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
@@ -208,14 +214,14 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
           <Dropdown
             placement="bottomRight"
             overlay={
-              <Menu>
+              <Menu className="p-0">
                 <StyledDetailItem>
                   {!record.pinnedAt ? (
-                    <Button onClick={() => handleUpload(record.id, new Date())}>
+                    <Button type="text" className="m-0" onClick={() => handleUpload(record.id, new Date())}>
                       {formatMessage(blogMessages.label.pinnedAtUpdate)}
                     </Button>
                   ) : (
-                    <Button onClick={() => handleUpload(record.id)}>
+                    <Button type="text" onClick={() => handleUpload(record.id)}>
                       {formatMessage(blogMessages.label.pinnedAtDelete)}
                     </Button>
                   )}
