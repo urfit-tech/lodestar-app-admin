@@ -114,7 +114,7 @@ const BlogAdminCollectionPage: React.FC = () => {
               {formatMessage(blogMessages.text.exportButton)}
             </StyledButton>
           )}
-        ></OrderExportModal>
+        />
       </div>
 
       <Tabs defaultActiveKey="published">

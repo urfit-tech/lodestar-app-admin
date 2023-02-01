@@ -656,7 +656,6 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             content = await getPaymentLogContent(startedAt, endedAt, orderStatuses)
             break
         }
-        console.log(content, 'testcontent')
         downloadCSV(
           `${fileName}_${moment(startedAt).format('YYYYMMDD')}_${moment(endedAt).format('YYYYMMDD')}.csv`,
           toCSV(content),

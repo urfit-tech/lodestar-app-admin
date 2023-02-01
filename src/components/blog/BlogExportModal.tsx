@@ -2,6 +2,9 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, DatePicker, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
@@ -11,12 +14,16 @@ import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { blogMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import saleMessages from '../sale/translation'
+dayjs.extend(utc)
+dayjs.extend(timezone)
+const currentTimeZone = dayjs.tz.guess()
 type FieldProps = {
   timeRange: [Moment, Moment]
 }
-const BlogExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
+const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
+
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
@@ -25,11 +32,7 @@ const BlogExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMod
       query: gql`
         query GET_BLOG_LOG_EXPORT($startedAt: timestamptz, $endedAt: timestamptz) {
           post(
-            where: {
-              is_deleted: { _eq: false }
-              published_at: { _is_null: false, _gte: $startedAt, _lte: $endedAt }
-              # post_tags: {}
-            }
+            where: { is_deleted: { _eq: false }, published_at: { _is_null: false, _gte: $startedAt, _lte: $endedAt } }
           ) {
             id
             title
@@ -90,7 +93,7 @@ const BlogExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMod
             `${exportLog.post_categories.map(v => v.category.name).join(',')}`,
             `${exportLog.post_tags.map(v => v.tag_name).join(',')}`,
             `${exportLog.post_roles.map(v => v.member?.name).join(',')}`,
-            `${moment(exportLog.published_at).format('YYYY-MM-DD HH:mm:ss')}`,
+            `${dayjs(exportLog.published_at).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss')}`,
             `${exportLog.views}`,
             `${exportLog.post_reaction.length}`,
             `${exportLog.post_issue.length}`,
@@ -105,7 +108,6 @@ const BlogExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMod
       .then(async () => {
         setLoading(true)
         const values = form.getFieldsValue()
-        console.log('BlogExportvalues', values)
         const startedAt = values.timeRange[0].startOf('day').toDate()
         const endedAt = values.timeRange[1].endOf('day').toDate()
 
