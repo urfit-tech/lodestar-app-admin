@@ -104,7 +104,6 @@ const ProjectIntroForm: React.FC<{
           variables: {
             projectId: project.id,
             previewUrl: uploadCoverUrl,
-            coverUrl: uploadCoverUrl,
           },
         })
       })
@@ -199,8 +198,8 @@ const ProjectIntroForm: React.FC<{
 }
 
 const UPDATE_PROJECT_COVER = gql`
-  mutation UPDATE_PROJECT_COVER($projectId: uuid!, $previewUrl: String, $coverUrl: String) {
-    update_project(where: { id: { _eq: $projectId } }, _set: { preview_url: $previewUrl, cover_url: $coverUrl }) {
+  mutation UPDATE_PROJECT_COVER($projectId: uuid!, $previewUrl: String) {
+    update_project(where: { id: { _eq: $projectId } }, _set: { preview_url: $previewUrl }) {
       affected_rows
     }
   }
