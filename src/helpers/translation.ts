@@ -4,6 +4,7 @@ export const commonMessages = {
   ui: defineMessages({
     usage: { id: 'common.ui.usage', defaultMessage: '用量' },
     video: { id: 'common.ui.video', defaultMessage: '影片' },
+    audio: { id: 'common.ui.audio', defaultMessage: 'audio' },
     image: { id: 'common.ui.image', defaultMessage: '圖片' },
     other: { id: 'common.ui.other', defaultMessage: '其他' },
     comma: { id: 'common.ui.comma', defaultMessage: '、' },
@@ -755,6 +756,7 @@ export const programMessages = {
     contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
     description: { id: 'program.label.description', defaultMessage: '內文' },
     score: { id: 'program.label.score', defaultMessage: '分數' },
+    audioFile: { id: 'program.label.audioFile', defaultMessage: 'Audio File' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -807,6 +809,11 @@ export const programMessages = {
     searchExerciseMember: { id: 'program.text. searchExerciseMember', defaultMessage: '搜尋學員姓名或 Email' },
     searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
     emptyPractice: { id: 'practice.text.emptyPractice', defaultMessage: '尚未有任何作業' },
+    audioFileLimit: {
+      id: 'program.text.audioFileLimit',
+      defaultMessage: 'The file size exceeds 250MB , please re-select the file to upload',
+    },
+    audioFileTips: { id: 'program.text.audioFileTips', defaultMessage: 'Accept format: .mp3\nFile size: 250MB' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -823,6 +830,8 @@ export const programMessages = {
     checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
     videoContent: { id: 'program.ui.videoContent', defaultMessage: 'Video content' },
     articleContent: { id: 'program.ui.articleContent', defaultMessage: 'Article content' },
+    audioContent: { id: 'program.ui.audioContent', defaultMessage: 'Audio content' },
+    uploadAudioFile: { id: 'program.ui.uploadAudioFile', defaultMessage: 'Upload audio file' },
   }),
 }
 
@@ -1085,12 +1094,17 @@ export const blogMessages = {
   }),
   label: defineMessages({
     title: { id: 'blog.label.title', defaultMessage: '標題' },
+    publicAt: { id: 'blog.publicAt', defaultMessage: '發布日期' },
     source: { id: 'blog.label.source', defaultMessage: '說明備註' },
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
     codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
     merchandises: { id: 'blog.label.merchandises', defaultMessage: '相關商品' },
     deletePost: { id: 'blog.label.deletePost', defaultMessage: '刪除文章' },
+    views: { id: 'blog.label.views', defaultMessage: '瀏覽數量' },
+    pinnedAt: { id: 'blog.label.pinnedAt', defaultMessage: '置頂' },
+    pinnedAtUpdate: { id: 'blog.label.pinnedAtUpdate', defaultMessage: '設定置頂' },
+    pinnedAtDelete: { id: 'blog.label.pinnedAtDelete', defaultMessage: '取消置頂' },
   }),
   text: defineMessages({
     pasteVideoUrl: { id: 'blog.text.pasteVideoUrl', defaultMessage: '貼上影片網址' },
@@ -1098,6 +1112,7 @@ export const blogMessages = {
     suggestedPictureSize: { id: 'blog.text.suggestedPictureSize', defaultMessage: '建議圖片尺寸：1200*675px' },
     uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
+    uploadPinnedAtLimmited: { id: 'blog.text.uploadPinnedAtLimmited', defaultMessage: '置頂上限為三則' },
   }),
 }
 

@@ -139,6 +139,24 @@ const ProgramContentSectionAdminCard: React.FC<{
             >
               {formatMessage(programMessages.ProgramContentSectionAdminCard.articleContent)}
             </StyledMenuItem>
+            <StyledMenuItem
+              onClick={() =>
+                createProgramContent({
+                  variables: {
+                    programContentSectionId: programContentSection.id,
+                    title: 'untitled',
+                    position: programContentSection.programContents.length,
+                    programContentType: 'audio',
+                    publishedAt: isProgramPublished ? new Date() : null,
+                    displayMode: isProgramPublished ? 'payToWatch' : 'conceal',
+                  },
+                })
+                  .then(() => onRefetch?.())
+                  .catch(handleError)
+              }
+            >
+              {formatMessage(programMessages.ProgramContentSectionAdminCard.audioContent)}
+            </StyledMenuItem>
             {enabledModules.practice && (
               <StyledMenuItem
                 onClick={() =>

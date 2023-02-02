@@ -84,9 +84,13 @@ export const useProgram = (programId: string) => {
                   duration
                 }
               }
+              program_content_audios {
+                id
+                data
+              }
             }
           }
-          program_roles(order_by: [{ created_at: asc}, { id: desc }]) {
+          program_roles(order_by: [{ created_at: asc }, { id: desc }]) {
             id
             name
             member {
@@ -196,6 +200,10 @@ export const useProgram = (programId: string) => {
             size: pcv.attachment.size,
             options: pcv.attachment.options,
             duration: pcv.attachment.duration,
+          })),
+          audios: pc.program_content_audios.map(pca => ({
+            id: pca.id,
+            data: pca.data,
           })),
         })),
       })),
@@ -398,10 +406,7 @@ export const usePrograms = (options?: {
 }
 
 export const useMutateProgram = () => {
-  const [updateProgramMetaTag] = useMutation<
-    hasura.UPDATE_PROGRAM_META_TAG,
-    hasura.UPDATE_PROGRAM_META_TAGVariables
-  >(
+  const [updateProgramMetaTag] = useMutation<hasura.UPDATE_PROGRAM_META_TAG, hasura.UPDATE_PROGRAM_META_TAGVariables>(
     gql`
       mutation UPDATE_PROGRAM_META_TAG($id: uuid!, $metaTag: jsonb) {
         update_program(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTag }) {
@@ -638,6 +643,9 @@ export const useMutateProgramContent = () => {
         delete_program_content_video(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
+        delete_program_content_audio(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
         delete_program_content_material(where: { program_content_id: { _eq: $programContentId } }) {
           affected_rows
         }
@@ -854,6 +862,35 @@ export const useProgramContentActions = (programContentId: string) => {
           programContentVideos: attachmentIds.map(attachmentId => ({
             program_content_id: programContentId,
             attachment_id: attachmentId,
+          })),
+        },
+      })
+    },
+    updateAudios: async (files: File[]) => {
+      await apolloClient.mutate<hasura.UPDATE_PROGRAM_CONTENT_AUDIOS, hasura.UPDATE_PROGRAM_CONTENT_AUDIOSVariables>({
+        mutation: gql`
+          mutation UPDATE_PROGRAM_CONTENT_AUDIOS(
+            $programContentId: uuid!
+            $audios: [program_content_audio_insert_input!]!
+          ) {
+            delete_program_content_audio(where: { program_content_id: { _eq: $programContentId } }) {
+              affected_rows
+            }
+            insert_program_content_audio(objects: $audios) {
+              affected_rows
+            }
+          }
+        `,
+        variables: {
+          programContentId,
+          audios: files.map(file => ({
+            program_content_id: programContentId,
+            data: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              lastModified: file.lastModified,
+            },
           })),
         },
       })
