@@ -1396,6 +1396,35 @@ export interface UPDATE_POST_MERCHANDISE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_PINNED_AT
+// ====================================================
+
+export interface UPDATE_POST_PINNED_AT_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_PINNED_AT {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_PINNED_AT_update_post | null;
+}
+
+export interface UPDATE_POST_PINNED_ATVariables {
+  postId?: any | null;
+  pinnedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_VIDEO_URL
 // ====================================================
 
@@ -6889,7 +6918,6 @@ export interface UPDATE_PROJECT_COVER {
 export interface UPDATE_PROJECT_COVERVariables {
   projectId: any;
   previewUrl?: string | null;
-  coverUrl?: string | null;
 }
 
 /* tslint:disable */
@@ -9526,6 +9554,11 @@ export interface UPDATE_POST_META_TAGVariables {
 // GraphQL query operation: GET_POSTS
 // ====================================================
 
+export interface GET_POSTS_post_post_merchandises {
+  __typename: "post_merchandise";
+  id: any;
+}
+
 export interface GET_POSTS_post_post_roles_member {
   __typename: "member_public";
   id: string | null;
@@ -9553,6 +9586,11 @@ export interface GET_POSTS_post {
   title: string;
   cover_url: string | null;
   video_url: string | null;
+  pinned_at: any | null;
+  /**
+   * An array relationship
+   */
+  post_merchandises: GET_POSTS_post_post_merchandises[];
   /**
    * An array relationship
    */
@@ -13498,6 +13536,12 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
   attachment: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos_attachment;
 }
 
+export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_audios {
+  __typename: "program_content_audio";
+  id: any;
+  data: any;
+}
+
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents {
   __typename: "program_content";
   id: any;
@@ -13535,6 +13579,10 @@ export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_progra
    * An array relationship
    */
   program_content_videos: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_videos[];
+  /**
+   * An array relationship
+   */
+  program_content_audios: GET_PROGRAM_BY_ID_program_by_pk_program_content_sections_program_contents_program_content_audios[];
 }
 
 export interface GET_PROGRAM_BY_ID_program_by_pk_program_content_sections {
@@ -14061,6 +14109,14 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content_video {
   affected_rows: number;
 }
 
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_audio {
+  __typename: "program_content_audio_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT_delete_program_content_material {
   __typename: "program_content_material_mutation_response";
   /**
@@ -14110,6 +14166,10 @@ export interface DELETE_PROGRAM_CONTENT {
    * delete data from the table: "program_content_video"
    */
   delete_program_content_video: DELETE_PROGRAM_CONTENT_delete_program_content_video | null;
+  /**
+   * delete data from the table: "program_content_audio"
+   */
+  delete_program_content_audio: DELETE_PROGRAM_CONTENT_delete_program_content_audio | null;
   /**
    * delete data from the table: "program_content_material"
    */
@@ -14426,6 +14486,47 @@ export interface UPDATE_PROGRAM_CONTENT_VIDEOS {
 export interface UPDATE_PROGRAM_CONTENT_VIDEOSVariables {
   programContentId: any;
   programContentVideos: program_content_video_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_AUDIOS
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOS_delete_program_content_audio {
+  __typename: "program_content_audio_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOS_insert_program_content_audio {
+  __typename: "program_content_audio_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOS {
+  /**
+   * delete data from the table: "program_content_audio"
+   */
+  delete_program_content_audio: UPDATE_PROGRAM_CONTENT_AUDIOS_delete_program_content_audio | null;
+  /**
+   * insert data into the table: "program_content_audio"
+   */
+  insert_program_content_audio: UPDATE_PROGRAM_CONTENT_AUDIOS_insert_program_content_audio | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_AUDIOSVariables {
+  programContentId: any;
+  audios: program_content_audio_insert_input[];
 }
 
 /* tslint:disable */
@@ -22124,6 +22225,7 @@ export enum member_select_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -22375,6 +22477,7 @@ export enum member_update_column {
   status = "status",
   title = "title",
   username = "username",
+  verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
@@ -32997,6 +33100,7 @@ export interface member_bool_exp {
   status?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
+  verified_emails?: jsonb_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
   vouchers_aggregate?: voucher_aggregate_bool_exp | null;
   youtube_channel_ids?: jsonb_comparison_exp | null;
@@ -33596,6 +33700,7 @@ export interface member_insert_input {
   status?: string | null;
   title?: string | null;
   username?: string | null;
+  verified_emails?: any | null;
   vouchers?: voucher_arr_rel_insert_input | null;
   youtube_channel_ids?: any | null;
   zoom_user_id_deprecate?: string | null;
@@ -34185,6 +34290,7 @@ export interface member_order_by {
   status?: order_by | null;
   title?: order_by | null;
   username?: order_by | null;
+  verified_emails?: order_by | null;
   vouchers_aggregate?: voucher_aggregate_order_by | null;
   youtube_channel_ids?: order_by | null;
   zoom_user_id_deprecate?: order_by | null;
@@ -34640,6 +34746,7 @@ export interface member_public_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
+  has_backstage_enter_permission?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_specialities_aggregate?: member_speciality_aggregate_bool_exp | null;
@@ -34664,6 +34771,7 @@ export interface member_public_insert_input {
   created_at?: any | null;
   description?: string | null;
   email?: string | null;
+  has_backstage_enter_permission?: number | null;
   id?: string | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -34694,6 +34802,7 @@ export interface member_public_order_by {
   created_at?: order_by | null;
   description?: order_by | null;
   email?: order_by | null;
+  has_backstage_enter_permission?: order_by | null;
   id?: order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
@@ -47374,6 +47483,7 @@ export interface token_bool_exp {
   _or?: token_bool_exp[] | null;
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
+  clicks?: Int_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   currency_id?: String_comparison_exp | null;
@@ -47389,6 +47499,7 @@ export interface token_bool_exp {
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+  views?: Int_comparison_exp | null;
 }
 
 /**
@@ -47397,6 +47508,7 @@ export interface token_bool_exp {
 export interface token_insert_input {
   abstract?: string | null;
   app_id?: string | null;
+  clicks?: number | null;
   cover_url?: string | null;
   created_at?: any | null;
   currency_id?: string | null;
@@ -47412,6 +47524,7 @@ export interface token_insert_input {
   title?: string | null;
   type?: string | null;
   updated_at?: any | null;
+  views?: number | null;
 }
 
 /**

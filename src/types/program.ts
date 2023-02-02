@@ -108,6 +108,7 @@ export type ProgramContentProps = {
     options: any
   }[]
   videos: AttachmentSelectorValue[]
+  audios: ProgramContentAudioProps[]
   programContentBodyData: any
   displayMode: DisplayMode
 }
@@ -125,6 +126,8 @@ export type ProgramContentMaterialProps = {
   id: string
   data: any
 }
+
+export type ProgramContentAudioProps = ProgramContentMaterialProps
 
 export type ProgramPlan = {
   id: string
