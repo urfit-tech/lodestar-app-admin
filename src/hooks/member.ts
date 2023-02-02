@@ -1051,6 +1051,7 @@ export const useProperty = () => {
           id
           name
           placeholder
+          is_editable
         }
       }
     `,
@@ -1062,6 +1063,7 @@ export const useProperty = () => {
       id: v.id,
       name: v.name,
       placeholder: v.placeholder?.replace(/[()]/g, ''),
+      isEditable: v.is_editable,
     })) || []
 
   return {
