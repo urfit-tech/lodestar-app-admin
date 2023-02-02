@@ -1,4 +1,5 @@
-import { Button, Form, Input, message } from 'antd'
+import { MoreOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Form, Input, Menu, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -41,7 +42,20 @@ const ProjectRejectMarkModal: React.VFC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button onClick={() => setVisible(true)}>{formatMessage(commonMessages['ui'].reject)}</Button>
+        <Dropdown
+          overlay={
+            <Menu>
+              <Menu.Item>
+                <div className="m-2" onClick={() => setVisible(true)}>
+                  {formatMessage(commonMessages['ui'].reject)}
+                </div>
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={['hover']}
+        >
+          <MoreOutlined />
+        </Dropdown>
       )}
       title={formatMessage(projectMessages.ProjectRejectMarkModal.rejectMark)}
       footer={null}
