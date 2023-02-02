@@ -374,7 +374,7 @@ const ProgramContentAdminModal: React.FC<{
                 </Form.Item>
 
                 {programContent.displayMode && (
-                  <DisplayModeSelector contentType={programContentBody.type} displayMode={programContent.displayMode} />
+                  <DisplayModeSelector contentType={contentType} displayMode={programContent.displayMode} />
                 )}
 
                 <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">

@@ -6918,7 +6918,6 @@ export interface UPDATE_PROJECT_COVER {
 export interface UPDATE_PROJECT_COVERVariables {
   projectId: any;
   previewUrl?: string | null;
-  coverUrl?: string | null;
 }
 
 /* tslint:disable */
