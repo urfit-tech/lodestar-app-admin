@@ -42,7 +42,6 @@ const StyledIcon = styled.div`
   top: 0.5rem;
   right: 0.5rem;
 `
-
 const StyledTitle = styled.div`
   color: var(--gray-darker);
   line-height: normal;
