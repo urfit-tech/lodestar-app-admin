@@ -70,7 +70,7 @@ const MemberAdminPage: React.FC = () => {
         ),
         <Tabs.TabPane key="timetable" tab={formatMessage(memberMessages.label.timetable)}>
           <div className="p-5">
-            <MemberTimetableAdminBlock memberId={memberId} />
+            <MemberTimetableAdminBlock memberId={memberId} memberCoins={memberAdmin.coins || 0} />
           </div>
         </Tabs.TabPane>,
         <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>

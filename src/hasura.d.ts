@@ -17509,6 +17509,11 @@ export interface GET_HISTORYVariables {
 // GraphQL query operation: GET_PROGRAM_TIMETABLE
 // ====================================================
 
+export interface GET_PROGRAM_TIMETABLE_program_program_plans {
+  __typename: "program_plan";
+  list_price: any;
+}
+
 export interface GET_PROGRAM_TIMETABLE_program_program_package_programs_program_package {
   __typename: "program_package";
   id: any;
@@ -17543,6 +17548,10 @@ export interface GET_PROGRAM_TIMETABLE_program {
   /**
    * An array relationship
    */
+  program_plans: GET_PROGRAM_TIMETABLE_program_program_plans[];
+  /**
+   * An array relationship
+   */
   program_package_programs: GET_PROGRAM_TIMETABLE_program_program_package_programs[];
   /**
    * An array relationship
@@ -17555,55 +17564,11 @@ export interface GET_PROGRAM_TIMETABLE_program_content_enrollment {
   program_id: any | null;
 }
 
-export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs_program_package {
-  __typename: "program_package";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs {
-  __typename: "program_package_program";
-  /**
-   * An object relationship
-   */
-  program_package: GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs_program_package;
-}
-
-export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories_category {
-  __typename: "category";
-  name: string;
-}
-
-export interface GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories {
-  __typename: "program_category";
-  /**
-   * An object relationship
-   */
-  category: GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories_category;
-}
-
-export interface GET_PROGRAM_TIMETABLE_program_timetable_program {
-  __typename: "program";
-  id: any;
-  title: string;
-  /**
-   * An array relationship
-   */
-  program_package_programs: GET_PROGRAM_TIMETABLE_program_timetable_program_program_package_programs[];
-  /**
-   * An array relationship
-   */
-  program_categories: GET_PROGRAM_TIMETABLE_program_timetable_program_program_categories[];
-}
-
 export interface GET_PROGRAM_TIMETABLE_program_timetable {
   __typename: "program_timetable";
-  /**
-   * An object relationship
-   */
-  program: GET_PROGRAM_TIMETABLE_program_timetable_program;
+  id: any;
+  program_id: any;
   time: any;
-  position: number;
 }
 
 export interface GET_PROGRAM_TIMETABLE {
@@ -46720,6 +46685,7 @@ export interface program_tempo_delivery_on_conflict {
  */
 export interface program_timetable_insert_input {
   created_at?: any | null;
+  id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   position?: number | null;
