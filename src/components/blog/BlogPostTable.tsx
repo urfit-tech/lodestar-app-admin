@@ -2,6 +2,9 @@ import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Input, Menu, message, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -14,6 +17,9 @@ import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as PlayIcon } from '../../images/icon/play.svg'
 import pageMessages from '../../pages/translation'
 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+const currentTimeZone = dayjs.tz.guess()
 const StyledDiv = styled.div`
   .ant-table-content {
     padding: 0.25rem 1.5rem 2.5rem;
@@ -170,7 +176,7 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
         render: (_, record) => {
           let data = null
           if (record.publishedAt) {
-            data = new Date(record.publishedAt).toDateString()
+            data = dayjs(record.publishedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm')
           } else {
             data = ''
           }
