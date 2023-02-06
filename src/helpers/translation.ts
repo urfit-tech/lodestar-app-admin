@@ -284,6 +284,7 @@ export const commonMessages = {
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
   }),
   text: defineMessages({
+    memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
     alreadyMember: { id: 'common.label.alreadyMember', defaultMessage: '已經是是會員嗎？' },
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '100 字以內' },

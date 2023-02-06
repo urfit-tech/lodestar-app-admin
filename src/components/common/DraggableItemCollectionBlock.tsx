@@ -107,8 +107,9 @@ const DraggableItemCollectionBlock: React.FC<{
             className="mb-2"
             actions={[
               pageName === 'memberAdminPage' && (
-                <div className="mr-3">
+                <div className="mr-3 d-flex align-content-center">
                   <Switch defaultChecked={v.isEditableField} onChange={check => onChange(check, v.id)} />
+                  <p className="ml-3">${formatMessage(commonMessages.text.memberEditable)}</p>
                 </div>
               ),
               <StyledSelect
