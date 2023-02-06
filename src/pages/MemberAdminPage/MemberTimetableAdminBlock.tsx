@@ -395,7 +395,7 @@ const GET_PROGRAM_TIMETABLE = gql`
     program_content_enrollment(where: { member_id: { _eq: $memberId } }, distinct_on: [program_id]) {
       program_id
     }
-    program_timetable(where: { member_id: { _eq: $memberId } }) {
+    program_timetable(where: { member_id: { _eq: $memberId } }, order_by: [{ position: asc }]) {
       id
       program_id
       time
