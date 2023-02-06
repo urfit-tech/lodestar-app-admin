@@ -21,7 +21,7 @@ const StyledDiv = styled.div`
   .ant-table-thead th.ant-table-column-has-sorters {
     display: none;
   }
-  .td.ant-table-column-sort {
+  td.ant-table-column-sort {
     background: transparent;
   }
 `
@@ -81,7 +81,6 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
     const [searchTitle, setSearchTitle] = useState<string>('')
     const [searchAuthor, setSearchAuthor] = useState<string>('')
     const [detailLoading, setDetailLoading] = useState(false)
-    const [blogDisplayData, setBlogDisplayData] = useState<BlogPostListColumn[]>([])
     const [updatePostPinnedAt] = useMutation<hasura.UPDATE_POST_PINNED_AT, hasura.UPDATE_POST_PINNED_ATVariables>(
       UPDATE_POST_PINNED_AT,
     )
@@ -192,9 +191,13 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
         sorter: (a, b) => {
           if (!!a.pinnedAt && !!b.pinnedAt) {
             return new Date(a.pinnedAt).getTime() - new Date(b.pinnedAt).getTime()
-          } else {
+          } else if (!!a.pinnedAt || !!b.pinnedAt) {
             let set1 = a.pinnedAt ? 1 : 0
             let set2 = b.pinnedAt ? 1 : 0
+            return set1 - set2
+          } else {
+            let set1 = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
+            let set2 = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
             return set1 - set2
           }
         },
@@ -244,6 +247,8 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
             rowKey="id"
             columns={displayColumns}
             dataSource={filteredBlogPost}
+            scroll={{ x: blogPostData.length * 10 }}
+            pagination={false}
           />
         </StyledDiv>
       )
