@@ -17522,6 +17522,7 @@ export interface GET_PROGRAM_TIMETABLE_program_program_package_programs_program_
 
 export interface GET_PROGRAM_TIMETABLE_program_program_package_programs {
   __typename: "program_package_program";
+  position: number;
   /**
    * An object relationship
    */

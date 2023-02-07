@@ -68,11 +68,13 @@ const MemberAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
         ),
-        <Tabs.TabPane key="timetable" tab={formatMessage(memberMessages.label.timetable)}>
-          <div className="p-5">
-            <MemberTimetableAdminBlock memberId={memberId} memberCoins={memberAdmin.coins || 0} />
-          </div>
-        </Tabs.TabPane>,
+        enabledModules.timetable && (
+          <Tabs.TabPane key="timetable" tab={formatMessage(memberMessages.label.timetable)}>
+            <div className="p-5">
+              <MemberTimetableAdminBlock memberId={memberId} memberCoins={memberAdmin.coins || 0} />
+            </div>
+          </Tabs.TabPane>
+        ),
         <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.label.coupon)}>
           <div className="p-5">
             <MemberCouponAdminBlock coupons={memberAdmin.coupons} />

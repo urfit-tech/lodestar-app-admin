@@ -1,7 +1,7 @@
 import { DeleteOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { uuidv4 } from '@antv/xflow-core'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Alert, AlertDescription, AlertIcon, AlertTitle } from '@chakra-ui/react'
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Tooltip } from '@chakra-ui/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
@@ -22,6 +22,7 @@ type TimetableProgram = {
   title: string
   categories: string[]
   coins: number
+  position: number
 }
 type TimetableProgramPackage = {
   id: string
@@ -40,27 +41,24 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
   const [searchText, setSearchText] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [searchType, setSearchType] = useState<'program' | 'programPackage'>('programPackage')
-  const {
-    enrolledProgramIds,
-    programs,
-    programPackages,
-    programEvents,
-    setProgramEvents,
-    resetProgramEvents,
-    updateProgramEvents,
-  } = useProgramTimetable(memberId)
+  const { enrolledProgramIds, programs, programPackages, programEvents, updateProgramEvents } =
+    useProgramTimetable(memberId)
+  const [selectedDateProgramEvents, setSelectedDateProgramEvents] = useState<TimetableProgramEvent[]>([])
 
+  useEffect(() => {
+    setSelectedDateProgramEvents(
+      programEvents.filter(pt => dayjs(pt.time).format('YYYYMMDD') === dayjs(selectedDate).format('YYYYMMDD')),
+    )
+  }, [programEvents, selectedDate])
   const handleSubmit = () => {
     setIsUpdating(true)
-    updateProgramEvents()
+    updateProgramEvents([
+      ...selectedDateProgramEvents,
+      ...programEvents.filter(pt => dayjs(pt.time).format('YYYYMMDD') !== dayjs(selectedDate).format('YYYYMMDD')),
+    ])
       .finally(() => setIsUpdating(false))
       .finally(() => setSelectedDate(null))
   }
-
-  const selectedDateProgramEvents = programEvents.filter(
-    pt => dayjs(pt.time).format('YYYYMMDD') === dayjs(selectedDate).format('YYYYMMDD'),
-  )
-
   const futureUnenrolledProgramEvents = programEvents.filter(
     pe => dayjs(pe.time) > dayjs() && !enrolledProgramIds.includes(pe.program.id),
   )
@@ -83,6 +81,10 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
       )}
       <FullCalendar
         selectable
+        eventOrder="position"
+        eventContent={({ event }) => (
+          <Tooltip label={event.extendedProps.program?.categories?.join('/')}>{event.title}</Tooltip>
+        )}
         plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
         headerToolbar={{
           left: 'prev,next today',
@@ -90,12 +92,14 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
           right: 'dayGridMonth,dayGridWeek,listYear',
         }}
         initialView="dayGridMonth"
-        events={programEvents.map(pevent => ({
+        events={programEvents.map((pevent, index) => ({
           title: pevent.program?.title,
           start: pevent.time,
           color: enrolledProgramIds.includes(pevent.program?.id) ? '#585858' : '#cdcece',
           allDay: true,
           url: `/programs/${pevent.program.id}?visitIntro=1`,
+          program: pevent.program,
+          position: index,
         }))}
         dateClick={info => setSelectedDate(info.date)}
         eventClick={info => {
@@ -108,7 +112,7 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
         width="80rem"
         okText={`${sum(selectedDateProgramEvents.map(programEvent => programEvent.program.coins))} Coins`}
         onCancel={() => {
-          resetProgramEvents()
+          setSelectedDateProgramEvents([])
           setSelectedDate(null)
         }}
         onOk={handleSubmit}
@@ -138,12 +142,13 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
                           icon={<PlusOutlined />}
                           onClick={() =>
                             selectedDate &&
-                            setProgramEvents(pevents => [
+                            setSelectedDateProgramEvents(pevents => [
                               ...pevents,
                               {
                                 id: uuidv4(),
                                 time: selectedDate,
                                 program,
+                                position: pevents.length,
                               },
                             ])
                           }
@@ -178,12 +183,13 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
                           icon={<PlusOutlined />}
                           onClick={() =>
                             selectedDate &&
-                            setProgramEvents(pevents => [
+                            setSelectedDateProgramEvents(pevents => [
                               ...pevents,
-                              ...programPackage.programs.map(program => ({
+                              ...programPackage.programs.map((program, idx) => ({
                                 id: uuidv4(),
                                 time: selectedDate,
                                 program,
+                                position: pevents.length + idx,
                               })),
                             ])
                           }
@@ -210,69 +216,66 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
               bordered
               style={{ height: '60vh', overflowY: 'auto' }}
               dataSource={selectedDateProgramEvents}
-              renderItem={(programEvent, index) => {
-                const programEventIndex = programEvents.findIndex(pevent => pevent.id === programEvent.id)
-                return (
-                  <List.Item
-                    actions={[
+              renderItem={(programEvent, index) => (
+                <List.Item
+                  actions={[
+                    <div>
+                      <Button
+                        key="up"
+                        type="link"
+                        icon={<UpOutlined />}
+                        disabled={index === 0}
+                        onClick={() =>
+                          setSelectedDateProgramEvents(pevents => [
+                            ...pevents.slice(0, index - 1),
+                            pevents[index],
+                            pevents[index - 1],
+                            ...pevents.slice(index + 1),
+                          ])
+                        }
+                      />
+                      <Button
+                        key="down"
+                        type="link"
+                        icon={<DownOutlined />}
+                        disabled={index === selectedDateProgramEvents.length - 1}
+                        onClick={() =>
+                          setSelectedDateProgramEvents(pevents => [
+                            ...pevents.slice(0, index),
+                            pevents[index + 1],
+                            pevents[index],
+                            ...pevents.slice(index + 2),
+                          ])
+                        }
+                      />
+                      <Button
+                        key="delete"
+                        type="link"
+                        icon={<DeleteOutlined />}
+                        onClick={() =>
+                          setSelectedDateProgramEvents(pevents => [
+                            ...pevents.slice(0, index),
+                            ...pevents.slice(index + 1),
+                          ])
+                        }
+                      />
+                    </div>,
+                  ]}
+                >
+                  <List.Item.Meta
+                    style={{ opacity: enrolledProgramIds.includes(programEvent.program.id) ? 0.4 : 1 }}
+                    title={
                       <div>
-                        <Button
-                          key="up"
-                          type="link"
-                          icon={<UpOutlined />}
-                          disabled={index === 0}
-                          onClick={() =>
-                            setProgramEvents(pevents => [
-                              ...pevents.slice(0, programEventIndex - 1),
-                              pevents[programEventIndex],
-                              pevents[programEventIndex - 1],
-                              ...pevents.slice(programEventIndex + 1),
-                            ])
-                          }
-                        />
-                        <Button
-                          key="down"
-                          type="link"
-                          icon={<DownOutlined />}
-                          disabled={index === selectedDateProgramEvents.length - 1}
-                          onClick={() =>
-                            setProgramEvents(pevents => [
-                              ...pevents.slice(0, programEventIndex),
-                              pevents[programEventIndex + 1],
-                              pevents[programEventIndex],
-                              ...pevents.slice(programEventIndex + 2),
-                            ])
-                          }
-                        />
-                        <Button
-                          key="delete"
-                          type="link"
-                          icon={<DeleteOutlined />}
-                          onClick={() =>
-                            setProgramEvents(pevents => [
-                              ...pevents.slice(0, programEventIndex),
-                              ...pevents.slice(programEventIndex + 1),
-                            ])
-                          }
-                        />
-                      </div>,
-                    ]}
-                  >
-                    <List.Item.Meta
-                      style={{ opacity: enrolledProgramIds.includes(programEvent.id) ? 0.4 : 1 }}
-                      title={
-                        <div>
-                          <span className="mr-2">{programEvent.program.title}</span>
-                          {programEvent.program.categories.map((category, idx) => (
-                            <Tag key={idx}>{category}</Tag>
-                          ))}
-                        </div>
-                      }
-                      description={`Coins: ${programEvent.program.coins}`}
-                    />
-                  </List.Item>
-                )
-              }}
+                        <span className="mr-2">{programEvent.program.title}</span>
+                        {programEvent.program.categories.map((category, idx) => (
+                          <Tag key={idx}>{category}</Tag>
+                        ))}
+                      </div>
+                    }
+                    description={`Coins: ${programEvent.program.coins}`}
+                  />
+                </List.Item>
+              )}
             />
           </div>
         </div>
@@ -282,7 +285,6 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
 }
 
 const useProgramTimetable = (memberId: string) => {
-  const [programEvents, setProgramEvents] = useState<TimetableProgramEvent[]>([])
   const [updateProgramTimetable] = useMutation<
     hasura.UPDATE_PROGRAM_TIMETABLE,
     hasura.UPDATE_PROGRAM_TIMETABLEVariables
@@ -304,6 +306,7 @@ const useProgramTimetable = (memberId: string) => {
         title: p.title,
         categories: p.program_categories.map(pc => pc.category.name),
         coins: p.program_plans[0].list_price,
+        position: 0,
       })) || [],
     [data],
   )
@@ -317,6 +320,7 @@ const useProgramTimetable = (memberId: string) => {
               title: p.title,
               categories: p.program_categories.map(pc => pc.category.name),
               coins: p.program_plans[0].list_price,
+              position: ppp.position,
             }
             accum[ppp.program_package.id] = {
               id: ppp.program_package.id,
@@ -326,10 +330,13 @@ const useProgramTimetable = (memberId: string) => {
           })
           return accum
         }, {} as { [programPackageId: string]: TimetableProgramPackage }) || {},
-      ),
+      ).map(programPackage => ({
+        ...programPackage,
+        programs: programPackage.programs.sort((a, b) => (a.position > b.position ? 1 : -1)),
+      })),
     [data],
   )
-  const defaultProgramEvents: TimetableProgramEvent[] = useMemo(
+  const programEvents: TimetableProgramEvent[] = useMemo(
     () =>
       data?.program_timetable
         .map(pt => {
@@ -345,24 +352,21 @@ const useProgramTimetable = (memberId: string) => {
         .filter(notEmpty) || [],
     [data],
   )
-  useEffect(() => setProgramEvents(defaultProgramEvents), [defaultProgramEvents])
 
   return {
     programs,
     programPackages,
     enrolledProgramIds,
     programEvents,
-    setProgramEvents,
-    resetProgramEvents: () => setProgramEvents(defaultProgramEvents),
-    updateProgramEvents: async () => {
+    updateProgramEvents: async (pevents: TimetableProgramEvent[]) => {
       await updateProgramTimetable({
         variables: {
           memberId,
-          programTimetableInsertInput: programEvents.map((programEvent, index) => ({
-            id: programEvent.id,
+          programTimetableInsertInput: pevents.map((pevent, index) => ({
+            id: pevent.id,
             member_id: memberId,
-            program_id: programEvent.program.id,
-            time: programEvent.time,
+            program_id: pevent.program.id,
+            time: pevent.time,
             position: index,
           })),
         },
@@ -380,7 +384,8 @@ const GET_PROGRAM_TIMETABLE = gql`
       program_plans(where: { currency_id: { _eq: "LSC" } }, order_by: [{ list_price: asc }]) {
         list_price
       }
-      program_package_programs(order_by: [{ position: asc }]) {
+      program_package_programs {
+        position
         program_package {
           id
           title
@@ -395,7 +400,7 @@ const GET_PROGRAM_TIMETABLE = gql`
     program_content_enrollment(where: { member_id: { _eq: $memberId } }, distinct_on: [program_id]) {
       program_id
     }
-    program_timetable(where: { member_id: { _eq: $memberId } }, order_by: [{ position: asc }]) {
+    program_timetable(where: { member_id: { _eq: $memberId } }, order_by: [{ time: asc }, { position: asc }]) {
       id
       program_id
       time
