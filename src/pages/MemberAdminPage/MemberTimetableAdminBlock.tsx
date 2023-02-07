@@ -380,7 +380,7 @@ const GET_PROGRAM_TIMETABLE = gql`
       program_plans(where: { currency_id: { _eq: "LSC" } }, order_by: [{ list_price: asc }]) {
         list_price
       }
-      program_package_programs {
+      program_package_programs(order_by: [{ position: asc }]) {
         program_package {
           id
           title
