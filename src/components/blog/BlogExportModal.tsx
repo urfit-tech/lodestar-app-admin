@@ -1,25 +1,39 @@
 import { LoadingOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
-import { Button, DatePicker, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import gql from 'graphql-tag'
-import moment, { Moment } from 'moment'
+import { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import hasura from '../../hasura'
 import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { blogMessages } from '../../helpers/translation'
-import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import saleMessages from '../sale/translation'
+import { ExportIcon } from '../../images/icon'
+import { AdminModalProps } from '../admin/AdminModal'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 const currentTimeZone = dayjs.tz.guess()
 type FieldProps = {
   timeRange: [Moment, Moment]
 }
+const StyledButton = styled.div`
+  width: auto;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.2px;
+  color: #4c5b8f;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`
 const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminModalProps }) => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
@@ -27,13 +41,11 @@ const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminMo
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
-  const getBlogLogExport: (startedAt: Date, endedAt: Date) => Promise<string[][]> = async (startedAt, endedAt) => {
+  const getBlogLogExport: () => Promise<string[][]> = async () => {
     const { data, loading } = await client.query<hasura.GET_BLOG_LOG_EXPORT, hasura.GET_BLOG_LOG_EXPORTVariables>({
       query: gql`
-        query GET_BLOG_LOG_EXPORT($startedAt: timestamptz, $endedAt: timestamptz) {
-          post(
-            where: { is_deleted: { _eq: false }, published_at: { _is_null: false, _gte: $startedAt, _lte: $endedAt } }
-          ) {
+        query GET_BLOG_LOG_EXPORT {
+          post(where: { is_deleted: { _eq: false }, published_at: { _is_null: false } }) {
             id
             title
             post_tags {
@@ -69,10 +81,7 @@ const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminMo
           }
         }
       `,
-      variables: {
-        startedAt,
-        endedAt,
-      },
+      variables: {},
     })
     const defaultDataTitle = [
       formatMessage(blogMessages.BlogExportModal.title),
@@ -84,21 +93,22 @@ const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminMo
       formatMessage(blogMessages.BlogExportModal.likes),
       formatMessage(blogMessages.BlogExportModal.comments),
     ]
-    const posts = loading
-      ? []
-      : [
-          [...defaultDataTitle],
-          ...data.post?.map(exportLog => [
-            `${exportLog.title}`,
-            `${exportLog.post_categories.map(v => v.category.name).join(',')}`,
-            `${exportLog.post_tags.map(v => v.tag_name).join(',')}`,
-            `${exportLog.post_roles.map(v => v.member?.name).join(',')}`,
-            `${dayjs(exportLog.published_at).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss')}`,
-            `${exportLog.views}`,
-            `${exportLog.post_reaction.length}`,
-            `${exportLog.post_issue.length}`,
-          ]),
-        ]
+    const posts =
+      loading || !data
+        ? []
+        : [
+            [...defaultDataTitle],
+            ...data.post?.map(exportLog => [
+              `${exportLog.title}`,
+              `${exportLog.post_categories.map(v => v.category.name).join(',')}`,
+              `${exportLog.post_tags.map(v => v.tag_name).join(',')}`,
+              `${exportLog.post_roles.map(v => v.member?.name).join(',')}`,
+              `${dayjs(exportLog.published_at).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss')}`,
+              `${exportLog.views}`,
+              `${exportLog.post_reaction.length}`,
+              `${exportLog.post_issue.length}`,
+            ]),
+          ]
     return posts
   }
 
@@ -107,19 +117,13 @@ const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminMo
       .validateFields()
       .then(async () => {
         setLoading(true)
-        const values = form.getFieldsValue()
-        const startedAt = values.timeRange[0].startOf('day').toDate()
-        const endedAt = values.timeRange[1].endOf('day').toDate()
 
-        let fileName = 'Blogpost.csv'
+        let fileName = 'Blogpost'
         let content: string[][] = []
 
-        content = await getBlogLogExport(startedAt, endedAt)
+        content = await getBlogLogExport()
 
-        downloadCSV(
-          `${fileName}_${moment(startedAt).format('YYYYMMDD')}_${moment(endedAt).format('YYYYMMDD')}.csv`,
-          toCSV(content),
-        )
+        downloadCSV(`${fileName}_${dayjs().tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss')}.csv`, toCSV(content))
         setLoading(false)
       })
       .catch(handleError)
@@ -129,54 +133,16 @@ const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminMo
   }
 
   return (
-    <AdminModal
-      renderTrigger={renderTrigger}
-      title={formatMessage(saleMessages.OrderExportModal.exportOrder)}
-      footer={null}
-      renderFooter={({ setVisible }) => (
-        <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(saleMessages['*'].cancel)}
-          </Button>
-          <Button type="primary" onClick={() => !loading && handleExport()}>
-            {loading ? <LoadingOutlined /> : <div>{formatMessage(saleMessages.OrderExportModal.exportOrderLog)}</div>}
-          </Button>
-        </>
+    <StyledButton onClick={() => !loading && handleExport()}>
+      {loading ? (
+        <LoadingOutlined />
+      ) : (
+        <div className="d-flex align-items-center">
+          <ExportIcon className="pr-1 align-content-center" />
+          <span>{formatMessage(blogMessages.text.exportButton)}</span>
+        </div>
       )}
-      maskClosable={false}
-      {...adminModalProps}
-    >
-      <Form
-        form={form}
-        colon={false}
-        hideRequiredMark
-        layout="vertical"
-        initialValues={{
-          timeRange: [moment().startOf('month'), moment().endOf('day')],
-        }}
-      >
-        <Form.Item label={formatMessage(saleMessages.OrderExportModal.dateRange)}>
-          <div className="d-flex">
-            <div className="flex-grow-1">
-              <Form.Item
-                name="timeRange"
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage(saleMessages['*'].isRequired, {
-                      field: formatMessage(saleMessages.OrderExportModal.timeRange),
-                    }),
-                  },
-                ]}
-                noStyle
-              >
-                <DatePicker.RangePicker style={{ width: '100%' }} format="YYYY-MM-DD" showTime={false} />
-              </Form.Item>
-            </div>
-          </div>
-        </Form.Item>
-      </Form>
-    </AdminModal>
+    </StyledButton>
   )
 }
 

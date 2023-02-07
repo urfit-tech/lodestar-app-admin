@@ -7,7 +7,6 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
-import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
 import OrderExportModal from '../components/blog/BlogExportModal'
 import BlogPostTable from '../components/blog/BlogPostTable'
@@ -17,22 +16,8 @@ import hasura from '../hasura'
 import { handleError } from '../helpers'
 import { blogMessages, commonMessages } from '../helpers/translation'
 import { usePostCollection } from '../hooks/blog'
-import { ExportIcon } from '../images/icon'
 import ForbiddenPage from './ForbiddenPage'
-const StyledButton = styled.div`
-  width: auto;
-  padding: 15px;
-  font-size: 16px;
-  font-weight: bold;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: 0.2px;
-  color: #4c5b8f;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-`
+
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -107,14 +92,8 @@ const BlogAdminCollectionPage: React.FC = () => {
               .catch(handleError)
           }
         />
-        <OrderExportModal
-          renderTrigger={({ setVisible }) => (
-            <StyledButton onClick={() => setVisible(true)}>
-              <ExportIcon className="pr-1" />
-              {formatMessage(blogMessages.text.exportButton)}
-            </StyledButton>
-          )}
-        />
+
+        <OrderExportModal />
       </div>
 
       <Tabs defaultActiveKey="published">

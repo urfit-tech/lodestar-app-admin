@@ -1209,11 +1209,6 @@ export interface GET_BLOG_LOG_EXPORT {
   post: GET_BLOG_LOG_EXPORT_post[];
 }
 
-export interface GET_BLOG_LOG_EXPORTVariables {
-  startedAt?: any | null;
-  endedAt?: any | null;
-}
-
 /* tslint:disable */
 /* eslint-disable */
 // @generated
