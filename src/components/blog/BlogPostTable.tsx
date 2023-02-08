@@ -21,9 +21,6 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 const currentTimeZone = dayjs.tz.guess()
 const StyledDiv = styled.div`
-  .ant-table-content {
-    padding: 0.25rem 1.5rem 2.5rem;
-  }
   .ant-table-thead th.ant-table-column-has-sorters {
     display: none;
   }
@@ -253,7 +250,6 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
             rowKey="id"
             columns={displayColumns}
             dataSource={filteredBlogPost}
-            scroll={{ x: blogPostData.length * 10 }}
             pagination={false}
           />
         </StyledDiv>
