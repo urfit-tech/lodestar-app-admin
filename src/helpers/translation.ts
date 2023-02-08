@@ -1085,7 +1085,7 @@ export const blogMessages = {
   }),
   label: defineMessages({
     title: { id: 'blog.label.title', defaultMessage: '標題' },
-    publicAt: { id: 'blog.publicAt', defaultMessage: '發布日期' },
+    publishedAt: { id: 'blog.label.publishedAt', defaultMessage: '發布日期' },
     source: { id: 'blog.label.source', defaultMessage: '說明備註' },
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
@@ -1103,7 +1103,7 @@ export const blogMessages = {
     suggestedPictureSize: { id: 'blog.text.suggestedPictureSize', defaultMessage: '建議圖片尺寸：1200*675px' },
     uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
-    uploadPinnedAtLimmited: { id: 'blog.text.uploadPinnedAtLimmited', defaultMessage: '置頂上限為三則' },
+    uploadPinnedAtLimited: { id: 'blog.text.uploadPinnedAtLimited', defaultMessage: '置頂上限為三則' },
     exportButton: { id: 'blog.text.exportButton', defaultMessage: '資料輸出' },
   }),
   BlogExportModal: defineMessages({

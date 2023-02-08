@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import gql from 'graphql-tag'
+import { BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -16,16 +17,25 @@ import { blogMessages, commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as PlayIcon } from '../../images/icon/play.svg'
 import pageMessages from '../../pages/translation'
+import Responsive from '../common/Responsive'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 const currentTimeZone = dayjs.tz.guess()
-const StyledDiv = styled.div`
+const StyledTableWrapper = styled.div`
+  .ant-table-content {
+    padding: 0.25rem 1.5rem 2.5rem;
+  }
   .ant-table-thead th.ant-table-column-has-sorters {
     display: none;
   }
   td.ant-table-column-sort {
     background: transparent;
+  }
+  @media (min-width: ${BREAK_POINT}px) {
+    .ant-table-content {
+      padding: 0;
+    }
   }
 `
 const StyledCover = styled.div<{ src: string }>`
@@ -88,11 +98,9 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
       UPDATE_POST_PINNED_AT,
     )
 
-    const blogPostPinatNumber = blogPostData.filter(post => !!post.pinnedAt).length
-
     const handleUpload = (id: String | null, updateTime: Date | null = null) => {
-      if (blogPostPinatNumber === 3 && updateTime) {
-        return message.warning(formatMessage(blogMessages.text.uploadPinnedAtLimmited))
+      if (blogPostData.filter(post => !!post.pinnedAt).length === 3 && updateTime) {
+        return message.warning(formatMessage(blogMessages.text.uploadPinnedAtLimited))
       }
       setDetailLoading(true)
 
@@ -167,17 +175,15 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
         filterIcon,
       },
       {
-        key: 'publicAt',
-        title: formatMessage(blogMessages.label.publicAt),
+        key: 'publishedAt',
+        title: formatMessage(blogMessages.label.publishedAt),
         width: '18%',
         render: (_, record) => {
-          let data = null
-          if (record.publishedAt) {
-            data = dayjs(record.publishedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm')
-          } else {
-            data = ''
-          }
-          return <div>{data}</div>
+          return (
+            <div>
+              {record.publishedAt ? dayjs(record.publishedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm') : ''}
+            </div>
+          )
         },
       },
       {
@@ -244,15 +250,27 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
 
     if (blogPostData.length > 0) {
       return (
-        <StyledDiv>
-          <Table<BlogPostListColumn>
-            loading={detailLoading}
-            rowKey="id"
-            columns={displayColumns}
-            dataSource={filteredBlogPost}
-            pagination={false}
-          />
-        </StyledDiv>
+        <StyledTableWrapper>
+          <Responsive.Default>
+            <Table<BlogPostListColumn>
+              loading={detailLoading}
+              rowKey="id"
+              columns={displayColumns}
+              dataSource={filteredBlogPost}
+              scroll={{ x: blogPostData.length * 10 }}
+              pagination={false}
+            />
+          </Responsive.Default>
+          <Responsive.Desktop>
+            <Table<BlogPostListColumn>
+              loading={detailLoading}
+              rowKey="id"
+              columns={displayColumns}
+              dataSource={filteredBlogPost}
+              pagination={false}
+            />
+          </Responsive.Desktop>
+        </StyledTableWrapper>
       )
     } else {
       return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
