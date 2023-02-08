@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { downloadCSV, handleError, toCSV } from '../../helpers'
-import { blogMessages } from '../../helpers/translation'
+import { blogMessages, commonMessages } from '../../helpers/translation'
 import { ExportIcon } from '../../images/icon'
 import { AdminModalProps } from '../admin/AdminModal'
 dayjs.extend(utc)
@@ -139,7 +139,7 @@ const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminMo
       ) : (
         <div className="d-flex align-items-center">
           <ExportIcon className="pr-1 align-content-center" />
-          <span>{formatMessage(blogMessages.text.exportButton)}</span>
+          <span>{formatMessage(commonMessages.ui.export)}</span>
         </div>
       )}
     </StyledButton>
