@@ -42,7 +42,7 @@ const BlogExportModal: React.VFC<AdminModalProps> = ({ renderTrigger, ...adminMo
   const [loading, setLoading] = useState(false)
 
   const getBlogLogExport: () => Promise<string[][]> = async () => {
-    const { data, loading } = await client.query<hasura.GET_BLOG_LOG_EXPORT, hasura.GET_BLOG_LOG_EXPORTVariables>({
+    const { data, loading } = await client.query<hasura.GET_BLOG_LOG_EXPORT>({
       query: gql`
         query GET_BLOG_LOG_EXPORT {
           post(where: { is_deleted: { _eq: false }, published_at: { _is_null: false } }) {
