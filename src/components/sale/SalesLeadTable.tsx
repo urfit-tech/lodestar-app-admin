@@ -23,7 +23,7 @@ import hasura from '../../hasura'
 import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useMutateMemberNote } from '../../hooks/member'
+import { useMutateMemberLastMemberNoteCreated, useMutateMemberNote } from '../../hooks/member'
 import { LeadProps, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
@@ -60,6 +60,7 @@ const SalesLeadTable: React.VFC<{
   const { id: appId } = useApp()
   const { authToken } = useAuth()
 
+  const { updateMemberLastMemberNoteCreated } = useMutateMemberLastMemberNoteCreated()
   const { insertMemberNote } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const [transferLeads] = useMutation<hasura.TRANSFER_LEADS, hasura.TRANSFER_LEADSVariables>(TRANSFER_LEADS)
@@ -380,6 +381,13 @@ const SalesLeadTable: React.VFC<{
             })
               .then(async ({ data }) => {
                 const memberNoteId = data?.insert_member_note_one?.id
+                if (type === 'outbound') {
+                  updateMemberLastMemberNoteCreated({
+                    variables: {
+                      memberId: selectedMember.id,
+                    },
+                  })
+                }
                 if (memberNoteId && attachments.length) {
                   await uploadAttachments('MemberNote', memberNoteId, attachments)
                 }

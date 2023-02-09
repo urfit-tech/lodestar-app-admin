@@ -8,7 +8,12 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useMemberAdmin, useMemberNotesAdmin, useMutateMemberNote } from '../../hooks/member'
+import {
+  useMemberAdmin,
+  useMemberNotesAdmin,
+  useMutateMemberLastMemberNoteCreated,
+  useMutateMemberNote,
+} from '../../hooks/member'
 import { AdminBlock } from '../admin'
 import { EmptyAdminBlock } from '../admin/AdminBlock'
 import MemberNoteAdminItem from '../member/MemberNoteAdminItem'
@@ -34,12 +39,12 @@ const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
           onSearch={value => setSearchText(value.trim())}
         />
       </SearchBlock>
-      <MemberNoteColleactionBlock memberId={memberId} searchText={searchText} />
+      <MemberNoteCollectionBlock memberId={memberId} searchText={searchText} />
     </div>
   )
 }
 
-const MemberNoteColleactionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
+const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
@@ -52,6 +57,7 @@ const MemberNoteColleactionBlock: React.FC<{ memberId: string; searchText: strin
   const [loading, setLoading] = useState(false)
 
   const { insertMemberNote } = useMutateMemberNote()
+  const { updateMemberLastMemberNoteCreated } = useMutateMemberLastMemberNoteCreated()
   const uploadAttachments = useUploadAttachments()
   if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
@@ -79,6 +85,13 @@ const MemberNoteColleactionBlock: React.FC<{ memberId: string; searchText: strin
           })
             .then(async ({ data }) => {
               const memberNoteId = data?.insert_member_note_one?.id
+              if (type === 'outbound') {
+                updateMemberLastMemberNoteCreated({
+                  variables: {
+                    memberId: memberAdmin.id,
+                  },
+                })
+              }
               if (memberNoteId && attachments.length) {
                 await uploadAttachments('MemberNote', memberNoteId, attachments)
               }

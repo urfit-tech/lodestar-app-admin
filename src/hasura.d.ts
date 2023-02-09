@@ -12241,23 +12241,11 @@ export interface INSERT_MEMBER_NOTE_insert_member_note_one {
   id: string;
 }
 
-export interface INSERT_MEMBER_NOTE_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface INSERT_MEMBER_NOTE {
   /**
    * insert a single row into the table: "member_note"
    */
   insert_member_note_one: INSERT_MEMBER_NOTE_insert_member_note_one | null;
-  /**
-   * update data of the table: "member"
-   */
-  update_member: INSERT_MEMBER_NOTE_update_member | null;
 }
 
 export interface INSERT_MEMBER_NOTEVariables {
@@ -12325,6 +12313,34 @@ export interface DELETE_MEMBER_NOTEVariables {
   memberNoteId: string;
   deletedAt?: any | null;
   currentMemberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATED
+// ====================================================
+
+export interface UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATED_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATED {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATED_update_member | null;
+}
+
+export interface UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATEDVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
