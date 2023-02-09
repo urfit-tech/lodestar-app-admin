@@ -24,6 +24,10 @@ const MemberPropertyAdminPage: React.FC = () => {
   const { loadingProperties, properties, refetchProperties } = useProperty()
   const [insertProperty] = useMutation<hasura.INSERT_PROPERTY, hasura.INSERT_PROPERTYVariables>(INSERT_PROPERTY)
   const [updateProperty] = useMutation<hasura.UPDATE_PROPERTY, hasura.UPDATE_PROPERTYVariables>(UPDATE_PROPERTY)
+  const [updatePropertyisEditable] = useMutation<
+    hasura.UPDATE_PROPERTY_ISEDITABLE,
+    hasura.UPDATE_PROPERTY_ISEDITABLEVariables
+  >(UPDATE_PROPERTY_ISEDITABLE)
   const [updatePropertyPosition] = useMutation<
     hasura.UPDATE_PROPERTY_POSITION,
     hasura.UPDATE_PROPERTY_POSITIONVariables
@@ -45,8 +49,15 @@ const MemberPropertyAdminPage: React.FC = () => {
       <AdminCard loading={loadingProperties} className={loading ? 'mask' : ''}>
         <div className="mb-3">{formatMessage(commonMessages.label.propertyItem)}</div>
         <DraggableItemCollectionBlock
-          items={properties.map(v => ({ id: v.id, description: v.name }))}
-          isEditable
+          pageName={'memberAdminPage'}
+          onChange={(check: boolean, id: String) => {
+            setLoading(true)
+            updatePropertyisEditable({ variables: { propertyId: id, isEditable: check } })
+              .then(() => refetchProperties())
+              .catch(handleError)
+              .finally(() => setLoading(false))
+          }}
+          items={properties.map(v => ({ id: v.id, description: v.name, isEditableField: v.isEditable }))}
           isDeletable
           onSort={newProperties => {
             setLoading(true)
@@ -111,6 +122,13 @@ const INSERT_PROPERTY = gql`
 const UPDATE_PROPERTY = gql`
   mutation UPDATE_PROPERTY($propertyId: uuid!, $name: String!) {
     update_property(where: { id: { _eq: $propertyId } }, _set: { name: $name }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PROPERTY_ISEDITABLE = gql`
+  mutation UPDATE_PROPERTY_ISEDITABLE($propertyId: uuid!, $isEditable: Boolean!) {
+    update_property(where: { id: { _eq: $propertyId } }, _set: { is_editable: $isEditable }) {
       affected_rows
     }
   }

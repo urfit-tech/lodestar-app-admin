@@ -284,6 +284,7 @@ export const commonMessages = {
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
   }),
   text: defineMessages({
+    memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
     alreadyMember: { id: 'common.label.alreadyMember', defaultMessage: '已經是是會員嗎？' },
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '100 字以內' },
@@ -1084,7 +1085,7 @@ export const blogMessages = {
   }),
   label: defineMessages({
     title: { id: 'blog.label.title', defaultMessage: '標題' },
-    publicAt: { id: 'blog.publicAt', defaultMessage: '發布日期' },
+    publishedAt: { id: 'blog.label.publishedAt', defaultMessage: '發布日期' },
     source: { id: 'blog.label.source', defaultMessage: '說明備註' },
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
@@ -1102,7 +1103,18 @@ export const blogMessages = {
     suggestedPictureSize: { id: 'blog.text.suggestedPictureSize', defaultMessage: '建議圖片尺寸：1200*675px' },
     uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
-    uploadPinnedAtLimmited: { id: 'blog.text.uploadPinnedAtLimmited', defaultMessage: '置頂上限為三則' },
+    uploadPinnedAtLimited: { id: 'blog.text.uploadPinnedAtLimited', defaultMessage: '置頂上限為三則' },
+    exportButton: { id: 'blog.text.exportButton', defaultMessage: '資料輸出' },
+  }),
+  BlogExportModal: defineMessages({
+    title: { id: 'blog.BlogExportModal.title', defaultMessage: '文章名稱' },
+    postTags: { id: 'blog.BlogExportModal.postTags', defaultMessage: '標籤' },
+    category: { id: 'blog.BlogExportModal.category', defaultMessage: '分類' },
+    publicAt: { id: 'blog.BlogExportModal.publicAt', defaultMessage: '發布日期' },
+    author: { id: 'blog.BlogExportModal.author', defaultMessage: '文章作者' },
+    likes: { id: 'blog.BlogExportModal.likes', defaultMessage: '愛心數' },
+    comments: { id: 'blog.BlogExportModal.comments', defaultMessage: '留言數' },
+    views: { id: 'blog.BlogExportModal.views', defaultMessage: '瀏覽數量' },
   }),
 }
 

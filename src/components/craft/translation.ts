@@ -62,6 +62,9 @@ const craftMessages = {
     preOrderProject: { id: 'craft.ProjectCollectionSettings.preOrderProject', defaultMessage: 'Pre Order Project' },
     portfolioProject: { id: 'craft.ProjectCollectionSettings.portfolioProject', defaultMessage: 'Portfolio Project' },
   }),
+  PostCollectionSettings: defineMessages({
+    postSectionId: { id: 'craft.PostCollectionSettings.postSectionId', defaultMessage: '文章區塊 ID' },
+  }),
   ImageSettings: defineMessages({
     ratio: { id: 'craft.ImageSettings.ratio', defaultMessage: '比例' },
   }),

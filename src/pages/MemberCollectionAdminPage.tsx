@@ -439,13 +439,15 @@ const MemberCollectionAdminPage: React.FC = () => {
           <div className="mr-2">
             <MemberImportModal onRefetch={refetchMembers} />
           </div>
-          <MemberExportModal
-            appId={appId}
-            visibleFields={visibleColumnIds}
-            columns={columns}
-            filter={fieldFilter}
-            sortOrder={sortOrder}
-          />
+          {enabledModules.member_info_export ? (
+            <MemberExportModal
+              appId={appId}
+              visibleFields={visibleColumnIds}
+              columns={columns}
+              filter={fieldFilter}
+              sortOrder={sortOrder}
+            />
+          ) : null}
         </div>
       </div>
 
