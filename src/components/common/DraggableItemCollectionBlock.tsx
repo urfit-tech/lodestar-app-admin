@@ -1,5 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons'
-import { Select } from 'antd'
+import { Select, Switch } from 'antd'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { move } from 'ramda'
 import React, { useRef } from 'react'
@@ -68,16 +68,19 @@ const StyledDeleteBlock = styled.div`
 export type ItemProps = {
   id: string
   description: string | null
+  isEditableField?: boolean
 }
 
 const DraggableItemCollectionBlock: React.FC<{
   items: ItemProps[]
   onSort: (newItems: ItemProps[]) => void
   onEdit?: (item: ItemProps) => void
+  onChange?: (check: boolean, id: string) => void
   onDelete?: (id: string) => void
   isDeletable?: boolean
+  pageName?: string
   isEditable?: boolean
-}> = ({ items, onSort, onEdit, onDelete, isDeletable, isEditable }) => {
+}> = ({ items, onSort, onEdit, onDelete, onChange = () => {}, isDeletable, isEditable, pageName }) => {
   const { formatMessage } = useIntl()
   const isSortingRef = useRef(false)
 
@@ -103,6 +106,12 @@ const DraggableItemCollectionBlock: React.FC<{
             dataId={v.id}
             className="mb-2"
             actions={[
+              pageName === 'memberAdminPage' && (
+                <div className="mr-3 d-flex align-content-center">
+                  <Switch defaultChecked={v.isEditableField} onChange={check => onChange(check, v.id)} />
+                  <p className="ml-3">{formatMessage(commonMessages.text.memberEditable)}</p>
+                </div>
+              ),
               <StyledSelect
                 key={v.id}
                 value={i + 1}
@@ -125,6 +134,7 @@ const DraggableItemCollectionBlock: React.FC<{
                   </Select.Option>
                 ))}
               </StyledSelect>,
+
               isDeletable && (
                 <StyledDeleteBlock>
                   <DeleteOutlined

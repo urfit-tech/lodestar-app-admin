@@ -1120,6 +1120,101 @@ export interface GET_APPOINTMENT_PLAN_SCHEDULESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_BLOG_LOG_EXPORT
+// ====================================================
+
+export interface GET_BLOG_LOG_EXPORT_post_post_tags {
+  __typename: "post_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_categories {
+  __typename: "post_category";
+  id: any;
+  post_id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_BLOG_LOG_EXPORT_post_post_categories_category;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_roles {
+  __typename: "post_role";
+  id: any;
+  /**
+   * creator | author
+   */
+  name: string;
+  /**
+   * An object relationship
+   */
+  member: GET_BLOG_LOG_EXPORT_post_post_roles_member | null;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_reaction {
+  __typename: "post_reaction";
+  post_id: any;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post_post_issue {
+  __typename: "post_issue";
+  post_id: any | null;
+}
+
+export interface GET_BLOG_LOG_EXPORT_post {
+  __typename: "post";
+  id: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  post_tags: GET_BLOG_LOG_EXPORT_post_post_tags[];
+  /**
+   * An array relationship
+   */
+  post_categories: GET_BLOG_LOG_EXPORT_post_post_categories[];
+  pinned_at: any | null;
+  /**
+   * An array relationship
+   */
+  post_roles: GET_BLOG_LOG_EXPORT_post_post_roles[];
+  published_at: any | null;
+  views: number;
+  /**
+   * An array relationship
+   */
+  post_reaction: GET_BLOG_LOG_EXPORT_post_post_reaction[];
+  /**
+   * An array relationship
+   */
+  post_issue: GET_BLOG_LOG_EXPORT_post_post_issue[];
+}
+
+export interface GET_BLOG_LOG_EXPORT {
+  /**
+   * fetch data from the table: "post"
+   */
+  post: GET_BLOG_LOG_EXPORT_post[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_ROLE
 // ====================================================
 
@@ -12533,6 +12628,7 @@ export interface GET_PROPERTY_property {
   id: any;
   name: string;
   placeholder: string | null;
+  is_editable: boolean;
 }
 
 export interface GET_PROPERTY {
@@ -17942,6 +18038,35 @@ export interface UPDATE_PROPERTY {
 export interface UPDATE_PROPERTYVariables {
   propertyId: any;
   name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROPERTY_ISEDITABLE
+// ====================================================
+
+export interface UPDATE_PROPERTY_ISEDITABLE_update_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROPERTY_ISEDITABLE {
+  /**
+   * update data of the table: "property"
+   */
+  update_property: UPDATE_PROPERTY_ISEDITABLE_update_property | null;
+}
+
+export interface UPDATE_PROPERTY_ISEDITABLEVariables {
+  propertyId: any;
+  isEditable: boolean;
 }
 
 /* tslint:disable */

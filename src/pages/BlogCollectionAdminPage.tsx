@@ -8,6 +8,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../components/admin'
+import OrderExportModal from '../components/blog/BlogExportModal'
 import BlogPostTable from '../components/blog/BlogPostTable'
 import ProductCreationModal from '../components/common/ProductCreationModal'
 import AdminLayout from '../components/layout/AdminLayout'
@@ -16,6 +17,7 @@ import { handleError } from '../helpers'
 import { blogMessages, commonMessages } from '../helpers/translation'
 import { usePostCollection } from '../hooks/blog'
 import ForbiddenPage from './ForbiddenPage'
+
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
@@ -48,7 +50,7 @@ const BlogAdminCollectionPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.blogPosts)}</span>
       </AdminPageTitle>
 
-      <div className="mb-4">
+      <div className="d-flex  justify-content-between container-fluid">
         <ProductCreationModal
           categoryClassType="post"
           renderTrigger={({ setVisible }) => (
@@ -90,6 +92,8 @@ const BlogAdminCollectionPage: React.FC = () => {
               .catch(handleError)
           }
         />
+
+        <OrderExportModal />
       </div>
 
       <Tabs defaultActiveKey="published">

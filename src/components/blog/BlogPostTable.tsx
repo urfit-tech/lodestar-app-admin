@@ -2,7 +2,11 @@ import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Input, Menu, message, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import gql from 'graphql-tag'
+import { BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -13,10 +17,25 @@ import { blogMessages, commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as PlayIcon } from '../../images/icon/play.svg'
 import pageMessages from '../../pages/translation'
+import Responsive from '../common/Responsive'
 
-const StyledDiv = styled.div`
+dayjs.extend(utc)
+dayjs.extend(timezone)
+const currentTimeZone = dayjs.tz.guess()
+const StyledTableWrapper = styled.div`
   .ant-table-content {
     padding: 0.25rem 1.5rem 2.5rem;
+  }
+  .ant-table-thead th.ant-table-column-has-sorters {
+    display: none;
+  }
+  td.ant-table-column-sort {
+    background: transparent;
+  }
+  @media (min-width: ${BREAK_POINT}px) {
+    .ant-table-content {
+      padding: 0;
+    }
   }
 `
 const StyledCover = styled.div<{ src: string }>`
@@ -36,7 +55,6 @@ const StyledIcon = styled.div`
   top: 0.5rem;
   right: 0.5rem;
 `
-
 const StyledTitle = styled.div`
   color: var(--gray-darker);
   line-height: normal;
@@ -49,7 +67,7 @@ const StyledTitle = styled.div`
 `
 
 const StyledDetailItem = styled(Menu.Item)`
-  padding: 0.5rem 1rem;
+  padding: 0;
 `
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
@@ -76,16 +94,13 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
     const [searchTitle, setSearchTitle] = useState<string>('')
     const [searchAuthor, setSearchAuthor] = useState<string>('')
     const [detailLoading, setDetailLoading] = useState(false)
-    const [blogDisplayData, setBlogDisplayData] = useState<BlogPostListColumn[]>([])
     const [updatePostPinnedAt] = useMutation<hasura.UPDATE_POST_PINNED_AT, hasura.UPDATE_POST_PINNED_ATVariables>(
       UPDATE_POST_PINNED_AT,
     )
 
-    const blogPostPinatNumber = blogPostData.filter(post => !!post.pinnedAt).length
-
     const handleUpload = (id: String | null, updateTime: Date | null = null) => {
-      if (blogPostPinatNumber === 3 && updateTime) {
-        return message.warning(formatMessage(blogMessages.text.uploadPinnedAtLimmited))
+      if (blogPostData.filter(post => !!post.pinnedAt).length === 3 && updateTime) {
+        return message.warning(formatMessage(blogMessages.text.uploadPinnedAtLimited))
       }
       setDetailLoading(true)
 
@@ -160,17 +175,15 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
         filterIcon,
       },
       {
-        key: 'publicAt',
-        title: formatMessage(blogMessages.label.publicAt),
+        key: 'publishedAt',
+        title: formatMessage(blogMessages.label.publishedAt),
         width: '18%',
         render: (_, record) => {
-          let data = null
-          if (record.publishedAt) {
-            data = new Date(record.publishedAt).toDateString()
-          } else {
-            data = ''
-          }
-          return <div>{data}</div>
+          return (
+            <div>
+              {record.publishedAt ? dayjs(record.publishedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm') : ''}
+            </div>
+          )
         },
       },
       {
@@ -187,9 +200,13 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
         sorter: (a, b) => {
           if (!!a.pinnedAt && !!b.pinnedAt) {
             return new Date(a.pinnedAt).getTime() - new Date(b.pinnedAt).getTime()
-          } else {
+          } else if (!!a.pinnedAt || !!b.pinnedAt) {
             let set1 = a.pinnedAt ? 1 : 0
             let set2 = b.pinnedAt ? 1 : 0
+            return set1 - set2
+          } else {
+            let set1 = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
+            let set2 = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
             return set1 - set2
           }
         },
@@ -208,14 +225,14 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
           <Dropdown
             placement="bottomRight"
             overlay={
-              <Menu>
+              <Menu className="p-0">
                 <StyledDetailItem>
                   {!record.pinnedAt ? (
-                    <Button onClick={() => handleUpload(record.id, new Date())}>
+                    <Button type="text" className="m-0" onClick={() => handleUpload(record.id, new Date())}>
                       {formatMessage(blogMessages.label.pinnedAtUpdate)}
                     </Button>
                   ) : (
-                    <Button onClick={() => handleUpload(record.id)}>
+                    <Button type="text" onClick={() => handleUpload(record.id)}>
                       {formatMessage(blogMessages.label.pinnedAtDelete)}
                     </Button>
                   )}
@@ -233,14 +250,27 @@ const BlogPostTable: React.VFC<{ blogPostData: BlogPostListColumn[]; postTableTy
 
     if (blogPostData.length > 0) {
       return (
-        <StyledDiv>
-          <Table<BlogPostListColumn>
-            loading={detailLoading}
-            rowKey="id"
-            columns={displayColumns}
-            dataSource={filteredBlogPost}
-          />
-        </StyledDiv>
+        <StyledTableWrapper>
+          <Responsive.Default>
+            <Table<BlogPostListColumn>
+              loading={detailLoading}
+              rowKey="id"
+              columns={displayColumns}
+              dataSource={filteredBlogPost}
+              scroll={{ x: blogPostData.length * 10 }}
+              pagination={false}
+            />
+          </Responsive.Default>
+          <Responsive.Desktop>
+            <Table<BlogPostListColumn>
+              loading={detailLoading}
+              rowKey="id"
+              columns={displayColumns}
+              dataSource={filteredBlogPost}
+              pagination={false}
+            />
+          </Responsive.Desktop>
+        </StyledTableWrapper>
       )
     } else {
       return <div>{formatMessage(pageMessages['*'].fetchDataError)}</div>
