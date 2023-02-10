@@ -1549,6 +1549,71 @@ export interface UPDATE_POST_VIDEO_URLVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_POST_CATEGORIES
+// ====================================================
+
+export interface GET_POST_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_POST_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_POST_CATEGORIES_category[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_POST_ID_LIST
+// ====================================================
+
+export interface GET_POST_ID_LIST_post {
+  __typename: "post";
+  id: any;
+  title: string;
+}
+
+export interface GET_POST_ID_LIST {
+  /**
+   * fetch data from the table: "post"
+   */
+  post: GET_POST_ID_LIST_post[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_POST_TAGS
+// ====================================================
+
+export interface GET_POST_TAGS_post_tag {
+  __typename: "post_tag";
+  tag_name: string;
+}
+
+export interface GET_POST_TAGS {
+  /**
+   * fetch data from the table: "post_tag"
+   */
+  post_tag: GET_POST_TAGS_post_tag[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_COIN_RELEASE_HISTORY
 // ====================================================
 
@@ -15495,47 +15560,6 @@ export interface UPDATE_LOGO {
 export interface UPDATE_LOGOVariables {
   appId: string;
   logoUrl: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_APP_HOSTS
-// ====================================================
-
-export interface UPDATE_APP_HOSTS_delete_app_host {
-  __typename: "app_host_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APP_HOSTS_insert_app_host {
-  __typename: "app_host_mutation_response";
-  /**
-   * number of rows affected by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APP_HOSTS {
-  /**
-   * delete data from the table: "app_host"
-   */
-  delete_app_host: UPDATE_APP_HOSTS_delete_app_host | null;
-  /**
-   * insert data into the table: "app_host"
-   */
-  insert_app_host: UPDATE_APP_HOSTS_insert_app_host | null;
-}
-
-export interface UPDATE_APP_HOSTSVariables {
-  appId: string;
-  appHosts: app_host_insert_input[];
 }
 
 /* tslint:disable */
