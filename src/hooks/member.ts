@@ -570,6 +570,9 @@ export const useMutateMemberNote = () => {
       ) {
         id
       }
+      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_created: "now()" }) {
+        affected_rows
+      }
     }
   `)
 
@@ -596,22 +599,6 @@ export const useMutateMemberNote = () => {
     insertMemberNote,
     updateMemberNote,
     deleteMemberNote,
-  }
-}
-
-export const useMutateMemberLastMemberNoteCreated = () => {
-  const [updateMemberLastMemberNoteCreated] = useMutation<
-    hasura.UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATED,
-    hasura.UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATEDVariables
-  >(gql`
-    mutation UPDATE_MEMBER_LAST_MEMBER_NOTE_CREATED($memberId: String!) {
-      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_created: "now()" }) {
-        affected_rows
-      }
-    }
-  `)
-  return {
-    updateMemberLastMemberNoteCreated,
   }
 }
 
