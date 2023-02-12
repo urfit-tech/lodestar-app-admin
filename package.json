@@ -163,5 +163,8 @@
   "resolutions": {
     "@craftjs/utils": "0.1.0-beta.20",
     "@types/react": "17"
+  },
+  "devDependencies": {
+    "xlsx": "^0.18.5"
   }
 }
