@@ -878,6 +878,7 @@
   "common.ui.detail": "詳情",
   "common.ui.discontinue": "下架",
   "common.ui.download": "下載",
+  "common.ui.downloading": "下載中",
   "common.ui.downloadMemberList": "下載名單",
   "common.ui.duplicate": "複製",
   "common.ui.edit": "編輯",

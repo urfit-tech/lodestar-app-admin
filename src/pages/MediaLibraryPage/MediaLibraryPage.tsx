@@ -15,6 +15,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import {
   CaptionUploadButton,
   DeleteButton,
+  DownloadButton,
   PreviewButton,
   ReUploadButton,
 } from '../../components/library/VideoLibraryItem'
@@ -82,13 +83,7 @@ const MediaLibraryPage: React.FC = () => {
       render: (_, attachment) => (
         <div>
           <div className="d-flex mb-1">
-            <PreviewButton
-              className="mr-1"
-              videoId={attachment.id}
-              title={attachment.name}
-              isExternalLink={!!attachment.data?.source}
-              videoUrl={attachment?.data?.url}
-            />
+            <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
             <ReUploadButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
@@ -96,7 +91,13 @@ const MediaLibraryPage: React.FC = () => {
             />
           </div>
           <div className="d-flex">
-            <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
+            <DownloadButton
+              className="mr-1"
+              videoId={attachment.id}
+              title={attachment.name}
+              isExternalLink={!!attachment.data?.source}
+              videoUrl={attachment?.data?.url}
+            />
             <DeleteButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
@@ -118,7 +119,14 @@ const MediaLibraryPage: React.FC = () => {
       key: 'name',
       render: (text, attachment) => (
         <div>
-          <div>{text}</div>
+          <div>
+            <PreviewButton
+              videoId={attachment.id}
+              title={attachment.name}
+              isExternalLink={!!attachment.data?.source}
+              videoUrl={attachment?.data?.url}
+            />
+          </div>
           <small>
             <span className="mr-1">{attachment.filename}</span>
             {attachment.author?.name ? '@' + attachment.author.name : ''}

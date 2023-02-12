@@ -1,8 +1,8 @@
-import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
+import { DeleteOutlined, DownloadOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
 import Uppy from '@uppy/core'
 import { StatusBar, useUppy } from '@uppy/react'
 import Tus from '@uppy/tus'
-import { Button, List, Modal, Select, Tag } from 'antd'
+import { Button, List, Modal, Select, Spin, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
@@ -11,10 +11,12 @@ import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
+import styled from 'styled-components'
 import { DeepPick } from 'ts-deep-pick'
 import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
+import AdminModal from '../admin/AdminModal'
 import VideoPlayer from './VideoPlayer'
 
 const messages = defineMessages({
@@ -72,6 +74,11 @@ const VideoLibraryItem: React.VFC<
   )
 }
 
+const PreviewLink = styled.a`
+  color: #4c5b8f;
+  font-weight: bold;
+`
+
 export const DeleteButton: React.VFC<
   { videoId: string; isExternalLink: boolean; onDelete?: () => void } & ButtonProps
 > = ({ videoId, isExternalLink, onDelete, ...buttonProps }) => {
@@ -123,27 +130,102 @@ export const DeleteButton: React.VFC<
   )
 }
 
-export const PreviewButton: React.VFC<
+export const DownloadButton: React.VFC<
   { videoId: string; title: string; isExternalLink: boolean; videoUrl?: string } & ButtonProps
 > = ({ videoId, title, isExternalLink, videoUrl, ...buttonProps }) => {
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+  const [loadingState, setloadingState] = useState<boolean>(false)
+  const [percent, setPercnet] = useState<number>(0)
+  const { authToken } = useAuth()
   const { formatMessage } = useIntl()
-  const [isModalVisible, setIsModalVisible] = useState(false)
+  const header = {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  }
+  const intervalMap: any = {}
+  const submitDownload = async (close: () => void) => {
+    setloadingState(true)
+    try {
+      const tokenResponse = await axios.post(
+        `${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}/token`,
+        {},
+        header,
+      )
+      await axios.post(`${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}/stream/downloads`, {}, header)
+      const downloadVideo = async () => {
+        let status
+        let downloadPath
+        let token
+        const downloadResponse = await axios.get(
+          `${process.env.REACT_APP_API_BASE_ROOT}/videos/${videoId}/stream/downloads`,
+          header,
+        )
+        status = downloadResponse.data.result.default.status
+        const downloadUrl = new URL(downloadResponse.data.result.default.url)
+        token = tokenResponse.data.result.token
+        downloadPath = `${downloadUrl.origin}/${token}/downloads/default.mp4`
+        setPercnet(downloadResponse.data.result.default.percentComplete)
+        if (status === 'ready') {
+          window.location.assign(downloadPath)
+          clearInterval(interval)
+          setloadingState(false)
+          close()
+        }
+      }
+      downloadVideo()
+      const interval = setInterval(() => {
+        downloadVideo()
+      }, 5000)
+      Object.assign(intervalMap, { interval: interval })
+    } catch (err) {
+      alert('Download Video Error:' + err)
+      clearInterval(intervalMap.interval)
+      setloadingState(false)
+      close()
+    }
+  }
+
   return (
     <>
-      <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
-        {isExternalLink ? (
-          <ReactPlayer url={videoUrl} width="100%" controls />
-        ) : (
-          <VideoPlayer videoId={videoId} width="100%" />
+      <AdminModal
+        renderFooter={() => (
+          <>
+            <Button
+              className="mr-2"
+              disabled={loadingState}
+              onClick={() => {
+                setIsModalVisible(false)
+              }}
+            >
+              {formatMessage(commonMessages.ui.cancel)}
+            </Button>
+            <Button
+              type="primary"
+              loading={loadingState}
+              onClick={() => submitDownload(() => setIsModalVisible(false))}
+            >
+              {formatMessage(commonMessages.ui.confirm)}
+            </Button>
+          </>
         )}
-      </Modal>
+        title={title}
+        footer={null}
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+      >
+        {loadingState && <Spin className="mr-2" />}
+        {loadingState && `${formatMessage(commonMessages.ui.downloading)}：`}
+        {loadingState && `${percent} %`}
+        {!loadingState && `${formatMessage(commonMessages.ui.download)}${formatMessage(commonMessages.ui.video)}?`}
+      </AdminModal>
       <Button
         size="small"
+        disabled={isExternalLink}
         title={formatMessage(commonMessages.ui.preview)}
-        type="primary"
         onClick={() => setIsModalVisible(true)}
         {...buttonProps}
-        icon={<EyeOutlined />}
+        icon={<DownloadOutlined />}
       />
     </>
   )
@@ -164,6 +246,7 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
         disabled={isExternalLink}
         title={formatMessage(messages.reUpload)}
         onClick={() => setIsModalVisible(true)}
+        type="primary"
         {...buttonProps}
         icon={<FileWordOutlined />}
       />
@@ -323,6 +406,26 @@ export const ReUploadButton: React.VFC<
         }}
       />
       <StatusBar uppy={uppy} hideUploadButton hideAfterFinish />
+    </>
+  )
+}
+
+export const PreviewButton: React.VFC<
+  { videoId: string; title: string; isExternalLink: boolean; videoUrl?: string } & ButtonProps
+> = ({ videoId, title, isExternalLink, videoUrl, ...buttonProps }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  return (
+    <>
+      <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
+        {isExternalLink ? (
+          <ReactPlayer url={videoUrl} width="100%" controls />
+        ) : (
+          <VideoPlayer videoId={videoId} width="100%" />
+        )}
+      </Modal>
+      <PreviewLink onClick={() => setIsModalVisible(true)} {...buttonProps}>
+        {title}
+      </PreviewLink>
     </>
   )
 }

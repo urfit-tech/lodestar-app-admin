@@ -878,6 +878,7 @@
   "common.ui.detail": "Detail",
   "common.ui.discontinue": "下架",
   "common.ui.download": "Download",
+  "common.ui.downloading": "Downloading",
   "common.ui.downloadMemberList": "Download List",
   "common.ui.duplicate": "Duplicate",
   "common.ui.edit": "Edit",
