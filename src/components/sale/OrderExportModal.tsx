@@ -178,7 +178,11 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             orderLog.order_discounts?.split('\\n').join('\n') || '',
             orderLog.order_product_num || 0,
             Math.max(orderLog.order_product_total_price || 0, 0),
-            enabledModules.merchandise ? orderLog.shipping?.fee || 0 : undefined,
+            enabledModules.merchandise
+              ? Object.keys(orderLog.shipping).length !== 0
+                ? orderLog.shipping?.fee || 0
+                : ''
+              : undefined,
             Math.max(orderLog.order_discount_total_price || 0, 0),
             Math.max(
               (orderLog.order_product_total_price || 0) -
