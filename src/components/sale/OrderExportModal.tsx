@@ -10,7 +10,7 @@ import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
+import { dateFormatter, downloadCSV, handleError, toCSV } from '../../helpers'
 import { useOrderStatuses } from '../../hooks/order'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ProductSelector from '../form/ProductSelector'
@@ -135,6 +135,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           formatMessage(saleMessages.OrderExportModal.orderDiscountName),
           formatMessage(saleMessages.OrderExportModal.orderProductCount),
           formatMessage(saleMessages.OrderExportModal.orderProductTotalPrice),
+          enabledModules.merchandise ? formatMessage(saleMessages.OrderExportModal.shippingFee) : undefined,
           formatMessage(saleMessages.OrderExportModal.orderDiscountTotalPrice),
           formatMessage(saleMessages.OrderExportModal.orderLogTotalPrice),
           enabledModules.sharing_code ? formatMessage(saleMessages.OrderExportModal.sharingCode) : undefined,
@@ -177,6 +178,11 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             orderLog.order_discounts?.split('\\n').join('\n') || '',
             orderLog.order_product_num || 0,
             Math.max(orderLog.order_product_total_price || 0, 0),
+            enabledModules.merchandise
+              ? Object.keys(orderLog.shipping).length !== 0
+                ? orderLog.shipping?.fee || 0
+                : ''
+              : undefined,
             Math.max(orderLog.order_discount_total_price || 0, 0),
             Math.max(
               (orderLog.order_product_total_price || 0) -
@@ -662,7 +668,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
         )
         setLoading(false)
       })
-      .catch(() => {})
+      .catch(handleError)
   }
 
   return (

@@ -165,6 +165,7 @@ const saleMessages = {
     invoiceUniformNumber: { id: 'sale.OrderExportModal.invoiceUniformNumber', defaultMessage: '發票統編' },
     invoiceUniformTitle: { id: 'sale.OrderExportModal.invoiceUniformTitle', defaultMessage: '發票抬頭' },
     invoiceAddress: { id: 'sale.OrderExportModal.invoiceAddress', defaultMessage: '發票地址' },
+    shippingFee: { id: 'sale.OrderExportModal.shippingFee', defaultMessage: 'Shipping fee' },
   }),
 }
 

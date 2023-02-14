@@ -2582,5 +2582,6 @@
   "program.label.audioFile": "Audio file",
   "program.DisplayModeSelector.audioTrial": "Audio trial",
   "program.DisplayModeSelector.loginToAudioTrial": "Login to audio trial",
-  "program.DisplayModeSelector.payToListen": "Pay to listen"
+  "program.DisplayModeSelector.payToListen": "Pay to listen",
+  "sale.OrderExportModal.shippingFee": "Shipping fee"
 }
