@@ -2639,5 +2639,6 @@
   "program.label.audioFile": "音频",
   "program.DisplayModeSelector.audioTrial": "试听",
   "program.DisplayModeSelector.loginToAudioTrial": "登入试听",
-  "program.DisplayModeSelector.payToListen": "付费听"
+  "program.DisplayModeSelector.payToListen": "付费听",
+  "sale.OrderExportModal.shippingFee": "运费"
 }

@@ -2639,5 +2639,6 @@
   "program.label.audioFile": "Tập tin âm thanh",
   "program.DisplayModeSelector.audioTrial": "dùng thử âm thanh",
   "program.DisplayModeSelector.loginToAudioTrial": "Đăng nhập để dùng thử âm thanh",
-  "program.DisplayModeSelector.payToListen": "trả tiền để nghe"
+  "program.DisplayModeSelector.payToListen": "trả tiền để nghe",
+  "sale.OrderExportModal.shippingFee": "Phí vận chuyển"
 }

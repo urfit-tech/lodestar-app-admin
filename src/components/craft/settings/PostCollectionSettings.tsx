@@ -8,6 +8,7 @@ import {
   StyledCollapsePanel,
 } from '../../../pages/CraftPageAdminPage/CraftSettingsPanel'
 import { AdminHeaderTitle } from '../../admin'
+import PostCollectionSelector from '../../blog/PostCollectionSelector'
 import LayoutInput from '../../common/LayoutInput'
 import craftMessages from '../translation'
 import CarouselSettingGroup from './CarouselSettingGroup'
@@ -15,6 +16,7 @@ import CarouselSettingGroup from './CarouselSettingGroup'
 const PostCollectionSettings: CraftElementSettings<PostCollectionProps> = ({ props, onPropsChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
+
   return (
     <Form
       className="pt-3"
@@ -35,6 +37,26 @@ const PostCollectionSettings: CraftElementSettings<PostCollectionProps> = ({ pro
           <Select.Option value="carousel">{formatMessage(craftMessages['*'].carousel)}</Select.Option>
         </Select>
       </Form.Item>
+
+      <Form.Item
+        valuePropName="checked"
+        label={<CraftSettingLabel>{formatMessage(craftMessages['*'].orderSelectorEnabled)}</CraftSettingLabel>}
+      >
+        <Switch
+          checked={props.withOrderSelector}
+          onChange={withOrderSelector =>
+            onPropsChange?.({ ...props, source: { from: 'popular', limit: 4 }, withOrderSelector })
+          }
+        />
+      </Form.Item>
+      <Form.Item className="mb-0">
+        <PostCollectionSelector
+          withOrderSelector={props.withOrderSelector}
+          value={props.source}
+          onChange={source => onPropsChange?.({ ...props, source })}
+        />
+      </Form.Item>
+
       <Form.Item
         valuePropName="checked"
         label={<CraftSettingLabel>{formatMessage(craftMessages['*'].categorySelectorEnabled)}</CraftSettingLabel>}

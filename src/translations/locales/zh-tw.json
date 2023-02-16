@@ -2643,5 +2643,6 @@
   "program.label.audioFile": "音頻",
   "program.DisplayModeSelector.audioTrial": "試聽",
   "program.DisplayModeSelector.loginToAudioTrial": "登入試聽",
-  "program.DisplayModeSelector.payToListen": "付費聽"
+  "program.DisplayModeSelector.payToListen": "付費聽",
+  "sale.OrderExportModal.shippingFee": "運費"
 }

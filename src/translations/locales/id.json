@@ -2639,5 +2639,6 @@
   "program.label.audioFile": "berkas audio",
   "program.DisplayModeSelector.audioTrial": "Uji coba audio",
   "program.DisplayModeSelector.loginToAudioTrial": "Masuk ke uji coba audio",
-  "program.DisplayModeSelector.payToListen": "Bayar untuk mendengarkan"
+  "program.DisplayModeSelector.payToListen": "Bayar untuk mendengarkan",
+  "sale.OrderExportModal.shippingFee": "Biaya pengiriman"
 }
