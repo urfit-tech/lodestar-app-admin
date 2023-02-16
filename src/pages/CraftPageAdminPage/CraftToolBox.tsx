@@ -3,6 +3,7 @@ import { Element, SerializedNodes, useEditor, UserComponent } from '@craftjs/cor
 import { Select } from 'antd'
 import gql from 'graphql-tag'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useCallback, useMemo, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import CraftTool from '../../components/craft/CraftTool'
@@ -135,6 +136,7 @@ const BasicToolbox: React.FC = () => {
 }
 
 const ProductToolbox: React.FC = () => {
+  const { enabledModules } = useApp()
   return (
     <div>
       <CraftTool
@@ -172,12 +174,14 @@ const ProductToolbox: React.FC = () => {
         source={{ from: 'publishedAt', limit: 4 }}
         customStyle={{ width: '100%' }}
       />
-      <CraftTool
-        as={CraftElement.CraftPostCollection}
-        coverUrl="https://static.kolable.com/images/default/craft/program.png"
-        source={{ from: 'publishedAt', limit: 4 }}
-        customStyle={{ width: '100%' }}
-      />
+      {enabledModules.blog && (
+        <CraftTool
+          as={CraftElement.CraftPostCollection}
+          coverUrl="https://static.kolable.com/images/default/craft/program.png"
+          source={{ from: 'publishedAt', limit: 4 }}
+          customStyle={{ width: '100%' }}
+        />
+      )}
       <CraftTool
         as={CraftElement.CraftMemberCollection}
         coverUrl="https://static.kolable.com/images/default/craft/program.png"

@@ -49,6 +49,7 @@ const MemberPropertyAdminPage: React.FC = () => {
       <AdminCard loading={loadingProperties} className={loading ? 'mask' : ''}>
         <div className="mb-3">{formatMessage(commonMessages.label.propertyItem)}</div>
         <DraggableItemCollectionBlock
+          isEditable
           pageName={'memberAdminPage'}
           onChange={(check: boolean, id: String) => {
             setLoading(true)
