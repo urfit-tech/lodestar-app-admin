@@ -65,8 +65,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
   const [selectedQuestionGroupIdList, setSelectedQuestionGroupIdList] = useState<string[]>([])
   const [form] = useForm<FieldProps>()
   const { loading, error, refetchQuestionLibrary, questionLibrary } = useQuestionLibrary(questionLibraryId)
-  const { questionLibraryList, refetchQuestionLibraryList, questionLibraryListLoading, questionLibraryListError } =
-    useQuestionLibraryList()
+  const { questionLibraryList, refetchQuestionLibraryList } = useQuestionLibraryList()
   const [createQuestionGroup] = useMutation<hasura.INSERT_QUESTION_GROUP, hasura.INSERT_QUESTION_GROUPVariables>(
     INSERT_QUESTION_GROUP,
   )

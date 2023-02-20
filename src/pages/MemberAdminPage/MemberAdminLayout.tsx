@@ -1,8 +1,6 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Layout, message, Tabs } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -18,7 +16,6 @@ import SingleUploader from '../../components/form/SingleUploader'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import JitsiDemoModal from '../../components/sale/JitsiDemoModal'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
-import hasura from '../../hasura'
 import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMutateMember, useMutateMemberNote } from '../../hooks/member'
@@ -133,7 +130,7 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.member_admin.path)
-  const { currentUserRole, permissions, currentMember, authToken } = useAuth()
+  const { currentUserRole, permissions, currentMember } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -143,23 +140,6 @@ const MemberAdminLayout: React.FC<{
   const avatarId = uuid()
 
   const { insertMemberNote } = useMutateMemberNote()
-  const [insertMemberNoteRejectedAt] = useMutation<
-    hasura.INSERT_MEMBER_NOTE_REJECTED_AT,
-    hasura.INSERT_MEMBER_NOTE_REJECTED_ATVariables
-  >(gql`
-    mutation INSERT_MEMBER_NOTE_REJECTED_AT(
-      $memberId: String!
-      $authorId: String!
-      $description: String!
-      $rejectedAt: timestamptz!
-    ) {
-      insert_member_note_one(
-        object: { member_id: $memberId, author_id: $authorId, description: $description, rejected_at: $rejectedAt }
-      ) {
-        id
-      }
-    }
-  `)
   const { updateMemberAvatar } = useMutateMember()
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)

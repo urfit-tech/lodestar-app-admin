@@ -1,5 +1,4 @@
 import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Tag } from 'antd'
 import gql from 'graphql-tag'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
@@ -8,7 +7,6 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
@@ -63,10 +61,6 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
 }> = ({ programPackageId, plans, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const [updatePosition] = useMutation<
-    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION,
-    hasura.UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables
-  >(UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION)
 
   return (
     <div className="row py-5">

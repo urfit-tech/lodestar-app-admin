@@ -1,13 +1,11 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { sum, prop, sortBy, max } from 'ramda'
+import { sum, prop, sortBy } from 'ramda'
 import hasura from '../hasura'
 import { SalesProps, LeadProps, LeadStatus, Manager } from '../types/sales'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
-import { useManagers } from '../hooks'
 
 export const useSales = (salesId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_SALES, hasura.GET_SALESVariables>(

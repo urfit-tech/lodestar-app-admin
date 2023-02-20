@@ -25,11 +25,10 @@ const GiftPlanCollectionAdminPage: React.FC = () => {
   const { id: appId } = useApp()
   const [searchTitle, setSearchTitle] = useState('')
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const { giftPlanCollection, refetchGiftPlanCollection, giftPlanCollectionLoading, giftPlanCollectionError } =
-    useGiftPlanCollection({
-      app_id: appId ? { _eq: appId } : undefined,
-      title: searchTitle ? { _ilike: `%${searchTitle}%` } : undefined,
-    })
+  const { giftPlanCollection, refetchGiftPlanCollection } = useGiftPlanCollection({
+    app_id: appId ? { _eq: appId } : undefined,
+    title: searchTitle ? { _ilike: `%${searchTitle}%` } : undefined,
+  })
 
   if (Object.keys(enabledModules).length === 0 || Object.keys(permissions).length === 0) {
     return <Skeleton active />

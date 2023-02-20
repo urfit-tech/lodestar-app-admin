@@ -193,7 +193,7 @@ const ProductToolbox: React.FC = () => {
 }
 
 const TemplateToolbox: React.FC = () => {
-  const { templateElements, refetch } = useTemplateElement()
+  const { templateElements } = useTemplateElement()
   return (
     <div>
       {templateElements?.map(templateElement => (

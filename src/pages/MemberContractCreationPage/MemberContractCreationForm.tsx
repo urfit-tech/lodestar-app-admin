@@ -2,7 +2,6 @@ import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/ic
 import { Button, Checkbox, Descriptions, Form, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
 import moment from 'moment'
-import { keys } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ContractInfo, FieldProps } from '.'
@@ -14,9 +13,6 @@ import ReferralMemberSelector from './ReferralMemberSelector'
 
 const StyledFieldLabel = styled.div`
   font-size: 14px;
-`
-const StyledPriceField = styled.div`
-  width: 150px;
 `
 
 const MemberContractCreationForm: React.FC<
@@ -65,16 +61,6 @@ const MemberContractCreationForm: React.FC<
     const appCustom = useAppCustom()
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
-
-    const minRebatePrice = Math.min(...keys(rebateGift).map(Number))
-    const targetRebateGiftList =
-      rebateGift?.[
-        Math.max(
-          ...keys(rebateGift)
-            .map(Number)
-            .filter(rebatePrice => totalPrice >= rebatePrice),
-        )
-      ] || []
 
     return (
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>

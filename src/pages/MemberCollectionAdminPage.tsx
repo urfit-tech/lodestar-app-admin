@@ -86,7 +86,7 @@ const MemberCollectionAdminPage: React.FC = () => {
 
   const theme = useAppTheme()
   const { permissions, currentUserRole, currentMemberId } = useAuth()
-  const { id: appId, enabledModules, settings } = useApp()
+  const { id: appId, enabledModules } = useApp()
 
   // table column filter
   const { properties } = useProperty()

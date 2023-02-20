@@ -3,7 +3,6 @@ import { useQuery } from '@apollo/react-hooks'
 import { DatePicker, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
 import gql from 'graphql-tag'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
 import { sum, uniqBy } from 'ramda'
@@ -11,7 +10,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
 import { v4 } from 'uuid'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
@@ -63,7 +61,6 @@ const SalesPerformancePage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
   const { currentMemberId, permissions } = useAuth()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   useEffect(() => {
     currentMemberId && setActiveManagerId(currentMemberId)
@@ -269,7 +266,6 @@ const SalesPerformanceTable: React.VFC<{
 }
 
 const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => {
-  const { id: appId } = useApp()
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT_LIST, hasura.GET_MEMBER_CONTRACT_LISTVariables>(
     gql`
       query GET_MEMBER_CONTRACT_LIST($startedAt: timestamptz!, $endedAt: timestamptz!) {

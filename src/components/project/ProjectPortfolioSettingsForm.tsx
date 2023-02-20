@@ -263,7 +263,7 @@ const ProjectPortfolioSettingsForm: React.FC<{
 }
 
 const usePortfolioVideoUrlCount = (projectId: string | undefined, videoUrl: string) => {
-  const { loading, error, data, refetch } = useQuery<
+  const { data, refetch } = useQuery<
     hasura.GET_PORTFOLIO_VIDEO_URL_COUNT,
     hasura.GET_PORTFOLIO_VIDEO_URL_COUNTVariables
   >(

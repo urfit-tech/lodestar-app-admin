@@ -188,7 +188,6 @@ const QuestionGroupAdminPage: React.VFC = () => {
   const { upsertQuestion, updateQuestionPosition } = useQuestionMutation()
   const {
     originalQuestionListLoading,
-    originalQuestionListError,
     questionLibraryId,
     questionGroupTitle,
     originalQuestionList,

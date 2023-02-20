@@ -26,16 +26,6 @@ const StyledPriceLabel = styled.div`
   letter-spacing: 0.2px;
   color: ${props => props.theme['@primary-color']};
 `
-
-const StyledQuantityLabel = styled.div`
-  width: 7rem;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: 0.2px;
-  color: var(--gray-darker);
-`
-
 const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
   id,
   coverUrl,

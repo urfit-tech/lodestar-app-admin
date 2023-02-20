@@ -24,9 +24,6 @@ const messages = defineMessages({
 const StyledCountDownBlock = styled.div`
   margin-top: 20px;
 `
-const StyledMenuItemText = styled.span`
-  display: block;
-`
 
 const StyledPriceBlock = styled.div`
   display: flex;

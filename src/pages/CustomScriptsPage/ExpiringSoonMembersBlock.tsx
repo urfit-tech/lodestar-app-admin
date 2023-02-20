@@ -6,7 +6,6 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import gql from 'graphql-tag'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { groupBy, values } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
@@ -193,7 +192,6 @@ const ResultBlock: React.VFC<{
 }
 
 const useExpiringSoonMembers = (expiredAt: dayjs.Dayjs) => {
-  const { settings } = useApp()
   const appCustom = useAppCustom()
   const title = appCustom.contractProjectPlan.title
 

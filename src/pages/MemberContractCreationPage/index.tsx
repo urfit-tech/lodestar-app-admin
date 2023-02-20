@@ -113,7 +113,7 @@ type ContractItem = {
 
 const MemberContractCreationPage: React.VFC = () => {
   const { memberId } = useParams<{ memberId: string }>()
-  const { id: appId, settings } = useApp()
+  const { id: appId } = useApp()
   const appCustom = useAppCustom()
 
   const [form] = useForm<FieldProps>()

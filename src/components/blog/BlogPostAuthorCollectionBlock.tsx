@@ -3,7 +3,6 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Modal, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -31,7 +30,6 @@ const BlogPostAuthorCollectionBlock: React.FC<{
   onRefetch?: () => {}
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
   const [form] = useForm<FieldPRops>()
   const [updatePostRole] = useMutation<hasura.UPDATE_POST_ROLE, hasura.UPDATE_POST_ROLEVariables>(UPDATE_POST_ROLE)
   const [isVisible, setVisible] = useState(false)

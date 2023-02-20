@@ -132,7 +132,7 @@ const ProjectPortfolioAuthorBlock: React.FC<{
 }
 
 const usePortfolioAuthor = (projectId: string) => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_PORTFOLIO_AUTHOR, hasura.GET_PORTFOLIO_AUTHORVariables>(
+  const { loading, data, refetch } = useQuery<hasura.GET_PORTFOLIO_AUTHOR, hasura.GET_PORTFOLIO_AUTHORVariables>(
     GET_PORTFOLIO_AUTHOR,
     {
       variables: { projectId },

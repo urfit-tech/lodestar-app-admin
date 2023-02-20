@@ -289,11 +289,10 @@ const useProgramTimetable = (memberId: string) => {
     hasura.UPDATE_PROGRAM_TIMETABLE,
     hasura.UPDATE_PROGRAM_TIMETABLEVariables
   >(UPDATE_PROGRAM_TIMETABLE)
-  const {
-    loading,
-    data,
-    refetch: refetchProgramTimetable,
-  } = useQuery<hasura.GET_PROGRAM_TIMETABLE, hasura.GET_PROGRAM_TIMETABLEVariables>(GET_PROGRAM_TIMETABLE, {
+  const { data, refetch: refetchProgramTimetable } = useQuery<
+    hasura.GET_PROGRAM_TIMETABLE,
+    hasura.GET_PROGRAM_TIMETABLEVariables
+  >(GET_PROGRAM_TIMETABLE, {
     variables: {
       memberId,
     },

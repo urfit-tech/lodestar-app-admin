@@ -146,8 +146,6 @@ const MemberContractCreationBlock: React.FC<{
       ),
     )
 
-    const previewProductCoinLogId = v4()
-
     // generate coupons
     const couponPlanId = v4()
     const coupons = range(0, totalAppointments).map((v, index) => ({

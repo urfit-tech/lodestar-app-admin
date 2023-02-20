@@ -74,12 +74,7 @@ const QuestionGroupDuplicateAdminModal: React.VFC<{
       })
   }
 
-  const {
-    duplicateQuestionGroupDataLoading,
-    duplicateQuestionGroupDataError,
-    duplicateQuestionGroupData,
-    duplicateQuestionsData,
-  } = useQuestionGroupData(questionGroupId, currentMemberId)
+  const { duplicateQuestionGroupData, duplicateQuestionsData } = useQuestionGroupData(questionGroupId, currentMemberId)
   const [insertDuplicateQuestionGroup] = useMutation<
     hasura.INSERT_DUPLICATE_QUESTION_GROUP,
     hasura.INSERT_DUPLICATE_QUESTION_GROUPVariables

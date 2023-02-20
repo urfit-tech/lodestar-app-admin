@@ -4,7 +4,6 @@ import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
 import { Button, Input, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -24,22 +23,13 @@ import ForbiddenPage from '../ForbiddenPage'
 import MediaLibraryUsageCard from './MediaLibraryUsageCard'
 
 const MediaLibraryPage: React.FC = () => {
-  const { settings } = useApp()
   const [uppy, setUppy] = useState<Uppy>()
   const [searchText, setSearchText] = useState('')
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
   const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
-  const {
-    totalDuration,
-    totalSize,
-    maxDuration,
-    maxSize,
-    attachments,
-    loading: loadingAttachments,
-    refetch: refetchAttachments,
-  } = useAttachments()
+  const { attachments, loading: loadingAttachments, refetch: refetchAttachments } = useAttachments()
 
   const handleVideoAdd = useCallback(() => {
     const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/`
@@ -195,13 +185,6 @@ const MediaLibraryPage: React.FC = () => {
             />
           </div>
         </Tabs.TabPane>
-
-        {/* <Tabs.TabPane tab={formatMessage(commonMessages.ui.image)} key="image">
-          Content of Tab Pane 2
-        </Tabs.TabPane> */}
-        {/* <Tabs.TabPane tab={formatMessage(commonMessages.ui.other)} key="other">
-          Content of Tab Pane 3
-        </Tabs.TabPane> */}
       </Tabs>
       <MediaLibraryUsageCard />
 

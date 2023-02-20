@@ -5,17 +5,11 @@ import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import { useContext, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { Device } from '../../types/general'
 import CraftPageBuilderContext from './CraftPageBuilderContext'
-
-const messages = defineMessages({
-  desktop: { id: 'craft.settings.responsiveSelector.desktop', defaultMessage: '桌面' },
-  tablet: { id: 'craft.settings.responsiveSelector.tablet', defaultMessage: '平板' },
-  mobile: { id: 'craft.settings.responsiveSelector.mobile', defaultMessage: '手機' },
-})
 
 const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) => {
   const editor = useEditor(state => ({ nodes: state.nodes }))
@@ -92,7 +86,13 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         }}
         onClick={() => editor.actions.history.redo()}
       />
-      <Button type="primary" className="mr-2" disabled={!editor.query.history.canUndo()} onClick={() => handleSave()}>
+      <Button
+        loading={loading}
+        type="primary"
+        className="mr-2"
+        disabled={!editor.query.history.canUndo()}
+        onClick={() => handleSave()}
+      >
         {formatMessage(commonMessages.ui.save)}
       </Button>
     </div>

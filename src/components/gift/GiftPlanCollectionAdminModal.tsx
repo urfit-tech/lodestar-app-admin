@@ -58,7 +58,7 @@ const GiftPlanCollectionEditAdminModal: React.VFC<
   const uploadCanceler = useRef<Canceler>()
   const [loading, setLoading] = useState(false)
   const [coverImg, setCoverImg] = useState<File | null>(null)
-  const { gift, refetchGift, giftLoading, giftError } = useGift({
+  const { gift, refetchGift, giftLoading } = useGift({
     id: giftId !== undefined ? { _eq: giftId } : { _is_null: true },
   })
   const {

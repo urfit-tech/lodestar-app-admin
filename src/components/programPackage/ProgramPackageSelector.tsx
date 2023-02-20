@@ -11,7 +11,7 @@ export const OwnedProgramPackageSelector: React.VFC<{ noAll?: boolean } & Select
   ...selectProps
 }) => {
   const { formatMessage } = useIntl()
-  const { loading: loadingProgramPackages, error, programPackages } = useProgramPackages()
+  const { loading: loadingProgramPackages, programPackages } = useProgramPackages()
 
   return (
     <Select

@@ -52,9 +52,6 @@ const VideoLibraryItem: React.VFC<
   onReUpload,
   onDelete,
 }) => {
-  const { authToken } = useAuth()
-  const [cloudflareOptions, setCloudflareOptions] = useState(options?.cloudflare)
-
   return (
     <List.Item className="mb-3" extra={[]}>
       <List.Item.Meta

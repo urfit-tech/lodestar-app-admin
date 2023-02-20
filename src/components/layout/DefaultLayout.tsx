@@ -88,7 +88,7 @@ export const DefaultLayoutHeader: React.FC<{
   renderTitle?: () => React.ReactNode
 }> = ({ renderTitle }) => {
   const { currentMemberId, permissions } = useAuth()
-  const { enabledModules, id: appId, settings } = useApp()
+  const { enabledModules, id: appId } = useApp()
   const { currentLocale, setCurrentLocale } = useContext(LocaleContext)
 
   let Logo: string | undefined
