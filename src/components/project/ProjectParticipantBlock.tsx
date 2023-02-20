@@ -14,6 +14,7 @@ import { useIdentity } from '../../hooks/identity'
 import { useProject } from '../../hooks/project'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import { AllMemberSelector } from '../form/MemberSelector'
+import ApplyingRoleAdminBlock from './ApplyingRoleAdminBlock'
 import projectMessages from './translation'
 
 const StyledModalTitle = styled.div`
@@ -50,8 +51,14 @@ const ProjectParticipantBlock: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [rejectForm] = useForm<RejectFormFieldProps>()
-  const { getProjectParticipantData, insertProjectRole, updateProjectRole, deleteProjectRole, rejectProjectRole } =
-    useProject()
+  const {
+    getProjectParticipantData,
+    insertProjectRole,
+    updateProjectRole,
+    deleteProjectRole,
+    agreeProjectRole,
+    rejectProjectRole,
+  } = useProject()
   const { participantList, participantListRefetch } = getProjectParticipantData(projectId)
   const { getIdentity } = useIdentity()
   const { identityList } = getIdentity('Project')
@@ -61,6 +68,20 @@ const ProjectParticipantBlock: React.FC<{
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false)
   const [rejectModalLoading, setRejectModalLoading] = useState(false)
   const [isUnregistered, setIsUnregistered] = useState(false)
+
+  const handleAgree = (projectRoleId: string) => {
+    agreeProjectRole({ variables: { projectRoleId } })
+      .then(() => {
+        message.success(formatMessage(projectMessages.ProjectParticipantBlock.agreeSuccessfully))
+        participantListRefetch()
+      })
+      .catch(handleError)
+  }
+
+  const handleReject = (projectRoleId: string) => {
+    rejectForm.setFieldsValue({ projectRoleId })
+    setIsRejectModalVisible(true)
+  }
 
   const handleSubmitRejectProjectRole = (values: RejectFormFieldProps) => {
     setRejectModalLoading(true)
@@ -75,7 +96,10 @@ const ProjectParticipantBlock: React.FC<{
         rejectForm.resetFields()
         setIsRejectModalVisible(false)
       })
-      .then(() => participantListRefetch())
+      .then(() => {
+        message.error(formatMessage(projectMessages.ProjectParticipantBlock.rejectSuccessfully))
+        participantListRefetch()
+      })
       .catch(handleError)
       .finally(() => {
         setRejectModalLoading(false)
@@ -188,6 +212,19 @@ const ProjectParticipantBlock: React.FC<{
   return (
     <>
       {participantList
+        ?.filter(participant => participant.member.status === 'verified' && participant.agreedAt === null)
+        .map(participant => (
+          <ApplyingRoleAdminBlock
+            key={participant.projectRoleId}
+            name={participant.member.name}
+            identity={participant.identity.name}
+            pictureUrl={participant.member.pictureUrl}
+            onAgree={() => handleAgree(participant.projectRoleId)}
+            onReject={() => handleReject(participant.projectRoleId)}
+          />
+        ))}
+
+      {participantList
         ?.filter(participant => participant.agreedAt !== null)
         .map(participant => (
           <RoleAdminBlock
@@ -200,7 +237,7 @@ const ProjectParticipantBlock: React.FC<{
         ))}
 
       {participantList
-        ?.filter(participant => participant.agreedAt === null)
+        ?.filter(participant => participant.member.status === 'invited' && participant.agreedAt === null)
         .map(participant => (
           <RoleAdminBlock
             key={participant.projectRoleId}

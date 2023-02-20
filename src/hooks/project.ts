@@ -92,6 +92,17 @@ export const useProject = () => {
     }
   `)
 
+  const [agreeProjectRole] = useMutation<hasura.AGREE_PROJECT_ROLE, hasura.AGREE_PROJECT_ROLEVariables>(gql`
+    mutation AGREE_PROJECT_ROLE($projectRoleId: uuid!) {
+      update_project_role_by_pk(
+        pk_columns: { id: $projectRoleId }
+        _set: { agreed_at: "now()", has_sended_marked_notification: true }
+      ) {
+        id
+      }
+    }
+  `)
+
   const [rejectProjectRole] = useMutation<hasura.REJECT_PROJECT_ROLE, hasura.REJECT_PROJECT_ROLEVariables>(gql`
     mutation REJECT_PROJECT_ROLE($projectRoleId: uuid!, $rejectedReason: String) {
       update_project_role_by_pk(
@@ -114,6 +125,7 @@ export const useProject = () => {
           identity: { name: { _neq: "author" } }
           rejected_at: { _is_null: true }
         }
+        order_by: { identity: { position: asc } }
       ) {
         id
         created_at
@@ -123,6 +135,7 @@ export const useProject = () => {
           name
           picture_url
           created_at
+          status
         }
         identity {
           id
@@ -144,6 +157,7 @@ export const useProject = () => {
           id: projectRole.member?.id || '',
           name: projectRole.member?.name || '',
           pictureUrl: projectRole.member?.picture_url || '',
+          status: projectRole.member?.status || 'invited',
         },
         identity: { id: projectRole.identity.id, name: projectRole.identity.name },
         agreedAt: projectRole.agreed_at,
@@ -160,6 +174,7 @@ export const useProject = () => {
     insertProjectRole,
     updateProjectRole,
     deleteProjectRole,
+    agreeProjectRole,
     rejectProjectRole,
     updateHasSendNotification,
   }
