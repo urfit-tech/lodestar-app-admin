@@ -14,7 +14,7 @@ export const salesLeadDeliveryPageMessages = {
     adMaterials: { id: 'page.salesLeadDeliveryPage.adMaterials', defaultMessage: '廣告素材' },
     leadLevel: { id: 'page.salesLeadDeliveryPage.leadLevel', defaultMessage: '名單分級' },
     createdAtRange: { id: 'page.salesLeadDeliveryPage.createdAtRange', defaultMessage: '名單建立日期' },
-    assignedAtRange: { id: 'page.salesLeadDeliveryPage.assignedAtRange', defaultMessage: '名單派發日期' },
+    lastContactRange: { id: 'page.salesLeadDeliveryPage.lastContactRange', defaultMessage: '上次聯繫日期' },
     nextStep: { id: 'page.salesLeadDeliveryPage.nextStep', defaultMessage: '下一步' },
     expectedDeliveryAmount: {
       id: 'page.salesLeadDeliveryPage.expectedDeliveryAmount',
