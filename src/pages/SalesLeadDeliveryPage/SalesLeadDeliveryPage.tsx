@@ -97,7 +97,9 @@ const SalesLeadDeliveryPage: React.VFC = () => {
           }}
         />
       )}
-      {currentStep === 2 && assignedResult && <ResultSection result={assignedResult} />}
+      {currentStep === 2 && assignedResult && (
+        <ResultSection result={assignedResult} onBack={() => setCurrentStep(0)} />
+      )}
     </AdminLayout>
   )
 }
