@@ -202,6 +202,8 @@ const formMessages = {
     CHECK_MEMBER_ORDER: { id: 'form.PermissionGroup.CHECK_MEMBER_ORDER', defaultMessage: '查看會員訂單紀錄' },
     CHECK_MEMBER_COIN: { id: 'form.PermissionGroup.CHECK_MEMBER_COIN', defaultMessage: '查看會員代幣紀錄' },
     CHECK_MEMBER_HISTORY: { id: 'form.PermissionGroup.CHECK_MEMBER_HISTORY', defaultMessage: '查看會員歷程紀錄' },
+    MEMBER_PROGRAM_TIMETABLE_VIEW: { id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW', defaultMessage: '查看會員課表' },
+    MEMBER_PROGRAM_TIMETABLE_EDIT: { id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT', defaultMessage: '編輯會員課表' },
 
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
