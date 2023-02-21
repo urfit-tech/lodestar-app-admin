@@ -82,6 +82,13 @@ export const AdminBlockSubTitle = styled.div`
   font-size: 14px;
   letter-spacing: 0.4px;
 `
+export const AdminBlockDescription = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: var(--gray-darker);
+  margin-bottom: 20px;
+`
 
 export const EmptyBlock = styled.div`
   padding: 12.5rem 0;
