@@ -30,7 +30,7 @@ import { salesLeadDeliveryPageMessages } from './translation'
 type Filter = {
   categoryIds: string[]
   createdAtRange: [Date, Date] | null
-  lastContactRange: [Date, Date] | null
+  lastAnsweredRange: [Date, Date] | null
   managerId?: string
   starRange: [number, number]
   starRangeIsNull: boolean
@@ -51,7 +51,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     categoryIds: [],
     starRange: [-999, 999],
     createdAtRange: null,
-    lastContactRange: null,
+    lastAnsweredRange: null,
     starRangeIsNull: false,
     marketingActivity: '',
     adMaterials: '',
@@ -210,8 +210,8 @@ const FilterSection: React.FC<{
         <DatePicker.RangePicker allowClear />
       </Form.Item>
       <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastContactRange)}
-        name="lastContactRange"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
+        name="lastAnsweredRange"
       >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
@@ -315,11 +315,11 @@ const ConfirmSection: React.FC<{
     {
       fetchPolicy: 'no-cache',
       variables: {
-        memberIds: filter.lastContactRange ? leadCandidatesData?.member_phone.map(v => v.member_id) || [] : [],
-        assignedAtCondition: filter.lastContactRange
+        memberIds: filter.lastAnsweredRange ? leadCandidatesData?.member_phone.map(v => v.member_id) || [] : [],
+        assignedAtCondition: filter.lastAnsweredRange
           ? {
-              _gte: moment(filter.lastContactRange[0]).startOf('day'),
-              _lte: moment(filter.lastContactRange[1]).endOf('day'),
+              _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+              _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
             }
           : undefined,
       },
@@ -327,11 +327,11 @@ const ConfirmSection: React.FC<{
   )
   const filteredMemberIds = useMemo(() => {
     const memberIds =
-      (filter.lastContactRange
+      (filter.lastAnsweredRange
         ? assignedLeadsData?.audit_log.map(v => v.member_id).filter(notEmpty)
         : leadCandidatesData?.member_phone.map(v => v.member_id)) || []
     return memberIds
-  }, [assignedLeadsData, filter.lastContactRange, leadCandidatesData?.member_phone])
+  }, [assignedLeadsData, filter.lastAnsweredRange, leadCandidatesData?.member_phone])
 
   const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
 
