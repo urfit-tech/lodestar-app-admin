@@ -78,7 +78,20 @@ const pageMessages = {
     projectIntroduction: { id: 'project.ProjectAdminPage.projectIntroduction', defaultMessage: '專案介紹' },
     portfolioContent: { id: 'project.ProjectAdminPage.portfolioContent', defaultMessage: 'Portfolio content' },
     portfolioSettings: { id: 'project.ProjectAdminPage.portfolioSettings', defaultMessage: 'Portfolio settings' },
-    portfolioDescription: { id: 'project.ProjectAdminPage.portfolioDescription', defaultMessage: 'Portfolio description' },
+    portfolioDescription: {
+      id: 'project.ProjectAdminPage.portfolioDescription',
+      defaultMessage: 'Portfolio description',
+    },
+    portfolioDescriptionNotice: {
+      id: 'project.ProjectAdminPage.portfolioDescriptionNotice',
+      defaultMessage:
+        'In order to protect the intellectual property rights of creators, it is recommended to indicate the production team of the work, the owner of the copyright of the work, customers, and agents in this field.',
+    },
+    portfolioAuthorNotice: {
+      id: 'project.ProjectAdminPage.portfolioAuthorNotice',
+      defaultMessage:
+        'Please set the producer (production company/individual creator) of this work. If you cannot find the account of the producer, it is recommended to fill in your own account first.',
+    },
     portfolioManagement: { id: 'project.ProjectAdminPage.portfolioManagement', defaultMessage: 'Portfolio management' },
     publishSettings: { id: 'project.ProjectAdminPage.publishSettings', defaultMessage: 'Publish settings' },
     deletePortfolio: { id: 'project.ProjectAdminPage.deletePortfolio', defaultMessage: 'Delete portfolio' },

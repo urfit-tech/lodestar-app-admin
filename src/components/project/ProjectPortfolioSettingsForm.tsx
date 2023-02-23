@@ -66,6 +66,9 @@ const OriginalPortfolioBlock = styled.div`
     font-weight: bold;
     letter-spacing: 0.2px;
   }
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 type FieldProps = {
@@ -78,7 +81,7 @@ const ProjectPortfolioSettingsForm: React.FC<{
   onRefetch?: () => void
 }> = ({ project, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
+  const { id: appId, host } = useApp()
   const { authToken } = useAuth()
   const uploadCanceler = useRef<Canceler>()
   const [form] = useForm<FieldProps>()
@@ -229,7 +232,11 @@ const ProjectPortfolioSettingsForm: React.FC<{
             <p>{formatMessage(projectMessages.ProjectPortfolioSettingsForm.hasSameOriginalSourceNoticeTitle)}</p>
             <p>{formatMessage(projectMessages.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice1)}</p>
             <p>{formatMessage(projectMessages.ProjectPortfolioSettingsForm.hasSameOriginalSourceNotice2)}</p>
-            <OriginalPortfolioBlock>
+            <OriginalPortfolioBlock
+              onClick={() => {
+                window.open(`https://${host}/projects/${originalSourceProject.id}`, '_blank')
+              }}
+            >
               <div>
                 <p className="portfolio-title">{originalSourceProject.title}</p>
                 <p className="portfolio-creator">
