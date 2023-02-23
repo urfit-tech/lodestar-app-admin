@@ -169,7 +169,7 @@ const GET_LEARNING_REPORT = gql`
         count
       }
     }
-    exercise(where: { member: { app_id: { _eq: $appId } } }) {
+    exercise(where: { answer: { _is_null: false }, member: { app_id: { _eq: $appId } } }) {
       answer
       member_id
       program_content {

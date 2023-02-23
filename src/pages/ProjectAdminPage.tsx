@@ -6,9 +6,11 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
   AdminBlock,
+  AdminBlockDescription,
   AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
@@ -30,6 +32,10 @@ import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
 import { ProjectAdminProps, ProjectDataType } from '../types/project'
 import pageMessages from './translation'
+
+const ProjectPortfolioBlockTitle = styled(AdminBlockTitle)`
+  margin-bottom: 8px;
+`
 
 const ProjectAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
@@ -88,9 +94,12 @@ const ProjectAdminPage: React.FC<{}> = () => {
                       <ProjectPortfolioSettingsForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
                     </AdminBlock>
                     <AdminBlock>
-                      <AdminBlockTitle>
+                      <ProjectPortfolioBlockTitle>
                         {formatMessage(pageMessages.ProjectAdminPage.portfolioDescription)}
-                      </AdminBlockTitle>
+                      </ProjectPortfolioBlockTitle>
+                      <AdminBlockDescription>
+                        {formatMessage(pageMessages.ProjectAdminPage.portfolioDescriptionNotice)}
+                      </AdminBlockDescription>
                       <ProjectPortfolioDescriptionForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
                     </AdminBlock>
                   </div>
@@ -116,7 +125,12 @@ const ProjectAdminPage: React.FC<{}> = () => {
                       />
                     </AdminBlock>
                     <AdminBlock>
-                      <AdminBlockTitle>{formatMessage(commonMessages.label.author)}</AdminBlockTitle>
+                      <ProjectPortfolioBlockTitle>
+                        {formatMessage(commonMessages.label.author)}
+                      </ProjectPortfolioBlockTitle>
+                      <AdminBlockDescription>
+                        {formatMessage(pageMessages.ProjectAdminPage.portfolioAuthorNotice)}
+                      </AdminBlockDescription>
                       <ProjectPortfolioAuthorBlock
                         projectId={projectAdmin.id}
                         publishedAt={projectAdmin.publishedAt}
