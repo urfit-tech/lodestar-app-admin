@@ -17535,34 +17535,6 @@ export interface GET_APP_USAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_MEMBER_NOTE_REJECTED_AT
-// ====================================================
-
-export interface INSERT_MEMBER_NOTE_REJECTED_AT_insert_member_note_one {
-  __typename: "member_note";
-  id: string;
-}
-
-export interface INSERT_MEMBER_NOTE_REJECTED_AT {
-  /**
-   * insert a single row into the table: "member_note"
-   */
-  insert_member_note_one: INSERT_MEMBER_NOTE_REJECTED_AT_insert_member_note_one | null;
-}
-
-export interface INSERT_MEMBER_NOTE_REJECTED_ATVariables {
-  memberId: string;
-  authorId: string;
-  description: string;
-  rejectedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_HISTORY
 // ====================================================
 
@@ -21437,6 +21409,16 @@ export interface GET_TODAY_MEMBER_CONTRACTVariables {
 // GraphQL query operation: GET_SALES_MATERIALS
 // ====================================================
 
+export interface GET_SALES_MATERIALS_total {
+  __typename: "member_property";
+  v: string;
+}
+
+export interface GET_SALES_MATERIALS_intervalTotal {
+  __typename: "member_property";
+  v: string;
+}
+
 export interface GET_SALES_MATERIALS_calledMembers {
   __typename: "member_property";
   v: string;
@@ -21470,6 +21452,14 @@ export interface GET_SALES_MATERIALS_rejectedMembers {
 }
 
 export interface GET_SALES_MATERIALS {
+  /**
+   * fetch data from the table: "member_property"
+   */
+  total: GET_SALES_MATERIALS_total[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  intervalTotal: GET_SALES_MATERIALS_intervalTotal[];
   /**
    * fetch data from the table: "member_property"
    */
@@ -24165,6 +24155,7 @@ export enum member_select_column {
   facebook_user_id = "facebook_user_id",
   google_user_id = "google_user_id",
   id = "id",
+  is_business = "is_business",
   last_member_note_created = "last_member_note_created",
   line_user_id = "line_user_id",
   logined_at = "logined_at",
@@ -24183,6 +24174,20 @@ export enum member_select_column {
   verified_emails = "verified_emails",
   youtube_channel_ids = "youtube_channel_ids",
   zoom_user_id_deprecate = "zoom_user_id_deprecate",
+}
+
+/**
+ * select "member_aggregate_bool_exp_bool_and_arguments_columns" columns of table "member"
+ */
+export enum member_select_column_member_aggregate_bool_exp_bool_and_arguments_columns {
+  is_business = "is_business",
+}
+
+/**
+ * select "member_aggregate_bool_exp_bool_or_arguments_columns" columns of table "member"
+ */
+export enum member_select_column_member_aggregate_bool_exp_bool_or_arguments_columns {
+  is_business = "is_business",
 }
 
 /**
@@ -24417,6 +24422,7 @@ export enum member_update_column {
   facebook_user_id = "facebook_user_id",
   google_user_id = "google_user_id",
   id = "id",
+  is_business = "is_business",
   last_member_note_created = "last_member_note_created",
   line_user_id = "line_user_id",
   logined_at = "logined_at",
@@ -27534,6 +27540,7 @@ export enum property_select_column {
   app_id = "app_id",
   created_at = "created_at",
   id = "id",
+  is_business = "is_business",
   is_editable = "is_editable",
   name = "name",
   placeholder = "placeholder",
@@ -27546,6 +27553,7 @@ export enum property_select_column {
  * select "property_aggregate_bool_exp_bool_and_arguments_columns" columns of table "property"
  */
 export enum property_select_column_property_aggregate_bool_exp_bool_and_arguments_columns {
+  is_business = "is_business",
   is_editable = "is_editable",
 }
 
@@ -27553,6 +27561,7 @@ export enum property_select_column_property_aggregate_bool_exp_bool_and_argument
  * select "property_aggregate_bool_exp_bool_or_arguments_columns" columns of table "property"
  */
 export enum property_select_column_property_aggregate_bool_exp_bool_or_arguments_columns {
+  is_business = "is_business",
   is_editable = "is_editable",
 }
 
@@ -27563,6 +27572,7 @@ export enum property_update_column {
   app_id = "app_id",
   created_at = "created_at",
   id = "id",
+  is_business = "is_business",
   is_editable = "is_editable",
   name = "name",
   placeholder = "placeholder",
@@ -34852,7 +34862,23 @@ export interface media_variance_order_by {
 }
 
 export interface member_aggregate_bool_exp {
+  bool_and?: member_aggregate_bool_exp_bool_and | null;
+  bool_or?: member_aggregate_bool_exp_bool_or | null;
   count?: member_aggregate_bool_exp_count | null;
+}
+
+export interface member_aggregate_bool_exp_bool_and {
+  arguments: member_select_column_member_aggregate_bool_exp_bool_and_arguments_columns;
+  distinct?: boolean | null;
+  filter?: member_bool_exp | null;
+  predicate: Boolean_comparison_exp;
+}
+
+export interface member_aggregate_bool_exp_bool_or {
+  arguments: member_select_column_member_aggregate_bool_exp_bool_or_arguments_columns;
+  distinct?: boolean | null;
+  filter?: member_bool_exp | null;
+  predicate: Boolean_comparison_exp;
 }
 
 export interface member_aggregate_bool_exp_count {
@@ -34948,6 +34974,7 @@ export interface member_bool_exp {
   facebook_user_id?: String_comparison_exp | null;
   google_user_id?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
+  is_business?: Boolean_comparison_exp | null;
   issue_reactions?: issue_reaction_bool_exp | null;
   issue_reactions_aggregate?: issue_reaction_aggregate_bool_exp | null;
   issue_replies?: issue_reply_bool_exp | null;
@@ -35593,6 +35620,7 @@ export interface member_insert_input {
   facebook_user_id?: string | null;
   google_user_id?: string | null;
   id?: string | null;
+  is_business?: boolean | null;
   issue_reactions?: issue_reaction_arr_rel_insert_input | null;
   issue_replies?: issue_reply_arr_rel_insert_input | null;
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
@@ -36183,6 +36211,7 @@ export interface member_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  is_business?: order_by | null;
   issue_reactions_aggregate?: issue_reaction_aggregate_order_by | null;
   issue_replies_aggregate?: issue_reply_aggregate_order_by | null;
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_order_by | null;
@@ -48177,6 +48206,7 @@ export interface property_bool_exp {
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_business?: Boolean_comparison_exp | null;
   is_editable?: Boolean_comparison_exp | null;
   member_properties?: member_property_bool_exp | null;
   member_properties_aggregate?: member_property_aggregate_bool_exp | null;
@@ -48195,6 +48225,7 @@ export interface property_insert_input {
   app_id?: string | null;
   created_at?: any | null;
   id?: any | null;
+  is_business?: boolean | null;
   is_editable?: boolean | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   name?: string | null;
