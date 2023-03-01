@@ -60,6 +60,8 @@ const SalesMaterialsPage: React.FC = () => {
   )
 
   const salesMaterials = {
+    total: count(data?.total.map(v => v.v) || []),
+    intervalTotal: count(data?.intervalTotal.map(v => v.v) || []),
     calledMembersCount: count(data?.calledMembers.map(v => v.v) || []),
     contactedMembersCount: count(data?.contactedMembers.map(v => v.v) || []),
     demoInvitedMembersCount: count(
@@ -69,6 +71,7 @@ const SalesMaterialsPage: React.FC = () => {
     dealtMembersCount: count(data?.dealtMembers.map(v => v.v) || []),
     rejectedMembersCount: count(data?.rejectedMembers.map(v => v.v) || []),
   }
+
   const allMaterialNames = pipe(
     map((v: { [index: string]: number }) => Object.keys(v)),
     flatten,
@@ -86,6 +89,8 @@ const SalesMaterialsPage: React.FC = () => {
       })),
       onFilter: (value, record) => record.materialName.includes(`${value}`),
     },
+    { dataIndex: 'total', title: '名單總數', sorter: (a, b) => a.called - b.called },
+    { dataIndex: 'intervalTotal', title: '區間名單數', sorter: (a, b) => a.called - b.called },
     {
       dataIndex: 'called',
       title: '已撥打',
@@ -176,6 +181,8 @@ const SalesMaterialsPage: React.FC = () => {
           rowKey="id"
           columns={columns}
           dataSource={allMaterialNames.map(materialName => {
+            const total = salesMaterials.total[materialName] || 0
+            const intervalTotal = salesMaterials.intervalTotal[materialName] || 0
             const called = salesMaterials.calledMembersCount[materialName] || 0
             const contacted = salesMaterials.contactedMembersCount[materialName] || 0
             const demoInvited = salesMaterials.demoInvitedMembersCount[materialName] || 0
@@ -185,6 +192,8 @@ const SalesMaterialsPage: React.FC = () => {
 
             return {
               materialName,
+              total,
+              intervalTotal,
               called: Math.max(called, contacted),
               contacted: Math.max(contacted, demoInvited),
               demoInvited: Math.max(demoInvited, demonstrated),
@@ -211,6 +220,28 @@ const GET_SALES_MATERIALS = gql`
     $sales: String_comparison_exp!
     $materialName: String!
   ) {
+    total: member_property(
+      where: {
+        property: { name: { _eq: $materialName } }
+        value: { _neq: "" }
+        member: { app_id: { _eq: $appId }, manager_id: $sales, member_notes: { author_id: $sales } }
+      }
+    ) {
+      v: value
+    }
+    intervalTotal: member_property(
+      where: {
+        property: { name: { _eq: $materialName } }
+        value: { _neq: "" }
+        member: {
+          app_id: { _eq: $appId }
+          manager_id: $sales
+          member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt } }
+        }
+      }
+    ) {
+      v: value
+    }
     calledMembers: member_property(
       where: {
         property: { name: { _eq: $materialName } }
