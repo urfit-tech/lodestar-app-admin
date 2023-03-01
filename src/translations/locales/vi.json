@@ -1359,6 +1359,8 @@
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "Chỉnh sửa hộp thư",
   "form.PermissionGroup.MEMBER_MANAGER_ADMIN": "Đăng ký chức năng của người tổ chức",
   "form.PermissionGroup.MEMBER_PHONE_ADMIN": "Kiểm tra thanh điện thoại",
+  "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT": "編輯會員課表",
+  "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW": "查看會員課表",
   "form.PermissionGroup.MEMBER_PROPERTY_ADMIN": "Tất cả các chức năng trường tự lập",
   "form.PermissionGroup.MEMBER_STAR_ADMIN": "Kiểm tra các ngôi sao và các lĩnh vực khác",
   "form.PermissionGroup.MEMBER_USERNAME_EDIT": "Chỉnh sửa tài khoản",

@@ -1359,6 +1359,8 @@
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "Edit kotak surat",
   "form.PermissionGroup.MEMBER_MANAGER_ADMIN": "Tetapkan Fungsi Manajer",
   "form.PermissionGroup.MEMBER_PHONE_ADMIN": "Lihat Bidang Telepon",
+  "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT": "編輯會員課表",
+  "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW": "查看會員課表",
   "form.PermissionGroup.MEMBER_PROPERTY_ADMIN": "Semua fitur bidang khusus",
   "form.PermissionGroup.MEMBER_STAR_ADMIN": "Lihat Bidang Besaran Bintang",
   "form.PermissionGroup.MEMBER_USERNAME_EDIT": "Edit Akun",

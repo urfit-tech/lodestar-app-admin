@@ -1359,6 +1359,8 @@
   "form.PermissionGroup.MEMBER_EMAIL_EDIT": "編輯信箱",
   "form.PermissionGroup.MEMBER_MANAGER_ADMIN": "指派承辦人功能",
   "form.PermissionGroup.MEMBER_PHONE_ADMIN": "檢視電話欄位",
+  "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT": "編輯會員課表",
+  "form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW": "查看會員課表",
   "form.PermissionGroup.MEMBER_PROPERTY_ADMIN": "所有自訂欄位功能",
   "form.PermissionGroup.MEMBER_STAR_ADMIN": "檢視星等欄位",
   "form.PermissionGroup.MEMBER_USERNAME_EDIT": "編輯帳號",
