@@ -1,6 +1,19 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Form, Input, Result, Slider, Statistic, Steps } from 'antd'
+import {
+  Button,
+  Checkbox,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Result,
+  Row,
+  Slider,
+  Statistic,
+  Steps,
+} from 'antd'
 import { ResultProps } from 'antd/lib/result'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -17,7 +30,7 @@ import { salesLeadDeliveryPageMessages } from './translation'
 type Filter = {
   categoryIds: string[]
   createdAtRange: [Date, Date] | null
-  assignedAtRange: [Date, Date] | null
+  lastAnsweredRange: [Date, Date] | null
   managerId?: string
   starRange: [number, number]
   starRangeIsNull: boolean
@@ -38,7 +51,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     categoryIds: [],
     starRange: [-999, 999],
     createdAtRange: null,
-    assignedAtRange: null,
+    lastAnsweredRange: null,
     starRangeIsNull: false,
     marketingActivity: '',
     adMaterials: '',
@@ -97,14 +110,20 @@ const SalesLeadDeliveryPage: React.VFC = () => {
           }}
         />
       )}
-      {currentStep === 2 && assignedResult && <ResultSection result={assignedResult} />}
+      {currentStep === 2 && assignedResult && (
+        <ResultSection result={assignedResult} onBack={() => setCurrentStep(0)} />
+      )}
     </AdminLayout>
   )
 }
 
-const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => void }> = ({ filter, onNext }) => {
+const FilterSection: React.FC<{
+  filter: Filter
+  onNext?: (filter: Filter) => void
+}> = ({ filter, onNext }) => {
   const { formatMessage } = useIntl()
   const [starRangeIsNull, setStarRangeIsNull] = useState(false)
+  const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
 
   return (
     <Form<Filter>
@@ -112,9 +131,7 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 12 }}
       initialValues={filter}
-      onFinish={values => {
-        onNext?.(values)
-      }}
+      onFinish={values => onNext?.({ ...values, starRange })}
     >
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.originalManager)}
@@ -132,9 +149,45 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
       >
         <Checkbox onChange={e => setStarRangeIsNull(e.target.checked)} />
       </Form.Item>
-      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRange)} name="starRange">
-        <Slider range min={-999} max={999} disabled={starRangeIsNull} />
+
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRange)}>
+        <Slider
+          range
+          min={-999}
+          max={999}
+          disabled={starRangeIsNull}
+          value={[starRange[0], starRange[1]]}
+          onChange={v => setStarRange(v)}
+        />
       </Form.Item>
+      <Form.Item label=" " colon={false}>
+        <Input.Group compact>
+          <Form.Item noStyle>
+            <InputNumber
+              min={-999}
+              max={999}
+              disabled={starRangeIsNull}
+              value={starRange[0]}
+              onChange={v => v && (+v > starRange[1] ? setStarRange([+v, +v]) : setStarRange([+v, starRange[1]]))}
+            />
+          </Form.Item>
+          <div style={{ height: '43px', marginLeft: '0.25rem', marginRight: '0.25rem' }}>
+            <div className="d-flex align-items-center" style={{ height: '100%' }}>
+              ~
+            </div>
+          </div>
+          <Form.Item noStyle>
+            <InputNumber
+              min={-999}
+              max={999}
+              disabled={starRangeIsNull}
+              value={starRange[1]}
+              onChange={v => v && (+v < starRange[0] ? setStarRange([+v, +v]) : setStarRange([starRange[0], +v]))}
+            />
+          </Form.Item>
+        </Input.Group>
+      </Form.Item>
+
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.marketingActivity)}
         name="marketingActivity"
@@ -157,8 +210,8 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
         <DatePicker.RangePicker allowClear />
       </Form.Item>
       <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.assignedAtRange)}
-        name="assignedAtRange"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
+        name="lastAnsweredRange"
       >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
@@ -262,11 +315,11 @@ const ConfirmSection: React.FC<{
     {
       fetchPolicy: 'no-cache',
       variables: {
-        memberIds: filter.assignedAtRange ? leadCandidatesData?.member_phone.map(v => v.member_id) || [] : [],
-        assignedAtCondition: filter.assignedAtRange
+        memberIds: filter.lastAnsweredRange ? leadCandidatesData?.member_phone.map(v => v.member_id) || [] : [],
+        assignedAtCondition: filter.lastAnsweredRange
           ? {
-              _gte: moment(filter.assignedAtRange[0]).startOf('day'),
-              _lte: moment(filter.assignedAtRange[1]).endOf('day'),
+              _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+              _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
             }
           : undefined,
       },
@@ -274,11 +327,11 @@ const ConfirmSection: React.FC<{
   )
   const filteredMemberIds = useMemo(() => {
     const memberIds =
-      (filter.assignedAtRange
+      (filter.lastAnsweredRange
         ? assignedLeadsData?.audit_log.map(v => v.member_id).filter(notEmpty)
         : leadCandidatesData?.member_phone.map(v => v.member_id)) || []
     return memberIds
-  }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member_phone])
+  }, [assignedLeadsData, filter.lastAnsweredRange, leadCandidatesData?.member_phone])
 
   const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
 
@@ -294,7 +347,16 @@ const ConfirmSection: React.FC<{
         <div className="mb-2">
           <ManagerInput value={managerId} onChange={setManagerId} />
         </div>
-        {!isLoading && <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIds.length} />}
+        {!isLoading && (
+          <Row className="mb-2">
+            <Col span={6}>
+              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={filteredMemberIds.length} />
+            </Col>
+            <Col span={18}>
+              <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIds.length} />
+            </Col>
+          </Row>
+        )}
         <Button
           type="primary"
           block
