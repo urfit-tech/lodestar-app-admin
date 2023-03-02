@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { isEmpty } from 'lodash'
-import { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
@@ -17,6 +16,7 @@ import {
   MemberPublicProps,
   NoteAdminProps,
   UserRole,
+  MemberNote,
 } from '../types/member'
 
 export const useMember = (memberId: string) => {
@@ -295,7 +295,7 @@ export const useMemberNotesAdmin = (
   },
   keyword?: string,
 ) => {
-  const splitedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({
+  const splittedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({
     [key as keyof Partial<hasura.member_note_order_by>]: value,
   }))
   const { permissions, currentMemberId } = useAuth()
@@ -320,18 +320,6 @@ export const useMemberNotesAdmin = (
     },
     description: keyword ? { _like: `%${keyword}%` } : undefined,
   }
-  const { data: dataMemberNotes } = useQuery<hasura.GET_MEMBER_NOTE_COUNT, hasura.GET_MEMBER_NOTE_COUNTVariables>(
-    gql`
-      query GET_MEMBER_NOTE_COUNT($condition: member_note_bool_exp) {
-        member_note_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    { variables: { condition } },
-  )
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_NOTES_ADMIN,
@@ -339,6 +327,11 @@ export const useMemberNotesAdmin = (
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: [member_note_order_by!]!, $condition: member_note_bool_exp) {
+        member_note_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
         member_note(where: $condition, order_by: $orderBy, limit: 10) {
           id
           created_at
@@ -348,50 +341,16 @@ export const useMemberNotesAdmin = (
             id
             picture_url
             name
-            username
           }
           member {
             id
             picture_url
             name
-            username
             email
-            manager {
-              id
-              name
-              username
-            }
-            member_categories {
-              id
-              category {
-                id
-                name
-              }
-            }
-            member_tags {
-              tag_name
-            }
-            order_logs {
-              id
-              order_products_aggregate {
-                aggregate {
-                  sum {
-                    price
-                  }
-                }
-              }
-              order_discounts_aggregate {
-                aggregate {
-                  sum {
-                    price
-                  }
-                }
-              }
-            }
+            username
           }
           duration
           description
-          metadata
           note
           member_note_attachments {
             attachment_id
@@ -401,10 +360,13 @@ export const useMemberNotesAdmin = (
         }
       }
     `,
-    { variables: { condition, orderBy: splitedOrderBy } },
+    { variables: { condition, orderBy: splittedOrderBy } },
   )
 
-  const notes: NoteAdminProps[] =
+  const notes: Pick<
+    MemberNote,
+    'id' | 'createdAt' | 'type' | 'status' | 'author' | 'member' | 'duration' | 'description' | 'note' | 'attachments'
+  >[] =
     data?.member_note.map(v => ({
       id: v.id,
       createdAt: new Date(v.created_at),
@@ -415,33 +377,14 @@ export const useMemberNotesAdmin = (
         pictureUrl: v.author.picture_url,
         name: v.author.name,
       },
-      manager: v.member?.manager
-        ? {
-            id: v.member.manager.id,
-            name: v.member.manager.name || v.member.manager.username,
-          }
-        : null,
-      member: v.member
-        ? {
-            id: v.member.id,
-            pictureUrl: v.member.picture_url,
-            name: v.member.name || v.member.username,
-            email: v.member.email,
-          }
-        : null,
-      memberCategories:
-        v.member?.member_categories.map(u => ({
-          id: u.category.id,
-          name: u.category.name,
-        })) || [],
-      memberTags: v.member?.member_tags.map(u => u.tag_name) || [],
-      consumption:
-        sum(v.member?.order_logs.map(u => u.order_products_aggregate.aggregate?.sum?.price || 0) || []) -
-        sum(v.member?.order_logs.map(u => u.order_discounts_aggregate.aggregate?.sum?.price || 0) || []),
+      member: {
+        id: v.member?.id || '',
+        pictureUrl: v.member?.picture_url || '',
+        name: v.member?.name || v.member?.username || '',
+        email: v.member?.email || '',
+      },
       duration: v.duration || 0,
-      audioFilePath: v.metadata?.recordfile || null,
       description: v.description,
-      metadata: v.metadata,
       note: v.note,
       attachments: v.member_note_attachments.map(u => ({
         id: u.attachment_id,
@@ -451,11 +394,11 @@ export const useMemberNotesAdmin = (
     })) || []
 
   const loadMoreNotes =
-    (dataMemberNotes?.member_note_aggregate.aggregate?.count || 0) > 10
+    (data?.member_note_aggregate.aggregate?.count || 0) > 10
       ? () =>
           fetchMore({
             variables: {
-              orderBy: splitedOrderBy,
+              orderBy: splittedOrderBy,
               condition: {
                 _or: [
                   { ...condition, created_at: { _lt: data?.member_note.slice(-1)[0]?.created_at } },
@@ -474,7 +417,7 @@ export const useMemberNotesAdmin = (
               const result = prev ? prev.member_note : []
               return {
                 ...prev,
-                member_note_aggregate: dataMemberNotes?.member_note_aggregate,
+                member_note_aggregate: fetchMoreResult?.member_note_aggregate,
                 member_note: [...result, ...fetchMoreResult.member_note],
               }
             },

@@ -8,7 +8,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
-import { NoteAdminProps } from '../../types/member'
+import { MemberNote, NoteAdminProps } from '../../types/member'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import FileUploader from '../common/FileUploader'
 import { CustomRatioImage } from '../common/Image'
@@ -33,10 +33,22 @@ type FieldProps = {
 }
 
 const MemberNoteAdminModal: React.FC<
-  AdminModalProps & {
-    note?: NoteAdminProps
-    onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
-  }
+  | AdminModalProps & {
+      note?: Pick<
+        MemberNote,
+        | 'id'
+        | 'createdAt'
+        | 'type'
+        | 'status'
+        | 'author'
+        | 'member'
+        | 'duration'
+        | 'description'
+        | 'note'
+        | 'attachments'
+      >
+      onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
+    }
 > = ({ note, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -45,20 +57,20 @@ const MemberNoteAdminModal: React.FC<
 
   const [type, setType] = useState(note?.type || '')
   const [status, setStatus] = useState<FieldProps['status']>(note?.status || 'answered')
-  const [attachments, setAttachments] = useState<File[]>(note?.attachments.map(attachment => attachment.data) || [])
+  const [attachments, setAttachments] = useState<File[]>(note?.attachments?.map(attachment => attachment.data) || [])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     setType(note?.type || '')
     setStatus(note?.status || 'answered')
-    setAttachments(note?.attachments.map(attachment => attachment.data) || [])
+    setAttachments(note?.attachments?.map(attachment => attachment.data) || [])
     form.resetFields()
   }, [form, note])
 
   const resetModal = () => {
     setType(note?.type || '')
     setStatus(note?.status || 'answered')
-    setAttachments(note?.attachments.map(attachment => attachment.data) || [])
+    setAttachments(note?.attachments?.map(attachment => attachment.data) || [])
     form.resetFields()
   }
 
@@ -176,7 +188,7 @@ const MemberNoteAdminModal: React.FC<
                 downloadableLink={
                   note?.attachments &&
                   (file => {
-                    const attachmentId = note.attachments.find(
+                    const attachmentId = note.attachments?.find(
                       v => v.data.name === file.name && v.data.lastModified,
                     )?.id
                     return `attachments/${attachmentId}`

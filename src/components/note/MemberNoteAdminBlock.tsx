@@ -99,7 +99,6 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
             <MemberNoteAdminItem
               key={note.id}
               note={note}
-              memberAdmin={memberAdmin}
               onRefetch={() => {
                 refetchMemberAdmin()
                 refetchNotes()

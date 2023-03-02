@@ -22,7 +22,6 @@ import { currencyFormatter, dateFormatter, downloadFile, getFileDownloadableLink
 import { commonMessages, memberMessages, podcastMessages } from '../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../hooks/data'
 import { useMutateMemberNote } from '../hooks/member'
-import { NoteAdminProps } from '../types/member'
 import ForbiddenPage from './ForbiddenPage'
 
 const messages = defineMessages({
@@ -76,15 +75,46 @@ type FiltersProps = {
   tags?: string[]
 }
 
-type NoteAdmin = NoteAdminProps & {
-  member:
-    | (NoteAdminProps['member'] & {
-        properties: {
-          name: string
-          value: string
-        }[]
-      })
-    | null
+export type NoteAdmin = {
+  id: string
+  createdAt: Date
+  type: 'inbound' | 'outbound' | 'demo' | 'sms' | null
+  status: string | null
+  author: {
+    id: string
+    pictureUrl: string | null
+    name: string
+  }
+  manager: {
+    id: string
+    name: string
+  } | null
+  member: {
+    id: string
+    pictureUrl: string | null
+    name: string
+    email: string
+    properties: {
+      name: string
+      value: string
+    }[]
+  }
+  memberCategories: {
+    id: string
+    name: string
+  }[]
+  memberTags: string[]
+  consumption: number
+  duration: number
+  audioFilePath: string | null
+  description: string | null
+  metadata: any
+  note: string | null
+  attachments: {
+    id: string
+    data: any
+    options: any
+  }[]
 }
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -448,17 +478,18 @@ const NoteCollectionPage: React.FC = () => {
                         }))
 
                         const memberNoteId = data?.update_member_note_by_pk?.id
-                        const deletedAttachmentIds = selectedNote.attachments
-                          .filter(noteAttachment =>
-                            attachments.every(
-                              attachment =>
-                                attachment.name !== noteAttachment.data.name &&
-                                attachment.lastModified !== noteAttachment.data.lastModified,
-                            ),
-                          )
-                          .map(attachment => attachment.id)
+                        const deletedAttachmentIds =
+                          selectedNote.attachments
+                            ?.filter(noteAttachment =>
+                              attachments.every(
+                                attachment =>
+                                  attachment.name !== noteAttachment.data.name &&
+                                  attachment.lastModified !== noteAttachment.data.lastModified,
+                              ),
+                            )
+                            ?.map(attachment => attachment.id) || []
                         const newAttachments = attachments.filter(attachment =>
-                          selectedNote.attachments.every(
+                          selectedNote.attachments?.every(
                             noteAttachment =>
                               noteAttachment.data.name !== attachment.name &&
                               noteAttachment.data.lastModified !== attachment.lastModified,
@@ -735,18 +766,17 @@ const useMemberNotesAdmin = (
             name: v.member.manager.name || v.member.manager.username,
           }
         : null,
-      member: v.member
-        ? {
-            id: v.member.id,
-            pictureUrl: v.member.picture_url,
-            name: v.member.name || v.member.username,
-            email: v.member.email,
-            properties: v.member.member_properties.map(w => ({
-              name: w.property.name,
-              value: w.value,
-            })),
-          }
-        : null,
+      member: {
+        id: v.member?.id || '',
+        pictureUrl: v.member?.picture_url || '',
+        name: v.member?.name || v.member?.username || '',
+        email: v.member?.email || '',
+        properties:
+          v.member?.member_properties.map(w => ({
+            name: w.property.name,
+            value: w.value,
+          })) || [],
+      },
       memberCategories:
         v.member?.member_categories.map(u => ({
           id: u.category.id,
