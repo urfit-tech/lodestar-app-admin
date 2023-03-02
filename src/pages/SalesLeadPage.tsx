@@ -36,7 +36,12 @@ const SalesLeadPage: React.VFC = () => {
     return <ForbiddenPage />
   }
 
-  const manager = managers.find(manager => manager.id === managerId) || managers?.[0] || ''
+  const manager =
+    currentMember?.role === 'general-member'
+      ? managers.find(v => v.id === currentMember.id)
+      : permissions.SALES_LEAD_SELECTOR_ADMIN
+      ? managers.find(manager => manager.id === managerId) || managers?.[0]
+      : ''
 
   return (
     <AdminLayout>

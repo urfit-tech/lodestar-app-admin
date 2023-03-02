@@ -180,7 +180,6 @@ const GET_SALES_LEAD_MEMBER_TASKS = gql`
     }
   }
 `
-
 const GET_SALES_LEAD_MEMBERS = gql`
   query GET_SALES_LEAD_MEMBERS($managerId: String!) {
     member(where: { manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }) {
