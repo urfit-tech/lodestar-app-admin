@@ -34,12 +34,12 @@ const MemberNoteAdminBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
           onSearch={value => setSearchText(value.trim())}
         />
       </SearchBlock>
-      <MemberNoteColleactionBlock memberId={memberId} searchText={searchText} />
+      <MemberNoteCollectionBlock memberId={memberId} searchText={searchText} />
     </div>
   )
 }
 
-const MemberNoteColleactionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
+const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string }> = ({ memberId, searchText }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
