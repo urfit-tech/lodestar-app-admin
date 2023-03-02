@@ -308,16 +308,7 @@ export const useMemberNotesAdmin = (
             _eq: currentMemberId,
           },
         },
-    member: {
-      _or: filters?.member
-        ? [
-            { id: { _eq: filters.member } },
-            { name: { _ilike: `%${filters.member}%` } },
-            { username: { _ilike: `%${filters.member}%` } },
-            { email: { _ilike: `%${filters.member}%` } },
-          ]
-        : undefined,
-    },
+    member: filters?.member ? { id: { _eq: filters.member } } : undefined,
     description: keyword ? { _like: `%${keyword}%` } : undefined,
   }
 
