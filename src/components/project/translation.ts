@@ -194,6 +194,14 @@ const projectMessages = {
       id: 'project.ProjectRejectMarkModal.invalidEmail',
       defaultMessage: '無效的信箱',
     },
+    agreeSuccessfully: {
+      id: 'project.ProjectRejectMarkModal.agreeSuccessfully',
+      defaultMessage: 'Agree successfully',
+    },
+    rejectSuccessfully: {
+      id: 'project.ProjectRejectMarkModal.rejectSuccessfully',
+      defaultMessage: 'Reject successfully',
+    },
   }),
   ProjectRejectMarkModal: defineMessages({
     rejectMark: {
