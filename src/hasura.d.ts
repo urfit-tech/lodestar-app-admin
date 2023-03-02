@@ -12104,29 +12104,38 @@ export interface GET_MEMBER_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
+// GraphQL query operation: GET_MEMBER_NOTE_COUNT
 // ====================================================
 
-export interface GET_MEMBER_NOTES_ADMIN_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_tag {
-  __typename: "member_tag";
-  tag_name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
+export interface GET_MEMBER_NOTE_COUNT_member_note_aggregate_aggregate {
   __typename: "member_note_aggregate_fields";
   count: number;
 }
 
-export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
+export interface GET_MEMBER_NOTE_COUNT_member_note_aggregate {
   __typename: "member_note_aggregate";
-  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_NOTE_COUNT_member_note_aggregate_aggregate | null;
 }
+
+export interface GET_MEMBER_NOTE_COUNT {
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_MEMBER_NOTE_COUNT_member_note_aggregate;
+}
+
+export interface GET_MEMBER_NOTE_COUNTVariables {
+  condition?: member_note_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
+// ====================================================
 
 export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
   __typename: "member";
@@ -12269,18 +12278,6 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
 }
 
 export interface GET_MEMBER_NOTES_ADMIN {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_MEMBER_NOTES_ADMIN_category[];
-  /**
-   * fetch data from the table: "member_tag"
-   */
-  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
-  /**
-   * fetch aggregated fields from the table: "member_note"
-   */
-  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
   /**
    * fetch data from the table: "member_note"
    */

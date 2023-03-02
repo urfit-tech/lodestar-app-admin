@@ -291,12 +291,7 @@ export const useMemberAdmin = (memberId: string) => {
 export const useMemberNotesAdmin = (
   orderBy: hasura.member_note_order_by,
   filters?: {
-    range?: [Moment, Moment]
-    author?: string
-    manager?: string
     member?: string
-    categories?: string[]
-    tags?: string[]
   },
   keyword?: string,
 ) => {
@@ -306,81 +301,34 @@ export const useMemberNotesAdmin = (
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     deleted_at: { _is_null: true },
-    created_at: filters?.range
-      ? {
-          _gte: filters.range[0].toDate(),
-          _lte: filters.range[1].toDate(),
-        }
-      : undefined,
-    author: filters?.author
-      ? {
-          _or: [
-            { name: { _ilike: `%${filters.author}%` } },
-            { username: { _ilike: `%${filters.author}%` } },
-            { email: { _ilike: `%${filters.author}%` } },
-          ],
-        }
-      : permissions.VIEW_ALL_MEMBER_NOTE
+    author: permissions.VIEW_ALL_MEMBER_NOTE
       ? undefined
       : {
           id: {
             _eq: currentMemberId,
           },
         },
-    member: {
-      manager: filters?.manager
-        ? {
-            _or: [
-              { name: { _ilike: `%${filters.manager}%` } },
-              { username: { _ilike: `%${filters.manager}%` } },
-              { email: { _ilike: `%${filters.manager}%` } },
-            ],
-          }
-        : undefined,
-      _or: filters?.member
-        ? [
-            { id: { _eq: filters.member } },
-            { name: { _ilike: `%${filters.member}%` } },
-            { username: { _ilike: `%${filters.member}%` } },
-            { email: { _ilike: `%${filters.member}%` } },
-          ]
-        : undefined,
-      _and:
-        filters?.categories || filters?.tags
-          ? [
-              {
-                _or: filters.categories?.map(categoryId => ({
-                  member_categories: { category_id: { _eq: categoryId } },
-                })),
-              },
-              {
-                _or: filters.tags?.map(tag => ({
-                  member_tags: { tag_name: { _eq: tag } },
-                })),
-              },
-            ]
-          : undefined,
-    },
     description: keyword ? { _like: `%${keyword}%` } : undefined,
   }
+  const { data: dataMemberNotes } = useQuery<hasura.GET_MEMBER_NOTE_COUNT, hasura.GET_MEMBER_NOTE_COUNTVariables>(
+    gql`
+      query GET_MEMBER_NOTE_COUNT($condition: member_note_bool_exp) {
+        member_note_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    { variables: { condition } },
+  )
+
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_NOTES_ADMIN,
     hasura.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: [member_note_order_by!]!, $condition: member_note_bool_exp) {
-        category {
-          id
-          name
-        }
-        member_tag(distinct_on: tag_name) {
-          tag_name
-        }
-        member_note_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
         member_note(where: $condition, order_by: $orderBy, limit: 10) {
           id
           created_at
@@ -446,16 +394,6 @@ export const useMemberNotesAdmin = (
     { variables: { condition, orderBy: splitedOrderBy } },
   )
 
-  const allMemberCategories: {
-    id: string
-    name: string
-  }[] =
-    data?.category.map(v => ({
-      id: v.id,
-      name: v.name,
-    })) || []
-  const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
-
   const notes: NoteAdminProps[] =
     data?.member_note.map(v => ({
       id: v.id,
@@ -503,7 +441,7 @@ export const useMemberNotesAdmin = (
     })) || []
 
   const loadMoreNotes =
-    (data?.member_note_aggregate.aggregate?.count || 0) > 10
+    (dataMemberNotes?.member_note_aggregate.aggregate?.count || 0) > 10
       ? () =>
           fetchMore({
             variables: {
@@ -526,7 +464,7 @@ export const useMemberNotesAdmin = (
               const result = prev ? prev.member_note : []
               return {
                 ...prev,
-                member_note_aggregate: fetchMoreResult.member_note_aggregate,
+                member_note_aggregate: dataMemberNotes?.member_note_aggregate,
                 member_note: [...result, ...fetchMoreResult.member_note],
               }
             },
@@ -536,8 +474,6 @@ export const useMemberNotesAdmin = (
   return {
     loadingNotes: loading,
     errorNotes: error,
-    allMemberCategories,
-    allMemberTags,
     notes,
     refetchNotes: refetch,
     loadMoreNotes,
