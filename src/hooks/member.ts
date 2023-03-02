@@ -693,20 +693,20 @@ export const useMemberRoleCount = (
           },
         }
       : undefined,
-    member_properties: filter?.properties?.length
-      ? {
-          _and: filter.properties
-            .filter(property => property.value)
-            .map(property => ({
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            })),
-        }
-      : undefined,
     member_permission_groups: filter?.permissionGroup
       ? {
           permission_group: { name: { _like: `${filter.permissionGroup}` } },
         }
+      : undefined,
+    _and: filter?.properties?.length
+      ? filter.properties
+          .filter(property => property.value)
+          .map(property => ({
+            member_properties: {
+              property_id: { _eq: property.id },
+              value: { _ilike: `%${property.value}%` },
+            },
+          }))
       : undefined,
   }
   const conditionAppOwner: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionAppOwner'] = {
@@ -848,20 +848,20 @@ export const useMemberCollection = (filter?: {
           },
         }
       : undefined,
-    member_properties: filter?.properties?.length
-      ? {
-          _and: filter.properties
-            .filter(property => property.value)
-            .map(property => ({
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            })),
-        }
-      : undefined,
     member_permission_groups: filter?.permissionGroup
       ? {
           permission_group: { name: { _like: `${filter.permissionGroup}` } },
         }
+      : undefined,
+    _and: filter?.properties?.length
+      ? filter.properties
+          .filter(property => property.value)
+          .map(property => ({
+            member_properties: {
+              property_id: { _eq: property.id },
+              value: { _ilike: `%${property.value}%` },
+            },
+          }))
       : undefined,
   }
 

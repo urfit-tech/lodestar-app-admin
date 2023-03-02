@@ -15539,6 +15539,31 @@ export interface DELETE_PROJECT_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: AGREE_PROJECT_ROLE
+// ====================================================
+
+export interface AGREE_PROJECT_ROLE_update_project_role_by_pk {
+  __typename: "project_role";
+  id: any;
+}
+
+export interface AGREE_PROJECT_ROLE {
+  /**
+   * update single row of the table: "project_role"
+   */
+  update_project_role_by_pk: AGREE_PROJECT_ROLE_update_project_role_by_pk | null;
+}
+
+export interface AGREE_PROJECT_ROLEVariables {
+  projectRoleId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: REJECT_PROJECT_ROLE
 // ====================================================
 
@@ -15574,6 +15599,7 @@ export interface GET_PROJECT_PARTICIPANT_project_role_member {
   name: string | null;
   picture_url: string | null;
   created_at: any | null;
+  status: string | null;
 }
 
 export interface GET_PROJECT_PARTICIPANT_project_role_identity {
