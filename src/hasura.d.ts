@@ -15724,10 +15724,10 @@ export interface GET_SALESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SALES_LEADS
+// GraphQL query operation: GET_SALES_LEAD_MEMBER_TASKS
 // ====================================================
 
-export interface GET_SALES_LEADS_member_task {
+export interface GET_SALES_LEAD_MEMBER_TASKS_member_task {
   __typename: "member_task";
   member_id: string;
   /**
@@ -15736,47 +15736,67 @@ export interface GET_SALES_LEADS_member_task {
   status: string;
 }
 
-export interface GET_SALES_LEADS_member_member_properties_property {
+export interface GET_SALES_LEAD_MEMBER_TASKS {
+  /**
+   * fetch data from the table: "member_task"
+   */
+  member_task: GET_SALES_LEAD_MEMBER_TASKS_member_task[];
+}
+
+export interface GET_SALES_LEAD_MEMBER_TASKSVariables {
+  managerId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_LEAD_MEMBERS
+// ====================================================
+
+export interface GET_SALES_LEAD_MEMBERS_member_member_properties_property {
   __typename: "property";
   id: any;
   name: string;
 }
 
-export interface GET_SALES_LEADS_member_member_properties {
+export interface GET_SALES_LEAD_MEMBERS_member_member_properties {
   __typename: "member_property";
   /**
    * An object relationship
    */
-  property: GET_SALES_LEADS_member_member_properties_property;
+  property: GET_SALES_LEAD_MEMBERS_member_member_properties_property;
   value: string;
 }
 
-export interface GET_SALES_LEADS_member_member_phones {
+export interface GET_SALES_LEAD_MEMBERS_member_member_phones {
   __typename: "member_phone";
   phone: string;
 }
 
-export interface GET_SALES_LEADS_member_member_categories_category {
+export interface GET_SALES_LEAD_MEMBERS_member_member_categories_category {
   __typename: "category";
   name: string;
 }
 
-export interface GET_SALES_LEADS_member_member_categories {
+export interface GET_SALES_LEAD_MEMBERS_member_member_categories {
   __typename: "member_category";
   /**
    * An object relationship
    */
-  category: GET_SALES_LEADS_member_member_categories_category;
+  category: GET_SALES_LEAD_MEMBERS_member_member_categories_category;
 }
 
-export interface GET_SALES_LEADS_member_member_contracts {
+export interface GET_SALES_LEAD_MEMBERS_member_member_contracts {
   __typename: "member_contract";
   agreed_at: any | null;
   revoked_at: any | null;
   values: any | null;
 }
 
-export interface GET_SALES_LEADS_member {
+export interface GET_SALES_LEAD_MEMBERS_member {
   __typename: "member";
   id: string;
   name: string;
@@ -15788,33 +15808,29 @@ export interface GET_SALES_LEADS_member {
   /**
    * An array relationship
    */
-  member_properties: GET_SALES_LEADS_member_member_properties[];
+  member_properties: GET_SALES_LEAD_MEMBERS_member_member_properties[];
   /**
    * An array relationship
    */
-  member_phones: GET_SALES_LEADS_member_member_phones[];
+  member_phones: GET_SALES_LEAD_MEMBERS_member_member_phones[];
   /**
    * An array relationship
    */
-  member_categories: GET_SALES_LEADS_member_member_categories[];
+  member_categories: GET_SALES_LEAD_MEMBERS_member_member_categories[];
   /**
    * An array relationship
    */
-  member_contracts: GET_SALES_LEADS_member_member_contracts[];
+  member_contracts: GET_SALES_LEAD_MEMBERS_member_member_contracts[];
 }
 
-export interface GET_SALES_LEADS {
-  /**
-   * fetch data from the table: "member_task"
-   */
-  member_task: GET_SALES_LEADS_member_task[];
+export interface GET_SALES_LEAD_MEMBERS {
   /**
    * fetch data from the table: "member"
    */
-  member: GET_SALES_LEADS_member[];
+  member: GET_SALES_LEAD_MEMBERS_member[];
 }
 
-export interface GET_SALES_LEADSVariables {
+export interface GET_SALES_LEAD_MEMBERSVariables {
   managerId: string;
 }
 

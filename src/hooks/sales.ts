@@ -93,11 +93,20 @@ export const useSales = (salesId: string) => {
 }
 
 export const useManagerLeads = (manager: Manager) => {
-  const { data, error, loading, refetch } = useQuery<hasura.GET_SALES_LEADS, hasura.GET_SALES_LEADSVariables>(
-    GET_SALES_LEADS,
-    { variables: { managerId: manager.id } },
-  )
-  const convertToLead = (v: hasura.GET_SALES_LEADS_member | null): LeadProps | null => {
+  const { data, error, loading, refetch } = useQuery<
+    hasura.GET_SALES_LEAD_MEMBER_TASKS,
+    hasura.GET_SALES_LEAD_MEMBER_TASKSVariables
+  >(GET_SALES_LEAD_MEMBER_TASKS, { variables: { managerId: manager.id } })
+  const {
+    data: dataMembers,
+    error: errorMembers,
+    loading: loadingMembers,
+    refetch: refetchMembers,
+  } = useQuery<hasura.GET_SALES_LEAD_MEMBERS, hasura.GET_SALES_LEAD_MEMBERSVariables>(GET_SALES_LEAD_MEMBERS, {
+    variables: { managerId: manager.id },
+  })
+
+  const convertToLead = (v: hasura.GET_SALES_LEAD_MEMBERS_member | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
     }
@@ -145,11 +154,14 @@ export const useManagerLeads = (manager: Manager) => {
       recentContactedAt: v.last_member_note_created ? dayjs(v.last_member_note_created).toDate() : null,
     }
   }
-  const totalLeads: LeadProps[] = sortBy(prop('id'))(data?.member.map(convertToLead).filter(notEmpty) || [])
+  const totalLeads: LeadProps[] = sortBy(prop('id'))(dataMembers?.member.map(convertToLead).filter(notEmpty) || [])
   return {
     loading,
     error,
     refetch,
+    loadingMembers,
+    errorMembers,
+    refetchMembers,
     totalLeads,
     idledLeads: totalLeads.filter(lead => lead.status === 'IDLED'),
     contactedLeads: totalLeads.filter(lead => lead.status === 'CONTACTED'),
@@ -160,12 +172,17 @@ export const useManagerLeads = (manager: Manager) => {
   }
 }
 
-const GET_SALES_LEADS = gql`
-  query GET_SALES_LEADS($managerId: String!) {
+const GET_SALES_LEAD_MEMBER_TASKS = gql`
+  query GET_SALES_LEAD_MEMBER_TASKS($managerId: String!) {
     member_task(where: { member: { manager_id: { _eq: $managerId } } }, distinct_on: [member_id]) {
       member_id
       status
     }
+  }
+`
+
+const GET_SALES_LEAD_MEMBERS = gql`
+  query GET_SALES_LEAD_MEMBERS($managerId: String!) {
     member(where: { manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }) {
       id
       name

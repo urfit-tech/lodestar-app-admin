@@ -36,7 +36,7 @@ const SalesLeadPage: React.VFC = () => {
     return <ForbiddenPage />
   }
 
-  const manager = managers.find(manager => manager.id === managerId) || managers.shift()
+  const manager = managers.find(manager => manager.id === managerId) || managers?.[0] || ''
 
   return (
     <AdminLayout>
@@ -68,6 +68,8 @@ const SalesLeadTabs: React.VFC<{
   const {
     loading,
     refetch,
+    loadingMembers,
+    refetchMembers,
     totalLeads,
     idledLeads,
     contactedLeads,
@@ -77,7 +79,7 @@ const SalesLeadTabs: React.VFC<{
     closedLeads,
   } = useManagerLeads(manager)
 
-  if (loading) {
+  if (loading || loadingMembers) {
     return <Skeleton active />
   }
 
@@ -88,7 +90,12 @@ const SalesLeadTabs: React.VFC<{
       activeKey={activeKey}
       onChange={onActiveKeyChanged}
       tabBarExtraContent={
-        <Button onClick={() => refetch?.()}>
+        <Button
+          onClick={() => {
+            refetch?.()
+            refetchMembers?.()
+          }}
+        >
           <RedoOutlined />
         </Button>
       }
@@ -102,7 +109,17 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable variant="starred" manager={manager} leads={starredLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            variant="starred"
+            manager={manager}
+            leads={starredLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -114,7 +131,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable manager={manager} leads={totalLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={totalLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -126,7 +152,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable manager={manager} leads={idledLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={idledLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
       <Tabs.TabPane
         key="contacted"
@@ -137,7 +172,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable manager={manager} leads={contactedLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={contactedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -149,7 +193,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable manager={manager} leads={invitedLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={invitedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
       <Tabs.TabPane
         key="presented"
@@ -160,7 +213,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable manager={manager} leads={presentedLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={presentedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -172,7 +234,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable manager={manager} leads={signedLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={signedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       {closedLeads.length > 0 && (
@@ -185,7 +256,16 @@ const SalesLeadTabs: React.VFC<{
             </div>
           }
         >
-          {<SalesLeadTable manager={manager} leads={closedLeads} onRefetch={refetch} />}
+          {
+            <SalesLeadTable
+              manager={manager}
+              leads={closedLeads}
+              onRefetch={() => {
+                refetch?.()
+                refetchMembers?.()
+              }}
+            />
+          }
         </Tabs.TabPane>
       )}
     </Tabs>
