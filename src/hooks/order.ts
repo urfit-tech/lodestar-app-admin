@@ -88,10 +88,11 @@ export const useOrderLogs = (
     status: filters?.statuses ? { _in: filters.statuses } : undefined,
     member:
       authStatus !== 'None'
-        ? filters?.memberId || filters?.memberNameAndEmail
+        ? filters?.memberId
+          ? { id: { _eq: filters.memberId } }
+          : filters?.memberNameAndEmail
           ? {
-              id: filters?.memberId ? { _like: `%${filters.memberId}%` } : undefined,
-              _or: filters?.memberNameAndEmail
+              _or: filters.memberNameAndEmail
                 ? [
                     { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
                     { username: { _ilike: `%${filters.memberNameAndEmail}%` } },
