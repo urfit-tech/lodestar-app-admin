@@ -209,13 +209,12 @@ const FilterSection: React.FC<{
       >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
-      {/* TODO: recover this part after last_contact logic finish */}
-      {/* <Form.Item
+      <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
         name="lastAnsweredRange"
       >
         <DatePicker.RangePicker allowClear />
-      </Form.Item> */}
+      </Form.Item>
       <Form.Item wrapperCol={{ offset: 6 }}>
         <Button type="primary" htmlType="submit">
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.nextStep)}

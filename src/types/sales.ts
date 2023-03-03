@@ -10,6 +10,7 @@ export type LeadStatus =
   | 'EXISTED'
   | 'DEAD'
   | 'STARRED'
+  | 'ANSWERED'
 export type Manager = {
   id: string
   avatarUrl: string | null
@@ -33,6 +34,7 @@ export type LeadProps = {
   status: LeadStatus
   notified: Boolean
   recentContactedAt: Date | null
+  recentAnsweredAt: Date | null
 }
 
 export type SalesProps = {

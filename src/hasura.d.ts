@@ -12227,6 +12227,8 @@ export interface INSERT_MEMBER_NOTEVariables {
   description?: string | null;
   note?: string | null;
   rejectedAt?: any | null;
+  lastMemberNoteCalled?: any | null;
+  lastMemberNoteAnswered?: any | null;
 }
 
 /* tslint:disable */
@@ -15698,6 +15700,8 @@ export interface GET_SALES_LEAD_MEMBERS_member {
   created_at: any | null;
   assigned_at: any | null;
   last_member_note_created: any | null;
+  last_member_note_called: any | null;
+  last_member_note_answered: any | null;
   /**
    * An array relationship
    */
@@ -24091,6 +24095,8 @@ export enum member_select_column {
   google_user_id = "google_user_id",
   id = "id",
   is_business = "is_business",
+  last_member_note_answered = "last_member_note_answered",
+  last_member_note_called = "last_member_note_called",
   last_member_note_created = "last_member_note_created",
   line_user_id = "line_user_id",
   logined_at = "logined_at",
@@ -24358,6 +24364,8 @@ export enum member_update_column {
   google_user_id = "google_user_id",
   id = "id",
   is_business = "is_business",
+  last_member_note_answered = "last_member_note_answered",
+  last_member_note_called = "last_member_note_called",
   last_member_note_created = "last_member_note_created",
   line_user_id = "line_user_id",
   logined_at = "logined_at",
@@ -34918,6 +34926,8 @@ export interface member_bool_exp {
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_bool_exp | null;
   issues?: issue_bool_exp | null;
   issues_aggregate?: issue_aggregate_bool_exp | null;
+  last_member_note_answered?: timestamptz_comparison_exp | null;
+  last_member_note_called?: timestamptz_comparison_exp | null;
   last_member_note_created?: timestamptz_comparison_exp | null;
   line_user_id?: String_comparison_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
@@ -35560,6 +35570,8 @@ export interface member_insert_input {
   issue_replies?: issue_reply_arr_rel_insert_input | null;
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
+  last_member_note_answered?: any | null;
+  last_member_note_called?: any | null;
   last_member_note_created?: any | null;
   line_user_id?: string | null;
   logined_at?: any | null;
@@ -35638,6 +35650,8 @@ export interface member_max_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  last_member_note_answered?: order_by | null;
+  last_member_note_called?: order_by | null;
   last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
@@ -35668,6 +35682,8 @@ export interface member_min_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  last_member_note_answered?: order_by | null;
+  last_member_note_called?: order_by | null;
   last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
@@ -36151,6 +36167,8 @@ export interface member_order_by {
   issue_replies_aggregate?: issue_reply_aggregate_order_by | null;
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
+  last_member_note_answered?: order_by | null;
+  last_member_note_called?: order_by | null;
   last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
