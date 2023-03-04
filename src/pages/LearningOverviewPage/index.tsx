@@ -4,7 +4,7 @@ import { Card, Statistic } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
-import { sum, uniq } from 'ramda'
+import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
@@ -20,16 +20,11 @@ import ProgressFunnel from './ProgressFunnel'
 const LearningOverviewPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
-  const {
-    recentLearningCount,
-    recentLearningDuration,
-    programCategoryCompleteness,
-    learningStatus,
-    passedMemberCount,
-    exercisedMemberCount,
-    totalMemberCount,
-    enrolledMemberCount,
-  } = useLearningReport(appId)
+  const { recentLearningCount, recentLearningDuration, programCategoryCompleteness, learningStatus } =
+    useLearningReport(appId)
+
+  const { loading, error, totalMemberCount, enrolledMemberCount, exercisedMemberCount, passedMemberCount } =
+    useLearningOverview(appId)
 
   if (!enabledModules.learning_statistics_advanced) {
     return <ForbiddenPage />
@@ -68,7 +63,7 @@ const LearningOverviewPage: React.VFC = () => {
           <Card className="mb-3">
             <Statistic
               title="測驗通過率"
-              value={(passedMemberCount.length / exercisedMemberCount.length) * 100}
+              value={(passedMemberCount / exercisedMemberCount) * 100}
               precision={2}
               suffix="%"
             />
@@ -96,8 +91,8 @@ const LearningOverviewPage: React.VFC = () => {
               values={[
                 { stage: '所有人數', count: totalMemberCount },
                 { stage: '上課人數', count: enrolledMemberCount },
-                { stage: '測驗人數', count: exercisedMemberCount.length },
-                { stage: '通過人數', count: passedMemberCount.length },
+                { stage: '測驗人數', count: exercisedMemberCount },
+                { stage: '通過人數', count: passedMemberCount },
               ]}
             />
           </Card>
@@ -131,17 +126,6 @@ const useLearningReport = (appId: string) => {
         .filter(v => moment(v.date) >= moment().startOf('day').subtract(1, 'week'))
         .map(v => v.total_duration || 0) || [],
     ),
-    totalMemberCount: data?.total_member.aggregate?.count || 0,
-    enrolledMemberCount: data?.total_enrolled_member.aggregate?.count || 0,
-    passedMemberCount: uniq(
-      data?.exercise
-        .filter(v => {
-          const gainedScore = sum(v.answer.map((ans: { gainedScore: number }) => ans.gainedScore))
-          return gainedScore >= v.program_content.metadata?.passingScore
-        })
-        .map(v => v.member_id) || [],
-    ),
-    exercisedMemberCount: uniq(data?.exercise.map(v => v.member_id) || []),
     learningStatus:
       data?.app_learning_status.map(v => ({
         date: v.date,
@@ -155,27 +139,33 @@ const useLearningReport = (appId: string) => {
       })) || [],
   }
 }
+const useLearningOverview = (appId: string) => {
+  const { loading, error, data } = useQuery<hasura.GET_LEARNING_OVERVIEW, hasura.GET_LEARNING_OVERVIEWVariables>(
+    gql`
+      query GET_LEARNING_OVERVIEW($appId: String!) {
+        learning_overview(where: { app_id: { _eq: $appId } }) {
+          app_id
+          total_member_count
+          enrolled_member_count
+          exercised_member_count
+          passed_member_count
+        }
+      }
+    `,
+    { variables: { appId } },
+  )
+
+  return {
+    loading,
+    error,
+    totalMemberCount: data?.learning_overview[0]?.total_member_count || 0,
+    enrolledMemberCount: data?.learning_overview[0]?.enrolled_member_count || 0,
+    passedMemberCount: data?.learning_overview[0]?.passed_member_count || 0,
+    exercisedMemberCount: data?.learning_overview[0]?.exercised_member_count || 0,
+  }
+}
 const GET_LEARNING_REPORT = gql`
   query GET_LEARNING_REPORT($appId: String!) {
-    total_member: member_aggregate(where: { app_id: { _eq: $appId } }) {
-      aggregate {
-        count
-      }
-    }
-    total_enrolled_member: member_aggregate(
-      where: { app_id: { _eq: $appId }, order_logs: { order_products: { product_id: { _like: "Program%" } } } }
-    ) {
-      aggregate {
-        count
-      }
-    }
-    exercise(where: { answer: { _is_null: false }, member: { app_id: { _eq: $appId } } }) {
-      answer
-      member_id
-      program_content {
-        metadata
-      }
-    }
     app_learning_status(where: { app_id: { _eq: $appId } }) {
       date
       total_count
