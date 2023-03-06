@@ -1902,6 +1902,7 @@
   "page.salesLeadDeliveryPage.expectedDeliveryAmount": "預計派發名單數",
   "page.salesLeadDeliveryPage.field": "領域",
   "page.salesLeadDeliveryPage.filterSalesLead": "篩選名單",
+  "page.salesLeadDeliveryPage.lastCalledRange": "上次撥打日期",
   "page.salesLeadDeliveryPage.lastContactRange": "上次接通日期",
   "page.salesLeadDeliveryPage.leadLevel": "名單分級",
   "page.salesLeadDeliveryPage.marketingActivity": "行銷活動",

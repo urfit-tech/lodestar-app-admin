@@ -30,6 +30,7 @@ import { salesLeadDeliveryPageMessages } from './translation'
 type Filter = {
   categoryIds: string[]
   createdAtRange: [Date, Date] | null
+  lastCalledRange: [Date, Date] | null
   lastAnsweredRange: [Date, Date] | null
   managerId?: string
   starRange: [number, number]
@@ -51,6 +52,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     categoryIds: [],
     starRange: [-999, 999],
     createdAtRange: null,
+    lastCalledRange: null,
     lastAnsweredRange: null,
     starRangeIsNull: false,
     marketingActivity: '',
@@ -210,6 +212,12 @@ const FilterSection: React.FC<{
         <DatePicker.RangePicker allowClear />
       </Form.Item>
       <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}
+        name="lastCalledRange"
+      >
+        <DatePicker.RangePicker allowClear />
+      </Form.Item>
+      <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
         name="lastAnsweredRange"
       >
@@ -274,6 +282,18 @@ const ConfirmSection: React.FC<{
                 _gte: filter.starRange[0],
                 _lte: filter.starRange[1],
               },
+          last_member_note_called: filter.lastCalledRange
+            ? {
+                _gte: moment(filter.lastCalledRange[0]).startOf('day'),
+                _lte: moment(filter.lastCalledRange[1]).endOf('day'),
+              }
+            : undefined,
+          last_member_note_answered: filter.lastAnsweredRange
+            ? {
+                _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+                _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+              }
+            : undefined,
           _and: [
             {
               member_properties:
@@ -298,42 +318,13 @@ const ConfirmSection: React.FC<{
       },
     },
   )
-  const { data: assignedLeadsData, loading: isAssignedLeadsLoading } = useQuery<
-    hasura.GET_ASSIGNED_LEADS,
-    hasura.GET_ASSIGNED_LEADSVariables
-  >(
-    gql`
-      query GET_ASSIGNED_LEADS($memberIds: [String!], $assignedAtCondition: timestamptz_comparison_exp) {
-        audit_log(
-          distinct_on: [member_id]
-          where: { member_id: { _in: $memberIds }, created_at: $assignedAtCondition }
-        ) {
-          member_id
-        }
-      }
-    `,
-    {
-      fetchPolicy: 'no-cache',
-      variables: {
-        memberIds: filter.lastAnsweredRange ? leadCandidatesData?.member_phone.map(v => v.member_id) || [] : [],
-        assignedAtCondition: filter.lastAnsweredRange
-          ? {
-              _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
-              _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
-            }
-          : undefined,
-      },
-    },
-  )
-  const filteredMemberIds = useMemo(() => {
-    const memberIds =
-      (filter.lastAnsweredRange
-        ? assignedLeadsData?.audit_log.map(v => v.member_id).filter(notEmpty)
-        : leadCandidatesData?.member_phone.map(v => v.member_id)) || []
-    return memberIds
-  }, [assignedLeadsData, filter.lastAnsweredRange, leadCandidatesData?.member_phone])
 
-  const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
+  const filteredMemberIds = useMemo(() => {
+    const memberIds = leadCandidatesData?.member_phone.map(v => v.member_id) || []
+    return memberIds
+  }, [leadCandidatesData?.member_phone])
+
+  const isLoading = isLeadCandidatesLoading
 
   return (
     <div className="row">

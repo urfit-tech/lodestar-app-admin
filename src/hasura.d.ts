@@ -21237,32 +21237,6 @@ export interface GET_LEAD_CANDIDATESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ASSIGNED_LEADS
-// ====================================================
-
-export interface GET_ASSIGNED_LEADS_audit_log {
-  __typename: "audit_log";
-  member_id: string | null;
-}
-
-export interface GET_ASSIGNED_LEADS {
-  /**
-   * fetch data from the table: "audit_log"
-   */
-  audit_log: GET_ASSIGNED_LEADS_audit_log[];
-}
-
-export interface GET_ASSIGNED_LEADSVariables {
-  memberIds?: string[] | null;
-  assignedAtCondition?: timestamptz_comparison_exp | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_LEAD_MANAGER
 // ====================================================
 
