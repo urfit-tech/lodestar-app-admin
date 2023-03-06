@@ -7,6 +7,7 @@ import { ModalProps } from 'antd/lib/modal'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import * as XLSX from 'xlsx'
 
 const messages = defineMessages({
   description: { id: 'sales.orderImportModal.description', defaultMessage: '點此下載範本' },
@@ -44,6 +45,7 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
       restrictions: {
         maxNumberOfFiles: 1,
         maxTotalFileSize: 10 * 1024 * 1024, // limited 10MB at once
+        allowedFileTypes: ['.csv', '.xlsx', '.xls'],
       },
     })
       .use(XHRUpload, {
@@ -57,6 +59,19 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
       })
       .on('error', console.error)
   })
+  const downloadSampleCsv = () => {
+    // const filepath = `https://${process.env.REACT_APP_S3_BUCKET}/public/sample_orders.csv`
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.aoa_to_sheet([
+      ['email', 'type', 'target', 'name', 'price', 'startedAt', 'endedAt', 'status'],
+      ['member1@sample.com', 'Program', '1231-34114-124134', '範例課程 ', '100', '2021-10-03', '', 'SUCCESS'],
+      ['member2@sample.com', 'Program', '1231-34114-124134', '範例課程 ', '100', '', '2021-10-03', 'FAILED'],
+      ['member3@sample.com', 'Program', '1231-34114-124134', '範例課程 ', '100', '', '', 'UNPAID'],
+      ['member4@sample.com', 'Program', '1231-34114-124134', '範例課程 ', '100', '2021-10-03', '2021-10-03', 'REFUND'],
+    ])
+    XLSX.utils.book_append_sheet(workbook, worksheet)
+    XLSX.writeFile(workbook, 'sample_orders.csv')
+  }
   return (
     <>
       {renderTrigger?.({ show: () => setIsVisible(true) })}
@@ -72,12 +87,7 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
           {...modalProps}
         >
           <div className="text-center">
-            <Button
-              type="link"
-              onClick={() =>
-                (window.location.href = `https://${process.env.REACT_APP_S3_BUCKET}/public/sample_orders.csv`)
-              }
-            >
+            <Button type="link" onClick={() => downloadSampleCsv()}>
               {formatMessage(messages.description)}
             </Button>
           </div>
@@ -103,7 +113,8 @@ const OrderImportModal: React.FC<OrderImportModalProps> = ({ renderTrigger, ...m
                           {formatMessage(messages.numFailed)}: {body.result?.failed.length}
                           {body.result?.failed.length && (
                             <span>
-                              ({body.result?.failed.map(f => `row ${f.index + 2} failed message: ${f.error}`).join(', ')}
+                              (
+                              {body.result?.failed.map(f => `row ${f.index + 2} failed message: ${f.error}`).join(', ')}
                               )
                             </span>
                           )}
