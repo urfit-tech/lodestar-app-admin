@@ -16499,6 +16499,51 @@ export interface GET_GIFT_PLAN_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_LEARNING_STATUS
+// ====================================================
+
+export interface GET_LEARNING_STATUS_app_learning_status {
+  __typename: "app_learning_status";
+  date: any | null;
+  total_count: any | null;
+  total_duration: number | null;
+}
+
+export interface GET_LEARNING_STATUS_program_category_completeness_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_LEARNING_STATUS_program_category_completeness {
+  __typename: "program_category_completeness";
+  /**
+   * An object relationship
+   */
+  category: GET_LEARNING_STATUS_program_category_completeness_category | null;
+  rate: any | null;
+}
+
+export interface GET_LEARNING_STATUS {
+  /**
+   * fetch data from the table: "app_learning_status"
+   */
+  app_learning_status: GET_LEARNING_STATUS_app_learning_status[];
+  /**
+   * fetch data from the table: "program_category_completeness"
+   */
+  program_category_completeness: GET_LEARNING_STATUS_program_category_completeness[];
+}
+
+export interface GET_LEARNING_STATUSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_LEARNING_OVERVIEW
 // ====================================================
 
@@ -16528,42 +16573,31 @@ export interface GET_LEARNING_OVERVIEWVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_LEARNING_REPORT
+// GraphQL query operation: GET_PROGRAM_CATEGORY_COMPLETENESS
 // ====================================================
 
-export interface GET_LEARNING_REPORT_app_learning_status {
-  __typename: "app_learning_status";
-  date: any | null;
-  total_count: any | null;
-  total_duration: number | null;
-}
-
-export interface GET_LEARNING_REPORT_program_category_completeness_category {
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness_category {
   __typename: "category";
   name: string;
 }
 
-export interface GET_LEARNING_REPORT_program_category_completeness {
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness {
   __typename: "program_category_completeness";
   /**
    * An object relationship
    */
-  category: GET_LEARNING_REPORT_program_category_completeness_category | null;
+  category: GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness_category | null;
   rate: any | null;
 }
 
-export interface GET_LEARNING_REPORT {
-  /**
-   * fetch data from the table: "app_learning_status"
-   */
-  app_learning_status: GET_LEARNING_REPORT_app_learning_status[];
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS {
   /**
    * fetch data from the table: "program_category_completeness"
    */
-  program_category_completeness: GET_LEARNING_REPORT_program_category_completeness[];
+  program_category_completeness: GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness[];
 }
 
-export interface GET_LEARNING_REPORTVariables {
+export interface GET_PROGRAM_CATEGORY_COMPLETENESSVariables {
   appId: string;
 }
 

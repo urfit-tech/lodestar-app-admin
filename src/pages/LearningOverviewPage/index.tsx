@@ -1,6 +1,6 @@
 import Icon, { RadarChartOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Card, Statistic } from 'antd'
+import { Card, Skeleton, Statistic } from 'antd'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
@@ -20,11 +20,19 @@ import ProgressFunnel from './ProgressFunnel'
 const LearningOverviewPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
-  const { recentLearningCount, recentLearningDuration, programCategoryCompleteness, learningStatus } =
-    useLearningReport(appId)
-
-  const { loading, error, totalMemberCount, enrolledMemberCount, exercisedMemberCount, passedMemberCount } =
-    useLearningOverview(appId)
+  const {
+    loadingLearningStatus,
+    loadingLearningOverview,
+    loadingProgramCategoryCompleteness,
+    recentLearningCount,
+    recentLearningDuration,
+    programCategoryCompleteness,
+    learningStatus,
+    totalMemberCount,
+    enrolledMemberCount,
+    exercisedMemberCount,
+    passedMemberCount,
+  } = useLearningReport(appId)
 
   if (!enabledModules.learning_statistics_advanced) {
     return <ForbiddenPage />
@@ -41,39 +49,55 @@ const LearningOverviewPage: React.VFC = () => {
       <div className="row">
         <div className="col-12 col-md-6 col-lg-3">
           <Card className="mb-3">
-            <Statistic title="近七天學習人數" value={recentLearningCount} suffix="人" />
+            {loadingLearningStatus ? (
+              <Skeleton active paragraph={{ rows: 1 }} />
+            ) : (
+              <Statistic title="近七天學習人數" value={recentLearningCount} suffix="人" />
+            )}
           </Card>
         </div>
         <div className="col-12 col-md-6 col-lg-3">
           <Card className="mb-3">
-            <Statistic title="近七天學習時數" value={recentLearningDuration / 60 / 60} precision={0} suffix="小時" />
+            {loadingLearningStatus ? (
+              <Skeleton active paragraph={{ rows: 1 }} />
+            ) : (
+              <Statistic title="近七天學習時數" value={recentLearningDuration / 60 / 60} precision={0} suffix="小時" />
+            )}
           </Card>
         </div>
         <div className="col-12 col-md-6 col-lg-3">
           <Card className="mb-3">
-            <Statistic
-              title="平均完課率"
-              value={(sum(programCategoryCompleteness.map(v => v.rate)) / programCategoryCompleteness.length) * 100}
-              precision={2}
-              suffix="%"
-            />
+            {loadingProgramCategoryCompleteness ? (
+              <Skeleton active paragraph={{ rows: 1 }} />
+            ) : (
+              <Statistic
+                title="平均完課率"
+                value={(sum(programCategoryCompleteness.map(v => v.rate)) / programCategoryCompleteness.length) * 100}
+                precision={2}
+                suffix="%"
+              />
+            )}
           </Card>
         </div>
         <div className="col-12 col-md-6 col-lg-3">
           <Card className="mb-3">
-            <Statistic
-              title="測驗通過率"
-              value={(passedMemberCount / exercisedMemberCount) * 100}
-              precision={2}
-              suffix="%"
-            />
+            {loadingLearningOverview ? (
+              <Skeleton active paragraph={{ rows: 1 }} />
+            ) : (
+              <Statistic
+                title="測驗通過率"
+                value={exercisedMemberCount <= 0 ? 0 : (passedMemberCount / exercisedMemberCount) * 100}
+                precision={2}
+                suffix="%"
+              />
+            )}
           </Card>
         </div>
       </div>
       <div className="row">
         <div className="col-12">
           <Card className="mb-3" title="學習人數與平均時數">
-            <LearningDualChart values={learningStatus} />
+            {loadingLearningStatus ? <Skeleton active /> : <LearningDualChart values={learningStatus} />}
           </Card>
         </div>
       </div>
@@ -81,27 +105,35 @@ const LearningOverviewPage: React.VFC = () => {
         <div className="col-12 col-md-6">
           <Card className="mb-3" title="完課率分佈">
             <div className="mx-auto" style={{ width: '90%' }}>
-              <LearningRadar value={programCategoryCompleteness} />
+              {loadingProgramCategoryCompleteness ? (
+                <Skeleton active />
+              ) : (
+                <LearningRadar value={programCategoryCompleteness} />
+              )}
             </div>
           </Card>
         </div>
         <div className="col-12 col-md-6">
           <Card className="mb-3" title="學員狀況">
-            <ProgressFunnel
-              values={[
-                { stage: '所有人數', count: totalMemberCount },
-                { stage: '上課人數', count: enrolledMemberCount },
-                { stage: '測驗人數', count: exercisedMemberCount },
-                { stage: '通過人數', count: passedMemberCount },
-              ]}
-            />
+            {loadingLearningOverview ? (
+              <Skeleton active />
+            ) : (
+              <ProgressFunnel
+                values={[
+                  { stage: '所有人數', count: totalMemberCount },
+                  { stage: '上課人數', count: enrolledMemberCount },
+                  { stage: '測驗人數', count: exercisedMemberCount },
+                  { stage: '通過人數', count: passedMemberCount },
+                ]}
+              />
+            )}
           </Card>
         </div>
       </div>
       <div className="row">
         <div className="col-12">
           <Card className="mb-3" title="學習熱度">
-            <LearningHeatmap values={learningStatus} />
+            {loadingLearningStatus ? <Skeleton active /> : <LearningHeatmap values={learningStatus} />}
           </Card>
         </div>
       </div>
@@ -110,37 +142,34 @@ const LearningOverviewPage: React.VFC = () => {
 }
 
 const useLearningReport = (appId: string) => {
-  const { data, loading } = useQuery<hasura.GET_LEARNING_REPORT, hasura.GET_LEARNING_REPORTVariables>(
-    GET_LEARNING_REPORT,
+  const {
+    loading: loadingLearningStatus,
+    error: errorLearningStatus,
+    data: dataLearningStatus,
+  } = useQuery<hasura.GET_LEARNING_STATUS, hasura.GET_LEARNING_STATUSVariables>(
+    gql`
+      query GET_LEARNING_STATUS($appId: String!) {
+        app_learning_status(where: { app_id: { _eq: $appId } }) {
+          date
+          total_count
+          total_duration
+        }
+        program_category_completeness(where: { category: { app_id: { _eq: $appId } } }) {
+          category {
+            name
+          }
+          rate
+        }
+      }
+    `,
     { variables: { appId } },
   )
-  return {
-    loading,
-    recentLearningCount: sum(
-      data?.app_learning_status
-        .filter(v => moment(v.date) >= moment().startOf('day').subtract(1, 'week'))
-        .map(v => v.total_count) || [],
-    ),
-    recentLearningDuration: sum(
-      data?.app_learning_status
-        .filter(v => moment(v.date) >= moment().startOf('day').subtract(1, 'week'))
-        .map(v => v.total_duration || 0) || [],
-    ),
-    learningStatus:
-      data?.app_learning_status.map(v => ({
-        date: v.date,
-        count: v.total_count || 0,
-        duration: v.total_duration || 0,
-      })) || [],
-    programCategoryCompleteness:
-      data?.program_category_completeness.map(v => ({
-        name: v.category?.name || '',
-        rate: v.rate,
-      })) || [],
-  }
-}
-const useLearningOverview = (appId: string) => {
-  const { loading, error, data } = useQuery<hasura.GET_LEARNING_OVERVIEW, hasura.GET_LEARNING_OVERVIEWVariables>(
+
+  const {
+    loading: loadingLearningOverview,
+    error: errorLearningOverview,
+    data: dataLearningOverview,
+  } = useQuery<hasura.GET_LEARNING_OVERVIEW, hasura.GET_LEARNING_OVERVIEWVariables>(
     gql`
       query GET_LEARNING_OVERVIEW($appId: String!) {
         learning_overview(where: { app_id: { _eq: $appId } }) {
@@ -155,28 +184,54 @@ const useLearningOverview = (appId: string) => {
     { variables: { appId } },
   )
 
+  const {
+    loading: loadingProgramCategoryCompleteness,
+    error: errorProgramCategoryCompleteness,
+    data: dataProgramCategoryCompleteness,
+  } = useQuery<hasura.GET_PROGRAM_CATEGORY_COMPLETENESS, hasura.GET_PROGRAM_CATEGORY_COMPLETENESSVariables>(
+    gql`
+      query GET_PROGRAM_CATEGORY_COMPLETENESS($appId: String!) {
+        program_category_completeness(where: { category: { app_id: { _eq: $appId } } }) {
+          category {
+            name
+          }
+          rate
+        }
+      }
+    `,
+    { variables: { appId } },
+  )
+
   return {
-    loading,
-    error,
-    totalMemberCount: data?.learning_overview[0]?.total_member_count || 0,
-    enrolledMemberCount: data?.learning_overview[0]?.enrolled_member_count || 0,
-    passedMemberCount: data?.learning_overview[0]?.passed_member_count || 0,
-    exercisedMemberCount: data?.learning_overview[0]?.exercised_member_count || 0,
+    loadingLearningStatus,
+    loadingLearningOverview,
+    loadingProgramCategoryCompleteness,
+    recentLearningCount: sum(
+      dataLearningStatus?.app_learning_status
+        .filter(v => moment(v.date) >= moment().startOf('day').subtract(1, 'week'))
+        .map(v => v.total_count) || [],
+    ),
+    recentLearningDuration: sum(
+      dataLearningStatus?.app_learning_status
+        .filter(v => moment(v.date) >= moment().startOf('day').subtract(1, 'week'))
+        .map(v => v.total_duration || 0) || [],
+    ),
+    learningStatus:
+      dataLearningStatus?.app_learning_status.map(v => ({
+        date: v.date,
+        count: v.total_count || 0,
+        duration: v.total_duration || 0,
+      })) || [],
+    programCategoryCompleteness:
+      dataProgramCategoryCompleteness?.program_category_completeness.map(v => ({
+        name: v.category?.name || '',
+        rate: v.rate,
+      })) || [],
+    totalMemberCount: dataLearningOverview?.learning_overview[0]?.total_member_count || 0,
+    enrolledMemberCount: dataLearningOverview?.learning_overview[0]?.enrolled_member_count || 0,
+    passedMemberCount: dataLearningOverview?.learning_overview[0]?.passed_member_count || 0,
+    exercisedMemberCount: dataLearningOverview?.learning_overview[0]?.exercised_member_count || 0,
   }
 }
-const GET_LEARNING_REPORT = gql`
-  query GET_LEARNING_REPORT($appId: String!) {
-    app_learning_status(where: { app_id: { _eq: $appId } }) {
-      date
-      total_count
-      total_duration
-    }
-    program_category_completeness(where: { category: { app_id: { _eq: $appId } } }) {
-      category {
-        name
-      }
-      rate
-    }
-  }
-`
+
 export default LearningOverviewPage
