@@ -254,26 +254,28 @@ const MemberContractCreationPage: React.VFC = () => {
       amount: 1,
     }
 
-    if (mainProducts.length === 2) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['tenPercentOff'],
-        name: '任選兩件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length === 3) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['fifteenPercentOff'],
-        name: '任選三件折抵',
-        ...promotionDiscount,
-      })
-    }
-    if (mainProducts.length >= 4) {
-      contractDiscounts.push({
-        id: contractsOptions.couponPlanId['twentyPercentOff'],
-        name: '任選四件折抵',
-        ...promotionDiscount,
-      })
+    if (contractsOptions?.couponPlanId) {
+      if (mainProducts.length === 2) {
+        contractDiscounts.push({
+          id: contractsOptions.couponPlanId['tenPercentOff'],
+          name: '任選兩件折抵',
+          ...promotionDiscount,
+        })
+      }
+      if (mainProducts.length === 3) {
+        contractDiscounts.push({
+          id: contractsOptions.couponPlanId['fifteenPercentOff'],
+          name: '任選三件折抵',
+          ...promotionDiscount,
+        })
+      }
+      if (mainProducts.length >= 4) {
+        contractDiscounts.push({
+          id: contractsOptions.couponPlanId['twentyPercentOff'],
+          name: '任選四件折抵',
+          ...promotionDiscount,
+        })
+      }
     }
   }
   if (fieldValue.hasDeposit) {
