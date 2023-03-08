@@ -321,13 +321,14 @@ const SalesLeadTable: React.VFC<{
       sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
       render: recentContactedAt => recentContactedAt && <time>{moment(recentContactedAt).fromNow()}</time>,
     },
-    // {
-    //   key: 'recentTaskedAt',
-    //   dataIndex: 'recentTaskedAt',
-    //   title: formatMessage(salesMessages.recentTaskedAt),
-    //   sorter: (a, b) => (a.recentTaskedAt?.getTime() || 0) - (b.recentTaskedAt?.getTime() || 0),
-    //   render: recentTaskedAt => <time>{recentTaskedAt && moment(recentTaskedAt).fromNow()}</time>,
-    // },
+    {
+      key: 'recentAnsweredAt',
+      dataIndex: 'recentAnsweredAt',
+      title: formatMessage(salesMessages.recentAnsweredAt),
+      sorter: (a, b) => (a.recentAnsweredAt?.getTime() || 0) - (b.recentAnsweredAt?.getTime() || 0),
+      render: recentAnsweredAt =>
+        recentAnsweredAt && <time>{recentAnsweredAt && moment(recentAnsweredAt).fromNow()}</time>,
+    },
   ]
 
   return (
@@ -376,6 +377,8 @@ const SalesLeadTable: React.VFC<{
                 status,
                 duration,
                 description,
+                lastMemberNoteCalled: type === 'outbound' && status !== 'answered' ? new Date() : undefined,
+                lastMemberNoteAnswered: type === 'outbound' && status === 'answered' ? new Date() : undefined,
               },
             })
               .then(async ({ data }) => {

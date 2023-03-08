@@ -132,7 +132,9 @@ export const useManagerLeads = (manager: Manager) => {
             .map(u => u.member_id)
             .includes(v.id)
         ? 'INVITED'
-        : v.last_member_note_created
+        : v.last_member_note_answered
+        ? 'ANSWERED'
+        : v.last_member_note_called
         ? 'CONTACTED'
         : 'IDLED'
     return {
@@ -151,7 +153,8 @@ export const useManagerLeads = (manager: Manager) => {
       status,
       assignedAt: v.assigned_at ? dayjs(v.assigned_at).toDate() : null,
       notified: !v.last_member_note_created,
-      recentContactedAt: v.last_member_note_created ? dayjs(v.last_member_note_created).toDate() : null,
+      recentContactedAt: v.last_member_note_called ? dayjs(v.last_member_note_called).toDate() : null,
+      recentAnsweredAt: v.last_member_note_answered ? dayjs(v.last_member_note_answered).toDate() : null,
     }
   }
   const totalLeads: LeadProps[] = sortBy(prop('id'))(dataMembers?.member.map(convertToLead).filter(notEmpty) || [])
@@ -165,6 +168,7 @@ export const useManagerLeads = (manager: Manager) => {
     totalLeads,
     idledLeads: totalLeads.filter(lead => lead.status === 'IDLED'),
     contactedLeads: totalLeads.filter(lead => lead.status === 'CONTACTED'),
+    answeredLeads: totalLeads.filter(lead => lead.status === 'ANSWERED'),
     invitedLeads: totalLeads.filter(lead => lead?.status === 'INVITED'),
     presentedLeads: totalLeads.filter(lead => lead?.status === 'PRESENTED'),
     signedLeads: totalLeads.filter(lead => lead?.status === 'SIGNED'),
@@ -190,6 +194,8 @@ const GET_SALES_LEAD_MEMBERS = gql`
       created_at
       assigned_at
       last_member_note_created
+      last_member_note_called
+      last_member_note_answered
       member_properties {
         property {
           id

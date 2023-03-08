@@ -78,6 +78,7 @@ const SalesLeadTabs: React.VFC<{
     totalLeads,
     idledLeads,
     contactedLeads,
+    answeredLeads,
     invitedLeads,
     presentedLeads,
     signedLeads,
@@ -168,6 +169,7 @@ const SalesLeadTabs: React.VFC<{
           />
         }
       </Tabs.TabPane>
+
       <Tabs.TabPane
         key="contacted"
         tab={
@@ -190,6 +192,25 @@ const SalesLeadTabs: React.VFC<{
       </Tabs.TabPane>
 
       <Tabs.TabPane
+        key="answered"
+        tab={
+          <div>
+            {formatMessage(salesMessages.answeredLeads)}
+            <span>({answeredLeads.length})</span>
+          </div>
+        }
+      >
+        <SalesLeadTable
+          manager={manager}
+          leads={answeredLeads}
+          onRefetch={() => {
+            refetch?.()
+            refetchMembers?.()
+          }}
+        />
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
         key="invited"
         tab={
           <div>
@@ -209,6 +230,7 @@ const SalesLeadTabs: React.VFC<{
           />
         }
       </Tabs.TabPane>
+
       <Tabs.TabPane
         key="presented"
         tab={
