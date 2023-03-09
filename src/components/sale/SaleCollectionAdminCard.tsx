@@ -88,8 +88,6 @@ const SaleCollectionAdminCard: React.VFC<{
     { statuses, orderId, memberNameAndEmail, memberId },
   )
 
-  // const {} = useOrderLogExpanded
-
   const [updateOrderProductDeliver] = useMutation<
     hasura.UPDATE_ORDER_PRODUCT_DELIVERED_AT,
     hasura.UPDATE_ORDER_PRODUCT_DELIVERED_ATVariables

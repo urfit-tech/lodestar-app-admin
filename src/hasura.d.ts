@@ -16499,89 +16499,105 @@ export interface GET_GIFT_PLAN_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_LEARNING_REPORT
+// GraphQL query operation: GET_LEARNING_STATUS
 // ====================================================
 
-export interface GET_LEARNING_REPORT_total_member_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number;
-}
-
-export interface GET_LEARNING_REPORT_total_member {
-  __typename: "member_aggregate";
-  aggregate: GET_LEARNING_REPORT_total_member_aggregate | null;
-}
-
-export interface GET_LEARNING_REPORT_total_enrolled_member_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number;
-}
-
-export interface GET_LEARNING_REPORT_total_enrolled_member {
-  __typename: "member_aggregate";
-  aggregate: GET_LEARNING_REPORT_total_enrolled_member_aggregate | null;
-}
-
-export interface GET_LEARNING_REPORT_exercise_program_content {
-  __typename: "program_content";
-  metadata: any | null;
-}
-
-export interface GET_LEARNING_REPORT_exercise {
-  __typename: "exercise";
-  answer: any | null;
-  member_id: string;
-  /**
-   * An object relationship
-   */
-  program_content: GET_LEARNING_REPORT_exercise_program_content;
-}
-
-export interface GET_LEARNING_REPORT_app_learning_status {
+export interface GET_LEARNING_STATUS_app_learning_status {
   __typename: "app_learning_status";
   date: any | null;
   total_count: any | null;
   total_duration: number | null;
 }
 
-export interface GET_LEARNING_REPORT_program_category_completeness_category {
+export interface GET_LEARNING_STATUS_program_category_completeness_category {
   __typename: "category";
   name: string;
 }
 
-export interface GET_LEARNING_REPORT_program_category_completeness {
+export interface GET_LEARNING_STATUS_program_category_completeness {
   __typename: "program_category_completeness";
   /**
    * An object relationship
    */
-  category: GET_LEARNING_REPORT_program_category_completeness_category | null;
+  category: GET_LEARNING_STATUS_program_category_completeness_category | null;
   rate: any | null;
 }
 
-export interface GET_LEARNING_REPORT {
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  total_member: GET_LEARNING_REPORT_total_member;
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  total_enrolled_member: GET_LEARNING_REPORT_total_enrolled_member;
-  /**
-   * fetch data from the table: "exercise"
-   */
-  exercise: GET_LEARNING_REPORT_exercise[];
+export interface GET_LEARNING_STATUS {
   /**
    * fetch data from the table: "app_learning_status"
    */
-  app_learning_status: GET_LEARNING_REPORT_app_learning_status[];
+  app_learning_status: GET_LEARNING_STATUS_app_learning_status[];
   /**
    * fetch data from the table: "program_category_completeness"
    */
-  program_category_completeness: GET_LEARNING_REPORT_program_category_completeness[];
+  program_category_completeness: GET_LEARNING_STATUS_program_category_completeness[];
 }
 
-export interface GET_LEARNING_REPORTVariables {
+export interface GET_LEARNING_STATUSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_LEARNING_OVERVIEW
+// ====================================================
+
+export interface GET_LEARNING_OVERVIEW_learning_overview {
+  __typename: "learning_overview";
+  app_id: string | null;
+  total_member_count: any | null;
+  enrolled_member_count: any | null;
+  exercised_member_count: any | null;
+  passed_member_count: any | null;
+}
+
+export interface GET_LEARNING_OVERVIEW {
+  /**
+   * fetch data from the table: "learning_overview"
+   */
+  learning_overview: GET_LEARNING_OVERVIEW_learning_overview[];
+}
+
+export interface GET_LEARNING_OVERVIEWVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_CATEGORY_COMPLETENESS
+// ====================================================
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness {
+  __typename: "program_category_completeness";
+  /**
+   * An object relationship
+   */
+  category: GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness_category | null;
+  rate: any | null;
+}
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS {
+  /**
+   * fetch data from the table: "program_category_completeness"
+   */
+  program_category_completeness: GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness[];
+}
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESSVariables {
   appId: string;
 }
 
@@ -22386,6 +22402,8 @@ export enum member_select_column {
   google_user_id = "google_user_id",
   id = "id",
   is_business = "is_business",
+  last_member_note_answered = "last_member_note_answered",
+  last_member_note_called = "last_member_note_called",
   last_member_note_created = "last_member_note_created",
   line_user_id = "line_user_id",
   logined_at = "logined_at",
@@ -22653,6 +22671,8 @@ export enum member_update_column {
   google_user_id = "google_user_id",
   id = "id",
   is_business = "is_business",
+  last_member_note_answered = "last_member_note_answered",
+  last_member_note_called = "last_member_note_called",
   last_member_note_created = "last_member_note_created",
   line_user_id = "line_user_id",
   logined_at = "logined_at",
@@ -33213,6 +33233,8 @@ export interface member_bool_exp {
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_bool_exp | null;
   issues?: issue_bool_exp | null;
   issues_aggregate?: issue_aggregate_bool_exp | null;
+  last_member_note_answered?: timestamptz_comparison_exp | null;
+  last_member_note_called?: timestamptz_comparison_exp | null;
   last_member_note_created?: timestamptz_comparison_exp | null;
   line_user_id?: String_comparison_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
@@ -33855,6 +33877,8 @@ export interface member_insert_input {
   issue_replies?: issue_reply_arr_rel_insert_input | null;
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
+  last_member_note_answered?: any | null;
+  last_member_note_called?: any | null;
   last_member_note_created?: any | null;
   line_user_id?: string | null;
   logined_at?: any | null;
@@ -33933,6 +33957,8 @@ export interface member_max_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  last_member_note_answered?: order_by | null;
+  last_member_note_called?: order_by | null;
   last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
@@ -33963,6 +33989,8 @@ export interface member_min_order_by {
   facebook_user_id?: order_by | null;
   google_user_id?: order_by | null;
   id?: order_by | null;
+  last_member_note_answered?: order_by | null;
+  last_member_note_called?: order_by | null;
   last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
@@ -34446,6 +34474,8 @@ export interface member_order_by {
   issue_replies_aggregate?: issue_reply_aggregate_order_by | null;
   issue_reply_reactions_aggregate?: issue_reply_reaction_aggregate_order_by | null;
   issues_aggregate?: issue_aggregate_order_by | null;
+  last_member_note_answered?: order_by | null;
+  last_member_note_called?: order_by | null;
   last_member_note_created?: order_by | null;
   line_user_id?: order_by | null;
   logined_at?: order_by | null;
