@@ -17345,89 +17345,105 @@ export interface GET_GIFT_PLAN_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_LEARNING_REPORT
+// GraphQL query operation: GET_LEARNING_STATUS
 // ====================================================
 
-export interface GET_LEARNING_REPORT_total_member_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number;
-}
-
-export interface GET_LEARNING_REPORT_total_member {
-  __typename: "member_aggregate";
-  aggregate: GET_LEARNING_REPORT_total_member_aggregate | null;
-}
-
-export interface GET_LEARNING_REPORT_total_enrolled_member_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number;
-}
-
-export interface GET_LEARNING_REPORT_total_enrolled_member {
-  __typename: "member_aggregate";
-  aggregate: GET_LEARNING_REPORT_total_enrolled_member_aggregate | null;
-}
-
-export interface GET_LEARNING_REPORT_exercise_program_content {
-  __typename: "program_content";
-  metadata: any | null;
-}
-
-export interface GET_LEARNING_REPORT_exercise {
-  __typename: "exercise";
-  answer: any | null;
-  member_id: string;
-  /**
-   * An object relationship
-   */
-  program_content: GET_LEARNING_REPORT_exercise_program_content;
-}
-
-export interface GET_LEARNING_REPORT_app_learning_status {
+export interface GET_LEARNING_STATUS_app_learning_status {
   __typename: "app_learning_status";
   date: any | null;
   total_count: any | null;
   total_duration: number | null;
 }
 
-export interface GET_LEARNING_REPORT_program_category_completeness_category {
+export interface GET_LEARNING_STATUS_program_category_completeness_category {
   __typename: "category";
   name: string;
 }
 
-export interface GET_LEARNING_REPORT_program_category_completeness {
+export interface GET_LEARNING_STATUS_program_category_completeness {
   __typename: "program_category_completeness";
   /**
    * An object relationship
    */
-  category: GET_LEARNING_REPORT_program_category_completeness_category | null;
+  category: GET_LEARNING_STATUS_program_category_completeness_category | null;
   rate: any | null;
 }
 
-export interface GET_LEARNING_REPORT {
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  total_member: GET_LEARNING_REPORT_total_member;
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  total_enrolled_member: GET_LEARNING_REPORT_total_enrolled_member;
-  /**
-   * fetch data from the table: "exercise"
-   */
-  exercise: GET_LEARNING_REPORT_exercise[];
+export interface GET_LEARNING_STATUS {
   /**
    * fetch data from the table: "app_learning_status"
    */
-  app_learning_status: GET_LEARNING_REPORT_app_learning_status[];
+  app_learning_status: GET_LEARNING_STATUS_app_learning_status[];
   /**
    * fetch data from the table: "program_category_completeness"
    */
-  program_category_completeness: GET_LEARNING_REPORT_program_category_completeness[];
+  program_category_completeness: GET_LEARNING_STATUS_program_category_completeness[];
 }
 
-export interface GET_LEARNING_REPORTVariables {
+export interface GET_LEARNING_STATUSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_LEARNING_OVERVIEW
+// ====================================================
+
+export interface GET_LEARNING_OVERVIEW_learning_overview {
+  __typename: "learning_overview";
+  app_id: string | null;
+  total_member_count: any | null;
+  enrolled_member_count: any | null;
+  exercised_member_count: any | null;
+  passed_member_count: any | null;
+}
+
+export interface GET_LEARNING_OVERVIEW {
+  /**
+   * fetch data from the table: "learning_overview"
+   */
+  learning_overview: GET_LEARNING_OVERVIEW_learning_overview[];
+}
+
+export interface GET_LEARNING_OVERVIEWVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_CATEGORY_COMPLETENESS
+// ====================================================
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness {
+  __typename: "program_category_completeness";
+  /**
+   * An object relationship
+   */
+  category: GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness_category | null;
+  rate: any | null;
+}
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESS {
+  /**
+   * fetch data from the table: "program_category_completeness"
+   */
+  program_category_completeness: GET_PROGRAM_CATEGORY_COMPLETENESS_program_category_completeness[];
+}
+
+export interface GET_PROGRAM_CATEGORY_COMPLETENESSVariables {
   appId: string;
 }
 

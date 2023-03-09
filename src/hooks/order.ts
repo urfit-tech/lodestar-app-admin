@@ -92,7 +92,7 @@ export const useOrderLogs = (
           ? { id: { _eq: filters.memberId } }
           : filters?.memberNameAndEmail
           ? {
-              _or: filters.memberNameAndEmail
+              _or: filters?.memberNameAndEmail
                 ? [
                     { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
                     { username: { _ilike: `%${filters.memberNameAndEmail}%` } },

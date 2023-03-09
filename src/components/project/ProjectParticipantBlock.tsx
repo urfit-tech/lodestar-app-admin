@@ -139,7 +139,7 @@ const ProjectParticipantBlock: React.FC<{
     setLoading(true)
     form.validateFields().then(() => {
       if (isUnregistered) {
-        if (isValidEmail(values.participant)) {
+        if (isValidEmail(values.participant.trim())) {
           axios
             .post(
               `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
@@ -147,7 +147,7 @@ const ProjectParticipantBlock: React.FC<{
                 appId,
                 executorName: currentMember?.name || '',
                 invitee: values.participantName,
-                email: values.participant,
+                email: values.participant.trim(),
                 identityId: values.participantTypeId,
                 projectId: projectId,
               },
