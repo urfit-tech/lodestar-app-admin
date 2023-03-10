@@ -2306,62 +2306,6 @@ export interface UPDATE_COUPON_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_COUPON_CODE_EXPORT
-// ====================================================
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_member {
-  __typename: "member";
-  id: string;
-  email: string;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_status {
-  __typename: "coupon_status";
-  used: boolean | null;
-  outdated: boolean | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons {
-  __typename: "coupon";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_COUPON_CODE_EXPORT_coupon_code_coupons_member;
-  /**
-   * An object relationship
-   */
-  status: GET_COUPON_CODE_EXPORT_coupon_code_coupons_status | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code {
-  __typename: "coupon_code";
-  id: any;
-  code: string;
-  remaining: number;
-  /**
-   * An array relationship
-   */
-  coupons: GET_COUPON_CODE_EXPORT_coupon_code_coupons[];
-}
-
-export interface GET_COUPON_CODE_EXPORT {
-  /**
-   * fetch data from the table: "coupon_code"
-   */
-  coupon_code: GET_COUPON_CODE_EXPORT_coupon_code[];
-}
-
-export interface GET_COUPON_CODE_EXPORTVariables {
-  couponPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_APP_PAGE_TEMPLATE
 // ====================================================
 
@@ -9859,6 +9803,71 @@ export interface GET_ENROLLED_CARDS {
 
 export interface GET_ENROLLED_CARDSVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_CHANNEL_INFO
+// ====================================================
+
+export interface GET_PRODUCT_CHANNEL_INFO_app_channel_product_channels {
+  __typename: "product_channel";
+  id: any;
+  channel_sku: string | null;
+}
+
+export interface GET_PRODUCT_CHANNEL_INFO_app_channel {
+  __typename: "app_channel";
+  id: any;
+  name: string;
+  /**
+   * An array relationship
+   */
+  product_channels: GET_PRODUCT_CHANNEL_INFO_app_channel_product_channels[];
+}
+
+export interface GET_PRODUCT_CHANNEL_INFO {
+  /**
+   * fetch data from the table: "app_channel"
+   */
+  app_channel: GET_PRODUCT_CHANNEL_INFO_app_channel[];
+}
+
+export interface GET_PRODUCT_CHANNEL_INFOVariables {
+  appId?: string | null;
+  productId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PRODUCT_CHANNEL
+// ====================================================
+
+export interface UPSERT_PRODUCT_CHANNEL_insert_product_channel {
+  __typename: "product_channel_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PRODUCT_CHANNEL {
+  /**
+   * insert data into the table: "product_channel"
+   */
+  insert_product_channel: UPSERT_PRODUCT_CHANNEL_insert_product_channel | null;
+}
+
+export interface UPSERT_PRODUCT_CHANNELVariables {
+  productChannel: product_channel_insert_input[];
 }
 
 /* tslint:disable */
@@ -20666,6 +20675,22 @@ export enum app_admin_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "app_channel"
+ */
+export enum app_channel_constraint {
+  app_channel_pkey = "app_channel_pkey",
+}
+
+/**
+ * update columns of table "app_channel"
+ */
+export enum app_channel_update_column {
+  app_id = "app_id",
+  id = "id",
+  name = "name",
+}
+
+/**
  * unique or primary key constraints on table "app"
  */
 export enum app_constraint {
@@ -24485,6 +24510,37 @@ export enum practice_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "product_channel"
+ */
+export enum product_channel_constraint {
+  product_channel_app_id_channel_sku_key = "product_channel_app_id_channel_sku_key",
+  product_channel_pkey = "product_channel_pkey",
+  product_channel_product_id_channel_id_key = "product_channel_product_id_channel_id_key",
+}
+
+/**
+ * select columns of table "product_channel"
+ */
+export enum product_channel_select_column {
+  app_id = "app_id",
+  channel_id = "channel_id",
+  channel_sku = "channel_sku",
+  id = "id",
+  product_id = "product_id",
+}
+
+/**
+ * update columns of table "product_channel"
+ */
+export enum product_channel_update_column {
+  app_id = "app_id",
+  channel_id = "channel_id",
+  channel_sku = "channel_sku",
+  id = "id",
+  product_id = "product_id",
+}
+
+/**
  * unique or primary key constraints on table "product"
  */
 export enum product_constraint {
@@ -27809,6 +27865,49 @@ export interface app_bool_exp {
   vimeo_project_id?: String_comparison_exp | null;
   voucher_plans?: voucher_plan_bool_exp | null;
   voucher_plans_aggregate?: voucher_plan_aggregate_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_channel". All fields are combined with a logical 'AND'.
+ */
+export interface app_channel_bool_exp {
+  _and?: app_channel_bool_exp[] | null;
+  _not?: app_channel_bool_exp | null;
+  _or?: app_channel_bool_exp[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  product_channels?: product_channel_bool_exp | null;
+  product_channels_aggregate?: product_channel_aggregate_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_channel"
+ */
+export interface app_channel_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  id?: any | null;
+  name?: string | null;
+  product_channels?: product_channel_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "app_channel"
+ */
+export interface app_channel_obj_rel_insert_input {
+  data: app_channel_insert_input;
+  on_conflict?: app_channel_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "app_channel"
+ */
+export interface app_channel_on_conflict {
+  constraint: app_channel_constraint;
+  update_columns: app_channel_update_column[];
+  where?: app_channel_bool_exp | null;
 }
 
 export interface app_host_aggregate_bool_exp {
@@ -41345,6 +41444,65 @@ export interface product_bool_exp {
   updated_at?: timestamptz_comparison_exp | null;
   voucher_plan_products?: voucher_plan_product_bool_exp | null;
   voucher_plan_products_aggregate?: voucher_plan_product_aggregate_bool_exp | null;
+}
+
+export interface product_channel_aggregate_bool_exp {
+  count?: product_channel_aggregate_bool_exp_count | null;
+}
+
+export interface product_channel_aggregate_bool_exp_count {
+  arguments?: product_channel_select_column[] | null;
+  distinct?: boolean | null;
+  filter?: product_channel_bool_exp | null;
+  predicate: Int_comparison_exp;
+}
+
+/**
+ * input type for inserting array relation for remote table "product_channel"
+ */
+export interface product_channel_arr_rel_insert_input {
+  data: product_channel_insert_input[];
+  on_conflict?: product_channel_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product_channel". All fields are combined with a logical 'AND'.
+ */
+export interface product_channel_bool_exp {
+  _and?: product_channel_bool_exp[] | null;
+  _not?: product_channel_bool_exp | null;
+  _or?: product_channel_bool_exp[] | null;
+  app?: app_bool_exp | null;
+  app_channel?: app_channel_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  channel_id?: uuid_comparison_exp | null;
+  channel_sku?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "product_channel"
+ */
+export interface product_channel_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_channel?: app_channel_obj_rel_insert_input | null;
+  app_id?: string | null;
+  channel_id?: any | null;
+  channel_sku?: string | null;
+  id?: any | null;
+  product?: product_obj_rel_insert_input | null;
+  product_id?: string | null;
+}
+
+/**
+ * on_conflict condition type for table "product_channel"
+ */
+export interface product_channel_on_conflict {
+  constraint: product_channel_constraint;
+  update_columns: product_channel_update_column[];
+  where?: product_channel_bool_exp | null;
 }
 
 export interface product_enrollment_aggregate_bool_exp {
