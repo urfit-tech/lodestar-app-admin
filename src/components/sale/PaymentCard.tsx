@@ -1,10 +1,10 @@
-import styled from 'styled-components'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { useIntl } from 'react-intl'
-import saleMessages from './translation'
+import styled from 'styled-components'
 import { PaymentLog } from '../../types/general'
+import saleMessages from './translation'
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
