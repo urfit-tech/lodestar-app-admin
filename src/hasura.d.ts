@@ -2306,62 +2306,6 @@ export interface UPDATE_COUPON_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_COUPON_CODE_EXPORT
-// ====================================================
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_member {
-  __typename: "member";
-  id: string;
-  email: string;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_status {
-  __typename: "coupon_status";
-  used: boolean | null;
-  outdated: boolean | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons {
-  __typename: "coupon";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_COUPON_CODE_EXPORT_coupon_code_coupons_member;
-  /**
-   * An object relationship
-   */
-  status: GET_COUPON_CODE_EXPORT_coupon_code_coupons_status | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code {
-  __typename: "coupon_code";
-  id: any;
-  code: string;
-  remaining: number;
-  /**
-   * An array relationship
-   */
-  coupons: GET_COUPON_CODE_EXPORT_coupon_code_coupons[];
-}
-
-export interface GET_COUPON_CODE_EXPORT {
-  /**
-   * fetch data from the table: "coupon_code"
-   */
-  coupon_code: GET_COUPON_CODE_EXPORT_coupon_code[];
-}
-
-export interface GET_COUPON_CODE_EXPORTVariables {
-  couponPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_APP_PAGE_TEMPLATE
 // ====================================================
 
@@ -2522,7 +2466,7 @@ export interface GET_ALL_MEMBER_COLLECTION {
 }
 
 export interface GET_ALL_MEMBER_COLLECTIONVariables {
-  search: string;
+  condition: member_bool_exp;
 }
 
 /* tslint:disable */
