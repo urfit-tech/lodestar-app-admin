@@ -1,10 +1,14 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Dropdown, Menu } from 'antd'
+import axios from 'axios'
+import gql from 'graphql-tag'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import moment from 'moment'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { dateRangeFormatter } from '../../helpers'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
@@ -91,11 +95,34 @@ const AppointmentPeriodCard: React.FC<
   onRefetch,
 }) => {
   const { formatMessage } = useIntl()
+  const { data, refetch: orderProductRefetch } = useQuery<hasura.GET_ORDER_PRODUCT, hasura.GET_ORDER_PRODUCTVariables>(
+    GET_ORDER_PRODUCT,
+    { variables: { orderProductId } },
+  )
 
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
+  const [startUrl, setStartUrl] = useState<string>(
+    `https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`,
+  )
+
+  useEffect(() => {
+    orderProductRefetch().then(async ({ data: orderProductData }) => {
+      const { id, options } = orderProductData.order_product[0]
+      const { meetId } = options
+
+      if (meetId !== undefined) {
+        const { data: meetServiceData } = await axios.post(
+          `${process.env.KOLABLE_API_ENDPOINT}/meets/${meetId}`,
+          { role: 'host' },
+          { headers: { 'x-api-key': process.env.KOLABLE_API_KEY } },
+        )
+        setStartUrl(meetServiceData.data.target)
+      }
+    })
+  }, [])
 
   return (
     <StyledCard>
@@ -169,11 +196,7 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.addToCalendar)}
               </Button>
             </a>
-            <a
-              href={`https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={startUrl} target="_blank" rel="noopener noreferrer">
               <StyledButton type="primary" className="ml-2" disabled={!orderProductId}>
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
               </StyledButton>
@@ -204,3 +227,12 @@ const AppointmentPeriodCard: React.FC<
 }
 
 export default AppointmentPeriodCard
+
+const GET_ORDER_PRODUCT = gql`
+  query GET_ORDER_PRODUCT($orderProductId: String!) {
+    order_product(where: { id: { _eq: $orderProductId } }) {
+      id
+      options
+    }
+  }
+`
