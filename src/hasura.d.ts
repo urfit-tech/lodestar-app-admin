@@ -9876,6 +9876,35 @@ export interface UPSERT_PRODUCT_CHANNELVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: DELETE_PRODUCT_CHANNEL
+// ====================================================
+
+export interface DELETE_PRODUCT_CHANNEL_delete_product_channel {
+  __typename: "product_channel_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PRODUCT_CHANNEL {
+  /**
+   * delete data from the table: "product_channel"
+   */
+  delete_product_channel: DELETE_PRODUCT_CHANNEL_delete_product_channel | null;
+}
+
+export interface DELETE_PRODUCT_CHANNELVariables {
+  channelIds: any[];
+  productId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_COUPON_PLAN_COLLECTION
 // ====================================================
 

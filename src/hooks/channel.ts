@@ -57,3 +57,18 @@ export const useUpsertProductChannel = () => {
   )
   return { upsertProductChannel }
 }
+
+export const useDeleteProductChannel = () => {
+  const [deleteProductChannel] = useMutation<hasura.DELETE_PRODUCT_CHANNEL, hasura.DELETE_PRODUCT_CHANNELVariables>(
+    gql`
+      mutation DELETE_PRODUCT_CHANNEL($channelIds: [uuid!]!, $productId: String!) {
+        delete_product_channel(
+          where: { _and: [{ channel_id: { _in: $channelIds } }, { product_id: { _eq: $productId } }] }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  )
+  return { deleteProductChannel }
+}

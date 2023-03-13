@@ -12,7 +12,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useProductChannelInfo, useUpsertProductChannel } from '../../hooks/channel'
+import { useDeleteProductChannel, useProductChannelInfo, useUpsertProductChannel } from '../../hooks/channel'
 import { useProductSku } from '../../hooks/data'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 
@@ -69,6 +69,7 @@ const ProductSkuModal: React.FC<
     productId,
   )
   const { upsertProductChannel } = useUpsertProductChannel()
+  const { deleteProductChannel } = useDeleteProductChannel()
 
   if (loadingProduct || loadingProductChannelInfo) {
     return <></>
@@ -138,18 +139,26 @@ const ProductSkuModal: React.FC<
           .then(() => {
             const formValues = form.getFieldsValue()
             const channelIds = Object.keys(formValues).filter(key => key !== 'sku')
-            const productChannelList = channelIds.map(id => ({
+            const upsertProductChannelList = channelIds.map(id => ({
               product_id: productId,
               app_id: appId,
               channel_id: id,
               channel_sku: formValues[id].trim() || null,
             }))
-            // FIXME: delete product_channel when unchecked
             return upsertProductChannel({
               variables: {
-                productChannel: productChannelList,
+                productChannel: upsertProductChannelList,
               },
             })
+          })
+          .then(() => {
+            const formValues = form.getFieldsValue()
+            const upsertChannelIds = Object.keys(formValues).filter(key => key !== 'sku')
+            const uncheckChannelIds =
+              productChannelInfo
+                ?.filter(info => !upsertChannelIds.includes(info.appChannelId))
+                .map(v => v.appChannelId) || []
+            return deleteProductChannel({ variables: { channelIds: uncheckChannelIds, productId } })
           })
           .then(() => {
             callback?.onSuccess?.()
