@@ -23,7 +23,9 @@ const StyledIcon = styled(Icon)`
 
 const StyledCheckbox = styled(Checkbox)`
   display: block;
-  margin-left: 0px;
+  &&& {
+    margin-left: 0px;
+  }
 `
 
 type FieldProps = {
@@ -142,6 +144,7 @@ const ProductSkuModal: React.FC<
               channel_id: id,
               channel_sku: formValues[id].trim() || null,
             }))
+            // FIXME: delete product_channel when unchecked
             return upsertProductChannel({
               variables: {
                 productChannel: productChannelList,

@@ -141,12 +141,13 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
             renderTrigger={({ onOpen, sku }) => (
               <div className="d-flex flex-column align-items-start">
                 <StyledModalButton type="link" onClick={() => onOpen?.()}>
-                  {sku
-                    ? `${formatMessage(commonMessages.label.sku)}: ${sku}`
-                    : formatMessage(commonMessages.label.skuSetting)}
+                  {!sku &&
+                    productChannelInfo?.filter(v => v.channelSku).length === 0 &&
+                    formatMessage(commonMessages.label.skuSetting)}
+                  {sku && `${formatMessage(commonMessages.label.sku)}: ${sku}`}
                 </StyledModalButton>
 
-                {sku &&
+                {productChannelInfo &&
                   productChannelInfo
                     ?.filter(v => v.channelSku)
                     ?.map(v => (
