@@ -320,7 +320,7 @@ const ProductSkuModal: React.FC<
             {skuError.type === 'message' ? (
               <span style={{ color: '#ff7d62' }}>{skuError.message}</span>
             ) : (
-              <Link to={skuError.url} color="#ff7d62">
+              <Link to={skuError.url} target="_blank" color="#ff7d62">
                 {skuError.message}
               </Link>
             )}
