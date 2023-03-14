@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { handleError, productTypeToPath } from '../../helpers'
+import { handleError, notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useDeleteProductChannel, useProductChannelInfo, useUpsertProductChannel } from '../../hooks/channel'
 import { useProductSku } from '../../hooks/data'
@@ -142,14 +142,7 @@ const ProductSkuModal: React.FC<
       })
       .then(async formValues => {
         const { data } = await client.query<hasura.GET_USED_CHANNEL_SKU, hasura.GET_USED_CHANNEL_SKUVariables>({
-          query: gql`
-            query GET_USED_CHANNEL_SKU($skuList: [String!]) {
-              product_channel(where: { channel_sku: { _in: $skuList } }) {
-                product_id
-                channel_id
-              }
-            }
-          `,
+          query: GET_USED_CHANNEL_SKU,
           variables: {
             skuList: Object.keys(formValues)
               .filter(key => key !== 'sku')
@@ -158,19 +151,54 @@ const ProductSkuModal: React.FC<
         })
         const productChannel = data.product_channel.filter(v => v.product_id !== productId)
         if (productChannel.length > 0) {
-          const skuErrors = productChannel.map(v => {
-            //FIXME: get product title, id
-            const [type, target] = v.product_id.split('_')
-            const path = productTypeToPath(type)
-            return {
+          //FIXME: set input border color
+          const duplicatedTargets = productChannel.map(v => v.product_id.split('_')[1]).filter(notEmpty)
+          const { data } = await client.query<hasura.GET_PRODUCT_TITLE, hasura.GET_PRODUCT_TITLEVariables>({
+            query: GET_PRODUCT_TITLE,
+            variables: {
+              targets: duplicatedTargets,
+            },
+          })
+
+          const errors: SkuError[] = []
+          data.program_plan.forEach(v => {
+            errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                name: `${'productTitle'} - ${'productPlanTitle'}`,
+                name: `${v.program.title} - ${v.title}`,
               }),
-              url: `/admin/${path}/${'productId'}?tab=plan`,
-            }
+              url: `/programs/${v.program.id}?tab=plan`,
+            })
           })
-          setSkuErrors(skuErrors)
+          data.program_package_plan.forEach(v => {
+            errors.push({
+              type: SkuErrorType.LINK,
+              message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
+                name: `${v.program_package.title} - ${v.title}`,
+              }),
+              url: `/program-packages/${v.program_package.id}?tab=sales`,
+            })
+          })
+          data.project_plan.forEach(v => {
+            errors.push({
+              type: SkuErrorType.LINK,
+              message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
+                name: `${v.project.title} - ${v.title}`,
+              }),
+              url: `/projects/${v.project.id}?tab=salesPlan`,
+            })
+          })
+          data.activity_ticket.forEach(v => {
+            errors.push({
+              type: SkuErrorType.LINK,
+              message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
+                name: `${v.activity.title} - ${v.title}`,
+              }),
+              url: `/activities/${v.activity.id}?tab=tickets`,
+            })
+          })
+
+          setSkuErrors(errors)
           return Promise.reject(productChannel)
         }
       })
@@ -214,7 +242,7 @@ const ProductSkuModal: React.FC<
           })
           .catch(handleError)
       })
-      .catch(handleError)
+      .catch(() => {})
       .finally(() => setLoading(false))
   }
 
@@ -287,7 +315,7 @@ const ProductSkuModal: React.FC<
       </Form>
       {skuErrors.length > 0 &&
         skuErrors.map(skuError => (
-          <div>
+          <div className="mb-2">
             <StyledIcon component={() => <ExclamationCircleIcon />} className="mr-2" />
             {skuError.type === 'message' ? (
               <span style={{ color: '#ff7d62' }}>{skuError.message}</span>
@@ -328,6 +356,48 @@ const UPDATE_PRODUCT_SKU = gql`
   mutation UPDATE_PRODUCT_SKU($productId: String, $sku: String) {
     update_product(where: { id: { _eq: $productId } }, _set: { sku: $sku }) {
       affected_rows
+    }
+  }
+`
+
+const GET_PRODUCT_TITLE = gql`
+  query GET_PRODUCT_TITLE($targets: [uuid!]) {
+    program_plan(where: { id: { _in: $targets } }) {
+      title
+      program {
+        id
+        title
+      }
+    }
+    program_package_plan(where: { id: { _in: $targets } }) {
+      title
+      program_package {
+        id
+        title
+      }
+    }
+    project_plan(where: { id: { _in: $targets } }) {
+      title
+      project {
+        id
+        title
+      }
+    }
+    activity_ticket(where: { id: { _in: $targets } }) {
+      title
+      activity {
+        id
+        title
+      }
+    }
+  }
+`
+
+const GET_USED_CHANNEL_SKU = gql`
+  query GET_USED_CHANNEL_SKU($skuList: [String!]) {
+    product_channel(where: { channel_sku: { _in: $skuList } }) {
+      product_id
+      channel_id
     }
   }
 `

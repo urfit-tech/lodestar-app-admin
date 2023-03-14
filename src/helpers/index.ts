@@ -384,23 +384,3 @@ export const isImageUrlResized = (imageUrl: string) => {
 export const isValidEmail = (email: string) => {
   return /^\w+((-\w+)|(\.\w+))*@\w+((\.|-)\w+)*\.[A-Za-z]+$/.test(email)
 }
-
-export const productTypeToPath = (type: string) => {
-  let path: string | null = null
-  switch (type) {
-    case 'ProjectPlan':
-      path = 'projects'
-      break
-    case 'ProgramPlan':
-      path = 'programs'
-      break
-    case 'ProgramPackagePlan':
-      path = 'program-packages'
-      break
-    case 'ActivityTicket':
-      path = 'activities'
-      break
-    default:
-  }
-  return path
-}

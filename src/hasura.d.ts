@@ -2051,32 +2051,6 @@ export interface INSERT_POINT_LOG_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_USED_CHANNEL_SKU
-// ====================================================
-
-export interface GET_USED_CHANNEL_SKU_product_channel {
-  __typename: "product_channel";
-  product_id: string;
-  channel_id: any;
-}
-
-export interface GET_USED_CHANNEL_SKU {
-  /**
-   * fetch data from the table: "product_channel"
-   */
-  product_channel: GET_USED_CHANNEL_SKU_product_channel[];
-}
-
-export interface GET_USED_CHANNEL_SKUVariables {
-  skuList?: string[] | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PRODUCT_SKU
 // ====================================================
 
@@ -2098,6 +2072,124 @@ export interface UPDATE_PRODUCT_SKU {
 export interface UPDATE_PRODUCT_SKUVariables {
   productId?: string | null;
   sku?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_TITLE
+// ====================================================
+
+export interface GET_PRODUCT_TITLE_program_plan_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_program_plan {
+  __typename: "program_plan";
+  title: string;
+  /**
+   * An object relationship
+   */
+  program: GET_PRODUCT_TITLE_program_plan_program;
+}
+
+export interface GET_PRODUCT_TITLE_program_package_plan_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_program_package_plan {
+  __typename: "program_package_plan";
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_PRODUCT_TITLE_program_package_plan_program_package;
+}
+
+export interface GET_PRODUCT_TITLE_project_plan_project {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_project_plan {
+  __typename: "project_plan";
+  title: string;
+  /**
+   * An object relationship
+   */
+  project: GET_PRODUCT_TITLE_project_plan_project;
+}
+
+export interface GET_PRODUCT_TITLE_activity_ticket_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_activity_ticket {
+  __typename: "activity_ticket";
+  title: string;
+  /**
+   * An object relationship
+   */
+  activity: GET_PRODUCT_TITLE_activity_ticket_activity;
+}
+
+export interface GET_PRODUCT_TITLE {
+  /**
+   * fetch data from the table: "program_plan"
+   */
+  program_plan: GET_PRODUCT_TITLE_program_plan[];
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_PRODUCT_TITLE_program_package_plan[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PRODUCT_TITLE_project_plan[];
+  /**
+   * fetch data from the table: "activity_ticket"
+   */
+  activity_ticket: GET_PRODUCT_TITLE_activity_ticket[];
+}
+
+export interface GET_PRODUCT_TITLEVariables {
+  targets?: any[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_USED_CHANNEL_SKU
+// ====================================================
+
+export interface GET_USED_CHANNEL_SKU_product_channel {
+  __typename: "product_channel";
+  product_id: string;
+  channel_id: any;
+}
+
+export interface GET_USED_CHANNEL_SKU {
+  /**
+   * fetch data from the table: "product_channel"
+   */
+  product_channel: GET_USED_CHANNEL_SKU_product_channel[];
+}
+
+export interface GET_USED_CHANNEL_SKUVariables {
+  skuList?: string[] | null;
 }
 
 /* tslint:disable */
