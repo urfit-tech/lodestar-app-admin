@@ -465,6 +465,8 @@
   "common.MetaProductDeletionBlock.deleteProduct": "刪除{metaProduct}",
   "common.MetaProductDeletionBlock.deleteProductWarning": "請仔細確認是否真的要刪除{metaProduct}，因為一旦刪除就無法恢復。",
   "common.MetaProductDeletionBlock.successfullyDeleted": "Successfully deleted",
+  "common.ProductSkuModal.channelSkuDuplicated": "通路料號重複，請重新設定",
+  "common.ProductSkuModal.productChannelSkuDuplicated": "通路料號 與「{name}」重複，請重新設定",
   "common.confirmPrivatelyPublishedNotation": "將不會出現在列表，僅以私下提供連結的方式。",
   "common.confirmPrivatelyPublishedTitle": "確定要設為私密發佈？",
   "common.event.cancelSubscriptionSuccess": "Cancel SubscriptionSuccess",

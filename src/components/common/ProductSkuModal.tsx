@@ -1,5 +1,5 @@
 import Icon from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
@@ -8,13 +8,15 @@ import { ExclamationCircleIcon } from 'lodestar-app-element/src/images'
 import { flatten, mergeAll } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
+import { handleError, productTypeToPath } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useDeleteProductChannel, useProductChannelInfo, useUpsertProductChannel } from '../../hooks/channel'
 import { useProductSku } from '../../hooks/data'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import componentCommonMessages from './translation'
 
 const StyledIcon = styled(Icon)`
   vertical-align: baseline;
@@ -32,13 +34,19 @@ type FieldProps = {
   sku?: string
 } & { [key: string]: string }
 
+enum SkuErrorType {
+  MESSAGE = 'message',
+  LINK = 'link',
+}
+
 type SkuError =
   | {
+      type: SkuErrorType.LINK
       message: string
-      productId: string
-      link: string
+      url: string
     }
   | {
+      type: SkuErrorType.MESSAGE
       message: string
     }
 
@@ -59,7 +67,8 @@ const ProductSkuModal: React.FC<
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-  const [skuError, setSkuError] = useState<SkuError | null>(null)
+  const [skuErrors, setSkuErrors] = useState<SkuError[]>([])
+  const client = useApolloClient()
   const { loadingProduct, product, refetchProduct } = useProductSku(productId)
   const [updateProductSku] = useMutation<hasura.UPDATE_PRODUCT_SKU, hasura.UPDATE_PRODUCT_SKUVariables>(
     UPDATE_PRODUCT_SKU,
@@ -84,6 +93,7 @@ const ProductSkuModal: React.FC<
       initialChannelSkuList,
     ]),
   )
+
   const handleSubmit = (callback?: { onSuccess?: () => void }) => {
     form
       .validateFields()
@@ -120,13 +130,49 @@ const ProductSkuModal: React.FC<
         // })
 
         if (duplicatedChannelIds.length > 0) {
-          setSkuError({ message: '通路料號重複，請重新設定' })
+          setSkuErrors([
+            {
+              type: SkuErrorType.MESSAGE,
+              message: formatMessage(componentCommonMessages.ProductSkuModal.channelSkuDuplicated),
+            },
+          ])
           return Promise.reject(duplicatedChannelIds)
         }
         return formValues
       })
-      .then(formValues => {
-        // FIXME: check sku exists
+      .then(async formValues => {
+        const { data } = await client.query<hasura.GET_USED_CHANNEL_SKU, hasura.GET_USED_CHANNEL_SKUVariables>({
+          query: gql`
+            query GET_USED_CHANNEL_SKU($skuList: [String!]) {
+              product_channel(where: { channel_sku: { _in: $skuList } }) {
+                product_id
+                channel_id
+              }
+            }
+          `,
+          variables: {
+            skuList: Object.keys(formValues)
+              .filter(key => key !== 'sku')
+              .map(key => formValues[key]),
+          },
+        })
+        const productChannel = data.product_channel.filter(v => v.product_id !== productId)
+        if (productChannel.length > 0) {
+          const skuErrors = productChannel.map(v => {
+            //FIXME: get product title, id
+            const [type, target] = v.product_id.split('_')
+            const path = productTypeToPath(type)
+            return {
+              type: SkuErrorType.LINK,
+              message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
+                name: `${'productTitle'} - ${'productPlanTitle'}`,
+              }),
+              url: `/admin/${path}/${'productId'}?tab=plan`,
+            }
+          })
+          setSkuErrors(skuErrors)
+          return Promise.reject(productChannel)
+        }
       })
       .then(() => {
         const { sku } = form.getFieldsValue()
@@ -143,7 +189,7 @@ const ProductSkuModal: React.FC<
               product_id: productId,
               app_id: appId,
               channel_id: id,
-              channel_sku: formValues[id].trim() || null,
+              channel_sku: formValues[id]?.trim() || null,
             }))
             return upsertProductChannel({
               variables: {
@@ -168,7 +214,7 @@ const ProductSkuModal: React.FC<
           })
           .catch(handleError)
       })
-      .catch(() => {})
+      .catch(handleError)
       .finally(() => setLoading(false))
   }
 
@@ -176,9 +222,20 @@ const ProductSkuModal: React.FC<
     <AdminModal
       title={renderTitle?.() || formatMessage(commonMessages.label.skuSetting)}
       footer={null}
+      onCancel={() => {
+        form.resetFields()
+        setSkuErrors([])
+      }}
       renderFooter={({ setVisible }) => (
         <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
+          <Button
+            className="mr-2"
+            onClick={() => {
+              setVisible(false)
+              form.resetFields()
+              setSkuErrors([])
+            }}
+          >
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button
@@ -203,7 +260,11 @@ const ProductSkuModal: React.FC<
           renderTrigger?.({
             sku: product?.sku || null,
             onOpen: () => setVisible(true),
-            onClose: () => setVisible(false),
+            onClose: () => {
+              setVisible(false)
+              form.resetFields()
+              setSkuErrors([])
+            },
           }) || null
         )
       }}
@@ -224,18 +285,19 @@ const ProductSkuModal: React.FC<
           ))}
         </Form.Item>
       </Form>
-      {skuError && (
-        <div>
-          <StyledIcon component={() => <ExclamationCircleIcon />} className="mr-2" />
-          <span style={{ color: '#ff7d62' }}>
-            {skuError.message}
-            {/* FIXME: link to product admin page */}
-            {/* <Link to={'skuError.link'} color="#ff7d62">
-              {skuError.message}
-            </Link> */}
-          </span>
-        </div>
-      )}
+      {skuErrors.length > 0 &&
+        skuErrors.map(skuError => (
+          <div>
+            <StyledIcon component={() => <ExclamationCircleIcon />} className="mr-2" />
+            {skuError.type === 'message' ? (
+              <span style={{ color: '#ff7d62' }}>{skuError.message}</span>
+            ) : (
+              <Link to={skuError.url} color="#ff7d62">
+                {skuError.message}
+              </Link>
+            )}
+          </div>
+        ))}
     </AdminModal>
   )
 }

@@ -2051,6 +2051,32 @@ export interface INSERT_POINT_LOG_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_USED_CHANNEL_SKU
+// ====================================================
+
+export interface GET_USED_CHANNEL_SKU_product_channel {
+  __typename: "product_channel";
+  product_id: string;
+  channel_id: any;
+}
+
+export interface GET_USED_CHANNEL_SKU {
+  /**
+   * fetch data from the table: "product_channel"
+   */
+  product_channel: GET_USED_CHANNEL_SKU_product_channel[];
+}
+
+export interface GET_USED_CHANNEL_SKUVariables {
+  skuList?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PRODUCT_SKU
 // ====================================================
 
