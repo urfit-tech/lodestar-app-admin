@@ -1,8 +1,8 @@
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import OrderStatusTag from './OrderStatusTag'
 import { currencyFormatter } from '../../helpers'
 import { OrderDiscount, OrderProduct } from '../../types/general'
-import { useIntl } from 'react-intl'
+import OrderStatusTag from './OrderStatusTag'
 import saleMessages from './translation'
 
 const StyledCard = styled.div`

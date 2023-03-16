@@ -10262,6 +10262,32 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_COUPON_STATUS
+// ====================================================
+
+export interface GET_COUPON_STATUS_coupon_status {
+  __typename: "coupon_status";
+  used: boolean | null;
+  coupon_id: any | null;
+}
+
+export interface GET_COUPON_STATUS {
+  /**
+   * fetch data from the table: "coupon_status"
+   */
+  coupon_status: GET_COUPON_STATUS_coupon_status[];
+}
+
+export interface GET_COUPON_STATUSVariables {
+  couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
 // ====================================================
 
@@ -10486,6 +10512,53 @@ export interface UPDATE_VOUCHER_PLANVariables {
   isTransferable?: boolean | null;
   saleAmount?: number | null;
   salePrice?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_COUPON_CODE
+// ====================================================
+
+export interface GET_COUPON_CODE_coupon_code_coupons_member {
+  __typename: "member";
+  id: string;
+  email: string;
+}
+
+export interface GET_COUPON_CODE_coupon_code_coupons {
+  __typename: "coupon";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_COUPON_CODE_coupon_code_coupons_member;
+}
+
+export interface GET_COUPON_CODE_coupon_code {
+  __typename: "coupon_code";
+  id: any;
+  code: string;
+  count: number;
+  remaining: number;
+  /**
+   * An array relationship
+   */
+  coupons: GET_COUPON_CODE_coupon_code_coupons[];
+}
+
+export interface GET_COUPON_CODE {
+  /**
+   * fetch data from the table: "coupon_code"
+   */
+  coupon_code: GET_COUPON_CODE_coupon_code[];
+}
+
+export interface GET_COUPON_CODEVariables {
+  couponPlanId: any;
 }
 
 /* tslint:disable */

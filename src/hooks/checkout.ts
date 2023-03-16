@@ -149,6 +149,69 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
   }
 }
 
+export const useCouponCode = (couponPlanId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_COUPON_CODE, hasura.GET_COUPON_CODEVariables>(
+    GET_COUPON_CODE,
+    {
+      variables: {
+        couponPlanId,
+      },
+    },
+  )
+
+  const couponCodes: (Pick<CouponCodeProps, 'id' | 'code' | 'count' | 'remaining'> & {
+    coupons: { id: string; memberEmail: string }[]
+  })[] =
+    data?.coupon_code.map(couponCode => ({
+      id: couponCode.id,
+      code: couponCode.code,
+      count: couponCode.count,
+      remaining: couponCode.remaining,
+      coupons: couponCode.coupons.map(couponCode => ({
+        id: couponCode.id,
+        memberEmail: couponCode.member?.email || '',
+      })),
+    })) || []
+
+  return {
+    loadingCouponCodes: loading,
+    errorCouponCodes: error,
+    couponCodes: couponCodes,
+    refetchCouponCodes: refetch,
+  }
+}
+
+export const useCouponsStatus = (couponPlanId: string) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_COUPON_STATUS, hasura.GET_COUPON_STATUSVariables>(
+    gql`
+      query GET_COUPON_STATUS($couponPlanId: uuid!) {
+        coupon_status(where: { coupon: { coupon_code: { coupon_plan_id: { _eq: $couponPlanId } } } }) {
+          used
+          coupon_id
+        }
+      }
+    `,
+    {
+      variables: {
+        couponPlanId,
+      },
+    },
+  )
+
+  const couponsStatus: { id: string; used: boolean }[] =
+    data?.coupon_status.map(couponStatus => ({
+      id: couponStatus.coupon_id,
+      used: !!couponStatus?.used,
+    })) || []
+
+  return {
+    loading,
+    error,
+    data: couponsStatus,
+    refetch,
+  }
+}
+
 export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLLECTIONVariables['condition']) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_VOUCHER_PLAN_COLLECTION,
@@ -557,6 +620,24 @@ export const useCheck = (
       (check.shippingOption?.fee || 0),
   }
 }
+
+const GET_COUPON_CODE = gql`
+  query GET_COUPON_CODE($couponPlanId: uuid!) {
+    coupon_code(where: { coupon_plan: { id: { _eq: $couponPlanId } } }) {
+      id
+      code
+      count
+      remaining
+      coupons {
+        id
+        member {
+          id
+          email
+        }
+      }
+    }
+  }
+`
 
 const GET_VOUCHER_CODE = gql`
   query GET_VOUCHER_CODE($voucherPlanId: uuid!) {

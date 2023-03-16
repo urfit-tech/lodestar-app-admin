@@ -1,8 +1,8 @@
-import styled from 'styled-components'
-import { useIntl } from 'react-intl'
-import saleMessages from './translation'
-import xss from 'xss'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import xss from 'xss'
+import saleMessages from './translation'
 
 const StyledContainer = styled.div`
   padding: 16px;
@@ -53,7 +53,11 @@ const OrderOtherInfoCard: React.FC<{
       message: orderLogExecutor,
       isRender: enabledModules.member_assignment,
     },
-    { title: formatMessage(saleMessages.OrderOtherInfoCard.referrer), message: referrer, isRender: enabledModules.referrer },
+    {
+      title: formatMessage(saleMessages.OrderOtherInfoCard.referrer),
+      message: referrer,
+      isRender: enabledModules.referrer,
+    },
     {
       title: formatMessage(saleMessages.OrderOtherInfoCard.sharingCode),
       message: sharingCode,

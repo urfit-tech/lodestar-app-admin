@@ -66,13 +66,11 @@ export type VoucherCodeProps = {
   code: string
   count: number
   remaining: number
-
   used?: number
 }
 
 export type VoucherProps = {
   id: string
-
   used?: boolean
 }
 
