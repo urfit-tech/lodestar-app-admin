@@ -9,8 +9,8 @@ import { useIntl } from 'react-intl'
 import AdminModal from '../../components/admin/AdminModal'
 import { memberMessages } from '../../helpers/translation'
 
-const ONLY_GSM_ALPHABET_MAX_LENGTH = 159;
-const MAX_LENGTH = 69;
+const ONLY_GSM_ALPHABET_MAX_LENGTH = 159
+const MAX_LENGTH = 69
 const isGSMAlphabet = (text: string) => {
   const rule = `^[\\w \\r\\n@!$"#%'()*+,-.\\/:;<=>?_¡£¥&¤&§¿]+$`
   const regex = new RegExp(rule, 'ig')
@@ -83,7 +83,7 @@ const MemberSmsModel: React.VFC<{ memberId: string; phone: string; name: string 
       <Form.Item
         className="mb-3"
         validateStatus={isTooLong ? 'error' : ''}
-        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong, {charactersLimit: MAX_LENGTH}) : undefined}
+        help={isTooLong ? formatMessage(memberMessages.text.smsTooLong, { charactersLimit: MAX_LENGTH }) : undefined}
       >
         <TextArea
           placeholder={formatMessage(memberMessages.placeholder.smsContent)}

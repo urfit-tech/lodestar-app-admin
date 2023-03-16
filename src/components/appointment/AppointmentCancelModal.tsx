@@ -1,14 +1,14 @@
-import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import { Textarea } from '@chakra-ui/react'
+import { Button, message } from 'antd'
+import { CommonTitleMixin } from 'lodestar-app-element/src/components/common'
+import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { CommonTitleMixin } from 'lodestar-app-element/src/components/common'
-import appointmentMessages from './translation'
-import { commonMessages } from '../../helpers/translation'
-import { Textarea } from '@chakra-ui/react'
-import { useState } from 'react'
-import { Button, message } from 'antd'
 import { handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { useCancelAppointment } from '../../hooks/appointment'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import appointmentMessages from './translation'
 
 const StyledModalTitle = styled.div`
   ${CommonTitleMixin}
