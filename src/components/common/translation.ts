@@ -35,7 +35,7 @@ const commonMessages = {
     },
     productChannelSkuDuplicated: {
       id: 'common.ProductSkuModal.productChannelSkuDuplicated',
-      defaultMessage: '通路料號 與「{name}」重複，請重新設定',
+      defaultMessage: '通路料號 {channelSku} 與「{productName}」重複，請重新設定',
     },
   }),
 }

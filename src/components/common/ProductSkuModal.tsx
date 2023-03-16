@@ -141,7 +141,10 @@ const ProductSkuModal: React.FC<
         return formValues
       })
       .then(async formValues => {
-        const { data } = await client.query<hasura.GET_USED_CHANNEL_SKU, hasura.GET_USED_CHANNEL_SKUVariables>({
+        const { data: channelSkuData } = await client.query<
+          hasura.GET_USED_CHANNEL_SKU,
+          hasura.GET_USED_CHANNEL_SKUVariables
+        >({
           query: GET_USED_CHANNEL_SKU,
           variables: {
             skuList: Object.keys(formValues)
@@ -149,11 +152,14 @@ const ProductSkuModal: React.FC<
               .map(key => formValues[key]),
           },
         })
-        const productChannel = data.product_channel.filter(v => v.product_id !== productId)
+        const productChannel = channelSkuData.product_channel.filter(v => v.product_id !== productId)
         if (productChannel.length > 0) {
           //FIXME: set input border color
           const duplicatedTargets = productChannel.map(v => v.product_id.split('_')[1]).filter(notEmpty)
-          const { data } = await client.query<hasura.GET_PRODUCT_TITLE, hasura.GET_PRODUCT_TITLEVariables>({
+          const { data: productTitleData } = await client.query<
+            hasura.GET_PRODUCT_TITLE,
+            hasura.GET_PRODUCT_TITLEVariables
+          >({
             query: GET_PRODUCT_TITLE,
             variables: {
               targets: duplicatedTargets,
@@ -161,40 +167,48 @@ const ProductSkuModal: React.FC<
           })
 
           const errors: SkuError[] = []
-          data.program_plan.forEach(v => {
+          productTitleData.program_plan.forEach(programPlan => {
+            const channel = productChannel.find(v => v.product_id.includes(programPlan.id))
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                name: `${v.program.title} - ${v.title}`,
+                productName: `${programPlan.program.title} - ${programPlan.title}`,
+                channelSku: channel?.channel_sku || '',
               }),
-              url: `/programs/${v.program.id}?tab=plan`,
+              url: `/programs/${programPlan.program.id}?tab=plan`,
             })
           })
-          data.program_package_plan.forEach(v => {
+          productTitleData.program_package_plan.forEach(programPackagePlan => {
+            const channel = productChannel.find(v => v.product_id.includes(programPackagePlan.id))
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                name: `${v.program_package.title} - ${v.title}`,
+                productName: `${programPackagePlan.program_package.title} - ${programPackagePlan.title}`,
+                channelSku: channel?.channel_sku || '',
               }),
-              url: `/program-packages/${v.program_package.id}?tab=sales`,
+              url: `/program-packages/${programPackagePlan.program_package.id}?tab=sales`,
             })
           })
-          data.project_plan.forEach(v => {
+          productTitleData.project_plan.forEach(projectPlan => {
+            const channel = productChannel.find(v => v.product_id.includes(projectPlan.id))
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                name: `${v.project.title} - ${v.title}`,
+                productName: `${projectPlan.project.title} - ${projectPlan.title}`,
+                channelSku: channel?.channel_sku || '',
               }),
-              url: `/projects/${v.project.id}?tab=salesPlan`,
+              url: `/projects/${projectPlan.project.id}?tab=salesPlan`,
             })
           })
-          data.activity_ticket.forEach(v => {
+          productTitleData.activity_ticket.forEach(activityTicket => {
+            const channel = productChannel.find(v => v.product_id.includes(activityTicket.id))
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                name: `${v.activity.title} - ${v.title}`,
+                productName: `${activityTicket.activity.title} - ${activityTicket.title}`,
+                channelSku: channel?.channel_sku || '',
               }),
-              url: `/activities/${v.activity.id}?tab=tickets`,
+              url: `/activities/${activityTicket.activity.id}?tab=tickets`,
             })
           })
 
@@ -363,6 +377,7 @@ const UPDATE_PRODUCT_SKU = gql`
 const GET_PRODUCT_TITLE = gql`
   query GET_PRODUCT_TITLE($targets: [uuid!]) {
     program_plan(where: { id: { _in: $targets } }) {
+      id
       title
       program {
         id
@@ -370,6 +385,7 @@ const GET_PRODUCT_TITLE = gql`
       }
     }
     program_package_plan(where: { id: { _in: $targets } }) {
+      id
       title
       program_package {
         id
@@ -377,6 +393,7 @@ const GET_PRODUCT_TITLE = gql`
       }
     }
     project_plan(where: { id: { _in: $targets } }) {
+      id
       title
       project {
         id
@@ -384,6 +401,7 @@ const GET_PRODUCT_TITLE = gql`
       }
     }
     activity_ticket(where: { id: { _in: $targets } }) {
+      id
       title
       activity {
         id
@@ -398,6 +416,7 @@ const GET_USED_CHANNEL_SKU = gql`
     product_channel(where: { channel_sku: { _in: $skuList } }) {
       product_id
       channel_id
+      channel_sku
     }
   }
 `
