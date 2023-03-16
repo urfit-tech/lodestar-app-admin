@@ -253,6 +253,7 @@ export const commonMessages = {
     memberCategory: { id: 'common.label.memberCategory', defaultMessage: '會員分類' },
     material: { id: 'common.label.material', defaultMessage: '教材' },
     sku: { id: 'common.label.sku', defaultMessage: 'SKU' },
+    appChannel: { id: 'common.label.appChannel', defaultMessage: '開放通路銷售' },
     skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
     roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
     permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
@@ -470,6 +471,7 @@ export const commonMessages = {
   }),
   placeholder: defineMessages({
     enterUrlLink: { id: 'common.placeholder.enterUrlLink', defaultMessage: '輸入網址連結' },
+    enterChannelSku: { id: 'common.placeholder.enterChannelSku', defaultMessage: '請輸入通路料號' },
     useCommaToSeparateKeywords: {
       id: 'common.placeholder.useCommaToSeparateKeywords',
       defaultMessage: 'Use comma to separate keywords',
