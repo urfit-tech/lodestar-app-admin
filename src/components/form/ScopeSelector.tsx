@@ -168,7 +168,7 @@ const ScopeSelector: React.FC<{
                   key={productType}
                   value={productType}
                   title={<ProductTypeLabel productType={productType} />}
-                  checkable={false}
+                  name={productType}
                 >
                   {briefProducts[productType]?.map(product => (
                     <TreeSelect.TreeNode

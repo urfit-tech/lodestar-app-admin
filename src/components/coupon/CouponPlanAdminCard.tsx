@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Modal } from 'antd'
 import gql from 'graphql-tag'
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -122,9 +122,15 @@ const CouponPlanAdminCard: React.FC<{
   renderDescription?: (props: { productIds: string[] }) => ReactElement
   renderCount?: ReactElement
   renderEditDropdown?: ReactElement
-}> = ({ couponPlan, isAvailable, renderDescription, renderCount, renderEditDropdown }) => {
+  stateCode?: number
+}> = ({ couponPlan, isAvailable, renderDescription, renderCount, renderEditDropdown, stateCode }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const { couponPlanProductIdList, refetchCouponPlanProductIdList } = useCouponPlanProductIds(couponPlan.id)
+
+  useEffect(() => {
+    refetchCouponPlanProductIdList()
+  }, [stateCode])
 
   return (
     <StyledAdminCard
@@ -180,24 +186,17 @@ const CouponPlanAdminCard: React.FC<{
         {renderEditDropdown}
       </div>
       {isModalVisible && (
-        <CouponPlanPreviewModal
-          couponPlanId={couponPlan.id}
-          title={couponPlan.title}
-          renderDescription={renderDescription}
-          onClose={() => setIsModalVisible(false)}
-        />
+        <StyledModal visible title={null} footer={null} onCancel={() => setIsModalVisible(false)}>
+          <StyledModalTitle className="mb-3">{couponPlan.title}</StyledModalTitle>
+          {renderDescription?.({ productIds: couponPlanProductIdList })}
+        </StyledModal>
       )}
     </StyledAdminCard>
   )
 }
 
-const CouponPlanPreviewModal: React.FC<{
-  couponPlanId: string
-  title: string
-  onClose?: () => void
-  renderDescription?: (props: { productIds: string[] }) => ReactElement
-}> = ({ couponPlanId, title, renderDescription, onClose }) => {
-  const { data } = useQuery<hasura.GET_COUPON_PLAN_PRODUCTS, hasura.GET_COUPON_PLAN_PRODUCTSVariables>(
+const useCouponPlanProductIds = (couponPlanId: string) => {
+  const { data, refetch } = useQuery<hasura.GET_COUPON_PLAN_PRODUCTS, hasura.GET_COUPON_PLAN_PRODUCTSVariables>(
     gql`
       query GET_COUPON_PLAN_PRODUCTS($couponPlanId: uuid!) {
         coupon_plan_product(where: { coupon_plan_id: { _eq: $couponPlanId } }) {
@@ -208,13 +207,11 @@ const CouponPlanPreviewModal: React.FC<{
     `,
     { variables: { couponPlanId } },
   )
-  const productIds = data?.coupon_plan_product.map(v => v.product_id) || []
-  return (
-    <StyledModal visible title={null} footer={null} onCancel={onClose}>
-      <StyledModalTitle className="mb-3">{title}</StyledModalTitle>
-      {renderDescription?.({ productIds })}
-    </StyledModal>
-  )
+  const couponPlanProductIdList = data?.coupon_plan_product.map(v => v.product_id) || []
+  return {
+    couponPlanProductIdList,
+    refetchCouponPlanProductIdList: refetch,
+  }
 }
 
 export default CouponPlanAdminCard
