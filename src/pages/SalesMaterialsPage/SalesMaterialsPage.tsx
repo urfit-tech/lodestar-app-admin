@@ -233,11 +233,7 @@ const GET_SALES_MATERIALS = gql`
       where: {
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
-        member: {
-          app_id: { _eq: $appId }
-          manager_id: $sales
-          member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt } }
-        }
+        member: { app_id: { _eq: $appId }, manager_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt } }
       }
     ) {
       v: value
