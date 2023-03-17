@@ -2751,11 +2751,22 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_appointment_plan {
   published_at: any | null;
 }
 
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
 export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_plan {
   __typename: "podcast_plan";
   id: any;
   title: string;
   published_at: any | null;
+  /**
+   * An object relationship
+   */
+  creator: GET_PRODUCT_SELECTION_COLLECTION_podcast_plan_creator | null;
 }
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_coupon_plan {

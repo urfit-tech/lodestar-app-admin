@@ -1,13 +1,11 @@
-import { Checkbox, Radio, Tag, TreeSelect } from 'antd'
+import { Checkbox, Radio } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { ProductType } from 'lodestar-app-element/src/types/product'
-import { keys } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { useAllBriefProductCollection } from '../../hooks/data'
-import ProductTypeLabel from '../common/ProductTypeLabel'
+import ProductSelector from './ProductSelector'
 
 const StyledLabel = styled.div`
   color: var(--gray-darker);
@@ -15,23 +13,7 @@ const StyledLabel = styled.div`
   line-height: 1.71;
   letter-spacing: 0.4px;
 `
-const StyledProductParent = styled.div`
-  max-width: 10rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-const StyledProductTitle = styled.div`
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
 
-  ${StyledProductParent} + & {
-    max-width: 14rem;
-    :before {
-      content: ' - ';
-    }
-  }
-`
 const StyledColumns = styled.div`
   columns: 2;
 `
@@ -52,7 +34,6 @@ const ScopeSelector: React.FC<{
 }> = ({ value, onChange, allText, specificTypeText, otherProductText }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { briefProducts } = useAllBriefProductCollection()
 
   const [scopeType, setScopeType] = useState<'all' | 'specific'>(
     !value || (value.productTypes === null && value.productIds.length === 0) ? 'all' : 'specific',
@@ -61,30 +42,31 @@ const ScopeSelector: React.FC<{
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>(value?.productIds || [])
 
   return (
-    <Radio.Group
-      value={scopeType}
-      onChange={value => {
-        setScopeType(value.target.value)
-        onChange?.(
-          value.target.value === 'all'
-            ? {
-                productTypes: null,
-                productIds: [],
-              }
-            : {
-                productTypes: selectedProductTypes,
-                productIds: selectedProductIds,
-              },
-        )
-      }}
-    >
-      <Radio value="all" className="d-block mb-4">
-        {allText || formatMessage(commonMessages.product.allItem)}
-      </Radio>
-      <Radio value="specific" className="d-block">
-        {specificTypeText || formatMessage(commonMessages.product.specificItem)}
-      </Radio>
-
+    <>
+      <Radio.Group
+        value={scopeType}
+        onChange={value => {
+          setScopeType(value.target.value)
+          onChange?.(
+            value.target.value === 'all'
+              ? {
+                  productTypes: null,
+                  productIds: [],
+                }
+              : {
+                  productTypes: selectedProductTypes,
+                  productIds: selectedProductIds,
+                },
+          )
+        }}
+      >
+        <Radio value="all" className="d-block mb-4">
+          {allText || formatMessage(commonMessages.product.allItem)}
+        </Radio>
+        <Radio value="specific" className="d-block">
+          {specificTypeText || formatMessage(commonMessages.product.specificItem)}
+        </Radio>
+      </Radio.Group>
       <div className={`mt-3 pl-3 ${scopeType === 'all' ? 'd-none' : ''}`}>
         <Checkbox.Group
           className="mb-3"
@@ -140,17 +122,11 @@ const ScopeSelector: React.FC<{
             )}
           </StyledColumns>
         </Checkbox.Group>
-
+      </div>
+      <div className={`${scopeType === 'all' ? 'd-none' : ''}`}>
         <StyledLabel>{otherProductText || formatMessage(commonMessages.product.otherItem)}</StyledLabel>
-        <TreeSelect
-          showSearch
-          multiple
-          allowClear
-          treeCheckable
-          placeholder={formatMessage(commonMessages.product.selectProducts)}
-          style={{ width: '100%' }}
-          dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-          value={selectedProductIds}
+        <ProductSelector
+          value={value?.productIds}
           onChange={value => {
             setSelectedProductIds(value)
             onChange &&
@@ -159,44 +135,20 @@ const ScopeSelector: React.FC<{
                 productIds: value,
               })
           }}
-          treeNodeFilterProp="name"
-        >
-          {keys(briefProducts).map(
-            productType =>
-              briefProducts[productType]?.length && (
-                <TreeSelect.TreeNode
-                  key={productType}
-                  value={productType}
-                  title={<ProductTypeLabel productType={productType} />}
-                  name={productType}
-                >
-                  {briefProducts[productType]?.map(product => (
-                    <TreeSelect.TreeNode
-                      key={product.productId}
-                      value={product.productId}
-                      name={(product.parent || '') + product.title}
-                      title={
-                        <div className="d-flex align-items-center flex-wrap">
-                          <div className="mr-1">
-                            {product.publishedAt === null
-                              ? `(${formatMessage(commonMessages.label.unPublished)})`
-                              : product.publishedAt && product.publishedAt.getTime() > Date.now()
-                              ? `(${formatMessage(commonMessages.status.notSold)})`
-                              : ''}
-                          </div>
-                          {product.tag && <Tag className="mr-2">{product.tag}</Tag>}
-                          {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
-                          <StyledProductTitle>{product.title}</StyledProductTitle>
-                        </div>
-                      }
-                    />
-                  ))}
-                </TreeSelect.TreeNode>
-              ),
-          )}
-        </TreeSelect>
+          multiple
+          allowTypes={[
+            'ProgramPlan',
+            'ProgramPackagePlan',
+            'ActivityTicket',
+            'PodcastProgram',
+            'PodcastPlan',
+            'AppointmentPlan',
+            'MerchandiseSpec',
+            'ProjectPlan',
+          ]}
+        />
       </div>
-    </Radio.Group>
+    </>
   )
 }
 

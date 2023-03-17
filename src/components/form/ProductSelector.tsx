@@ -24,6 +24,8 @@ const productTypeLabel = (productType: string) => {
       return commonMessages.label.allPodcastProgram
     case 'Merchandise':
       return commonMessages.label.allMerchandise
+    case 'MerchandiseSpec':
+      return commonMessages.label.allMerchandiseSpec
     case 'ProjectPlan':
       return commonMessages.label.allProjectPlan
     case 'AppointmentPlan':
@@ -33,7 +35,7 @@ const productTypeLabel = (productType: string) => {
     case 'CouponPlan':
       return commonMessages.label.allCouponPlan
     case 'VoucherPlan':
-      return commonMessages.label.allVocherPlan
+      return commonMessages.label.allVoucherPlan
     default:
       return commonMessages.label.unknownProduct
   }
@@ -215,6 +217,11 @@ const useProductSelections = () => {
           id
           title
           published_at
+          creator {
+            id
+            name
+            username
+          }
         }
         coupon_plan {
           id
@@ -304,6 +311,17 @@ const useProductSelections = () => {
         })) || [],
     },
     {
+      productType: 'MerchandiseSpec',
+      products:
+        data?.merchandise.flatMap(v =>
+          v.merchandise_specs.flatMap(spec => ({
+            id: `MerchandiseSpec_${spec.id}`,
+            title: `${v.title} - ${spec.title}`,
+            publishedAt: v.published_at ? new Date(v.published_at) : null,
+          })),
+        ) || [],
+    },
+    {
       productType: 'ProjectPlan',
       products:
         data?.project_plan.map(v => ({
@@ -325,8 +343,8 @@ const useProductSelections = () => {
       productType: 'PodcastPlan',
       products:
         data?.podcast_plan.map(v => ({
-          id: `PodcastProgram_${v.id}`,
-          title: v.title,
+          id: `PodcastPlan_${v.id}`,
+          title: `${v.creator?.name || v.creator?.username || ''}`,
           publishedAt: v.published_at ? new Date(v.published_at) : null,
         })) || [],
     },
