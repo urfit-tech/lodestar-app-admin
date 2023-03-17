@@ -2589,7 +2589,7 @@ export interface GET_ALL_MEMBER_COLLECTION {
 }
 
 export interface GET_ALL_MEMBER_COLLECTIONVariables {
-  search: string;
+  condition: member_bool_exp;
 }
 
 /* tslint:disable */

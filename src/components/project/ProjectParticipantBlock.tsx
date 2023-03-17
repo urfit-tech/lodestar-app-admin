@@ -285,7 +285,12 @@ const ProjectParticipantBlock: React.FC<{
               },
             ]}
           >
-            <AllMemberSelector allowClear isAllowAddUnregistered={true} setIsUnregistered={setIsUnregistered} />
+            <AllMemberSelector
+              allowClear
+              isAllowAddUnregistered={true}
+              setIsUnregistered={setIsUnregistered}
+              allowedPermissions={['PROJECT_PORTFOLIO_ADMIN', 'PROJECT_PORTFOLIO_NORMAL']}
+            />
           </Form.Item>
           {isUnregistered ? (
             <Form.Item
