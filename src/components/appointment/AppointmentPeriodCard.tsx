@@ -1,6 +1,9 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
 import { Button, Divider, Dropdown, Menu } from 'antd'
+import axios from 'axios'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -59,6 +62,7 @@ export type AppointmentPeriodCardProps = {
   id: string
   avatarUrl: string | null
   member: {
+    id: string
     name: string
     email: string | null
     phone: string | null
@@ -91,11 +95,41 @@ const AppointmentPeriodCard: React.FC<
   onRefetch,
 }) => {
   const { formatMessage } = useIntl()
-
+  const { id: appId } = useApp()
+  const { authToken } = useAuth()
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
+
+  const handleJoin = async () => {
+    const currentTime = new Date()
+    try {
+      const { data: createMeetData } = await axios.post(
+        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+        {
+          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`,
+          authRecording: true,
+          service: 'zoom',
+          nbf: null,
+          exp: null,
+          startedAt: currentTime,
+          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'x-api-key': 'kolable',
+          },
+        },
+      )
+      window.open(createMeetData.options.startUrl)
+    } catch (error) {
+      window.open(
+        `https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`,
+      )
+    }
+  }
 
   return (
     <StyledCard>
@@ -169,15 +203,9 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.addToCalendar)}
               </Button>
             </a>
-            <a
-              href={`https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <StyledButton type="primary" className="ml-2" disabled={!orderProductId}>
-                {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
-              </StyledButton>
-            </a>
+            <StyledButton type="primary" className="ml-2" disabled={!orderProductId} onClick={() => handleJoin()}>
+              {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
+            </StyledButton>
             <AppointmentCancelModal
               orderProductId={orderProductId}
               onRefetch={onRefetch}
