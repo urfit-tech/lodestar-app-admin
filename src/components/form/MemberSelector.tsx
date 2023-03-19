@@ -98,7 +98,7 @@ export const AllMemberSelector: React.FC<
     }
 
     timeout = setTimeout(() => {
-      setSearch(value)
+      setSearch(value.trim())
     }, 300)
   }
 
