@@ -1,4 +1,5 @@
 export { default as ActivityCollectionSettings } from './ActivityCollectionSettings'
+export { default as AIBotSettings } from './AIBotSettings'
 export { default as ButtonSettings } from './ButtonSettings'
 export { default as CardSettings } from './CardSettings'
 export { default as CarouselSettings } from './CarouselSettings'
