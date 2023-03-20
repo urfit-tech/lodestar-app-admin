@@ -6,7 +6,7 @@ import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { ExclamationCircleIcon } from 'lodestar-app-element/src/images'
 import { flatten, mergeAll } from 'ramda'
-import React, { useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -42,8 +42,7 @@ enum SkuErrorType {
 type SkuError =
   | {
       type: SkuErrorType.LINK
-      message: string
-      url: string
+      message: ReactNode
     }
   | {
       type: SkuErrorType.MESSAGE
@@ -172,10 +171,13 @@ const ProductSkuModal: React.FC<
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                productName: `${programPlan.program.title} - ${programPlan.title}`,
+                productName: (
+                  <Link to={`/programs/${programPlan.program.id}?tab=plan`} target="_blank" color="#ff7d62">
+                    {programPlan.program.title} - {programPlan.title}
+                  </Link>
+                ),
                 channelSku: channel?.channel_sku || '',
               }),
-              url: `/programs/${programPlan.program.id}?tab=plan`,
             })
           })
           productTitleData.program_package_plan.forEach(programPackagePlan => {
@@ -183,10 +185,17 @@ const ProductSkuModal: React.FC<
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                productName: `${programPackagePlan.program_package.title} - ${programPackagePlan.title}`,
+                productName: (
+                  <Link
+                    to={`/program-packages/${programPackagePlan.program_package.id}?tab=sales`}
+                    target="_blank"
+                    color="#ff7d62"
+                  >
+                    {programPackagePlan.program_package.title} - {programPackagePlan.title}
+                  </Link>
+                ),
                 channelSku: channel?.channel_sku || '',
               }),
-              url: `/program-packages/${programPackagePlan.program_package.id}?tab=sales`,
             })
           })
           productTitleData.project_plan.forEach(projectPlan => {
@@ -194,10 +203,13 @@ const ProductSkuModal: React.FC<
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                productName: `${projectPlan.project.title} - ${projectPlan.title}`,
+                productName: (
+                  <Link to={`/projects/${projectPlan.project.id}?tab=salesPlan`} target="_blank" color="#ff7d62">
+                    {projectPlan.project.title} - {projectPlan.title}
+                  </Link>
+                ),
                 channelSku: channel?.channel_sku || '',
               }),
-              url: `/projects/${projectPlan.project.id}?tab=salesPlan`,
             })
           })
           productTitleData.activity_ticket.forEach(activityTicket => {
@@ -205,10 +217,13 @@ const ProductSkuModal: React.FC<
             errors.push({
               type: SkuErrorType.LINK,
               message: formatMessage(componentCommonMessages.ProductSkuModal.productChannelSkuDuplicated, {
-                productName: `${activityTicket.activity.title} - ${activityTicket.title}`,
+                productName: (
+                  <Link to={`/activities/${activityTicket.activity.id}?tab=tickets`} target="_blank" color="#ff7d62">
+                    {activityTicket.activity.title} - {activityTicket.title}
+                  </Link>
+                ),
                 channelSku: channel?.channel_sku || '',
               }),
-              url: `/activities/${activityTicket.activity.id}?tab=tickets`,
             })
           })
 
@@ -331,13 +346,7 @@ const ProductSkuModal: React.FC<
         skuErrors.map(skuError => (
           <div className="mb-2">
             <StyledIcon component={() => <ExclamationCircleIcon />} className="mr-2" />
-            {skuError.type === 'message' ? (
-              <span style={{ color: '#ff7d62' }}>{skuError.message}</span>
-            ) : (
-              <Link to={skuError.url} target="_blank" color="#ff7d62">
-                {skuError.message}
-              </Link>
-            )}
+            <span style={{ color: '#ff7d62' }}>{skuError.message}</span>
           </div>
         ))}
     </AdminModal>
