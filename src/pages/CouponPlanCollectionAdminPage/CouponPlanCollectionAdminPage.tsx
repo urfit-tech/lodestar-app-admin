@@ -121,9 +121,10 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={`${tabContent.key}_${stateCode}`} tab={tabContent.tab}>
             <CouponPlanCollectionBlock
-              key={stateCode}
               condition={tabContent.condition}
               isAvailable={tabContent.key === 'available'}
+              stateCode={stateCode}
+              onRefetch={() => setStateCode(Math.random())}
             />
           </Tabs.TabPane>
         ))}
