@@ -317,28 +317,32 @@ const MemberAdminLayout: React.FC<{
             <Button
               block
               onClick={async () => {
-                const currentTime = new Date()
-                try {
-                  const { data: createMeetData } = await axios.post(
-                    `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
-                    {
-                      name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`,
-                      authRecording: true,
-                      service: 'zoom',
-                      nbf: null,
-                      exp: null,
-                      startedAt: currentTime,
-                      endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
-                    },
-                    {
-                      headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        'x-api-key': 'kolable',
+                if (enabledModules.meet_service) {
+                  const currentTime = new Date()
+                  try {
+                    const { data: createMeetData } = await axios.post(
+                      `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+                      {
+                        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`,
+                        authRecording: true,
+                        service: 'zoom',
+                        nbf: null,
+                        exp: null,
+                        startedAt: currentTime,
+                        endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
                       },
-                    },
-                  )
-                  window.open(createMeetData.options.startUrl)
-                } catch (error) {
+                      {
+                        headers: {
+                          Authorization: `Bearer ${authToken}`,
+                          'x-api-key': 'kolable',
+                        },
+                      },
+                    )
+                    window.open(createMeetData.options.startUrl)
+                  } catch (error) {
+                    setJitsiModalVisible(true)
+                  }
+                } else {
                   setJitsiModalVisible(true)
                 }
               }}
