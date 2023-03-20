@@ -128,7 +128,7 @@ const ProjectPlanCard: React.FC<
                 <BraftContent>{projectPlan.description}</BraftContent>
               </Typography.Paragraph>
               <ExtraContentBlock className="d-flex justify-content-between align-items-center">
-                {enabledModules.sku && (
+                {enabledModules.sku ? (
                   <ProductSkuModal
                     productId={`ProjectPlan_${projectPlan.id}`}
                     renderTrigger={({ sku, onOpen }) => (
@@ -153,6 +153,8 @@ const ProjectPlanCard: React.FC<
                     )}
                     onRefetch={() => refetchProductChannelInfo()}
                   />
+                ) : (
+                  <div></div>
                 )}
                 <div className="d-flex">
                   {projectPlan.publishedAt ? (

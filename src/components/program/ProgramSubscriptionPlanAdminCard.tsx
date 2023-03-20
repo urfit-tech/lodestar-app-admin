@@ -134,7 +134,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
       )}
 
       <div className="d-flex align-items-end justify-content-between">
-        {enabledModules.sku && (
+        {enabledModules.sku ? (
           <ProductSkuModal
             className="flex-grow-1"
             productId={`ProgramPlan_${programPlan.id}`}
@@ -161,6 +161,8 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
             )}
             onRefetch={() => refetchProductChannelInfo()}
           />
+        ) : (
+          <div></div>
         )}
         <div>
           {!loadingEnrollmentCount && formatMessage(messages.subscriptionCount, { count: `${enrollmentCount}` })}
