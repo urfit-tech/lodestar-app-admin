@@ -82,7 +82,6 @@ export const AllMemberSelector: React.FC<
     ? {
         member_permissions: { permission_id: { _in: allowedPermissions } },
         _or: [
-          { id: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
@@ -90,6 +89,21 @@ export const AllMemberSelector: React.FC<
       }
     : {}
   const { members } = useAllMemberCollection(condition)
+
+  const { data: existingMembers } = useQuery<hasura.GET_SINGLE_MEMBER_PUBLIC, hasura.GET_SINGLE_MEMBER_PUBLICVariables>(
+    gql`
+      query GET_SINGLE_MEMBER_PUBLIC($search: String!) {
+        member_public(
+          where: {
+            _or: [{ name: { _ilike: $search } }, { username: { _ilike: $search } }, { email: { _ilike: $search } }]
+          }
+        ) {
+          id
+        }
+      }
+    `,
+    { variables: { search: `%${Array.isArray(search) ? search[0] : search}%` } },
+  )
 
   const handleSearch = (value: string) => {
     if (timeout) {
@@ -101,7 +115,8 @@ export const AllMemberSelector: React.FC<
       setSearch(value.trim())
     }, 300)
   }
-
+  console.log(members)
+  console.log(existingMembers)
   return (
     <Select<string | string[]>
       style={{ width: '100%' }}
@@ -130,7 +145,10 @@ export const AllMemberSelector: React.FC<
         setIsUnregistered?.(false)
       }}
     >
-      {isAllowAddUnregistered && search !== '' && members.length === 0 ? (
+      {isAllowAddUnregistered &&
+      search !== '' &&
+      members.length === 0 &&
+      existingMembers?.member_public.length === 0 ? (
         <Select.Option
           key="unknown"
           value={Array.isArray(search) ? search[0] : search}

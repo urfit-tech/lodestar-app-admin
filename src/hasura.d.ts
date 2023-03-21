@@ -2565,6 +2565,31 @@ export interface GET_GIFT_PLANSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SINGLE_MEMBER_PUBLIC
+// ====================================================
+
+export interface GET_SINGLE_MEMBER_PUBLIC_member_public {
+  __typename: "member_public";
+  id: string | null;
+}
+
+export interface GET_SINGLE_MEMBER_PUBLIC {
+  /**
+   * fetch data from the table: "member_public"
+   */
+  member_public: GET_SINGLE_MEMBER_PUBLIC_member_public[];
+}
+
+export interface GET_SINGLE_MEMBER_PUBLICVariables {
+  search: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ALL_MEMBER_PUBLIC_COLLECTION
 // ====================================================
 
