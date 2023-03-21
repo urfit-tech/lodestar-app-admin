@@ -755,6 +755,7 @@ export const programMessages = {
     description: { id: 'program.label.description', defaultMessage: '內文' },
     score: { id: 'program.label.score', defaultMessage: '分數' },
     audioFile: { id: 'program.label.audioFile', defaultMessage: 'Audio File' },
+    contentPlan: { id: 'program.label.contentPlan', defaultMessage: 'Content Plan' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },

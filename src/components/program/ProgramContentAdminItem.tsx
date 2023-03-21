@@ -139,10 +139,10 @@ const ProgramContentAdminItem: React.FC<{
           : null}
 
         {programContent.programContentType === 'practice' ? (
-          <PracticeAdminModal programContent={programContent} onRefetch={onRefetch} />
+          <PracticeAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
         ) : // TODO: remove exercise
         programContent.programContentType === 'exercise' || programContent.programContentType === 'exam' ? (
-          <ExerciseAdminModal programContent={programContent} onRefetch={onRefetch} />
+          <ExerciseAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
         ) : (
           <ProgramContentAdminModal programId={programId} programContent={programContent} onRefetch={onRefetch} />
         )}
