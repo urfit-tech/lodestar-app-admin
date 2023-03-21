@@ -2565,31 +2565,28 @@ export interface GET_GIFT_PLANSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_MEMBER_COLLECTION
+// GraphQL query operation: GET_ALL_MEMBER_PUBLIC_COLLECTION
 // ====================================================
 
-export interface GET_ALL_MEMBER_COLLECTION_member {
-  __typename: "member";
-  id: string;
+export interface GET_ALL_MEMBER_PUBLIC_COLLECTION_member_public {
+  __typename: "member_public";
+  id: string | null;
   picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  /**
-   * invited | verified | activated | engaged
-   */
-  status: string;
+  name: string | null;
+  username: string | null;
+  email: string | null;
+  status: string | null;
 }
 
-export interface GET_ALL_MEMBER_COLLECTION {
+export interface GET_ALL_MEMBER_PUBLIC_COLLECTION {
   /**
-   * fetch data from the table: "member"
+   * fetch data from the table: "member_public"
    */
-  member: GET_ALL_MEMBER_COLLECTION_member[];
+  member_public: GET_ALL_MEMBER_PUBLIC_COLLECTION_member_public[];
 }
 
-export interface GET_ALL_MEMBER_COLLECTIONVariables {
-  condition: member_bool_exp;
+export interface GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables {
+  condition: member_public_bool_exp;
 }
 
 /* tslint:disable */
@@ -35565,6 +35562,8 @@ export interface member_public_bool_exp {
   email?: String_comparison_exp | null;
   has_backstage_enter_permission?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
+  member_permissions?: member_permission_bool_exp | null;
+  member_permissions_aggregate?: member_permission_aggregate_bool_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_specialities_aggregate?: member_speciality_aggregate_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -35590,6 +35589,7 @@ export interface member_public_insert_input {
   email?: string | null;
   has_backstage_enter_permission?: number | null;
   id?: string | null;
+  member_permissions?: member_permission_arr_rel_insert_input | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   metadata?: any | null;
   name?: string | null;
@@ -35621,6 +35621,7 @@ export interface member_public_order_by {
   email?: order_by | null;
   has_backstage_enter_permission?: order_by | null;
   id?: order_by | null;
+  member_permissions_aggregate?: member_permission_aggregate_order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
   name?: order_by | null;

@@ -78,7 +78,7 @@ export const AllMemberSelector: React.FC<
 > = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
   const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
-  const condition: hasura.GET_ALL_MEMBER_COLLECTIONVariables['condition'] = allowedPermissions
+  const condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition'] = allowedPermissions
     ? {
         member_permissions: { permission_id: { _in: allowedPermissions } },
         _or: [
@@ -173,14 +173,14 @@ export const AllMemberSelector: React.FC<
   )
 }
 
-const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_COLLECTIONVariables['condition']) => {
+const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition']) => {
   const { data, loading, error } = useQuery<
-    hasura.GET_ALL_MEMBER_COLLECTION,
-    hasura.GET_ALL_MEMBER_COLLECTIONVariables
+    hasura.GET_ALL_MEMBER_PUBLIC_COLLECTION,
+    hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables
   >(
     gql`
-      query GET_ALL_MEMBER_COLLECTION($condition: member_bool_exp!) {
-        member(where: $condition) {
+      query GET_ALL_MEMBER_PUBLIC_COLLECTION($condition: member_public_bool_exp!) {
+        member_public(where: $condition) {
           id
           picture_url
           name
@@ -195,16 +195,16 @@ const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_COLLECTIONVaria
 
   const members = useMemo<MemberOptionProps[]>(() => {
     return (
-      data?.member.map(member => ({
-        id: member.id,
+      data?.member_public.map(member => ({
+        id: member.id || '',
         avatarUrl: member.picture_url,
-        name: member.name || member.username,
-        username: member.username,
-        email: member.email,
+        name: member.name || member.username || '',
+        username: member.username || '',
+        email: member.email || '',
         status: member.status,
       })) || []
     )
-  }, [data?.member])
+  }, [data?.member_public])
 
   return {
     loading,
