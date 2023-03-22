@@ -10004,10 +10004,10 @@ export interface GET_PRODUCT_CHANNEL_INFOVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPSERT_PRODUCT_CHANNEL
+// GraphQL mutation operation: UPDATE_PRODUCT_CHANNEL
 // ====================================================
 
-export interface UPSERT_PRODUCT_CHANNEL_insert_product_channel {
+export interface UPDATE_PRODUCT_CHANNEL_delete_product_channel {
   __typename: "product_channel_mutation_response";
   /**
    * number of rows affected by the mutation
@@ -10015,15 +10015,28 @@ export interface UPSERT_PRODUCT_CHANNEL_insert_product_channel {
   affected_rows: number;
 }
 
-export interface UPSERT_PRODUCT_CHANNEL {
+export interface UPDATE_PRODUCT_CHANNEL_insert_product_channel {
+  __typename: "product_channel_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRODUCT_CHANNEL {
+  /**
+   * delete data from the table: "product_channel"
+   */
+  delete_product_channel: UPDATE_PRODUCT_CHANNEL_delete_product_channel | null;
   /**
    * insert data into the table: "product_channel"
    */
-  insert_product_channel: UPSERT_PRODUCT_CHANNEL_insert_product_channel | null;
+  insert_product_channel: UPDATE_PRODUCT_CHANNEL_insert_product_channel | null;
 }
 
-export interface UPSERT_PRODUCT_CHANNELVariables {
-  productChannel: product_channel_insert_input[];
+export interface UPDATE_PRODUCT_CHANNELVariables {
+  productId: string;
+  productChannelList: product_channel_insert_input[];
 }
 
 /* tslint:disable */

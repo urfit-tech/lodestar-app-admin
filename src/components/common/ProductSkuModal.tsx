@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useDeleteProductChannel, useProductChannelInfo, useUpsertProductChannel } from '../../hooks/channel'
+import { useDeleteProductChannel, useProductChannelInfo, useUpdateProductChannel } from '../../hooks/channel'
 import { useProductSku } from '../../hooks/data'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import componentCommonMessages from './translation'
@@ -49,6 +49,13 @@ type SkuError =
       message: string
     }
 
+type UpdateProductChannelDTO = {
+  product_id: string
+  app_id: string
+  channel_id: string
+  channel_sku: string | null
+}
+
 const ProductSkuModal: React.FC<
   Omit<AdminModalProps, 'renderTrigger'> & {
     productId: string
@@ -76,7 +83,7 @@ const ProductSkuModal: React.FC<
     appId,
     productId,
   )
-  const { upsertProductChannel } = useUpsertProductChannel()
+  const { updateProductChannel } = useUpdateProductChannel()
   const { deleteProductChannel } = useDeleteProductChannel()
 
   if (loadingProduct || loadingProductChannelInfo) {
@@ -148,7 +155,8 @@ const ProductSkuModal: React.FC<
           variables: {
             skuList: Object.keys(formValues)
               .filter(key => key !== 'sku')
-              .map(key => formValues[key]),
+              .map(id => formValues[id]?.trim() || null)
+              .filter(notEmpty),
           },
         })
         const productChannel = channelSkuData.product_channel.filter(v => v.product_id !== productId)
@@ -242,15 +250,17 @@ const ProductSkuModal: React.FC<
           .then(() => {
             const formValues = form.getFieldsValue()
             const channelIds = Object.keys(formValues).filter(key => key !== 'sku')
-            const upsertProductChannelList = channelIds.map(id => ({
+            const updateProductChannelList: UpdateProductChannelDTO[] = channelIds.map(id => ({
               product_id: productId,
               app_id: appId,
               channel_id: id,
               channel_sku: formValues[id]?.trim() || null,
             }))
-            return upsertProductChannel({
+            const deleteProductId = updateProductChannelList[0].product_id
+            return updateProductChannel({
               variables: {
-                productChannel: upsertProductChannelList,
+                productId: deleteProductId,
+                productChannelList: updateProductChannelList,
               },
             })
           })
