@@ -42,12 +42,15 @@ export const useProductChannelInfo = (appId: string, productId: string) => {
   }
 }
 
-export const useUpsertProductChannel = () => {
-  const [upsertProductChannel] = useMutation<hasura.UPSERT_PRODUCT_CHANNEL, hasura.UPSERT_PRODUCT_CHANNELVariables>(
+export const useUpdateProductChannel = () => {
+  const [updateProductChannel] = useMutation<hasura.UPDATE_PRODUCT_CHANNEL, hasura.UPDATE_PRODUCT_CHANNELVariables>(
     gql`
-      mutation UPSERT_PRODUCT_CHANNEL($productChannel: [product_channel_insert_input!]!) {
+      mutation UPDATE_PRODUCT_CHANNEL($productId: String!, $productChannelList: [product_channel_insert_input!]!) {
+        delete_product_channel(where: { product_id: { _eq: $productId } }) {
+          affected_rows
+        }
         insert_product_channel(
-          objects: $productChannel
+          objects: $productChannelList
           on_conflict: { constraint: product_channel_product_id_channel_id_key, update_columns: [channel_sku] }
         ) {
           affected_rows
@@ -55,7 +58,7 @@ export const useUpsertProductChannel = () => {
       }
     `,
   )
-  return { upsertProductChannel }
+  return { updateProductChannel }
 }
 
 export const useDeleteProductChannel = () => {

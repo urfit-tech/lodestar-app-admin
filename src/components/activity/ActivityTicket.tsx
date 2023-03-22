@@ -1,15 +1,15 @@
-import Icon from '@ant-design/icons'
-import { Divider, Tag } from 'antd'
+import { Button, Divider, Tag } from 'antd'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter } from '../../helpers'
-import { activityMessages, commonMessages } from '../../helpers/translation'
+import { activityMessages, commonMessages, commonMessages as helperCommonMessages } from '../../helpers/translation'
+import { useProductChannelInfo } from '../../hooks/channel'
 import { useCurrency } from '../../hooks/currency'
-import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { ActivityTicketProps, ActivityTicketSessionProps } from '../../types/activity'
+import ProductSkuModal from '../common/ProductSkuModal'
 
 const StyledWrapper = styled.div`
   padding: 1.5rem;
@@ -77,12 +77,22 @@ const StyledExtraAdmin = styled.div`
   letter-spacing: 0.2px;
 `
 
+const StyledModalButton = styled(Button)`
+  padding: 0;
+  height: fit-content;
+
+  span: {
+    margin: 0;
+  }
+`
+
 const ActivityTicket: React.FC<
   ActivityTicketProps & {
     sessions: ActivityTicketSessionProps[]
     extra?: React.ReactNode
   }
 > = ({
+  id,
   title,
   description,
   currencyId,
@@ -95,9 +105,10 @@ const ActivityTicket: React.FC<
   enrollmentsCount,
   extra,
 }) => {
-  const { enabledModules } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const { formatCurrency } = useCurrency(currencyId)
+  const { productChannelInfo, refetchProductChannelInfo } = useProductChannelInfo(appId, `ActivityTicket_${id}`)
 
   const status =
     !isPublished || Date.now() < startedAt.getTime()
@@ -112,7 +123,7 @@ const ActivityTicket: React.FC<
     <StyledWrapper>
       <StyledTitle className="d-flex align-items-start justify-content-between mb-3">
         <span>{title}</span>
-        <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
+        {extra}
       </StyledTitle>
 
       <StyledPrice>{formatCurrency(price)}</StyledPrice>
@@ -144,13 +155,42 @@ const ActivityTicket: React.FC<
       <StyledMeta>{dateRangeFormatter({ startedAt, endedAt, dateFormat: 'YYYY-MM-DD(dd)' })}</StyledMeta>
 
       <StyledExtraAdmin className="d-flex align-items-center justify-content-between">
+        {enabledModules.sku ? (
+          <ProductSkuModal
+            productId={`ActivityTicket_${id}`}
+            renderTrigger={({ sku, onOpen }) => (
+              <div className="d-flex flex-column align-items-start">
+                <StyledModalButton type="link" onClick={() => onOpen?.()}>
+                  {!sku &&
+                    productChannelInfo?.filter(v => v.channelSku).length === 0 &&
+                    formatMessage(commonMessages.label.skuSetting)}
+                  {sku && `${formatMessage(commonMessages.label.sku)}: ${sku}`}
+                </StyledModalButton>
+
+                {productChannelInfo &&
+                  productChannelInfo
+                    ?.filter(v => v.channelSku)
+                    ?.map(v => (
+                      <StyledModalButton
+                        key={v.appChannelId}
+                        type="link"
+                        onClick={() => onOpen?.()}
+                      >{`${v.appChannelName}: ${v.channelSku}`}</StyledModalButton>
+                    ))}
+              </div>
+            )}
+            onRefetch={() => refetchProductChannelInfo()}
+          />
+        ) : (
+          <div></div>
+        )}
         <div>
-          <Icon component={() => <UserOIcon />} className="mr-2" />
-          <span>
-            {enrollmentsCount} / {count}
-          </span>
+          <StyledLabel
+            active={status === formatMessage(commonMessages.status.selling)}
+          >{`${status}: ${enrollmentsCount} / ${formatMessage(helperCommonMessages.label.amountParticipants, {
+            amount: count,
+          })}`}</StyledLabel>
         </div>
-        {extra}
       </StyledExtraAdmin>
     </StyledWrapper>
   )
