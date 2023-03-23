@@ -2,14 +2,12 @@ import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/ico
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ActivityAdminProps } from '../../types/activity'
-import ProductSkuModal from '../common/ProductSkuModal'
 import ActivityTicket from './ActivityTicket'
 import ActivityTicketAdminModal from './ActivityTicketAdminModal'
 
@@ -17,7 +15,6 @@ const ActivityTicketsAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps | null
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
-  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const { insertActivityTicket, updateActivityTicket, archiveActivityTicket } = useMutationActivityTicket()
 
@@ -120,16 +117,6 @@ const ActivityTicketsAdminBlock: React.FC<{
                       >
                         {formatMessage(commonMessages.ui.delete)}
                       </Menu.Item>
-                      {enabledModules.sku && (
-                        <Menu.Item>
-                          <ProductSkuModal
-                            productId={`ActivityTicket_${ticket.id}`}
-                            renderTrigger={({ sku, onOpen }) => (
-                              <span onClick={() => onOpen?.()}>{formatMessage(commonMessages.label.skuSetting)}</span>
-                            )}
-                          />
-                        </Menu.Item>
-                      )}
                     </Menu>
                   }
                   trigger={['click']}

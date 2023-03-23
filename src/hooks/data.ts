@@ -620,6 +620,14 @@ export const useSimpleProduct = (
           isPhysical: data.merchandise_spec_by_pk.merchandise.is_physical,
           isCustomized: data.merchandise_spec_by_pk.merchandise.is_customized,
         }
+      : data.activity_ticket_by_pk
+      ? {
+          id: data.activity_ticket_by_pk.id,
+          productType: 'ActivityTicket',
+          title: `${data.activity_ticket_by_pk.activity.title} - ${data.activity_ticket_by_pk.title}`,
+          listPrice: data.activity_ticket_by_pk.price,
+          coverUrl: data.activity_ticket_by_pk.activity.cover_url,
+        }
       : {
           id: targetId,
           productType: null,

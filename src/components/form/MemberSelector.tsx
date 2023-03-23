@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import Select, { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -71,13 +71,39 @@ let timeout: NodeJS.Timeout | null
 
 export const AllMemberSelector: React.FC<
   SelectProps<string | string[]> & {
+    allowedPermissions?: string[]
     isAllowAddUnregistered?: boolean
     setIsUnregistered?: React.Dispatch<React.SetStateAction<boolean>>
   }
-> = ({ value, onChange, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
+> = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
   const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
-  const { members } = useAllMemberCollection(Array.isArray(search) ? search[0] : search)
+  const condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition'] = allowedPermissions
+    ? {
+        member_permissions: { permission_id: { _in: allowedPermissions } },
+        _or: [
+          { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+        ],
+      }
+    : {}
+  const { members } = useAllMemberCollection(condition)
+
+  const { data: existingMembers } = useQuery<hasura.GET_SINGLE_MEMBER_PUBLIC, hasura.GET_SINGLE_MEMBER_PUBLICVariables>(
+    gql`
+      query GET_SINGLE_MEMBER_PUBLIC($search: String!) {
+        member_public(
+          where: {
+            _or: [{ name: { _ilike: $search } }, { username: { _ilike: $search } }, { email: { _ilike: $search } }]
+          }
+        ) {
+          id
+        }
+      }
+    `,
+    { variables: { search: `%${Array.isArray(search) ? search[0] : search}%` } },
+  )
 
   const handleSearch = (value: string) => {
     if (timeout) {
@@ -86,10 +112,11 @@ export const AllMemberSelector: React.FC<
     }
 
     timeout = setTimeout(() => {
-      setSearch(value)
+      setSearch(value.trim())
     }, 300)
   }
-
+  console.log(members)
+  console.log(existingMembers)
   return (
     <Select<string | string[]>
       style={{ width: '100%' }}
@@ -118,7 +145,10 @@ export const AllMemberSelector: React.FC<
         setIsUnregistered?.(false)
       }}
     >
-      {isAllowAddUnregistered && search !== '' && members.length === 0 ? (
+      {isAllowAddUnregistered &&
+      search !== '' &&
+      members.length === 0 &&
+      existingMembers?.member_public.length === 0 ? (
         <Select.Option
           key="unknown"
           value={Array.isArray(search) ? search[0] : search}
@@ -161,21 +191,14 @@ export const AllMemberSelector: React.FC<
   )
 }
 
-const useAllMemberCollection = (search: string) => {
-  const { data, loading, error } = useQuery<hasura.GET_ALL_MEMBER_COLLECTION>(
+const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition']) => {
+  const { data, loading, error } = useQuery<
+    hasura.GET_ALL_MEMBER_PUBLIC_COLLECTION,
+    hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables
+  >(
     gql`
-      query GET_ALL_MEMBER_COLLECTION($search: String!) {
-        member(
-          where: {
-            _or: [
-              { id: { _ilike: $search } }
-              { name: { _ilike: $search } }
-              { username: { _ilike: $search } }
-              { email: { _ilike: $search } }
-            ]
-          }
-          limit: 100
-        ) {
+      query GET_ALL_MEMBER_PUBLIC_COLLECTION($condition: member_public_bool_exp!) {
+        member_public(where: $condition) {
           id
           picture_url
           name
@@ -185,18 +208,21 @@ const useAllMemberCollection = (search: string) => {
         }
       }
     `,
-    { variables: { search: `%${search}%` } },
+    { variables: { condition } },
   )
 
-  const members: MemberOptionProps[] =
-    data?.member.map(member => ({
-      id: member.id,
-      avatarUrl: member.picture_url,
-      name: member.name || member.username,
-      username: member.username,
-      email: member.email,
-      status: member.status,
-    })) || []
+  const members = useMemo<MemberOptionProps[]>(() => {
+    return (
+      data?.member_public.map(member => ({
+        id: member.id || '',
+        avatarUrl: member.picture_url,
+        name: member.name || member.username || '',
+        username: member.username || '',
+        email: member.email || '',
+        status: member.status,
+      })) || []
+    )
+  }, [data?.member_public])
 
   return {
     loading,

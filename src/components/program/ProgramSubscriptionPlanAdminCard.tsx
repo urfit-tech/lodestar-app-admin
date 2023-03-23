@@ -12,6 +12,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
 import { commonMessages } from '../../helpers/translation'
+import { useProductChannelInfo } from '../../hooks/channel'
 import { ProgramPlan, ProgramPlanPeriodType } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import CountDownTimeBlock from '../common/CountDownTimeBlock'
@@ -37,17 +38,30 @@ const StyledPriceBlock = styled.div`
   }
 `
 
+const StyledModalButton = styled(Button)`
+  padding: 0;
+  height: fit-content;
+
+  span: {
+    margin: 0;
+  }
+`
+
 const ProgramSubscriptionPlanAdminCard: React.FC<{
   programId: string
   programPlan: ProgramPlan
   onRefetch?: () => void
 }> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { permissions } = useAuth()
   const { salePrice, listPrice, discountDownPrice, periodType, periodAmount, currencyId } = programPlan
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
   const { productGiftPlan, refetchProductGiftPlan } = useProductGiftPlan(`ProgramPlan_${programPlan?.id}`)
+  const { productChannelInfo, refetchProductChannelInfo } = useProductChannelInfo(
+    appId,
+    `ProgramPlan_${programPlan?.id}`,
+  )
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
   const description = programPlan.description?.trim() || ''
@@ -119,22 +133,40 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         </div>
       )}
 
-      <div className="d-flex align-items-center justify-content-between">
-        <div className="flex-grow-1">
-          {!loadingEnrollmentCount && formatMessage(messages.subscriptionCount, { count: `${enrollmentCount}` })}
-        </div>
-        {enabledModules.sku && (
+      <div className="d-flex align-items-end justify-content-between">
+        {enabledModules.sku ? (
           <ProductSkuModal
+            className="flex-grow-1"
             productId={`ProgramPlan_${programPlan.id}`}
             renderTrigger={({ onOpen, sku }) => (
-              <Button type="link" onClick={() => onOpen?.()}>
-                {sku
-                  ? `${formatMessage(commonMessages.label.sku)}: ${sku}`
-                  : formatMessage(commonMessages.label.skuSetting)}
-              </Button>
+              <div className="d-flex flex-column align-items-start">
+                <StyledModalButton type="link" onClick={() => onOpen?.()}>
+                  {!sku &&
+                    productChannelInfo?.filter(v => v.channelSku).length === 0 &&
+                    formatMessage(commonMessages.label.skuSetting)}
+                  {sku && `${formatMessage(commonMessages.label.sku)}: ${sku}`}
+                </StyledModalButton>
+
+                {productChannelInfo &&
+                  productChannelInfo
+                    ?.filter(v => v.channelSku)
+                    ?.map(v => (
+                      <StyledModalButton
+                        key={v.appChannelId}
+                        type="link"
+                        onClick={() => onOpen?.()}
+                      >{`${v.appChannelName}: ${v.channelSku}`}</StyledModalButton>
+                    ))}
+              </div>
             )}
+            onRefetch={() => refetchProductChannelInfo()}
           />
+        ) : (
+          <div></div>
         )}
+        <div>
+          {!loadingEnrollmentCount && formatMessage(messages.subscriptionCount, { count: `${enrollmentCount}` })}
+        </div>
       </div>
     </AdminBlock>
   )

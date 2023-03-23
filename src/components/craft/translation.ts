@@ -108,6 +108,15 @@ const craftMessages = {
       defaultMessage: '請填入 iframe',
     },
   }),
+  AIBotSettings: defineMessages({
+    setting: { id: 'craft.AIBotSettings.setting', defaultMessage: '基本設定' },
+    style: { id: 'craft.AIBotSettings.style', defaultMessage: '樣式' },
+    systemPrompt: { id: 'craft.AIBotSettings.systemPrompt', defaultMessage: '系統提示詞' },
+    systemPromptPlaceholder: { id: 'craft.AIBotSettings.systemPromptPlaceholder', defaultMessage: 'You are an expert of...' },
+    assistantQuestions: { id: 'craft.AIBotSettings.assistantQuestions', defaultMessage: '使用者問答' },
+    assistantQuestionsPlaceholder: { id: 'craft.AIBotSettings.assistantQuestionsPlaceholder', defaultMessage: 'What do you want to ask?' },
+    addQuestion: { id: 'craft.AIBotSettings.addQuestion', defaultMessage: '新增問題' },
+  }),
   CarouselSettings: defineMessages({
     carouselStyle: { id: 'craft.CarouselSettings.carouselStyle', defaultMessage: '輪播樣式' },
     carouselSetting: { id: 'craft.CarouselSettings.carouselSetting', defaultMessage: '輪播設定' },

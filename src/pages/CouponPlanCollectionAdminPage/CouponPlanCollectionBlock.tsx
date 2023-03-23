@@ -2,7 +2,7 @@ import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { EmptyBlock } from '../../components/admin'
 import CouponPlanAdminCard from '../../components/coupon/CouponPlanAdminCard'
@@ -15,11 +15,17 @@ import pageMessages from '../translation'
 const CouponCollectionBlock: React.VFC<{
   condition: hasura.GET_PREVIEW_COUPON_PLAN_COLLECTIONVariables['condition']
   isAvailable: boolean
-}> = ({ condition, isAvailable }) => {
+  stateCode: number
+  onRefetch?: () => void
+}> = ({ condition, isAvailable, stateCode, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const { couponPlanPreviews, errorCouponPlans, loadingCouponPlans, refetchCouponPlans, loadMoreCouponPlans } =
     usePreviewCouponPlanCollection(condition)
+
+  useEffect(() => {
+    refetchCouponPlans()
+  }, [refetchCouponPlans, stateCode])
 
   if (loadingCouponPlans) return <Skeleton active />
 
@@ -65,7 +71,7 @@ const CouponCollectionBlock: React.VFC<{
                               icon={<EditOutlined />}
                               title={formatMessage(pageMessages['*'].editCouponPlan)}
                               couponPlan={couponPlan}
-                              onRefetch={refetchCouponPlans}
+                              onRefetch={onRefetch}
                             />
                           </Menu.Item>
                         </Menu>
@@ -74,6 +80,7 @@ const CouponCollectionBlock: React.VFC<{
                       <MoreOutlined />
                     </Dropdown>
                   }
+                  stateCode={stateCode}
                 />
               </div>
             ))}

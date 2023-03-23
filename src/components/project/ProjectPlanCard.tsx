@@ -8,6 +8,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
+import { useProductChannelInfo } from '../../hooks/channel'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ProjectPlan, ProjectPlanPeriodType } from '../../types/project'
 import AdminCard from '../admin/AdminCard'
@@ -54,6 +55,15 @@ const StyledOnSale = styled.div<{ status?: string }>`
   }
 `
 
+const StyledModalButton = styled(Button)`
+  padding: 0;
+  height: fit-content;
+
+  span: {
+    margin: 0;
+  }
+`
+
 const ProjectPlanCard: React.FC<
   {
     projectPlan: ProjectPlan
@@ -62,7 +72,11 @@ const ProjectPlanCard: React.FC<
   } & CardProps
 > = ({ projectPlan, projectId, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
+  const { id: appId, enabledModules } = useApp()
+  const { productChannelInfo, refetchProductChannelInfo } = useProductChannelInfo(
+    appId,
+    `ProjectPlan_${projectPlan.id}`,
+  )
   const isOnSale = (projectPlan.soldAt?.getTime() || 0) > Date.now()
   const projectPlanType =
     projectPlan.periodAmount && projectPlan.periodType
@@ -114,6 +128,34 @@ const ProjectPlanCard: React.FC<
                 <BraftContent>{projectPlan.description}</BraftContent>
               </Typography.Paragraph>
               <ExtraContentBlock className="d-flex justify-content-between align-items-center">
+                {enabledModules.sku ? (
+                  <ProductSkuModal
+                    productId={`ProjectPlan_${projectPlan.id}`}
+                    renderTrigger={({ sku, onOpen }) => (
+                      <div className="d-flex flex-column align-items-start">
+                        <StyledModalButton type="link" onClick={() => onOpen?.()}>
+                          {!sku &&
+                            productChannelInfo?.filter(v => v.channelSku).length === 0 &&
+                            formatMessage(projectMessages.ProjectPlanCard.skuSetting)}
+                          {sku && `${formatMessage(projectMessages.ProjectPlanCard.sku)}: ${sku}`}
+                        </StyledModalButton>
+                        {productChannelInfo &&
+                          productChannelInfo
+                            .filter(v => v.channelSku)
+                            .map(v => (
+                              <StyledModalButton
+                                key={v.appChannelId}
+                                type="link"
+                                onClick={() => onOpen?.()}
+                              >{`${v.appChannelName}: ${v.channelSku}`}</StyledModalButton>
+                            ))}
+                      </div>
+                    )}
+                    onRefetch={() => refetchProductChannelInfo()}
+                  />
+                ) : (
+                  <div></div>
+                )}
                 <div className="d-flex">
                   {projectPlan.publishedAt ? (
                     <StyledOnSale status="onSale">{formatMessage(projectMessages.ProjectPlanCard.onSale)}</StyledOnSale>
@@ -125,18 +167,6 @@ const ProjectPlanCard: React.FC<
                     amount: projectPlan.projectPlanEnrollment,
                   })}
                 </div>
-                {enabledModules.sku && (
-                  <ProductSkuModal
-                    productId={`ProjectPlan_${projectPlan.id}`}
-                    renderTrigger={({ sku, onOpen }) => (
-                      <Button type="link" onClick={() => onOpen?.()}>
-                        {sku
-                          ? `${formatMessage(projectMessages.ProjectPlanCard.sku)}: ${sku}`
-                          : formatMessage(projectMessages.ProjectPlanCard.skuSetting)}
-                      </Button>
-                    )}
-                  />
-                )}
               </ExtraContentBlock>
             </>
           }

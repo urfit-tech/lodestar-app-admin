@@ -113,6 +113,12 @@ export const useResolver = () => {
       settings: withResponsive(CraftSetting.EmbeddedSettings),
     },
   }
+  CraftElement.CraftAIBot.craft = {
+    displayName: formatMessage({ id: 'craft.resolver.AIBotSettings', defaultMessage: '嵌入' }),
+    related: {
+      settings: withResponsive(CraftSetting.AIBotSettings),
+    },
+  }
   for (const resolvedName in CraftElement) {
     if (Object.prototype.hasOwnProperty.call(CraftElement, resolvedName)) {
       const element = CraftElement[resolvedName as keyof typeof CraftElement]

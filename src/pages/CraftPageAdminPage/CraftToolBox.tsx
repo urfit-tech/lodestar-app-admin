@@ -39,6 +39,7 @@ const CraftToolbox: React.FC = () => {
   )
 }
 const BasicToolbox: React.FC = () => {
+  const { enabledModules } = useApp()
   return (
     <div>
       <CraftTool
@@ -119,6 +120,17 @@ const BasicToolbox: React.FC = () => {
         title="馬上查看"
       />
       <CraftTool as={CraftElement.CraftEmbedded} iframe="" customStyle={{ margin: 0 }} />
+      {enabledModules.openai && (
+        <CraftTool
+          as={CraftElement.CraftAIBot}
+          displayName="AI Bot"
+          temperature={1}
+          system=""
+          assistants={[]}
+          submitText="submit"
+          customStyle={{ margin: 0 }}
+        />
+      )}
       {/* <CraftTool as={CraftElement.CraftCarousel} canvas>
         <Element is={CraftElement.CraftSection} canvas customStyle={{ padding: '40px 0', background: 'yellow' }}>
           <Element is={CraftElement.CraftTitle} title="Sample Title 1" />

@@ -251,6 +251,7 @@ export const useAppointmentEnrollmentCollection = (
       id: v.id,
       avatarUrl: v.member?.picture_url || null,
       member: {
+        id: v.member?.id || '',
         name: v.member_name || '',
         email: v.member_email,
         phone: v.member_phone,

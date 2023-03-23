@@ -2132,6 +2132,129 @@ export interface UPDATE_PRODUCT_SKUVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PRODUCT_TITLE
+// ====================================================
+
+export interface GET_PRODUCT_TITLE_program_plan_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_program_plan {
+  __typename: "program_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program: GET_PRODUCT_TITLE_program_plan_program;
+}
+
+export interface GET_PRODUCT_TITLE_program_package_plan_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_PRODUCT_TITLE_program_package_plan_program_package;
+}
+
+export interface GET_PRODUCT_TITLE_project_plan_project {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_project_plan {
+  __typename: "project_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  project: GET_PRODUCT_TITLE_project_plan_project;
+}
+
+export interface GET_PRODUCT_TITLE_activity_ticket_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_TITLE_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  activity: GET_PRODUCT_TITLE_activity_ticket_activity;
+}
+
+export interface GET_PRODUCT_TITLE {
+  /**
+   * fetch data from the table: "program_plan"
+   */
+  program_plan: GET_PRODUCT_TITLE_program_plan[];
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_PRODUCT_TITLE_program_package_plan[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PRODUCT_TITLE_project_plan[];
+  /**
+   * fetch data from the table: "activity_ticket"
+   */
+  activity_ticket: GET_PRODUCT_TITLE_activity_ticket[];
+}
+
+export interface GET_PRODUCT_TITLEVariables {
+  targets?: any[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_USED_CHANNEL_SKU
+// ====================================================
+
+export interface GET_USED_CHANNEL_SKU_product_channel {
+  __typename: "product_channel";
+  product_id: string;
+  channel_id: any;
+  channel_sku: string | null;
+}
+
+export interface GET_USED_CHANNEL_SKU {
+  /**
+   * fetch data from the table: "product_channel"
+   */
+  product_channel: GET_USED_CHANNEL_SKU_product_channel[];
+}
+
+export interface GET_USED_CHANNEL_SKUVariables {
+  skuList?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACTS
 // ====================================================
 
@@ -2330,62 +2453,6 @@ export interface UPDATE_COUPON_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_COUPON_CODE_EXPORT
-// ====================================================
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_member {
-  __typename: "member";
-  id: string;
-  email: string;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons_status {
-  __typename: "coupon_status";
-  used: boolean | null;
-  outdated: boolean | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code_coupons {
-  __typename: "coupon";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_COUPON_CODE_EXPORT_coupon_code_coupons_member;
-  /**
-   * An object relationship
-   */
-  status: GET_COUPON_CODE_EXPORT_coupon_code_coupons_status | null;
-}
-
-export interface GET_COUPON_CODE_EXPORT_coupon_code {
-  __typename: "coupon_code";
-  id: any;
-  code: string;
-  remaining: number;
-  /**
-   * An array relationship
-   */
-  coupons: GET_COUPON_CODE_EXPORT_coupon_code_coupons[];
-}
-
-export interface GET_COUPON_CODE_EXPORT {
-  /**
-   * fetch data from the table: "coupon_code"
-   */
-  coupon_code: GET_COUPON_CODE_EXPORT_coupon_code[];
-}
-
-export interface GET_COUPON_CODE_EXPORTVariables {
-  couponPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_APP_PAGE_TEMPLATE
 // ====================================================
 
@@ -2522,31 +2589,53 @@ export interface GET_GIFT_PLANSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_MEMBER_COLLECTION
+// GraphQL query operation: GET_SINGLE_MEMBER_PUBLIC
 // ====================================================
 
-export interface GET_ALL_MEMBER_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  /**
-   * invited | verified | activated | engaged
-   */
-  status: string;
+export interface GET_SINGLE_MEMBER_PUBLIC_member_public {
+  __typename: "member_public";
+  id: string | null;
 }
 
-export interface GET_ALL_MEMBER_COLLECTION {
+export interface GET_SINGLE_MEMBER_PUBLIC {
   /**
-   * fetch data from the table: "member"
+   * fetch data from the table: "member_public"
    */
-  member: GET_ALL_MEMBER_COLLECTION_member[];
+  member_public: GET_SINGLE_MEMBER_PUBLIC_member_public[];
 }
 
-export interface GET_ALL_MEMBER_COLLECTIONVariables {
+export interface GET_SINGLE_MEMBER_PUBLICVariables {
   search: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ALL_MEMBER_PUBLIC_COLLECTION
+// ====================================================
+
+export interface GET_ALL_MEMBER_PUBLIC_COLLECTION_member_public {
+  __typename: "member_public";
+  id: string | null;
+  picture_url: string | null;
+  name: string | null;
+  username: string | null;
+  email: string | null;
+  status: string | null;
+}
+
+export interface GET_ALL_MEMBER_PUBLIC_COLLECTION {
+  /**
+   * fetch data from the table: "member_public"
+   */
+  member_public: GET_ALL_MEMBER_PUBLIC_COLLECTION_member_public[];
+}
+
+export interface GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables {
+  condition: member_public_bool_exp;
 }
 
 /* tslint:disable */
@@ -2708,11 +2797,22 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_appointment_plan {
   published_at: any | null;
 }
 
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
 export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_plan {
   __typename: "podcast_plan";
   id: any;
   title: string;
   published_at: any | null;
+  /**
+   * An object relationship
+   */
+  creator: GET_PRODUCT_SELECTION_COLLECTION_podcast_plan_creator | null;
 }
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_coupon_plan {
@@ -10147,6 +10247,113 @@ export interface GET_ENROLLED_CARDS {
 
 export interface GET_ENROLLED_CARDSVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_CHANNEL_INFO
+// ====================================================
+
+export interface GET_PRODUCT_CHANNEL_INFO_app_channel_product_channels {
+  __typename: "product_channel";
+  id: any;
+  channel_sku: string | null;
+}
+
+export interface GET_PRODUCT_CHANNEL_INFO_app_channel {
+  __typename: "app_channel";
+  id: any;
+  name: string;
+  /**
+   * An array relationship
+   */
+  product_channels: GET_PRODUCT_CHANNEL_INFO_app_channel_product_channels[];
+}
+
+export interface GET_PRODUCT_CHANNEL_INFO {
+  /**
+   * fetch data from the table: "app_channel"
+   */
+  app_channel: GET_PRODUCT_CHANNEL_INFO_app_channel[];
+}
+
+export interface GET_PRODUCT_CHANNEL_INFOVariables {
+  appId?: string | null;
+  productId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PRODUCT_CHANNEL
+// ====================================================
+
+export interface UPDATE_PRODUCT_CHANNEL_delete_product_channel {
+  __typename: "product_channel_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRODUCT_CHANNEL_insert_product_channel {
+  __typename: "product_channel_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PRODUCT_CHANNEL {
+  /**
+   * delete data from the table: "product_channel"
+   */
+  delete_product_channel: UPDATE_PRODUCT_CHANNEL_delete_product_channel | null;
+  /**
+   * insert data into the table: "product_channel"
+   */
+  insert_product_channel: UPDATE_PRODUCT_CHANNEL_insert_product_channel | null;
+}
+
+export interface UPDATE_PRODUCT_CHANNELVariables {
+  productId: string;
+  productChannelList: product_channel_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PRODUCT_CHANNEL
+// ====================================================
+
+export interface DELETE_PRODUCT_CHANNEL_delete_product_channel {
+  __typename: "product_channel_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PRODUCT_CHANNEL {
+  /**
+   * delete data from the table: "product_channel"
+   */
+  delete_product_channel: DELETE_PRODUCT_CHANNEL_delete_product_channel | null;
+}
+
+export interface DELETE_PRODUCT_CHANNELVariables {
+  channelIds: any[];
+  productId: string;
 }
 
 /* tslint:disable */
@@ -22331,6 +22538,22 @@ export enum app_admin_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "app_channel"
+ */
+export enum app_channel_constraint {
+  app_channel_pkey = "app_channel_pkey",
+}
+
+/**
+ * update columns of table "app_channel"
+ */
+export enum app_channel_update_column {
+  app_id = "app_id",
+  id = "id",
+  name = "name",
+}
+
+/**
  * unique or primary key constraints on table "app"
  */
 export enum app_constraint {
@@ -23456,6 +23679,81 @@ export enum exam_update_column {
  */
 export enum exercise_constraint {
   exercise_pkey = "exercise_pkey",
+}
+
+/**
+ * select columns of table "exercise_public"
+ */
+export enum exercise_public_select_column {
+  choice_ids = "choice_ids",
+  duration = "duration",
+  ended_at = "ended_at",
+  exercise_id = "exercise_id",
+  gained_points = "gained_points",
+  is_correct = "is_correct",
+  member_id = "member_id",
+  program_content_id = "program_content_id",
+  question_ended_at = "question_ended_at",
+  question_id = "question_id",
+  question_points = "question_points",
+  question_started_at = "question_started_at",
+  started_at = "started_at",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_avg_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_avg_arguments_columns {
+  duration = "duration",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_corr_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_corr_arguments_columns {
+  duration = "duration",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_covar_samp_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_covar_samp_arguments_columns {
+  duration = "duration",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_max_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_max_arguments_columns {
+  duration = "duration",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_min_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_min_arguments_columns {
+  duration = "duration",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_stddev_samp_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_stddev_samp_arguments_columns {
+  duration = "duration",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_sum_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_sum_arguments_columns {
+  duration = "duration",
+}
+
+/**
+ * select "exercise_public_aggregate_bool_exp_var_samp_arguments_columns" columns of table "exercise_public"
+ */
+export enum exercise_public_select_column_exercise_public_aggregate_bool_exp_var_samp_arguments_columns {
+  duration = "duration",
 }
 
 /**
@@ -26147,6 +26445,37 @@ export enum practice_update_column {
   reviewed_at = "reviewed_at",
   title = "title",
   updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "product_channel"
+ */
+export enum product_channel_constraint {
+  product_channel_app_id_channel_sku_key = "product_channel_app_id_channel_sku_key",
+  product_channel_pkey = "product_channel_pkey",
+  product_channel_product_id_channel_id_key = "product_channel_product_id_channel_id_key",
+}
+
+/**
+ * select columns of table "product_channel"
+ */
+export enum product_channel_select_column {
+  app_id = "app_id",
+  channel_id = "channel_id",
+  channel_sku = "channel_sku",
+  id = "id",
+  product_id = "product_id",
+}
+
+/**
+ * update columns of table "product_channel"
+ */
+export enum product_channel_update_column {
+  app_id = "app_id",
+  channel_id = "channel_id",
+  channel_sku = "channel_sku",
+  id = "id",
+  product_id = "product_id",
 }
 
 /**
@@ -29474,6 +29803,49 @@ export interface app_bool_exp {
   vimeo_project_id?: String_comparison_exp | null;
   voucher_plans?: voucher_plan_bool_exp | null;
   voucher_plans_aggregate?: voucher_plan_aggregate_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_channel". All fields are combined with a logical 'AND'.
+ */
+export interface app_channel_bool_exp {
+  _and?: app_channel_bool_exp[] | null;
+  _not?: app_channel_bool_exp | null;
+  _or?: app_channel_bool_exp[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  product_channels?: product_channel_bool_exp | null;
+  product_channels_aggregate?: product_channel_aggregate_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_channel"
+ */
+export interface app_channel_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  id?: any | null;
+  name?: string | null;
+  product_channels?: product_channel_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "app_channel"
+ */
+export interface app_channel_obj_rel_insert_input {
+  data: app_channel_insert_input;
+  on_conflict?: app_channel_on_conflict | null;
+}
+
+/**
+ * on_conflict condition type for table "app_channel"
+ */
+export interface app_channel_on_conflict {
+  constraint: app_channel_constraint;
+  update_columns: app_channel_update_column[];
+  where?: app_channel_bool_exp | null;
 }
 
 export interface app_host_aggregate_bool_exp {
@@ -33843,6 +34215,8 @@ export interface exercise_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   exam?: exam_bool_exp | null;
   exam_id?: uuid_comparison_exp | null;
+  exercise_publics?: exercise_public_bool_exp | null;
+  exercise_publics_aggregate?: exercise_public_aggregate_bool_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
@@ -33861,6 +34235,7 @@ export interface exercise_insert_input {
   ended_at?: any | null;
   exam?: exam_obj_rel_insert_input | null;
   exam_id?: any | null;
+  exercise_publics?: exercise_public_arr_rel_insert_input | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
@@ -33899,12 +34274,157 @@ export interface exercise_min_order_by {
 }
 
 /**
+ * input type for inserting object relation for remote table "exercise"
+ */
+export interface exercise_obj_rel_insert_input {
+  data: exercise_insert_input;
+  on_conflict?: exercise_on_conflict | null;
+}
+
+/**
  * on_conflict condition type for table "exercise"
  */
 export interface exercise_on_conflict {
   constraint: exercise_constraint;
   update_columns: exercise_update_column[];
   where?: exercise_bool_exp | null;
+}
+
+export interface exercise_public_aggregate_bool_exp {
+  avg?: exercise_public_aggregate_bool_exp_avg | null;
+  corr?: exercise_public_aggregate_bool_exp_corr | null;
+  count?: exercise_public_aggregate_bool_exp_count | null;
+  covar_samp?: exercise_public_aggregate_bool_exp_covar_samp | null;
+  max?: exercise_public_aggregate_bool_exp_max | null;
+  min?: exercise_public_aggregate_bool_exp_min | null;
+  stddev_samp?: exercise_public_aggregate_bool_exp_stddev_samp | null;
+  sum?: exercise_public_aggregate_bool_exp_sum | null;
+  var_samp?: exercise_public_aggregate_bool_exp_var_samp | null;
+}
+
+export interface exercise_public_aggregate_bool_exp_avg {
+  arguments: exercise_public_select_column_exercise_public_aggregate_bool_exp_avg_arguments_columns;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_corr {
+  arguments: exercise_public_aggregate_bool_exp_corr_arguments;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_corr_arguments {
+  X: exercise_public_select_column_exercise_public_aggregate_bool_exp_corr_arguments_columns;
+  Y: exercise_public_select_column_exercise_public_aggregate_bool_exp_corr_arguments_columns;
+}
+
+export interface exercise_public_aggregate_bool_exp_count {
+  arguments?: exercise_public_select_column[] | null;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: Int_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_covar_samp {
+  arguments: exercise_public_aggregate_bool_exp_covar_samp_arguments;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_covar_samp_arguments {
+  X: exercise_public_select_column_exercise_public_aggregate_bool_exp_covar_samp_arguments_columns;
+  Y: exercise_public_select_column_exercise_public_aggregate_bool_exp_covar_samp_arguments_columns;
+}
+
+export interface exercise_public_aggregate_bool_exp_max {
+  arguments: exercise_public_select_column_exercise_public_aggregate_bool_exp_max_arguments_columns;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_min {
+  arguments: exercise_public_select_column_exercise_public_aggregate_bool_exp_min_arguments_columns;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_stddev_samp {
+  arguments: exercise_public_select_column_exercise_public_aggregate_bool_exp_stddev_samp_arguments_columns;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_sum {
+  arguments: exercise_public_select_column_exercise_public_aggregate_bool_exp_sum_arguments_columns;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+export interface exercise_public_aggregate_bool_exp_var_samp {
+  arguments: exercise_public_select_column_exercise_public_aggregate_bool_exp_var_samp_arguments_columns;
+  distinct?: boolean | null;
+  filter?: exercise_public_bool_exp | null;
+  predicate: float8_comparison_exp;
+}
+
+/**
+ * input type for inserting array relation for remote table "exercise_public"
+ */
+export interface exercise_public_arr_rel_insert_input {
+  data: exercise_public_insert_input[];
+}
+
+/**
+ * Boolean expression to filter rows from the table "exercise_public". All fields are combined with a logical 'AND'.
+ */
+export interface exercise_public_bool_exp {
+  _and?: exercise_public_bool_exp[] | null;
+  _not?: exercise_public_bool_exp | null;
+  _or?: exercise_public_bool_exp[] | null;
+  choice_ids?: String_comparison_exp | null;
+  duration?: float8_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  exercise?: exercise_bool_exp | null;
+  exercise_id?: uuid_comparison_exp | null;
+  gained_points?: String_comparison_exp | null;
+  is_correct?: String_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  question_ended_at?: String_comparison_exp | null;
+  question_id?: String_comparison_exp | null;
+  question_points?: String_comparison_exp | null;
+  question_started_at?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "exercise_public"
+ */
+export interface exercise_public_insert_input {
+  choice_ids?: string | null;
+  duration?: any | null;
+  ended_at?: any | null;
+  exercise?: exercise_obj_rel_insert_input | null;
+  exercise_id?: any | null;
+  gained_points?: string | null;
+  is_correct?: string | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  program_content_id?: any | null;
+  question_ended_at?: string | null;
+  question_id?: string | null;
+  question_points?: string | null;
+  question_started_at?: string | null;
+  started_at?: any | null;
 }
 
 /**
@@ -33975,6 +34495,21 @@ export interface file_on_conflict {
   constraint: file_constraint;
   update_columns: file_update_column[];
   where?: file_bool_exp | null;
+}
+
+/**
+ * Boolean expression to compare columns of type "float8". All fields are combined with logical 'AND'.
+ */
+export interface float8_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
 }
 
 /**
@@ -36730,6 +37265,8 @@ export interface member_public_bool_exp {
   email?: String_comparison_exp | null;
   has_backstage_enter_permission?: Int_comparison_exp | null;
   id?: String_comparison_exp | null;
+  member_permissions?: member_permission_bool_exp | null;
+  member_permissions_aggregate?: member_permission_aggregate_bool_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_specialities_aggregate?: member_speciality_aggregate_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -36755,6 +37292,7 @@ export interface member_public_insert_input {
   email?: string | null;
   has_backstage_enter_permission?: number | null;
   id?: string | null;
+  member_permissions?: member_permission_arr_rel_insert_input | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   metadata?: any | null;
   name?: string | null;
@@ -36786,6 +37324,7 @@ export interface member_public_order_by {
   email?: order_by | null;
   has_backstage_enter_permission?: order_by | null;
   id?: order_by | null;
+  member_permissions_aggregate?: member_permission_aggregate_order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
   name?: order_by | null;
@@ -43010,6 +43549,65 @@ export interface product_bool_exp {
   updated_at?: timestamptz_comparison_exp | null;
   voucher_plan_products?: voucher_plan_product_bool_exp | null;
   voucher_plan_products_aggregate?: voucher_plan_product_aggregate_bool_exp | null;
+}
+
+export interface product_channel_aggregate_bool_exp {
+  count?: product_channel_aggregate_bool_exp_count | null;
+}
+
+export interface product_channel_aggregate_bool_exp_count {
+  arguments?: product_channel_select_column[] | null;
+  distinct?: boolean | null;
+  filter?: product_channel_bool_exp | null;
+  predicate: Int_comparison_exp;
+}
+
+/**
+ * input type for inserting array relation for remote table "product_channel"
+ */
+export interface product_channel_arr_rel_insert_input {
+  data: product_channel_insert_input[];
+  on_conflict?: product_channel_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product_channel". All fields are combined with a logical 'AND'.
+ */
+export interface product_channel_bool_exp {
+  _and?: product_channel_bool_exp[] | null;
+  _not?: product_channel_bool_exp | null;
+  _or?: product_channel_bool_exp[] | null;
+  app?: app_bool_exp | null;
+  app_channel?: app_channel_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  channel_id?: uuid_comparison_exp | null;
+  channel_sku?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "product_channel"
+ */
+export interface product_channel_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_channel?: app_channel_obj_rel_insert_input | null;
+  app_id?: string | null;
+  channel_id?: any | null;
+  channel_sku?: string | null;
+  id?: any | null;
+  product?: product_obj_rel_insert_input | null;
+  product_id?: string | null;
+}
+
+/**
+ * on_conflict condition type for table "product_channel"
+ */
+export interface product_channel_on_conflict {
+  constraint: product_channel_constraint;
+  update_columns: product_channel_update_column[];
+  where?: product_channel_bool_exp | null;
 }
 
 export interface product_enrollment_aggregate_bool_exp {

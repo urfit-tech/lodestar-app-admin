@@ -1,6 +1,7 @@
 import Icon from '@ant-design/icons'
 import { Skeleton } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { parsePayload } from 'lodestar-app-element/src/hooks/util'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../components/admin'
@@ -13,7 +14,8 @@ import { ReactComponent as UserIcon } from '../images/icon/user.svg'
 
 const SettingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, authToken } = useAuth()
+  const payload = authToken ? parsePayload(authToken) : null
 
   return (
     <AdminLayout>
@@ -30,7 +32,7 @@ const SettingAdminPage: React.FC = () => {
 
       {!currentMemberId ? (
         <Skeleton active />
-      ) : (
+      ) : payload && !payload.isBusiness ? (
         <ProfileBasicCard
           className="mb-4"
           memberId={currentMemberId}
@@ -40,7 +42,7 @@ const SettingAdminPage: React.FC = () => {
           withAbstract={currentUserRole === 'content-creator'}
           withDescription={currentUserRole === 'content-creator'}
         />
-      )}
+      ) : null}
 
       <ProfileAccountAdminCard className="mb-4" memberId={currentMemberId || ''} />
       <ProfilePasswordAdminCard memberId={currentMemberId || ''} />

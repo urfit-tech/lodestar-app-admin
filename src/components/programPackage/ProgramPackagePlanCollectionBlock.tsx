@@ -1,4 +1,4 @@
-import Icon, { BarcodeOutlined, EditOutlined } from '@ant-design/icons'
+import EditOutlined from '@ant-design/icons'
 import { Button, Divider, Tag } from 'antd'
 import gql from 'graphql-tag'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
@@ -7,9 +7,9 @@ import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, commonMessages as helperCommonMessages } from '../../helpers/translation'
+import { useProductChannelInfo } from '../../hooks/channel'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
-import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 import ProductSkuModal from '../common/ProductSkuModal'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 import programPackageMessages from './translation'
@@ -19,18 +19,6 @@ const messages = defineMessages({
   availableForLimitTime: { id: 'programPackage.label.availableForLimitTime', defaultMessage: '可觀看 {amount} {unit}' },
 })
 
-const StyledButton = styled(Button)`
-  && {
-    background: none;
-    border: 1px solid white;
-    color: white;
-    span:nth-child(2) {
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-`
 const StyledCard = styled.div`
   padding: 1.5rem;
   background: white;
@@ -54,55 +42,25 @@ const StyledText = styled.span`
   font-size: 14px;
 `
 
+const StyledModalButton = styled(Button)`
+  padding: 0;
+  height: fit-content;
+
+  span: {
+    margin: 0;
+  }
+`
+
 const ProgramPackagePlanCollectionBlock: React.FC<{
   programPackageId: string
   plans: ProgramPackagePlanProps[]
   onRefetch?: () => void
 }> = ({ programPackageId, plans, onRefetch }) => {
-  const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
-
   return (
     <div className="row py-5">
       {plans.map(plan => (
         <div key={plan.id} className="col-12 col-md-6 mb-4">
-          <OverlayWrapper>
-            <ProgramPackagePlanCard {...plan} />
-
-            <OverlayBlock>
-              <div>
-                <ProgramPackagePlanAdminModal
-                  programPackageId={programPackageId}
-                  onRefetch={onRefetch}
-                  plan={plan}
-                  title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
-                  renderTrigger={({ setVisible }) => (
-                    <StyledButton block icon={<EditOutlined />} onClick={() => setVisible?.(true)}>
-                      {formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
-                    </StyledButton>
-                  )}
-                />
-
-                {enabledModules.sku && (
-                  <ProductSkuModal
-                    productId={`ProgramPackagePlan_${plan.id}`}
-                    renderTrigger={({ onOpen, sku }) => (
-                      <StyledButton block className="mt-4" onClick={() => onOpen?.()}>
-                        <Icon component={() => <BarcodeOutlined />} />
-                        {sku
-                          ? `${formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}: ${sku}`
-                          : formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)}
-                      </StyledButton>
-                    )}
-                    renderTitle={() =>
-                      formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)
-                    }
-                    renderInputLabel={() => formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}
-                  />
-                )}
-              </div>
-            </OverlayBlock>
-          </OverlayWrapper>
+          <ProgramPackagePlanCard programPackageId={programPackageId} onRefetch={onRefetch} {...plan} />
         </div>
       ))}
     </div>
@@ -127,81 +85,151 @@ const StyledLabel = styled.div<{ active?: boolean }>`
     border-radius: 50%;
   }
 `
-const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
-  title,
-  description,
-  periodAmount,
-  periodType,
-  listPrice,
-  salePrice,
-  soldAt,
-  discountDownPrice,
-  isSubscription,
-  publishedAt,
-  soldQuantity,
-}) => {
-  const { formatMessage } = useIntl()
-  const isOnSale = soldAt && soldAt.getTime() > Date.now()
-  const status =
-    publishedAt && Date.now() > publishedAt.getTime()
-      ? formatMessage(commonMessages.status.selling)
-      : formatMessage(commonMessages.status.notSold)
+const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps & { programPackageId: string; onRefetch?: () => void }> =
+  ({
+    programPackageId,
+    id,
+    title,
+    listPrice,
+    salePrice,
+    soldAt,
+    discountDownPrice,
+    description,
+    soldQuantity,
+    isSubscription,
+    periodAmount,
+    periodType,
+    publishedAt,
+    isTempoDelivery,
+    isParticipantsVisible,
+    position,
+    onRefetch,
+  }) => {
+    const { formatMessage } = useIntl()
+    const { id: appId, enabledModules } = useApp()
+    const { productChannelInfo, refetchProductChannelInfo } = useProductChannelInfo(appId, `ProgramPackagePlan_${id}`)
+    const isOnSale = soldAt && soldAt.getTime() > Date.now()
+    const status =
+      publishedAt && Date.now() > publishedAt.getTime()
+        ? formatMessage(commonMessages.status.selling)
+        : formatMessage(commonMessages.status.notSold)
 
-  const programPackagePlanType = isSubscription ? 'subscription' : periodAmount && periodType ? 'period' : 'perpetual'
+    const programPackagePlanType = isSubscription ? 'subscription' : periodAmount && periodType ? 'period' : 'perpetual'
 
-  return (
-    <StyledCard>
-      <StyledTitle className="mb-3 d-flex justify-content-between">
-        <div className="d-flex align-items-center">
-          <Tag className="mr-2">
-            {programPackagePlanType === 'subscription'
-              ? formatMessage(commonMessages.ui.subscriptionPlan)
-              : programPackagePlanType === 'period'
-              ? formatMessage(commonMessages.ui.periodPlan)
-              : formatMessage(commonMessages.ui.perpetualPlan)}
-          </Tag>
-          {title}
+    return (
+      <StyledCard>
+        <StyledTitle className="mb-3 d-flex justify-content-between">
+          <div className="d-flex align-items-center">
+            <Tag className="mr-2">
+              {programPackagePlanType === 'subscription'
+                ? formatMessage(commonMessages.ui.subscriptionPlan)
+                : programPackagePlanType === 'period'
+                ? formatMessage(commonMessages.ui.periodPlan)
+                : formatMessage(commonMessages.ui.perpetualPlan)}
+            </Tag>
+            {title}
+          </div>
+          <ProgramPackagePlanAdminModal
+            programPackageId={programPackageId}
+            onRefetch={onRefetch}
+            plan={{
+              id,
+              title,
+              listPrice,
+              salePrice,
+              soldAt,
+              discountDownPrice,
+              description,
+              soldQuantity,
+              isSubscription,
+              periodType,
+              periodAmount,
+              publishedAt,
+              isTempoDelivery,
+              isParticipantsVisible,
+              position,
+            }}
+            title={formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.editPlan)}
+            renderTrigger={({ setVisible }) => (
+              <div className="d-flex align-items-center">
+                <EditOutlined onClick={() => setVisible?.(true)} />
+              </div>
+            )}
+          />
+        </StyledTitle>
+        <PriceLabel
+          listPrice={listPrice}
+          salePrice={isOnSale && salePrice ? salePrice : undefined}
+          downPrice={discountDownPrice || undefined}
+          periodType={isSubscription ? periodType : undefined}
+          periodAmount={periodAmount}
+          variant="full-detail"
+        />
+        <Divider className="my-3" />
+
+        {!isSubscription && periodAmount && periodType && (
+          <StyledText>
+            {formatMessage(messages.availableForLimitTime, {
+              amount: periodAmount,
+              unit:
+                periodType === 'D'
+                  ? formatMessage(commonMessages.unit.day)
+                  : periodType === 'W'
+                  ? formatMessage(commonMessages.unit.week)
+                  : periodType === 'M'
+                  ? formatMessage(commonMessages.unit.month)
+                  : periodType === 'Y'
+                  ? formatMessage(commonMessages.unit.year)
+                  : formatMessage(commonMessages.label.unknownPeriod),
+            })}
+          </StyledText>
+        )}
+
+        <div className="mb-3">
+          <BraftContent>{description}</BraftContent>
         </div>
-        <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
-      </StyledTitle>
-      <PriceLabel
-        listPrice={listPrice}
-        salePrice={isOnSale && salePrice ? salePrice : undefined}
-        downPrice={discountDownPrice || undefined}
-        periodType={isSubscription ? periodType : undefined}
-        periodAmount={periodAmount}
-        variant="full-detail"
-      />
-      <Divider className="my-3" />
+        <StyledEnrollment className="d-flex align-items-center justify-content-between">
+          {enabledModules.sku ? (
+            <ProductSkuModal
+              productId={`ProgramPackagePlan_${id}`}
+              renderTrigger={({ onOpen, sku }) => (
+                <div className="d-flex flex-column align-items-start">
+                  <StyledModalButton type="link" onClick={() => onOpen?.()}>
+                    {!sku &&
+                      productChannelInfo?.filter(v => v.channelSku).length === 0 &&
+                      formatMessage(commonMessages.label.skuSetting)}
+                    {sku && `${formatMessage(commonMessages.label.sku)}: ${sku}`}
+                  </StyledModalButton>
 
-      {!isSubscription && periodAmount && periodType && (
-        <StyledText>
-          {formatMessage(messages.availableForLimitTime, {
-            amount: periodAmount,
-            unit:
-              periodType === 'D'
-                ? formatMessage(commonMessages.unit.day)
-                : periodType === 'W'
-                ? formatMessage(commonMessages.unit.week)
-                : periodType === 'M'
-                ? formatMessage(commonMessages.unit.month)
-                : periodType === 'Y'
-                ? formatMessage(commonMessages.unit.year)
-                : formatMessage(commonMessages.label.unknownPeriod),
-          })}
-        </StyledText>
-      )}
-
-      <div className="mb-3">
-        <BraftContent>{description}</BraftContent>
-      </div>
-      <StyledEnrollment className="mb-3">
-        <span className="mr-2">{soldQuantity || 0}</span>
-        <span>{formatMessage(messages.people)}</span>
-      </StyledEnrollment>
-    </StyledCard>
-  )
-}
+                  {productChannelInfo &&
+                    productChannelInfo
+                      ?.filter(v => v.channelSku)
+                      ?.map(v => (
+                        <StyledModalButton
+                          key={v.appChannelId}
+                          type="link"
+                          onClick={() => onOpen?.()}
+                        >{`${v.appChannelName}: ${v.channelSku}`}</StyledModalButton>
+                      ))}
+                </div>
+              )}
+              renderTitle={() => formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.skuSetting)}
+              renderInputLabel={() => formatMessage(programPackageMessages.ProgramPackagePlanCollectionBlock.sku)}
+              onRefetch={() => refetchProductChannelInfo()}
+            />
+          ) : (
+            <div></div>
+          )}
+          <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{`${status} / ${formatMessage(
+            helperCommonMessages.label.amountParticipants,
+            {
+              amount: soldQuantity || 0,
+            },
+          )}`}</StyledLabel>
+        </StyledEnrollment>
+      </StyledCard>
+    )
+  }
 
 export const UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION = gql`
   mutation UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION($data: [program_package_plan_insert_input!]!) {
