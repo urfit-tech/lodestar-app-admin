@@ -87,7 +87,13 @@ export const AllMemberSelector: React.FC<
           { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
         ],
       }
-    : {}
+    : {
+        _or: [
+          { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+        ],
+      }
   const { members } = useAllMemberCollection(condition)
 
   const { data: existingMembers } = useQuery<hasura.GET_SINGLE_MEMBER_PUBLIC, hasura.GET_SINGLE_MEMBER_PUBLICVariables>(
@@ -115,8 +121,7 @@ export const AllMemberSelector: React.FC<
       setSearch(value.trim())
     }, 300)
   }
-  console.log(members)
-  console.log(existingMembers)
+
   return (
     <Select<string | string[]>
       style={{ width: '100%' }}
