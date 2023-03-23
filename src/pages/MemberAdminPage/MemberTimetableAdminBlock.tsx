@@ -377,16 +377,19 @@ const useProgramTimetable = (memberId: string) => {
 
 const GET_PROGRAM_TIMETABLE = gql`
   query GET_PROGRAM_TIMETABLE($memberId: String!) {
-    program(where: { published_at: { _is_null: false }, program_plans: { currency_id: { _eq: "LSC" } } }) {
+    program(
+      where: {
+        published_at: { _is_null: false }
+        program_plans: { published_at: { _is_null: false }, currency_id: { _eq: "LSC" } }
+        program_package_programs: { program_package: { published_at: { _is_null: false } } }
+      }
+    ) {
       id
       title
-      program_plans(
-        where: { published_at: { _is_null: false }, currency_id: { _eq: "LSC" } }
-        order_by: [{ list_price: asc }]
-      ) {
+      program_plans(order_by: [{ list_price: asc }]) {
         list_price
       }
-      program_package_programs(where: { program_package: { published_at: { _is_null: false } } }) {
+      program_package_programs {
         position
         program_package {
           id
