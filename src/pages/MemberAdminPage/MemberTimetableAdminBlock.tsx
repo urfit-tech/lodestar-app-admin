@@ -380,7 +380,7 @@ const GET_PROGRAM_TIMETABLE = gql`
     program(
       where: {
         published_at: { _is_null: false }
-        program_plans: { published_at: { _is_null: false }, currency_id: { _eq: "LSC" } }
+        program_plans: { currency_id: { _eq: "LSC" } }
         program_package_programs: { program_package: { published_at: { _is_null: false } } }
       }
     ) {
