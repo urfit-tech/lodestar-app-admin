@@ -287,6 +287,7 @@ export const commonMessages = {
   }),
   text: defineMessages({
     memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
+    required: { id: 'common.text.required', defaultMessage: 'required' },
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
     alreadyMember: { id: 'common.label.alreadyMember', defaultMessage: '已經是是會員嗎？' },
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '100 字以內' },
