@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError, notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useDeleteProductChannel, useProductChannelInfo, useUpdateProductChannel } from '../../hooks/channel'
+import { useProductChannelInfo, useUpdateProductChannel } from '../../hooks/channel'
 import { useProductSku } from '../../hooks/data'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import componentCommonMessages from './translation'
@@ -84,7 +84,6 @@ const ProductSkuModal: React.FC<
     productId,
   )
   const { updateProductChannel } = useUpdateProductChannel()
-  const { deleteProductChannel } = useDeleteProductChannel()
 
   if (loadingProduct || loadingProductChannelInfo) {
     return <></>
@@ -256,22 +255,12 @@ const ProductSkuModal: React.FC<
               channel_id: id,
               channel_sku: formValues[id]?.trim() || null,
             }))
-            const deleteProductId = updateProductChannelList[0].product_id
             return updateProductChannel({
               variables: {
-                productId: deleteProductId,
+                productId: productId,
                 productChannelList: updateProductChannelList,
               },
             })
-          })
-          .then(() => {
-            const formValues = form.getFieldsValue()
-            const upsertChannelIds = Object.keys(formValues).filter(key => key !== 'sku')
-            const uncheckChannelIds =
-              productChannelInfo
-                ?.filter(info => !upsertChannelIds.includes(info.appChannelId))
-                .map(v => v.appChannelId) || []
-            return deleteProductChannel({ variables: { channelIds: uncheckChannelIds, productId } })
           })
           .then(() => {
             callback?.onSuccess?.()
