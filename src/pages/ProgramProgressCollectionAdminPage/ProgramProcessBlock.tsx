@@ -118,7 +118,12 @@ const ProgramProcessBlock: React.VFC = () => {
                 )
                 const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
                 const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
-                const watchedProgress = memberProgramContentProgress?.progress || 0
+                const watchedProgress =
+                  programContentType === 'exam' || programContentType === 'exercise'
+                    ? exercises.length > 0
+                      ? 1
+                      : 0
+                    : memberProgramContentProgress?.progress || 0
                 const firstWatchedAt = memberProgramContentProgress?.created_at || ''
                 const lastWatchedAt = memberProgramContentProgress?.updated_at || ''
                 const watchedDuration = programContentDuration * watchedProgress
@@ -166,7 +171,7 @@ const ProgramProcessBlock: React.VFC = () => {
                     : ''
                 const examProgressPercentage =
                   exerciseStatus === formatMessage(pageMessages.ProgramProcessBlock.exercisePassed) &&
-                  hightestScore.totalGainedPoints > 0
+                  hightestScore.totalGainedPoints >= hightestScore.passingScore
                     ? '100%'
                     : '0%'
                 rows.push([
@@ -180,9 +185,7 @@ const ProgramProcessBlock: React.VFC = () => {
                   memberEmail,
                   ...data.property.map(p => m.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
                   Math.ceil(Number(watchedDuration) / 60).toString(),
-                  programContentType === 'exam' || programContentType === 'exercise'
-                    ? examProgressPercentage
-                    : (watchedProgress * 100).toFixed(0) + '%',
+                  (watchedProgress * 100).toFixed(0) + '%',
                   firstWatchedAt && dayjs(firstWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   lastWatchedAt && dayjs(lastWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   programContentType === 'exam' || programContentType === 'exercise'
