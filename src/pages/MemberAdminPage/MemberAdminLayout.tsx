@@ -324,7 +324,7 @@ const MemberAdminLayout: React.FC<{
                       `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
                       {
                         name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`,
-                        authRecording: true,
+                        autoRecording: true,
                         service: 'zoom',
                         nbf: null,
                         exp: null,
