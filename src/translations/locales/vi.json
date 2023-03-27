@@ -840,6 +840,7 @@
   "common.text.ogImageTips": "Recommend image size: 1200*630px",
   "common.text.period": " , ",
   "common.text.purchasedAt": "{name} đã mua lúc {date}",
+  "common.text.required": "required",
   "common.text.resetPasswordNotation": " Vì lý do bảo mật, vui lòng vào hộp thư để thay đổi mật khẩu ",
   "common.text.sentResetPasswordMail": "Thư đặt lại mật khẩu đã được gửi ",
   "common.text.shortDescriptionPlaceholder": "giới hạn trong 30 ký tự",

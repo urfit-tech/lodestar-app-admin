@@ -840,6 +840,7 @@
   "common.text.ogImageTips": "Recommend image size: 1200*630px",
   "common.text.period": ",",
   "common.text.purchasedAt": "{name} purchased at {date}",
+  "common.text.required": "required",
   "common.text.resetPasswordNotation": "For security reasons, please go to the mailbox to change the password",
   "common.text.sentResetPasswordMail": "A password reset letter has been sent",
   "common.text.shortDescriptionPlaceholder": "limit in 30 characters",

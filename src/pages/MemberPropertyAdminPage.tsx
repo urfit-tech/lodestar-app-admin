@@ -24,10 +24,14 @@ const MemberPropertyAdminPage: React.FC = () => {
   const { loadingProperties, properties, refetchProperties } = useProperty()
   const [insertProperty] = useMutation<hasura.INSERT_PROPERTY, hasura.INSERT_PROPERTYVariables>(INSERT_PROPERTY)
   const [updateProperty] = useMutation<hasura.UPDATE_PROPERTY, hasura.UPDATE_PROPERTYVariables>(UPDATE_PROPERTY)
-  const [updatePropertyisEditable] = useMutation<
-    hasura.UPDATE_PROPERTY_ISEDITABLE,
-    hasura.UPDATE_PROPERTY_ISEDITABLEVariables
-  >(UPDATE_PROPERTY_ISEDITABLE)
+  const [updatePropertyIsEditable] = useMutation<
+    hasura.UPDATE_PROPERTY_IS_EDITABLE,
+    hasura.UPDATE_PROPERTY_IS_EDITABLEVariables
+  >(UPDATE_PROPERTY_IS_EDITABLE)
+  const [updatePropertiesIsRequired] = useMutation<
+    hasura.UPDATE_PROPERTY_IS_REQUIRED,
+    hasura.UPDATE_PROPERTY_IS_REQUIREDVariables
+  >(UPDATE_PROPERTY_IS_REQUIRED)
   const [updatePropertyPosition] = useMutation<
     hasura.UPDATE_PROPERTY_POSITION,
     hasura.UPDATE_PROPERTY_POSITIONVariables
@@ -51,14 +55,26 @@ const MemberPropertyAdminPage: React.FC = () => {
         <DraggableItemCollectionBlock
           isEditable
           pageName={'memberAdminPage'}
-          onChange={(check: boolean, id: String) => {
+          onChange={(check: boolean, id: string, type?: string) => {
             setLoading(true)
-            updatePropertyisEditable({ variables: { propertyId: id, isEditable: check } })
-              .then(() => refetchProperties())
-              .catch(handleError)
-              .finally(() => setLoading(false))
+            if (type === 'isEditable') {
+              updatePropertyIsEditable({ variables: { propertyId: id, isEditable: check } })
+                .then(() => refetchProperties())
+                .catch(handleError)
+                .finally(() => setLoading(false))
+            } else if (type === 'isRequired') {
+              updatePropertiesIsRequired({ variables: { propertyId: id, isRequired: check } })
+                .then(() => refetchProperties())
+                .catch(handleError)
+                .finally(() => setLoading(false))
+            }
           }}
-          items={properties.map(v => ({ id: v.id, description: v.name, isEditableField: v.isEditable }))}
+          items={properties.map(v => ({
+            id: v.id,
+            description: v.name,
+            isEditableField: v.isEditable,
+            isRequiredField: v.isRequired,
+          }))}
           isDeletable
           onSort={newProperties => {
             setLoading(true)
@@ -127,9 +143,16 @@ const UPDATE_PROPERTY = gql`
     }
   }
 `
-const UPDATE_PROPERTY_ISEDITABLE = gql`
-  mutation UPDATE_PROPERTY_ISEDITABLE($propertyId: uuid!, $isEditable: Boolean!) {
+const UPDATE_PROPERTY_IS_EDITABLE = gql`
+  mutation UPDATE_PROPERTY_IS_EDITABLE($propertyId: uuid!, $isEditable: Boolean!) {
     update_property(where: { id: { _eq: $propertyId } }, _set: { is_editable: $isEditable }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PROPERTY_IS_REQUIRED = gql`
+  mutation UPDATE_PROPERTY_IS_REQUIRED($propertyId: uuid!, $isRequired: Boolean!) {
+    update_property(where: { id: { _eq: $propertyId } }, _set: { is_required: $isRequired }) {
       affected_rows
     }
   }

@@ -840,6 +840,7 @@
   "common.text.ogImageTips": "Recommend image size: 1200*630px",
   "common.text.period": "，",
   "common.text.purchasedAt": "{name} 于 {date} 购买",
+  "common.text.required": "必填",
   "common.text.resetPasswordNotation": "为了安全考量，请至信箱收信更换密码",
   "common.text.sentResetPasswordMail": "已寄送重设密码信",
   "common.text.shortDescriptionPlaceholder": "100 字以内",

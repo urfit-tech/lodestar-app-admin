@@ -840,6 +840,7 @@
   "common.text.ogImageTips": "建議圖片尺寸：1200*630px",
   "common.text.period": "，",
   "common.text.purchasedAt": "{name} 於 {date} 購買",
+  "common.text.required": "必填",
   "common.text.resetPasswordNotation": "為了安全考量，請至信箱收信更換密碼",
   "common.text.sentResetPasswordMail": "已寄送重設密碼信",
   "common.text.shortDescriptionPlaceholder": "100 字以內",
