@@ -374,6 +374,17 @@ const pageMessages = {
     walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
     blackboardPosition: { id: 'page.VenueSeatSetting.blackboardPosition', defaultMessage: '黑板位置' },
   }),
+  MemberAdminPage: defineMessages({
+    notEnoughCoins: { id: 'page.MemberAdminPage.notEnoughCoins', defaultMessage: 'Coins are not enough!' },
+    notEnoughCoinsDescription: {
+      id: 'page.MemberAdminPage.notEnoughCoinsDescription',
+      defaultMessage: 'Needs {futureCoins} coins. You need {insufficientCoins} coins more.',
+    },
+    remainingCoins: {
+      id: 'page.MemberAdminPage.remainingCoins',
+      defaultMessage: 'Still have {remainingCoins} coins.',
+    },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },

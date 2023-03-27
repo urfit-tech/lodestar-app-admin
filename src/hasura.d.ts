@@ -27859,6 +27859,7 @@ export enum property_select_column {
   id = "id",
   is_business = "is_business",
   is_editable = "is_editable",
+  is_required = "is_required",
   name = "name",
   placeholder = "placeholder",
   position = "position",
@@ -27872,6 +27873,7 @@ export enum property_select_column {
 export enum property_select_column_property_aggregate_bool_exp_bool_and_arguments_columns {
   is_business = "is_business",
   is_editable = "is_editable",
+  is_required = "is_required",
 }
 
 /**
@@ -27880,6 +27882,7 @@ export enum property_select_column_property_aggregate_bool_exp_bool_and_argument
 export enum property_select_column_property_aggregate_bool_exp_bool_or_arguments_columns {
   is_business = "is_business",
   is_editable = "is_editable",
+  is_required = "is_required",
 }
 
 /**
@@ -27891,6 +27894,7 @@ export enum property_update_column {
   id = "id",
   is_business = "is_business",
   is_editable = "is_editable",
+  is_required = "is_required",
   name = "name",
   placeholder = "placeholder",
   position = "position",
@@ -48804,6 +48808,7 @@ export interface property_bool_exp {
   id?: uuid_comparison_exp | null;
   is_business?: Boolean_comparison_exp | null;
   is_editable?: Boolean_comparison_exp | null;
+  is_required?: Boolean_comparison_exp | null;
   member_properties?: member_property_bool_exp | null;
   member_properties_aggregate?: member_property_aggregate_bool_exp | null;
   name?: String_comparison_exp | null;
@@ -48823,6 +48828,7 @@ export interface property_insert_input {
   id?: any | null;
   is_business?: boolean | null;
   is_editable?: boolean | null;
+  is_required?: boolean | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   name?: string | null;
   placeholder?: string | null;

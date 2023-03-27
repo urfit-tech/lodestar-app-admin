@@ -13,9 +13,11 @@ import { sum } from 'lodash'
 import { StyledTitle } from 'lodestar-app-element/src/components/modals/CheckoutProductModal'
 import { notEmpty } from 'lodestar-app-element/src/helpers'
 import React, { useEffect, useMemo, useState } from 'react'
+import { useIntl } from 'react-intl'
 import AdminModal from '../../components/admin/AdminModal'
 import hasura from '../../hasura'
 import { fuzzySearch } from '../../helpers'
+import pageMessages from '../translation'
 
 type TimetableProgram = {
   id: string
@@ -37,6 +39,7 @@ type TimetableProgramEvent = {
 }
 
 const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: number }> = ({ memberId, memberCoins }) => {
+  const { formatMessage } = useIntl()
   const [isUpdating, setIsUpdating] = useState(false)
   const [searchText, setSearchText] = useState<string>('')
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -63,20 +66,24 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
     pe => dayjs(pe.time) > dayjs() && !enrolledProgramIds.includes(pe.program.id),
   )
   const futureCoins = sum(futureUnenrolledProgramEvents.map(pe => pe.program.coins))
+
   return (
     <>
       {futureCoins > memberCoins ? (
         <Alert status="error" className="mb-3">
           <AlertIcon />
-          <AlertTitle>Coins are not enough!</AlertTitle>
+          <AlertTitle>{formatMessage(pageMessages.MemberAdminPage.notEnoughCoins)}</AlertTitle>
           <AlertDescription>
-            Needs {futureCoins} coins. You need {futureCoins - memberCoins} coins more.
+            {formatMessage(pageMessages.MemberAdminPage.notEnoughCoinsDescription, {
+              futureCoins,
+              insufficientCoins: futureCoins - memberCoins,
+            })}
           </AlertDescription>
         </Alert>
       ) : (
         <Alert status="success" className="mb-3">
           <AlertIcon />
-          Still have {memberCoins - futureCoins} coins.
+          {formatMessage(pageMessages.MemberAdminPage.remainingCoins, { remainingCoins: memberCoins - futureCoins })}
         </Alert>
       )}
       <FullCalendar
@@ -123,8 +130,8 @@ const MemberTimetableAdminBlock: React.VFC<{ memberId: string; memberCoins: numb
           <div className="col-12 col-md-6">
             <Input.Group compact className="mb-2">
               <Select value={searchType} onSelect={setSearchType}>
-                <Select.Option value="programPackage">programPackage</Select.Option>
-                <Select.Option value="program">program</Select.Option>
+                <Select.Option value="programPackage">{formatMessage(pageMessages['*'].programPackage)}</Select.Option>
+                <Select.Option value="program">{formatMessage(pageMessages['*'].program)}</Select.Option>
               </Select>
               <Input style={{ width: '60%' }} onChange={e => setSearchText(e.target.value)} value={searchText} />
             </Input.Group>
@@ -377,19 +384,18 @@ const useProgramTimetable = (memberId: string) => {
 
 const GET_PROGRAM_TIMETABLE = gql`
   query GET_PROGRAM_TIMETABLE($memberId: String!) {
-    program(
-      where: {
-        published_at: { _is_null: false }
-        program_plans: { currency_id: { _eq: "LSC" } }
-        program_package_programs: { program_package: { published_at: { _is_null: false } } }
-      }
-    ) {
+    program(where: { published_at: { _is_null: false }, program_plans: { currency_id: { _eq: "LSC" } } }) {
       id
       title
       program_plans(order_by: [{ list_price: asc }]) {
         list_price
       }
-      program_package_programs {
+      program_package_programs(
+        where: {
+          program: { published_at: { _is_null: false } }
+          program_package: { published_at: { _is_null: false } }
+        }
+      ) {
         position
         program_package {
           id
