@@ -341,6 +341,7 @@ const MemberAdminLayout: React.FC<{
                       )
                       .then(res => window.open(res.data.options.startUrl))
                   } catch (error) {
+                    console.log(`get meets error: ${error}`)
                     setJitsiModalVisible(true)
                   }
                 } else {

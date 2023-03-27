@@ -127,6 +127,7 @@ const AppointmentPeriodCard: React.FC<
           )
           .then(res => window.open(res.data.options.startUrl))
       } catch (error) {
+        console.log(`get meets error: ${error}`)
         window.open(
           `https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`,
         )
