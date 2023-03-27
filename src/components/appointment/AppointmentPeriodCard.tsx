@@ -125,7 +125,7 @@ const AppointmentPeriodCard: React.FC<
               },
             },
           )
-          .then(res => window.open(res.data.options.startUrl))
+          .then(({ data: { code, message, data } }) => window.open(data.options.startUrl))
       } catch (error) {
         console.log(`get meets error: ${error}`)
         window.open(
