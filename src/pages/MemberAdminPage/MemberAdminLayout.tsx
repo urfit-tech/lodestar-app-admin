@@ -1,5 +1,5 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useApolloClient, useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Layout, message, Tabs } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
 import axios from 'axios'
@@ -22,6 +22,7 @@ import { useCustomRenderer } from '../../contexts/CustomRendererContext'
 import hasura from '../../hasura'
 import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
+import { GET_MEMBER_MEET } from '../../hooks/meet'
 import { useMutateMember, useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
@@ -136,6 +137,7 @@ const MemberAdminLayout: React.FC<{
   const match = useRouteMatch(routesProps.member_admin.path)
   const { currentUserRole, permissions, currentMember, authToken } = useAuth()
   const { enabledModules, settings, host, id: appId } = useApp()
+  const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
@@ -319,7 +321,20 @@ const MemberAdminLayout: React.FC<{
               onClick={async () => {
                 if (enabledModules.meet_service) {
                   const currentTime = new Date()
+                  let startUrl = ''
+
                   try {
+                    await apolloClient
+                      .query<hasura.GET_MEMBER_MEET, hasura.GET_MEMBER_MEETVariables>({
+                        query: GET_MEMBER_MEET,
+                        variables: { name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}` },
+                      })
+                      .then(({ data }) => {
+                        if (data.meet?.[0].options.startUrl) startUrl = data.meet[0].options.startUrl
+                      })
+
+                    if (startUrl !== '') return window.open(startUrl)
+
                     await axios
                       .post(
                         `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -330,7 +345,7 @@ const MemberAdminLayout: React.FC<{
                           nbf: null,
                           exp: null,
                           startedAt: currentTime,
-                          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
+                          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000), // default 2 hr
                         },
                         {
                           headers: {
