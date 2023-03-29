@@ -11769,32 +11769,6 @@ export interface DELETE_META_PROJECT_IDENTITYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_MEET
-// ====================================================
-
-export interface GET_MEMBER_MEET_meet {
-  __typename: "meet";
-  id: any;
-  options: any;
-}
-
-export interface GET_MEMBER_MEET {
-  /**
-   * fetch data from the table: "meet"
-   */
-  meet: GET_MEMBER_MEET_meet[];
-}
-
-export interface GET_MEMBER_MEETVariables {
-  name: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 

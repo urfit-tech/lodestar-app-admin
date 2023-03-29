@@ -1,5 +1,4 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Divider, Dropdown, Menu } from 'antd'
 import axios from 'axios'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
@@ -9,9 +8,7 @@ import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import hasura from '../../hasura'
 import { dateRangeFormatter } from '../../helpers'
-import { GET_MEMBER_MEET } from '../../hooks/meet'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AvatarImage } from '../common/Image'
@@ -100,29 +97,15 @@ const AppointmentPeriodCard: React.FC<
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
   const { authToken } = useAuth()
-  const apolloClient = useApolloClient()
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
 
   const handleJoin = async () => {
+    const currentTime = new Date()
     if (enabledModules.meet_service) {
-      const currentTime = new Date()
-      let startUrl = ''
-
       try {
-        await apolloClient
-          .query<hasura.GET_MEMBER_MEET, hasura.GET_MEMBER_MEETVariables>({
-            query: GET_MEMBER_MEET,
-            variables: { name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}` },
-          })
-          .then(({ data }) => {
-            if (data.meet?.[0].options.startUrl) startUrl = data.meet[0].options.startUrl
-          })
-
-        if (startUrl !== '') return window.open(startUrl)
-
         await axios
           .post(
             `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
@@ -133,7 +116,7 @@ const AppointmentPeriodCard: React.FC<
               nbf: null,
               exp: null,
               startedAt: currentTime,
-              endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000), // default 2 hr
+              endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
             },
             {
               headers: {
