@@ -174,6 +174,30 @@ const ProgramProcessBlock: React.VFC = () => {
                   hightestScore.totalGainedPoints >= hightestScore.passingScore
                     ? '100%'
                     : '0%'
+
+                let programContentProgress = p.program_content_sections.flatMap(pcs =>
+                  pcs.program_contents.flatMap(pc =>
+                    pc.program_content_progress.flatMap(contentProgress => contentProgress.progress || 0),
+                  ),
+                )
+                let programContentProgress2 = p.program_content_sections.flatMap(pcs =>
+                  pcs.program_contents.map(pc =>
+                    pc.program_content_progress.map(contentProgress => contentProgress.progress || 0),
+                  ),
+                )
+
+                const viewRate =
+                  programContentProgress.length > 0
+                    ? Math.floor((sum(programContentProgress) / programContentProgress.length) * 100)
+                    : 0
+
+                console.log('exportCSV', {
+                  memberWatchedDuration,
+                  programContentProgress,
+                  programContentProgress2,
+                  programDuration,
+                  viewRate,
+                })
                 rows.push([
                   categories,
                   programTitle,
