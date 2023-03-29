@@ -1,13 +1,16 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
+import { useApolloClient } from '@apollo/react-hooks'
 import { Button, Divider, Dropdown, Menu } from 'antd'
 import axios from 'axios'
+import gql from 'graphql-tag'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { dateRangeFormatter } from '../../helpers'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
@@ -96,27 +99,40 @@ const AppointmentPeriodCard: React.FC<
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
-  const { authToken } = useAuth()
+  const { authToken, currentMemberId } = useAuth()
+  const apolloClient = useApolloClient()
+  const [loading, setLoading] = useState(false)
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
 
   const handleJoin = async () => {
-    const currentTime = new Date()
+    setLoading(true)
     if (enabledModules.meet_service) {
+      const { data } = await apolloClient.query<
+        hasura.GET_APPOINTMENT_PERIOD_MEET_ID,
+        hasura.GET_APPOINTMENT_PERIOD_MEET_IDVariables
+      >({
+        query: gql`
+          query GET_APPOINTMENT_PERIOD_MEET_ID($orderProductId: uuid!) {
+            order_product(where: { id: { _eq: $orderProductId } }) {
+              id
+              options
+            }
+          }
+        `,
+        variables: { orderProductId },
+      })
+      const meetId = data.order_product?.[0]?.options?.meetId
+
       try {
         await axios
           .post(
-            `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+            `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`,
             {
-              name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`,
-              autoRecording: true,
-              service: 'zoom',
-              nbf: null,
-              exp: null,
-              startedAt: currentTime,
-              endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
+              role: 'guest',
+              name: `${appId}-${currentMemberId}`,
             },
             {
               headers: {
@@ -137,6 +153,7 @@ const AppointmentPeriodCard: React.FC<
         `https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`,
       )
     }
+    setLoading(false)
   }
 
   return (
@@ -211,7 +228,13 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.addToCalendar)}
               </Button>
             </a>
-            <StyledButton type="primary" className="ml-2" disabled={!orderProductId} onClick={() => handleJoin()}>
+            <StyledButton
+              loading={loading}
+              type="primary"
+              className="ml-2"
+              disabled={!orderProductId}
+              onClick={() => handleJoin()}
+            >
               {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
             </StyledButton>
             <AppointmentCancelModal

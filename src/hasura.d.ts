@@ -779,6 +779,32 @@ export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PERIOD_MEET_ID
+// ====================================================
+
+export interface GET_APPOINTMENT_PERIOD_MEET_ID_order_product {
+  __typename: "order_product";
+  id: any;
+  options: any | null;
+}
+
+export interface GET_APPOINTMENT_PERIOD_MEET_ID {
+  /**
+   * fetch data from the table: "order_product"
+   */
+  order_product: GET_APPOINTMENT_PERIOD_MEET_ID_order_product[];
+}
+
+export interface GET_APPOINTMENT_PERIOD_MEET_IDVariables {
+  orderProductId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
 // ====================================================
 
