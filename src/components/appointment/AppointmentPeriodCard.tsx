@@ -131,7 +131,7 @@ const AppointmentPeriodCard: React.FC<
           .post(
             `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`,
             {
-              role: 'guest',
+              role: 'host',
               name: `${appId}-${currentMemberId}`,
             },
             {
@@ -141,7 +141,7 @@ const AppointmentPeriodCard: React.FC<
               },
             },
           )
-          .then(({ data: { code, message, data } }) => window.open(data.options.startUrl))
+          .then(({ data: { code, message, data } }) => window.open(data.target))
       } catch (error) {
         console.log(`get meets error: ${error}`)
         window.open(
