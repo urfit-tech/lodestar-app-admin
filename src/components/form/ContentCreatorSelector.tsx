@@ -11,15 +11,15 @@ import MemberSelector from './MemberSelector'
 const ContentCreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
-  allowedPermission?: string
-}> = ({ value, onChange, allowedPermission }) => {
+  allowedPermissions?: string[]
+}> = ({ value, onChange, allowedPermissions }) => {
   const { formatMessage } = useIntl()
 
-  const condition: hasura.GET_CONTENT_CREATOR_COLLECTIONVariables['condition'] = allowedPermission
+  const condition: hasura.GET_CONTENT_CREATOR_COLLECTIONVariables['condition'] = allowedPermissions
     ? {
         _or: [
           { role: { _in: ['content-creator', 'app-owner'] } },
-          { member_permissions: { permission_id: { _eq: allowedPermission } } },
+          { member_permissions: { permission_id: { _in: allowedPermissions } } },
         ],
       }
     : { role: { _in: ['content-creator', 'app-owner'] } }

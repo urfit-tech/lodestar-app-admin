@@ -11,6 +11,7 @@ const programMessages = {
     successfullySaved: { id: 'program.*.successfullySaved', defaultMessage: '儲存成功' },
     fetchDataError: { id: 'program.*.fetchDataError', defaultMessage: '讀取錯誤' },
     nothingIsChange: { id: 'program.*.nothingIsChange', defaultMessage: '無修改項目' },
+    contentPlan: { id: 'program.*.contentPlan', defaultMessage: 'Content Plan' },
   }),
   ProgramCollectionSelector: defineMessages({
     recentWatched: { id: 'program.ProgramCollectionSelector.recentWatched', defaultMessage: '依最後觀看時間' },

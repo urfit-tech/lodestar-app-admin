@@ -41,7 +41,7 @@ const ProjectPreOrderPage: React.FC<{}> = () => {
         <div className="row mb-5">
           <div className="col-8">
             <ProductCreationModal
-              allowedPermission={'PROJECT_PRE_ORDER_ADMIN'}
+              allowedPermissions={['PROJECT_PRE_ORDER_ADMIN']}
               withCreatorSelector={currentUserRole === 'app-owner'}
               creatorAppellation={formatMessage(pageMessages.ProjectPreOrderPage.sponsor)}
               customTitle={formatMessage(pageMessages.ProjectPreOrderPage.projectTitle)}

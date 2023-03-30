@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { useMutateProgramContent } from '../../hooks/program'
+import { useMutateProgramContent, useProgramContentActions } from '../../hooks/program'
 import { Exam, ExamTimeUnit, ProgramContentProps } from '../../types/program'
 import DisplayModeSelector from './DisplayModeSelector'
 import ExamBasicForm from './ExamBasicForm'
@@ -22,6 +22,7 @@ type FieldProps = {
   isNotifyUpdate: boolean
   displayMode: string
   publishedAt: Date
+  planIds: string[]
 }
 
 export type BasicExam = Pick<
@@ -68,9 +69,10 @@ const StyledModal = styled(Modal)<{ isFullWidth?: boolean }>`
 `
 
 const ExerciseAdminModal: React.FC<{
+  programId: string
   programContent: ProgramContentProps
   onRefetch?: () => void
-}> = ({ programContent, onRefetch }) => {
+}> = ({ programId, programContent, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { deleteProgramContentExerciseAndExam } = useMutateProgramContent()
@@ -103,6 +105,7 @@ const ExerciseAdminModal: React.FC<{
   const [activityKey, setActivityKey] = useState('basicSetting')
   const [currentBasicExam, setCurrentBasicExam] = useState<BasicExam>(basicExam)
   const [currentQuestionExam, setCurrentQuestionExam] = useState<QuestionExam>(questionExam)
+  const { updatePlans } = useProgramContentActions(programContent.id)
 
   const handleInitialCurrentState = () => {
     setCurrentBasicExam({
@@ -135,6 +138,7 @@ const ExerciseAdminModal: React.FC<{
     ) {
       // adjust all form
       Promise.all([
+        updatePlans(values.planIds || []),
         updateExam({
           variables: {
             programContentId: programContent.id,
@@ -211,6 +215,7 @@ const ExerciseAdminModal: React.FC<{
     ) {
       // only adjust basic form
       Promise.all([
+        updatePlans(values.planIds || []),
         updateExam({
           variables: {
             programContentId: programContent.id,
@@ -315,20 +320,23 @@ const ExerciseAdminModal: React.FC<{
         })
     } else {
       // only adjust program content
-      updateExamProgramContent({
-        variables: {
-          programContentId: programContent.id,
-          title: values.title,
-          isNotifyUpdate: values.isNotifyUpdate,
-          notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
-          displayMode: values.displayMode,
-          publishedAt: values.publishedAt
-            ? new Date(values.publishedAt)
-            : values.displayMode !== 'conceal'
-            ? new Date()
-            : null,
-        },
-      })
+      Promise.all([
+        updatePlans(values.planIds || []),
+        updateExamProgramContent({
+          variables: {
+            programContentId: programContent.id,
+            title: values.title,
+            isNotifyUpdate: values.isNotifyUpdate,
+            notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+            displayMode: values.displayMode,
+            publishedAt: values.publishedAt
+              ? new Date(values.publishedAt)
+              : values.displayMode !== 'conceal'
+              ? new Date()
+              : null,
+          },
+        }),
+      ])
         .then(() => {
           message.success(formatMessage(programMessages['*'].successfullySaved))
           onRefetch?.()
@@ -364,6 +372,7 @@ const ExerciseAdminModal: React.FC<{
           layout="vertical"
           initialValues={{
             title: programContent.title,
+            planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
             publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
             displayMode: programContent.displayMode,
             isNotifyUpdate: programContent.isNotifyUpdate,
@@ -430,7 +439,12 @@ const ExerciseAdminModal: React.FC<{
 
           <Tabs activeKey={activityKey} onChange={v => setActivityKey(v)}>
             <Tabs.TabPane key="basicSetting" tab={formatMessage(programMessages.ExerciseAdminModal.basicSetting)}>
-              <ExamBasicForm basicExam={basicExam} currentBasicExam={currentBasicExam} onChange={setCurrentBasicExam} />
+              <ExamBasicForm
+                programId={programId}
+                basicExam={basicExam}
+                currentBasicExam={currentBasicExam}
+                onChange={setCurrentBasicExam}
+              />
             </Tabs.TabPane>
             <Tabs.TabPane key="questionSetting" tab={formatMessage(programMessages.ExerciseAdminModal.questionSetting)}>
               <ExamQuestionSettingForm

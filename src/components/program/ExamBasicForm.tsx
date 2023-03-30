@@ -7,16 +7,18 @@ import { ExamTimeUnit } from '../../types/program'
 import { StyledTips } from '../admin'
 import { BasicExam } from './ExerciseAdminModal'
 import IndividualExamTimeLimitModal from './IndividualExamTimeLimitModal'
+import ProgramPlanSelector from './ProgramPlanSelector'
 import programMessages from './translation'
 
 type Examinable = 'unlimited' | 'bought' | 'limited'
 type TimeLimit = 'unlimited' | 'limited'
 
 const ExamBasicForm: React.VFC<{
+  programId: string
   basicExam: BasicExam
   currentBasicExam: BasicExam
   onChange: React.Dispatch<React.SetStateAction<BasicExam>>
-}> = ({ basicExam, currentBasicExam, onChange }) => {
+}> = ({ programId, basicExam, currentBasicExam, onChange }) => {
   const { formatMessage } = useIntl()
   const [examinable, setExaminable] = useState<Examinable>(
     basicExam.examinableAmount && basicExam.examinableUnit
@@ -56,6 +58,9 @@ const ExamBasicForm: React.VFC<{
     <>
       <Form.Item name="title" label={formatMessage(programMessages['*'].exerciseTitle)}>
         <Input />
+      </Form.Item>
+      <Form.Item label={formatMessage(programMessages['*'].contentPlan)} name="planIds">
+        <ProgramPlanSelector programId={programId} placeholder={formatMessage(programMessages['*'].contentPlan)} />
       </Form.Item>
       <Form.Item
         label={

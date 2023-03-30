@@ -69,13 +69,14 @@ export type ItemProps = {
   id: string
   description: string | null
   isEditableField?: boolean
+  isRequiredField?: boolean
 }
 
 const DraggableItemCollectionBlock: React.FC<{
   items: ItemProps[]
   onSort: (newItems: ItemProps[]) => void
   onEdit?: (item: ItemProps) => void
-  onChange?: (check: boolean, id: string) => void
+  onChange?: (check: boolean, id: string, type?: string) => void
   onDelete?: (id: string) => void
   isDeletable?: boolean
   pageName?: string
@@ -107,9 +108,21 @@ const DraggableItemCollectionBlock: React.FC<{
             className="mb-2"
             actions={[
               pageName === 'memberAdminPage' && (
-                <div className="mr-3 d-flex align-content-center">
-                  <Switch defaultChecked={v.isEditableField} onChange={check => onChange(check, v.id)} />
-                  <p className="ml-3">{formatMessage(commonMessages.text.memberEditable)}</p>
+                <div className="d-flex align-content-center mr-3">
+                  <div className="d-flex align-content-center mr-3">
+                    <Switch
+                      defaultChecked={v.isEditableField}
+                      onChange={check => onChange(check, v.id, 'isEditable')}
+                    />
+                    <p className="ml-2">{formatMessage(commonMessages.text.memberEditable)}</p>
+                  </div>
+                  <div className="d-flex align-content-center">
+                    <Switch
+                      defaultChecked={v.isRequiredField}
+                      onChange={check => onChange(check, v.id, 'isRequired')}
+                    />
+                    <p className="ml-2">{formatMessage(commonMessages.text.required)}</p>
+                  </div>
                 </div>
               ),
               <StyledSelect

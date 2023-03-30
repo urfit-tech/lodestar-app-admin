@@ -169,7 +169,11 @@ const ProgramProcessBlock: React.VFC = () => {
                   exerciseStatus === formatMessage(pageMessages.ProgramProcessBlock.exercisePassed)
                     ? hightestScore.updatedAt
                     : ''
-
+                const examProgressPercentage =
+                  exerciseStatus === formatMessage(pageMessages.ProgramProcessBlock.exercisePassed) &&
+                  hightestScore.totalGainedPoints >= hightestScore.passingScore
+                    ? '100%'
+                    : '0%'
                 rows.push([
                   categories,
                   programTitle,
@@ -184,7 +188,9 @@ const ProgramProcessBlock: React.VFC = () => {
                   (watchedProgress * 100).toFixed(0) + '%',
                   firstWatchedAt && dayjs(firstWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   lastWatchedAt && dayjs(lastWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
-                  ((memberWatchedDuration / (programDuration || 1)) * 100).toFixed(0) + '%',
+                  programContentType === 'exam' || programContentType === 'exercise'
+                    ? examProgressPercentage
+                    : ((memberWatchedDuration / (programDuration || 1)) * 100).toFixed(0) + '%',
                   exerciseStatus,
                   exercisePoint,
                   exercisePassedAt && dayjs(exercisePassedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),

@@ -320,26 +320,28 @@ const MemberAdminLayout: React.FC<{
                 if (enabledModules.meet_service) {
                   const currentTime = new Date()
                   try {
-                    const { data: createMeetData } = await axios.post(
-                      `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
-                      {
-                        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`,
-                        authRecording: true,
-                        service: 'zoom',
-                        nbf: null,
-                        exp: null,
-                        startedAt: currentTime,
-                        endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
-                      },
-                      {
-                        headers: {
-                          Authorization: `Bearer ${authToken}`,
-                          'x-api-key': 'kolable',
+                    await axios
+                      .post(
+                        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+                        {
+                          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${member?.id}`,
+                          autoRecording: true,
+                          service: 'zoom',
+                          nbf: null,
+                          exp: null,
+                          startedAt: currentTime,
+                          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
                         },
-                      },
-                    )
-                    window.open(createMeetData.options.startUrl)
+                        {
+                          headers: {
+                            Authorization: `Bearer ${authToken}`,
+                            'x-api-key': 'kolable',
+                          },
+                        },
+                      )
+                      .then(({ data: { code, message, data } }) => window.open(data.options.startUrl))
                   } catch (error) {
+                    console.log(`get meets error: ${error}`)
                     setJitsiModalVisible(true)
                   }
                 } else {

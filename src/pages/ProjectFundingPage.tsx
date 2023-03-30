@@ -41,7 +41,7 @@ const ProjectFundingPage: React.FC<{}> = () => {
         <div className="row mb-5">
           <div className="col-8">
             <ProductCreationModal
-              allowedPermission={'PROJECT_FUNDING_ADMIN'}
+              allowedPermissions={['PROJECT_FUNDING_ADMIN']}
               withCreatorSelector={currentUserRole === 'app-owner'}
               creatorAppellation={formatMessage(pageMessages.ProjectFundingPage.sponsor)}
               customTitle={formatMessage(pageMessages.ProjectFundingPage.projectTitle)}

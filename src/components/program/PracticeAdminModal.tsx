@@ -12,13 +12,14 @@ import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
-import { useMutateProgramContent, useProgramContentBody } from '../../hooks/program'
+import { useMutateProgramContent, useProgramContentActions, useProgramContentBody } from '../../hooks/program'
 import { ProgramContentBody, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
 import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import DisplayModeSelector from './DisplayModeSelector'
+import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({
   displayPrivate: { id: 'program.label.displayPrivate', defaultMessage: '私密成果' },
@@ -50,12 +51,14 @@ type FieldProps = {
   isPracticePrivate: boolean
   difficulty: number
   isCoverRequired: boolean
+  planIds: string[]
 }
 
 const PracticeAdminModal: React.FC<{
+  programId: string
   programContent: ProgramContentProps
   onRefetch?: () => void
-}> = ({ programContent, onRefetch }) => {
+}> = ({ programId, programContent, onRefetch }) => {
   const [visible, setVisible] = useState(false)
   const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
 
@@ -74,6 +77,7 @@ const PracticeAdminModal: React.FC<{
         visible={visible}
       >
         <PracticeForm
+          programId={programId}
           programContent={programContent}
           programContentBody={programContentBody}
           onRefetch={() => onRefetch?.()}
@@ -85,24 +89,26 @@ const PracticeAdminModal: React.FC<{
 }
 
 const PracticeForm: React.FC<{
+  programId: string
   programContent: ProgramContentProps
   programContentBody: ProgramContentBody
   onRefetch?: () => void
   onCancel?: () => void
-}> = ({ programContent, programContentBody, onRefetch, onCancel }) => {
+}> = ({ programId, programContent, programContentBody, onRefetch, onCancel }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const uploadAttachments = useUploadAttachments()
   const { archiveAttachments } = useMutateAttachment()
   const { deleteProgramContent } = useMutateProgramContent()
   const [updatePractice] = useMutation<hasura.UPDATE_PRACTICE, hasura.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
-
   const [attachments, setAttachments] = useState<File[]>(programContent.attachments.map(v => v.data) || [])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { updatePlans } = useProgramContentActions(programContent.id)
 
   const handleSubmit = (values: FieldProps) => {
     setIsSubmitting(true)
     Promise.all([
+      updatePlans(values.planIds || []),
       updatePractice({
         variables: {
           programContentId: programContent.id,
@@ -179,6 +185,7 @@ const PracticeForm: React.FC<{
         isPracticePrivate: !!programContent.metadata?.private,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
+        planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
         estimatedTime: programContent.duration,
         description: BraftEditor.createEditorState(programContentBody.description),
         difficulty: programContent.metadata?.difficulty || 1,
@@ -264,6 +271,10 @@ const PracticeForm: React.FC<{
 
       <Form.Item label={formatMessage(programMessages.label.contentTitle)} name="title">
         <Input />
+      </Form.Item>
+
+      <Form.Item label={formatMessage(programMessages.label.contentPlan)} name="planIds">
+        <ProgramPlanSelector programId={programId} placeholder={formatMessage(programMessages.label.contentPlan)} />
       </Form.Item>
 
       <Form.Item label={formatMessage(messages.difficulty)} name="difficulty">
