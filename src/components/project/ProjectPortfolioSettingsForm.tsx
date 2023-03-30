@@ -139,12 +139,13 @@ const ProjectPortfolioSettingsForm: React.FC<{
           })
             .then(() => {
               message.success(formatMessage(commonMessages.event.successfullySaved))
-              refetchHasSameOriginalSource().then(onRefetch)
+              onRefetch?.()
             })
             .catch(handleError)
+        } else {
+          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch?.()
         }
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch?.()
       })
       .finally(() => setLoading(false))
   }

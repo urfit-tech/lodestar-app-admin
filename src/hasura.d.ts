@@ -779,6 +779,32 @@ export interface GET_APPOINTMENT_ENROLLMENT_ISSUE_AND_RESULTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PERIOD_MEET_ID
+// ====================================================
+
+export interface GET_APPOINTMENT_PERIOD_MEET_ID_order_product {
+  __typename: "order_product";
+  id: any;
+  options: any | null;
+}
+
+export interface GET_APPOINTMENT_PERIOD_MEET_ID {
+  /**
+   * fetch data from the table: "order_product"
+   */
+  order_product: GET_APPOINTMENT_PERIOD_MEET_ID_order_product[];
+}
+
+export interface GET_APPOINTMENT_PERIOD_MEET_IDVariables {
+  orderProductId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
 // ====================================================
 
@@ -12869,6 +12895,7 @@ export interface GET_PROPERTY_property {
   name: string;
   placeholder: string | null;
   is_editable: boolean;
+  is_required: boolean;
 }
 
 export interface GET_PROPERTY {
@@ -18259,10 +18286,10 @@ export interface UPDATE_PROPERTYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROPERTY_ISEDITABLE
+// GraphQL mutation operation: UPDATE_PROPERTY_IS_EDITABLE
 // ====================================================
 
-export interface UPDATE_PROPERTY_ISEDITABLE_update_property {
+export interface UPDATE_PROPERTY_IS_EDITABLE_update_property {
   __typename: "property_mutation_response";
   /**
    * number of rows affected by the mutation
@@ -18270,16 +18297,45 @@ export interface UPDATE_PROPERTY_ISEDITABLE_update_property {
   affected_rows: number;
 }
 
-export interface UPDATE_PROPERTY_ISEDITABLE {
+export interface UPDATE_PROPERTY_IS_EDITABLE {
   /**
    * update data of the table: "property"
    */
-  update_property: UPDATE_PROPERTY_ISEDITABLE_update_property | null;
+  update_property: UPDATE_PROPERTY_IS_EDITABLE_update_property | null;
 }
 
-export interface UPDATE_PROPERTY_ISEDITABLEVariables {
+export interface UPDATE_PROPERTY_IS_EDITABLEVariables {
   propertyId: any;
   isEditable: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROPERTY_IS_REQUIRED
+// ====================================================
+
+export interface UPDATE_PROPERTY_IS_REQUIRED_update_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of rows affected by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROPERTY_IS_REQUIRED {
+  /**
+   * update data of the table: "property"
+   */
+  update_property: UPDATE_PROPERTY_IS_REQUIRED_update_property | null;
+}
+
+export interface UPDATE_PROPERTY_IS_REQUIREDVariables {
+  propertyId: any;
+  isRequired: boolean;
 }
 
 /* tslint:disable */

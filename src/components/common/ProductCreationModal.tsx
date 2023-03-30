@@ -50,7 +50,7 @@ const ProductCreationModal: React.FC<
       isPhysical?: boolean
       isCustomized?: boolean
     }) => Promise<any>
-    allowedPermission?: string
+    allowedPermissions?: string[]
     creatorAppellation?: string
     customTitle?: string
     customTitleDefault?: string
@@ -62,7 +62,7 @@ const ProductCreationModal: React.FC<
   withProgramType,
   withMerchandiseType,
   onCreate,
-  allowedPermission,
+  allowedPermissions,
   creatorAppellation,
   customTitle,
   customTitleDefault,
@@ -126,7 +126,7 @@ const ProductCreationModal: React.FC<
             label={creatorAppellation || formatMessage(commonMessages.label.selectInstructor)}
             name="creatorId"
           >
-            <ContentCreatorSelector allowedPermission={allowedPermission} />
+            <ContentCreatorSelector allowedPermissions={allowedPermissions} />
           </Form.Item>
         )}
         <Form.Item

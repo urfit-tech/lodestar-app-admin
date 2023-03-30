@@ -42,7 +42,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
         <div className="row mb-5">
           <div className="col-8">
             <ProductCreationModal
-              allowedPermission={'PROJECT_PORTFOLIO_ADMIN'}
+              allowedPermissions={['PROJECT_PORTFOLIO_ADMIN']}
               customModalTitle={formatMessage(pageMessages.ProjectPortfolioPage.createPortfolio)}
               customTitle={formatMessage(pageMessages.ProjectPortfolioPage.projectTitle)}
               customTitleDefault={formatMessage(pageMessages.ProjectPortfolioPage.untitledPortfolio)}

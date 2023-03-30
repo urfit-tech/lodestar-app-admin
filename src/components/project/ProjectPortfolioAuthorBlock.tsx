@@ -114,7 +114,7 @@ const ProjectPortfolioAuthorBlock: React.FC<{
 
         <Form form={form} layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item label={formatMessage(commonMessages.label.selectAuthor)} name="memberId">
-            <ContentCreatorSelector allowedPermission="POST_ADMIN" />
+            <ContentCreatorSelector allowedPermissions={['PROJECT_PORTFOLIO_ADMIN', 'PROJECT_PORTFOLIO_NORMAL']} />
           </Form.Item>
 
           <Form.Item className="text-right">
