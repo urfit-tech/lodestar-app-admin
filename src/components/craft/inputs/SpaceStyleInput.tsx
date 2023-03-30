@@ -20,7 +20,7 @@ const pxFormatter = (value?: string | number) => {
   }
   switch (typeof value) {
     case 'string':
-      return `${value.replace(/[^0-9]/gi, '')}px`
+      return `${value?.replace(/[^0-9]/gi, '')}px`
     case 'number':
       if (!isNaN(value)) {
         return `${value}px`
@@ -57,11 +57,11 @@ const SpaceStyleInput: React.VFC<{
       adjustedPx = 0
     }
     if (spaceTab === 'margin') {
-      marginArr[order] = `${typeof adjustedPx === 'string' ? adjustedPx.replace(/[^0-9]/gi, '') : adjustedPx}px`
+      marginArr[order] = `${typeof adjustedPx === 'string' ? adjustedPx?.replace(/[^0-9]/gi, '') : adjustedPx}px`
       let margin = marginArr.join(' ')
       onChange?.({ ...value, margin })
     } else if (spaceTab === 'padding') {
-      paddingArr[order] = `${typeof adjustedPx === 'string' ? adjustedPx.replace(/[^0-9]/gi, '') : adjustedPx}px`
+      paddingArr[order] = `${typeof adjustedPx === 'string' ? adjustedPx?.replace(/[^0-9]/gi, '') : adjustedPx}px`
       let padding = paddingArr.join(' ')
       onChange?.({ ...value, padding })
     }
@@ -96,8 +96,8 @@ const SpaceStyleInput: React.VFC<{
               defaultValue={0}
               value={
                 spaceTab === 'margin'
-                  ? parseInt(marginArr[0].replace(/[^0-9]/gi, ''))
-                  : parseInt(paddingArr[0].replace(/[^0-9]/gi, ''))
+                  ? parseInt(marginArr[0]?.replace(/[^0-9]/gi, ''))
+                  : parseInt(paddingArr[0]?.replace(/[^0-9]/gi, ''))
               }
               min={0}
               formatter={pxFormatter}
@@ -110,8 +110,8 @@ const SpaceStyleInput: React.VFC<{
               defaultValue={0}
               value={
                 spaceTab === 'margin'
-                  ? parseInt(marginArr[1].replace(/[^0-9]/gi, ''))
-                  : parseInt(paddingArr[1].replace(/[^0-9]/gi, ''))
+                  ? parseInt(marginArr[1]?.replace(/[^0-9]/gi, ''))
+                  : parseInt(paddingArr[1]?.replace(/[^0-9]/gi, ''))
               }
               min={0}
               formatter={pxFormatter}
@@ -123,8 +123,8 @@ const SpaceStyleInput: React.VFC<{
               defaultValue={0}
               value={
                 spaceTab === 'margin'
-                  ? parseInt(marginArr[2].replace(/[^0-9]/gi, ''))
-                  : parseInt(paddingArr[2].replace(/[^0-9]/gi, ''))
+                  ? parseInt(marginArr[2]?.replace(/[^0-9]/gi, ''))
+                  : parseInt(paddingArr[2]?.replace(/[^0-9]/gi, ''))
               }
               min={0}
               formatter={pxFormatter}
@@ -136,8 +136,8 @@ const SpaceStyleInput: React.VFC<{
               defaultValue={0}
               value={
                 spaceTab === 'margin'
-                  ? parseInt(marginArr[3].replace(/[^0-9]/gi, ''))
-                  : parseInt(paddingArr[3].replace(/[^0-9]/gi, ''))
+                  ? parseInt(marginArr[3]?.replace(/[^0-9]/gi, ''))
+                  : parseInt(paddingArr[3]?.replace(/[^0-9]/gi, ''))
               }
               min={0}
               formatter={pxFormatter}
