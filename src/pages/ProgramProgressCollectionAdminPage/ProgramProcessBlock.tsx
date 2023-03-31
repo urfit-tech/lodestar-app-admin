@@ -121,7 +121,7 @@ const ProgramProcessBlock: React.VFC = () => {
 
                 const firstWatchedAt = memberProgramContentProgress?.created_at || ''
                 const lastWatchedAt = memberProgramContentProgress?.updated_at || ''
-                const watchedDuration = programContentDuration * watchedProgress
+
                 const exercisePoint = exercises
                   .map(ex => {
                     const totalQuestionPoints = sum(
@@ -173,6 +173,7 @@ const ProgramProcessBlock: React.VFC = () => {
                   programContentType === 'exam' || programContentType === 'exercise'
                     ? examProgressPercentage
                     : memberProgramContentProgress?.progress || 0
+                const watchedDuration = programContentDuration * watchedProgress
                 let programContentProgress = p.program_content_sections.flatMap(pcs =>
                   pcs.program_contents.map(pc =>
                     pc.program_content_progress
