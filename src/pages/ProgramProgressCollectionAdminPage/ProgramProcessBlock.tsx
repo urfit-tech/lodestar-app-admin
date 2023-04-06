@@ -95,9 +95,6 @@ const ProgramProcessBlock: React.VFC = () => {
         data.program.forEach(p => {
           const categories = p.program_categories.map(pc => pc.category.name).join(',')
           const programTitle = p.title
-          const programDuration = sum(
-            p.program_content_sections.flatMap(pcs => pcs.program_contents.map(pc => pc.duration || 0)),
-          )
           p.program_content_sections.forEach(pcs => {
             const programContentSectionTitle = pcs.title
             pcs.program_contents.forEach(pc => {
@@ -107,15 +104,6 @@ const ProgramProcessBlock: React.VFC = () => {
               data.member.forEach(m => {
                 const memberName = m.name
                 const memberEmail = m.email
-                const memberWatchedDuration = sum(
-                  p.program_content_sections.flatMap(pcs =>
-                    pcs.program_contents.flatMap(pc =>
-                      pc.program_content_progress
-                        .filter(pcp => pcp.member_id === m.id)
-                        .map(pcp => pcp.progress * pc.duration),
-                    ),
-                  ),
-                )
                 const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
                 const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
 
