@@ -71,7 +71,7 @@ export const useProgram = (programId: string) => {
                   title
                 }
               }
-              program_content_attachments {
+              program_content_attachments(where: { data: { _is_null: false } }) {
                 attachment_id
                 data
                 options
@@ -726,7 +726,7 @@ export const useProgramContent = (programContentId: string) => {
               title
             }
           }
-          program_content_attachments {
+          program_content_attachments(where: { data: { _is_null: false } }) {
             attachment_id
             data
             options

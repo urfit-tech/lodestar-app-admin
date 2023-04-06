@@ -435,7 +435,7 @@ export const useMemberNotesAdmin = (
           description
           metadata
           note
-          member_note_attachments {
+          member_note_attachments(where: { data: { _is_null: false } }) {
             attachment_id
             data
             options
