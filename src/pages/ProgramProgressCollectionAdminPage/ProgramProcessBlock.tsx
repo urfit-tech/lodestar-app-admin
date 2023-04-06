@@ -95,9 +95,6 @@ const ProgramProcessBlock: React.VFC = () => {
         data.program.forEach(p => {
           const categories = p.program_categories.map(pc => pc.category.name).join(',')
           const programTitle = p.title
-          const programDuration = sum(
-            p.program_content_sections.flatMap(pcs => pcs.program_contents.map(pc => pc.duration || 0)),
-          )
           p.program_content_sections.forEach(pcs => {
             const programContentSectionTitle = pcs.title
             pcs.program_contents.forEach(pc => {
@@ -107,26 +104,12 @@ const ProgramProcessBlock: React.VFC = () => {
               data.member.forEach(m => {
                 const memberName = m.name
                 const memberEmail = m.email
-                const memberWatchedDuration = sum(
-                  p.program_content_sections.flatMap(pcs =>
-                    pcs.program_contents.flatMap(pc =>
-                      pc.program_content_progress
-                        .filter(pcp => pcp.member_id === m.id)
-                        .map(pcp => pcp.progress * pc.duration),
-                    ),
-                  ),
-                )
                 const memberProgramContentProgress = pc.program_content_progress.find(pcp => pcp.member_id === m.id)
                 const exercises = pc.exercises.filter(exercise => exercise.member_id === m.id)
-                const watchedProgress =
-                  programContentType === 'exam' || programContentType === 'exercise'
-                    ? exercises.length > 0
-                      ? 1
-                      : 0
-                    : memberProgramContentProgress?.progress || 0
+
                 const firstWatchedAt = memberProgramContentProgress?.created_at || ''
                 const lastWatchedAt = memberProgramContentProgress?.updated_at || ''
-                const watchedDuration = programContentDuration * watchedProgress
+
                 const exercisePoint = exercises
                   .map(ex => {
                     const totalQuestionPoints = sum(
@@ -172,8 +155,28 @@ const ProgramProcessBlock: React.VFC = () => {
                 const examProgressPercentage =
                   exerciseStatus === formatMessage(pageMessages.ProgramProcessBlock.exercisePassed) &&
                   hightestScore.totalGainedPoints >= hightestScore.passingScore
-                    ? '100%'
-                    : '0%'
+                    ? 1
+                    : 0
+                const watchedProgress =
+                  programContentType === 'exam' || programContentType === 'exercise'
+                    ? examProgressPercentage
+                    : memberProgramContentProgress?.progress || 0
+                const watchedDuration = programContentDuration * watchedProgress
+                let programContentProgress = p.program_content_sections.flatMap(pcs =>
+                  pcs.program_contents.map(pc =>
+                    pc.program_content_progress
+                      .filter(pcp => pcp.member_id === m.id)
+                      .map(contentProgress => contentProgress.progress || 0),
+                  ),
+                )
+
+                const viewRate =
+                  programContentProgress.length > 0
+                    ? Math.floor(
+                        (sum(programContentProgress.flatMap(item => item)) / programContentProgress.length) * 100,
+                      )
+                    : 0
+
                 rows.push([
                   categories,
                   programTitle,
@@ -188,9 +191,7 @@ const ProgramProcessBlock: React.VFC = () => {
                   (watchedProgress * 100).toFixed(0) + '%',
                   firstWatchedAt && dayjs(firstWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
                   lastWatchedAt && dayjs(lastWatchedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
-                  programContentType === 'exam' || programContentType === 'exercise'
-                    ? examProgressPercentage
-                    : ((memberWatchedDuration / (programDuration || 1)) * 100).toFixed(0) + '%',
+                  viewRate + '%',
                   exerciseStatus,
                   exercisePoint,
                   exercisePassedAt && dayjs(exercisePassedAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm:ss'),
