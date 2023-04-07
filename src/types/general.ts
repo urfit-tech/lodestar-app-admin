@@ -1,4 +1,3 @@
-import { MemberBriefProps } from './member'
 import { InvoiceProps } from './merchandise'
 
 export type Device = 'desktop' | 'tablet' | 'mobile'
@@ -15,6 +14,7 @@ export type ClassType =
   | 'member'
   | 'creator'
   | 'podcastAlbum'
+  | 'voucher'
 
 export type Category = {
   id: string
