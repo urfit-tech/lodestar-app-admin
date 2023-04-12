@@ -1,5 +1,5 @@
 import { FileAddOutlined, QuestionCircleFilled } from '@ant-design/icons'
-import { useApolloClient } from '@apollo/react-hooks'
+import { useApolloClient } from '@apollo/client'
 import { Button, Form, Input, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'

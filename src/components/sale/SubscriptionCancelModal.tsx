@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, message } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'

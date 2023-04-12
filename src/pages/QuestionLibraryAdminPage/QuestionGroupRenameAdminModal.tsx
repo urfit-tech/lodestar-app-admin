@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
@@ -38,7 +38,7 @@ const QuestionGroupRenameAdminModal: React.VFC<{
         updateQuestionGroupTitle({
           variables: {
             questionGroupId: questionGroupId,
-            title: values.title,
+            title: values.title || '',
             modifierId: currentMemberId,
             questionLibraryIdForUpdate: questionLibraryId,
           },

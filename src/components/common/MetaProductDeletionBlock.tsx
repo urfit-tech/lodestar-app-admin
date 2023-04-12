@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, message, Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'

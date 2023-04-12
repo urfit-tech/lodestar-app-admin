@@ -1,7 +1,7 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Button, Form, Input, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -121,7 +121,7 @@ const MemberPropertyModal: React.FC<
                 memberId: member.id,
                 authorId: sales.id,
                 status: values.note.status,
-                description: values.note.description,
+                description: values.note.description || '',
                 duration: 0,
               },
             }),

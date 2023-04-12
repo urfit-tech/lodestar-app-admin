@@ -1,6 +1,6 @@
-import { useApolloClient } from '@apollo/react-hooks'
+import { useApolloClient } from '@apollo/client'
 import { Statistic } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'

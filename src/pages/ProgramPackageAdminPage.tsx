@@ -1,7 +1,7 @@
 import { ArrowLeftOutlined, FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Skeleton, Tabs } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
@@ -86,7 +86,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                   programs={
                     programPackage?.programs.map(program => ({
                       id: program.program.id,
-                      title: program.program.title,
+                      title: program.program.title || '',
                       programPackageProgramId: program.id,
                     })) || []
                   }
@@ -96,7 +96,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                   items={
                     programPackage?.programs.map(program => ({
                       id: program.id,
-                      title: program.program.title,
+                      title: program.program.title || '',
                       programId: program.program.id,
                     })) || []
                   }
@@ -207,7 +207,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                   items={
                     programPackage?.plans.map(plan => ({
                       id: plan.id,
-                      title: plan.title,
+                      title: plan.title || '',
                       isSubscription: plan.isSubscription,
                       listPrice: plan.listPrice,
                     })) || []
@@ -219,7 +219,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                         data: values.map((value, index) => ({
                           position: index,
                           id: value.id,
-                          title: value.title,
+                          title: value.title || '',
                           is_subscription: value.isSubscription,
                           list_price: value.listPrice,
                           program_package_id: programPackageId,

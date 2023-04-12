@@ -1,8 +1,8 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Tabs } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -164,10 +164,10 @@ const useCertificate = (certificateId: string) => {
   const certificate: Certificate | null = data?.certificate_by_pk
     ? {
         id: data?.certificate_by_pk?.id,
-        title: data?.certificate_by_pk?.title,
-        description: data?.certificate_by_pk?.description,
-        qualification: data?.certificate_by_pk?.qualification,
-        code: data?.certificate_by_pk?.code,
+        title: data?.certificate_by_pk?.title || '',
+        description: data?.certificate_by_pk?.description || '',
+        qualification: data?.certificate_by_pk?.qualification || null,
+        code: data?.certificate_by_pk?.code || null,
         periodType: data?.certificate_by_pk?.period_type as 'D' | 'W' | 'M' | 'Y',
         periodAmount: data?.certificate_by_pk?.period_amount,
         author: {

@@ -45,8 +45,8 @@ const CertificatePreviewModal: React.VFC<
     memberId: 'demo-id',
     certificate: {
       id: certificate.id,
-      title: certificate.title,
-      description: certificate.description,
+      title: certificate.title || '',
+      description: certificate.description || '',
       code: certificate.code,
       template: certificate.certificateTemplate.template,
       templateImage: certificate.certificateTemplate.backgroundImage,
@@ -60,7 +60,7 @@ const CertificatePreviewModal: React.VFC<
   const defaultTemplateVars = {
     name: formatMessage(pageMessages.CertificatePreviewModal.demoName),
     number: memberCertificate.number,
-    title: memberCertificate.certificate.title,
+    title: memberCertificate.certificate.title || '',
     qualification: memberCertificate.certificate.qualification,
     backgroundImage: memberCertificate.certificate.templateImage,
   }

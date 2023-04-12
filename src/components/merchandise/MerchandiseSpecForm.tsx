@@ -1,9 +1,9 @@
 import { CloseOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Checkbox, Divider, Form, Input, message, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { PeriodType } from 'lodestar-app-element/src/types/data'
@@ -109,7 +109,7 @@ const MerchandiseSpecForm: React.FC<{
         data: values.specs.map((spec, index) => ({
           merchandise_id: merchandiseId,
           id: spec.id || undefined,
-          title: spec.title,
+          title: spec.title || '',
           list_price: spec.listPrice || 0,
           sale_price: spec.salePrice ?? null,
           quota: spec.quota || undefined,

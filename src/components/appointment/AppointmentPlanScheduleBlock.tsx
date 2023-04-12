@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import { groupBy } from 'ramda'
 import React from 'react'

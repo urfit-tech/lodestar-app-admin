@@ -1,5 +1,5 @@
-import { useApolloClient, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useApolloClient, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { max, min } from 'lodash'
 import hasura from '../hasura'
 
@@ -42,7 +42,7 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
       ? []
       : data.merchandise.map(merchandise => ({
           id: merchandise.id,
-          title: merchandise.title,
+          title: merchandise.title || '',
           soldAt: merchandise.sold_at ? new Date(merchandise.sold_at) : null,
           minPrice: 0,
           maxPrice: 0,
@@ -63,7 +63,16 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
 
 export const useMerchandise = (id: string) => {
   const apolloClient = useApolloClient()
-  const [merchandiseProducts, setMerchandiseProducts] = useState<hasura.GET_MERCHANDISE_SPEC_PRODUCTS_product[]>([])
+  const [merchandiseProducts, setMerchandiseProducts] = useState<
+    {
+      id: string
+      type: string
+      target: string
+      coin_back: any
+      coin_period_type?: string | null
+      coin_period_amount?: number | null
+    }[]
+  >([])
   const {
     loading: loadingMerchandise,
     error: errorMerchandise,
@@ -158,7 +167,7 @@ export const useMerchandise = (id: string) => {
       ? null
       : {
           id,
-          title: merchandiseData.merchandise_by_pk.title,
+          title: merchandiseData.merchandise_by_pk.title || '',
           categories: merchandiseData.merchandise_by_pk.merchandise_categories.map(merchandiseCategory => ({
             id: merchandiseCategory.category.id,
             name: merchandiseCategory.category.name,
@@ -168,9 +177,9 @@ export const useMerchandise = (id: string) => {
             url: img.url,
             isCover: img.type === 'cover',
           })),
-          abstract: merchandiseData.merchandise_by_pk.abstract,
-          link: merchandiseData.merchandise_by_pk.link,
-          description: merchandiseData.merchandise_by_pk.description,
+          abstract: merchandiseData.merchandise_by_pk.abstract || '',
+          link: merchandiseData.merchandise_by_pk.link || null,
+          description: merchandiseData.merchandise_by_pk.description || '',
           soldAt: merchandiseData.merchandise_by_pk.sold_at,
           startedAt: merchandiseData.merchandise_by_pk.started_at,
           endedAt: merchandiseData.merchandise_by_pk.ended_at,
@@ -185,7 +194,7 @@ export const useMerchandise = (id: string) => {
           currencyId: merchandiseData.merchandise_by_pk.currency_id,
           specs: merchandiseData.merchandise_by_pk.merchandise_specs.map(v => ({
             id: v.id,
-            title: v.title,
+            title: v.title || '',
             listPrice: v.list_price,
             salePrice: v.sale_price,
             quota: v.quota,
@@ -241,7 +250,7 @@ export const useMemberShopCollection = (memberId?: string) => {
   const memberShops: MemberShopPreviewProps[] =
     data?.member_shop.map(memberShop => ({
       id: memberShop.id,
-      title: memberShop.title,
+      title: memberShop.title || '',
       member: {
         id: memberShop.member?.id || '',
         name: memberShop.member?.name || memberShop.member?.username || '',
@@ -315,10 +324,10 @@ export const useMemberShop = (shopId: string) => {
       ? null
       : {
           id: data.member_shop_by_pk.id,
-          title: data.member_shop_by_pk.title,
+          title: data.member_shop_by_pk.title || '',
           shippingMethods: data.member_shop_by_pk.shipping_methods || [],
           publishedAt: data.member_shop_by_pk.published_at,
-          coverUrl: data.member_shop_by_pk.cover_url,
+          coverUrl: data.member_shop_by_pk.cover_url || null,
           member: {
             id: data.member_shop_by_pk.member?.id || '',
             name: data.member_shop_by_pk.member?.name || data.member_shop_by_pk.member?.username || '',
@@ -327,7 +336,7 @@ export const useMemberShop = (shopId: string) => {
           merchandises: data.member_shop_by_pk.merchandises.map(v => ({
             id: v.id,
             coverUrl: v.merchandise_imgs[0]?.url || null,
-            title: v.title,
+            title: v.title || '',
             soldAt: v.sold_at && new Date(v.sold_at),
             minPrice: min(
               v.merchandise_specs.map(spec =>
@@ -454,7 +463,7 @@ export const useMerchandiseSpecCollection = (options?: {
       ? []
       : data.merchandise_spec.map(v => ({
           id: v.id,
-          title: v.title,
+          title: v.title || '',
           coverUrl: v.merchandise.merchandise_imgs[0]?.url || null,
           publishedAt: v.merchandise.published_at,
           inventoryStatus: {
@@ -465,7 +474,7 @@ export const useMerchandiseSpecCollection = (options?: {
           },
           isPhysical: v.merchandise.is_physical,
           isCustomized: v.merchandise.is_customized,
-          merchandiseTitle: v.merchandise.title,
+          merchandiseTitle: v.merchandise.title || '',
           memberShop: {
             id: v.merchandise?.member_shop?.id || '',
             title: v.merchandise?.member_shop?.title || '',

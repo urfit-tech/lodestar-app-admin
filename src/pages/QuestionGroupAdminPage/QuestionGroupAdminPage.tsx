@@ -1,8 +1,8 @@
 import { CloseOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Collapse, message } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import GridOptionsBlock from 'lodestar-app-element/src/components/blocks/GridOptionsBlock'
 import ListsOptionsBlock from 'lodestar-app-element/src/components/blocks/ListsOptionsBlock'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -537,8 +537,8 @@ const useQuestionGroup = (questionGroupId: string) => {
         subject: v.subject,
         layout: v.layout,
         font: v.font,
-        explanation: v.explanation,
-        position: v.position,
+        explanation: v.explanation || '',
+        position: v.position || 0,
         options: v.question_options.map(w => {
           return {
             id: String(w.id),
@@ -581,7 +581,7 @@ const useQuestionGroup = (questionGroupId: string) => {
 
   return {
     questionLibraryId: data?.question_group_by_pk?.question_library?.id,
-    questionGroupTitle: data?.question_group_by_pk?.title,
+    questionGroupTitle: data?.question_group_by_pk?.title || '',
     originalQuestionList: questions,
     isNewQuestionGroup: isNewQuestionGroup,
     refetchQuestionGroup: refetch,

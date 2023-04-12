@@ -7,7 +7,7 @@
     "start": "PUBLIC_URL=/admin react-app-rewired start",
     "build": "PUBLIC_URL=/admin CI=false env-cmd -f .env.${NODE_ENV:-production} react-app-rewired --max-old-space-size=4096 build",
     "test": "react-scripts test",
-    "typegen": "apollo client:codegen ./src/hasura.d.ts --outputFlat --target typescript",
+    "typegen": "graphql-codegen",
     "format:organize-imports": "organize-imports-cli ./src/***/**/*.ts[x]",
     "format:prettier": "prettier --write ./src/***/**/*.ts[x]",
     "format": "npm run format:organize-imports && npm run format:prettier",
@@ -36,7 +36,7 @@
     "@ant-design/charts": "^1.4.2",
     "@ant-design/compatible": "^1.0.8",
     "@ant-design/icons": "^4.6.2",
-    "@apollo/react-hooks": "3",
+    "@apollo/client": "^3.7.11",
     "@babel/cli": "^7.13.10",
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
@@ -76,14 +76,6 @@
     "@uppy/tus": "2.2.0",
     "@uppy/xhr-upload": "2.0.7",
     "antd": "4.9.4",
-    "apollo": "2.32.5",
-    "apollo-cache-inmemory": "1.6.6",
-    "apollo-client": "2.6.10",
-    "apollo-link": "1.2.14",
-    "apollo-link-batch-http": "^1.2.14",
-    "apollo-link-context": "^1.0.20",
-    "apollo-link-error": "1.1.13",
-    "apollo-link-http": "1.5.17",
     "audio-recorder-polyfill": "^0.3.8",
     "audiobuffer-to-wav": "^1.0.0",
     "axios": "^0.21.1",
@@ -94,7 +86,7 @@
     "customize-cra": "^1.0.0",
     "dayjs": "^1.11.3",
     "env-cmd": "^10.1.0",
-    "graphql-tag": "2.12.5",
+    "graphql": "^16.6.0",
     "husky": "4.3.8",
     "jsonwebtoken": "^8.5.1",
     "lamejs": "^1.2.0",
@@ -167,6 +159,14 @@
     "@types/react": "17"
   },
   "volta": {
-    "node": "14.21.3"
+    "node": "14.19.0"
+  },
+  "engines": {
+    "node": ">=14.16.0 <17.0.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^3.3.0",
+    "@graphql-codegen/client-preset": "^3.0.0",
+    "dotenv-flow": "^3.2.0"
   }
 }

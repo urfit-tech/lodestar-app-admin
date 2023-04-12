@@ -1,7 +1,7 @@
 import { EditOutlined, FileTextFilled } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Input, Skeleton, Tabs } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
@@ -251,7 +251,7 @@ const ProgramCollectionBlock: React.FC<{
                   data: values.map((value, index) => ({
                     app_id: appId,
                     id: value.id,
-                    title: value.title,
+                    title: value.title || '',
                     position: index,
                   })),
                 },
@@ -339,11 +339,11 @@ const useProgramPreviewCollection = (
 
       return {
         id: program.id,
-        coverUrl: program.cover_url,
-        coverMobileUrl: program.cover_mobile_url,
-        coverThumbnailUrl: program.cover_thumbnail_url,
-        title: program.title,
-        abstract: program.abstract,
+        coverUrl: program.cover_url || null,
+        coverMobileUrl: program.cover_mobile_url || null,
+        coverThumbnailUrl: program.cover_thumbnail_url || null,
+        title: program.title || '',
+        abstract: program.abstract || '',
         instructors: data.program_role
           .filter(v => v.program_id === program.id)
           .map(programRole => ({
@@ -388,7 +388,7 @@ const useProgramPreviewCollection = (
             variables: {
               condition: {
                 ...condition,
-                ...(Object.keys(orderBy ? orderBy[0] : {})[0] === 'position'
+                ...(Object.keys(Array.isArray(orderBy) ? orderBy[0] : orderBy)[0] === 'position'
                   ? {
                       _or: [
                         {
@@ -442,7 +442,7 @@ const useProgramSortCollection = (condition: hasura.GET_PROGRAM_PREVIEW_COLLECTI
       : data.program.map(program => {
           return {
             id: program.id,
-            title: program.title,
+            title: program.title || '',
           }
         })
 

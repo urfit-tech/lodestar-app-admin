@@ -1,8 +1,8 @@
 import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Dropdown, Input, Menu, message, Popover, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import { sum } from 'ramda'
@@ -552,13 +552,13 @@ const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string; 
           createdAt: new Date(coinLog.created_at),
           member: {
             id: coinLog.member.id,
-            avatarUrl: coinLog.member.picture_url,
+            avatarUrl: coinLog.member.picture_url || null,
             name: coinLog.member.name || coinLog.member.username,
             email: coinLog.member.email,
           },
-          title: coinLog.title,
-          description: coinLog.description,
-          note: coinLog.note,
+          title: coinLog.title || '',
+          description: coinLog.description || '',
+          note: coinLog.note || '',
           startedAt: coinLog.started_at && new Date(coinLog.started_at),
           endedAt: coinLog.ended_at && new Date(coinLog.ended_at),
           amount: coinLog.amount,
@@ -650,13 +650,13 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
           createdAt: new Date(coinFutureLog.created_at),
           member: {
             id: coinFutureLog.member.id,
-            avatarUrl: coinFutureLog.member.picture_url,
+            avatarUrl: coinFutureLog.member.picture_url || null,
             name: coinFutureLog.member.name || coinFutureLog.member.username,
             email: coinFutureLog.member.email,
           },
-          title: coinFutureLog.title,
-          description: coinFutureLog.description,
-          note: coinFutureLog.note,
+          title: coinFutureLog.title || '',
+          description: coinFutureLog.description || '',
+          note: coinFutureLog.note || '',
           startedAt: coinFutureLog.started_at && new Date(coinFutureLog.started_at),
           endedAt: coinFutureLog.ended_at && new Date(coinFutureLog.ended_at),
           amount: coinFutureLog.amount,
@@ -757,7 +757,7 @@ const useOrderLogWithCoinsCollection = (filter?: {
           id: orderLog.id,
           member: {
             id: orderLog.member.id,
-            avatarUrl: orderLog.member.picture_url,
+            avatarUrl: orderLog.member.picture_url || null,
             name: orderLog.member.name || orderLog.member.username,
             email: orderLog.member.email,
           },

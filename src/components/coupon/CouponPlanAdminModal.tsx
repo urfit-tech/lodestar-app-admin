@@ -1,8 +1,8 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { generate } from 'coupon-code'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
@@ -59,11 +59,11 @@ const CouponPlanAdminModal: React.FC<
             variables: {
               couponPlanId: couponPlan.id,
               constraint: values.constraint,
-              description: values.description,
+              description: values.description || '',
               endedAt: values.endedAt,
               startedAt: values.startedAt,
               scope: values.scope?.productTypes || null,
-              title: values.title,
+              title: values.title || '',
               type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
               amount: values.discount.amount,
               couponPlanProduct:
@@ -105,11 +105,11 @@ const CouponPlanAdminModal: React.FC<
                   }
                 }) || [],
               constraint: values.constraint,
-              description: values.description,
+              description: values.description || '',
               startedAt: values.startedAt,
               endedAt: values.endedAt,
               scope: values.scope?.productTypes || null,
-              title: values.title,
+              title: values.title || '',
               type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
               amount: values.discount.amount,
               couponPlanProduct:
@@ -159,7 +159,7 @@ const CouponPlanAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: couponPlan?.title,
+          title: couponPlan?.title || '',
           scope: {
             productTypes: couponPlan?.scope || null,
             productIds: couponPlan?.productIds || [],
@@ -171,7 +171,7 @@ const CouponPlanAdminModal: React.FC<
           },
           startedAt: couponPlan && couponPlan.startedAt ? moment(couponPlan.startedAt) : null,
           endedAt: couponPlan && couponPlan.endedAt ? moment(couponPlan.endedAt) : null,
-          description: couponPlan?.description,
+          description: couponPlan?.description || '',
         }}
       >
         <Form.Item

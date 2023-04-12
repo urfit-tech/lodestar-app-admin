@@ -84,7 +84,7 @@ const ProductCreationModal: React.FC<
         const values = form.getFieldsValue()
         setLoading(true)
         onCreate({
-          title: values.title,
+          title: values.title || '',
           categoryIds: categoryClassType ? values.categoryIds || [] : [],
           creatorId: values.creatorId || currentMemberId,
           isSubscription: withProgramType ? values.isSubscription : undefined,

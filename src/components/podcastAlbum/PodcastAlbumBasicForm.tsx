@@ -1,9 +1,9 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useRef, useState } from 'react'
@@ -59,8 +59,8 @@ const PodcastAlbumBasicForm: React.FC<{
     updatePodcastAlbumBasic({
       variables: {
         id: podcastAlbum.id,
-        title: values.title,
-        abstract: values.abstract,
+        title: values.title || '',
+        abstract: values.abstract || '',
         coverUrl: podcastAlbum.coverUrl,
         podcastAlbumCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           podcast_album_id: podcastAlbum.id,
@@ -107,8 +107,8 @@ const PodcastAlbumBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        title: podcastAlbum.title,
-        abstract: podcastAlbum.abstract,
+        title: podcastAlbum.title || '',
+        abstract: podcastAlbum.abstract || '',
         categoryIds: podcastAlbum.categories.map(category => category.id),
       }}
       onFinish={handleSubmit}

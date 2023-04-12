@@ -35,7 +35,7 @@ const ShippingAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useState('shipping')
   const [isPaidAtDesc, setIsPaidAtDesc] = useState(false)
 
-  const filteredProductLogs = orderPhysicalProductLogs
+  const filteredProductLogs = [...orderPhysicalProductLogs]
     .filter(orderPhysicalProductLog =>
       orderPhysicalProductLog.orderPhysicalProducts.some(
         orderPhysicalProduct =>

@@ -1,5 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import hasura from '../hasura'
 import { prop, sum } from 'ramda'
 import { OrderLog, PaymentLog } from '../types/general'
@@ -62,7 +62,7 @@ export const usePaymentLogs = (filters?: { orderLogId?: string | null; status?: 
       gateway: v.gateway || '',
       paidAt: v.paid_at && new Date(v.paid_at),
       method: v.method || '',
-      customNo: v.custom_no,
+      customNo: v.custom_no || null,
     })) || []
 
   return {
@@ -228,7 +228,7 @@ export const useOrderLogs = (
       expiredAt: v.expired_at,
       name: v.member.name,
       email: v.member.email,
-      paymentMethod: v.payment_logs[0]?.gateway,
+      paymentMethod: v.payment_logs[0]?.gateway || null,
       options: v.options,
       invoiceOptions: v.invoice_options,
       invoiceIssuedAt: v.invoice_issued_at,
@@ -249,7 +249,7 @@ export const useOrderLogs = (
       orderDiscounts: v.order_discounts.map(w => ({
         id: w.id,
         name: w.name,
-        description: w.description,
+        description: w.description || '',
         price: w.price,
         type: w.type,
         target: w.target,

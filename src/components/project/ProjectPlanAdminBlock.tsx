@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -59,7 +59,7 @@ const ProjectPlanAdminBlock: React.FC<{
                 data: values.map((value, index) => ({
                   id: value.id,
                   project_id: value.projectId,
-                  title: value.title,
+                  title: value.title || '',
                   position: index,
                 })),
               },
@@ -107,7 +107,7 @@ const useProjectPlanSortCollection = (projectId: string) => {
     data?.project_plan.map(v => ({
       id: v.id,
       projectId: v.project_id,
-      title: v.title,
+      title: v.title || '',
     })) || []
   return {
     loadingProjectPlanSorts: loading,

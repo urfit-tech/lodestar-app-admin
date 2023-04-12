@@ -1,7 +1,7 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import programMessages from '../program/translation'
@@ -58,7 +58,7 @@ const useProgramPackages = (options?: { isPublished: boolean }) => {
   const programPackages =
     data?.program_package.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
     })) || []
 
   return {

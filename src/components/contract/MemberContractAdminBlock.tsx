@@ -1,6 +1,6 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Card, message, Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -213,7 +213,7 @@ const useMemberContracts = (memberId: string) => {
         startedAt: v.started_at && new Date(v.started_at),
         endedAt: v.ended_at && new Date(v.ended_at),
         agreedAt: v.agreed_at && new Date(v.agreed_at),
-        agreedIp: v.agreed_ip,
+        agreedIp: v.agreed_ip || null,
         agreedOptions: v.agreed_options,
         revokedAt: v.revoked_at && new Date(v.revoked_at),
       }

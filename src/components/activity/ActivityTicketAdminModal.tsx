@@ -71,7 +71,7 @@ const ActivityTicketAdminModal: React.FC<
         setLoading(true)
         const values = form.getFieldsValue()
         onSubmit({
-          title: values.title,
+          title: values.title || '',
           sessions: uniq(
             values.sessions
               .filter(notEmpty)

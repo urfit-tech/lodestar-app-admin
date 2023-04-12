@@ -1,5 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { sum } from 'ramda'
 import hasura from '../hasura'
 import { notEmpty } from '../helpers'
@@ -116,8 +116,8 @@ export const useActivityCollection = (
       ? []
       : data.activity.map(activity => ({
           id: activity.id,
-          coverUrl: activity.cover_url,
-          title: activity.title,
+          coverUrl: activity.cover_url || null,
+          title: activity.title || '',
           publishedAt: activity.published_at && new Date(activity.published_at),
           isPrivate: activity.is_private,
           participantsCount: {
@@ -237,10 +237,10 @@ export const useActivityAdmin = (activityId: string) => {
       ? null
       : {
           id: data.activity[0]?.id,
-          coverUrl: data.activity[0]?.cover_url,
-          title: data.activity[0]?.title,
+          coverUrl: data.activity[0]?.cover_url || null,
+          title: data.activity[0]?.title || '',
           publishedAt: data.activity[0]?.published_at && new Date(data.activity[0]?.published_at),
-          description: data.activity[0]?.description,
+          description: data.activity[0]?.description || '',
           isParticipantsVisible: data.activity[0]?.is_participants_visible,
           organizerId: data.activity[0]?.organizer_id,
           supportLocales: data.activity[0]?.support_locales || [],
@@ -254,33 +254,33 @@ export const useActivityAdmin = (activityId: string) => {
           tickets:
             data?.activity[0]?.activity_tickets?.map(v => ({
               id: v.id,
-              title: v.title,
+              title: v.title || '',
               startedAt: new Date(v.started_at),
               endedAt: new Date(v.ended_at),
               currencyId: v.currency_id,
               price: v.price,
               count: v.count,
-              description: v.description,
+              description: v.description || '',
               isPublished: v.is_published,
               sessions: v.activity_session_tickets.map(v => ({
                 id: v.activity_session.id,
                 type: v.activity_session_type as ActivityTicketSessionType,
-                title: v.activity_session.title,
-                location: v.activity_session.location,
-                onlineLink: v.activity_session.online_link,
+                title: v.activity_session.title || '',
+                location: v.activity_session.location || null,
+                onlineLink: v.activity_session.online_link || null,
               })),
               enrollmentsCount: v.activity_ticket_enrollments_aggregate.aggregate?.count || 0,
             })) || [],
           sessions:
             data?.activity[0]?.activity_sessions?.map(v => ({
               id: v.id,
-              title: v.title,
+              title: v.title || '',
               startedAt: new Date(v.started_at),
               endedAt: new Date(v.ended_at),
-              location: v.location,
-              onlineLink: v.online_link,
+              location: v.location || null,
+              onlineLink: v.online_link || null,
               threshold: v.threshold,
-              description: v.description,
+              description: v.description || '',
               maxAmount: {
                 online: sum(
                   v.activity_session_tickets

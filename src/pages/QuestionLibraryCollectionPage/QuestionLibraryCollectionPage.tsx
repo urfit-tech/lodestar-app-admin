@@ -1,8 +1,8 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
@@ -40,7 +40,7 @@ const QuestionLibraryCollectionPage: React.VFC = () => {
     setLoading(true)
     form.validateFields().then(() => {
       const values = form.getFieldsValue()
-      createQuestionLibrary({ variables: { title: values.title, modifierId: modifierId, appId: appId } })
+      createQuestionLibrary({ variables: { title: values.title || '', modifierId: modifierId, appId: appId } })
         .then(({ data }) => {
           const questionLibraryId = data?.insert_question_library?.returning[0]?.id
           setLoading(false)

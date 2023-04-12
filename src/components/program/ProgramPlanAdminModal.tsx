@@ -1,9 +1,9 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, Input, InputNumber, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useGiftPlanMutation } from 'lodestar-app-element/src/hooks/giftPlan'
@@ -129,7 +129,7 @@ const ProgramPlanAdminModal: React.FC<
             id: programPlan ? programPlan.id : newProgramPlanId,
             programId,
             type: values.type,
-            title: values.title,
+            title: values.title || '',
             description: values.description.toRAW(),
             listPrice: values.listPrice || 0,
             salePrice: values.sale ? values.sale.price || 0 : null,
@@ -234,7 +234,7 @@ const ProgramPlanAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: programPlan?.title,
+          title: programPlan?.title || '',
           isPublished: !!programPlan?.publishedAt,
           isParticipantsVisible: !!programPlan?.isParticipantsVisible,
           currencyId: programPlan?.currencyId,

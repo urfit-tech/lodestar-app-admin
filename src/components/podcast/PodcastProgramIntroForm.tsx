@@ -1,8 +1,8 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -65,7 +65,7 @@ const PodcastProgramIntroForm: React.FC<{
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
-        abstract: values.abstract,
+        abstract: values.abstract || '',
       },
     })
       .then(() => {
@@ -85,7 +85,7 @@ const PodcastProgramIntroForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        abstract: podcastProgramAdmin.abstract,
+        abstract: podcastProgramAdmin.abstract || '',
       }}
       onFinish={handleSubmit}
     >

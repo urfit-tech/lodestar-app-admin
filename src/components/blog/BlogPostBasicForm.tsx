@@ -1,8 +1,8 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -57,8 +57,8 @@ const BlogPostBasicForm: React.FC<{
     updatePostBasic({
       variables: {
         postId: post.id,
-        title: values.title,
-        source: values.source,
+        title: values.title || '',
+        source: values.source || null,
         categories: values.categoryIds.map((categoryId: string, index: number) => ({
           post_id: post.id,
           category_id: categoryId,
@@ -93,8 +93,8 @@ const BlogPostBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        title: post.title,
-        source: post.source,
+        title: post.title || '',
+        source: post.source || null,
         categoryIds: post.categories.map(category => category.id),
         tags: post.tagNames,
         codeName: post.codeName,

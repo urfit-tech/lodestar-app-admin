@@ -8,10 +8,10 @@ import {
   SwapOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Input, message, Table } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'

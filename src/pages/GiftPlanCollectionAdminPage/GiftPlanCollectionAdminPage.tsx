@@ -1,7 +1,7 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Button, Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
@@ -92,7 +92,7 @@ const useGiftPlanCollection = (condition: hasura.GET_GIFT_PLAN_COLLECTIONVariabl
   const giftPlanCollection: GiftPlanCollectionProps[] =
     data?.gift_plan.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       createdAt: moment(v.created_at).format('YYYY-MM-DD HH:mm:ss'),
       giftIdList: v.gift_plan_products.map(w => w.product.target),
       giftPlanProductIdList: v.gift_plan_products.map(x => x.id),

@@ -57,8 +57,8 @@ const OpenGraphSettingsBlock: React.VFC<{
         metaTag: {
           ...metaTag,
           openGraph: {
-            title: values.title,
-            description: values.description,
+            title: values.title || '',
+            description: values.description || '',
             image: values.image,
             imageAlt: values.imageAlt,
           },
@@ -84,8 +84,8 @@ const OpenGraphSettingsBlock: React.VFC<{
               metaTag: {
                 ...metaTag,
                 openGraph: {
-                  title: values.title,
-                  description: values.description,
+                  title: values.title || '',
+                  description: values.description || '',
                   image: `https://${process.env.REACT_APP_S3_BUCKET}/og_images/${appId}/${type}/${id}/${ogImageId}`,
                   imageAlt: values.imageAlt,
                 },
@@ -111,8 +111,8 @@ const OpenGraphSettingsBlock: React.VFC<{
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
-          title: metaTag?.openGraph?.title,
-          description: metaTag?.openGraph?.description,
+          title: metaTag?.openGraph?.title || '',
+          description: metaTag?.openGraph?.description || '',
           image: metaTag?.openGraph?.image,
           imageAlt: metaTag?.openGraph?.imageAlt,
         }}

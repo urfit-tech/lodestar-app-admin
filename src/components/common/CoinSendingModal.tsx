@@ -1,8 +1,8 @@
 import { FileAddOutlined, UploadOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, InputNumber, message, Radio, Space, Upload } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
@@ -63,12 +63,12 @@ const CoinSendingModal: React.FC<{
           variables: {
             data: values.memberIds.map(memberId => ({
               member_id: memberId,
-              title: values.title,
-              description: values.description,
+              title: values.title || '',
+              description: values.description || '',
               amount: values.amount,
               started_at: values.startedAt && moment(values.startedAt).startOf('minute').toDate(),
               ended_at: values.endedAt && moment(values.endedAt).startOf('minute').toDate(),
-              note: values.note,
+              note: values.note || '',
             })),
           },
         })

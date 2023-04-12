@@ -1,9 +1,9 @@
 import { EditOutlined, MoreOutlined, QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -118,7 +118,7 @@ const PracticeForm: React.FC<{
             : values.displayMode !== 'conceal'
             ? new Date()
             : null,
-          title: values.title,
+          title: values.title || '',
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration: values.estimatedTime,
           isNotifyUpdate: values.isNotifyUpdate,
@@ -184,7 +184,7 @@ const PracticeForm: React.FC<{
         displayMode: programContent.displayMode,
         isPracticePrivate: !!programContent.metadata?.private,
         isNotifyUpdate: programContent.isNotifyUpdate,
-        title: programContent.title,
+        title: programContent.title || '',
         planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
         estimatedTime: programContent.duration,
         description: BraftEditor.createEditorState(programContentBody.description),

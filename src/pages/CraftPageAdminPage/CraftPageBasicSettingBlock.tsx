@@ -67,7 +67,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
           labelCol={{ md: { span: 4 } }}
           wrapperCol={{ md: { span: 8 } }}
           initialValues={{
-            pageName: pageAdmin?.title,
+            pageName: pageAdmin?.title || '',
             path: pageAdmin?.path,
           }}
           onFinish={handleSubmit}
