@@ -1,5 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import hasura from '../hasura'
 import { CreatorProps } from '../types/creator'
 
@@ -34,7 +34,7 @@ export const useCreator = () => {
       : data.creator.map(v => ({
           id: v.id || '',
           isPublished: !!v.published_at,
-          pictureUrl: v.picture_url,
+          pictureUrl: v.picture_url || null,
           name: v.name || '',
           categoryNames: v.creator_categories.map(w => w.category.name),
           specialityNames: v.member_specialities.map(w => w.tag_name),

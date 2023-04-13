@@ -57,7 +57,7 @@ const ProjectCollectionTable: React.FC<{
     project.markedProjectRoles?.forEach(markedProjectRole =>
       markedProject.push({
         id: project.id,
-        title: project.title,
+        title: project.title || '',
         previewUrl: project.previewUrl || '',
         author: {
           id: project.author?.id || '',

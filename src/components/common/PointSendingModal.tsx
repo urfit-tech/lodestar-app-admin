@@ -1,8 +1,8 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -56,11 +56,11 @@ const PointSendingModal: React.FC<{
           variables: {
             data: values.memberIds.map(memberId => ({
               member_id: memberId,
-              description: values.description,
+              description: values.description || '',
               point: values.points,
               started_at: values.startedAt && moment(values.startedAt).startOf('minute').toDate(),
               ended_at: values.endedAt && moment(values.endedAt).startOf('minute').toDate(),
-              note: values.note,
+              note: values.note || '',
             })),
           },
         })

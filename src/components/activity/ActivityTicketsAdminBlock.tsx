@@ -1,7 +1,7 @@
 import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -33,15 +33,15 @@ const ActivityTicketsAdminBlock: React.FC<{
         icon={<FileAddOutlined />}
         activitySessions={activityAdmin.sessions.map(v => ({
           id: v.id,
-          title: v.title,
-          location: v.location,
-          onlineLink: v.onlineLink,
+          title: v.title || '',
+          location: v.location || null,
+          onlineLink: v.onlineLink || null,
         }))}
         onSubmit={values =>
           insertActivityTicket({
             variables: {
               activityId: activityAdmin.id,
-              title: values.title,
+              title: values.title || '',
               activitySessionTickets: values.sessions.map(session => ({
                 activity_session_id: session.id,
                 activity_session_type: session.type,
@@ -52,7 +52,7 @@ const ActivityTicketsAdminBlock: React.FC<{
               currencyId: values.currencyId,
               price: values.price,
               count: values.count,
-              description: values.description,
+              description: values.description || '',
             },
           })
         }
@@ -77,15 +77,15 @@ const ActivityTicketsAdminBlock: React.FC<{
                           activityTicket={ticket}
                           activitySessions={activityAdmin.sessions.map(v => ({
                             id: v.id,
-                            title: v.title,
-                            location: v.location,
-                            onlineLink: v.onlineLink,
+                            title: v.title || '',
+                            location: v.location || null,
+                            onlineLink: v.onlineLink || null,
                           }))}
                           onSubmit={values =>
                             updateActivityTicket({
                               variables: {
                                 activityTicketId: ticket.id,
-                                title: values.title,
+                                title: values.title || '',
                                 activitySessionTickets: values.sessions.map(session => ({
                                   activity_ticket_id: ticket.id,
                                   activity_session_id: session.id,
@@ -97,7 +97,7 @@ const ActivityTicketsAdminBlock: React.FC<{
                                 currencyId: values.currencyId,
                                 price: values.price,
                                 count: values.count,
-                                description: values.description,
+                                description: values.description || '',
                               },
                             })
                           }

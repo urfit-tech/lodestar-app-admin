@@ -1,7 +1,7 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Button, Skeleton, Tabs } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -290,11 +290,11 @@ const useProjectAdmin = (projectId: string) => {
       ? null
       : {
           id: data.project_by_pk.id,
-          title: data.project_by_pk.title,
-          abstract: data.project_by_pk.abstract,
-          introduction: data.project_by_pk.introduction,
-          introductionDesktop: data.project_by_pk.introduction_desktop,
-          description: data.project_by_pk.description,
+          title: data.project_by_pk.title || '',
+          abstract: data.project_by_pk.abstract || '',
+          introduction: data.project_by_pk.introduction || '',
+          introductionDesktop: data.project_by_pk.introduction_desktop || '',
+          description: data.project_by_pk.description || '',
           targetAmount: data.project_by_pk.target_amount,
           targetUnit: data.project_by_pk.target_unit,
           projectType: data.project_by_pk.type as ProjectDataType,
@@ -305,16 +305,16 @@ const useProjectAdmin = (projectId: string) => {
           comments: data.project_by_pk.comments,
           contents: data.project_by_pk.contents,
           coverType: data.project_by_pk.cover_type,
-          coverUrl: data.project_by_pk.cover_url,
-          previewUrl: data.project_by_pk.preview_url,
+          coverUrl: data.project_by_pk.cover_url || null,
+          previewUrl: data.project_by_pk.preview_url || null,
           isParticipantsVisible: data.project_by_pk.is_participants_visible,
           isCountdownTimerVisible: data.project_by_pk.is_countdown_timer_visible,
           projectPlan: data.project_by_pk.project_plans.map(v => ({
             id: v.id,
             projectId: v.project_id,
-            coverUrl: v.cover_url,
-            title: v.title,
-            description: v.description,
+            coverUrl: v.cover_url || null,
+            title: v.title || '',
+            description: v.description || '',
             currencyId: v.currency_id,
             listPrice: v.list_price,
             salePrice: v.sale_price,
@@ -322,8 +322,8 @@ const useProjectAdmin = (projectId: string) => {
             discountDownPrice: v.discount_down_price,
             isSubscription: v.is_subscription,
             periodAmount: v.period_amount,
-            periodType: v.period_type,
-            position: v.position,
+            periodType: v.period_type || null,
+            position: v.position || 0,
             isParticipantsVisible: v.is_participants_visible,
             isPhysical: v.is_physical,
             isLimited: v.is_limited,

@@ -1,8 +1,8 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -44,7 +44,7 @@ const ActivityBasicForm: React.FC<{
     updateActivityBasic({
       variables: {
         activityId: activityAdmin.id,
-        title: values.title,
+        title: values.title || '',
         supportLocales: values.languages?.length ? values.languages : null,
         activityCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           activity_id: activityAdmin.id,
@@ -80,7 +80,7 @@ const ActivityBasicForm: React.FC<{
       colon={false}
       hideRequiredMark
       initialValues={{
-        title: activityAdmin.title,
+        title: activityAdmin.title || '',
         categoryIds: activityAdmin.categories.map(category => category.id),
         tags: activityAdmin.tags,
         languages: activityAdmin.supportLocales.map(supportLocale => supportLocale),

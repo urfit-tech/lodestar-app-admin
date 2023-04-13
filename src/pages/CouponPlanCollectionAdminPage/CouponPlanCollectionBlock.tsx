@@ -1,7 +1,7 @@
 import { EditOutlined, MoreOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Button, Dropdown, Menu, Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { EmptyBlock } from '../../components/admin'
@@ -143,8 +143,8 @@ const usePreviewCouponPlanCollection = (condition: hasura.GET_PREVIEW_COUPON_PLA
       : data.coupon_plan.map(v => {
           return {
             id: v.id,
-            title: v.title,
-            description: v.description,
+            title: v.title || '',
+            description: v.description || '',
             scope: v.scope,
             type: v.type === 1 ? 'cash' : v.type === 2 ? 'percent' : null,
             amount: v.amount,

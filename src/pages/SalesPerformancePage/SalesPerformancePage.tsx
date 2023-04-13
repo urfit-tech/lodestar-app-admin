@@ -1,8 +1,8 @@
 import Icon, { DollarOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { DatePicker, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
@@ -344,7 +344,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                   .map((op: any) => op.name + (op.options ? `(${op.options.quantity})` : '')),
                 paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
                 paymentNumber: v.values.paymentOptions.paymentNumber,
-                note: v.options?.note,
+                note: v.options?.note || '',
               }
             }) || [],
         )

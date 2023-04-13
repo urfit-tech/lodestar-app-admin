@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Dropdown, InputNumber, Menu, message } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import GridLayout from 'react-grid-layout'

@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Form, InputNumber, Skeleton, Tag } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { flatten, sum } from 'ramda'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -53,7 +53,7 @@ const ExamQuestionSettingForm: React.VFC<{
     )
     .map(v => ({
       key: v.id,
-      title: v.title,
+      title: v.title || '',
       children: v.questionGroups
         // if question group does not have any question
         ?.filter(questionGroup => questionGroup.amount !== 0)
@@ -200,10 +200,10 @@ const useExamQuestionLibrary = () => {
   const questionLibraries: QuestionLibrary[] =
     data?.question_library.map(v => ({
       id: v.id,
-      title: v?.title,
+      title: v?.title || '',
       questionGroups: v?.question_groups.map(w => ({
         id: w.id,
-        title: w.title,
+        title: w.title || '',
         amount: w.questions_aggregate.aggregate?.count || 0,
       })),
     })) || []

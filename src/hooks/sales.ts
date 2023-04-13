@@ -1,5 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import { sum, prop, sortBy } from 'ramda'
 import hasura from '../hasura'
@@ -63,7 +63,7 @@ export const useSales = (salesId: string) => {
   const sales: SalesProps | null = data?.member_by_pk
     ? {
         id: data.member_by_pk.id,
-        pictureUrl: data.member_by_pk.picture_url,
+        pictureUrl: data.member_by_pk.picture_url || null,
         name: data.member_by_pk.name,
         email: data.member_by_pk.email,
         telephone: data.member_by_pk.member_properties[0]?.value || '',
@@ -98,7 +98,7 @@ export const useSalesLeads = (managerId: string, leadFilter?: (lead: LeadProps) 
     GET_SALES_LEADS,
     { variables: { appId, managerId } },
   )
-  const convertToLead = (v: hasura.GET_SALES_LEADS_lead_status_new): LeadProps | null => {
+  const convertToLead = (v: hasura.GET_SALES_LEADS['lead_status_new'][number]): LeadProps | null => {
     const notified =
       v.paid <= 0 &&
       v.member &&

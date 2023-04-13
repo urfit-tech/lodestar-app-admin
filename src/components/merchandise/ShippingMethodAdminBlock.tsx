@@ -1,6 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Checkbox, InputNumber, message } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'

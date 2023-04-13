@@ -1,9 +1,9 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Select, Skeleton } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -86,8 +86,8 @@ const ProfileBasicCard: React.FC<
       variables: {
         memberId,
         name: values.name,
-        title: values.title,
-        abstract: values.abstract,
+        title: values.title || '',
+        abstract: values.abstract || '',
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
         creatorCategories:
           values.fields?.map(v => ({
@@ -127,10 +127,10 @@ const ProfileBasicCard: React.FC<
         hideRequiredMark
         initialValues={{
           name: member.name,
-          title: member.title,
+          title: member.title || '',
           fields: member.creatorCategoryIds,
           specialities: member.specialities || [],
-          abstract: member.abstract,
+          abstract: member.abstract || '',
           description: BraftEditor.createEditorState(member.description),
         }}
         onFinish={handleSubmit}

@@ -1,8 +1,8 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Form, message, TreeSelect } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -164,7 +164,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
       ? []
       : data?.program.map(program => ({
           id: program.id,
-          title: program.title,
+          title: program.title || '',
           isSubscription: program.is_subscription,
           publishedAt: program.published_at,
         }))

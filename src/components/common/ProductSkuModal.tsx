@@ -1,8 +1,8 @@
 import Icon from '@ant-design/icons'
-import { useApolloClient, useMutation } from '@apollo/react-hooks'
+import { useApolloClient, useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { ExclamationCircleIcon } from 'lodestar-app-element/src/images'
 import { flatten, mergeAll } from 'ramda'
@@ -336,7 +336,7 @@ const ProductSkuModal: React.FC<
               key={v.appChannelId}
               channelId={v.appChannelId}
               name={v.appChannelName}
-              channelSku={v.channelSku}
+              channelSku={v.channelSku || null}
             />
           ))}
         </Form.Item>

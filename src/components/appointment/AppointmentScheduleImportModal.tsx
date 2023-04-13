@@ -1,7 +1,7 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useLazyQuery, useMutation } from '@apollo/react-hooks'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { Button, Form, Select } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -249,7 +249,7 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
   const appointmentPlans: AppointmentPlanImportingProps[] =
     data?.appointment_plan.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       creator: {
         id: v.creator?.id || '',
         name: v.creator?.name || v.creator?.username || '',
@@ -257,7 +257,7 @@ const useAppointmentPlansWithSchedules = (currentPlan: AppointmentPlanAdminProps
       schedules: v.appointment_schedules.map(s => ({
         id: s.id,
         startedAt: new Date(s.started_at),
-        intervalAmount: s.interval_amount,
+        intervalAmount: s.interval_amount || null,
         intervalType: s.interval_type as PeriodType | null,
         excludes: s.excludes.map((e: string) => new Date(e)),
         isExisted: false,

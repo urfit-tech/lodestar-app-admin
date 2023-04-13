@@ -1,6 +1,6 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import hasura from '../hasura'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 
 export const useGetAttend = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_ATTEND, hasura.GET_ATTENDVariables>(

@@ -1,8 +1,8 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Select, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -49,7 +49,7 @@ const AppointmentPlanBasicForm: React.FC<{
     updateAppointmentPlanTitle({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
-        title: values.title,
+        title: values.title || '',
         phone: values.phone,
         reservationAmount: values.reservationAmount,
         reservationType: values.reservationType,
@@ -72,7 +72,7 @@ const AppointmentPlanBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        title: appointmentPlanAdmin.title,
+        title: appointmentPlanAdmin.title || '',
         phone: appointmentPlanAdmin.phone,
         reservationAmount: appointmentPlanAdmin.reservationAmount || 0,
         reservationType: appointmentPlanAdmin.reservationType || 'hour',

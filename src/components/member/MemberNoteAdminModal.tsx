@@ -74,8 +74,8 @@ const MemberNoteAdminModal: React.FC<
       type: values.type || null,
       status: values.type ? values.status : null,
       duration: values.duration ? moment(values.duration).diff(moment().startOf('day'), 'seconds') : 0,
-      description: values.description,
-      note: values.note,
+      description: values.description || '',
+      note: values.note || '',
       attachments,
     })
       .then(() => onSuccess())

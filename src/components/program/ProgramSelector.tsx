@@ -70,19 +70,19 @@ export const ProgramTreeSelector: React.FC<
   })
   const treeData: TreeSelectProps<string>['treeData'] = programs.map(program => ({
     key: program.id,
-    title: program.title,
+    title: program.title || '',
     value: program.id,
     group: 'program',
     selectable: treeNodeSelectable,
     children: program.contentSections.map(section => ({
       key: section.id,
-      title: section.title,
+      title: section.title || '',
       value: section.id,
       group: 'programContentSection',
       selectable: treeNodeSelectable,
       children: section.contents.map(content => ({
         key: content.id,
-        title: content.title,
+        title: content.title || '',
         value: content.id,
         group: 'programContent',
       })),

@@ -1,5 +1,5 @@
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useQuery, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
@@ -47,10 +47,10 @@ export const useAppPage = (pageId: string) => {
   const appPage: AppPageProps | null = data?.app_page_by_pk
     ? {
         id: data.app_page_by_pk.id,
-        path: data.app_page_by_pk.path,
-        title: data.app_page_by_pk.title,
+        path: data.app_page_by_pk.path || null,
+        title: data.app_page_by_pk.title || '',
         craftData: data.app_page_by_pk.craft_data,
-        editorId: data.app_page_by_pk.editor_id,
+        editorId: data.app_page_by_pk.editor_id || null,
         editorName: data.app_page_by_pk.editor?.name || null,
         publishedAt: data.app_page_by_pk.published_at ? new Date(data.app_page_by_pk.published_at) : null,
         updatedAt: new Date(data.app_page_by_pk.updated_at),
@@ -110,10 +110,10 @@ export const useAppPageCollection = () => {
     data?.app_page
       .map(v => ({
         id: v.id,
-        path: v.path,
-        title: v.title,
+        path: v.path || null,
+        title: v.title || '',
         craftData: v.craft_data,
-        editorId: v.editor_id,
+        editorId: v.editor_id || null,
         editorName: v.editor?.name || null,
         publishedAt: v.published_at ? new Date(v.published_at) : null,
         updatedAt: new Date(v.updated_at),
@@ -186,7 +186,7 @@ export const useMutateAppPage = () => {
         pageId: values.pageId,
         updated: {
           path: values.path,
-          title: values.title,
+          title: values.title || '',
           editor_id: values.editorId,
           craft_data: values.craftData,
           is_deleted: values.isDeleted,

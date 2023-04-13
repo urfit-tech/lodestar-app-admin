@@ -1,8 +1,8 @@
 import { EditOutlined, MoreOutlined, WarningOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Checkbox, Dropdown, Form, Menu, message, Modal, Skeleton, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import { flatten } from 'ramda'
 import React, { useState } from 'react'
@@ -142,7 +142,7 @@ const ExerciseAdminModal: React.FC<{
         updateExam({
           variables: {
             programContentId: programContent.id,
-            title: values.title,
+            title: values.title || '',
             publishedAt: values.publishedAt
               ? new Date(values.publishedAt)
               : values.displayMode !== 'conceal'
@@ -181,7 +181,7 @@ const ExerciseAdminModal: React.FC<{
         updateExamProgramContent({
           variables: {
             programContentId: programContent.id,
-            title: values.title,
+            title: values.title || '',
             isNotifyUpdate: values.isNotifyUpdate,
             notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
             displayMode: values.displayMode,
@@ -219,7 +219,7 @@ const ExerciseAdminModal: React.FC<{
         updateExam({
           variables: {
             programContentId: programContent.id,
-            title: values.title,
+            title: values.title || '',
             publishedAt: values.publishedAt
               ? new Date(values.publishedAt)
               : values.displayMode !== 'conceal'
@@ -247,7 +247,7 @@ const ExerciseAdminModal: React.FC<{
         updateExamProgramContent({
           variables: {
             programContentId: programContent.id,
-            title: values.title,
+            title: values.title || '',
             isNotifyUpdate: values.isNotifyUpdate,
             notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
             displayMode: values.displayMode,
@@ -293,7 +293,7 @@ const ExerciseAdminModal: React.FC<{
         updateExamProgramContent({
           variables: {
             programContentId: programContent.id,
-            title: values.title,
+            title: values.title || '',
             isNotifyUpdate: values.isNotifyUpdate,
             notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
             displayMode: values.displayMode,
@@ -325,7 +325,7 @@ const ExerciseAdminModal: React.FC<{
         updateExamProgramContent({
           variables: {
             programContentId: programContent.id,
-            title: values.title,
+            title: values.title || '',
             isNotifyUpdate: values.isNotifyUpdate,
             notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
             displayMode: values.displayMode,
@@ -371,7 +371,7 @@ const ExerciseAdminModal: React.FC<{
           form={form}
           layout="vertical"
           initialValues={{
-            title: programContent.title,
+            title: programContent.title || '',
             planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
             publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
             displayMode: programContent.displayMode,

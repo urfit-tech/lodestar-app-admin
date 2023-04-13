@@ -1,9 +1,9 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, Input, message, Skeleton, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { uploadFile } from 'lodestar-app-element/src/helpers'
@@ -73,7 +73,7 @@ const ProjectIntroForm: React.FC<{
     updateProjectIntro({
       variables: {
         projectId: project.id,
-        abstract: values.abstract,
+        abstract: values.abstract || '',
         introduction: values.introduction?.getCurrentContent().hasText() ? values.introduction.toRAW() : null,
         introductionDesktop: values.introductionDesktop?.getCurrentContent().hasText()
           ? values.introductionDesktop.toRAW()
@@ -125,7 +125,7 @@ const ProjectIntroForm: React.FC<{
       wrapperCol={{ md: { span: 13 } }}
       initialValues={{
         coverUrl: project.coverType === 'video' ? project.coverUrl : null,
-        abstract: project.abstract,
+        abstract: project.abstract || '',
         introduction: BraftEditor.createEditorState(project.introduction),
         introductionDesktop: BraftEditor.createEditorState(project.introductionDesktop),
       }}

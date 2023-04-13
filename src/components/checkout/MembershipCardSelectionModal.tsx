@@ -53,7 +53,7 @@ const MembershipCardSelectionModal: React.FC<MembershipCardSelectionModalProps> 
               onSelect && onSelect(membershipCard.card.id)
               setSelectedMembershipCard({
                 id: membershipCard.card.id,
-                title: membershipCard.card.title,
+                title: membershipCard.card.title || '',
               })
               setVisible(false)
             }}

@@ -231,7 +231,7 @@ const ProgramContentAdminModal: React.FC<{
         variables: {
           programContentId: programContent.id,
           price: null,
-          title: values.title,
+          title: values.title || '',
           duration: values.contentBodyType === 'audio' ? audioDuration : values.duration,
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
@@ -258,14 +258,14 @@ const ProgramContentAdminModal: React.FC<{
                 target: programContent.id,
                 app_id: appId,
                 author_id: currentMemberId,
-                name: externalVideoInfo.title,
-                filename: externalVideoInfo.title,
+                name: externalVideoInfo.title || '',
+                filename: externalVideoInfo.title || '',
                 thumbnail_url: externalVideoInfo.thumbnailUrl,
                 content_type: `video/${contentTypeFormat(externalVideoInfo?.source || '')}`,
                 duration: values.duration,
                 data: {
                   id: externalVideoInfo.id,
-                  source: externalVideoInfo.source,
+                  source: externalVideoInfo.source || null,
                   url: externalVideoInfo.url,
                 },
               },
@@ -339,7 +339,7 @@ const ProgramContentAdminModal: React.FC<{
               videoAttachment: last(programContent.videos),
               publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
               isNotifyUpdate: programContent.isNotifyUpdate,
-              title: programContent.title,
+              title: programContent.title || '',
               planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
               duration: programContent.duration || 0,
               video: programContentBody.data?.video,
@@ -480,9 +480,9 @@ const ProgramContentAdminModal: React.FC<{
                                     id: id,
                                     status: 'success',
                                     source: externalVideoInfo.source,
-                                    thumbnailUrl: res.data?.thumbnail_url,
+                                    thumbnailUrl: res.data?.thumbnail_url || null,
                                     url: e.target.value,
-                                    title: res.data?.title,
+                                    title: res.data?.title || '',
                                   })
                                 }
                               }}

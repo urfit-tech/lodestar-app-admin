@@ -1,7 +1,7 @@
 import { DragOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
@@ -52,7 +52,7 @@ const ProgramStructureAdminModal: React.FC<{
           programContentSections: sections.map((section, idx) => ({
             id: section.id,
             program_id: program.id,
-            title: section.title,
+            title: section.title || '',
             position: idx,
           })),
         },
@@ -62,7 +62,7 @@ const ProgramStructureAdminModal: React.FC<{
           programContents: sections.flatMap(section =>
             section.programContents.map((content, idx) => ({
               id: content.id,
-              title: content.title,
+              title: content.title || '',
               position: idx,
               content_section_id: section.id,
               display_mode: content.displayMode,

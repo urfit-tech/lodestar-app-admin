@@ -95,12 +95,12 @@ const VoucherPlanAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: voucherPlan?.title,
+          title: voucherPlan?.title || '',
           voucherPlanProducts: voucherPlan?.productIds || [],
           productQuantityLimit: voucherPlan?.productQuantityLimit || 1,
           startedAt: voucherPlan?.startedAt ? moment(voucherPlan.startedAt) : null,
           endedAt: voucherPlan?.endedAt ? moment(voucherPlan.endedAt) : null,
-          description: voucherPlan?.description,
+          description: voucherPlan?.description || '',
           isTransferable: !!voucherPlan?.isTransferable,
           sale: voucherPlan?.sale,
         }}

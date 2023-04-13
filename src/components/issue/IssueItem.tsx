@@ -1,9 +1,9 @@
 import { HeartFilled, HeartOutlined, MessageOutlined, MoreOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Dropdown, Form, Input, Menu, Tag, Typography } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -146,7 +146,7 @@ const IssueItem: React.FC<{
     updateIssue({
       variables: {
         issueId,
-        title: values.title,
+        title: values.title || '',
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })

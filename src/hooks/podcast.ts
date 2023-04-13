@@ -1,5 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { useMemo } from 'react'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
 import hasura from '../hasura'
@@ -66,8 +66,8 @@ export const usePodcastProgramCollection = (memberId?: string) => {
       ? []
       : data.podcast_program.map(podcastProgram => ({
           id: podcastProgram.id,
-          coverUrl: podcastProgram.cover_url,
-          title: podcastProgram.title,
+          coverUrl: podcastProgram.cover_url || null,
+          title: podcastProgram.title || '',
           instructorName: podcastProgram.podcast_program_roles.length
             ? podcastProgram.podcast_program_roles[0].member?.name ||
               podcastProgram.podcast_program_roles[0].member?.username ||
@@ -162,16 +162,16 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
 
     return {
       id: data.podcast_program_by_pk.id,
-      title: data.podcast_program_by_pk.title,
-      contentType: data.podcast_program_by_pk.content_type,
-      filename: data.podcast_program_by_pk.filename,
+      title: data.podcast_program_by_pk.title || '',
+      contentType: data.podcast_program_by_pk.content_type || null,
+      filename: data.podcast_program_by_pk.filename || null,
       duration: data.podcast_program_by_pk.duration,
       durationSecond: data.podcast_program_by_pk.duration_second,
       description: data.podcast_program_by_pk.podcast_program_bodies[0]
-        ? data.podcast_program_by_pk.podcast_program_bodies[0].description
-        : null,
-      coverUrl: data.podcast_program_by_pk.cover_url,
-      abstract: data.podcast_program_by_pk.abstract,
+        ? data.podcast_program_by_pk.podcast_program_bodies[0].description || ''
+        : '',
+      coverUrl: data.podcast_program_by_pk.cover_url || null,
+      abstract: data.podcast_program_by_pk.abstract || '',
       listPrice: data.podcast_program_by_pk.list_price,
       salePrice: data.podcast_program_by_pk.sale_price,
       soldAt: data.podcast_program_by_pk.sold_at,

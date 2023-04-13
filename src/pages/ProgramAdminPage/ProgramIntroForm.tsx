@@ -1,8 +1,8 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -40,7 +40,7 @@ const ProgramIntroForm: React.FC<{
     updateProgramIntro({
       variables: {
         programId: program.id,
-        abstract: values.abstract,
+        abstract: values.abstract || '',
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
         coverVideoUrl: values.coverVideoUrl,
       },
@@ -62,7 +62,7 @@ const ProgramIntroForm: React.FC<{
       wrapperCol={{ md: { span: 10 } }}
       initialValues={{
         coverVideoUrl: program.coverVideoUrl,
-        abstract: program.abstract,
+        abstract: program.abstract || '',
         description: BraftEditor.createEditorState(program.description),
       }}
       onFinish={handleSubmit}

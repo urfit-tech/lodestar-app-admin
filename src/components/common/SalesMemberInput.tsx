@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Spin } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import hasura from '../../hasura'
@@ -27,7 +27,7 @@ const SalesMemberInput: React.FC<{
       allowClear
       members={data?.member?.map(v => ({
         id: v.id,
-        avatarUrl: v.picture_url,
+        avatarUrl: v.picture_url || null,
         name: v.name,
         username: v.username,
         email: v.email,

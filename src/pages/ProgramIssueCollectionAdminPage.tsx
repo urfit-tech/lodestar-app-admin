@@ -1,7 +1,7 @@
 import { BookFilled } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Select, Skeleton } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -138,8 +138,8 @@ const useGetCreatorProgramIssue = (memberId: string | null, selectedProgramId: s
       ? []
       : data.issue.map(issue => ({
           id: issue.id,
-          title: issue.title,
-          description: issue.description,
+          title: issue.title || '',
+          description: issue.description || '',
           solvedAt: issue.solved_at ? new Date(issue.solved_at) : null,
           createdAt: new Date(issue.created_at),
           issueMemberId: issue.member_id,

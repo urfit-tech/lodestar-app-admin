@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { isEmpty } from 'lodash'
 import { Moment } from 'moment'
 import { sum } from 'ramda'
@@ -213,15 +213,15 @@ export const useMemberAdmin = (memberId: string) => {
       ? null
       : {
           id: data.member_by_pk.id,
-          avatarUrl: data.member_by_pk.picture_url,
+          avatarUrl: data.member_by_pk.picture_url || null,
           username: data.member_by_pk.username,
           name: data.member_by_pk.name,
           email: data.member_by_pk.email,
           star: data.member_by_pk.star,
           role: data.member_by_pk.role as UserRole,
-          title: data.member_by_pk.title,
-          description: data.member_by_pk.description,
-          abstract: data.member_by_pk.abstract,
+          title: data.member_by_pk.title || '',
+          description: data.member_by_pk.description || '',
+          abstract: data.member_by_pk.abstract || '',
           createdAt: new Date(data.member_by_pk.created_at),
           loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
           assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
@@ -230,7 +230,7 @@ export const useMemberAdmin = (memberId: string) => {
                 id: data.member_by_pk.manager.id,
                 email: data.member_by_pk.manager.email,
                 name: data.member_by_pk.manager.name,
-                avatarUrl: data.member_by_pk.manager.picture_url,
+                avatarUrl: data.member_by_pk.manager.picture_url || null,
               }
             : null,
           tags: data.member_by_pk.member_tags.map(v => v.tag_name),
@@ -241,7 +241,7 @@ export const useMemberAdmin = (memberId: string) => {
                 author: {
                   name: data.member_by_pk.member_notes[0].author.name,
                 },
-                description: data.member_by_pk.member_notes[0].description,
+                description: data.member_by_pk.member_notes[0].description || '',
                 rejectedAt: new Date(data.member_by_pk.member_notes[0].rejected_at),
               }
             : null,
@@ -253,8 +253,8 @@ export const useMemberAdmin = (memberId: string) => {
             },
             couponPlan: {
               id: v.coupon_code.coupon_plan.id,
-              title: v.coupon_code.coupon_plan.title,
-              description: v.coupon_code.coupon_plan.description,
+              title: v.coupon_code.coupon_plan.title || '',
+              description: v.coupon_code.coupon_plan.description || '',
               scope: v.coupon_code.coupon_plan.scope,
               type:
                 v.coupon_code.coupon_plan.type === 1 ? 'cash' : v.coupon_code.coupon_plan.type === 2 ? 'percent' : null,
@@ -435,7 +435,7 @@ export const useMemberNotesAdmin = (
           description
           metadata
           note
-          member_note_attachments {
+          member_note_attachments(where: { data: { _is_null: false } }) {
             attachment_id
             data
             options
@@ -461,10 +461,10 @@ export const useMemberNotesAdmin = (
       id: v.id,
       createdAt: new Date(v.created_at),
       type: v.type as NoteAdminProps['type'],
-      status: v.status,
+      status: v.status || null,
       author: {
         id: v.author.id,
-        pictureUrl: v.author.picture_url,
+        pictureUrl: v.author.picture_url || null,
         name: v.author.name,
       },
       manager: v.member?.manager
@@ -476,7 +476,7 @@ export const useMemberNotesAdmin = (
       member: v.member
         ? {
             id: v.member.id,
-            pictureUrl: v.member.picture_url,
+            pictureUrl: v.member.picture_url || null,
             name: v.member.name || v.member.username,
             email: v.member.email,
           }
@@ -492,9 +492,9 @@ export const useMemberNotesAdmin = (
         sum(v.member?.order_logs.map(u => u.order_discounts_aggregate.aggregate?.sum?.price || 0) || []),
       duration: v.duration || 0,
       audioFilePath: v.metadata?.recordfile || null,
-      description: v.description,
+      description: v.description || '',
       metadata: v.metadata,
-      note: v.note,
+      note: v.note || '',
       attachments: v.member_note_attachments.map(u => ({
         id: u.attachment_id,
         data: u.data,
@@ -941,14 +941,14 @@ export const useMemberCollection = (filter?: {
       ? []
       : data.member.map(v => ({
           id: v.id,
-          avatarUrl: v.picture_url,
+          avatarUrl: v.picture_url || null,
           name: v.name,
           username: v.username,
           email: v.email,
           role: v.role as UserRole,
           createdAt: v.created_at ? new Date(v.created_at) : null,
           loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-          manager: v.manager,
+          manager: v.manager || null,
           assignedAt: v.assigned_at ? new Date(v.assigned_at) : null,
           phones: v.member_phones.map(v => v.phone),
           consumption: sum(
@@ -1029,7 +1029,7 @@ export const useMemberSummaryCollection = () => {
       ? []
       : data.member.map(member => ({
           id: member.id,
-          avatarUrl: member.picture_url,
+          avatarUrl: member.picture_url || null,
           name: member.name,
           username: member.username,
           email: member.email,

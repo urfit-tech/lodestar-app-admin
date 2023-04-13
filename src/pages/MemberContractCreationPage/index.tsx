@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
 import { sum, uniqBy } from 'ramda'
@@ -416,11 +416,19 @@ const useContractInfo = (appId: string, memberId: string) => {
           })),
         }
       : null
-    info.properties = data.property
-    info.contracts = data.contract
+    info.properties = data.property.map(p => ({
+      id: p.id,
+      name: p.name,
+      placeholder: p.placeholder || null,
+    }))
+    info.contracts = data.contract.map(c => ({
+      id: c.id,
+      name: c.name,
+      options: c.options,
+    }))
     info.products = data.project_plan.map(v => ({
       id: v.id,
-      name: v.title,
+      name: v.title || '',
       price: v.list_price,
       addonPrice: v.options?.addonPrice || 0,
       appointments: v.options?.appointments || 0,
@@ -432,8 +440,8 @@ const useContractInfo = (appId: string, memberId: string) => {
       .map(v =>
         v.creator
           ? {
-              id: v.creator.id,
-              name: v.creator.name,
+              id: v.creator.id || null,
+              name: v.creator.name || null,
             }
           : null,
       )

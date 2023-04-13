@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/client'
 import { Button, Typography } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -46,7 +46,7 @@ const CategoryAdminCard: React.FC<{
               data: newCategories.map((category, index) => ({
                 id: category.id,
                 app_id: app.id,
-                name: category.description,
+                name: category.description || '',
                 class: classType,
                 position: index,
               })),
@@ -60,7 +60,7 @@ const CategoryAdminCard: React.FC<{
           updateCategoryName({
             variables: {
               categoryId: item.id,
-              name: item.description,
+              name: item.description || '',
             },
           })
             .then(() => refetch())

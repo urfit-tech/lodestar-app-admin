@@ -1,8 +1,8 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { CustomRatioImage } from 'lodestar-app-element/src/components/common/Image'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -118,7 +118,7 @@ const useCertificate = (condition: hasura.GET_CERTIFICATE_PREVIEWVariables['cond
   const certificates: CertificateColumn[] =
     data?.certificate.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       certificateTemplate: {
         id: v.certificate_template?.id,
         template: v.certificate_template?.template || '',

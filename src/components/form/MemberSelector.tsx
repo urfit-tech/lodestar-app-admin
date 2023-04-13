@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import Select, { SelectProps } from 'antd/lib/select'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -220,7 +220,7 @@ const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTI
     return (
       data?.member_public.map(member => ({
         id: member.id || '',
-        avatarUrl: member.picture_url,
+        avatarUrl: member.picture_url || null,
         name: member.name || member.username || '',
         username: member.username || '',
         email: member.email || '',

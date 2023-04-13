@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { DatePicker, Form, Input, Radio, Select } from 'antd'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React from 'react'
@@ -92,7 +92,7 @@ const useGiftPlans = (appId: string) => {
   const giftPlans: Pick<GiftPlan, 'id' | 'title'>[] =
     data?.gift_plan.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
     })) || []
 
   return {

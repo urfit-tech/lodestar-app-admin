@@ -1,8 +1,8 @@
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Dropdown, Input, Menu, message, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -232,7 +232,7 @@ const useQuestionGroups = (condition: hasura.GET_QUESTION_GROUPSVariables['condi
   const questionGroups: QuestionGroupColumn[] =
     data?.question_group.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       count: v?.questions_aggregate?.aggregate?.count || 0,
       modifierId: v.modifier_id,
       modifier: v.modifier.name,
