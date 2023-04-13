@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminBlock, AdminBlockTitle } from '../../components/admin'
@@ -115,7 +114,11 @@ const ProgramRoleAdminPane: React.FC<{
         >
           <Form layout="vertical" colon={false} hideRequiredMark>
             <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.selectInstructor)}>
-              <ContentCreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
+              <ContentCreatorSelector
+                value={selectedMemberId || ''}
+                onChange={value => setSelectedMemberId(value)}
+                allowedPermissions={['PROGRAM_ADMIN', 'PROGRAM_NORMAL']}
+              />
             </Form.Item>
           </Form>
         </AdminModal>
