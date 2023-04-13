@@ -1,9 +1,8 @@
 import Icon, { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
-import gql from 'graphql-tag'
 import { debounce } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -304,12 +303,12 @@ const usePortfolioVideoUrlCount = (projectId: string | undefined, videoUrl: stri
 
   const originalSourceProject = {
     id: data?.project_aggregate?.nodes[0]?.id,
-    title: data?.project_aggregate?.nodes[0]?.title,
+    title: data?.project_aggregate?.nodes[0]?.title || '',
     creator: {
       id: data?.project_aggregate?.nodes[0]?.creator?.id,
       name: data?.project_aggregate?.nodes[0]?.creator?.name,
     },
-    coverUrl: data?.project_aggregate?.nodes[0]?.preview_url,
+    coverUrl: data?.project_aggregate?.nodes[0]?.preview_url || null,
   }
 
   return {

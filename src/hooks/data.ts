@@ -1,8 +1,8 @@
 import { DeepPick } from 'ts-deep-pick'
 import { useMemo, useState, useEffect, useCallback } from 'react'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { UploadFile } from 'antd/lib/upload/interface'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { useIntl } from 'react-intl'
 import axios, { AxiosRequestConfig } from 'axios'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -119,11 +119,11 @@ export const useNotifications = (memberId: string, limit?: number) => {
       ? []
       : data.notification.map(notification => ({
           id: notification.id,
-          description: notification.description,
-          type: notification.type,
-          referenceUrl: notification.reference_url,
-          extra: notification.extra,
-          avatar: notification.avatar,
+          description: notification.description || '',
+          type: notification.type || null,
+          referenceUrl: notification.reference_url || null,
+          extra: notification.extra || null,
+          avatar: notification.avatar || null,
           readAt: notification.read_at && new Date(notification.read_at),
           updatedAt: new Date(notification.updated_at),
         }))
@@ -187,10 +187,10 @@ export const useProductInventoryLog = (productId: string) => {
           ...data.product_inventory.map(productInventory => ({
             id: productInventory.id,
             createdAt: new Date(productInventory.created_at),
-            status: productInventory.status,
-            specification: productInventory.specification,
+            status: productInventory.status || null,
+            specification: productInventory.specification || null,
             quantity: productInventory.quantity,
-            comment: productInventory.comment,
+            comment: productInventory.comment || '',
           })),
         ]
 
@@ -316,7 +316,7 @@ export const useOrderPhysicalProductLog = (memberId?: string) => {
             updatedAt: v.updated_at,
             lastPaidAt: v.last_paid_at,
             deliveredAt: v.delivered_at,
-            deliverMessage: v.deliver_message,
+            deliverMessage: v.deliver_message || null,
             shipping: v.shipping,
             invoice: v.invoice_options,
             orderPhysicalProducts: v.order_products.map(orderPhysicalProduct => ({
@@ -325,7 +325,7 @@ export const useOrderPhysicalProductLog = (memberId?: string) => {
               name: orderPhysicalProduct.name,
               productId: orderPhysicalProduct.product_id.split('_')[1],
               quantity: orderPhysicalProduct.options?.quantity || 1,
-              description: orderPhysicalProduct.description,
+              description: orderPhysicalProduct.description || '',
               files: orderPhysicalProduct.order_product_files.map(v => v.data),
               memberShopId: orderPhysicalProduct.product.product_owner?.target || undefined,
             })),
@@ -545,7 +545,7 @@ export const useSimpleProduct = (
       ? {
           id: data.card_by_pk.id,
           productType: 'Card',
-          title: data.card_by_pk.title,
+          title: data.card_by_pk.title || '',
           listPrice: 0,
         }
       : data.project_plan_by_pk
@@ -567,8 +567,8 @@ export const useSimpleProduct = (
       ? {
           id: data.podcast_program_by_pk.id,
           productType: 'PodcastProgram',
-          title: data.podcast_program_by_pk.title,
-          coverUrl: data.podcast_program_by_pk.cover_url,
+          title: data.podcast_program_by_pk.title || '',
+          coverUrl: data.podcast_program_by_pk.cover_url || null,
           listPrice: data.podcast_program_by_pk.list_price,
           salePrice:
             data.podcast_program_by_pk.sold_at && new Date(data.podcast_program_by_pk.sold_at).getTime() > Date.now()
@@ -588,8 +588,8 @@ export const useSimpleProduct = (
       ? {
           id: data.appointment_plan_by_pk.id,
           productType: 'AppointmentPlan',
-          title: data.appointment_plan_by_pk.title,
-          coverUrl: data.appointment_plan_by_pk.creator && data.appointment_plan_by_pk.creator.picture_url,
+          title: data.appointment_plan_by_pk.title || '',
+          coverUrl: data.appointment_plan_by_pk.creator && data.appointment_plan_by_pk.creator.picture_url || null,
           startedAt: data.appointment_plan_by_pk.appointment_periods[0]?.started_at,
           endedAt: data.appointment_plan_by_pk.appointment_periods[0]?.ended_at,
         }
@@ -597,7 +597,7 @@ export const useSimpleProduct = (
       ? {
           id: data.merchandise_by_pk.id,
           productType: 'Merchandise',
-          title: data.merchandise_by_pk.title,
+          title: data.merchandise_by_pk.title || '',
           listPrice: data.merchandise_by_pk.list_price,
           coverUrl: data.merchandise_by_pk.merchandise_imgs[0]?.url,
           quantity: options.quantity,
@@ -626,7 +626,7 @@ export const useSimpleProduct = (
           productType: 'ActivityTicket',
           title: `${data.activity_ticket_by_pk.activity.title} - ${data.activity_ticket_by_pk.title}`,
           listPrice: data.activity_ticket_by_pk.price,
-          coverUrl: data.activity_ticket_by_pk.activity.cover_url,
+          coverUrl: data.activity_ticket_by_pk.activity.cover_url || null,
         }
       : {
           id: targetId,
@@ -790,8 +790,8 @@ export const useCouponCollection = (memberId: string) => {
                   : 'cash',
               constraint: coupon.coupon_code.coupon_plan.constraint,
               amount: coupon.coupon_code.coupon_plan.amount,
-              title: coupon.coupon_code.coupon_plan.title,
-              description: coupon.coupon_code.coupon_plan.description,
+              title: coupon.coupon_code.coupon_plan.title || '',
+              description: coupon.coupon_code.coupon_plan.description || '',
               count: 0,
               remaining: 0,
               scope: coupon.coupon_code.coupon_plan.scope,
@@ -905,7 +905,7 @@ export const useAttachments = (options?: { contentType?: string; status?: string
               name: 'unknown',
             },
         contentType: v.content_type || 'application/octet-stream',
-        thumbnailUrl: v.thumbnail_url,
+        thumbnailUrl: v.thumbnail_url || null,
         createdAt: v.created_at,
         updatedAt: v.updated_at,
         options: v.options,
@@ -1155,8 +1155,8 @@ export const useAllBriefProductCollection = () => {
       : {
           ProgramPlan: data.program_plan.map(programPlan => ({
             productId: `ProgramPlan_${programPlan.id}`,
-            title: programPlan.title,
-            parent: programPlan.program.title,
+            title: programPlan.title || '',
+            parent: programPlan.program.title || '',
             publishedAt: programPlan.published_at ? new Date(programPlan.published_at) : null,
             tag: programPlan.auto_renewed
               ? formatMessage(commonMessages.ui.subscriptionPlan)
@@ -1167,15 +1167,15 @@ export const useAllBriefProductCollection = () => {
           ActivityTicket: enabledModules.activity
             ? data.activity_ticket.map(activityTicket => ({
                 productId: `ActivityTicket_${activityTicket.id}`,
-                title: activityTicket.title,
-                parent: activityTicket.activity.title,
+                title: activityTicket.title || '',
+                parent: activityTicket.activity.title || '',
                 publishedAt: activityTicket.started_at ? new Date(activityTicket.started_at) : null,
               }))
             : undefined,
           PodcastProgram: enabledModules.podcast
             ? data.podcast_program.map(podcastProgram => ({
                 productId: `PodcastProgram_${podcastProgram.id}`,
-                title: podcastProgram.title,
+                title: podcastProgram.title || '',
                 publishedAt: podcastProgram.published_at ? new Date(podcastProgram.published_at) : null,
               }))
             : undefined,
@@ -1189,7 +1189,7 @@ export const useAllBriefProductCollection = () => {
           AppointmentPlan: enabledModules.appointment
             ? data.appointment_plan.map(appointmentPlan => ({
                 productId: `AppointmentPlan_${appointmentPlan.id}`,
-                title: appointmentPlan.title,
+                title: appointmentPlan.title || '',
                 parent: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
                 publishedAt: appointmentPlan.published_at ? new Date(appointmentPlan.published_at) : null,
               }))
@@ -1197,29 +1197,29 @@ export const useAllBriefProductCollection = () => {
           MerchandiseSpec: enabledModules.merchandise
             ? data.merchandise_spec.map(merchandiseSpec => ({
                 productId: `MerchandiseSpec_${merchandiseSpec.id}`,
-                title: merchandiseSpec.title,
-                parent: merchandiseSpec.merchandise.title,
+                title: merchandiseSpec.title || '',
+                parent: merchandiseSpec.merchandise.title || '',
               }))
             : undefined,
           // todo: add module check of project
           ProjectPlan: data.project_plan.map(projectPlan => ({
             productId: `ProjectPlan_${projectPlan.id}`,
-            title: projectPlan.title,
-            parent: projectPlan.project.title,
+            title: projectPlan.title || '',
+            parent: projectPlan.project.title || '',
             publishedAt: projectPlan.published_at ? new Date(projectPlan.published_at) : null,
           })),
           ProgramPackagePlan: enabledModules.program_package
             ? data.program_package_plan.map(programPackagePlan => ({
                 productId: `ProgramPackagePlan_${programPackagePlan.id}`,
-                title: programPackagePlan.title,
-                parent: programPackagePlan.program_package.title,
+                title: programPackagePlan.title || '',
+                parent: programPackagePlan.program_package.title || '',
                 publishedAt: programPackagePlan.published_at ? new Date(programPackagePlan.published_at) : null,
               }))
             : undefined,
           VoucherPlan: enabledModules.sale_voucher
             ? data.voucher_plan.map(v => ({
                 productId: `VoucherPlan_${v.id}`,
-                title: v.title,
+                title: v.title || '',
               }))
             : undefined,
         }

@@ -1,7 +1,6 @@
 import { DownloadOutlined } from '@ant-design/icons'
-import { useApolloClient } from '@apollo/react-hooks'
+import { gql, useApolloClient } from '@apollo/client'
 import { Button, Col, DatePicker, Form, Input, message, Row, Select } from 'antd'
-import gql from 'graphql-tag'
 import moment from 'moment'
 import { flatten, uniq } from 'ramda'
 import { RangeValue } from 'rc-picker/lib/interface'

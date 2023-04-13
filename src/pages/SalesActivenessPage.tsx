@@ -1,14 +1,14 @@
 import { BarChartOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { DatePicker, Form, Table } from 'antd'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from '../components/admin'
-import AdminCard from '../components/admin/AdminCard'
-import AdminLayout from '../components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import { groupBy, map, mapObjIndexed, split, sum, toPairs } from 'ramda'
 import React, { useState } from 'react'
+import { AdminPageTitle } from '../components/admin'
+import AdminCard from '../components/admin/AdminCard'
+import AdminLayout from '../components/layout/AdminLayout'
 import hasura from '../hasura'
 import ForbiddenPage from './ForbiddenPage'
 
@@ -494,73 +494,73 @@ const useSalesLogsCollection = (filter: { startedAt: Date; endedAt: Date }) => {
     ) || {}
   const firsthandLogs: LogsProps[] =
     data?.firsthand.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const secondhandLogs: LogsProps[] =
     data?.secondhand.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const attendLogs: LogsProps[] =
     data?.attend.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
       startedAt: new Date(v.started_at),
       endedAt: new Date(v.ended_at),
     })) || []
   const validSpeakingLogs: LogsProps[] =
     data?.validSpeaking.map(w => ({
-      id: w.id,
-      salesId: w.sales_id,
+      id: w.id || null,
+      salesId: w.sales_id || null,
       duration: w.duration || 0,
     })) || []
   const dialLogs: LogsProps[] =
     data?.dial.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const validGetThroughLogs: LogsProps[] =
     data?.validGetThrough.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const invalidNumberLogs: LogsProps[] =
     data?.invalidNumber.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const rejectedLogs: LogsProps[] =
     data?.rejected.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const keepInTouchLogs: LogsProps[] =
     data?.keepInTouch.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const invitedDemoLogs: LogsProps[] =
     data?.invitedDemo.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
     })) || []
   const demonstratedLogs: LogsProps[] =
     data?.demonstrated.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
       duration: v.duration || 0,
     })) || []
   const performanceLogs: LogsProps[] =
     data?.performance.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
       price: v.price,
     })) || []
   const revokedLogs: LogsProps[] =
     data?.revoked.map(v => ({
-      id: v.id,
-      salesId: v.sales_id,
+      id: v.id || null,
+      salesId: v.sales_id || null,
       price: v.price,
     })) || []
 

@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Radio, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -35,7 +34,7 @@ const CertificateBasicForm: React.FC<{
     updateCertificateBasic({
       variables: {
         certificateId: certificate.id,
-        title: values.title,
+        title: values.title || '',
         certificateTemplateId: values.certificateTemplate,
         qualification: values.qualification,
       },
@@ -56,7 +55,7 @@ const CertificateBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        title: certificate.title,
+        title: certificate.title || '',
         certificateTemplate: certificate.certificateTemplate.id,
         qualification: certificate.qualification,
       }}

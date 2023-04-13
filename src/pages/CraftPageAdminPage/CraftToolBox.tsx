@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Element, SerializedNodes, useEditor, UserComponent } from '@craftjs/core'
 import { Select } from 'antd'
-import gql from 'graphql-tag'
 import * as CraftElement from 'lodestar-app-element/src/components/common/CraftElement'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useCallback, useMemo, useState } from 'react'
@@ -315,7 +314,7 @@ const useTemplateElement = () => {
       data?.app_page_template.map(apt => ({
         id: apt.id,
         name: apt.name,
-        coverUrl: apt.cover_url,
+        coverUrl: apt.cover_url || null,
         node: generateTemplateElement(apt.root_node_id, apt.data),
       })) || [],
     [data, generateTemplateElement],

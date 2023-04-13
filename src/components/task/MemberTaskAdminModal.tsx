@@ -1,9 +1,8 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Dropdown, Form, Input, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
-import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
@@ -70,14 +69,14 @@ const MemberTaskAdminModal: React.FC<
               data: [
                 {
                   id: memberTask.id,
-                  title: values.title,
+                  title: values.title || '',
                   category_id: values.categoryId,
                   member_id: values.memberId,
                   executor_id: values.executorId,
                   priority: values.priority,
                   status: values.status,
                   due_at: values.dueAt?.toDate(),
-                  description: values.description,
+                  description: values.description || '',
                   author_id: currentMemberId,
                 },
               ],
@@ -94,14 +93,14 @@ const MemberTaskAdminModal: React.FC<
             variables: {
               data: [
                 {
-                  title: values.title,
+                  title: values.title || '',
                   category_id: values.categoryId,
                   member_id: values.memberId,
                   executor_id: values.executorId,
                   priority: values.priority,
                   status: values.status,
                   due_at: values.dueAt?.toDate(),
-                  description: values.description,
+                  description: values.description || '',
                   author_id: currentMemberId,
                 },
               ],
@@ -168,14 +167,14 @@ const MemberTaskAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: memberTask?.title,
+          title: memberTask?.title || '',
           categoryId: memberTask?.category?.id,
           memberId: memberTask?.member?.id || initialMemberId,
           executorId: memberTask?.executor?.id || initialExecutorId,
           priority: memberTask?.priority || 'high',
           status: memberTask?.status || 'pending',
           dueAt: memberTask?.dueAt ? moment(memberTask.dueAt) : null,
-          description: memberTask?.description,
+          description: memberTask?.description || '',
         }}
       >
         <Form.Item

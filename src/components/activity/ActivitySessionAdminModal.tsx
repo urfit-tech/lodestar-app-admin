@@ -53,7 +53,7 @@ const ActivitySessionAdminModal: React.FC<
         const values = form.getFieldsValue()
         onSubmit(
           {
-            title: values.title,
+            title: values.title || '',
             startedAt: values.startedAt.toDate(),
             endedAt: values.endedAt.toDate(),
             location: values.offlineLocation,

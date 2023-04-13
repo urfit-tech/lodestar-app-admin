@@ -1,5 +1,5 @@
-import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useApolloClient, useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { sum } from 'ramda'
 import { useEffect, useState, useMemo } from 'react'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -71,7 +71,7 @@ export const useProgram = (programId: string) => {
                   title
                 }
               }
-              program_content_attachments {
+              program_content_attachments(where: { data: { _is_null: false } }) {
                 attachment_id
                 data
                 options
@@ -152,16 +152,16 @@ export const useProgram = (programId: string) => {
     return {
       id: data.program_by_pk.id,
       appId: data.program_by_pk.app_id,
-      title: data.program_by_pk.title,
-      abstract: data.program_by_pk.abstract,
-      description: data.program_by_pk.description,
-      coverUrl: data.program_by_pk.cover_url,
-      coverMobileUrl: data.program_by_pk.cover_mobile_url,
-      coverThumbnailUrl: data.program_by_pk.cover_thumbnail_url,
-      coverVideoUrl: data.program_by_pk.cover_video_url,
+      title: data.program_by_pk.title || '',
+      abstract: data.program_by_pk.abstract || '',
+      description: data.program_by_pk.description || '',
+      coverUrl: data.program_by_pk.cover_url || null,
+      coverMobileUrl: data.program_by_pk.cover_mobile_url || null,
+      coverThumbnailUrl: data.program_by_pk.cover_thumbnail_url || null,
+      coverVideoUrl: data.program_by_pk.cover_video_url || null,
       publishedAt: data.program_by_pk.published_at && new Date(data.program_by_pk.published_at),
       inAdvance: data.program_by_pk.in_advance,
-      isSoldOut: data.program_by_pk.is_sold_out,
+      isSoldOut: data.program_by_pk.is_sold_out || false,
       supportLocales: data.program_by_pk.support_locales || [],
       metaTag: data.program_by_pk.meta_tag,
       isDeleted: data.program_by_pk.is_deleted,
@@ -172,10 +172,10 @@ export const useProgram = (programId: string) => {
       isEnrolledCountVisible: data.program_by_pk.is_enrolled_count_visible,
       contentSections: data.program_by_pk.program_content_sections.map(pcs => ({
         id: pcs.id,
-        title: pcs.title,
+        title: pcs.title || '',
         programContents: pcs.program_contents.map(pc => ({
           id: pc.id,
-          title: pc.title,
+          title: pc.title || '',
           publishedAt: pc.published_at && new Date(pc.published_at),
           displayMode: pc.display_mode as DisplayMode,
           listPrice: pc.list_price,
@@ -185,7 +185,7 @@ export const useProgram = (programId: string) => {
           notifiedAt: pc.notified_at && new Date(pc.notified_at),
           programPlans: pc.program_content_plans.map(pcp => ({
             id: pcp.program_plan.id,
-            title: pcp.program_plan.title,
+            title: pcp.program_plan.title || '',
           })),
           metadata: pc.metadata,
           programContentBodyData: pc.program_content_body.data,
@@ -211,24 +211,24 @@ export const useProgram = (programId: string) => {
         id: programRole.id,
         name: programRole.name as ProgramRoleName,
         member: {
-          id: programRole.member && programRole.member.id,
-          name: programRole.member && programRole.member.name,
-          pictureUrl: programRole.member && programRole.member.picture_url,
+          id: programRole.member && programRole.member.id || null,
+          name: programRole.member && programRole.member.name || null,
+          pictureUrl: programRole.member && programRole.member.picture_url || null,
         },
       })),
       plans: data.program_by_pk.program_plans.map(programPlan => ({
         id: programPlan.id,
         type: programPlan.type,
-        title: programPlan.title,
-        description: programPlan.description,
+        title: programPlan.title || '',
+        description: programPlan.description || '',
         gains: programPlan.gains,
         salePrice: programPlan.sale_price,
         listPrice: programPlan.list_price,
         discountDownPrice: programPlan.discount_down_price,
         periodAmount: programPlan.period_amount,
-        periodType: programPlan.period_type,
-        remindPeriodAmount: programPlan.remind_period_amount,
-        remindPeriodType: programPlan.remind_period_type,
+        periodType: programPlan.period_type || null,
+        remindPeriodAmount: programPlan.remind_period_amount || null,
+        remindPeriodType: programPlan.remind_period_type || null,
         soldAt: programPlan.sold_at && new Date(programPlan.sold_at),
         currencyId: programPlan.currency_id,
         autoRenewed: programPlan.auto_renewed,
@@ -247,8 +247,8 @@ export const useProgram = (programId: string) => {
         createdAt: new Date(programApproval.created_at),
         updatedAt: new Date(programApproval.updated_at),
         status: programApproval.status as ProgramApprovalProps['status'],
-        description: programApproval.description,
-        feedback: programApproval.feedback,
+        description: programApproval.description || '',
+        feedback: programApproval.feedback || '',
       })),
     }
   }, [data, error, loading])
@@ -298,8 +298,8 @@ export const useProgramContentBody = (programContentId: string) => {
     }
     return {
       id: data.program_content_by_pk.program_content_body.id,
-      type: data.program_content_by_pk.program_content_body.type,
-      description: data.program_content_by_pk.program_content_body.description,
+      type: data.program_content_by_pk.program_content_body.type || null,
+      description: data.program_content_by_pk.program_content_body.description || '',
       data: data.program_content_by_pk.program_content_body.data,
       materials: data.program_content_by_pk.program_content_materials.map(v => ({
         id: v.id,
@@ -384,15 +384,15 @@ export const usePrograms = (options?: {
   }[] =
     data?.program.map(program => ({
       id: program.id,
-      title: program.title,
+      title: program.title || '',
       contentSections:
         program.program_content_sections?.map(v => ({
           id: v.id,
-          title: v.title,
+          title: v.title || '',
           contents:
             v.program_contents?.map(w => ({
               id: w.id,
-              title: w.title,
+              title: w.title || '',
             })) || [],
         })) || [],
     })) || []
@@ -727,7 +727,7 @@ export const useProgramContent = (programContentId: string) => {
               title
             }
           }
-          program_content_attachments {
+          program_content_attachments(where: { data: { _is_null: false } }) {
             attachment_id
             data
             options
@@ -751,7 +751,7 @@ export const useProgramContent = (programContentId: string) => {
     | null = data?.program_content_by_pk
     ? {
         id: data.program_content_by_pk.id,
-        title: data.program_content_by_pk.title,
+        title: data.program_content_by_pk.title || '',
         publishedAt: data.program_content_by_pk.published_at && new Date(data.program_content_by_pk.published_at),
         listPrice: data.program_content_by_pk.list_price,
         duration: data.program_content_by_pk.duration,
@@ -763,7 +763,7 @@ export const useProgramContent = (programContentId: string) => {
         notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
         programPlans: data.program_content_by_pk.program_content_plans.map(pcp => ({
           id: pcp.program_plan.id,
-          title: pcp.program_plan.title,
+          title: pcp.program_plan.title || '',
         })),
         metadata: data.program_content_by_pk.metadata,
         programContentBodyData: data.program_content_by_pk.program_content_body.data,

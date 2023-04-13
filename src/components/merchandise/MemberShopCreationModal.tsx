@@ -2,9 +2,8 @@ import { Form } from '@ant-design/compatible'
 import '@ant-design/compatible/assets/index.css'
 import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Input } from 'antd'
-import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -44,7 +43,7 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
           insertMemberShop({
             variables: {
               memberId: values?.creatorId || currentMemberId,
-              title: values.title,
+              title: values.title || '',
             },
           })
             .then(

@@ -1,7 +1,6 @@
 import { DeleteOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, message } from 'antd'
-import gql from 'graphql-tag'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'

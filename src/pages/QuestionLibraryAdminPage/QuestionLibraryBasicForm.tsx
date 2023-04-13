@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -42,8 +41,8 @@ const QuestionLibraryBasicForm: React.FC<{
         updateQuestionLibraryBasic({
           variables: {
             questionLibraryId: questionLibrary.id,
-            title: values.title,
-            abstract: values.abstract,
+            title: values.title || '',
+            abstract: values.abstract || '',
             modifierId: currentMemberId,
           },
         })
@@ -66,8 +65,8 @@ const QuestionLibraryBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        title: questionLibrary.title,
-        abstract: questionLibrary.abstract,
+        title: questionLibrary.title || '',
+        abstract: questionLibrary.abstract || '',
       }}
       onFinish={handleSubmit}
     >

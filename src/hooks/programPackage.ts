@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { flatten, sum } from 'ramda'
 import hasura from '../hasura'
 import { PeriodType } from '../types/general'
@@ -49,7 +49,7 @@ export const useProgramPackageCollection = () => {
       ? []
       : data.program_package.map(v => ({
           id: v.id,
-          title: v.title,
+          title: v.title || '',
           coverUrl: v?.cover_url || '',
           publishedAt: v.published_at,
           programPackageEnrollment: 0,
@@ -103,7 +103,7 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null,
       ? []
       : data.program_package_plan.map(programPackagePlan => ({
           id: programPackagePlan.id,
-          title: programPackagePlan.title,
+          title: programPackagePlan.title || '',
         }))
 
   return {
@@ -145,7 +145,7 @@ export const useProgramPackageProgramCollection = (programPackageId: string | nu
       ? []
       : data.program_package_program.map(programPackageProgram => ({
           id: programPackageProgram.program.id,
-          title: programPackageProgram.program.title,
+          title: programPackageProgram.program.title || '',
           programPackageProgramId: programPackageProgram.id,
         }))
 
@@ -386,8 +386,8 @@ export const useProgramPackage = (id: string) => {
             id: programPackageProgram.id,
             program: {
               id: programPackageProgram.program.id,
-              title: programPackageProgram.program.title,
-              coverUrl: programPackageProgram.program.cover_url,
+              title: programPackageProgram.program.title || '',
+              coverUrl: programPackageProgram.program.cover_url || null,
               publishedAt: programPackageProgram.program.published_at,
             },
             position: programPackageProgram.position,
@@ -395,13 +395,13 @@ export const useProgramPackage = (id: string) => {
           plans:
             data.program_package_by_pk.program_package_plans.map(plan => ({
               id: plan.id,
-              title: plan.title,
+              title: plan.title || '',
               listPrice: plan.list_price,
               salePrice: plan.sale_price,
               soldAt: plan.sold_at ? new Date(plan.sold_at) : null,
               periodType: plan.period_type as PeriodType,
               periodAmount: plan.period_amount,
-              description: plan.description,
+              description: plan.description || '',
               isSubscription: plan.is_subscription,
               discountDownPrice: plan.discount_down_price,
               publishedAt: plan.published_at ? new Date(plan.published_at) : null,

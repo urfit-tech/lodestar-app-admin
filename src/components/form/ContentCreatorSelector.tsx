@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Spin } from 'antd'
-import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -69,7 +68,7 @@ const useContentCreatorCollection = (condition: hasura.GET_CONTENT_CREATOR_COLLE
       ? []
       : data.member.map(member => ({
           id: member.id,
-          avatarUrl: member.picture_url,
+          avatarUrl: member.picture_url || null,
           name: member.name || member.username,
           username: member.username,
           email: member.email,

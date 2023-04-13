@@ -1,8 +1,7 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -166,7 +165,7 @@ const useGetAvailablePodcastProgramCollection = (appId: string) => {
   }[] =
     data?.podcast_program?.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       publishedAt: v.published_at,
     })) || []
 

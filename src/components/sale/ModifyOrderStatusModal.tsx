@@ -1,7 +1,6 @@
-import { useApolloClient, useMutation } from '@apollo/react-hooks'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, InputNumber, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'

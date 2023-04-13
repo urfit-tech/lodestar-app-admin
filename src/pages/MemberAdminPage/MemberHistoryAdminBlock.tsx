@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Breadcrumb, DatePicker, Slider, Timeline } from 'antd'
-import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import { RangeValue } from 'rc-picker/lib/interface'
 import React, { useState } from 'react'

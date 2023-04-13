@@ -1,5 +1,5 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import {
   Button,
   Checkbox,
@@ -15,7 +15,6 @@ import {
   Steps,
 } from 'antd'
 import { ResultProps } from 'antd/lib/result'
-import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -24,7 +23,6 @@ import CategoryInput from '../../components/common/CategoryInput'
 import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
-import { notEmpty } from '../../helpers'
 import { salesLeadDeliveryPageMessages } from './translation'
 
 type Filter = {

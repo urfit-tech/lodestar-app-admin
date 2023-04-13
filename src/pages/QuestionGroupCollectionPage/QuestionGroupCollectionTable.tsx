@@ -1,8 +1,7 @@
 import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Dropdown, Input, Menu, message, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
 import moment from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -245,9 +244,9 @@ const useQuestionGroupList = (appId: string, condition: hasura.GET_QUESTION_GROU
     v.question_groups.forEach(w => {
       questionGroupList.push({
         id: w.id,
-        title: w.title,
+        title: w.title || '',
         questionLibraryId: v.id,
-        questionLibraryTitle: v.title,
+        questionLibraryTitle: v.title || '',
         count: w.questions_aggregate?.aggregate?.count || 0,
         modifierId: w.modifier_id,
         modifier: w.modifier.name,

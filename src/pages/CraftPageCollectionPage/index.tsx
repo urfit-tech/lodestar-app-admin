@@ -1,6 +1,6 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { gql } from '@apollo/client'
 import { Tabs } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -37,7 +37,7 @@ const CraftPageCollectionPage: React.VFC = () => {
         .filter(appPage => appPage.publishedAt)
         .map(appPage => ({
           id: appPage.id,
-          title: appPage.title,
+          title: appPage.title || '',
           path: appPage.path,
           updatedAt: appPage.updatedAt,
           editorName: appPage.editorName,
@@ -51,7 +51,7 @@ const CraftPageCollectionPage: React.VFC = () => {
         .filter(appPage => !appPage.publishedAt)
         .map(appPage => ({
           id: appPage.id,
-          title: appPage.title,
+          title: appPage.title || '',
           path: appPage.path,
           updatedAt: appPage.updatedAt,
           editorName: appPage.editorName,

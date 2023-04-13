@@ -1,8 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -228,7 +227,7 @@ const useAppointmentPlansAdmin = (condition: hasura.GET_APPOINTMENT_PLAN_COLLECT
         name: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
         abstract: appointmentPlan.creator?.abstract || null,
       },
-      title: appointmentPlan.title,
+      title: appointmentPlan.title || '',
       duration: appointmentPlan.duration,
       listPrice: appointmentPlan.price,
       enrollments: 0,

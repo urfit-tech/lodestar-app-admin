@@ -1,6 +1,6 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { generate } from 'coupon-code'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import { times } from 'ramda'
 import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -85,8 +85,8 @@ export const useCouponPlanCollection = () => {
           //   ) || 0
           return {
             id: couponPlan.id,
-            title: couponPlan.title,
-            description: couponPlan.description,
+            title: couponPlan.title || '',
+            description: couponPlan.description || '',
             scope: couponPlan.scope,
             type: couponPlan.type === 1 ? 'cash' : couponPlan.type === 2 ? 'percent' : null,
             amount: couponPlan.amount,
@@ -249,7 +249,7 @@ export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLL
     data?.voucher_plan.map(v => {
       return {
         id: v.id,
-        title: v.title,
+        title: v.title || '',
         startedAt: v?.started_at || null,
         endedAt: v?.ended_at || null,
         productQuantityLimit: v.product_quantity_limit,

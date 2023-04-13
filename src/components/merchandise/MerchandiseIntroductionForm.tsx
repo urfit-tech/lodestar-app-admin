@@ -1,8 +1,7 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -38,7 +37,7 @@ const MerchandiseIntroductionForm: React.FC<{
     updateMerchandiseIntroduction({
       variables: {
         merchandiseId,
-        abstract: values.abstract,
+        abstract: values.abstract || '',
       },
     })
       .then(() => {
@@ -73,7 +72,7 @@ const MerchandiseIntroductionForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        abstract: merchandise.abstract,
+        abstract: merchandise.abstract || '',
         memberShopId: merchandise.memberShopId,
       }}
       onFinish={handleSubmit}

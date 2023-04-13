@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Checkbox, DatePicker, Form, notification, Select } from 'antd'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment-timezone'

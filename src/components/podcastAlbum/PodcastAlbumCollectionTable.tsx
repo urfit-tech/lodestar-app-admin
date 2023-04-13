@@ -1,8 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
 import { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -186,7 +185,7 @@ const usePodcastAlbumPreviewCollection = (
   const podcastAlbums: Pick<PodcastAlbum, 'id' | 'title' | 'coverUrl' | 'author' | 'publishedAt'>[] =
     data?.podcast_album.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       coverUrl: v.cover_url || '',
       publishedAt: v.published_at,
       author: {

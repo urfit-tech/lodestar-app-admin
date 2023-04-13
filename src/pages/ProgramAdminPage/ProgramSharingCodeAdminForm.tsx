@@ -1,7 +1,6 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { countBy } from 'ramda'
 import React, { useState } from 'react'
@@ -71,7 +70,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
             app_id: appId,
             path: pathKey,
             code: sharingCode.code.trim().replace(/ +/g, '-'),
-            note: sharingCode.note,
+            note: sharingCode.note || '',
           })),
       },
     })
@@ -224,7 +223,7 @@ const useSharingCodeCollection = (path: string) => {
       id: v.id,
       path: v.path,
       code: v.code,
-      note: v.note,
+      note: v.note || '',
     })) || []
 
   return {

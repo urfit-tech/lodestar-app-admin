@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import { uniq } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
@@ -57,10 +57,10 @@ export const usePost = (postId: string) => {
       ? null
       : {
           id: data.post_by_pk.id,
-          title: data.post_by_pk.title,
-          source: data.post_by_pk.source,
-          videoUrl: data.post_by_pk.video_url,
-          description: data.post_by_pk.description,
+          title: data.post_by_pk.title || '',
+          source: data.post_by_pk.source || null,
+          videoUrl: data.post_by_pk.video_url || null,
+          description: data.post_by_pk.description || '',
           metaTag: data.post_by_pk.meta_tag,
           isDeleted: data.post_by_pk.is_deleted,
           categories:
@@ -69,12 +69,12 @@ export const usePost = (postId: string) => {
               name: category.category.name,
             })) || [],
           tagNames: data.post_by_pk.post_tags.map(tag => tag.tag_name) || [],
-          codeName: data.post_by_pk.code_name,
+          codeName: data.post_by_pk.code_name || null,
           codeNames: uniq([
             ...data.post.map(post => post.id),
             ...data.post.filter(post => post.code_name).map(post => post.code_name),
           ]),
-          coverUrl: data.post_by_pk.cover_url,
+          coverUrl: data.post_by_pk.cover_url || null,
           merchandiseIds: data.post_by_pk.post_merchandises?.map(postMerchandise => postMerchandise.merchandise_id),
           creatorId: data.post_by_pk.post_roles.find(postRole => postRole.name === 'creator')?.member_id || '',
           authors: data.post_by_pk.post_roles
@@ -170,9 +170,9 @@ export const usePostCollection = () => {
       ? []
       : data.post.map(post => ({
           id: post.id,
-          title: post.title,
-          coverUrl: post.cover_url,
-          videoUrl: post.video_url,
+          title: post.title || '',
+          coverUrl: post.cover_url || null,
+          videoUrl: post.video_url || null,
           views: post.views,
           pinnedAt: post.pinned_at,
           publishedAt: post.published_at,

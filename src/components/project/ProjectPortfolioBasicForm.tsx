@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -39,7 +38,7 @@ const ProjectPortfolioBasicForm: React.FC<{
     updatePortfolioProjectBasic({
       variables: {
         projectId: project.id,
-        title: values.title,
+        title: values.title || '',
         projectCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           project_id: project.id,
           category_id: categoryId,
@@ -72,7 +71,7 @@ const ProjectPortfolioBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
       initialValues={{
-        title: project.title,
+        title: project.title || '',
         categoryIds: project.categories.map(category => category.id),
         tags: project.tags,
       }}

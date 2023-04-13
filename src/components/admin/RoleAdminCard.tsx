@@ -37,7 +37,7 @@ const RoleAdminCard: React.FC<{
                 id: identity.id,
                 app_id: app.id,
                 type: classType,
-                name: identity.description,
+                name: identity.description || '',
                 position: index,
               })),
             },
@@ -50,7 +50,7 @@ const RoleAdminCard: React.FC<{
           updateMetaProjectIdentityName({
             variables: {
               identityId: item.id,
-              name: item.description,
+              name: item.description || '',
             },
           })
             .then(() => identityListRefetch?.())

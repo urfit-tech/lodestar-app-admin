@@ -120,7 +120,7 @@ const GiftPlanCollectionBlock: React.VFC<{
           setModalVisible={setIsModalVisible}
           giftPlan={{
             id: giftPlanProps.id,
-            title: giftPlanProps.title,
+            title: giftPlanProps.title || '',
             giftPlanProductId: giftPlanProps.giftPlanProductId,
           }}
           giftId={giftPlanProps.giftId}

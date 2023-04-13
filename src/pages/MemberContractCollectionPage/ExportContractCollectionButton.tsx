@@ -1,4 +1,4 @@
-import { useApolloClient } from '@apollo/react-hooks'
+import { useApolloClient } from '@apollo/client'
 import { Button } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SortOrder } from 'antd/lib/table/interface'
@@ -81,12 +81,12 @@ const ExportContractCollectionButton: React.FC<{
 
           return {
             id: v.id,
-            authorName: v.author_name,
+            authorName: v.author_name || null,
             member: {
-              id: v.member_id,
-              name: v.member_name,
-              pictureUrl: v.member_picture_url,
-              email: v.member_email,
+              id: v.member_id || null,
+              name: v.member_name || null,
+              pictureUrl: v.member_picture_url || null,
+              email: v.member_email || null,
               createdAt: v.member?.created_at && new Date(v.member.created_at),
             },
             startedAt: new Date(v.started_at),
@@ -97,10 +97,10 @@ const ExportContractCollectionButton: React.FC<{
             loanCanceledAt: v.loan_canceled_at ? new Date(v.loan_canceled_at) : null,
             refundAppliedAt: v.refund_applied_at ? new Date(v.refund_applied_at) : null,
             referral: {
-              name: v.referral_name,
-              email: v.referral_email,
+              name: v.referral_name || null,
+              email: v.referral_email || null,
             },
-            appointmentCreatorName: v.appointment_creator_name,
+            appointmentCreatorName: v.appointment_creator_name || null,
             studentCertification: v.student_certification || null,
             attachments: v.attachments,
             invoice: v.values?.invoice || null,
@@ -119,7 +119,7 @@ const ExportContractCollectionButton: React.FC<{
               paymentNumber: v.values.paymentOptions?.paymentNumber || '',
               installmentPlan: v.values.paymentOptions?.installmentPlan || 0,
             },
-            note: v.note,
+            note: v.note || null,
             orderExecutors:
               v.values?.orderExecutors?.map((v: any) => ({
                 ratio: v.ratio,
@@ -138,15 +138,15 @@ const ExportContractCollectionButton: React.FC<{
                   name: v.member.manager.name,
                   username: v.member.manager.username,
                   email: v.member.manager.email,
-                  avatarUrl: v.member.manager.picture_url,
+                  avatarUrl: v.member.manager.picture_url || null,
                 }
               : null,
             status: v.status as StatusType | null,
-            lastActivity: v.last_marketing_activity,
-            lastAdPackage: v.last_ad_package,
-            lastAdMaterial: v.last_ad_material,
-            firstFilledAt: v.first_fill_in_date,
-            lastFilledAt: v.last_fill_in_date,
+            lastActivity: v.last_marketing_activity || null,
+            lastAdPackage: v.last_ad_package || null,
+            lastAdMaterial: v.last_ad_material || null,
+            firstFilledAt: v.first_fill_in_date || null,
+            lastFilledAt: v.last_fill_in_date || null,
             sourceUrl: v.source_url,
           }
         }) || []

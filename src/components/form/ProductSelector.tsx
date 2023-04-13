@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Spin, Tag, TreeSelect } from 'antd'
 import { DataNode } from 'antd/lib/tree'
-import gql from 'graphql-tag'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -92,7 +91,7 @@ const ProductSelector: React.FC<{
             {<span>{product.title}</span>}
           </div>
         ),
-        name: product.title,
+        name: product.title || '',
         value: product.id,
       })),
     }))
@@ -288,7 +287,7 @@ const useProductSelections = () => {
       products:
         data?.podcast_program.map(v => ({
           id: `PodcastProgram_${v.id}`,
-          title: v.title,
+          title: v.title || '',
           publishedAt: v.published_at ? new Date(v.published_at) : null,
         })) || [],
     },
@@ -297,7 +296,7 @@ const useProductSelections = () => {
       products:
         data?.card.map(v => ({
           id: `Card_${v.id}`,
-          title: v.title,
+          title: v.title || '',
         })) || [],
     },
     {
@@ -305,7 +304,7 @@ const useProductSelections = () => {
       products:
         data?.merchandise.map(v => ({
           id: `Merchandise_${v.id}`,
-          title: v.title,
+          title: v.title || '',
           publishedAt: v.published_at ? new Date(v.published_at) : null,
           children: v.merchandise_specs.map(({ id }) => id),
         })) || [],
@@ -326,7 +325,7 @@ const useProductSelections = () => {
       products:
         data?.project_plan.map(v => ({
           id: `ProjectPlan_${v.id}`,
-          title: v.title,
+          title: v.title || '',
           publishedAt: v.published_at ? new Date(v.published_at) : null,
         })) || [],
     },
@@ -335,7 +334,7 @@ const useProductSelections = () => {
       products:
         data?.appointment_plan.map(v => ({
           id: `AppointmentPlan_${v.id}`,
-          title: v.title,
+          title: v.title || '',
           publishedAt: v.published_at ? new Date(v.published_at) : null,
         })) || [],
     },
@@ -353,7 +352,7 @@ const useProductSelections = () => {
       products:
         data?.coupon_plan.map(v => ({
           id: `CouponPlan_${v.id}`,
-          title: v.title,
+          title: v.title || '',
         })) || [],
     },
     {
@@ -361,7 +360,7 @@ const useProductSelections = () => {
       products:
         data?.voucher_plan.map(v => ({
           id: `VoucherPlan_${v.id}`,
-          title: v.title,
+          title: v.title || '',
         })) || [],
     },
   ]

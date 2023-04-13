@@ -1,9 +1,8 @@
 import { ArrowLeftOutlined, FileAddOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Spinner } from '@chakra-ui/react'
 import { Button, Form, Input, InputNumber, message, Select, Tabs } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { sampleSize } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -137,7 +136,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
                   {
                     id: uuid(),
                     question_library_id: questionLibraryId,
-                    title: values.title,
+                    title: values.title || '',
                     modifier_id: currentMemberId,
                     questions: { data: importQuestionListData },
                   },
@@ -190,7 +189,7 @@ const QuestionLibraryAdminPage: React.VFC = () => {
                   {
                     id: uuid(),
                     question_library_id: questionLibraryId,
-                    title: values.title,
+                    title: values.title || '',
                     modifier_id: currentMemberId,
                     questions: { data: randomSelectQuestionList },
                   },
@@ -209,7 +208,11 @@ const QuestionLibraryAdminPage: React.VFC = () => {
             break
           default:
             createQuestionGroup({
-              variables: { title: values.title, modifierId: currentMemberId, questionLibraryId: questionLibraryId },
+              variables: {
+                title: values.title || '',
+                modifierId: currentMemberId,
+                questionLibraryId: questionLibraryId,
+              },
             })
               .then(({ data }) => {
                 const questionGroupId = data?.insert_question_group?.returning[0]?.id
@@ -439,7 +442,7 @@ const useQuestionLibrary = (questionLibraryId: string) => {
   const questionLibrary: QuestionLibraryAdmin = {
     id: data?.question_library_by_pk?.id,
     title: data?.question_library_by_pk?.title || '',
-    abstract: data?.question_library_by_pk?.abstract,
+    abstract: data?.question_library_by_pk?.abstract || '',
   }
 
   return {
@@ -466,13 +469,13 @@ const useQuestionLibraryList = () => {
   const questionLibraryList =
     data?.question_library.map(v => ({
       key: v.id,
-      title: v.title,
+      title: v.title || '',
       selectable: v.question_groups.length >= 1,
       disabled: v.question_groups.length < 1,
       disableCheckbox: v.question_groups.length < 1,
       children: v.question_groups.map(w => ({
         key: w.id,
-        title: w.title,
+        title: w.title || '',
         isLeaf: true,
       })),
     })) || []

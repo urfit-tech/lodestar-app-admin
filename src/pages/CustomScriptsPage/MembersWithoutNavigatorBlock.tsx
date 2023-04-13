@@ -1,15 +1,15 @@
 import { LinkOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/es/table'
 import gql from 'graphql-tag'
-import { AdminBlock, AdminBlockTitle } from '../../components/admin'
-import { AvatarImage } from '../../components/common/Image'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'
+import { AdminBlock, AdminBlockTitle } from '../../components/admin'
+import { AvatarImage } from '../../components/common/Image'
 import hasura from '../../hasura'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 const StyledMemberName = styled.div`
   color: var(--gray-darker);
@@ -182,7 +182,7 @@ const useMemberWithoutNavigator = () => {
         id: y.member.id,
         name: y.member.name,
         email: y.member.email,
-        pictureUrl: y.member.picture_url,
+        pictureUrl: y.member.picture_url || null,
         agreedAt: y.agreed_at ? y.agreed_at : new Date(y.agreed_at),
         projectPlanName:
           y.values?.projectPlanName || y.values?.orderProducts?.map((z: { name: string }) => z.name).join('、') || null,

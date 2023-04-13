@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Skeleton } from 'antd'
-import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
@@ -73,7 +72,7 @@ const ProjectCollectionBlock: React.FC<{
                 variables: {
                   data: values.map((value, index) => ({
                     id: value.id,
-                    title: value.title,
+                    title: value.title || '',
                     type: projectType,
                     position: index,
                     app_id: appId,
@@ -150,8 +149,8 @@ const useProjectPreviewCollection = (
       : data.project.map(v => {
           return {
             id: v.id,
-            title: v.title,
-            abstract: v.abstract,
+            title: v.title || '',
+            abstract: v.abstract || '',
             author: {
               id: v.project_roles[0]?.member?.id || '',
               name: v.project_roles[0]?.member?.name || '',
@@ -161,8 +160,8 @@ const useProjectPreviewCollection = (
             createdAt: v.created_at,
             publishedAt: v.published_at,
             expiredAt: v.expired_at,
-            coverUrl: v.cover_url,
-            previewUrl: v.preview_url,
+            coverUrl: v.cover_url || null,
+            previewUrl: v.preview_url || null,
             totalCount: sum(v.project_plans.map(w => w.project_plan_enrollments_aggregate.aggregate?.count || 0)),
             coverType: v.cover_type,
             markedProjectRoles: v.marked_project_role.map(projectRole => ({
@@ -179,7 +178,7 @@ const useProjectPreviewCollection = (
             variables: {
               condition: {
                 ...condition,
-                ...(Object.keys(orderBy[0])[0] === 'position'
+                ...(Object.keys(Array.isArray(orderBy) ? orderBy[0] : orderBy)[0] === 'position'
                   ? { position: { _gt: data?.project.slice(-1)[0]?.position } }
                   : { created_at: { _lt: data?.project.slice(-1)[0]?.created_at } }),
               },
@@ -220,7 +219,7 @@ const useProjectSortCollection = (condition: hasura.GET_PROJECT_SORT_COLLECTIONV
   const projectSorts: ProjectSortProps[] =
     data?.project.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       type: v.type,
     })) || []
   return {

@@ -1,6 +1,6 @@
 import { Funnel } from '@ant-design/charts'
 import { BarChartOutlined, FunnelPlotFilled } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Button, DatePicker, message, Popover, Table } from 'antd'
 import gql from 'graphql-tag'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -13,6 +13,7 @@ import AdminCard from '../components/admin/AdminCard'
 import CategorySelector from '../components/common/CategorySelector'
 import AdminLayout from '../components/layout/AdminLayout'
 import hasura from '../hasura'
+import { notEmpty } from '../helpers'
 import ForbiddenPage from './ForbiddenPage'
 
 type AssignedMemberProps = {
@@ -409,29 +410,31 @@ const useAssignedMemberCollection = (filter: {
   const assignedMemberCollection: AssignedMemberProps[] =
     loading || !!error || !data
       ? []
-      : data.member.map(v => ({
-          id: v.id,
-          manager: v.manager as hasura.GET_ASSIGNED_MEMBER_member_manager,
-          notes: v.member_notes.map(w => ({
-            id: w.id,
-            authorId: w.author_id,
-            type: w.type,
-            status: w.status,
-            duration: w.duration,
-            rejectedAt: w.rejected_at ? new Date(w.rejected_at) : null,
-          })),
-          contracts: v.member_contracts.map(w => ({
-            price: w.values.price || 0,
-            orderExecutors:
-              w.values.orderExecutors?.map((x: { ratio: number; member_id: string }) => ({
-                ratio: x.ratio,
-                memberId: x.member_id,
-              })) || [],
-          })),
-          isDemoInvited: !!v.member_tasks_aggregate?.aggregate?.count,
-          isDemoed: !!v.member_notes_aggregate?.aggregate?.count,
-          isAgreed: !!v.member_contracts_aggregate?.aggregate?.count,
-        }))
+      : data.member
+          .filter(v => notEmpty(v.manager))
+          .map(v => ({
+            id: v.id,
+            manager: v.manager as NonNullable<hasura.GET_ASSIGNED_MEMBER['member'][number]['manager']>,
+            notes: v.member_notes.map(w => ({
+              id: w.id,
+              authorId: w.author_id,
+              type: w.type || null,
+              status: w.status || null,
+              duration: w.duration,
+              rejectedAt: w.rejected_at ? new Date(w.rejected_at) : null,
+            })),
+            contracts: v.member_contracts.map(w => ({
+              price: w.values.price || 0,
+              orderExecutors:
+                w.values.orderExecutors?.map((x: { ratio: number; member_id: string }) => ({
+                  ratio: x.ratio,
+                  memberId: x.member_id,
+                })) || [],
+            })),
+            isDemoInvited: !!v.member_tasks_aggregate?.aggregate?.count,
+            isDemoed: !!v.member_notes_aggregate?.aggregate?.count,
+            isAgreed: !!v.member_contracts_aggregate?.aggregate?.count,
+          }))
 
   return {
     loading,

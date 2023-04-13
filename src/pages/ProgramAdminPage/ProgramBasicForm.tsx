@@ -1,8 +1,7 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -48,7 +47,7 @@ const ProgramBasicForm: React.FC<{
     updateProgramBasic({
       variables: {
         programId: program.id,
-        title: values.title,
+        title: values.title || '',
         supportLocales: values.languages?.length ? values.languages : null,
         isIssuesOpen: values.isIssuesOpen,
         isIntroductionSectionVisible: values.isIntroductionSectionVisible ?? program.isIntroductionSectionVisible,
@@ -87,7 +86,7 @@ const ProgramBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        title: program.title,
+        title: program.title || '',
         categoryIds: program.categories.map(category => category.id),
         tags: program.tags,
         languages: program.supportLocales,

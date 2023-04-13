@@ -1,10 +1,9 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, Input, InputNumber, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ModalProps } from 'antd/lib/modal'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -101,7 +100,7 @@ const ProgramPackagePlanAdminModal: React.FC<
           variables: {
             data: {
               id: plan?.id,
-              title: values.title,
+              title: values.title || '',
               is_tempo_delivery: values.isTempoDelivery,
               published_at: values.isPublished ? new Date() : null,
               is_subscription: isSubscription,
@@ -164,7 +163,7 @@ const ProgramPackagePlanAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: plan?.title,
+          title: plan?.title || '',
           isTempoDelivery: !!plan?.isTempoDelivery,
           isPublished: !!plan?.publishedAt,
           isParticipantsVisible: !!plan?.isParticipantsVisible,

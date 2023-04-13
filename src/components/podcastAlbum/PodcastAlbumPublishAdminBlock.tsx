@@ -1,6 +1,5 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Skeleton } from 'antd'
-import gql from 'graphql-tag'
 import { isEmpty } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'

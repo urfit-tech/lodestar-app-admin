@@ -1,19 +1,19 @@
 import Icon, { RadarChartOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { DatePicker } from 'antd'
 import gql from 'graphql-tag'
-import { AdminPageTitle } from '../../components/admin'
-import AdminLayout from '../../components/layout/AdminLayout'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment-timezone'
 import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { AdminPageTitle } from '../../components/admin'
+import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
 import { salesMessages } from '../../helpers/translation'
 import { GroupSettingProps, SalesStatus } from '../../types/sales'
 import CallStatusBlock from './CallStatusBlock'
 import TotalRevenueBlock from './TotalRevenueBlock'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 const SalesStatusPage: React.VFC = () => {
   const [today, setToday] = useState(moment().startOf('day'))

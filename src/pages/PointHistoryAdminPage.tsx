@@ -1,7 +1,6 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Dropdown, Menu, message, Popover, Skeleton, Table, Tabs } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -330,12 +329,12 @@ const usePointLogCollection = () => {
           createdAt: new Date(pointLog.created_at),
           member: {
             id: pointLog.member.id,
-            avatarUrl: pointLog.member.picture_url,
+            avatarUrl: pointLog.member.picture_url || null,
             name: pointLog.member.name || pointLog.member.username,
             email: pointLog.member.email,
           },
-          title: pointLog.description,
-          note: pointLog.note,
+          title: pointLog.description || '',
+          note: pointLog.note || '',
           startedAt: pointLog.started_at && new Date(pointLog.started_at),
           endedAt: pointLog.ended_at && new Date(pointLog.ended_at),
           points: pointLog.point,
@@ -414,7 +413,7 @@ const useOrderLogWithPointsCollection = () => {
           id: orderLog.id,
           member: {
             id: orderLog.member.id,
-            avatarUrl: orderLog.member.picture_url,
+            avatarUrl: orderLog.member.picture_url || null,
             name: orderLog.member.name || orderLog.member.username,
             email: orderLog.member.email,
           },

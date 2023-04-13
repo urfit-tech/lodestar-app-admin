@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -43,7 +42,7 @@ const MemberShopBasicForm: React.FC<{
     updateMemberShopTitle({
       variables: {
         memberShopId: memberShop.id,
-        title: values.title,
+        title: values.title || '',
       },
     })
       .then(() => {

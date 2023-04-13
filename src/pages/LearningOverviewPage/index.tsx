@@ -1,7 +1,6 @@
 import Icon, { RadarChartOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Card, Skeleton, Statistic } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import { sum } from 'ramda'

@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Tabs } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { groupBy } from 'ramda'
 import React from 'react'
@@ -198,7 +197,7 @@ const useActivitySessionParticipants = (activityId: string) => {
 
           return data.activity_session.map(session => ({
             id: session.id,
-            title: session.title,
+            title: session.title || '',
             participants: sessionParticipants[session.id]
               ? sessionParticipants[session.id].map(participant => ({
                   id: participant.member_id || '',

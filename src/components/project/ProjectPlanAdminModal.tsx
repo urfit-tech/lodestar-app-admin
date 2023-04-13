@@ -1,10 +1,9 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, Input, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
 import { isEmpty } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -111,7 +110,7 @@ const ProjectPlanAdminModal: React.FC<
             data: {
               id: projectPlan?.id,
               project_id: projectId,
-              title: values.title,
+              title: values.title || '',
               published_at: values.isPublished ? new Date() : null,
               is_participants_visible: values.isParticipantsVisible,
               period_amount: withPeriod ? values.period.amount : null,
@@ -227,7 +226,7 @@ const ProjectPlanAdminModal: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: projectPlan?.title,
+          title: projectPlan?.title || '',
           isPublished: !!projectPlan?.publishedAt,
           isParticipantsVisible: !!projectPlan?.isParticipantsVisible,
           currencyId: projectPlan?.currencyId,

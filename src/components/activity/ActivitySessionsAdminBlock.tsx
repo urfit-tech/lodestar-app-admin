@@ -1,7 +1,6 @@
 import Icon, { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Dropdown, Menu, message, Skeleton } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { map } from 'ramda'
 import React from 'react'
@@ -70,11 +69,11 @@ const ActivitySessionsAdminBlock: React.FC<{
           insertActivitySession({
             variables: {
               activityId: activityAdmin.id,
-              title: values.title,
+              title: values.title || '',
               startedAt: values.startedAt,
               endedAt: values.endedAt,
-              location: values.location,
-              onlineLink: values.onlineLink,
+              location: values.location || null,
+              onlineLink: values.onlineLink || null,
               threshold: values.threshold,
             },
           }).then(reset)
@@ -166,11 +165,11 @@ const ActivitySessionsAdminBlock: React.FC<{
                           updateActivitySession({
                             variables: {
                               activitySessionId: session.id,
-                              title: values.title,
+                              title: values.title || '',
                               startedAt: values.startedAt,
                               endedAt: values.endedAt,
-                              location: values.location,
-                              onlineLink: values.onlineLink,
+                              location: values.location || null,
+                              onlineLink: values.onlineLink || null,
                               threshold: values.threshold,
                             },
                           })

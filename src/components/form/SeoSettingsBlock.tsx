@@ -46,7 +46,7 @@ const SeoSettingsBlock: React.VFC<{
         id: id,
         metaTag: {
           ...metaTag,
-          seo: { pageTitle: values.pageTitle, description: values.description, keywords: values.keywords },
+          seo: { pageTitle: values.pageTitle, description: values.description || '', keywords: values.keywords },
         },
       },
     })
@@ -70,7 +70,7 @@ const SeoSettingsBlock: React.VFC<{
         wrapperCol={{ md: { span: 8 } }}
         initialValues={{
           pageTitle: metaTag?.seo?.pageTitle,
-          description: metaTag?.seo?.description,
+          description: metaTag?.seo?.description || '',
           keywords: metaTag?.seo?.keywords,
         }}
         onFinish={handleSubmit}

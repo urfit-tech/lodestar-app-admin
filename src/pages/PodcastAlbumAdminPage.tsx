@@ -1,7 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Skeleton, Tabs } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -76,7 +75,7 @@ const PodcastAlbumAdminPage: React.VFC = () => {
                     podcastPrograms={
                       podcastAlbum.podcastPrograms.map(podcastProgram => ({
                         id: podcastProgram.id,
-                        title: podcastProgram.title,
+                        title: podcastProgram.title || '',
                         podcastAlbumPodcastProgramId: podcastProgram.podcastAlbumPodcastProgramId,
                       })) || []
                     }
@@ -86,7 +85,7 @@ const PodcastAlbumAdminPage: React.VFC = () => {
                     items={
                       podcastAlbum?.podcastPrograms.map(podcastProgram => ({
                         id: podcastProgram.podcastAlbumPodcastProgramId,
-                        title: podcastProgram.title,
+                        title: podcastProgram.title || '',
                         podcastProgramId: podcastProgram.id,
                       })) || []
                     }

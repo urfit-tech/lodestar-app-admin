@@ -1,6 +1,6 @@
-import EditOutlined from '@ant-design/icons'
+import { EditOutlined } from '@ant-design/icons'
+import { gql } from '@apollo/client'
 import { Button, Divider, Tag } from 'antd'
-import gql from 'graphql-tag'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'

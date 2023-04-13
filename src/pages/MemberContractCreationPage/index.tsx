@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment, { Moment } from 'moment'
 import { sum, uniqBy } from 'ramda'
@@ -494,7 +493,11 @@ const usePrivateTeachContractInfo = (
         ...v,
         placeholder: v.placeholder?.replace(/[()]/g, '').replace(/必填：/g, '') || null,
       }))
-      info.contracts = data.contract
+      info.contracts = data.contract.map(c => ({
+        id: c.id,
+        name: c.name,
+        options: c.options,
+      }))
       info.projectPlans = data.projectPrivateTeachPlan.map(v => ({
         id: v.id,
         title: v.title,
@@ -503,21 +506,21 @@ const usePrivateTeachContractInfo = (
       }))
       info.products = data.products.map(v => ({
         id: v.id,
-        name: v.title,
+        name: v.title || '',
         price: v.list_price,
         addonPrice: v.options?.addonPrice || 0,
         appointments: v.options?.appointments || 0,
-        previews: v.options?.previews || [],
         coins: v.options?.coins || 0,
         periodAmount: v.period_amount || 0,
         periodType: v.period_type as PeriodType | null,
+        previews: v.options?.previews || [],
       }))
       info.appointmentPlanCreators = data.appointment_plan
         .map(v =>
           v.creator
             ? {
-                id: v.creator.id,
-                name: v.creator.name,
+                id: v.creator.id || null,
+                name: v.creator.name || null,
               }
             : null,
         )

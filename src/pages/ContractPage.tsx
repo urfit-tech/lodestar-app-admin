@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Card, Typography } from 'antd'
-import gql from 'graphql-tag'
 import moment from 'moment'
 import { render } from 'mustache'
 import React from 'react'

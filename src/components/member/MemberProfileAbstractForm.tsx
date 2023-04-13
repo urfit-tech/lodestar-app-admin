@@ -1,8 +1,7 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import AdminBraftEditor from '../../components/form/AdminBraftEditor'
@@ -37,8 +36,8 @@ const MemberProfileAbstractForm: React.FC<{
     updateMemberBasic({
       variables: {
         memberId: memberAdmin.id,
-        title: values.title,
-        abstract: values.abstract,
+        title: values.title || '',
+        abstract: values.abstract || '',
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
@@ -59,8 +58,8 @@ const MemberProfileAbstractForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
       initialValues={{
-        title: memberAdmin.title,
-        abstract: memberAdmin.abstract,
+        title: memberAdmin.title || '',
+        abstract: memberAdmin.abstract || '',
         description: BraftEditor.createEditorState(memberAdmin.description),
       }}
       onFinish={handleSubmit}

@@ -1,7 +1,6 @@
 import { PlusOutlined, UserOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -84,7 +83,7 @@ const MemberPropertyAdminPage: React.FC = () => {
                   id: property.id,
                   app_id: app.id,
                   type: 'member',
-                  name: property.description,
+                  name: property.description || '',
                   position: index,
                 })),
               },

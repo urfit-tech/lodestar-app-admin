@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import Select, { SelectProps } from 'antd/lib/select'
-import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -53,7 +52,7 @@ const useCertificateTemplate = () => {
   const certificateTemplates: { id: string; title: string; backgroundImage: string }[] =
     data?.certificate_template.map(v => ({
       id: v.id,
-      title: v.title,
+      title: v.title || '',
       backgroundImage: v.background_image,
     })) || []
 

@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Select, Spin } from 'antd'
-import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'

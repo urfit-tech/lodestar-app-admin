@@ -1,6 +1,5 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, message, Modal, Skeleton } from 'antd'
-import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'

@@ -1,7 +1,6 @@
 import Icon from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Input, Select, Skeleton } from 'antd'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useCallback, useRef, useState } from 'react'
@@ -231,9 +230,9 @@ const usePracticePreviewCollection = (
     data?.practice.map(v => ({
       id: v.id,
       isCoverRequired: !!v.program_content.metadata?.isCoverRequired,
-      coverUrl: v.cover_url,
+      coverUrl: v.cover_url || null,
       createdAt: new Date(v.created_at),
-      title: v.title,
+      title: v.title || '',
       memberId: v.member_id,
       reactedMemberIds: v.practice_reactions.map(v => v.member_id),
       isReviewed: v.reviewed_at && new Date(v.reviewed_at),

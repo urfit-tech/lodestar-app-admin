@@ -1,7 +1,6 @@
 import Icon from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Skeleton, Tabs } from 'antd'
-import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -78,7 +77,7 @@ const MemberVoucherAdminBlock: React.VFC<{
   })[] =
     data?.voucher.map(voucher => ({
       id: voucher.id,
-      title: voucher.voucher_code.voucher_plan.title,
+      title: voucher.voucher_code.voucher_plan.title || '',
       startedAt: voucher.voucher_code.voucher_plan.started_at
         ? new Date(voucher.voucher_code.voucher_plan.started_at)
         : undefined,

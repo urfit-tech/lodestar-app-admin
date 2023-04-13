@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, Input, InputNumber, message, Radio, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -81,7 +80,7 @@ const ProjectBasicForm: React.FC<{
     updateProjectBasic({
       variables: {
         projectId: project.id,
-        title: values.title,
+        title: values.title || '',
         projectCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           project_id: project.id,
           category_id: categoryId,
@@ -119,7 +118,7 @@ const ProjectBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
       initialValues={{
-        title: project.title,
+        title: project.title || '',
         categoryIds: project.categories.map(category => category.id),
         tags: project.tags,
         targetUnit: project.targetUnit,

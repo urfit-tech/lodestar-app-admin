@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
@@ -60,9 +60,9 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
 
     return {
       id: appointmentPlanId,
-      title: data.appointment_plan_by_pk.title,
+      title: data.appointment_plan_by_pk.title || '',
       phone: data.appointment_plan_by_pk.phone || '',
-      description: data.appointment_plan_by_pk.description,
+      description: data.appointment_plan_by_pk.description || '',
       duration: data.appointment_plan_by_pk.duration,
       listPrice: data.appointment_plan_by_pk.price,
       reservationAmount: data.appointment_plan_by_pk.reservation_amount,
@@ -70,7 +70,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
       schedules: data.appointment_plan_by_pk.appointment_schedules.map(s => ({
         id: s.id,
         startedAt: new Date(s.started_at),
-        intervalAmount: s.interval_amount,
+        intervalAmount: s.interval_amount || null,
         intervalType: s.interval_type as PeriodType,
         excludes: s.excludes.map((e: string) => new Date(e)),
       })),
@@ -253,8 +253,8 @@ export const useAppointmentEnrollmentCollection = (
       member: {
         id: v.member?.id || '',
         name: v.member_name || '',
-        email: v.member_email,
-        phone: v.member_phone,
+        email: v.member_email || null,
+        phone: v.member_phone || null,
       },
       appointmentPlanTitle: v.appointment_plan?.title || '',
       startedAt: new Date(v.started_at),

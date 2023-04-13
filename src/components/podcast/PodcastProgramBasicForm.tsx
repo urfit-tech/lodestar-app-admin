@@ -1,8 +1,7 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -51,7 +50,7 @@ const PodcastProgramBasicForm: React.FC<{
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
-        title: values.title,
+        title: values.title || '',
         supportLocales: values.languages?.length ? values.languages : null,
         podcastCategories: values.categoryIds
           ? values.categoryIds.map((categoryId: string, position: number) => ({
@@ -92,7 +91,7 @@ const PodcastProgramBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
-        title: podcastProgramAdmin.title,
+        title: podcastProgramAdmin.title || '',
         categoryIds: podcastProgramAdmin.categories.map(category => category.id),
         tags: podcastProgramAdmin.tags,
         languages: podcastProgramAdmin.supportLocales.map(supportLocale => supportLocale),

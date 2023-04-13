@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/client'
 import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -139,13 +139,13 @@ export const useMemberContractCollection = ({
 
       return {
         id: v.id,
-        authorId: v.author_id,
-        authorName: v.author_name,
+        authorId: v.author_id || null,
+        authorName: v.author_name || null,
         member: {
-          id: v.member_id,
-          name: v.member_name,
-          pictureUrl: v.member_picture_url,
-          email: v.member_email,
+          id: v.member_id || null,
+          name: v.member_name || null,
+          pictureUrl: v.member_picture_url || null,
+          email: v.member_email || null,
           createdAt: v.member?.created_at && new Date(v.member.created_at),
         },
         startedAt: new Date(v.started_at),
@@ -156,10 +156,10 @@ export const useMemberContractCollection = ({
         loanCanceledAt: v.loan_canceled_at ? new Date(v.loan_canceled_at) : null,
         refundAppliedAt: v.refund_applied_at ? new Date(v.refund_applied_at) : null,
         referral: {
-          name: v.referral_name,
-          email: v.referral_email,
+          name: v.referral_name || null,
+          email: v.referral_email || null,
         },
-        appointmentCreatorName: v.appointment_creator_name,
+        appointmentCreatorName: v.appointment_creator_name || null,
         studentCertification: v.student_certification || null,
         attachments: v.attachments,
         invoice: v.values?.invoice || null,
@@ -176,7 +176,7 @@ export const useMemberContractCollection = ({
           paymentNumber: v.values.paymentOptions?.paymentNumber || '',
           installmentPlan: v.values.paymentOptions?.installmentPlan || 0,
         },
-        note: v.note,
+        note: v.note || null,
         orderExecutors:
           v.values?.orderExecutors?.map((v: any) => ({
             ratio: v.ratio,
@@ -195,15 +195,15 @@ export const useMemberContractCollection = ({
               name: v.member.manager.name,
               username: v.member.manager.username,
               email: v.member.manager.name,
-              avatarUrl: v.member.manager.picture_url,
+              avatarUrl: v.member.manager.picture_url || null,
             }
           : null,
         status: v.status as StatusType | null,
-        lastActivity: v.last_marketing_activity,
-        lastAdPackage: v.last_ad_package,
-        lastAdMaterial: v.last_ad_material,
-        firstFilledAt: v.first_fill_in_date,
-        lastFilledAt: v.last_fill_in_date,
+        lastActivity: v.last_marketing_activity || null,
+        lastAdPackage: v.last_ad_package || null,
+        lastAdMaterial: v.last_ad_material || null,
+        firstFilledAt: v.first_fill_in_date || null,
+        lastFilledAt: v.last_fill_in_date || null,
         sourceUrl: v.source_url,
         rebateGift: rebateGift,
       }
@@ -342,7 +342,7 @@ export const useManagers = () => {
           id: v.member.id,
           name: v.member.name,
           username: v.member.username,
-          avatarUrl: v.member.picture_url,
+          avatarUrl: v.member.picture_url || null,
           email: v.member.email,
           telephone: v.value,
         })) || [],

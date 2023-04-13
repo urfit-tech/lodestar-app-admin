@@ -1,11 +1,11 @@
 // organize-imports-ignore
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { Button, DatePicker, Input, Select, Spin, Table, Skeleton, Checkbox, Tooltip } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client'
 import moment from 'moment'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -469,7 +469,7 @@ const MemberTaskAdminBlock: React.FC<{
                     return {
                       id: memberTask.id,
                       title: `${memberTask.title}(${memberTask.member.name})`,
-                      description: memberTask.description,
+                      description: memberTask.description || '',
                       start: moment(memberTask.dueAt).format(),
                       dotColor: memberTask.category ? categoryColorPairs[memberTask.category?.id] : 'transparent',
                     }
@@ -643,7 +643,7 @@ const useMemberTaskCollection = (options?: {
       ? []
       : data.member_task.map(v => ({
           id: v.id,
-          title: v.title,
+          title: v.title || '',
           priority: v.priority as MemberTaskProps['priority'],
           status: v.status as MemberTaskProps['status'],
           category: v.category
@@ -654,7 +654,7 @@ const useMemberTaskCollection = (options?: {
             : null,
           dueAt: v.due_at && new Date(v.due_at),
           createdAt: v.created_at && new Date(v.created_at),
-          description: v.description,
+          description: v.description || '',
           member: {
             id: v.member.id,
             name: v.member.name || v.member.username,
@@ -663,14 +663,14 @@ const useMemberTaskCollection = (options?: {
             ? {
                 id: v.executor.id,
                 name: v.executor.name || v.executor.username,
-                avatarUrl: v.executor.picture_url,
+                avatarUrl: v.executor.picture_url || null,
               }
             : null,
           author: v.author
             ? {
                 id: v.author.id,
                 name: v.author.name || v.author.username,
-                avatarUrl: v.author.picture_url,
+                avatarUrl: v.author.picture_url || null,
               }
             : null,
         }))

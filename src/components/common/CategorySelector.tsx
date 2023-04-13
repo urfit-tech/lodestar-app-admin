@@ -1,9 +1,9 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Select } from 'antd'
 import gql from 'graphql-tag'
-import { commonMessages } from '../../helpers/translation'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
+import { commonMessages } from '../../helpers/translation'
 
 export default function CategorySelector({
   class: categoryClass,

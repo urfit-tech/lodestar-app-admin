@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, message } from 'antd'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { v4 as uuid } from 'uuid'
@@ -32,7 +31,7 @@ const QuestionGroupDuplicateAdminModal: React.VFC<{
         duplicateQuestionGroupData: [
           {
             id: questionGroupData.id,
-            title: questionGroupData.title,
+            title: questionGroupData.title || '',
             modifier_id: questionGroupData.modifierId,
             question_library_id: questionLibraryId,
           },
@@ -126,6 +125,7 @@ const useQuestionGroupData = (questionGroupId: string, currentMemberId: string) 
   const duplicateQuestionsData: QuestionsData =
     data?.question_group_by_pk?.questions.map(question => ({
       ...question,
+      explanation: question.explanation || '',
       options: question.question_options.map(option => ({
         ...option,
         isAnswer: option.is_answer || false,

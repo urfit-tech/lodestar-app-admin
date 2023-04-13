@@ -6,9 +6,8 @@ import {
   QuestionCircleOutlined,
   TagOutlined,
 } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { List } from 'antd'
-import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'

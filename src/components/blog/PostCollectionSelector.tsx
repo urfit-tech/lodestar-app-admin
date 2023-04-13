@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Form, InputNumber, Select } from 'antd'
-import gql from 'graphql-tag'
 import { PostCollectionProps } from 'lodestar-app-element/src/components/collections/PostCollection'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'

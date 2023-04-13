@@ -1,8 +1,7 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
-import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { isEmpty } from 'ramda'
@@ -67,7 +66,7 @@ const ProgramPackageBasicForm: React.FC<{
     updateProgramPackageBasic({
       variables: {
         programPackageId: programPackage.id,
-        title: values.title,
+        title: values.title || '',
         programPackageCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           program_package_id: programPackage.id,
           category_id: categoryId,
@@ -127,7 +126,7 @@ const ProgramPackageBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 11 } }}
       initialValues={{
-        title: programPackage.title,
+        title: programPackage.title || '',
         categoryIds: programPackage.categories.map(category => category.id),
         tags: programPackage.tags,
       }}

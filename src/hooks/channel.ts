@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
+import { useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
 import hasura from '../hasura'
 
 export const useProductChannelInfo = (appId: string, productId: string) => {

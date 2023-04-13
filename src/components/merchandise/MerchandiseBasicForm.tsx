@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -36,7 +35,7 @@ const MerchandiseBasicForm: React.FC<{
     updateMerchandiseBasic({
       variables: {
         merchandiseId: merchandiseId,
-        title: values.title,
+        title: values.title || '',
         categories:
           values.categoryIds?.map((categoryId: string, index: number) => ({
             merchandise_id: merchandiseId,
@@ -74,7 +73,7 @@ const MerchandiseBasicForm: React.FC<{
       colon={false}
       hideRequiredMark
       initialValues={{
-        title: merchandise.title,
+        title: merchandise.title || '',
         categoryIds: merchandise.categories.map(category => category.id),
         tags: merchandise.tags,
         isLimited: merchandise.isLimited,

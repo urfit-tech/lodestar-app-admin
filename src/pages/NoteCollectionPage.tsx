@@ -1,5 +1,5 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Button, Checkbox, DatePicker, Input, message, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
@@ -754,10 +754,10 @@ const useMemberNotesAdmin = (
       id: v.id,
       createdAt: new Date(v.created_at),
       type: v.type as NoteAdmin['type'],
-      status: v.status,
+      status: v.status || null,
       author: {
         id: v.author.id,
-        pictureUrl: v.author.picture_url,
+        pictureUrl: v.author.picture_url || null,
         name: v.author.name,
       },
       manager: v.member?.manager
@@ -788,9 +788,9 @@ const useMemberNotesAdmin = (
         sum(v.member?.order_logs.map(u => u.order_discounts_aggregate.aggregate?.sum?.price || 0) || []),
       duration: v.duration || 0,
       audioFilePath: v.metadata?.recordfile || null,
-      description: v.description,
+      description: v.description || null,
       metadata: v.metadata,
-      note: v.note,
+      note: v.note || null,
       attachments: v.member_note_attachments.map(u => ({
         id: u.attachment_id,
         data: u.data,

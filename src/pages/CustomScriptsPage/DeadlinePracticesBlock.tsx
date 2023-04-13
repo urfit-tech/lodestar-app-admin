@@ -1,14 +1,14 @@
 import { ExportOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/client'
 import { Button, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import gql from 'graphql-tag'
-import { AdminBlock, AdminBlockTitle } from '../../components/admin'
-import { ProgramTreeSelector } from '../../components/program/ProgramSelector'
-import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { AdminBlock, AdminBlockTitle } from '../../components/admin'
+import { ProgramTreeSelector } from '../../components/program/ProgramSelector'
 import hasura from '../../hasura'
+import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 
 type ImplementPracticeProps = {
   id: string
@@ -27,7 +27,7 @@ const DeadlinePracticesBlock: React.VFC = () => {
     <AdminBlock>
       <AdminBlockTitle>實戰營作業</AdminBlockTitle>
       <ProgramTreeSelector
-        allowContentTypes={["practice"]}
+        allowContentTypes={['practice']}
         treeNodeSelectable={false}
         className="mb-4"
         value={programContentId}
