@@ -2511,6 +2511,7 @@
   "sale.OrderExportModal.recipientAddress": "收件地址",
   "sale.OrderExportModal.recipientName": "收件人",
   "sale.OrderExportModal.recipientPhone": "收件電話",
+  "sale.OrderExportModal.referrer": "推薦人",
   "sale.OrderExportModal.send": "寄送",
   "sale.OrderExportModal.sharingCode": "推廣網址",
   "sale.OrderExportModal.sharingNote": "推廣備註",

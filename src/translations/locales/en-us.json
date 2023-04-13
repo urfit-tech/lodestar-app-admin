@@ -2507,6 +2507,7 @@
   "sale.OrderExportModal.recipientAddress": "收件地址",
   "sale.OrderExportModal.recipientName": "收件人",
   "sale.OrderExportModal.recipientPhone": "收件電話",
+  "sale.OrderExportModal.referrer": "referrer",
   "sale.OrderExportModal.send": "寄送",
   "sale.OrderExportModal.sharingCode": "Promotion URL",
   "sale.OrderExportModal.sharingNote": "Promotion Note",
