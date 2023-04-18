@@ -20,6 +20,7 @@ const voucherMessages = {
   }),
   VoucherPlanAdminModal: defineMessages({
     voucherCodes: { id: 'voucher.VoucherPlanAdminModal.voucherCodes', defaultMessage: '兌換碼' },
+    voucherCategory: { id: 'voucher.VoucherPlanAdminModal.VoucherCategory', defaultMessage: '兌換分類' },
     errorVoucherCodes: {
       id: 'voucher.VoucherPlanAdminModal.errorVoucherCodes',
       defaultMessage: '至少一組兌換碼',
