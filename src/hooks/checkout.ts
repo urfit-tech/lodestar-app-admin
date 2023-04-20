@@ -14,6 +14,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { InvoiceProps } from '../types/merchandise'
 import { ShippingProps } from '../types/merchandise'
 import { CheckProps, OrderDiscountProps, OrderProductProps, shippingOptionProps } from '../types/checkout'
+import { uuidv4 } from '@antv/xflow-core'
 
 export const useCouponPlanCollection = () => {
   const app = useApp()
@@ -388,7 +389,9 @@ export const useMutateVoucherPlan = () => {
   const [insertVoucherPlanHandler] = useMutation<hasura.INSERT_VOUCHER_PLAN, hasura.INSERT_VOUCHER_PLANVariables>(
     gql`
       mutation INSERT_VOUCHER_PLAN(
+        $voucherPlanId: uuid
         $title: String!
+        $categoryId: String
         $description: String
         $appId: String!
         $startedAt: timestamptz
@@ -403,6 +406,7 @@ export const useMutateVoucherPlan = () => {
       ) {
         insert_voucher_plan(
           objects: {
+            id: $voucherPlanId
             title: $title
             description: $description
             app_id: $appId
@@ -419,17 +423,23 @@ export const useMutateVoucherPlan = () => {
         ) {
           affected_rows
         }
+        insert_voucher_plan_category(objects: { voucher_plan_id: $voucherPlanId, category_id: $categoryId }) {
+          affected_rows
+        }
       }
     `,
   )
   const insertVoucherPlan = (values: VoucherPlanFields) => {
-    const { sale, ...restValues } = values
+    const { sale, categoryId, ...restValues } = values
+    const voucherPlanId = uuidv4()
     return insertVoucherPlanHandler({
       variables: {
         ...restValues,
+        voucherPlanId: voucherPlanId,
         appId,
         saleAmount: sale?.amount,
         salePrice: sale?.price,
+        categoryId: categoryId,
         voucherCodes:
           values.voucherCodes?.flatMap(voucherCode =>
             voucherCode.type === 'random'
@@ -460,6 +470,7 @@ export const useMutateVoucherPlan = () => {
       mutation UPDATE_VOUCHER_PLAN(
         $voucherPlanId: uuid!
         $title: String!
+        $categoryId: String
         $description: String
         $appId: String!
         $startedAt: timestamptz
@@ -492,14 +503,21 @@ export const useMutateVoucherPlan = () => {
         insert_voucher_plan_product(objects: $voucherPlanProducts) {
           affected_rows
         }
+        delete_voucher_plan_category(where: { voucher_plan_id: { _eq: $voucherPlanId } }) {
+          affected_rows
+        }
+        insert_voucher_plan_category(objects: { voucher_plan_id: $voucherPlanId, category_id: $categoryId }) {
+          affected_rows
+        }
       }
     `,
   )
   const updateVoucherPlan = (values: VoucherPlanFields, voucherPlanId: string) => {
-    const { sale, ...restValues } = values
+    const { sale, categoryId, ...restValues } = values
     return updateVoucherPlanHandler({
       variables: {
         ...restValues,
+        categoryId,
         voucherPlanId,
         appId,
         saleAmount: sale?.amount,
