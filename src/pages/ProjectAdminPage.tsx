@@ -1,8 +1,8 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Skeleton, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -31,6 +31,7 @@ import ProjectPublishAdminBlock from '../components/project/ProjectPublishAdminB
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
 import { ProjectAdminProps, ProjectDataType } from '../types/project'
+import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
 
 const ProjectPortfolioBlockTitle = styled(AdminBlockTitle)`
@@ -41,8 +42,16 @@ const ProjectAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { projectId } = useParams<{ projectId: string }>()
   const [projectKey, setProjectKey] = useQueryParam('tab', StringParam)
-  const { host } = useApp()
+  const { host, enabledModules } = useApp()
+  const { permissions } = useAuth()
   const { loadingProjectAdmin, projectAdmin, refetchProjectAdmin } = useProjectAdmin(projectId)
+
+  if (
+    !enabledModules.portfolio_project ||
+    (!permissions.PROJECT_PORTFOLIO_ADMIN && !permissions.PROJECT_PORTFOLIO_NORMAL)
+  ) {
+    return <ForbiddenPage />
+  }
 
   return (
     <>
