@@ -105,6 +105,7 @@ const VoucherPlanAdminModal: React.FC<
           description: voucherPlan?.description || '',
           isTransferable: !!voucherPlan?.isTransferable,
           sale: voucherPlan?.sale,
+          categoryId: voucherPlan?.category?.id,
         }}
       >
         <Form.Item

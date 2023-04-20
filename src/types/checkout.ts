@@ -52,6 +52,7 @@ export type VoucherPlanBriefProps = {
   count: number
   remaining: number
   sale?: { amount: number; price: number }
+  category?: { id: string; name: string }
 }
 
 export type VoucherPlanProps = VoucherPlanBriefProps & {
