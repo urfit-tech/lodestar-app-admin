@@ -10,10 +10,12 @@ import { useMutateVoucherPlan } from '../../hooks/checkout'
 import { VoucherPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
+import CategorySelector from '../form/CategorySelector'
 import voucherMessages from './translation'
 
 export type VoucherPlanFields = {
   title: string
+  categoryId: string
   voucherCodes?: PlanCodeProps[]
   voucherPlanProducts: string[]
   productQuantityLimit: number
@@ -118,6 +120,10 @@ const VoucherPlanAdminModal: React.FC<
           ]}
         >
           <Input />
+        </Form.Item>
+
+        <Form.Item label={formatMessage(voucherMessages.VoucherPlanAdminModal.voucherCategory)} name="categoryId">
+          <CategorySelector classType="voucher" single={true} />
         </Form.Item>
 
         {!voucherPlan && (

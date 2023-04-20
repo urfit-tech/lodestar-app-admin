@@ -114,7 +114,11 @@ const ProgramRoleAdminPane: React.FC<{
         >
           <Form layout="vertical" colon={false} hideRequiredMark>
             <Form.Item label={formatMessage(ProgramAdminPageMessages.ProgramRoleAdminPane.selectInstructor)}>
-              <ContentCreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
+              <ContentCreatorSelector
+                value={selectedMemberId || ''}
+                onChange={value => setSelectedMemberId(value)}
+                allowedPermissions={['PROGRAM_ADMIN', 'PROGRAM_NORMAL']}
+              />
             </Form.Item>
           </Form>
         </AdminModal>

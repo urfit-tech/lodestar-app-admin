@@ -50,6 +50,7 @@ const adminMessages = {
     shipping: { id: 'admin.AdminMenu.shipping', defaultMessage: '出貨管理' },
     promotionAdmin: { id: 'admin.AdminMenu.promotionAdmin', defaultMessage: '促銷管理' },
     vouchers: { id: 'admin.AdminMenu.voucherPlans', defaultMessage: '兌換方案' },
+    voucherCategory: { id: 'admin.AdminMenu.voucherCategory', defaultMessage: 'voucher category' },
     creditAdmin: { id: 'admin.AdminMenu.creditAdmin', defaultMessage: '紅利折抵' },
     coinHistory: { id: 'admin.AdminMenu.coinHistory', defaultMessage: '代幣紀錄' },
     memberAdmin: { id: 'admin.AdminMenu.memberAdmin', defaultMessage: '會員管理' },

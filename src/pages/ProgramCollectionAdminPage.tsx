@@ -157,6 +157,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                 programId && history.push(`/programs/${programId}`)
               })
             }
+            allowedPermissions={['PROGRAM_ADMIN', 'PROGRAM_NORMAL']}
           />
         </div>
         <div className="col-4">
