@@ -1,8 +1,7 @@
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons'
-import { useApolloClient } from '@apollo/client'
+import { gql, useApolloClient } from '@apollo/client'
 import { Button, DatePicker, Dropdown, Form, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { isNull } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { ProductType } from 'lodestar-app-element/src/types/product'
@@ -140,6 +139,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           formatMessage(saleMessages.OrderExportModal.orderLogTotalPrice),
           enabledModules.sharing_code ? formatMessage(saleMessages.OrderExportModal.sharingCode) : undefined,
           enabledModules.sharing_code ? formatMessage(saleMessages.OrderExportModal.sharingNote) : undefined,
+          enabledModules.referrer ? formatMessage(saleMessages.OrderExportModal.referrer) : undefined,
           enabledModules.member_assignment ? formatMessage(saleMessages.OrderExportModal.orderLogExecutor) : undefined,
           formatMessage(saleMessages.OrderExportModal.gift),
           formatMessage(saleMessages.OrderExportModal.send),
@@ -192,6 +192,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             ),
             enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
             enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
+            enabledModules.referrer ? orderLog.referrer_email || '' : undefined,
             enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
             orderLog.gift_plans?.split('\\n').join('\n') || '',
             orderLog.shipping?.isOutsideTaiwanIsland
@@ -368,6 +369,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
           formatMessage(saleMessages.OrderExportModal.productQuantity),
           formatMessage(saleMessages.OrderExportModal.productPrice),
           enabledModules.sharing_code ? formatMessage(saleMessages.OrderExportModal.sharingCode) : undefined,
+          enabledModules.referrer ? formatMessage(saleMessages.OrderExportModal.referrer) : undefined,
         ].filter(v => typeof v !== 'undefined'),
         ...orderProducts.map(orderProduct =>
           [
@@ -388,6 +390,7 @@ const OrderExportModal: React.FC<AdminModalProps> = ({ renderTrigger, ...adminMo
             orderProduct.quantity,
             Math.max(orderProduct.price, 0),
             enabledModules.sharing_code ? orderProduct.options?.sharingCode || '' : undefined,
+            enabledModules.referrer ? orderProduct.referrer_email || '' : undefined,
           ].filter(v => typeof v !== 'undefined'),
         ),
       ]
@@ -889,6 +892,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       gift_plans
       country
       country_code
+      referrer_email
     }
   }
 `
@@ -909,6 +913,7 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
       product_id
       country
       country_code
+      referrer_email
     }
   }
 `

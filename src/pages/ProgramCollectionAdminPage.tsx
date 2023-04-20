@@ -1,7 +1,6 @@
 import { EditOutlined, FileTextFilled } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Input, Skeleton, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
@@ -158,6 +157,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                 programId && history.push(`/programs/${programId}`)
               })
             }
+            allowedPermissions={['PROGRAM_ADMIN', 'PROGRAM_NORMAL']}
           />
         </div>
         <div className="col-4">

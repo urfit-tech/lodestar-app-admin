@@ -416,6 +416,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(adminMessages.AdminMenu.vouchers),
         },
         {
+          permissionIsAllowed: !!enabledModules.voucher && Boolean(permissions.VOUCHER_CATEGORY_ADMIN),
+          key: 'voucher_category',
+          name: formatMessage(adminMessages.AdminMenu.voucherCategory),
+        },
+        {
           permissionIsAllowed:
             !!enabledModules.gift && (Boolean(permissions.GIFT_PLAN_ADMIN) || Boolean(permissions.GIFT_PLAN_NORMAL)),
           key: 'gift_plans',

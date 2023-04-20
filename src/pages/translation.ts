@@ -372,6 +372,9 @@ const pageMessages = {
     walkway: { id: 'page.VenueSeatSetting.walkway', defaultMessage: '走道' },
     blackboardPosition: { id: 'page.VenueSeatSetting.blackboardPosition', defaultMessage: '黑板位置' },
   }),
+  VoucherCategoryPage: defineMessages({
+    voucherCategory: { id: 'page.VoucherCategoryPage.voucherCategory', defaultMessage: 'Voucher Category' },
+  }),
 }
 
 // fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },
