@@ -235,6 +235,13 @@ export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLL
             id
             product_id
           }
+          voucher_plan_category {
+            id
+            category {
+              id
+              name
+            }
+          }
         }
         voucher_plan_aggregate(where: $condition) {
           aggregate {
@@ -260,6 +267,10 @@ export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLL
         productIds: v.voucher_plan_products.map(product => product.product_id),
         isTransferable: v.is_transferable,
         sale: v.sale_amount ? { amount: v.sale_amount, price: v.sale_price } : undefined,
+        category: {
+          id: v.voucher_plan_category?.category?.id || '',
+          name: v.voucher_plan_category?.category?.name || '',
+        },
       }
     }) || []
 
@@ -439,7 +450,7 @@ export const useMutateVoucherPlan = () => {
         appId,
         saleAmount: sale?.amount,
         salePrice: sale?.price,
-        categoryId: categoryId,
+        categoryId: categoryId || '',
         voucherCodes:
           values.voucherCodes?.flatMap(voucherCode =>
             voucherCode.type === 'random'
@@ -517,7 +528,7 @@ export const useMutateVoucherPlan = () => {
     return updateVoucherPlanHandler({
       variables: {
         ...restValues,
-        categoryId,
+        categoryId: categoryId || '',
         voucherPlanId,
         appId,
         saleAmount: sale?.amount,

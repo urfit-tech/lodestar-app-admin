@@ -15,7 +15,7 @@ import voucherMessages from './translation'
 
 export type VoucherPlanFields = {
   title: string
-  categoryId: string
+  categoryId?: string
   voucherCodes?: PlanCodeProps[]
   voucherPlanProducts: string[]
   productQuantityLimit: number
@@ -105,6 +105,7 @@ const VoucherPlanAdminModal: React.FC<
           description: voucherPlan?.description || '',
           isTransferable: !!voucherPlan?.isTransferable,
           sale: voucherPlan?.sale,
+          categoryId: voucherPlan?.category?.id,
         }}
       >
         <Form.Item
