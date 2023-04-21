@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -126,7 +125,10 @@ const UPDATE_PORTFOLIO_PROJECT_BASIC = gql`
     delete_project_tag(where: { project_id: { _eq: $projectId } }) {
       affected_rows
     }
-    insert_project_tag(objects: $projectTags) {
+    insert_project_tag(
+      objects: $projectTags
+      on_conflict: { constraint: project_tag_project_id_tag_name_key, update_columns: [tag_name] }
+    ) {
       affected_rows
     }
   }
