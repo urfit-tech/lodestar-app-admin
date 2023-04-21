@@ -15,7 +15,7 @@ import voucherMessages from './translation'
 
 export type VoucherPlanFields = {
   title: string
-  categoryId: string
+  categoryId?: string
   voucherCodes?: PlanCodeProps[]
   voucherPlanProducts: string[]
   productQuantityLimit: number

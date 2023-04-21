@@ -450,7 +450,7 @@ export const useMutateVoucherPlan = () => {
         appId,
         saleAmount: sale?.amount,
         salePrice: sale?.price,
-        categoryId: categoryId,
+        categoryId: categoryId || '',
         voucherCodes:
           values.voucherCodes?.flatMap(voucherCode =>
             voucherCode.type === 'random'
@@ -528,7 +528,7 @@ export const useMutateVoucherPlan = () => {
     return updateVoucherPlanHandler({
       variables: {
         ...restValues,
-        categoryId,
+        categoryId: categoryId || '',
         voucherPlanId,
         appId,
         saleAmount: sale?.amount,
