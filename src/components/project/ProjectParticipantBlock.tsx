@@ -32,7 +32,7 @@ const StyledTextArea = styled(Input.TextArea)`
 
 type FieldProps = {
   projectRoleId: string
-  participant: string // uuid | email string
+  participant: string
   participantTypeId: string
   participantName?: string
 }
@@ -126,7 +126,7 @@ const ProjectParticipantBlock: React.FC<{
       if (participant.projectRoleId === editId) {
         form.setFieldsValue({
           projectRoleId: participant.projectRoleId,
-          participant: participant.member.id,
+          participant: participant.member.email,
           participantTypeId: participant.identity.id,
         })
         setIsEdit(true)
@@ -292,6 +292,7 @@ const ProjectParticipantBlock: React.FC<{
               allowedPermissions={['PROJECT_PORTFOLIO_ADMIN', 'PROJECT_PORTFOLIO_NORMAL']}
             />
           </Form.Item>
+
           {isUnregistered ? (
             <Form.Item
               label={formatMessage(projectMessages.ProjectParticipantBlock.participantName)}
