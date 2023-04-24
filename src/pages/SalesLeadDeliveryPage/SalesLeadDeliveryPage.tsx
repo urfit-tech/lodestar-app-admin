@@ -243,7 +243,7 @@ const ConfirmSection: React.FC<{
   >(
     gql`
       query GET_LEAD_CANDIDATES($condition: member_bool_exp) {
-        member_phone(where: { member: $condition }, distinct_on: [member_id]) {
+        member_phone(where: { _and: [{ phone: { _neq: "" } }, { member: $condition }] }, distinct_on: [member_id]) {
           member_id
         }
       }
