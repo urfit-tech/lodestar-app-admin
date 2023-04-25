@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Select, { SelectProps } from 'antd/lib/select'
-import { gql } from '@apollo/client'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -73,9 +72,9 @@ export const AllMemberSelector: React.FC<
   SelectProps<string | string[]> & {
     allowedPermissions?: string[]
     isAllowAddUnregistered?: boolean
-    setIsUnregistered?: React.Dispatch<React.SetStateAction<boolean>>
+    onMemberStatus?: (value: string | null) => void
   }
-> = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
+> = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, onMemberStatus, onSelect }) => {
   const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
   const condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition'] = allowedPermissions
@@ -132,13 +131,10 @@ export const AllMemberSelector: React.FC<
       filterOption={false}
       onChange={(value, option) => onChange?.(value, option)}
       onSelect={(value, option) => {
-        if (
-          isAllowAddUnregistered &&
-          (members.length === 0 || members.find(v => v.name === option.name || v.id === value)?.status === 'invited')
-        ) {
-          setIsUnregistered?.(true)
+        if (isAllowAddUnregistered && members.length === 0) {
+          onMemberStatus?.(null)
         } else {
-          setIsUnregistered?.(false)
+          onMemberStatus?.(members.find(member => member.id === value)?.status || null)
         }
         onSelect?.(value, option)
       }}
@@ -147,7 +143,7 @@ export const AllMemberSelector: React.FC<
       allowClear
       onClear={() => {
         setSearch('')
-        setIsUnregistered?.(false)
+        onMemberStatus?.(null)
       }}
     >
       {isAllowAddUnregistered &&

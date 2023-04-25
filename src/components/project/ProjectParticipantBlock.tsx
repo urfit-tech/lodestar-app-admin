@@ -67,7 +67,7 @@ const ProjectParticipantBlock: React.FC<{
   const [isEdit, setIsEdit] = useState(false)
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false)
   const [rejectModalLoading, setRejectModalLoading] = useState(false)
-  const [isUnregistered, setIsUnregistered] = useState(false)
+  const [memberStatus, setMemberStatus] = useState<string | null>(null)
 
   const handleAgree = (projectRoleId: string) => {
     agreeProjectRole({ variables: { projectRoleId } })
@@ -138,7 +138,25 @@ const ProjectParticipantBlock: React.FC<{
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     form.validateFields().then(() => {
-      if (isUnregistered) {
+      if (isEdit) {
+        updateProjectRole({
+          variables: {
+            id: values.projectRoleId,
+            memberId: values.participant,
+            identityId: values.participantTypeId,
+            hasSendedMarkedNotification: publishAt ? true : false,
+          },
+        })
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+            form.resetFields()
+            setIsEdit(false)
+            setVisible(false)
+            participantListRefetch()
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      } else if (memberStatus === null) {
         if (isValidEmail(values.participant.trim())) {
           axios
             .post(
@@ -164,30 +182,39 @@ const ProjectParticipantBlock: React.FC<{
             .catch(handleError)
             .finally(() => {
               setLoading(false)
-              setIsUnregistered(false)
+              setMemberStatus(null)
             })
         } else {
           setLoading(false)
           return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
         }
-      } else if (isEdit) {
-        updateProjectRole({
-          variables: {
-            id: values.projectRoleId,
-            memberId: values.participant,
-            identityId: values.participantTypeId,
-            hasSendedMarkedNotification: publishAt ? true : false,
-          },
-        })
+      } else if (memberStatus === 'invited') {
+        axios
+          .post(
+            `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
+            {
+              appId,
+              executorName: currentMember?.name || '',
+              invitee: values.participantName,
+              email: participantList?.find(v => v.member.id === values.participant)?.member.email,
+              identityId: values.participantTypeId,
+              projectId: projectId,
+            },
+            {
+              headers: { authorization: `Bearer ${authToken}` },
+            },
+          )
           .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
+            message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
             form.resetFields()
-            setIsEdit(false)
             setVisible(false)
             participantListRefetch()
           })
           .catch(handleError)
-          .finally(() => setLoading(false))
+          .finally(() => {
+            setLoading(false)
+            setMemberStatus(null)
+          })
       } else {
         insertProjectRole({
           variables: {
@@ -264,7 +291,7 @@ const ProjectParticipantBlock: React.FC<{
             setIsEdit(false)
           }
           form.resetFields()
-          setIsUnregistered(false)
+          setMemberStatus(null)
           setVisible(false)
         }}
       >
@@ -280,7 +307,7 @@ const ProjectParticipantBlock: React.FC<{
             name="participant"
             rules={[
               {
-                required: !isUnregistered,
+                required: !memberStatus,
                 message: formatMessage(projectMessages.ProjectParticipantBlock.participantFieldRequired),
               },
             ]}
@@ -288,12 +315,12 @@ const ProjectParticipantBlock: React.FC<{
             <AllMemberSelector
               allowClear
               isAllowAddUnregistered={true}
-              setIsUnregistered={setIsUnregistered}
+              onMemberStatus={status => (status ? setMemberStatus(status) : setMemberStatus(null))}
               allowedPermissions={['PROJECT_PORTFOLIO_ADMIN', 'PROJECT_PORTFOLIO_NORMAL']}
             />
           </Form.Item>
 
-          {isUnregistered ? (
+          {!isEdit ? (
             <Form.Item
               label={formatMessage(projectMessages.ProjectParticipantBlock.participantName)}
               name="participantName"
@@ -333,7 +360,7 @@ const ProjectParticipantBlock: React.FC<{
                   setIsEdit(false)
                 }
                 form.resetFields()
-                setIsUnregistered(false)
+                setMemberStatus(null)
                 setVisible(false)
               }}
             >
