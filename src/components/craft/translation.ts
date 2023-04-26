@@ -92,6 +92,7 @@ const craftMessages = {
     disappearAfterLogin: { id: 'craft.SectionSettings.disappearAfterLogin', defaultMessage: '登入後隱藏' },
     link: { id: 'craft.SectionSettings.link', defaultMessage: '連結' },
     openNewTab: { id: 'craft.SectionSettings.openNewTab', defaultMessage: '另開分頁' },
+    sectionId: { id: 'craft.SectionSettings.sectionId', defaultMessage: 'Section ID' },
   }),
   TitleSettings: defineMessages({
     titleContent: { id: 'craft.TitleSettings.titleContent', defaultMessage: '標題內容' },
