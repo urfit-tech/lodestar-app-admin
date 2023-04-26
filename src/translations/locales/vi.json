@@ -476,6 +476,7 @@
   "common.event.loading": "Đang tải",
   "common.event.publishedSuccessfully": "Phát hành thành công",
   "common.event.publishingFailed": "Xuất bản không thành công",
+  "common.event.retryLater": "請再試一次",
   "common.event.successfullyCreated": "Thành lập thành công",
   "common.event.successfullyDeleted": "đã xóa thành công",
   "common.event.successfullyEdited": "Chỉnh sửa",

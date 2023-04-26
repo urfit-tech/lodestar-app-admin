@@ -476,6 +476,7 @@
   "common.event.loading": "载入中",
   "common.event.publishedSuccessfully": "发布成功",
   "common.event.publishingFailed": "发布失败",
+  "common.event.retryLater": "請再試一次",
   "common.event.successfullyCreated": "建立成功",
   "common.event.successfullyDeleted": "删除成功",
   "common.event.successfullyEdited": "编辑成功",

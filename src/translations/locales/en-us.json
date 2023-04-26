@@ -476,6 +476,7 @@
   "common.event.loading": "Loading",
   "common.event.publishedSuccessfully": "Published Successfully",
   "common.event.publishingFailed": "Publishing Failed",
+  "common.event.retryLater": "請再試一次",
   "common.event.successfullyCreated": "Created",
   "common.event.successfullyDeleted": "Deleted",
   "common.event.successfullyEdited": "Edited successfully",

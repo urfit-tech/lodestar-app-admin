@@ -476,6 +476,7 @@
   "common.event.loading": "Memuat",
   "common.event.publishedSuccessfully": "Berhasil Diterbitkan",
   "common.event.publishingFailed": "Penerbitan Gagal",
+  "common.event.retryLater": "請再試一次",
   "common.event.successfullyCreated": "Dibuat",
   "common.event.successfullyDeleted": "Dihapus",
   "common.event.successfullyEdited": "Berhasil diedit",
