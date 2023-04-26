@@ -59,7 +59,13 @@ const ProjectPortfolioBasicForm: React.FC<{
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
       })
-      .catch(handleError)
+      .catch(e => {
+        if (/project_tag_project_id_tag_name_key/.test(e.message)) {
+          message.error('請再試一次')
+          return
+        }
+        handleError(e)
+      })
       .finally(() => setLoading(false))
   }
 
