@@ -178,6 +178,7 @@ const ProjectParticipantBlock: React.FC<{
       .catch(handleError)
       .finally(() => {
         setMemberStatus(null)
+        setLoading(false)
       })
   }
 
@@ -197,54 +198,52 @@ const ProjectParticipantBlock: React.FC<{
         participantListRefetch()
       })
       .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    form
-      .validateFields()
-      .then(() => {
-        if (isEdit) {
-          memberStatus === 'unregistered'
-            ? isValidEmail(values.participant.trim())
-              ? deleteProjectRole({ variables: { projectRoleId: values.projectRoleId } })
-                  .then(() => handleRegisterProjectPortfolioParticipant(values))
-                  .catch(handleError)
-              : message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
-            : memberStatus === 'invited'
+    form.validateFields().then(() => {
+      if (isEdit) {
+        memberStatus === 'unregistered'
+          ? isValidEmail(values.participant.trim())
             ? deleteProjectRole({ variables: { projectRoleId: values.projectRoleId } })
                 .then(() => handleRegisterProjectPortfolioParticipant(values))
                 .catch(handleError)
-            : updateProjectRole({
-                variables: {
-                  id: values.projectRoleId,
-                  memberId: values.participant,
-                  identityId: values.participantTypeId,
-                  hasSendedMarkedNotification: publishAt ? true : false,
-                },
+            : message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+          : memberStatus === 'invited'
+          ? deleteProjectRole({ variables: { projectRoleId: values.projectRoleId } })
+              .then(() => handleRegisterProjectPortfolioParticipant(values))
+              .catch(handleError)
+          : updateProjectRole({
+              variables: {
+                id: values.projectRoleId,
+                memberId: values.participant,
+                identityId: values.participantTypeId,
+                hasSendedMarkedNotification: publishAt ? true : false,
+              },
+            })
+              .then(() => {
+                message.success(formatMessage(commonMessages.event.successfullySaved))
+                form.resetFields()
+                setIsEdit(false)
+                setVisible(false)
+                participantListRefetch()
               })
-                .then(() => {
-                  message.success(formatMessage(commonMessages.event.successfullySaved))
-                  form.resetFields()
-                  setIsEdit(false)
-                  setVisible(false)
-                  participantListRefetch()
-                })
-                .catch(handleError)
-                .finally(() => setLoading(false))
-        } else if (memberStatus === 'unregistered') {
-          if (isValidEmail(values.participant.trim())) {
-            handleRegisterProjectPortfolioParticipant(values)
-          } else {
-            return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
-          }
-        } else if (memberStatus === 'invited') {
+              .catch(handleError)
+              .finally(() => setLoading(false))
+      } else if (memberStatus === 'unregistered') {
+        if (isValidEmail(values.participant.trim())) {
           handleRegisterProjectPortfolioParticipant(values)
         } else {
-          handleInsertProjectRole(values)
+          return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
         }
-      })
-      .finally(() => setLoading(false))
+      } else if (memberStatus === 'invited') {
+        handleRegisterProjectPortfolioParticipant(values)
+      } else {
+        handleInsertProjectRole(values)
+      }
+    })
   }
 
   return (
