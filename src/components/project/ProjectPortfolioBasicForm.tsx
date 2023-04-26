@@ -61,7 +61,7 @@ const ProjectPortfolioBasicForm: React.FC<{
       })
       .catch(e => {
         if (/project_tag_project_id_tag_name_key/.test(e.message)) {
-          message.error('請再試一次')
+          message.error(formatMessage(commonMessages.event.retryLater))
           return
         }
         handleError(e)

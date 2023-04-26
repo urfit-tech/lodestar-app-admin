@@ -340,6 +340,7 @@ export const commonMessages = {
     successfullyDeleted: { id: 'common.event.successfullyDeleted', defaultMessage: '刪除成功' },
     failedUpload: { id: 'common.event.failedUpload', defaultMessage: '上傳失敗' },
     failedSave: { id: 'common.event.failedSave', defaultMessage: '儲存失敗' },
+    retryLater: { id: 'common.event.retryLater', defaultMessage: '請再試一次' },
   }),
   status: defineMessages({
     deleted: { id: 'common.status.deleted', defaultMessage: '已刪除' },
