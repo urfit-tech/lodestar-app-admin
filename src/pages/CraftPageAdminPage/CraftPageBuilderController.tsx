@@ -92,7 +92,13 @@ const CraftPageBuilderController: React.FC<{ pageId: string }> = ({ pageId }) =>
         }}
         onClick={() => editor.actions.history.redo()}
       />
-      <Button type="primary" className="mr-2" disabled={!editor.query.history.canUndo()} onClick={() => handleSave()}>
+      <Button
+        loading={loading}
+        type="primary"
+        className="mr-2"
+        disabled={!editor.query.history.canUndo()}
+        onClick={() => handleSave()}
+      >
         {formatMessage(commonMessages.ui.save)}
       </Button>
     </div>
