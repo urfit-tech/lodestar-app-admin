@@ -1,4 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons'
+import { gql, useApolloClient } from '@apollo/client'
 import { Button, Form, Input, message, Modal, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
@@ -16,6 +17,7 @@ import RoleAdminBlock from '../admin/RoleAdminBlock'
 import { AllMemberSelector } from '../form/MemberSelector'
 import ApplyingRoleAdminBlock from './ApplyingRoleAdminBlock'
 import projectMessages from './translation'
+import hasura from '../../hasura'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -48,6 +50,7 @@ const ProjectParticipantBlock: React.FC<{
 }> = ({ projectId, publishAt }) => {
   const { id: appId } = useApp()
   const { authToken, currentMember } = useAuth()
+  const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [rejectForm] = useForm<RejectFormFieldProps>()
@@ -126,7 +129,7 @@ const ProjectParticipantBlock: React.FC<{
       if (participant.projectRoleId === editId) {
         form.setFieldsValue({
           projectRoleId: participant.projectRoleId,
-          participant: participant.member.email,
+          participant: participant.member.id,
           participantTypeId: participant.identity.id,
         })
         setIsEdit(true)
@@ -135,105 +138,113 @@ const ProjectParticipantBlock: React.FC<{
     setVisible(true)
   }
 
+  const handleRegisterProjectPortfolioParticipant = async (values: FieldProps) => {
+    let memberEmail = null
+    if (!isValidEmail(values.participant.trim())) {
+      const { data } = await apolloClient.query<hasura.getMemberEmailById, hasura.getMemberEmailByIdVariables>({
+        query: gql`
+          query getMemberEmailById($id: String!) {
+            member_by_pk(id: $id) {
+              id
+              email
+            }
+          }
+        `,
+        variables: { id: values.participant.trim() },
+      })
+      memberEmail = data.member_by_pk?.email
+    }
+    axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
+        {
+          appId,
+          executorName: currentMember?.name || '',
+          invitee: values.participantName,
+          email: memberEmail || values.participant.trim(),
+          identityId: values.participantTypeId,
+          projectId: projectId,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+      .then(() => {
+        message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
+        form.resetFields()
+        setVisible(false)
+        participantListRefetch()
+      })
+      .catch(handleError)
+      .finally(() => {
+        setMemberStatus(null)
+      })
+  }
+
+  const handleInsertProjectRole = (values: FieldProps) => {
+    insertProjectRole({
+      variables: {
+        projectId: projectId,
+        memberId: values.participant,
+        identityId: values.participantTypeId,
+        hasSendedMarkedNotification: publishAt ? true : false,
+      },
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullyCreated))
+        form.resetFields()
+        setVisible(false)
+        participantListRefetch()
+      })
+      .catch(handleError)
+  }
+
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    form.validateFields().then(() => {
-      if (isEdit) {
-        updateProjectRole({
-          variables: {
-            id: values.projectRoleId,
-            memberId: values.participant,
-            identityId: values.participantTypeId,
-            hasSendedMarkedNotification: publishAt ? true : false,
-          },
-        })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            form.resetFields()
-            setIsEdit(false)
-            setVisible(false)
-            participantListRefetch()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
-      } else if (memberStatus === null) {
-        if (isValidEmail(values.participant.trim())) {
-          axios
-            .post(
-              `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
-              {
-                appId,
-                executorName: currentMember?.name || '',
-                invitee: values.participantName,
-                email: values.participant.trim(),
-                identityId: values.participantTypeId,
-                projectId: projectId,
-              },
-              {
-                headers: { authorization: `Bearer ${authToken}` },
-              },
-            )
-            .then(() => {
-              message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
-              form.resetFields()
-              setVisible(false)
-              participantListRefetch()
-            })
-            .catch(handleError)
-            .finally(() => {
-              setLoading(false)
-              setMemberStatus(null)
-            })
+    form
+      .validateFields()
+      .then(() => {
+        if (isEdit) {
+          memberStatus === 'unregistered'
+            ? isValidEmail(values.participant.trim())
+              ? deleteProjectRole({ variables: { projectRoleId: values.projectRoleId } })
+                  .then(() => handleRegisterProjectPortfolioParticipant(values))
+                  .catch(handleError)
+              : message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+            : memberStatus === 'invited'
+            ? deleteProjectRole({ variables: { projectRoleId: values.projectRoleId } })
+                .then(() => handleRegisterProjectPortfolioParticipant(values))
+                .catch(handleError)
+            : updateProjectRole({
+                variables: {
+                  id: values.projectRoleId,
+                  memberId: values.participant,
+                  identityId: values.participantTypeId,
+                  hasSendedMarkedNotification: publishAt ? true : false,
+                },
+              })
+                .then(() => {
+                  message.success(formatMessage(commonMessages.event.successfullySaved))
+                  form.resetFields()
+                  setIsEdit(false)
+                  setVisible(false)
+                  participantListRefetch()
+                })
+                .catch(handleError)
+                .finally(() => setLoading(false))
+        } else if (memberStatus === 'unregistered') {
+          if (isValidEmail(values.participant.trim())) {
+            handleRegisterProjectPortfolioParticipant(values)
+          } else {
+            return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+          }
+        } else if (memberStatus === 'invited') {
+          handleRegisterProjectPortfolioParticipant(values)
         } else {
-          setLoading(false)
-          return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+          handleInsertProjectRole(values)
         }
-      } else if (memberStatus === 'invited') {
-        axios
-          .post(
-            `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
-            {
-              appId,
-              executorName: currentMember?.name || '',
-              invitee: values.participantName,
-              email: participantList?.find(v => v.member.id === values.participant)?.member.email,
-              identityId: values.participantTypeId,
-              projectId: projectId,
-            },
-            {
-              headers: { authorization: `Bearer ${authToken}` },
-            },
-          )
-          .then(() => {
-            message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
-            form.resetFields()
-            setVisible(false)
-            participantListRefetch()
-          })
-          .catch(handleError)
-          .finally(() => {
-            setLoading(false)
-            setMemberStatus(null)
-          })
-      } else {
-        insertProjectRole({
-          variables: {
-            projectId: projectId,
-            memberId: values.participant,
-            identityId: values.participantTypeId,
-            hasSendedMarkedNotification: publishAt ? true : false,
-          },
-        })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullyCreated))
-            form.resetFields()
-            setVisible(false)
-            participantListRefetch()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
-      }
-    })
+      })
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -302,6 +313,7 @@ const ProjectParticipantBlock: React.FC<{
           <Form.Item label={formatMessage(commonMessages.label.selectParticipant)} name="projectRoleId" hidden>
             <Input />
           </Form.Item>
+
           <Form.Item
             label={formatMessage(commonMessages.label.selectParticipant)}
             name="participant"
@@ -313,6 +325,7 @@ const ProjectParticipantBlock: React.FC<{
             ]}
           >
             <AllMemberSelector
+              value={form.getFieldValue('participant')}
               allowClear
               isAllowAddUnregistered={true}
               onMemberStatus={status => (status ? setMemberStatus(status) : setMemberStatus(null))}
@@ -320,7 +333,11 @@ const ProjectParticipantBlock: React.FC<{
             />
           </Form.Item>
 
-          {!isEdit ? (
+          {(
+            isEdit
+              ? memberStatus === 'invited' || memberStatus === 'unregistered'
+              : !!form.getFieldValue('participant') && (memberStatus === 'unregistered' || memberStatus === 'invited')
+          ) ? (
             <Form.Item
               label={formatMessage(projectMessages.ProjectParticipantBlock.participantName)}
               name="participantName"
