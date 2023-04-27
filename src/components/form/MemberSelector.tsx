@@ -1,6 +1,6 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
+import { Spin } from 'antd'
 import Select, { SelectProps } from 'antd/lib/select'
-import { gql } from '@apollo/client'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -73,15 +73,16 @@ export const AllMemberSelector: React.FC<
   SelectProps<string | string[]> & {
     allowedPermissions?: string[]
     isAllowAddUnregistered?: boolean
-    setIsUnregistered?: React.Dispatch<React.SetStateAction<boolean>>
+    onMemberStatus?: (value: string | null) => void
   }
-> = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
+> = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, onMemberStatus, onSelect }) => {
   const { formatMessage } = useIntl()
   const [search, setSearch] = useState(value || '')
   const condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition'] = allowedPermissions
     ? {
         member_permissions: { permission_id: { _in: allowedPermissions } },
         _or: [
+          { id: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
@@ -89,19 +90,25 @@ export const AllMemberSelector: React.FC<
       }
     : {
         _or: [
+          { id: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
         ],
       }
-  const { members } = useAllMemberCollection(condition)
+  const { loading, members } = useAllMemberCollection(condition)
 
   const { data: existingMembers } = useQuery<hasura.GET_SINGLE_MEMBER_PUBLIC, hasura.GET_SINGLE_MEMBER_PUBLICVariables>(
     gql`
       query GET_SINGLE_MEMBER_PUBLIC($search: String!) {
         member_public(
           where: {
-            _or: [{ name: { _ilike: $search } }, { username: { _ilike: $search } }, { email: { _ilike: $search } }]
+            _or: [
+              { id: { _ilike: $search } }
+              { name: { _ilike: $search } }
+              { username: { _ilike: $search } }
+              { email: { _ilike: $search } }
+            ]
           }
         ) {
           id
@@ -126,28 +133,25 @@ export const AllMemberSelector: React.FC<
     <Select<string | string[]>
       style={{ width: '100%' }}
       showSearch
-      value={value}
+      value={loading ? `${formatMessage(formMessages['*'].loading)}...` : value}
+      notFoundContent={() => <Spin />}
       defaultActiveFirstOption={false}
       showArrow={false}
       filterOption={false}
       onChange={(value, option) => onChange?.(value, option)}
       onSelect={(value, option) => {
-        if (
-          isAllowAddUnregistered &&
-          (members.length === 0 || members.find(v => v.name === option.name || v.id === value)?.status === 'invited')
-        ) {
-          setIsUnregistered?.(true)
+        if (isAllowAddUnregistered && members.length === 0) {
+          onMemberStatus?.('unregistered')
         } else {
-          setIsUnregistered?.(false)
+          onMemberStatus?.(members.find(member => member.id === value)?.status || null)
         }
         onSelect?.(value, option)
       }}
       onSearch={handleSearch}
-      notFoundContent={null}
       allowClear
       onClear={() => {
         setSearch('')
-        setIsUnregistered?.(false)
+        onMemberStatus?.(null)
       }}
     >
       {isAllowAddUnregistered &&

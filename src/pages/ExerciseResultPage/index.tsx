@@ -32,7 +32,7 @@ const ExerciseResultPage: React.VFC = () => {
 
   const [selectedContentId, setSelectedContentId] = useState('')
 
-  if (!enabledModules.exercise) {
+  if (!enabledModules.exercise || (!permissions.EXERCISE_ADMIN && !permissions.EXERCISE_NORMAL)) {
     return <ForbiddenPage />
   }
 
