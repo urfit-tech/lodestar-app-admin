@@ -1083,8 +1083,30 @@ export const useMutateMember = () => {
       }
     }
   `)
+  const [updateMemberLastMemberNoteAnswered] = useMutation<
+    hasura.updateMemberLastMemberNoteAnswered,
+    hasura.updateMemberLastMemberNoteAnsweredVariables
+  >(gql`
+    mutation updateMemberLastMemberNoteAnswered($memberId: String!) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_answered: "NOW" }) {
+        affected_rows
+      }
+    }
+  `)
+  const [updateMemberLastMemberNoteCalled] = useMutation<
+    hasura.updateMemberLastMemberNoteCalled,
+    hasura.updateMemberLastMemberNoteCalledVariables
+  >(gql`
+    mutation updateMemberLastMemberNoteCalled($memberId: String!) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_called: "NOW" }) {
+        affected_rows
+      }
+    }
+  `)
   return {
     updateMemberAvatar,
+    updateMemberLastMemberNoteAnswered,
+    updateMemberLastMemberNoteCalled,
   }
 }
 

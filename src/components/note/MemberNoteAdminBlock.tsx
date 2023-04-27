@@ -52,6 +52,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
   const [loading, setLoading] = useState(false)
 
   const { insertMemberNote } = useMutateMemberNote()
+  const { updateMemberLastMemberNoteAnswered, updateMemberLastMemberNoteCalled } = useMutateMember()
   const uploadAttachments = useUploadAttachments()
   if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
@@ -81,6 +82,11 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               const memberNoteId = data?.insert_member_note_one?.id
               if (memberNoteId && attachments.length) {
                 await uploadAttachments('MemberNote', memberNoteId, attachments)
+              }
+              if (status === 'answered') {
+                await updateMemberLastMemberNoteAnswered({ variables: { memberId: memberAdmin.id } })
+              } else {
+                await updateMemberLastMemberNoteCalled({ variables: { memberId: memberAdmin.id } })
               }
               message.success(formatMessage(commonMessages.event.successfullyCreated))
               refetchMemberAdmin()
