@@ -133,6 +133,7 @@ export const useProject = () => {
         member {
           id
           name
+          email
           picture_url
           created_at
           status
@@ -155,6 +156,7 @@ export const useProject = () => {
         projectRoleId: projectRole.id,
         member: {
           id: projectRole.member?.id || '',
+          email: projectRole.member?.email || '',
           name: projectRole.member?.name || '',
           pictureUrl: projectRole.member?.picture_url || '',
           status: projectRole.member?.status || 'invited',
