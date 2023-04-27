@@ -59,7 +59,13 @@ const ProjectPortfolioBasicForm: React.FC<{
         message.success(formatMessage(commonMessages.event.successfullySaved))
         onRefetch?.()
       })
-      .catch(handleError)
+      .catch(e => {
+        if (/project_tag_project_id_tag_name_key/.test(e.message)) {
+          message.error(formatMessage(commonMessages.event.retryLater))
+          return
+        }
+        handleError(e)
+      })
       .finally(() => setLoading(false))
   }
 
@@ -125,7 +131,10 @@ const UPDATE_PORTFOLIO_PROJECT_BASIC = gql`
     delete_project_tag(where: { project_id: { _eq: $projectId } }) {
       affected_rows
     }
-    insert_project_tag(objects: $projectTags) {
+    insert_project_tag(
+      objects: $projectTags
+      on_conflict: { constraint: project_tag_project_id_tag_name_key, update_columns: [tag_name] }
+    ) {
       affected_rows
     }
   }

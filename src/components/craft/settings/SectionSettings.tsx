@@ -196,6 +196,11 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
           key="advancedSetting"
           header={<AdminHeaderTitle>{formatMessage(craftMessages['*'].advancedSetting)}</AdminHeaderTitle>}
         >
+          <Form.Item
+            label={<CraftSettingLabel>{formatMessage(craftMessages.SectionSettings.sectionId)}</CraftSettingLabel>}
+          >
+            <Input value={props.id} onChange={e => onPropsChange?.({ ...props, id: e.target.value })} />
+          </Form.Item>
           <Form.Item label={<CraftSettingLabel>{formatMessage(craftMessages['*'].className)}</CraftSettingLabel>}>
             <Input
               className="mt-2"
