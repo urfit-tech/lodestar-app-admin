@@ -1,5 +1,4 @@
 import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
 import { Button, Checkbox, Dropdown, Input, Menu, Popover, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
@@ -632,53 +631,60 @@ type UseDuplicatedPhoneList = () => {
 type DuplicatePhone = { id: string; phone: string; members: { id: string; name: string; email: string }[] }
 
 const useDuplicatedPhoneList: UseDuplicatedPhoneList = () => {
-  const { data, loading } = useQuery<{
-    member_phone: {
-      id: string
-      phone: string
-      member: {
-        id: string
-        name: string
-        email: string
-      }
-    }[]
-  }>(gql`
-    query GET_MEMBER_PHONE {
-      member_phone {
-        id
-        phone
-        member {
-          id
-          name
-          email
-        }
-      }
-    }
-  `)
-  const phoneMap: {
-    [phone: string]: DuplicatePhone
-  } = {}
-  const duplicatePhones: DuplicatePhone[] = []
-
-  data?.member_phone.forEach(({ id, phone, member }) => {
-    if (phoneMap[phone]) {
-      phoneMap[phone].members.push(member)
-      return
-    }
-
-    phoneMap[phone] = { id, phone, members: [member] }
-  })
-
-  for (const key in phoneMap) {
-    if (phoneMap[key].members.length > 1) {
-      duplicatePhones.push(phoneMap[key])
-    }
-  }
-
   return {
-    isLoading: loading,
-    data: duplicatePhones.sort((a, b) => (a.members.length < b.members.length ? -1 : 1)),
+    isLoading: false,
+    data: [],
   }
+  // TODO: should fix the massive join of member_phone.
+  //       this cause huge memory usage in browser & hasura.
+
+  // const { data, loading } = useQuery<{
+  //   member_phone: {
+  //     id: string
+  //     phone: string
+  //     member: {
+  //       id: string
+  //       name: string
+  //       email: string
+  //     }
+  //   }[]
+  // }>(gql`
+  //   query GET_MEMBER_PHONE {
+  //     member_phone {
+  //       id
+  //       phone
+  //       member {
+  //         id
+  //         name
+  //         email
+  //       }
+  //     }
+  //   }
+  // `)
+  // const phoneMap: {
+  //   [phone: string]: DuplicatePhone
+  // } = {}
+  // const duplicatePhones: DuplicatePhone[] = []
+
+  // data?.member_phone.forEach(({ id, phone, member }) => {
+  //   if (phoneMap[phone]) {
+  //     phoneMap[phone].members.push(member)
+  //     return
+  //   }
+
+  //   phoneMap[phone] = { id, phone, members: [member] }
+  // })
+
+  // for (const key in phoneMap) {
+  //   if (phoneMap[key].members.length > 1) {
+  //     duplicatePhones.push(phoneMap[key])
+  //   }
+  // }
+
+  // return {
+  //   isLoading: loading,
+  //   data: duplicatePhones.sort((a, b) => (a.members.length < b.members.length ? -1 : 1)),
+  // }
 }
 
 export default MemberCollectionAdminPage
