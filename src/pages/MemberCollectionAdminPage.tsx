@@ -635,9 +635,6 @@ const useDuplicatedPhoneList: UseDuplicatedPhoneList = () => {
     isLoading: false,
     data: [],
   }
-  // TODO: should fix the massive join of member_phone.
-  //       this cause huge memory usage in browser & hasura.
-
   // const { data, loading } = useQuery<{
   //   member_phone: {
   //     id: string
