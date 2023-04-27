@@ -342,6 +342,7 @@ export const commonMessages = {
     successfullyDeleted: { id: 'common.event.successfullyDeleted', defaultMessage: '刪除成功' },
     failedUpload: { id: 'common.event.failedUpload', defaultMessage: '上傳失敗' },
     failedSave: { id: 'common.event.failedSave', defaultMessage: '儲存失敗' },
+    retryLater: { id: 'common.event.retryLater', defaultMessage: '請再試一次' },
   }),
   status: defineMessages({
     deleted: { id: 'common.status.deleted', defaultMessage: '已刪除' },
@@ -1135,6 +1136,7 @@ export const blogMessages = {
 
 export const memberMessages = {
   ui: {
+    view: { id: 'member.ui.view', defaultMessage: '查看' },
     memberPage: { id: 'member.ui.memberPage', defaultMessage: '學員主頁' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
@@ -1188,6 +1190,14 @@ export const memberMessages = {
     abstract: { id: 'member.label.abstract', defaultMessage: '個人簡介' },
   }),
   text: {
+    duplicatedPhoneMember: {
+      id: 'member.text.duplicatedPhoneMember',
+      defaultMessage: '重複手機的會員',
+    },
+    duplicatedPhoneMemberExist: {
+      id: 'member.text.duplicatedPhoneMemberExist',
+      defaultMessage: '系統存在重複手機的會員',
+    },
     deleteMemberNoteConfirmation: {
       id: 'member.text.deleteMemberNoteConfirmation',
       defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',

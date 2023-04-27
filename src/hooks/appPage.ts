@@ -48,7 +48,7 @@ export const useAppPage = (pageId: string) => {
     ? {
         id: data.app_page_by_pk.id,
         path: data.app_page_by_pk.path || null,
-        title: data.app_page_by_pk.title || '',
+        title: data.app_page_by_pk.title || null,
         craftData: data.app_page_by_pk.craft_data,
         editorId: data.app_page_by_pk.editor_id || null,
         editorName: data.app_page_by_pk.editor?.name || null,
@@ -111,7 +111,7 @@ export const useAppPageCollection = () => {
       .map(v => ({
         id: v.id,
         path: v.path || null,
-        title: v.title || '',
+        title: v.title || null,
         craftData: v.craft_data,
         editorId: v.editor_id || null,
         editorName: v.editor?.name || null,
@@ -186,7 +186,7 @@ export const useMutateAppPage = () => {
         pageId: values.pageId,
         updated: {
           path: values.path,
-          title: values.title || '',
+          title: values.title,
           editor_id: values.editorId,
           craft_data: values.craftData,
           is_deleted: values.isDeleted,
@@ -195,10 +195,7 @@ export const useMutateAppPage = () => {
       },
     })
   }
-  const [updateAppPageMetaTag] = useMutation<
-    hasura.UPDATE_APP_PAGE_META_TAG,
-    hasura.UPDATE_APP_PAGE_META_TAGVariables
-  >(
+  const [updateAppPageMetaTag] = useMutation<hasura.UPDATE_APP_PAGE_META_TAG, hasura.UPDATE_APP_PAGE_META_TAGVariables>(
     gql`
       mutation UPDATE_APP_PAGE_META_TAG($id: uuid!, $metaTag: jsonb) {
         update_app_page(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTag }) {
@@ -211,6 +208,6 @@ export const useMutateAppPage = () => {
   return {
     insertAppPage,
     updateAppPage,
-    updateAppPageMetaTag
+    updateAppPageMetaTag,
   }
 }
