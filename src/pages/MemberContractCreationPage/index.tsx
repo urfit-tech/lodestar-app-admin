@@ -408,7 +408,7 @@ const usePrivateTeachContractInfo = (
             }
           }
         }
-        property(where: { placeholder: { _like: "%必填%" } }) {
+        property(where: { is_required: { _eq: true } }) {
           id
           name
           placeholder
