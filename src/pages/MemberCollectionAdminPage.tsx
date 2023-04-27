@@ -1,4 +1,6 @@
 import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
+import { gql, useQuery } from '@apollo/client'
+import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
 import { Button, Checkbox, Dropdown, Input, Menu, Popover, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
@@ -21,6 +23,8 @@ import { currencyFormatter } from '../helpers'
 import { commonMessages, memberMessages } from '../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../hooks/member'
 import { usePermissionGroupsDropdownMenu } from '../hooks/permission'
+import { ReactComponent as AngleRightIcon } from '../images/icon/angle-right.svg'
+import { ReactComponent as ExclamationCircleIcon } from '../images/icon/exclamation-circle.svg'
 import { ReactComponent as TableIcon } from '../images/icon/table.svg'
 import { MemberInfoProps, UserRole } from '../types/member'
 import ForbiddenPage from './ForbiddenPage'
@@ -79,6 +83,68 @@ const StyledTag = styled(Tag)`
   && {
     border-radius: 11px;
   }
+`
+
+const StyledAlertText = styled.div`
+  height: 40px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  color: var(--error);
+  background-color: #ffe9e5;
+  curser: pointer;
+`
+
+const StyledDrawerTitle = styled.p`
+  color: var(--gray-darker);
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
+
+const StyledDuplicatedNumberList = styled.ul`
+  padding: 0 26px;
+  margin: 0;
+`
+
+const StyledDuplicatedNumberListItem = styled.li`
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+  color: var(--gray-darker);
+  margin-bottom: 20px;
+`
+
+const StyledDuplicatedNumberMemberList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+`
+
+const StyledDuplicatedNumberMemberItemButton = styled(Button)`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: auto;
+  padding: 0;
+  font-weight: 500;
+  margin-top: 8px;
+
+  span {
+    margin: 0;
+  }
+`
+
+const StyledDuplicatedNumberMemberName = styled.span`
+  font-weight: bold;
+`
+
+const StyledDuplicatedNumberMemberEmail = styled.span`
+  font-size: 14px;
 `
 
 const MemberCollectionAdminPage: React.FC = () => {
@@ -391,6 +457,9 @@ const MemberCollectionAdminPage: React.FC = () => {
       }),
   ]
 
+  const duplicatePhoneList = useDuplicatedPhoneList()
+  const [open, setOpen] = useState(false)
+
   if (!permissions.MEMBER_ADMIN) {
     return <ForbiddenPage />
   }
@@ -451,6 +520,56 @@ const MemberCollectionAdminPage: React.FC = () => {
         </div>
       </div>
 
+      {!duplicatePhoneList.isLoading && duplicatePhoneList.data.length > 0 && (
+        <>
+          <StyledAlertText
+            className="d-flex align-items-center justify-content-between"
+            onClick={() => {
+              setOpen(true)
+            }}
+          >
+            <span className="d-flex align-items-center">
+              <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
+              <span>{formatMessage(memberMessages.text.duplicatedPhoneMemberExist)}</span>
+            </span>
+            <span className="d-flex align-items-center">
+              {formatMessage(memberMessages.ui.view)}
+              <Icon className="ml-2" component={() => <AngleRightIcon />} />
+            </span>
+          </StyledAlertText>
+          <Drawer isOpen={open} placement="right" onClose={() => setOpen(false)} size="sm">
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerHeader>
+                <HStack>
+                  <CloseButton onClick={() => setOpen(false)} />
+                  <StyledDrawerTitle> {formatMessage(memberMessages.text.duplicatedPhoneMember)}</StyledDrawerTitle>
+                </HStack>
+              </DrawerHeader>
+              <DrawerBody>
+                {duplicatePhoneList.data.map(({ id, phone, members }) => (
+                  <StyledDuplicatedNumberList key={id}>
+                    <StyledDuplicatedNumberListItem>
+                      {phone}
+                      <StyledDuplicatedNumberMemberList>
+                        {members.map(({ id, name, email }) => (
+                          <StyledDuplicatedNumberMemberItemButton
+                            type="link"
+                            onClick={() => window.open(`${process.env.PUBLIC_URL}/members/${id}`, '_blank')}
+                          >
+                            <StyledDuplicatedNumberMemberName>{name}</StyledDuplicatedNumberMemberName>
+                            <StyledDuplicatedNumberMemberEmail>{email}</StyledDuplicatedNumberMemberEmail>
+                          </StyledDuplicatedNumberMemberItemButton>
+                        ))}
+                      </StyledDuplicatedNumberMemberList>
+                    </StyledDuplicatedNumberListItem>
+                  </StyledDuplicatedNumberList>
+                ))}
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+        </>
+      )}
       <AdminCard className="mb-5">
         <TableWrapper>
           <Table<MemberInfoProps>
@@ -491,6 +610,71 @@ const MemberCollectionAdminPage: React.FC = () => {
       </AdminCard>
     </AdminLayout>
   )
+}
+
+type UseDuplicatedPhoneList = () => {
+  isLoading: boolean
+  data: {
+    id: string
+    phone: string
+    members: {
+      id: string
+      name: string
+      email: string
+    }[]
+  }[]
+}
+
+type DuplicatePhone = { id: string; phone: string; members: { id: string; name: string; email: string }[] }
+
+const useDuplicatedPhoneList: UseDuplicatedPhoneList = () => {
+  const { data, loading } = useQuery<{
+    member_phone: {
+      id: string
+      phone: string
+      member: {
+        id: string
+        name: string
+        email: string
+      }
+    }[]
+  }>(gql`
+    query GET_MEMBER_PHONE {
+      member_phone {
+        id
+        phone
+        member {
+          id
+          name
+          email
+        }
+      }
+    }
+  `)
+  const phoneMap: {
+    [phone: string]: DuplicatePhone
+  } = {}
+  const duplicatePhones: DuplicatePhone[] = []
+
+  data?.member_phone.forEach(({ id, phone, member }) => {
+    if (phoneMap[phone]) {
+      phoneMap[phone].members.push(member)
+      return
+    }
+
+    phoneMap[phone] = { id, phone, members: [member] }
+  })
+
+  for (const key in phoneMap) {
+    if (phoneMap[key].members.length > 1) {
+      duplicatePhones.push(phoneMap[key])
+    }
+  }
+
+  return {
+    isLoading: loading,
+    data: duplicatePhones.sort((a, b) => (a.members.length < b.members.length ? -1 : 1)),
+  }
 }
 
 export default MemberCollectionAdminPage
