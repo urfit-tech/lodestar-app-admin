@@ -1437,7 +1437,7 @@
   "form.PermissionGroup.PROJECT_ROLE_ADMIN": "角色管理",
   "form.PermissionGroup.SALES_CALL_ADMIN": "Kiểm tra khu vực kinh doanh",
   "form.PermissionGroup.SALES_EXPORT": "Nhập tất cả các đơn đặt hàng",
-  "form.PermissionGroup.SALES_LEAD_ADMIN": "Danh sách",
+  "form.PermissionGroup.SALES_LEAD_ADMIN": "Liệt kê chức năng quản lý cuộc gọi",
   "form.PermissionGroup.SALES_LEAD_DELIVERY_ADMIN": "Danh sách chức năng phân phối",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "Liệt kê chức năng thiết bị lựa chọn quay số",
   "form.PermissionGroup.SALES_PERFORMANCE_ADMIN": "Tổng số bảng hiệu suất",

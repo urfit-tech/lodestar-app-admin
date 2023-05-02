@@ -170,7 +170,6 @@ const formMessages = {
     MEMBER_CONTRACT_INSERT: { id: 'form.PermissionGroup.MEMBER_CONTRACT_INSERT', defaultMessage: '建立合約功能' },
     MEMBER_CONTRACT_REVOKE: { id: 'form.PermissionGroup.MEMBER_CONTRACT_REVOKE', defaultMessage: '解除合約功能' },
     MEMBER_ATTENDANT: { id: 'form.PermissionGroup.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
-    SALES_CALL_ADMIN: { id: 'form.PermissionGroup.SALES_CALL_ADMIN', defaultMessage: '檢視業務專區' },
     VIEW_ALL_MEMBER_NOTE: { id: 'form.PermissionGroup.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡紀錄' },
     MEMBER_EMAIL_EDIT: { id: 'form.PermissionGroup.MEMBER_EMAIL_EDIT', defaultMessage: '編輯信箱' },
     MEMBER_USERNAME_EDIT: { id: 'form.PermissionGroup.MEMBER_USERNAME_EDIT', defaultMessage: '編輯帳號' },
@@ -202,8 +201,14 @@ const formMessages = {
     CHECK_MEMBER_ORDER: { id: 'form.PermissionGroup.CHECK_MEMBER_ORDER', defaultMessage: '查看會員訂單紀錄' },
     CHECK_MEMBER_COIN: { id: 'form.PermissionGroup.CHECK_MEMBER_COIN', defaultMessage: '查看會員代幣紀錄' },
     CHECK_MEMBER_HISTORY: { id: 'form.PermissionGroup.CHECK_MEMBER_HISTORY', defaultMessage: '查看會員歷程紀錄' },
-    MEMBER_PROGRAM_TIMETABLE_VIEW: { id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW', defaultMessage: '查看會員課表' },
-    MEMBER_PROGRAM_TIMETABLE_EDIT: { id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT', defaultMessage: '編輯會員課表' },
+    MEMBER_PROGRAM_TIMETABLE_VIEW: {
+      id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_VIEW',
+      defaultMessage: '查看會員課表',
+    },
+    MEMBER_PROGRAM_TIMETABLE_EDIT: {
+      id: 'form.PermissionGroup.MEMBER_PROGRAM_TIMETABLE_EDIT',
+      defaultMessage: '編輯會員課表',
+    },
 
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
@@ -287,7 +292,8 @@ const formMessages = {
     SALES_PERFORMANCE_ADMIN: { id: 'form.PermissionGroup.SALES_PERFORMANCE_ADMIN', defaultMessage: '業績總表' },
 
     // sales_lead
-    SALES_LEAD_ADMIN: { id: 'form.PermissionGroup.SALES_LEAD_ADMIN', defaultMessage: '名單撥打' },
+    SALES_LEAD_ADMIN: { id: 'form.PermissionGroup.SALES_LEAD_ADMIN', defaultMessage: '所有名單撥打功能' },
+    SALES_LEAD_NORMAL: { id: 'form.PermissionGroup.SALES_LEAD_NORMAL', defaultMessage: '個人名單撥打功能' },
     SALES_LEAD_DELIVERY_ADMIN: { id: 'form.PermissionGroup.SALES_LEAD_DELIVERY_ADMIN', defaultMessage: '名單分派功能' },
     SALES_LEAD_SELECTOR_ADMIN: {
       id: 'form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN',

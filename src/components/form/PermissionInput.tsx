@@ -114,7 +114,8 @@ const PermissionGroup: React.FC<{
     MEMBER_ATTENDANT: !!enabledModules.attend,
     MEMBER_CONTRACT_INSERT: !!enabledModules.contract,
     MEMBER_CONTRACT_REVOKE: !!enabledModules.contract,
-    SALES_CALL_ADMIN: !!enabledModules.member_assignment,
+    SALES_LEAD_ADMIN: !!enabledModules.member_assignment,
+    SALES_LEAD_NORMAL: !!enabledModules.member_assignment,
   }
 
   return (
