@@ -130,7 +130,7 @@ const MemberProfileBasicForm: React.FC<{
           name="managerId"
           extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
         >
-          <AllMemberSelector allowClear />
+          <AllMemberSelector allowClear allowedPermissions={['BACKSTAGE_ENTER']} />
         </Form.Item>
       )}
 
