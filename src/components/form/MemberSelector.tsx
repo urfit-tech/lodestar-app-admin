@@ -68,6 +68,95 @@ const MemberSelector: React.FC<{
 
 let timeout: NodeJS.Timeout | null
 
+export const InhibitInputMemberSelector: React.FC<
+  SelectProps<string | string[]> & {
+    allowedPermissions?: string[]
+    isAllowAddUnregistered?: boolean
+    setIsUnregistered?: React.Dispatch<React.SetStateAction<boolean>>
+  }
+> = ({ value, onChange, allowedPermissions, isAllowAddUnregistered, setIsUnregistered, onSelect }) => {
+  const { formatMessage } = useIntl()
+  const [search, setSearch] = useState(value || '')
+  const condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTIONVariables['condition'] = allowedPermissions
+    ? {
+        member_permissions: { permission_id: { _in: allowedPermissions } },
+        _or: [
+          { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+        ],
+      }
+    : {
+        _or: [
+          { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+          { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
+        ],
+      }
+  const { members } = useAllMemberCollection(condition)
+
+  const handleSearch = (value: string) => {
+    if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+
+    timeout = setTimeout(() => {
+      setSearch(value.trim())
+    }, 300)
+  }
+
+  return (
+    <Select<string | string[]>
+      style={{ width: '100%' }}
+      showSearch
+      value={value}
+      defaultActiveFirstOption={false}
+      showArrow={false}
+      filterOption={false}
+      onChange={(value, option) => onChange?.(value, option)}
+      onSelect={(value, option) => {
+        if (
+          isAllowAddUnregistered &&
+          (members.length === 0 || members.find(v => v.name === option.name || v.id === value)?.status === 'invited')
+        ) {
+          setIsUnregistered?.(true)
+        } else {
+          setIsUnregistered?.(false)
+        }
+        onSelect?.(value, option)
+      }}
+      onSearch={handleSearch}
+      notFoundContent={null}
+      allowClear
+      onClear={() => {
+        setSearch('')
+        setIsUnregistered?.(false)
+      }}
+    >
+      {members.map(member => (
+        <Select.Option
+          key={member.id}
+          value={member.id}
+          title={member.name || member.username}
+          data-source={`${member.id} ${member.name} ${member.username} ${member.email}`}
+          data-email={member.email}
+          disabled={member.disabled}
+        >
+          <div className="d-flex align-items-center justify-content-start">
+            <AvatarImage size="28px" src={member.avatarUrl} className="mr-2 flex-shrink-0" />
+            <StyledText className="mr-2">{member.name}</StyledText>
+            <StyledTextSecondary>
+              {member.status === 'invited' ? ` (${formatMessage(formMessages.MemberSelector.memberIsInvited)}) ` : null}
+              {member.email}
+            </StyledTextSecondary>
+          </div>
+        </Select.Option>
+      ))}
+    </Select>
+  )
+}
+
 export const AllMemberSelector: React.FC<
   SelectProps<string | string[]> & {
     allowedPermissions?: string[]
