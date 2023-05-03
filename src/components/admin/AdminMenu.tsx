@@ -491,7 +491,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(adminMessages.AdminMenu.salesPerformance),
         },
         {
-          permissionIsAllowed: !!enabledModules.sales && Boolean(permissions.SALES_LEAD_ADMIN),
+          permissionIsAllowed:
+            !!enabledModules.sales && (Boolean(permissions.SALES_LEAD_ADMIN) || Boolean(permissions.SALES_LEAD_NORMAL)),
           key: 'sales_lead',
           name: formatMessage(adminMessages.AdminMenu.salesLead),
         },

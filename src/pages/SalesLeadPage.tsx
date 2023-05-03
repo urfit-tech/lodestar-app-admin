@@ -28,14 +28,15 @@ const SalesLeadPage: React.VFC = () => {
   const { managers } = useManagers()
   const { currentMemberId, currentMember, permissions } = useAuth()
   const [activeKey, setActiveKey] = useState('starred')
-  const [managerId, setmanagerId] = useState<string | null>(currentMemberId)
+  const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
 
-  if (!enabledModules.sales || !permissions.SALES_LEAD_ADMIN || !permissions.SALES_CALL_ADMIN) {
+  const manager =
+    managers.find(manager => manager.id === managerId) || (permissions.SALES_LEAD_ADMIN ? managers?.[0] : null)
+
+  if (!enabledModules.sales || (!permissions.SALES_LEAD_ADMIN && !permissions.SALES_LEAD_NORMAL && !manager)) {
     return <ForbiddenPage />
   }
-
-  const manager = managers.find(manager => manager.id === managerId) || managers?.[0]
 
   return (
     <AdminLayout>
@@ -44,10 +45,10 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {permissions.SALES_LEAD_SELECTOR_ADMIN && manager ? (
+        {permissions.SALES_LEAD_ADMIN && manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">承辦人：</span>
-            <ManagerInput value={manager.id} onChange={value => setmanagerId(value)} />
+            <ManagerInput value={manager.id} onChange={value => setManagerId(value)} />
           </StyledManagerBlock>
         ) : currentMember?.role === 'general-member' ? (
           <div>承辦編號：{currentMember.id}</div>
