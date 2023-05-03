@@ -12,7 +12,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { MemberAdminProps } from '../../types/member'
 import CategorySelector from '../form/CategorySelector'
-import { AllMemberSelector } from '../form/MemberSelector'
+import { InhibitInputMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
 
 type FieldProps = {
@@ -130,7 +130,7 @@ const MemberProfileBasicForm: React.FC<{
           name="managerId"
           extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
         >
-          <AllMemberSelector allowClear allowedPermissions={['BACKSTAGE_ENTER']} />
+          <InhibitInputMemberSelector allowedPermissions={['BACKSTAGE_ENTER']} />
         </Form.Item>
       )}
 
