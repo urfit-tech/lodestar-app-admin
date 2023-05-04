@@ -169,10 +169,9 @@ const useSalesGroups = (appId: string) => {
     loading || error || !data
       ? []
       : data.member_property?.reduce<GroupSettingProps[]>((currentGroupSettings, currentSalesMember) => {
-          const {
-            value: groupName,
-            member: { id, name },
-          } = currentSalesMember
+          const id = currentSalesMember.member?.id || ''
+          const name = currentSalesMember.member?.name || ''
+          const groupName = currentSalesMember.value
 
           const currentGroupId = currentGroupSettings.findIndex(groupSetting => groupSetting.name === groupName)
 

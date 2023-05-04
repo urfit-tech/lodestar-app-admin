@@ -339,11 +339,11 @@ export const useManagers = () => {
       data?.member_property
         .filter(v => v.value)
         .map(v => ({
-          id: v.member.id,
-          name: v.member.name,
-          username: v.member.username,
-          avatarUrl: v.member.picture_url || null,
-          email: v.member.email,
+          id: v.member?.id || '',
+          name: v.member?.name || '',
+          username: v.member?.username || '',
+          avatarUrl: v.member?.picture_url || null,
+          email: v.member?.email || '',
           telephone: v.value,
         })) || [],
     [data],
