@@ -4,6 +4,7 @@ const formMessages = {
   '*': defineMessages({
     startedAt: { id: 'form.*.startedAt', defaultMessage: '開始日期' },
     endedAt: { id: 'form.*.endedAt', defaultMessage: '截止日期' },
+    loading: { id: 'form.*.loading', defaultMessage: '讀取中' },
   }),
   PermissionInput: defineMessages({
     backstage: { id: 'form.PermissionInput.backstage', defaultMessage: '後台權限' },

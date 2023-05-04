@@ -1,4 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons'
+import { gql, useApolloClient } from '@apollo/client'
 import { Button, Form, Input, message, Modal, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
@@ -8,6 +9,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import hasura from '../../hasura'
 import { handleError, isValidEmail } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useIdentity } from '../../hooks/identity'
@@ -32,7 +34,7 @@ const StyledTextArea = styled(Input.TextArea)`
 
 type FieldProps = {
   projectRoleId: string
-  participant: string // uuid | email string
+  participant: string
   participantTypeId: string
   participantName?: string
 }
@@ -48,6 +50,7 @@ const ProjectParticipantBlock: React.FC<{
 }> = ({ projectId, publishAt }) => {
   const { id: appId } = useApp()
   const { authToken, currentMember } = useAuth()
+  const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [rejectForm] = useForm<RejectFormFieldProps>()
@@ -67,7 +70,7 @@ const ProjectParticipantBlock: React.FC<{
   const [isEdit, setIsEdit] = useState(false)
   const [isRejectModalVisible, setIsRejectModalVisible] = useState(false)
   const [rejectModalLoading, setRejectModalLoading] = useState(false)
-  const [isUnregistered, setIsUnregistered] = useState(false)
+  const [memberStatus, setMemberStatus] = useState<string | null>(null)
 
   const handleAgree = (projectRoleId: string) => {
     agreeProjectRole({ variables: { projectRoleId } })
@@ -135,78 +138,115 @@ const ProjectParticipantBlock: React.FC<{
     setVisible(true)
   }
 
+  const handleRegisterProjectPortfolioParticipant = async (values: FieldProps) => {
+    let memberEmail = null
+    if (!isValidEmail(values.participant.trim())) {
+      const { data } = await apolloClient.query<hasura.getMemberEmailById, hasura.getMemberEmailByIdVariables>({
+        query: gql`
+          query getMemberEmailById($id: String!) {
+            member_by_pk(id: $id) {
+              id
+              email
+            }
+          }
+        `,
+        variables: { id: values.participant.trim() },
+      })
+      memberEmail = data.member_by_pk?.email
+    }
+    axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
+        {
+          appId,
+          executorName: currentMember?.name || '',
+          invitee: values.participantName,
+          email: memberEmail || values.participant.trim(),
+          identityId: values.participantTypeId,
+          projectId: projectId,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+      .then(() => {
+        message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
+        form.resetFields()
+        setVisible(false)
+        participantListRefetch()
+      })
+      .catch(handleError)
+      .finally(() => {
+        setMemberStatus(null)
+        setLoading(false)
+      })
+  }
+
+  const handleInsertProjectRole = (values: FieldProps) => {
+    insertProjectRole({
+      variables: {
+        projectId: projectId,
+        memberId: values.participant,
+        identityId: values.participantTypeId,
+        hasSendedMarkedNotification: publishAt ? true : false,
+      },
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullyCreated))
+        form.resetFields()
+        setVisible(false)
+        participantListRefetch()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
+  }
+
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    form.validateFields().then(() => {
-      if (isUnregistered) {
-        if (isValidEmail(values.participant.trim())) {
-          axios
-            .post(
-              `${process.env.REACT_APP_API_BASE_ROOT}/auth/register-project-portfolio-participant`,
-              {
-                appId,
-                executorName: currentMember?.name || '',
-                invitee: values.participantName,
-                email: values.participant.trim(),
-                identityId: values.participantTypeId,
-                projectId: projectId,
-              },
-              {
-                headers: { authorization: `Bearer ${authToken}` },
-              },
-            )
-            .then(() => {
-              message.success(formatMessage(projectMessages.ProjectParticipantBlock.inviteSuccessfully))
-              form.resetFields()
-              setVisible(false)
-              participantListRefetch()
-            })
-            .catch(handleError)
-            .finally(() => {
-              setLoading(false)
-              setIsUnregistered(false)
-            })
+    form
+      .validateFields()
+      .then(() => {
+        if (isEdit) {
+          memberStatus === 'unregistered'
+            ? isValidEmail(values.participant.trim())
+              ? deleteProjectRole({ variables: { projectRoleId: values.projectRoleId } })
+                  .then(() => handleRegisterProjectPortfolioParticipant(values))
+                  .catch(handleError)
+              : message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+            : memberStatus === 'invited'
+            ? deleteProjectRole({ variables: { projectRoleId: values.projectRoleId } })
+                .then(() => handleRegisterProjectPortfolioParticipant(values))
+                .catch(handleError)
+            : updateProjectRole({
+                variables: {
+                  id: values.projectRoleId,
+                  memberId: values.participant,
+                  identityId: values.participantTypeId,
+                  hasSendedMarkedNotification: publishAt ? true : false,
+                },
+              })
+                .then(() => {
+                  message.success(formatMessage(commonMessages.event.successfullySaved))
+                  form.resetFields()
+                  setIsEdit(false)
+                  setVisible(false)
+                  participantListRefetch()
+                })
+                .catch(handleError)
+                .finally(() => setLoading(false))
+        } else if (memberStatus === 'unregistered') {
+          if (isValidEmail(values.participant.trim())) {
+            handleRegisterProjectPortfolioParticipant(values)
+          } else {
+            return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+          }
+        } else if (memberStatus === 'invited') {
+          handleRegisterProjectPortfolioParticipant(values)
         } else {
-          setLoading(false)
-          return message.error(formatMessage(projectMessages.ProjectParticipantBlock.invalidEmail))
+          handleInsertProjectRole(values)
         }
-      } else if (isEdit) {
-        updateProjectRole({
-          variables: {
-            id: values.projectRoleId,
-            memberId: values.participant,
-            identityId: values.participantTypeId,
-            hasSendedMarkedNotification: publishAt ? true : false,
-          },
-        })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            form.resetFields()
-            setIsEdit(false)
-            setVisible(false)
-            participantListRefetch()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
-      } else {
-        insertProjectRole({
-          variables: {
-            projectId: projectId,
-            memberId: values.participant,
-            identityId: values.participantTypeId,
-            hasSendedMarkedNotification: publishAt ? true : false,
-          },
-        })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullyCreated))
-            form.resetFields()
-            setVisible(false)
-            participantListRefetch()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
-      }
-    })
+      })
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -264,7 +304,7 @@ const ProjectParticipantBlock: React.FC<{
             setIsEdit(false)
           }
           form.resetFields()
-          setIsUnregistered(false)
+          setMemberStatus(null)
           setVisible(false)
         }}
       >
@@ -275,24 +315,31 @@ const ProjectParticipantBlock: React.FC<{
           <Form.Item label={formatMessage(commonMessages.label.selectParticipant)} name="projectRoleId" hidden>
             <Input />
           </Form.Item>
+
           <Form.Item
             label={formatMessage(commonMessages.label.selectParticipant)}
             name="participant"
             rules={[
               {
-                required: !isUnregistered,
+                required: !memberStatus,
                 message: formatMessage(projectMessages.ProjectParticipantBlock.participantFieldRequired),
               },
             ]}
           >
             <AllMemberSelector
+              value={form.getFieldValue('participant')}
               allowClear
               isAllowAddUnregistered={true}
-              setIsUnregistered={setIsUnregistered}
+              onMemberStatus={status => (status ? setMemberStatus(status) : setMemberStatus(null))}
               allowedPermissions={['PROJECT_PORTFOLIO_ADMIN', 'PROJECT_PORTFOLIO_NORMAL']}
             />
           </Form.Item>
-          {isUnregistered ? (
+
+          {(
+            isEdit
+              ? memberStatus === 'invited' || memberStatus === 'unregistered'
+              : !!form.getFieldValue('participant') && (memberStatus === 'unregistered' || memberStatus === 'invited')
+          ) ? (
             <Form.Item
               label={formatMessage(projectMessages.ProjectParticipantBlock.participantName)}
               name="participantName"
@@ -332,7 +379,7 @@ const ProjectParticipantBlock: React.FC<{
                   setIsEdit(false)
                 }
                 form.resetFields()
-                setIsUnregistered(false)
+                setMemberStatus(null)
                 setVisible(false)
               }}
             >
