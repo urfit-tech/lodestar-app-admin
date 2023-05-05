@@ -302,6 +302,7 @@ const SalesPerformanceTable: React.VFC<{
 }
 
 const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => {
+  const { currentMemberId, currentUserRole } = useAuth()
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT_LIST, hasura.GET_MEMBER_CONTRACT_LISTVariables>(
     gql`
       query GET_MEMBER_CONTRACT_LIST($startedAt: timestamptz!, $endedAt: timestamptz!) {
@@ -370,44 +371,54 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
       data?.member_contract
         .map(
           v =>
-            v.values.orderExecutors?.map((orderExecutor: any) => {
-              const executor = managers.find(v => v.id === orderExecutor.member_id)
-              const isGuaranteed = v.options?.note?.includes('保買') || false
-              const performance = orderExecutor.ratio * v.values.price
-              const recognizePerformance = Math.round(
-                orderExecutor.ratio * (v.values.orderOptions?.recognizePerformance || v.values.price),
-              )
-              return {
-                id: v.id,
-                author: {
-                  id: v.author?.id,
-                  name: v.author?.name,
-                },
-                executor: {
-                  id: executor?.id,
-                  name: executor?.name,
-                  groupName: executor?.groupName,
-                  department: executor?.department,
-                },
-                member: {
-                  id: v.member.id,
-                  name: v.member.name,
-                },
-                agreedAt: v.agreed_at,
-                revokedAt: v.revoked_at,
-                approvedAt: v.options?.approvedAt,
-                canceledAt: v.options?.loanCanceledAt,
-                refundAppliedAt: v.options?.refundAppliedAt,
-                performance: isGuaranteed ? performance * 0.7 : performance,
-                recognizePerformance,
-                products: v.values.orderProducts?.map(
-                  (op: any) => op.name + (op.options ? `(${op.options.quantity})` : ''),
-                ),
-                paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
-                paymentNumber: v.values.paymentOptions.paymentNumber,
-                note: v.options?.note || '',
-              }
-            }) || [],
+            v.values.orderExecutors
+              .filter((orderExecutor: any) => {
+                if (currentUserRole === 'app-owner') {
+                  return true
+                } else {
+                  const currentExecutor = managers.find(v => v.id === currentMemberId)
+                  if (orderExecutor.department && orderExecutor.department === currentExecutor?.department) return true
+                  return false
+                }
+              })
+              ?.map((orderExecutor: any) => {
+                const executor = managers.find(v => v.id === orderExecutor.member_id)
+                const isGuaranteed = v.options?.note?.includes('保買') || false
+                const performance = orderExecutor.ratio * v.values.price
+                const recognizePerformance = Math.round(
+                  orderExecutor.ratio * (v.values.orderOptions?.recognizePerformance || v.values.price),
+                )
+                return {
+                  id: v.id,
+                  author: {
+                    id: v.author?.id,
+                    name: v.author?.name,
+                  },
+                  executor: {
+                    id: executor?.id,
+                    name: executor?.name,
+                    groupName: executor?.groupName,
+                    department: executor?.department,
+                  },
+                  member: {
+                    id: v.member.id,
+                    name: v.member.name,
+                  },
+                  agreedAt: v.agreed_at,
+                  revokedAt: v.revoked_at,
+                  approvedAt: v.options?.approvedAt,
+                  canceledAt: v.options?.loanCanceledAt,
+                  refundAppliedAt: v.options?.refundAppliedAt,
+                  performance: isGuaranteed ? performance * 0.7 : performance,
+                  recognizePerformance,
+                  products: v.values.orderProducts?.map(
+                    (op: any) => op.name + (op.options ? `(${op.options.quantity})` : ''),
+                  ),
+                  paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
+                  paymentNumber: v.values.paymentOptions.paymentNumber,
+                  note: v.options?.note || '',
+                }
+              }) || [],
         )
         .flat() || [],
     [data?.member_contract],
