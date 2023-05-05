@@ -372,15 +372,6 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
         .map(
           v =>
             v.values.orderExecutors
-              .filter((orderExecutor: any) => {
-                if (currentUserRole === 'app-owner') {
-                  return true
-                } else {
-                  const currentExecutor = managers.find(v => v.id === currentMemberId)
-                  if (orderExecutor.department && orderExecutor.department === currentExecutor?.department) return true
-                  return false
-                }
-              })
               ?.map((orderExecutor: any) => {
                 const executor = managers.find(v => v.id === orderExecutor.member_id)
                 const isGuaranteed = v.options?.note?.includes('保買') || false
@@ -417,6 +408,15 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                   paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
                   paymentNumber: v.values.paymentOptions.paymentNumber,
                   note: v.options?.note || '',
+                }
+              })
+              .filter((orderExecutor: any) => {
+                if (currentUserRole === 'app-owner') {
+                  return true
+                } else {
+                  const currentExecutor = managers.find(v => v.id === currentMemberId)
+                  if (orderExecutor.executor.department === currentExecutor?.department) return true
+                  return false
                 }
               }) || [],
         )
