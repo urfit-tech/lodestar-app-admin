@@ -590,7 +590,8 @@ const useMemberNotesAdmin = (
   orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
   filters?: FiltersProps,
 ) => {
-  const { permissions, currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
+
   const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
     created_at: filters?.range
       ? {
@@ -598,21 +599,23 @@ const useMemberNotesAdmin = (
           _lte: filters.range[1].toDate(),
         }
       : undefined,
-    author: filters?.author
-      ? {
-          _or: [
-            { name: { _ilike: `%${filters.author}%` } },
-            { username: { _ilike: `%${filters.author}%` } },
-            { email: { _ilike: `%${filters.author}%` } },
-          ],
-        }
-      : permissions.VIEW_ALL_MEMBER_NOTE
-      ? undefined
-      : {
-          id: {
-            _eq: currentMemberId,
+    author:
+      currentUserRole === 'app-owner'
+        ? // permissions.VIEW_ALL_MEMBER_NOTE
+          filters?.author
+          ? {
+              _or: [
+                { name: { _ilike: `%${filters.author}%` } },
+                { username: { _ilike: `%${filters.author}%` } },
+                { email: { _ilike: `%${filters.author}%` } },
+              ],
+            }
+          : undefined
+        : {
+            id: {
+              _eq: currentMemberId,
+            },
           },
-        },
     member: {
       manager: filters?.manager
         ? {
