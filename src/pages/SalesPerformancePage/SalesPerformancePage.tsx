@@ -32,6 +32,7 @@ export type MemberContract = {
     id: string
     name: string
     groupName: string
+    department: string
   }
   member: {
     id: string
@@ -54,12 +55,13 @@ const TableWrapper = styled.div`
 `
 
 const SalesPerformancePage: React.VFC = () => {
+  const { formatMessage } = useIntl()
   const [month, setMonth] = useState(moment().startOf('month'))
   const [activeGroupName, setActiveGroupName] = useState<string>()
   const [activeManagerId, setActiveManagerId] = useState<string>()
-  const { formatMessage } = useIntl()
+  const [activeDepartment, setActiveDepartment] = useState<string>()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
-  const { currentMemberId, permissions } = useAuth()
+  const { currentMemberId, permissions, currentUserRole } = useAuth()
 
   useEffect(() => {
     currentMemberId && setActiveManagerId(currentMemberId)
@@ -98,6 +100,7 @@ const SalesPerformancePage: React.VFC = () => {
               ))}
             </Select>
           )}
+
           <Select
             className="mr-3"
             style={{ width: 200 }}
@@ -114,6 +117,25 @@ const SalesPerformancePage: React.VFC = () => {
               </Select.Option>
             ))}
           </Select>
+
+          {currentUserRole === 'app-owner' && (
+            <Select
+              className="mr-3"
+              style={{ width: 200 }}
+              showSearch
+              allowClear
+              placeholder="機構"
+              value={activeDepartment}
+              optionFilterProp="children"
+              onChange={setActiveDepartment}
+            >
+              {uniqBy(manager => manager.department, managers || []).map(manager => (
+                <Select.Option key={manager.id} value={manager.department}>
+                  {manager.department}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
         </div>
       </AdminPageTitle>
       {currentMemberId ? (
@@ -122,14 +144,29 @@ const SalesPerformancePage: React.VFC = () => {
           memberContracts={
             activeManagerId
               ? activeGroupName
-                ? memberContracts.filter(
-                    memberContract =>
-                      memberContract.executor.id === activeManagerId &&
-                      memberContract.executor.groupName === activeGroupName,
-                  )
+                ? activeDepartment
+                  ? memberContracts.filter(
+                      memberContract =>
+                        memberContract.executor.id === activeManagerId &&
+                        memberContract.executor.groupName === activeGroupName &&
+                        memberContract.executor.department === activeDepartment,
+                    )
+                  : memberContracts.filter(
+                      memberContract =>
+                        memberContract.executor.id === activeManagerId &&
+                        memberContract.executor.groupName === activeGroupName,
+                    )
                 : memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
               : activeGroupName
-              ? memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
+              ? activeDepartment
+                ? memberContracts.filter(
+                    memberContract =>
+                      memberContract.executor.groupName === activeDepartment &&
+                      memberContract.executor.groupName === activeGroupName,
+                  )
+                : activeDepartment
+                ? memberContracts.filter(memberContract => memberContract.executor.groupName === activeDepartment)
+                : memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
               : memberContracts
           }
         />
@@ -274,7 +311,10 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
             name
             email
             app_id
-            member_properties(where: { property: { name: { _eq: "組別" } } }) {
+            groupNames: member_properties(where: { property: { name: { _eq: "組別" } } }) {
+              value
+            }
+            departments: member_properties(where: { property: { name: { _eq: "機構" } } }) {
               value
             }
           }
@@ -318,11 +358,13 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
           id: v.member?.id || v4(),
           name: v.member?.name || 'unknown',
           email: v.member?.email || 'unknown',
-          groupName: v.member?.member_properties[0]?.value || 'unknown',
+          groupName: v.member?.groupNames[0]?.value || 'unknown',
+          department: v.member?.departments[0]?.value || 'unknown',
         }
       }) || [],
     [data?.order_executor],
   )
+
   const memberContracts: MemberContract[] = useMemo(
     () =>
       data?.member_contract
@@ -345,6 +387,7 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
                   id: executor?.id,
                   name: executor?.name,
                   groupName: executor?.groupName,
+                  department: executor?.department,
                 },
                 member: {
                   id: v.member.id,
