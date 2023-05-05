@@ -156,17 +156,25 @@ const SalesPerformancePage: React.VFC = () => {
                         memberContract.executor.id === activeManagerId &&
                         memberContract.executor.groupName === activeGroupName,
                     )
+                : activeDepartment
+                ? memberContracts.filter(
+                    memberContract =>
+                      memberContract.executor.id === activeManagerId &&
+                      memberContract.executor.department === activeDepartment,
+                  )
                 : memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
               : activeGroupName
               ? activeDepartment
                 ? memberContracts.filter(
                     memberContract =>
-                      memberContract.executor.department === activeDepartment &&
-                      memberContract.executor.groupName === activeGroupName,
+                      memberContract.executor.groupName === activeGroupName &&
+                      memberContract.executor.department === activeDepartment,
                   )
                 : activeDepartment
                 ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
                 : memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
+              : activeDepartment
+              ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
               : memberContracts
           }
         />
