@@ -45,7 +45,7 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {permissions.SALES_LEAD_ADMIN && manager ? (
+        {permissions.SALES_LEAD_SELECTOR_ADMIN && manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">承辦人：</span>
             <ManagerInput value={manager.id} onChange={value => setManagerId(value)} />
