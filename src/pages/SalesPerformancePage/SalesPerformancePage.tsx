@@ -161,11 +161,11 @@ const SalesPerformancePage: React.VFC = () => {
               ? activeDepartment
                 ? memberContracts.filter(
                     memberContract =>
-                      memberContract.executor.groupName === activeDepartment &&
+                      memberContract.executor.department === activeDepartment &&
                       memberContract.executor.groupName === activeGroupName,
                   )
                 : activeDepartment
-                ? memberContracts.filter(memberContract => memberContract.executor.groupName === activeDepartment)
+                ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
                 : memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
               : memberContracts
           }
