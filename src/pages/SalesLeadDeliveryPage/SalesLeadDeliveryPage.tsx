@@ -15,9 +15,12 @@ import {
   Steps,
 } from 'antd'
 import { ResultProps } from 'antd/lib/result'
+import { Box, Text } from '@chakra-ui/react'
+import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
 import CategoryInput from '../../components/common/CategoryInput'
 import ManagerInput from '../../components/common/ManagerInput'
@@ -36,6 +39,8 @@ type Filter = {
   marketingActivity: string
   adMaterials: string
   leadLevel: string
+  isAdMaterialsExactMatch: boolean
+  isMarketingActivitysExactMatch: boolean
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -56,6 +61,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     marketingActivity: '',
     adMaterials: '',
     leadLevel: '',
+    isAdMaterialsExactMatch: false,
+    isMarketingActivitysExactMatch: false,
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -124,7 +131,17 @@ const FilterSection: React.FC<{
   const { formatMessage } = useIntl()
   const [starRangeIsNull, setStarRangeIsNull] = useState(false)
   const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
-
+  const ExactMatchCheckBox = styled(Form.Item)`
+    left: 0%;
+    bottom: -70%;
+    display: flex;
+    position: absolute;
+    @media (min-width: ${DESKTOP_BREAK_POINT}px) {
+      bottom: 0%;
+      left: auto;
+      right: -120px;
+    }
+  `
   return (
     <Form<Filter>
       layout="horizontal"
@@ -188,17 +205,33 @@ const FilterSection: React.FC<{
         </Input.Group>
       </Form.Item>
 
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.marketingActivity)}
-        name="marketingActivity"
-      >
-        <Input />
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.marketingActivity)}>
+        <Box position="relative" w="100%" display="flex">
+          <Form.Item name="marketingActivity" style={{ width: '100%' }}>
+            <Input style={{ width: '100%' }} />
+          </Form.Item>
+          <ExactMatchCheckBox name="isMarketingActivitysExactMatch" valuePropName="checked">
+            <Checkbox style={{ display: 'flex', alignItems: 'center' }}>
+              <Text color="var(--gary-dark)" size="sm">
+                {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.exactMatch)}
+              </Text>
+            </Checkbox>
+          </ExactMatchCheckBox>
+        </Box>
       </Form.Item>
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.adMaterials)}
-        name="adMaterials"
-      >
-        <Input />
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.adMaterials)}>
+        <Box position="relative" w="100%" display="flex">
+          <Form.Item name="adMaterials" style={{ width: '100%' }}>
+            <Input style={{ width: '100%' }} />
+          </Form.Item>
+          <ExactMatchCheckBox name="isAdMaterialsExactMatch" valuePropName="checked">
+            <Checkbox style={{ display: 'flex', alignItems: 'center' }}>
+              <Text color="var(--gary-dark)" size="sm">
+                {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.exactMatch)}
+              </Text>
+            </Checkbox>
+          </ExactMatchCheckBox>
+        </Box>
       </Form.Item>
       <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.leadLevel)} name="leadLevel">
         <Input />
@@ -295,14 +328,24 @@ const ConfirmSection: React.FC<{
           _and: [
             {
               member_properties:
-                filter.marketingActivity !== ''
-                  ? { property: { name: { _eq: '行銷活動' } }, value: { _like: `%${filter.marketingActivity}%` } }
-                  : undefined,
+              filter.marketingActivity !== ''
+              ? {
+                  property: { name: { _eq: '行銷活動' } },
+                  value: filter.isMarketingActivitysExactMatch
+                    ? { _eq: `${filter.marketingActivity}` }
+                    : { _like: `%${filter.marketingActivity}%` },
+                }
+              : undefined,
             },
             {
               member_properties:
                 filter.adMaterials !== ''
-                  ? { property: { name: { _eq: '廣告素材' } }, value: { _like: `%${filter.adMaterials}%` } }
+                  ? {
+                      property: { name: { _eq: '廣告素材' } },
+                      value: filter.isAdMaterialsExactMatch
+                        ? { _eq: `${filter.adMaterials}` }
+                        : { _like: `%${filter.adMaterials}%` },
+                    }
                   : undefined,
             },
             {
