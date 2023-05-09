@@ -1,4 +1,4 @@
-import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons'
 import Uppy from '@uppy/core'
 import { StatusBar, useUppy } from '@uppy/react'
 import Tus from '@uppy/tus'
@@ -12,9 +12,11 @@ import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
 import { DeepPick } from 'ts-deep-pick'
+import { getFileDownloadableLink } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
+import libraryMessages from './translation'
 import VideoPlayer from './VideoPlayer'
 
 const messages = defineMessages({
@@ -123,29 +125,64 @@ export const DeleteButton: React.VFC<
   )
 }
 
-export const PreviewButton: React.VFC<
-  { videoId: string; title: string; isExternalLink: boolean; videoUrl?: string } & ButtonProps
-> = ({ videoId, title, isExternalLink, videoUrl, ...buttonProps }) => {
-  const { formatMessage } = useIntl()
+export const TitleBlock: React.VFC<{
+  attachment: DeepPick<Attachment, 'id' | 'name' | 'data' | 'options' | 'filename' | '~author.name'>
+  text: string
+}> = ({ attachment, text }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   return (
-    <>
-      <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
-        {isExternalLink ? (
-          <ReactPlayer url={videoUrl} width="100%" controls />
+    <div style={{ cursor: 'pointer' }}>
+      <Modal title={attachment.name} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
+        {!!attachment.data?.source ? (
+          <ReactPlayer url={attachment.data.url} width="100%" controls />
         ) : (
-          <VideoPlayer videoId={videoId} width="100%" />
+          <VideoPlayer videoId={attachment.id} width="100%" />
         )}
       </Modal>
-      <Button
-        size="small"
-        title={formatMessage(commonMessages.ui.preview)}
-        type="primary"
-        onClick={() => setIsModalVisible(true)}
-        {...buttonProps}
-        icon={<EyeOutlined />}
-      />
-    </>
+      <div onClick={() => setIsModalVisible(true)}>
+        <div>{text}</div>
+        <small>
+          <span className="mr-1">{attachment.filename}</span>
+          {attachment.author?.name ? '@' + attachment.author.name : ''}
+        </small>
+      </div>
+    </div>
+  )
+}
+
+export const DownloadButton: React.VFC<{
+  className: string
+  videoId: string
+  isExternalLink: boolean
+  options: Pick<Attachment, 'options'>
+  fileName?: string
+}> = ({ className, videoId, isExternalLink, options, fileName }) => {
+  const { formatMessage } = useIntl()
+  const { authToken } = useAuth()
+  const handleDownload = async () => {
+    if (options) {
+      // cloudflare
+    } else if (fileName) {
+      const url: string = await getFileDownloadableLink(`attachments/${videoId}`, authToken)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName || ''
+      link.click()
+    } else {
+      alert('此檔案無法下載，請聯絡客服人員')
+    }
+  }
+
+  return (
+    <Button
+      disabled={isExternalLink}
+      className={className}
+      size="small"
+      title={formatMessage(libraryMessages['*'].download)}
+      type="primary"
+      onClick={() => handleDownload()}
+      icon={<DownloadOutlined />}
+    />
   )
 }
 
