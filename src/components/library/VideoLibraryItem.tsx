@@ -19,18 +19,6 @@ import { Attachment, UploadState } from '../../types/general'
 import libraryMessages from './translation'
 import VideoPlayer from './VideoPlayer'
 
-const messages = defineMessages({
-  preview: { id: 'program.ui.preview', defaultMessage: '預覽' },
-  reUpload: { id: 'program.ui.reUpload', defaultMessage: '重新上傳' },
-  chooseFile: { id: 'program.ui.chooseFile', defaultMessage: '選擇檔案' },
-  manageCaption: { id: 'program.ui.manageCaption', defaultMessage: '管理字幕' },
-  uploadCaptions: { id: 'program.ui.uploadCaptions', defaultMessage: '上傳字幕' },
-  uploadedCaptions: { id: 'program.ui.uploadedCaptions', defaultMessage: '已上傳字幕' },
-  delete: { id: 'program.ui.delete', defaultMessage: '刪除檔案' },
-  duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
-  chooseCaptionLanguage: { id: 'program.label.chooseCaptionLanguage', defaultMessage: '選擇字幕語系' },
-})
-
 const VideoLibraryItem: React.VFC<
   Pick<Attachment, 'id' | 'name'> &
     Partial<Omit<Attachment, 'author'>> &
@@ -113,7 +101,7 @@ export const DeleteButton: React.VFC<
   return (
     <>
       <Button
-        title={formatMessage(messages.delete)}
+        title={formatMessage(libraryMessages.VideoLibraryItem.delete)}
         size="small"
         loading={deleting}
         danger
@@ -199,7 +187,7 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
       <Button
         size="small"
         disabled={isExternalLink}
-        title={formatMessage(messages.reUpload)}
+        title={formatMessage(libraryMessages.VideoLibraryItem.reUpload)}
         onClick={() => setIsModalVisible(true)}
         {...buttonProps}
         icon={<FileWordOutlined />}
@@ -215,9 +203,9 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
   const { captions, captionLanguages, refetch: refetchCaptions, deleteCaption, addCaption, uppy } = useCaptions(videoId)
   const [languageCode, setLanguageCode] = useState<typeof captionLanguages[number]['code']>()
   return (
-    <Modal visible footer={null} title={formatMessage(messages.manageCaption)} {...modalProps}>
+    <Modal visible footer={null} title={formatMessage(libraryMessages.VideoLibraryItem.manageCaption)} {...modalProps}>
       <div className="d-flex mb-2">
-        {formatMessage(messages.uploadedCaptions)}：
+        {formatMessage(libraryMessages.VideoLibraryItem.uploadedCaptions)}：
         {captions.map(caption => (
           <Tag key={caption.language} className="mr-1" closable onClose={() => deleteCaption(caption.language)}>
             {caption.label}
@@ -229,7 +217,7 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
         style={{ width: '100%' }}
         showSearch
         allowClear
-        placeholder={formatMessage(messages.chooseCaptionLanguage)}
+        placeholder={formatMessage(libraryMessages.VideoLibraryItem.chooseCaptionLanguage)}
         value={languageCode}
         onChange={code =>
           addCaption(code).then(() => {
@@ -246,7 +234,7 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
       </Select>
       {uppy && (
         <Button block onClick={() => inputRef.current?.click()}>
-          {formatMessage(messages.chooseFile)}
+          {formatMessage(libraryMessages.VideoLibraryItem.chooseFile)}
         </Button>
       )}
       {uppy && (
@@ -324,7 +312,7 @@ export const ReUploadButton: React.VFC<
       <Button
         size="small"
         disabled={uploadState === 'uploading' || isExternalLink}
-        title={formatMessage(messages.reUpload)}
+        title={formatMessage(libraryMessages.VideoLibraryItem.reUpload)}
         onClick={() => inputRef.current?.click()}
         {...buttonProps}
         icon={<UploadOutlined />}
