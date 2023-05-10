@@ -481,6 +481,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         !!enabledModules.sales &&
         (Boolean(permissions.SALES_PERFORMANCE_ADMIN) ||
           Boolean(permissions.SALES_LEAD_ADMIN) ||
+          Boolean(permissions.SALES_LEAD_NORMAL) ||
           Boolean(permissions.SALES_LEAD_DELIVERY_ADMIN)),
       key: 'sales_management',
       icon: () => <PhoneIcon />,
