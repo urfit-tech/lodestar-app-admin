@@ -17,7 +17,6 @@ const ProjectPublishAdminBlock: React.FC<{
 }> = ({ project, type, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishProject] = useMutation<hasura.PUBLISH_PROJECT, hasura.PUBLISH_PROJECTVariables>(PUBLISH_PROJECT)
-  const { updateHasSendNotification } = useProject()
 
   if (!project) {
     return <Skeleton active />
@@ -94,17 +93,8 @@ const ProjectPublishAdminBlock: React.FC<{
       },
     })
       .then(() => {
-        if (type === 'portfolio') {
-          updateHasSendNotification({ variables: { projectId: project.id } })
-            .then(() => {
-              onSuccess?.()
-              onRefetch?.()
-            })
-            .catch(error => onError && onError(error))
-        } else {
-          onSuccess?.()
-          onRefetch?.()
-        }
+        onSuccess?.()
+        onRefetch?.()
       })
       .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())

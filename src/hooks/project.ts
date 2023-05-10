@@ -73,17 +73,6 @@ export const useProject = () => {
     }
   `)
 
-  const [updateHasSendNotification] = useMutation<
-    hasura.UPDATE_HAS_SENDED_NOTIFICATION,
-    hasura.UPDATE_HAS_SENDED_NOTIFICATIONVariables
-  >(gql`
-    mutation UPDATE_HAS_SENDED_NOTIFICATION($projectId: uuid!) {
-      update_project_role(where: { project_id: { _eq: $projectId } }, _set: { has_sended_marked_notification: true }) {
-        affected_rows
-      }
-    }
-  `)
-
   const [deleteProjectRole] = useMutation<hasura.DELETE_PROJECT_ROLE, hasura.DELETE_PROJECT_ROLEVariables>(gql`
     mutation DELETE_PROJECT_ROLE($projectRoleId: uuid!) {
       delete_project_role(where: { id: { _eq: $projectRoleId } }) {
@@ -178,6 +167,5 @@ export const useProject = () => {
     deleteProjectRole,
     agreeProjectRole,
     rejectProjectRole,
-    updateHasSendNotification,
   }
 }
