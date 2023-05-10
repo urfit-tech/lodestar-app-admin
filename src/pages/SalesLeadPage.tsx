@@ -50,7 +50,7 @@ const SalesLeadPage: React.VFC = () => {
             <span className="flex-shrink-0">承辦人：</span>
             <ManagerInput value={manager.id} onChange={value => setManagerId(value)} />
           </StyledManagerBlock>
-        ) : currentMember?.role === 'general-member' ? (
+        ) : currentMember ? (
           <div>承辦編號：{currentMember.id}</div>
         ) : null}
       </div>
