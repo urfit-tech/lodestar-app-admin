@@ -222,7 +222,6 @@ const ProjectParticipantBlock: React.FC<{
                   id: values.projectRoleId,
                   memberId: values.participant,
                   identityId: values.participantTypeId,
-                  hasSendedMarkedNotification: publishAt ? true : false,
                 },
               })
                 .then(() => {

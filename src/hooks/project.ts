@@ -53,22 +53,21 @@ export const useProject = () => {
   `)
 
   const [updateProjectRole] = useMutation<hasura.UPDATE_PROJECT_ROLE, hasura.UPDATE_PROJECT_ROLEVariables>(gql`
-    mutation UPDATE_PROJECT_ROLE(
-      $id: uuid!
-      $memberId: String!
-      $identityId: uuid!
-      $hasSendedMarkedNotification: Boolean!
-    ) {
-      update_project_role_by_pk(
-        pk_columns: { id: $id }
-        _set: {
-          member_id: $memberId
-          identity_id: $identityId
-          has_sended_marked_notification: $hasSendedMarkedNotification
-        }
-      ) {
+    mutation UPDATE_PROJECT_ROLE($id: uuid!, $memberId: String!, $identityId: uuid!) {
+      update_project_role_by_pk(pk_columns: { id: $id }, _set: { member_id: $memberId, identity_id: $identityId }) {
         member_id
         identity_id
+      }
+    }
+  `)
+
+  const [updateHasSendNotification] = useMutation<
+    hasura.UPDATE_HAS_SENDED_NOTIFICATION,
+    hasura.UPDATE_HAS_SENDED_NOTIFICATIONVariables
+  >(gql`
+    mutation UPDATE_HAS_SENDED_NOTIFICATION($projectId: uuid!) {
+      update_project_role(where: { project_id: { _eq: $projectId } }, _set: { has_sended_marked_notification: true }) {
+        affected_rows
       }
     }
   `)
@@ -122,7 +121,6 @@ export const useProject = () => {
         member {
           id
           name
-          email
           picture_url
           created_at
           status
@@ -145,7 +143,6 @@ export const useProject = () => {
         projectRoleId: projectRole.id,
         member: {
           id: projectRole.member?.id || '',
-          email: projectRole.member?.email || '',
           name: projectRole.member?.name || '',
           pictureUrl: projectRole.member?.picture_url || '',
           status: projectRole.member?.status || 'invited',
@@ -167,5 +164,6 @@ export const useProject = () => {
     deleteProjectRole,
     agreeProjectRole,
     rejectProjectRole,
+    updateHasSendNotification,
   }
 }
