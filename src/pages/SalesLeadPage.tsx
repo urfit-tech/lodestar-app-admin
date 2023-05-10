@@ -29,7 +29,7 @@ const SalesLeadPage: React.VFC = () => {
   const [saleId, setSaleId] = useState<string | undefined>()
   useMemberContractNotification()
 
-  if (!enabledModules.sales || !permissions.SALES_LEAD_ADMIN) {
+  if (!enabledModules.sales || (!permissions.SALES_LEAD_ADMIN && !permissions.SALES_LEAD_NORMAL)) {
     return <ForbiddenPage />
   }
 
