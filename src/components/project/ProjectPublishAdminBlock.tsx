@@ -93,7 +93,7 @@ const ProjectPublishAdminBlock: React.FC<{
       },
     })
       .then(() => {
-        if (type === 'portfolio') {
+        if (type === 'portfolio' && !project.publishedAt) {
           updateMarkedNotificationStatus({
             variables: { projectId: project.id, oldStatus: 'unsend', newStatus: 'readyToSend' },
           })
