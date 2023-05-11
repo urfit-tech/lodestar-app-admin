@@ -75,7 +75,11 @@ export const useProject = () => {
   >(gql`
     mutation updateMarkedNotificationStatus($projectId: uuid!, $oldStatus: String!, $newStatus: String!) {
       update_project_role(
-        where: { project_id: { _eq: $projectId }, marked_notification_status: { _eq: $oldStatus } }
+        where: {
+          project_id: { _eq: $projectId }
+          agreed_at: { _is_null: false }
+          marked_notification_status: { _eq: $oldStatus }
+        }
         _set: { marked_notification_status: $newStatus }
       ) {
         affected_rows
