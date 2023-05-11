@@ -73,7 +73,7 @@ const ProjectParticipantBlock: React.FC<{
   const [memberStatus, setMemberStatus] = useState<string | null>(null)
 
   const handleAgree = (projectRoleId: string) => {
-    agreeProjectRole({ variables: { projectRoleId } })
+    agreeProjectRole({ variables: { projectRoleId, markedNotificationStatus: publishAt ? 'readyToSend' : 'unsend' } })
       .then(() => {
         message.success(formatMessage(projectMessages.ProjectParticipantBlock.agreeSuccessfully))
         participantListRefetch()
@@ -92,7 +92,11 @@ const ProjectParticipantBlock: React.FC<{
       .validateFields()
       .then(() =>
         rejectProjectRole({
-          variables: { projectRoleId: values.projectRoleId, rejectedReason: values.rejectedReason },
+          variables: {
+            projectRoleId: values.projectRoleId,
+            rejectedReason: values.rejectedReason,
+            markedNotificationStatus: publishAt ? 'readyToSend' : 'unsend',
+          },
         }),
       )
       .then(() => {
@@ -188,7 +192,7 @@ const ProjectParticipantBlock: React.FC<{
         projectId: projectId,
         memberId: values.participant,
         identityId: values.participantTypeId,
-        hasSendedMarkedNotification: publishAt ? true : false,
+        markedNotificationStatus: publishAt ? 'readyToSend' : 'unsend',
       },
     })
       .then(() => {
@@ -222,7 +226,7 @@ const ProjectParticipantBlock: React.FC<{
                   id: values.projectRoleId,
                   memberId: values.participant,
                   identityId: values.participantTypeId,
-                  hasSendedMarkedNotification: publishAt ? true : false,
+                  markedNotificationStatus: publishAt ? 'readyToSend' : 'unsend',
                 },
               })
                 .then(() => {

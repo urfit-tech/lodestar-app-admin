@@ -73,7 +73,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                               projectId: projectId,
                               memberId: currentMemberId,
                               identityId: insertedIdentityId,
-                              hasSendedMarkedNotification: false,
+                              markedNotificationStatus: 'sended',
                             },
                           })
                             .then(() => {
@@ -88,7 +88,7 @@ const ProjectPortfolioPage: React.FC<{}> = () => {
                           projectId: projectId,
                           memberId: currentMemberId,
                           identityId: identityId,
-                          hasSendedMarkedNotification: false,
+                          markedNotificationStatus: 'sended',
                         },
                       })
                         .then(() => projectId && history.push(`/projects/${projectId}`))
