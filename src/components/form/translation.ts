@@ -24,6 +24,7 @@ const formMessages = {
     voucher: { id: 'form.PermissionInput.voucher', defaultMessage: '兌換方案' },
     bonus: { id: 'form.PermissionInput.bonus', defaultMessage: '紅利折抵' },
     task: { id: 'form.PermissionInput.task', defaultMessage: '待辦管理' },
+    memberNote: { id: 'form.PermissionInput.memberNote', defaultMessage: '聯絡記錄' },
     project: { id: 'form.PermissionInput.project', defaultMessage: '專案管理' },
     contract: { id: 'form.PermissionInput.contract', defaultMessage: '合約管理' },
     analysis: { id: 'form.PermissionInput.analysis', defaultMessage: '數據分析' },
@@ -211,6 +212,9 @@ const formMessages = {
       defaultMessage: '編輯會員課表',
     },
 
+    // member
+    MEMBER_NOTE_ADMIN: { id: 'form.PermissionGroup.MEMBER_NOTE_ADMIN', defaultMessage: '聯絡記錄管理功能' },
+
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
     TASK_CATEGORY_ADMIN: { id: 'form.PermissionGroup.TASK_CATEGORY_ADMIN', defaultMessage: '所有待辦分類功能' },
@@ -294,7 +298,7 @@ const formMessages = {
 
     // sales_lead
     SALES_LEAD_ADMIN: { id: 'form.PermissionGroup.SALES_LEAD_ADMIN', defaultMessage: '所有名單撥打功能' },
-    SALES_LEAD_NORMAL: { id: 'form.PermissionGroup.SALES_LEAD_NORMAL', defaultMessage: '個人名單撥打功能' },
+    SALES_LEAD_NORMAL: { id: 'form.PermissionGroup.SALES_LEAD_NORMAL', defaultMessage: '個人名單撥打管理功能' },
     SALES_LEAD_DELIVERY_ADMIN: { id: 'form.PermissionGroup.SALES_LEAD_DELIVERY_ADMIN', defaultMessage: '名單分派功能' },
     SALES_LEAD_SELECTOR_ADMIN: {
       id: 'form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN',

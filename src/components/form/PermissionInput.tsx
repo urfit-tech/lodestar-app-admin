@@ -52,6 +52,7 @@ const PermissionInput: React.FC<{
     voucher: !!enabledModules.voucher,
     bonus: !!enabledModules.coin,
     task: !!enabledModules.member_task,
+    memberNote: !!enabledModules.member_note,
     project: !!enabledModules.project,
     contract: !!enabledModules.contract,
     analysis: !!enabledModules.analysis,
