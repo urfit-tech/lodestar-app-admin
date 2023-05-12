@@ -1,4 +1,5 @@
 import { MoreOutlined } from '@ant-design/icons'
+import { gql, useApolloClient } from '@apollo/client'
 import { Button, Dropdown, Form, Input, Menu, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
@@ -8,6 +9,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProject } from '../../hooks/project'
 import projectMessages from './translation'
+import hasura from '../../hasura'
 
 type RenameFieldProps = {
   reason: string
@@ -20,15 +22,37 @@ const ProjectRejectMarkModal: React.VFC<{
   const [form] = useForm<RenameFieldProps>()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
+  const apolloClient = useApolloClient()
   const { rejectProjectRole } = useProject()
 
-  const handleSubmit = (projectRoleId: string, setVisible: (visible: boolean) => void) => {
+  const handleSubmit = async (projectRoleId: string, setVisible: (visible: boolean) => void) => {
+    const { data } = await apolloClient.query<hasura.getProjectRole, hasura.getProjectRoleVariables>({
+      query: gql`
+        query getProjectRole($projectRoleId: uuid!) {
+          project_role {
+            id
+            project {
+              id
+              published_at
+            }
+          }
+        }
+      `,
+      variables: { projectRoleId },
+    })
+
     setLoading(true)
     form
       .validateFields()
       .then(() => {
         const values = form.getFieldsValue()
-        rejectProjectRole({ variables: { projectRoleId: projectRoleId, rejectedReason: values.reason } })
+        rejectProjectRole({
+          variables: {
+            projectRoleId: projectRoleId,
+            rejectedReason: values.reason,
+            markedNotificationStatus: data?.project_role[0]?.project?.published_at ? 'readyToSend' : 'unsend',
+          },
+        })
           .then(() => {
             message.error(formatMessage(projectMessages.ProjectRejectMarkModal.hasRejectedMark))
             onRefetch?.()

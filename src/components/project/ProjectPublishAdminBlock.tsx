@@ -1,6 +1,5 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -94,8 +93,10 @@ const ProjectPublishAdminBlock: React.FC<{
       },
     })
       .then(() => {
-        if (type === 'portfolio') {
-          updateMarkedNotificationStatus({ variables: { projectId: project.id, status: 'readyToSend' } })
+        if (type === 'portfolio' && !project.publishedAt) {
+          updateMarkedNotificationStatus({
+            variables: { projectId: project.id, oldStatus: 'unsend', newStatus: 'readyToSend' },
+          })
             .then(() => {
               onSuccess?.()
               onRefetch?.()
