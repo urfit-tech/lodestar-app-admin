@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
@@ -244,12 +243,7 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
       }
     }
     project_role_aggregate(
-      where: {
-        member_id: { _eq: $memberId }
-        identity: { name: { _neq: "author" } }
-        rejected_at: { _is_null: true }
-        marked_notification_status: { _eq: "sended" }
-      }
+      where: { member_id: { _eq: $memberId }, identity: { name: { _neq: "author" } }, rejected_at: { _is_null: true } }
     ) {
       aggregate {
         count
@@ -287,7 +281,6 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           member_id: { _eq: $memberId }
           identity: { name: { _neq: "author" } }
           rejected_at: { _is_null: true }
-          marked_notification_status: { _eq: "sended" }
         }
       ) {
         id
