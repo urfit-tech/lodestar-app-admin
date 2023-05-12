@@ -248,7 +248,7 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
         member_id: { _eq: $memberId }
         identity: { name: { _neq: "author" } }
         rejected_at: { _is_null: true }
-        marked_notification_status: { _eq: 'sended' }
+        marked_notification_status: { _eq: "sended" }
       }
     ) {
       aggregate {
@@ -287,7 +287,7 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           member_id: { _eq: $memberId }
           identity: { name: { _neq: "author" } }
           rejected_at: { _is_null: true }
-          marked_notification_status: { _eq: 'sended' }
+          marked_notification_status: { _eq: "sended" }
         }
       ) {
         id
