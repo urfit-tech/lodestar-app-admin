@@ -54,29 +54,30 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     }[]
   }[] = [
     {
-      permissionIsAllowed: Boolean(permissions.BACKSTAGE_ENTER),
+      permissionIsAllowed: !!enabledModules.sale_manager,
       icon: () => <MoneyCircleIcon />,
       key: 'sales',
       name: formatMessage(adminMessages.AdminMenu.salesAdmin),
     },
     {
-      permissionIsAllowed: Boolean(permissions.MEDIA_LIBRARY_ADMIN),
+      permissionIsAllowed: !!enabledModules.media_library && Boolean(permissions.MEDIA_LIBRARY_ADMIN),
       key: 'media_library',
       icon: () => <DatabaseOutlined className="m-0" />,
       name: formatMessage(adminMessages.AdminMenu.mediaLibrary),
     },
     {
       permissionIsAllowed:
-        Boolean(permissions.PROGRAM_ADMIN) ||
-        Boolean(permissions.PROGRAM_ISSUE_ADMIN) ||
-        Boolean(permissions.PROGRAM_PACKAGE_ADMIN) ||
-        Boolean(permissions.PROGRAM_PROGRESS_READ) ||
-        Boolean(permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN) ||
-        Boolean(permissions.PROGRAM_CATEGORY_ADMIN) ||
-        Boolean(permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN) ||
-        Boolean(permissions.PRACTICE_ADMIN) ||
-        Boolean(permissions.PROGRAM_NORMAL) ||
-        Boolean(permissions.PROGRAM_ISSUE_NORMAL),
+        !!enabledModules.program &&
+        (Boolean(permissions.PROGRAM_ADMIN) ||
+          Boolean(permissions.PROGRAM_ISSUE_ADMIN) ||
+          Boolean(permissions.PROGRAM_PACKAGE_ADMIN) ||
+          Boolean(permissions.PROGRAM_PROGRESS_READ) ||
+          Boolean(permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN) ||
+          Boolean(permissions.PROGRAM_CATEGORY_ADMIN) ||
+          Boolean(permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN) ||
+          Boolean(permissions.PRACTICE_ADMIN) ||
+          Boolean(permissions.PROGRAM_NORMAL) ||
+          Boolean(permissions.PROGRAM_ISSUE_NORMAL)),
       icon: () => <BookIcon />,
       key: 'program_admin',
       name: formatMessage(adminMessages.AdminMenu.programAdmin),
@@ -394,12 +395,13 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        Boolean(permissions.COUPON_PLAN_ADMIN) ||
-        Boolean(permissions.COUPON_PLAN_NORMAL) ||
-        Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
-        Boolean(permissions.VOUCHER_PLAN_NORMAL) ||
-        Boolean(permissions.GIFT_PLAN_ADMIN) ||
-        Boolean(permissions.GIFT_PLAN_NORMAL),
+        !!enabledModules.promotion &&
+        (Boolean(permissions.COUPON_PLAN_ADMIN) ||
+          Boolean(permissions.COUPON_PLAN_NORMAL) ||
+          Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
+          Boolean(permissions.VOUCHER_PLAN_NORMAL) ||
+          Boolean(permissions.GIFT_PLAN_ADMIN) ||
+          Boolean(permissions.GIFT_PLAN_NORMAL)),
       key: 'promotion_admin',
       icon: () => <DiscountIcon />,
       name: formatMessage(adminMessages.AdminMenu.promotionAdmin),
@@ -607,6 +609,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     <>
       {renderAdminMenu?.({
         settings,
+        enabledModules,
         role: currentUserRole,
         permissions,
         menuItems: defaultMenuItems,

@@ -26,17 +26,19 @@ const App: React.FC<{
     <Application
       appId={appId}
       customRender={{
-        renderAdminMenu: ({ settings, role, permissions, menuItems, onClick }) => {
+        renderAdminMenu: ({ settings, role, permissions, menuItems, onClick, enabledModules }) => {
           const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
             {
-              permissionIsAllowed: permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL,
+              permissionIsAllowed:
+                !!enabledModules.member_contract_manager &&
+                (permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL),
               key: 'member_contract_collection',
               icon: () => <UserCopyIcon />,
               name: '合約資料管理',
             },
             {
-              permissionIsAllowed: !!permissions.SALES_CALL_ADMIN,
+              permissionIsAllowed: !!enabledModules.sales_call && !!permissions.SALES_CALL_ADMIN,
               key: 'sales_call_admin',
               icon: () => <PhoneIcon />,
               name: '業務查詢',
@@ -54,7 +56,7 @@ const App: React.FC<{
               ],
             },
             {
-              permissionIsAllowed: permissions.ANALYSIS_ADMIN,
+              permissionIsAllowed: !!enabledModules.analytics && !!permissions.ANALYSIS_ADMIN,
               key: 'analytics',
               icon: () => <BarChartOutlined style={{ margin: 0 }} />,
               name: '數據分析',
