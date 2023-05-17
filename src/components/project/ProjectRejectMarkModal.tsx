@@ -26,10 +26,10 @@ const ProjectRejectMarkModal: React.VFC<{
   const { rejectProjectRole } = useProject()
 
   const handleSubmit = async (projectRoleId: string, setVisible: (visible: boolean) => void) => {
-    const { data } = await apolloClient.query<hasura.getProjectRole, hasura.getProjectRoleVariables>({
+    const { data } = await apolloClient.query<hasura.GetProjectPublishedAt, hasura.GetProjectPublishedAtVariables>({
       query: gql`
-        query getProjectRole($projectRoleId: uuid!) {
-          project_role {
+        query GetProjectPublishedAt($projectRoleId: uuid!) {
+          project_role(where: { id: { _eq: $projectRoleId } }) {
             id
             project {
               id
@@ -54,7 +54,7 @@ const ProjectRejectMarkModal: React.VFC<{
           },
         })
           .then(() => {
-            message.error(formatMessage(projectMessages.ProjectRejectMarkModal.hasRejectedMark))
+            message.success(formatMessage(projectMessages.ProjectRejectMarkModal.hasRejectedMark))
             onRefetch?.()
           })
           .catch(handleError)
