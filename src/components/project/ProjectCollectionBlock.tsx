@@ -243,12 +243,7 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
       }
     }
     project_role_aggregate(
-      where: {
-        member_id: { _eq: $memberId }
-        identity: { name: { _neq: "author" } }
-        rejected_at: { _is_null: true }
-        has_sended_marked_notification: { _eq: true }
-      }
+      where: { member_id: { _eq: $memberId }, identity: { name: { _neq: "author" } }, rejected_at: { _is_null: true } }
     ) {
       aggregate {
         count
@@ -286,7 +281,6 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           member_id: { _eq: $memberId }
           identity: { name: { _neq: "author" } }
           rejected_at: { _is_null: true }
-          has_sended_marked_notification: { _eq: true }
         }
       ) {
         id
