@@ -73,8 +73,11 @@ export const useProject = () => {
     hasura.updateMarkedNotificationStatus,
     hasura.updateMarkedNotificationStatusVariables
   >(gql`
-    mutation updateMarkedNotificationStatus($projectId: uuid!, $status: String!) {
-      update_project_role(where: { project_id: { _eq: $projectId } }, _set: { marked_notification_status: $status }) {
+    mutation updateMarkedNotificationStatus($projectId: uuid!, $oldStatus: String!, $newStatus: String!) {
+      update_project_role(
+        where: { project_id: { _eq: $projectId }, marked_notification_status: { _eq: $oldStatus } }
+        _set: { marked_notification_status: $newStatus }
+      ) {
         affected_rows
       }
     }
