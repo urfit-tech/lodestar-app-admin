@@ -33,6 +33,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
     key: string
     tab: string
     condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
+    markedRoleCondition?: hasura.GET_MARKED_PROJECT_ROLESVariables['condition']
     orderBy?: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy']
     withSortingButton?: boolean
   }[] = [
@@ -45,7 +46,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         _or: [{ expired_at: { _gt: 'now()' } }, { expired_at: { _is_null: true } }],
         creator_id: creatorId,
       },
-      orderBy: [{ position: 'asc' as hasura.order_by }],
+      orderBy: [{ published_at: 'desc' as hasura.order_by }, { position: 'asc' as hasura.order_by }],
       withSortingButton: true,
     },
     {
@@ -74,6 +75,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         type: { _eq: projectType },
         project_roles: { member_id: { _eq: currentMemberId } },
       },
+      markedRoleCondition: { created_at: { _lt: 'now()' } },
     },
   ]
 
@@ -103,8 +105,10 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
               appId={appId}
               projectType={projectType}
               condition={tabContent.condition}
+              markedRoleCondition={tabContent.markedRoleCondition}
               orderBy={tabContent?.orderBy}
               withSortingButton={tabContent.withSortingButton}
+              tabContentKey={tabContent.key}
               onReady={count =>
                 count !== counts[tabContent.key] &&
                 setCounts({
