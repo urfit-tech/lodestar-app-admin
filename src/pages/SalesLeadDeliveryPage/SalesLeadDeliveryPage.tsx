@@ -1,5 +1,6 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
+import { Box, Text } from '@chakra-ui/react'
 import {
   Button,
   Checkbox,
@@ -17,8 +18,9 @@ import {
   Steps,
 } from 'antd'
 import { ResultProps } from 'antd/lib/result'
-import { Box, Text } from '@chakra-ui/react'
+import { isEmpty } from 'lodash'
 import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -28,9 +30,8 @@ import CategoryInput from '../../components/common/CategoryInput'
 import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
 import hasura from '../../hasura'
-import { salesLeadDeliveryPageMessages } from './translation'
 import { useProperty } from '../../hooks/member'
-import { isEmpty } from 'lodash'
+import { salesLeadDeliveryPageMessages } from './translation'
 
 type Filter = {
   [key: string]: any
@@ -127,6 +128,7 @@ const FilterSection: React.FC<{
   const [starRangeIsNull, setStarRangeIsNull] = useState(false)
   const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
   const { loadingProperties, properties } = useProperty()
+  const { currentMemberId } = useAuth()
   const ExactMatchCheckBox = styled(Form.Item)`
     left: 0%;
     bottom: -150%;
@@ -206,7 +208,7 @@ const FilterSection: React.FC<{
           </Form.Item>
         </Input.Group>
       </Form.Item>
-      {loadingProperties ? (
+      {!currentMemberId || loadingProperties ? (
         <Spin />
       ) : (
         properties.map(property => (
