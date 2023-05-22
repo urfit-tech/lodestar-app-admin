@@ -1,5 +1,4 @@
 import { Spin } from 'antd'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useManagers } from '../../hooks'
 import MemberSelector from '../form/MemberSelector'
@@ -9,10 +8,9 @@ const ManagerInput: React.FC<{
   onChange?: (value: string) => void
   disabled?: boolean
 }> = ({ value, onChange, disabled }) => {
-  const { currentMemberId } = useAuth()
   const { managers, loading, error } = useManagers()
 
-  if (!currentMemberId || loading) {
+  if (loading) {
     return <Spin />
   }
 
