@@ -1440,7 +1440,7 @@
   "form.PermissionGroup.PROJECT_ROLE_ADMIN": "角色管理",
   "form.PermissionGroup.SALES_CALL_ADMIN": "Lihat Area Bisnis",
   "form.PermissionGroup.SALES_EXPORT": "Ekspor semua pesanan",
-  "form.PermissionGroup.SALES_LEAD_ADMIN": "Daftar fungsi manajemen panggilan",
+  "form.PermissionGroup.SALES_LEAD_ADMIN": "Semua Fitur Dial Daftar",
   "form.PermissionGroup.SALES_LEAD_DELIVERY_ADMIN": "Fungsi Penetapan Daftar",
   "form.PermissionGroup.SALES_LEAD_NORMAL": "個人名單撥打功能",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "Fungsi pemilih dial daftar",
