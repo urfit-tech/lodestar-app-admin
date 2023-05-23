@@ -319,7 +319,7 @@ export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
     gql`
       query GET_MANAGER_COLLECTION {
-        member_property(where: { property: { name: { _eq: "分機號碼" } } }, limit: 10) {
+        member_property(where: { property: { name: { _eq: "分機號碼" } } }) {
           id
           value
           member {
