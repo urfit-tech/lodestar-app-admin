@@ -199,6 +199,7 @@ export const AllMemberSelector: React.FC<
               { email: { _ilike: $search } }
             ]
           }
+          limit: 10
         ) {
           id
         }
@@ -296,7 +297,7 @@ const useAllMemberCollection = (condition: hasura.GET_ALL_MEMBER_PUBLIC_COLLECTI
   >(
     gql`
       query GET_ALL_MEMBER_PUBLIC_COLLECTION($condition: member_public_bool_exp!) {
-        member_public(where: $condition) {
+        member_public(where: $condition, limit: 10) {
           id
           picture_url
           name
