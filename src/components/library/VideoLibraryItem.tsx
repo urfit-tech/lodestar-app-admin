@@ -1,23 +1,25 @@
-import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons'
+import { DeleteOutlined, FileWordOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons'
+import { Box, CircularProgress, CircularProgressLabel, Flex, Button as ChakraButton } from '@chakra-ui/react'
 import Uppy from '@uppy/core'
 import { StatusBar, useUppy } from '@uppy/react'
 import Tus from '@uppy/tus'
-import { Button, List, Modal, Select, Tag } from 'antd'
+import { Button, List, message, Modal, Select, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
 import { DeepPick } from 'ts-deep-pick'
 import { getFileDownloadableLink } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
 import libraryMessages from './translation'
 import VideoPlayer from './VideoPlayer'
+import { CheckIcon } from '../../images/icon'
 
 const VideoLibraryItem: React.VFC<
   Pick<Attachment, 'id' | 'name'> &
@@ -99,7 +101,7 @@ export const DeleteButton: React.VFC<
     }
   }
   return (
-    <>
+    <div>
       <Button
         title={formatMessage(libraryMessages.VideoLibraryItem.delete)}
         size="small"
@@ -109,7 +111,7 @@ export const DeleteButton: React.VFC<
         {...buttonProps}
         icon={<DeleteOutlined />}
       />
-    </>
+    </div>
   )
 }
 
@@ -145,11 +147,28 @@ export const DownloadButton: React.VFC<{
   options: Pick<Attachment, 'options'>
   fileName?: string
 }> = ({ className, videoId, isExternalLink, options, fileName }) => {
+  const theme = useAppTheme()
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [currentProcess, setCurrentProcess] = useState(0)
+
   const handleDownload = async () => {
+    setIsModalVisible(true)
     if (options) {
       // cloudflare
+      axios.post(``).then(({ data }) => {
+        if (data.success) {
+          const status = data.result.default.status
+          const url = data.result.default.url
+          const percentComplete = data.result.default.percentComplete
+          setCurrentProcess(percentComplete)
+        } else if (data.errors) {
+          message.error(data.errors)
+        } else {
+          message.error(formatMessage(libraryMessages['*'].systemErrorText))
+        }
+      })
     } else if (fileName) {
       const url: string = await getFileDownloadableLink(`attachments/${videoId}`, authToken)
       const link = document.createElement('a')
@@ -157,20 +176,68 @@ export const DownloadButton: React.VFC<{
       link.download = fileName || ''
       link.click()
     } else {
-      alert('此檔案無法下載，請聯絡客服人員')
+      message.error(formatMessage(libraryMessages.VideoLibraryItem.downloadFileError))
     }
   }
 
   return (
-    <Button
-      disabled={isExternalLink}
-      className={className}
-      size="small"
-      title={formatMessage(libraryMessages['*'].download)}
-      type="primary"
-      onClick={() => handleDownload()}
-      icon={<DownloadOutlined />}
-    />
+    <div>
+      <Modal footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
+        <Box py="40px" textAlign="center">
+          <Flex justifyContent="center" alignItems="center">
+            <CircularProgress
+              min={0}
+              max={100}
+              value={currentProcess}
+              color={currentProcess === 100 ? '#198754' : theme.colors.primary[500]}
+              size="75px"
+              thickness="0.5rem"
+            >
+              <CircularProgressLabel
+                color={currentProcess === 100 ? '#198754' : '#585858'}
+                d="flex"
+                justifyContent="center"
+                fontSize="1rem"
+              >
+                {currentProcess === 100 ? <CheckIcon fontSize="1rem" /> : `${currentProcess}%`}
+              </CircularProgressLabel>
+            </CircularProgress>
+          </Flex>
+          {currentProcess === 100 ? (
+            <>
+              <Box mt="1rem" lineHeight="24px">
+                <Box>{formatMessage(libraryMessages['*'].finish)}</Box>
+                {/* FIXME: change expired time */}
+                <Box>{formatMessage(libraryMessages.VideoLibraryItem.expiredDate, { expiredDate: '2023-05-30' })}</Box>
+              </Box>
+              <ChakraButton
+                mt="2rem"
+                variant="ghost"
+                border="1px solid #cdcdcd"
+                borderRadius="4px"
+                onClick={() => handleDownload()}
+              >
+                {formatMessage(libraryMessages['*'].downloadFile)}
+              </ChakraButton>
+            </>
+          ) : (
+            <Box mt="1rem" fontSize="16px">
+              {formatMessage(libraryMessages.VideoLibraryItem.downloadingText)}
+            </Box>
+          )}
+        </Box>
+      </Modal>
+
+      <Button
+        disabled={isExternalLink}
+        className={className}
+        size="small"
+        title={formatMessage(libraryMessages['*'].download)}
+        type="primary"
+        onClick={() => handleDownload()}
+        icon={<DownloadOutlined />}
+      />
+    </div>
   )
 }
 
@@ -183,7 +250,7 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
-    <>
+    <div>
       <Button
         size="small"
         disabled={isExternalLink}
@@ -193,7 +260,7 @@ export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: b
         icon={<FileWordOutlined />}
       />
       {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
-    </>
+    </div>
   )
 }
 
@@ -308,7 +375,7 @@ export const ReUploadButton: React.VFC<
       })
   })
   return (
-    <>
+    <div>
       <Button
         size="small"
         disabled={uploadState === 'uploading' || isExternalLink}
@@ -348,7 +415,7 @@ export const ReUploadButton: React.VFC<
         }}
       />
       <StatusBar uppy={uppy} hideUploadButton hideAfterFinish />
-    </>
+    </div>
   )
 }
 
