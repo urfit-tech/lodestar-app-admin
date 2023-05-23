@@ -64,9 +64,11 @@ const VideoLibraryItem: React.VFC<
   )
 }
 
-export const DeleteButton: React.VFC<
-  { videoId: string; isExternalLink: boolean; onDelete?: () => void } & ButtonProps
-> = ({ videoId, isExternalLink, onDelete, ...buttonProps }) => {
+export const DeleteButton: React.VFC<{ videoId: string; isExternalLink: boolean; onDelete?: () => void }> = ({
+  videoId,
+  isExternalLink,
+  onDelete,
+}) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const [deleting, setDeleting] = useState(false)
@@ -106,9 +108,8 @@ export const DeleteButton: React.VFC<
         title={formatMessage(libraryMessages.VideoLibraryItem.delete)}
         size="small"
         loading={deleting}
-        danger
         onClick={handleClick}
-        {...buttonProps}
+        type="primary"
         icon={<DeleteOutlined />}
       />
     </div>
@@ -130,7 +131,7 @@ export const TitleBlock: React.VFC<{
         )}
       </Modal>
       <div onClick={() => setIsModalVisible(true)}>
-        <div>{text}</div>
+        <Box fontWeight="bold">{text}</Box>
         <small>
           <span className="mr-1">{attachment.filename}</span>
           {attachment.author?.name ? '@' + attachment.author.name : ''}
@@ -241,22 +242,22 @@ export const DownloadButton: React.VFC<{
   )
 }
 
-export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: boolean } & ButtonProps> = ({
+export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: boolean; className: string }> = ({
   videoId,
   isExternalLink,
-  ...buttonProps
+  className,
 }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
-    <div>
+    <div className={className}>
       <Button
         size="small"
         disabled={isExternalLink}
         title={formatMessage(libraryMessages.VideoLibraryItem.reUpload)}
         onClick={() => setIsModalVisible(true)}
-        {...buttonProps}
+        type="primary"
         icon={<FileWordOutlined />}
       />
       {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
@@ -381,7 +382,7 @@ export const ReUploadButton: React.VFC<
         disabled={uploadState === 'uploading' || isExternalLink}
         title={formatMessage(libraryMessages.VideoLibraryItem.reUpload)}
         onClick={() => inputRef.current?.click()}
-        {...buttonProps}
+        type="primary"
         icon={<UploadOutlined />}
       />
       <input
