@@ -1444,7 +1444,7 @@
   "form.PermissionGroup.PROJECT_ROLE_ADMIN": "角色管理",
   "form.PermissionGroup.SALES_CALL_ADMIN": "檢視業務專區",
   "form.PermissionGroup.SALES_EXPORT": "匯出所有訂單",
-  "form.PermissionGroup.SALES_LEAD_ADMIN": "名單撥打管理功能",
+  "form.PermissionGroup.SALES_LEAD_ADMIN": "所有名單撥打功能",
   "form.PermissionGroup.SALES_LEAD_DELIVERY_ADMIN": "名單分派功能",
   "form.PermissionGroup.SALES_LEAD_NORMAL": "個人名單撥打功能",
   "form.PermissionGroup.SALES_LEAD_SELECTOR_ADMIN": "名單撥打選擇器功能",
