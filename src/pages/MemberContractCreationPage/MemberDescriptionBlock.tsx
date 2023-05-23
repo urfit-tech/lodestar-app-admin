@@ -67,7 +67,7 @@ const MemberDescriptionBlock: React.FC<{
         .catch(handleError)
         .finally(() => setLoading(false))
     }
-    console.log({ properties })
+
     return (
       <div ref={memberBlockRef}>
         <Descriptions title="學生資料" bordered className="mb-3">

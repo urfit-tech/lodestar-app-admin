@@ -529,7 +529,7 @@ const usePrivateTeachContractInfo = (
       info.coinExchangeRage = Number(data.app_setting[0]?.value) || 1
     }
     return info
-  }, [data])
+  }, [data, managers])
 
   return {
     loading,
