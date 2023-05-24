@@ -1,6 +1,7 @@
 import { message } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { parsePayload } from 'lodestar-app-element/src/hooks/util'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -44,7 +45,9 @@ const messages = defineMessages({
 const HomePage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId, currentUserRole, permissions, logout } = useAuth()
+  const { currentMemberId, currentUserRole, permissions, logout, authToken } = useAuth()
+  const payload = authToken ? parsePayload(authToken) : null
+  const isBusiness = payload && payload.isBusiness
   const { loading, id: appId, settings } = useApp()
   const [visible, setVisible] = useState(false)
 
@@ -53,7 +56,9 @@ const HomePage: React.FC = () => {
       return
     }
 
-    if (currentUserRole === 'app-owner') {
+    if (isBusiness) {
+      history.push(`/sales`)
+    } else if (currentUserRole === 'app-owner') {
       history.push(settings['admin.app_owner.redirect'] || `/sales`)
     } else if (currentUserRole === 'content-creator') {
       history.push(settings['admin.content_creator.redirect'] || `/programs`)
@@ -63,7 +68,17 @@ const HomePage: React.FC = () => {
     } else {
       history.push(`/settings`)
     }
-  }, [currentMemberId, currentUserRole, formatMessage, history, loading, logout, permissions.BACKSTAGE_ENTER, settings])
+  }, [
+    currentMemberId,
+    currentUserRole,
+    formatMessage,
+    history,
+    loading,
+    logout,
+    permissions.BACKSTAGE_ENTER,
+    settings,
+    isBusiness,
+  ])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
