@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProjectDataType, ProjectPreviewProps, ProjectSortProps } from '../../types/project'
+import { MarkedProjectRoleProps, ProjectDataType, ProjectPreviewProps, ProjectSortProps } from '../../types/project'
 import { EmptyBlock } from '../admin'
 import ItemsSortingModal from '../common/ItemsSortingModal'
 import ProjectAdminCard from './ProjectAdminCard'
@@ -18,10 +18,12 @@ const ProjectCollectionBlock: React.FC<{
   appId: string
   projectType: ProjectDataType
   condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
+  markedRoleCondition?: hasura.GET_MARKED_PROJECT_ROLESVariables['condition']
   orderBy?: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy']
+  tabContentKey: String
   withSortingButton?: boolean
   onReady?: (count: number) => void
-}> = ({ appId, projectType, condition, orderBy, withSortingButton, onReady }) => {
+}> = ({ appId, projectType, condition, orderBy, withSortingButton, markedRoleCondition, tabContentKey, onReady }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -36,6 +38,13 @@ const ProjectCollectionBlock: React.FC<{
       currentMemberId || '',
       orderBy,
     )
+  const {
+    loadingMarkedProjectRoles,
+    loadMoreMarkedProjectRoles,
+    refetchMarkedProjectRoles,
+    markedProjectRolesCount,
+    markedProjectRoles,
+  } = useMarkedProjectRole(currentMemberId || '', projectType, markedRoleCondition || {})
 
   const { projectSorts, refetchProjectSorts } = useProjectSortCollection(condition)
   const [updatePositions] = useMutation<
@@ -47,17 +56,23 @@ const ProjectCollectionBlock: React.FC<{
     setSearch(search)
   }
 
+  const tabCount = tabContentKey === 'marked' ? markedProjectRolesCount : projectPreviewCount
   useEffect(() => {
-    onReady?.(projectPreviewCount)
+    onReady?.(tabCount || 0)
     refetchProject()
-  }, [onReady, projectPreviewCount, refetchProject])
+    refetchMarkedProjectRoles()
+  }, [onReady, tabCount, refetchProject, refetchMarkedProjectRoles])
 
-  if (loadingProject && search === '') {
+  if ((loadingProject || loadingMarkedProjectRoles) && search === '') {
     return <Skeleton active />
   }
 
   if (projectPreview.length === 0 && search === '') {
     return <EmptyBlock>{formatMessage(projectMessages['*'].noProject)}</EmptyBlock>
+  }
+
+  const refetchAndLoadProjectRoles = async () => {
+    await refetchMarkedProjectRoles({ limit: markedProjectRoles.length })
   }
 
   return (
@@ -91,11 +106,13 @@ const ProjectCollectionBlock: React.FC<{
       {projectType === 'portfolio' ? (
         <ProjectCollectionTable
           projects={projectPreview}
+          markedProjectRole={markedProjectRoles}
           onSearch={handleSearch}
-          type={condition.project_roles ? 'marked' : 'normal'}
-          onLoadMoreProjects={setLoadMoreLoading => {
-            if (loadMoreProjects) {
-              loadMoreProjects?.()
+          type={tabContentKey === 'marked' ? 'marked' : 'normal'}
+          onLoadMoreSubmit={setLoadMoreLoading => {
+            const loadMoreRowData = tabContentKey === 'marked' ? loadMoreMarkedProjectRoles : loadMoreProjects
+            if (loadMoreRowData) {
+              loadMoreRowData?.()
                 ?.catch(handleError)
                 .finally(() => setLoadMoreLoading(false))
               return true
@@ -103,7 +120,7 @@ const ProjectCollectionBlock: React.FC<{
               return false
             }
           }}
-          onRefetch={refetchProject}
+          onRefetch={refetchAndLoadProjectRoles}
         />
       ) : (
         <div className="row py-3">
@@ -141,7 +158,7 @@ const useProjectPreviewCollection = (
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_PROJECT_PREVIEW_COLLECTION,
     hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables
-  >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, memberId, orderBy, limit: 10 } })
+  >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, orderBy, limit: 10 } })
 
   const projectPreview: ProjectPreviewProps[] =
     loading || error || !data
@@ -164,10 +181,6 @@ const useProjectPreviewCollection = (
             previewUrl: v.preview_url || null,
             totalCount: sum(v.project_plans.map(w => w.project_plan_enrollments_aggregate.aggregate?.count || 0)),
             coverType: v.cover_type,
-            markedProjectRoles: v.marked_project_role.map(projectRole => ({
-              projectRoleId: projectRole.id,
-              identity: projectRole.identity,
-            })),
           }
         })
   const loadMoreProjects =
@@ -190,7 +203,6 @@ const useProjectPreviewCollection = (
               }
               return {
                 project_aggregate: prev.project_aggregate,
-                project_role_aggregate: prev.project_role_aggregate,
                 project: [...prev.project, ...fetchMoreResult.project],
               }
             },
@@ -199,9 +211,7 @@ const useProjectPreviewCollection = (
   return {
     loadingProject: loading,
     errorProject: error,
-    projectPreviewCount: condition.project_roles
-      ? data?.project_role_aggregate.aggregate?.count || 0
-      : data?.project_aggregate.aggregate?.count || 0,
+    projectPreviewCount: data?.project_aggregate.aggregate?.count || 0,
     projectPreview,
     refetchProject: refetch,
     loadMoreProjects,
@@ -230,21 +240,71 @@ const useProjectSortCollection = (condition: hasura.GET_PROJECT_SORT_COLLECTIONV
   }
 }
 
+const useMarkedProjectRole = (
+  memberId: hasura.GET_MARKED_PROJECT_ROLESVariables['memberId'],
+  projectType: hasura.GET_MARKED_PROJECT_ROLESVariables['projectType'],
+  condition: hasura.GET_MARKED_PROJECT_ROLESVariables['condition'],
+  limit: hasura.GET_MARKED_PROJECT_ROLESVariables['limit'] = 10,
+) => {
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    hasura.GET_MARKED_PROJECT_ROLES,
+    hasura.GET_MARKED_PROJECT_ROLESVariables
+  >(GET_MARKED_PROJECT_ROLES, {
+    variables: {
+      memberId,
+      projectType,
+      condition,
+      limit,
+    },
+  })
+  const markedProjectRoles: MarkedProjectRoleProps[] =
+    data?.marked_project_role.map(projectRole => ({
+      id: projectRole.id,
+      agreedAt: projectRole.agreed_at,
+      createdAt: projectRole.created_at,
+      identity: projectRole.identity,
+      title: projectRole.project.title,
+      author: {
+        id: projectRole.project.project_roles[0]?.member?.id || '',
+        name: projectRole.project.project_roles[0]?.member?.name || '',
+        pictureUrl: projectRole.project.project_roles[0]?.member?.picture_url || '',
+      },
+      previewUrl: projectRole.project.preview_url || null,
+    })) || []
+  const loadMoreMarkedProjectRoles =
+    (data?.marked_project_role.length || 0) < (data?.project_role_aggregate.aggregate?.count || 0)
+      ? (limit: number = 10) =>
+          fetchMore({
+            variables: {
+              memberId,
+              projectType,
+              limit,
+              condition: { created_at: { _lt: data?.marked_project_role.slice(-1)[0]?.created_at } },
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return {
+                project_role_aggregate: prev.project_role_aggregate,
+                marked_project_role: [...prev.marked_project_role, ...fetchMoreResult.marked_project_role],
+              }
+            },
+          })
+      : undefined
+  return {
+    loadingMarkedProjectRoles: loading,
+    errorMarkedProjectRoles: error,
+    markedProjectRoles,
+    refetchMarkedProjectRoles: refetch,
+    loadMoreMarkedProjectRoles,
+    markedProjectRolesCount: data?.project_role_aggregate.aggregate?.count || 0,
+  }
+}
+
 const GET_PROJECT_PREVIEW_COLLECTION = gql`
-  query GET_PROJECT_PREVIEW_COLLECTION(
-    $condition: project_bool_exp!
-    $memberId: String!
-    $orderBy: [project_order_by!]
-    $limit: Int!
-  ) {
+  query GET_PROJECT_PREVIEW_COLLECTION($condition: project_bool_exp!, $orderBy: [project_order_by!], $limit: Int!) {
     project_aggregate(where: $condition) {
-      aggregate {
-        count
-      }
-    }
-    project_role_aggregate(
-      where: { member_id: { _eq: $memberId }, identity: { name: { _neq: "author" } }, rejected_at: { _is_null: true } }
-    ) {
       aggregate {
         count
       }
@@ -276,19 +336,6 @@ const GET_PROJECT_PREVIEW_COLLECTION = gql`
           picture_url
         }
       }
-      marked_project_role: project_roles(
-        where: {
-          member_id: { _eq: $memberId }
-          identity: { name: { _neq: "author" } }
-          rejected_at: { _is_null: true }
-        }
-      ) {
-        id
-        identity {
-          id
-          name
-        }
-      }
     }
   }
 `
@@ -308,4 +355,53 @@ const UPDATE_PROJECT_POSITION_COLLECTION = gql`
     }
   }
 `
+const GET_MARKED_PROJECT_ROLES = gql`
+  query GET_MARKED_PROJECT_ROLES(
+    $memberId: String!
+    $projectType: String!
+    $condition: project_role_bool_exp!
+    $limit: Int!
+  ) {
+    project_role_aggregate(
+      where: { member_id: { _eq: $memberId }, identity: { name: { _neq: "author" } }, rejected_at: { _is_null: true } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+    marked_project_role: project_role(
+      order_by: { created_at: desc_nulls_last }
+      limit: $limit
+      where: {
+        _and: [
+          $condition
+          { project: { type: { _eq: $projectType } } }
+          { member_id: { _eq: $memberId }, identity: { name: { _neq: "author" } }, rejected_at: { _is_null: true } }
+        ]
+      }
+    ) {
+      project {
+        id
+        title
+        preview_url
+        type
+        project_roles(where: { identity: { name: { _eq: "author" } } }) {
+          member {
+            id
+            name
+            picture_url
+          }
+        }
+      }
+      id
+      agreed_at
+      created_at
+      identity {
+        id
+        name
+      }
+    }
+  }
+`
+
 export default ProjectCollectionBlock

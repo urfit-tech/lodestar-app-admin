@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ProjectPreviewProps } from '../../types/project'
+import { MarkedProjectRoleProps, ProjectPreviewProps } from '../../types/project'
 import { AdminPageBlock, EmptyBlock } from '../admin'
 import { CustomRatioImage } from '../common/Image'
 import ProjectRejectMarkModal from './ProjectRejectMarkModal'
@@ -34,40 +34,21 @@ const StyledAuthorName = styled.span`
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
 type ProjectCollectionProps = Pick<ProjectPreviewProps, 'id' | 'title' | 'previewUrl' | 'author'>
-type MarkedProjectCollectionProps = ProjectCollectionProps & {
-  markedProjectRole: { projectRoleId: string; identity: { id: string; name: string } }
-}
 
 const ProjectCollectionTable: React.FC<{
   projects: ProjectPreviewProps[]
+  markedProjectRole: MarkedProjectRoleProps[]
   type: 'normal' | 'marked'
-  onLoadMoreProjects: (setLoadMoreLoading: (loading: boolean) => void) => boolean
+  onLoadMoreSubmit: (setLoadMoreLoading: (loading: boolean) => void) => boolean
   onSearch: (search: string) => void
   onRefetch?: () => void
-}> = ({ projects, type, onLoadMoreProjects, onSearch, onRefetch }) => {
+}> = ({ projects, markedProjectRole, type, onLoadMoreSubmit, onSearch, onRefetch }) => {
   const { host } = useApp()
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [loading, setLoading] = useState(false)
   const [loadMoreEnable, setLoadMoreEnable] = useState(true)
   const [search, setSearch] = useState<string | null>(null)
-
-  const markedProject: MarkedProjectCollectionProps[] = []
-  projects.forEach(project =>
-    project.markedProjectRoles?.forEach(markedProjectRole =>
-      markedProject.push({
-        id: project.id,
-        title: project.title || '',
-        previewUrl: project.previewUrl || '',
-        author: {
-          id: project.author?.id || '',
-          name: project.author?.name || '',
-          pictureUrl: project.author?.pictureUrl || '',
-        },
-        markedProjectRole: markedProjectRole,
-      }),
-    ),
-  )
 
   const columns: ColumnProps<ProjectCollectionProps>[] = [
     {
@@ -106,7 +87,7 @@ const ProjectCollectionTable: React.FC<{
     },
   ]
 
-  const markedColumns: ColumnProps<MarkedProjectCollectionProps>[] = [
+  const markedColumns: ColumnProps<MarkedProjectRoleProps>[] = [
     {
       key: 'title',
       width: '60%',
@@ -133,23 +114,19 @@ const ProjectCollectionTable: React.FC<{
       title: formatMessage(projectMessages.ProjectCollectionTable.mark),
       render: (text, record, index) => (
         <StyledAuthorName>
-          {record.markedProjectRole?.identity.name === 'author'
-            ? formatMessage(commonMessages.label.author)
-            : record.markedProjectRole?.identity.name}
+          {record.identity.name === 'author' ? formatMessage(commonMessages.label.author) : record?.identity.name}
         </StyledAuthorName>
       ),
     },
     {
       width: '10%',
-      render: (text, record, index) => (
-        <ProjectRejectMarkModal projectRoleId={record.markedProjectRole.projectRoleId} onRefetch={onRefetch} />
-      ),
+      render: (text, record, index) => <ProjectRejectMarkModal projectRoleId={record.id} onRefetch={onRefetch} />,
     },
   ]
 
   if (type === 'normal' && projects.length === 0 && search === '') {
     return <EmptyBlock>{formatMessage(projectMessages['*'].noProject)}</EmptyBlock>
-  } else if (type === 'marked' && markedProject.length === 0) {
+  } else if (type === 'marked' && markedProjectRole.length === 0) {
     return <EmptyBlock>{formatMessage(projectMessages['*'].noMarkedPortfolio)}</EmptyBlock>
   }
 
@@ -171,7 +148,7 @@ const ProjectCollectionTable: React.FC<{
                       loading={loading}
                       onClick={() => {
                         setLoading(true)
-                        const loadMoreEnable = onLoadMoreProjects(setLoading)
+                        const loadMoreEnable = onLoadMoreSubmit(setLoading)
                         setLoadMoreEnable(loadMoreEnable)
                       }}
                     >
@@ -191,7 +168,7 @@ const ProjectCollectionTable: React.FC<{
           rowClassName="cursor-pointer"
           loading={false}
           columns={markedColumns}
-          dataSource={markedProject}
+          dataSource={markedProjectRole}
           pagination={false}
           footer={
             loadMoreEnable
@@ -201,7 +178,7 @@ const ProjectCollectionTable: React.FC<{
                       loading={loading}
                       onClick={() => {
                         setLoading(true)
-                        const loadMoreEnable = onLoadMoreProjects(setLoading)
+                        const loadMoreEnable = onLoadMoreSubmit(setLoading)
                         setLoadMoreEnable(loadMoreEnable)
                       }}
                     >

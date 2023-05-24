@@ -78,3 +78,12 @@ export type ProjectSortProps = {
   id: string
   title: string
 }
+
+export type MarkedProjectRoleProps = {
+  id: string
+  title: string
+  agreedAt: Date | null
+  identity: { id: string; name: string }
+  author: Pick<CreatorProps, 'id' | 'name' | 'pictureUrl'> | null
+  previewUrl: string | null
+}
