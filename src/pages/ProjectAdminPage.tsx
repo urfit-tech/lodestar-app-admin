@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { Button, Skeleton, Tabs } from 'antd'
 import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -32,6 +32,8 @@ import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
 import { ProjectAdminProps, ProjectDataType } from '../types/project'
 import pageMessages from './translation'
+import SeoSettingsBlock from '../components/form/SeoSettingsBlock'
+import OpenGraphSettingsBlock from '../components/form/OpenGraphSettingsBlock'
 
 const ProjectPortfolioBlockTitle = styled(AdminBlockTitle)`
   margin-bottom: 8px;
@@ -43,7 +45,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
   const [projectKey, setProjectKey] = useQueryParam('tab', StringParam)
   const { host } = useApp()
   const { loadingProjectAdmin, projectAdmin, refetchProjectAdmin } = useProjectAdmin(projectId)
-
+  const { updateProjectMetaTag } = useMutateProjectAdmin()
   return (
     <>
       <AdminHeader>
@@ -111,6 +113,19 @@ const ProjectAdminPage: React.FC<{}> = () => {
                       <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
                       <ProjectPortfolioBasicForm project={projectAdmin} onRefetch={refetchProjectAdmin} />
                     </AdminBlock>
+                    <SeoSettingsBlock
+                      id={projectAdmin?.id}
+                      metaTag={projectAdmin?.metaTag}
+                      updateMetaTag={updateProjectMetaTag}
+                      onRefetch={refetchProjectAdmin}
+                    />
+                    <OpenGraphSettingsBlock
+                      id={projectAdmin?.id}
+                      type="project"
+                      metaTag={projectAdmin?.metaTag}
+                      updateMetaTag={updateProjectMetaTag}
+                      onRefetch={refetchProjectAdmin}
+                    />
                   </div>
                 </Tabs.TabPane>
 
@@ -225,6 +240,7 @@ const useProjectAdmin = (projectId: string) => {
           preview_url
           is_participants_visible
           is_countdown_timer_visible
+          meta_tag
           creator {
             id
             name
@@ -307,6 +323,7 @@ const useProjectAdmin = (projectId: string) => {
           coverType: data.project_by_pk.cover_type,
           coverUrl: data.project_by_pk.cover_url || null,
           previewUrl: data.project_by_pk.preview_url || null,
+          metaTag: data.project_by_pk.meta_tag || null,
           isParticipantsVisible: data.project_by_pk.is_participants_visible,
           isCountdownTimerVisible: data.project_by_pk.is_countdown_timer_visible,
           projectPlan: data.project_by_pk.project_plans.map(v => ({
@@ -347,6 +364,22 @@ const useProjectAdmin = (projectId: string) => {
     errorProjectAdmin: error,
     projectAdmin,
     refetchProjectAdmin: refetch,
+  }
+}
+
+const useMutateProjectAdmin = () => {
+  const [updateProjectMetaTag] = useMutation<hasura.UPDATE_PROJECT_META_TAG, hasura.UPDATE_PROJECT_META_TAGVariables>(
+    gql`
+      mutation UPDATE_PROJECT_META_TAG($id: uuid!, $metaTag: jsonb) {
+        update_project(where: { id: { _eq: $id } }, _set: { meta_tag: $metaTag }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return {
+    updateProjectMetaTag,
   }
 }
 
