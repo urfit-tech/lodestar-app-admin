@@ -3,6 +3,7 @@ import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { parsePayload } from 'lodestar-app-element/src/hooks/util'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -38,10 +39,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { enabledModules, settings } = useApp()
-  const { permissions, currentUserRole } = useAuth()
+  const { permissions, currentUserRole, authToken } = useAuth()
   const { renderAdminMenu } = useCustomRenderer()
   const [openKeys, setOpenKeys] = useState<React.Key[]>([])
-
+  const payload = authToken ? parsePayload(authToken) : null
+  const isBusiness = payload && payload.isBusiness
   const defaultMenuItems: {
     permissionIsAllowed: boolean
     icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
@@ -549,7 +551,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
-      permissionIsAllowed: true,
+      permissionIsAllowed: !isBusiness,
       key: 'settings',
       icon: () => <UserIcon />,
       name:

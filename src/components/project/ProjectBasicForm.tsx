@@ -206,7 +206,7 @@ const ProjectBasicForm: React.FC<{
         </Form.Item>
       )}
       <Form.Item label={formatMessage(projectMessages['*'].participantsAmount)} name="isParticipantsVisible">
-        <Radio.Group disabled={form.getFieldValue('targetUnit') === 'participants'}>
+        <Radio.Group disabled={targetUnit === 'participants'}>
           <Radio value={true}>{formatMessage(commonMessages.status.visible)}</Radio>
           <Radio value={false}>{formatMessage(commonMessages.status.invisible)}</Radio>
         </Radio.Group>
