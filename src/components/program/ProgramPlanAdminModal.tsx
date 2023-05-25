@@ -27,6 +27,8 @@ import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 import formMessages from '../form/translation'
 import programMessages from './translation'
+import { useMutateProductLevel, useProductLevel } from '../../hooks/data'
+import { Spinner } from '@chakra-ui/react'
 
 const StyledNotation = styled.div`
   line-height: 1.5;
@@ -56,6 +58,7 @@ type FieldProps = {
   giftPlanProductId: string
   giftPlanStartedAt?: Moment | null
   giftPlanEndedAt?: Moment | null
+  productLevel?: number
 }
 
 type ProgramPlanType = 'perpetual' | 'period' | 'subscription'
@@ -93,6 +96,9 @@ const ProgramPlanAdminModal: React.FC<
     UPSERT_PROGRAM_PLAN,
   )
   const { upsertProductGiftPlan, deleteProductGiftPlan } = useGiftPlanMutation()
+  const { loading: loadingProductLevel, productLevel } = useProductLevel(`Program_${programId}`)
+  const { updateProductLevel } = useMutateProductLevel()
+
   const [loading, setLoading] = useState(false)
   const currencyId = programPlan?.currencyId || ''
 
@@ -121,8 +127,14 @@ const ProgramPlanAdminModal: React.FC<
       .validateFields()
       .then(() => {
         setLoading(true)
-        const values = form.getFieldsValue()
+        const values: FieldProps = form.getFieldsValue()
         const newProgramPlanId = uuid()
+
+        if (enabledModules.product_level && programPlan?.id) {
+          updateProductLevel({
+            variables: { productId: `Program_${programPlan.id}`, level: values.productLevel },
+          }).catch(e => handleError(e))
+        }
 
         upsertProgramPlan({
           variables: {
@@ -257,6 +269,7 @@ const ProgramPlanAdminModal: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
+          productLevel: productLevel,
         }}
       >
         <Form.Item
@@ -343,6 +356,16 @@ const ProgramPlanAdminModal: React.FC<
             )}
           </div>
         )}
+        {enabledModules.product_level ? (
+          loadingProductLevel ? (
+            <Spinner />
+          ) : (
+            <Form.Item label={formatMessage(programMessages.ProgramPlanAdminModal.productLevel)} name="productLevel">
+              <InputNumber />
+            </Form.Item>
+          )
+        ) : null}
+
         {enabledModules?.currency && (
           <Form.Item
             label={formatMessage(commonMessages.label.currency)}
