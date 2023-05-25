@@ -848,7 +848,7 @@ export const useProductLevel = (productId: string) => {
     `,
     { variables: { productId } },
   )
-  const productLevel: number = data?.product_by_pk?.level
+  const productLevel: number = data?.product_by_pk?.level || 0
 
   return {
     loading,

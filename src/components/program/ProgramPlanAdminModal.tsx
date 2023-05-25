@@ -1,9 +1,9 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
+import { Spinner } from '@chakra-ui/react'
 import { Button, Checkbox, Form, Input, InputNumber, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useGiftPlanMutation } from 'lodestar-app-element/src/hooks/giftPlan'
@@ -15,6 +15,7 @@ import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
+import { useMutateProductLevel, useProductLevel } from '../../hooks/data'
 import { PeriodType } from '../../types/general'
 import { ProductGiftPlan } from '../../types/giftPlan'
 import { ProgramPlan } from '../../types/program'
@@ -27,8 +28,6 @@ import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 import formMessages from '../form/translation'
 import programMessages from './translation'
-import { useMutateProductLevel, useProductLevel } from '../../hooks/data'
-import { Spinner } from '@chakra-ui/react'
 
 const StyledNotation = styled.div`
   line-height: 1.5;
@@ -96,7 +95,7 @@ const ProgramPlanAdminModal: React.FC<
     UPSERT_PROGRAM_PLAN,
   )
   const { upsertProductGiftPlan, deleteProductGiftPlan } = useGiftPlanMutation()
-  const { loading: loadingProductLevel, productLevel } = useProductLevel(`Program_${programId}`)
+  const { loading: loadingProductLevel, productLevel } = useProductLevel(`ProgramPlan_${programPlan?.id}`)
   const { updateProductLevel } = useMutateProductLevel()
 
   const [loading, setLoading] = useState(false)
@@ -130,12 +129,6 @@ const ProgramPlanAdminModal: React.FC<
         const values: FieldProps = form.getFieldsValue()
         const newProgramPlanId = uuid()
 
-        if (enabledModules.product_level && programPlan?.id) {
-          updateProductLevel({
-            variables: { productId: `Program_${programPlan.id}`, level: values.productLevel },
-          }).catch(e => handleError(e))
-        }
-
         upsertProgramPlan({
           variables: {
             id: programPlan ? programPlan.id : newProgramPlanId,
@@ -159,6 +152,14 @@ const ProgramPlanAdminModal: React.FC<
             isParticipantsVisible: values.isParticipantsVisible,
           },
         })
+          .then(res => {
+            const programPlanId = res.data?.insert_program_plan?.returning?.[0].id
+            if (enabledModules.product_level && programPlanId) {
+              updateProductLevel({
+                variables: { productId: `ProgramPlan_${programPlanId}`, level: values.productLevel },
+              }).catch(e => handleError(e))
+            }
+          })
           .catch(handleError)
           .finally(() => {
             if (values.hasGiftPlan) {
@@ -495,6 +496,9 @@ const UPSERT_PROGRAM_PLAN = gql`
       }
     ) {
       affected_rows
+      returning {
+        id
+      }
     }
   }
 `
