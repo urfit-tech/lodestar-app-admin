@@ -1,5 +1,5 @@
 import { CreatorProps } from './creator'
-import { Category } from './general'
+import { Category, MetaTag } from './general'
 
 export type ProjectDataType = 'funding' | 'pre-order' | 'on-sale' | 'modular' | 'portfolio'
 export type ProjectPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
@@ -18,6 +18,7 @@ export type ProjectAdminProps = ProjectPreviewProps & {
   isCountdownTimerVisible: boolean
   projectPlan: ProjectPlan[]
   authorId: string | null
+  metaTag: MetaTag
   creator?: Pick<CreatorProps, 'id' | 'name' | 'pictureUrl'> | null
 }
 
@@ -76,4 +77,13 @@ export type ProjectPlanSortProps = {
 export type ProjectSortProps = {
   id: string
   title: string
+}
+
+export type MarkedProjectRoleProps = {
+  id: string
+  title: string
+  agreedAt: Date | null
+  identity: { id: string; name: string }
+  author: Pick<CreatorProps, 'id' | 'name' | 'pictureUrl'> | null
+  previewUrl: string | null
 }

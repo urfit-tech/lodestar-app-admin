@@ -78,7 +78,9 @@ const ProjectRejectMarkModal: React.VFC<{
           }
           trigger={['hover']}
         >
-          <MoreOutlined />
+          <div style={{ width: '100%' }}>
+            <MoreOutlined />
+          </div>
         </Dropdown>
       )}
       title={formatMessage(projectMessages.ProjectRejectMarkModal.rejectMark)}
