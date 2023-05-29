@@ -1,6 +1,6 @@
-import Icon, { MoreOutlined } from '@ant-design/icons'
+import Icon, { LoadingOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/client'
-import { Button, DatePicker, Dropdown, Form, Input, Menu, Select } from 'antd'
+import { Button, DatePicker, Dropdown, Form, Input, Menu, Select, Spin } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
 import { gql } from '@apollo/client'
@@ -18,6 +18,9 @@ import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
+import Checkbox from 'antd/lib/checkbox/Checkbox'
+import { Text } from '@chakra-ui/react'
+import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 
 const StyledLinkIconWrapper = styled.span`
   cursor: pointer;
@@ -31,6 +34,11 @@ const StyledFormItemWrapper = styled.div`
     width: 100%;
   }
 `
+const MeetingButton = styled(Button)`
+  width: 100%;
+  border-radius: 4px;
+  justify-content: center;
+`
 
 type FieldProps = {
   title: string
@@ -41,6 +49,7 @@ type FieldProps = {
   status: MemberTaskProps['status']
   dueAt: Moment | null
   description: string | null
+  hasMeeting: boolean
 }
 
 const MemberTaskAdminModal: React.FC<
@@ -48,15 +57,17 @@ const MemberTaskAdminModal: React.FC<
     memberTask?: MemberTaskProps
     initialMemberId?: string
     initialExecutorId?: string
+    meetingButtonOnClick?: () => void
     onRefetch?: () => void
   } & AdminModalProps
-> = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
+> = ({ memberTask, initialMemberId, meetingButtonOnClick, initialExecutorId, onRefetch, onCancel, ...props }) => {
   const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [insertTask] = useMutation<hasura.INSERT_TASK, hasura.INSERT_TASKVariables>(INSERT_TASK)
   const [deleteTask] = useMutation<hasura.DELETE_TASK, hasura.DELETE_TASKVariables>(DELETE_TASK)
   const [loading, setLoading] = useState(false)
+  const [meetingLoading, setMeetingLoading] = useState(false)
 
   const handleSubmit = (onSuccess?: () => void) => {
     form
@@ -78,6 +89,7 @@ const MemberTaskAdminModal: React.FC<
                   status: values.status,
                   due_at: values.dueAt?.toDate(),
                   description: values.description || '',
+                  has_meeting: values.hasMeeting,
                   author_id: currentMemberId,
                 },
               ],
@@ -102,6 +114,7 @@ const MemberTaskAdminModal: React.FC<
                   status: values.status,
                   due_at: values.dueAt?.toDate(),
                   description: values.description || '',
+                  has_meeting: values.hasMeeting,
                   author_id: currentMemberId,
                 },
               ],
@@ -175,6 +188,7 @@ const MemberTaskAdminModal: React.FC<
           priority: memberTask?.priority || 'high',
           status: memberTask?.status || 'pending',
           dueAt: memberTask?.dueAt ? moment(memberTask.dueAt) : null,
+          hasMeeting: memberTask?.hasMeeting,
           description: memberTask?.description || '',
         }}
       >
@@ -274,6 +288,37 @@ const MemberTaskAdminModal: React.FC<
             style={{ width: '100%' }}
           />
         </Form.Item>
+        <Form.Item label={formatMessage(memberMessages.label.meetingLink)} name="hasMeeting" valuePropName="checked">
+          {memberTask?.hasMeeting ? (
+            <MeetingButton
+              size="large"
+              type="primary"
+              onClick={async () => {
+                if (meetingLoading) return
+                setMeetingLoading(() => true)
+                await meetingButtonOnClick?.()
+                setMeetingLoading(() => false)
+              }}
+            >
+              <div className="d-flex align-items-center">
+                {meetingLoading ? (
+                  <div className="mr-2">
+                    <Spin size="small" className="mb-2" indicator={<LoadingOutlined style={{ color: 'white' }} />} />
+                  </div>
+                ) : (
+                  <MeetingIcon className="mr-2" />
+                )}
+                {formatMessage(memberMessages.label.createMeeting)}
+              </div>
+            </MeetingButton>
+          ) : (
+            <Checkbox style={{ display: 'flex', alignItems: 'center' }}>
+              <Text color="var(--gary-dark)" size="sm">
+                {formatMessage(memberMessages.label.hasMeeting)}
+              </Text>
+            </Checkbox>
+          )}
+        </Form.Item>
         <Form.Item label={formatMessage(memberMessages.label.taskDescription)} name="description">
           <TextArea />
         </Form.Item>
@@ -288,7 +333,7 @@ const INSERT_TASK = gql`
       objects: $data
       on_conflict: {
         constraint: member_task_pkey
-        update_columns: [title, category_id, member_id, executor_id, priority, status, due_at, description]
+        update_columns: [title, category_id, member_id, executor_id, priority, status, due_at, description, has_meeting]
       }
     ) {
       affected_rows

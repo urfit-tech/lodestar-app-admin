@@ -1177,6 +1177,10 @@ export const memberMessages = {
     audioRecordFile: { id: 'member.label.audioRecordFile', defaultMessage: '音檔紀錄' },
     attachment: { id: 'member.label.attachment', defaultMessage: '通話附件' },
     abstract: { id: 'member.label.abstract', defaultMessage: '個人簡介' },
+    meeting: { id: 'member.label.meeting', defaultMessage: '會議' },
+    meetingLink: { id: 'member.label.meetingLink', defaultMessage: '會議連結' },
+    hasMeeting: { id: 'member.label.hasMeeting', defaultMessage: '新增線上會議連結' },
+    createMeeting: { id: 'member.label.createMeeting', defaultMessage: '產生會議連結' },
   }),
   text: {
     duplicatedPhoneMember: {
