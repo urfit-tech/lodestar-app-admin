@@ -159,6 +159,7 @@ export type MemberTaskProps = {
   } | null
   dueAt: Date | null
   createdAt: Date | null
+  hasMeeting: boolean
   description: string | null
   member: {
     id: string
