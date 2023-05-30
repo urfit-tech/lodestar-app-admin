@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Spin, Tag, TreeSelect } from 'antd'
 import { DataNode } from 'antd/lib/tree'
-import { gql } from '@apollo/client'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -141,7 +140,10 @@ const useProductSelections = () => {
     gql`
       query GET_PRODUCT_SELECTION_COLLECTION {
         program_plan(
-          where: { is_deleted: { _eq: false }, program: { is_deleted: { _eq: false } } }
+          where: {
+            program: { is_deleted: { _eq: false } }
+            _and: [{ is_deleted: { _eq: false } }, { published_at: { _is_null: false } }]
+          }
           order_by: { published_at: desc_nulls_last }
         ) {
           id
@@ -155,7 +157,10 @@ const useProductSelections = () => {
             title
           }
         }
-        program_package_plan(order_by: { published_at: desc_nulls_last }) {
+        program_package_plan(
+          where: { program_package: { published_at: { _is_null: false } } }
+          order_by: { published_at: desc_nulls_last }
+        ) {
           id
           title
           published_at
@@ -164,7 +169,12 @@ const useProductSelections = () => {
             title
           }
         }
-        activity_ticket(where: { ended_at: { _gt: "now()" }, activity: { deleted_at: { _is_null: true } } }) {
+        activity_ticket(
+          where: {
+            ended_at: { _gt: "now()" }
+            activity: { _and: [{ deleted_at: { _is_null: true } }, { published_at: { _is_null: false } }] }
+          }
+        ) {
           id
           title
           started_at
@@ -203,7 +213,10 @@ const useProductSelections = () => {
             title
           }
         }
-        project_plan(order_by: { published_at: desc_nulls_last }) {
+        project_plan(
+          where: { project: { published_at: { _is_null: false } } }
+          order_by: { published_at: desc_nulls_last }
+        ) {
           id
           title
           published_at
