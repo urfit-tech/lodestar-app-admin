@@ -1,8 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { ApolloClient, useApolloClient, useMutation } from '@apollo/client'
+import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
 import { Button, Divider, Input, message, Switch, Table, Tooltip, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { gql } from '@apollo/client'
 import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -278,7 +277,7 @@ const SaleCollectionAdminCard: React.VFC<{
                       })})`}
                     </span>
                   )}
-                  {v.quantity && <span>{` X ${v.quantity} `}</span>}
+                  {v.quantity ? <span>{` X ${v.quantity} `}</span> : null}
                 </div>
                 <div className="col-3 d-flex justify-content-between">
                   <div>
