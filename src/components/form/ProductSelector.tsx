@@ -220,6 +220,10 @@ const useProductSelections = () => {
           id
           title
           published_at
+          project {
+            id
+            title
+          }
         }
         appointment_plan(order_by: { published_at: desc_nulls_last }) {
           id
@@ -339,7 +343,7 @@ const useProductSelections = () => {
       products:
         data?.project_plan.map(v => ({
           id: `ProjectPlan_${v.id}`,
-          title: v.title || '',
+          title: `${v.project.title} - ${v.title}` || '',
           publishedAt: v.published_at ? new Date(v.published_at) : null,
         })) || [],
     },
