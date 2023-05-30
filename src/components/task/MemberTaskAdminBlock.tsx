@@ -198,7 +198,7 @@ const MemberTaskAdminBlock: React.FC<{
     }
   }
 
-  const meetingButtonOnClick = async () => {
+  const meetingButtonOnClick = async (meetingMember: { id: string; name: string }) => {
     if (!enabledModules.meet_service) {
       setJitsiModalVisible(true)
       return
@@ -208,7 +208,7 @@ const MemberTaskAdminBlock: React.FC<{
       const response = await axios.post(
         `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
         {
-          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${memberId}`,
+          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMember.id}`,
           autoRecording: true,
           service: 'zoom',
           nbf: null,
@@ -268,8 +268,7 @@ const MemberTaskAdminBlock: React.FC<{
                     loading: true,
                   }
                 })
-                setMeetingMember(() => record.member)
-                meetingButtonOnClick()
+                meetingButtonOnClick(record.member)
               }}
               style={{ width: 30, height: 30, alignItems: 'center' }}
             >
@@ -461,7 +460,6 @@ const MemberTaskAdminBlock: React.FC<{
           title={formatMessage(memberMessages.ui.newTask)}
           initialMemberId={memberId}
           initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
-          meetingButtonOnClick={meetingButtonOnClick}
           onRefetch={refetchMemberTasks}
         />
 
@@ -656,7 +654,7 @@ const MemberTaskAdminBlock: React.FC<{
             refetchMemberTasks()
             setSelectedMemberTask(null)
           }}
-          meetingButtonOnClick={meetingButtonOnClick}
+          meetingButtonOnClick={() => meetingButtonOnClick(meetingMember)}
           onCancel={() => setSelectedMemberTask(null)}
         />
       )}
