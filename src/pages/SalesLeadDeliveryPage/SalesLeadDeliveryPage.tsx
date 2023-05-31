@@ -1,5 +1,5 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import { Box, Text } from '@chakra-ui/react'
 import {
   Button,
@@ -29,7 +29,7 @@ import { AdminPageTitle } from '../../components/admin'
 import CategoryInput from '../../components/common/CategoryInput'
 import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
-import hasura from '../../hasura'
+import hasura, { member_bool_exp } from '../../hasura'
 import { useProperty } from '../../hooks/member'
 import { salesLeadDeliveryPageMessages } from './translation'
 
@@ -64,6 +64,10 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     UPDATE_LEAD_MANAGER,
   )
 
+  const [getLeadManager] = useLazyQuery<hasura.GET_LEAD_CANDIDATES, hasura.GET_LEAD_CANDIDATESVariables>(
+    GET_LEAD_CANDIDATES,
+  )
+
   return (
     <AdminLayout>
       <div className="mb-5 d-flex justify-content-between align-items-center">
@@ -92,17 +96,27 @@ const SalesLeadDeliveryPage: React.VFC = () => {
       {currentStep === 1 && (
         <ConfirmSection
           filter={filter}
-          onNext={({ memberIds, managerId }) => {
+          onNext={({ condition, limit, managerId }) => {
             setCurrentStep(step => step + 1)
             setAssignedResult({
               status: 'info',
             })
-            updateLeadManager({ variables: { memberIds, managerId } })
+            getLeadManager({ variables: { condition, limit } })
               .then(({ data }) => {
-                setAssignedResult({
-                  status: 'success',
-                  data: data?.update_member?.affected_rows || 0,
-                })
+                const memberIds = data?.member.map(m => m.id)
+                updateLeadManager({ variables: { memberIds, managerId } })
+                  .then(({ data }) => {
+                    setAssignedResult({
+                      status: 'success',
+                      data: data?.update_member?.affected_rows || 0,
+                    })
+                  })
+                  .catch(error => {
+                    setAssignedResult({
+                      status: 'error',
+                      error,
+                    })
+                  })
               })
               .catch(error => {
                 setAssignedResult({
@@ -269,89 +283,94 @@ const FilterSection: React.FC<{
 
 const ConfirmSection: React.FC<{
   filter: Filter
-  onNext?: (values: { memberIds: string[]; managerId: string | null }) => void
+  onNext?: (values: { condition: member_bool_exp; limit: number; managerId: string | null }) => void
 }> = ({ filter, onNext }) => {
   const { formatMessage } = useIntl()
   const [managerId, setManagerId] = useState<string>()
   const [numDeliver, setNumDeliver] = useState(1)
   const { properties } = useProperty()
 
+  const leadCandidatesCondition = {
+    member_phones: { phone: { _neq: '' } },
+    manager_id: {
+      _is_null: !filter.managerId,
+      _eq: filter.managerId || undefined,
+    },
+    member_categories:
+      filter.categoryIds.length > 0
+        ? {
+            category: {
+              name: {
+                _in: filter.categoryIds,
+              },
+            },
+          }
+        : undefined,
+    created_at: filter.createdAtRange
+      ? {
+          _gte: moment(filter.createdAtRange[0]).startOf('day'),
+          _lte: moment(filter.createdAtRange[1]).endOf('day'),
+        }
+      : undefined,
+    star: filter.starRangeIsNull
+      ? {
+          _is_null: true,
+        }
+      : {
+          _gte: filter.starRange[0],
+          _lte: filter.starRange[1],
+        },
+    last_member_note_called: filter.lastCalledRange
+      ? {
+          _gte: moment(filter.lastCalledRange[0]).startOf('day'),
+          _lte: moment(filter.lastCalledRange[1]).endOf('day'),
+        }
+      : undefined,
+    last_member_note_answered: filter.lastAnsweredRange
+      ? {
+          _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+          _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+        }
+      : undefined,
+    _and: properties.map(property => {
+      return {
+        member_properties: !isEmpty(filter[property.name])
+          ? {
+              property: { name: { _eq: property.name } },
+              value: filter[`is${property.name}ExactMatch`]
+                ? { _eq: `${filter[property.name]}` }
+                : { _like: `%${filter[property.name]}%` },
+            }
+          : undefined,
+      }
+    }),
+  }
+
   const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
-    hasura.GET_LEAD_CANDIDATES,
-    hasura.GET_LEAD_CANDIDATESVariables
+    hasura.GET_LEAD_CANDIDATES_AGGREGATE,
+    hasura.GET_LEAD_CANDIDATES_AGGREGATEVariables
   >(
     gql`
-      query GET_LEAD_CANDIDATES($condition: member_bool_exp) {
-        member_phone(where: { _and: [{ phone: { _neq: "" } }, { member: $condition }] }, distinct_on: [member_id]) {
-          member_id
+      query GET_LEAD_CANDIDATES_AGGREGATE($condition: member_bool_exp) {
+        member_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
         }
       }
     `,
     {
       fetchPolicy: 'no-cache',
       variables: {
-        condition: {
-          manager_id: {
-            _is_null: !filter.managerId,
-            _eq: filter.managerId || undefined,
-          },
-          member_categories:
-            filter.categoryIds.length > 0
-              ? {
-                  category: {
-                    name: {
-                      _in: filter.categoryIds,
-                    },
-                  },
-                }
-              : undefined,
-          created_at: filter.createdAtRange
-            ? {
-                _gte: moment(filter.createdAtRange[0]).startOf('day'),
-                _lte: moment(filter.createdAtRange[1]).endOf('day'),
-              }
-            : undefined,
-          star: filter.starRangeIsNull
-            ? {
-                _is_null: true,
-              }
-            : {
-                _gte: filter.starRange[0],
-                _lte: filter.starRange[1],
-              },
-          last_member_note_called: filter.lastCalledRange
-            ? {
-                _gte: moment(filter.lastCalledRange[0]).startOf('day'),
-                _lte: moment(filter.lastCalledRange[1]).endOf('day'),
-              }
-            : undefined,
-          last_member_note_answered: filter.lastAnsweredRange
-            ? {
-                _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
-                _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
-              }
-            : undefined,
-          _and: properties.map(property => {
-            return {
-              member_properties: !isEmpty(filter[property.name])
-                ? {
-                    property: { name: { _eq: property.name } },
-                    value: filter[`is${property.name}ExactMatch`]
-                      ? { _eq: `${filter[property.name]}` }
-                      : { _like: `%${filter[property.name]}%` },
-                  }
-                : undefined,
-            }
-          }),
-        },
+        condition: leadCandidatesCondition,
       },
     },
   )
 
-  const filteredMemberIds = useMemo(() => {
-    const memberIds = leadCandidatesData?.member_phone.map(v => v.member_id) || []
-    return memberIds
-  }, [leadCandidatesData?.member_phone])
+  const filteredMemberIdCount = useMemo(() => {
+    const count = leadCandidatesData?.member_aggregate.aggregate?.count || 0
+    return count
+  }, [leadCandidatesData?.member_aggregate])
 
   const isLoading = isLeadCandidatesLoading
 
@@ -362,7 +381,7 @@ const ConfirmSection: React.FC<{
           loading={isLoading}
           className="mb-3"
           title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
-          value={`${numDeliver} / ${filteredMemberIds.length}`}
+          value={`${numDeliver} / ${filteredMemberIdCount}`}
         />
         <div className="mb-2">
           <ManagerInput value={managerId} onChange={setManagerId} />
@@ -370,17 +389,19 @@ const ConfirmSection: React.FC<{
         {!isLoading && (
           <Row className="mb-2">
             <Col span={6}>
-              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={filteredMemberIds.length} />
+              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={filteredMemberIdCount} />
             </Col>
             <Col span={18}>
-              <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIds.length} />
+              <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIdCount} />
             </Col>
           </Row>
         )}
         <Button
           type="primary"
           block
-          onClick={() => onNext?.({ memberIds: filteredMemberIds.slice(0, numDeliver), managerId: managerId || null })}
+          onClick={() =>
+            onNext?.({ condition: leadCandidatesCondition, limit: numDeliver, managerId: managerId || null })
+          }
         >
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
@@ -423,6 +444,14 @@ const UPDATE_LEAD_MANAGER = gql`
   mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
     update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
       affected_rows
+    }
+  }
+`
+
+const GET_LEAD_CANDIDATES = gql`
+  query GET_LEAD_CANDIDATES($condition: member_bool_exp, $limit: Int!) {
+    member(where: $condition, limit: $limit) {
+      id
     }
   }
 `
