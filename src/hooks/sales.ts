@@ -12,9 +12,7 @@ export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
     gql`
       query GET_MANAGER_COLLECTION {
-        member_property(where: { property: { name: { _eq: "分機號碼" } } }) {
-          id
-          value
+        member_permission(where: { permission_id: { _eq: "BACKSTAGE_ENTER" } }) {
           member {
             id
             name
@@ -27,18 +25,35 @@ export const useManagers = () => {
     `,
   )
 
+  const { data: managerTelephoneExtData } = useQuery<
+    hasura.GET_MANAGER_TELEPHONE_EXT,
+    hasura.GET_MANAGER_TELEPHONE_EXTVariables
+  >(
+    gql`
+      query GET_MANAGER_TELEPHONE_EXT($memberIds: [String!]!) {
+        member_property(where: { member_id: { _in: $memberIds }, property: { name: { _eq: "分機號碼" } } }) {
+          value
+          member_id
+        }
+      }
+    `,
+    {
+      variables: {
+        memberIds: data?.member_permission.map(d => d.member?.id || '') || [],
+      },
+    },
+  )
+
   const managers: Manager[] = useMemo(
     () =>
-      data?.member_property
-        .filter(v => v.value)
-        .map(v => ({
-          id: v.member?.id || '',
-          name: v.member?.name || '',
-          username: v.member?.username || '',
-          avatarUrl: v.member?.picture_url || null,
-          email: v.member?.email || '',
-          telephone: v.value,
-        })) || [],
+      data?.member_permission.map(v => ({
+        id: v.member?.id || '',
+        name: v.member?.name || '',
+        username: v.member?.username || '',
+        avatarUrl: v.member?.picture_url || null,
+        email: v.member?.email || '',
+        telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
+      })) || [],
     [data],
   )
 
