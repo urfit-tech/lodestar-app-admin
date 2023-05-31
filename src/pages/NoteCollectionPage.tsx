@@ -1,12 +1,15 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, DatePicker, Input, message, Table, Tag } from 'antd'
+import { useQuery } from '@apollo/client'
+import { Button, Checkbox, DatePicker, Input, message, Select, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import axios from 'axios'
+import gql from 'graphql-tag'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
-import React, { useRef, useState } from 'react'
+import { sum } from 'ramda'
+import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
@@ -18,8 +21,7 @@ import hasura from '../hasura'
 import { currencyFormatter, dateFormatter, downloadFile, getFileDownloadableLink, handleError } from '../helpers'
 import { commonMessages, memberMessages, podcastMessages } from '../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../hooks/data'
-import { useMemberNotesAdmin, useMutateMemberNote } from '../hooks/member'
-import { NoteAdminProps } from '../types/member'
+import { useMutateMemberNote } from '../hooks/member'
 import ForbiddenPage from './ForbiddenPage'
 
 const messages = defineMessages({
@@ -73,9 +75,51 @@ type FiltersProps = {
   tags?: string[]
 }
 
+export type NoteAdmin = {
+  id: string
+  createdAt: Date
+  type: 'inbound' | 'outbound' | 'demo' | 'sms' | null
+  status: string | null
+  author: {
+    id: string
+    pictureUrl: string | null
+    name: string
+  }
+  manager: {
+    id: string
+    name: string
+  } | null
+  member: {
+    id: string
+    pictureUrl: string | null
+    name: string
+    email: string
+    properties: {
+      name: string
+      value: string
+    }[]
+  }
+  memberCategories: {
+    id: string
+    name: string
+  }[]
+  memberTags: string[]
+  consumption: number
+  duration: number
+  audioFilePath: string | null
+  description: string | null
+  metadata: any
+  note: string | null
+  attachments: {
+    id: string
+    data: any
+    options: any
+  }[]
+}
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
+
   const { enabledModules } = useApp()
   const [orderBy, setOrderBy] = useState<hasura.member_note_order_by>({
     created_at: 'desc' as hasura.order_by,
@@ -96,9 +140,10 @@ const NoteCollectionPage: React.FC = () => {
   const [updatedNotes, setUpdatedNotes] = useState<{ [NoteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
   const [downloadingNoteIds, setDownloadingNoteIds] = useState<string[]>([])
-  const [selectedNote, setSelectedNote] = useState<NoteAdminProps | null>(null)
+  const [selectedNote, setSelectedNote] = useState<NoteAdmin | null>(null)
+  const [playbackRate, setPlaybackRate] = useState(1)
 
-  const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
+  const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdmin> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -151,7 +196,7 @@ const NoteCollectionPage: React.FC = () => {
     onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
   })
 
-  const columns: ColumnProps<NoteAdminProps>[] = [
+  const columns: ColumnProps<NoteAdmin>[] = [
     {
       key: 'createdAt',
       title: formatMessage(messages.memberNoteCreatedAt),
@@ -250,6 +295,24 @@ const NoteCollectionPage: React.FC = () => {
       render: (text, record, index) => record.memberTags.map(tag => <Tag key={tag}>{tag}</Tag>),
     },
     {
+      key: 'propertyMaterials',
+      title: '廣告素材',
+      width: '10rem',
+      render: (text, record, index) => record.member?.properties.find(property => property.name === '廣告素材')?.value,
+    },
+    {
+      key: 'propertyEvent',
+      title: '行銷活動',
+      width: '10rem',
+      render: (text, record, index) => record.member?.properties.find(property => property.name === '行銷活動')?.value,
+    },
+    {
+      key: 'propertyPackage',
+      title: '廣告組合',
+      width: '10rem',
+      render: (text, record, index) => record.member?.properties.find(property => property.name === '廣告組合')?.value,
+    },
+    {
       key: 'consumption',
       title: formatMessage(commonMessages.label.consumption),
       render: (text, record, index) => <NoWrapText>{currencyFormatter(record.consumption)}</NoWrapText>,
@@ -267,7 +330,18 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'audioRecordFile',
-      title: formatMessage(memberMessages.label.audioRecordFile),
+      title: (
+        <>
+          <span className="mr-2">{formatMessage(memberMessages.label.audioRecordFile)}</span>
+          <Select<number> value={playbackRate} onChange={value => setPlaybackRate(value)}>
+            <Select.Option value={0.5}>0.5x</Select.Option>
+            <Select.Option value={1}>1x</Select.Option>
+            <Select.Option value={1.5}>1.5x</Select.Option>
+            <Select.Option value={2}>2x</Select.Option>
+          </Select>
+        </>
+      ),
+
       render: (text, record, index) => {
         const recordAttachmentId = record.attachments.find(v => v.data.name.includes('recordFile'))?.id
         return (
@@ -276,6 +350,7 @@ const NoteCollectionPage: React.FC = () => {
               <LoadRecordFileButton
                 memberName={record.member?.name || ''}
                 startTime={record.metadata?.starttime || ''}
+                playbackRate={playbackRate}
                 attachmentId={recordAttachmentId}
               />
             </div>
@@ -359,7 +434,7 @@ const NoteCollectionPage: React.FC = () => {
             title={formatMessage(memberMessages.label.editNote)}
             note={selectedNote || undefined}
             renderTrigger={({ setVisible }) => (
-              <Table<NoteAdminProps>
+              <Table<NoteAdmin>
                 columns={columns}
                 rowKey="id"
                 rowClassName="cursor-pointer"
@@ -367,7 +442,7 @@ const NoteCollectionPage: React.FC = () => {
                 loading={loadingNotes}
                 dataSource={notes}
                 onChange={(pagination, filters, sorter) => {
-                  const newSorter = sorter as SorterResult<NoteAdminProps>
+                  const newSorter = sorter as SorterResult<NoteAdmin>
                   setOrderBy({
                     [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
                       newSorter.order === 'ascend' ? 'asc' : 'desc',
@@ -403,17 +478,18 @@ const NoteCollectionPage: React.FC = () => {
                         }))
 
                         const memberNoteId = data?.update_member_note_by_pk?.id
-                        const deletedAttachmentIds = selectedNote.attachments
-                          .filter(noteAttachment =>
-                            attachments.every(
-                              attachment =>
-                                attachment.name !== noteAttachment.data.name &&
-                                attachment.lastModified !== noteAttachment.data.lastModified,
-                            ),
-                          )
-                          .map(attachment => attachment.id)
+                        const deletedAttachmentIds =
+                          selectedNote.attachments
+                            ?.filter(noteAttachment =>
+                              attachments.every(
+                                attachment =>
+                                  attachment.name !== noteAttachment.data.name &&
+                                  attachment.lastModified !== noteAttachment.data.lastModified,
+                              ),
+                            )
+                            ?.map(attachment => attachment.id) || []
                         const newAttachments = attachments.filter(attachment =>
-                          selectedNote.attachments.every(
+                          selectedNote.attachments?.every(
                             noteAttachment =>
                               noteAttachment.data.name !== attachment.name &&
                               noteAttachment.data.lastModified !== attachment.lastModified,
@@ -455,12 +531,22 @@ const NoteCollectionPage: React.FC = () => {
 const LoadRecordFileButton: React.FC<{
   memberName: string
   startTime: string
+  playbackRate: number
   attachmentId: string
-}> = ({ memberName, startTime, attachmentId }) => {
+}> = ({ memberName, startTime, playbackRate, attachmentId }) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const { id: appId } = useApp()
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    if (!audioRef.current || audioRef.current.playbackRate === playbackRate) {
+      return
+    }
+
+    audioRef.current.playbackRate = playbackRate
+  }, [playbackRate])
 
   if (!authToken || !appId) {
     return (
@@ -474,6 +560,7 @@ const LoadRecordFileButton: React.FC<{
     setAudioUrl('')
     try {
       const link: string = await getFileDownloadableLink(`attachments/${attachmentId}`, authToken)
+
       const response = await axios.get(link, {
         responseType: 'blob',
       })
@@ -490,13 +577,265 @@ const LoadRecordFileButton: React.FC<{
       <a href={audioUrl} download={`${memberName}_${startTime.replace(/:/g, '')}.wav`} className="flex-shrink-0 mr-2">
         <Button type="primary">{formatMessage(commonMessages.ui.download)}</Button>
       </a>
-      <audio src={audioUrl} controls />
+      <audio ref={audioRef} src={audioUrl} controls />
     </div>
   ) : (
     <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>
       {formatMessage(podcastMessages.ui.play)}
     </Button>
   )
+}
+
+const useMemberNotesAdmin = (
+  orderBy: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['orderBy'],
+  filters?: FiltersProps,
+) => {
+  const { currentMemberId, currentUserRole } = useAuth()
+
+  const condition: hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables['condition'] = {
+    created_at: filters?.range
+      ? {
+          _gte: filters.range[0].toDate(),
+          _lte: filters.range[1].toDate(),
+        }
+      : undefined,
+    author:
+      currentUserRole === 'app-owner'
+        ? // permissions.VIEW_ALL_MEMBER_NOTE
+          filters?.author
+          ? {
+              _or: [
+                { name: { _ilike: `%${filters.author}%` } },
+                { username: { _ilike: `%${filters.author}%` } },
+                { email: { _ilike: `%${filters.author}%` } },
+              ],
+            }
+          : undefined
+        : {
+            id: {
+              _eq: currentMemberId,
+            },
+          },
+    member: {
+      manager: filters?.manager
+        ? {
+            _or: [
+              { name: { _ilike: `%${filters.manager}%` } },
+              { username: { _ilike: `%${filters.manager}%` } },
+              { email: { _ilike: `%${filters.manager}%` } },
+            ],
+          }
+        : undefined,
+      _or: filters?.member
+        ? [
+            { id: { _eq: filters.member } },
+            { name: { _ilike: `%${filters.member}%` } },
+            { username: { _ilike: `%${filters.member}%` } },
+            { email: { _ilike: `%${filters.member}%` } },
+          ]
+        : undefined,
+      _and:
+        filters?.categories || filters?.tags
+          ? [
+              {
+                _or: filters.categories?.map(categoryId => ({
+                  member_categories: { category_id: { _eq: categoryId } },
+                })),
+              },
+              {
+                _or: filters.tags?.map(tag => ({
+                  member_tags: { tag_name: { _eq: tag } },
+                })),
+              },
+            ]
+          : undefined,
+    },
+  }
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    hasura.GET_MEMBER_NOTES_ADMIN_XUEMI,
+    hasura.GET_MEMBER_NOTES_ADMIN_XUEMIVariables
+  >(
+    gql`
+      query GET_MEMBER_NOTES_ADMIN_XUEMI($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+        category(where: { member_categories: {} }) {
+          id
+          name
+        }
+        member_tag(distinct_on: tag_name) {
+          tag_name
+        }
+        member_note_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+        member_note(where: $condition, order_by: [$orderBy], limit: 10) {
+          id
+          created_at
+          type
+          status
+          author {
+            id
+            picture_url
+            name
+            username
+          }
+          member {
+            id
+            picture_url
+            name
+            username
+            email
+            manager {
+              id
+              name
+              username
+            }
+            member_categories {
+              id
+              category {
+                id
+                name
+              }
+            }
+            member_tags {
+              tag_name
+            }
+            member_properties(where: { property: { name: { _similar: "廣告素材|行銷活動|廣告組合" } } }) {
+              id
+              property {
+                id
+                name
+              }
+              value
+            }
+            order_logs {
+              id
+              order_products_aggregate {
+                aggregate {
+                  sum {
+                    price
+                  }
+                }
+              }
+              order_discounts_aggregate {
+                aggregate {
+                  sum {
+                    price
+                  }
+                }
+              }
+            }
+          }
+          duration
+          description
+          metadata
+          note
+          member_note_attachments {
+            attachment_id
+            data
+            options
+          }
+        }
+      }
+    `,
+    { variables: { condition, orderBy } },
+  )
+
+  const allMemberCategories: {
+    id: string
+    name: string
+  }[] =
+    data?.category.map(v => ({
+      id: v.id,
+      name: v.name,
+    })) || []
+  const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
+
+  const notes: NoteAdmin[] =
+    data?.member_note.map(v => ({
+      id: v.id,
+      createdAt: new Date(v.created_at),
+      type: v.type as NoteAdmin['type'],
+      status: v.status || null,
+      author: {
+        id: v.author.id,
+        pictureUrl: v.author.picture_url || null,
+        name: v.author.name,
+      },
+      manager: v.member?.manager
+        ? {
+            id: v.member.manager.id,
+            name: v.member.manager.name || v.member.manager.username,
+          }
+        : null,
+      member: {
+        id: v.member?.id || '',
+        pictureUrl: v.member?.picture_url || '',
+        name: v.member?.name || v.member?.username || '',
+        email: v.member?.email || '',
+        properties:
+          v.member?.member_properties.map(w => ({
+            name: w.property.name,
+            value: w.value,
+          })) || [],
+      },
+      memberCategories:
+        v.member?.member_categories.map(u => ({
+          id: u.category.id,
+          name: u.category.name,
+        })) || [],
+      memberTags: v.member?.member_tags.map(u => u.tag_name) || [],
+      consumption:
+        sum(v.member?.order_logs.map(u => u.order_products_aggregate.aggregate?.sum?.price || 0) || []) -
+        sum(v.member?.order_logs.map(u => u.order_discounts_aggregate.aggregate?.sum?.price || 0) || []),
+      duration: v.duration || 0,
+      audioFilePath: v.metadata?.recordfile || null,
+      description: v.description || null,
+      metadata: v.metadata,
+      note: v.note || null,
+      attachments: v.member_note_attachments.map(u => ({
+        id: u.attachment_id,
+        data: u.data,
+        options: u.options,
+      })),
+    })) || []
+
+  const loadMoreNotes = () =>
+    fetchMore({
+      variables: {
+        orderBy,
+        condition: {
+          ...condition,
+          created_at: orderBy.created_at
+            ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
+            : undefined,
+          duration: orderBy.duration
+            ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
+            : undefined,
+        },
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        return {
+          ...prev,
+          member_note_aggregate: fetchMoreResult.member_note_aggregate,
+          member_note: [...prev.member_note, ...fetchMoreResult.member_note],
+        }
+      },
+    })
+
+  return {
+    loadingNotes: loading,
+    errorNotes: error,
+    allMemberCategories,
+    allMemberTags,
+    notes,
+    refetchNotes: refetch,
+    loadMoreNotes: (data?.member_note_aggregate.aggregate?.count || 0) > 10 ? loadMoreNotes : undefined,
+  }
 }
 
 export default NoteCollectionPage

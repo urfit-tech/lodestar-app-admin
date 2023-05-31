@@ -284,6 +284,7 @@ export const commonMessages = {
     participantOccupation: { id: 'common.label.participantOccupation', defaultMessage: 'Participant occupation' },
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
+    emailForEnglish: { id: 'common.label.emailForEnglish', defaultMessage: 'Email' },
   }),
   text: defineMessages({
     memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
