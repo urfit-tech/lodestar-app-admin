@@ -86,6 +86,7 @@ export const commonMessages = {
     agree: { id: 'common.ui.agree', defaultMessage: 'Agree' },
   }),
   label: defineMessages({
+    leadLevel: { id: 'common.label.leadLevel', defaultMessage: '分級' },
     program: { id: 'common.label.program', defaultMessage: '課程' },
     activity: { id: 'common.label.activity', defaultMessage: '活動' },
     merchandise: { id: 'common.label.merchandise', defaultMessage: '商品' },
@@ -284,6 +285,7 @@ export const commonMessages = {
     participantOccupation: { id: 'common.label.participantOccupation', defaultMessage: 'Participant occupation' },
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
+    emailForEnglish: { id: 'common.label.emailForEnglish', defaultMessage: 'Email' },
   }),
   text: defineMessages({
     memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
@@ -1409,6 +1411,10 @@ export const permissionGroupsAdminMessages = {
 }
 
 export const salesMessages = defineMessages({
+  answeredLeads: { id: 'sales.label.answeredLeads', defaultMessage: '已接通名單' },
+  signedLead: { id: 'sales.label.signedLead', defaultMessage: '已簽約' },
+  totalLead: { id: 'sales.label.totalLead', defaultMessage: '全部' },
+  recentAnsweredAt: { id: 'sales.label.recentAnsweredAt', defaultMessage: '最近接通' },
   salesLead: { id: 'sales.label.salesLead', defaultMessage: '名單撥打' },
   salesLeadDelivery: { id: 'sales.label.salesLeadDelivery', defaultMessage: '名單派發' },
   salesPerformance: { id: 'sales.label.salesPerformance', defaultMessage: '業績總表' },

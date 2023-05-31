@@ -1,9 +1,16 @@
-import Icon, { DatabaseOutlined, GlobalOutlined, GoldenFilled, ShoppingFilled } from '@ant-design/icons'
+import Icon, {
+  BarChartOutlined,
+  DatabaseOutlined,
+  GlobalOutlined,
+  GoldenFilled,
+  ShoppingFilled,
+} from '@ant-design/icons'
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { parsePayload } from 'lodestar-app-element/src/hooks/util'
+import { isEmpty } from 'ramda'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -23,6 +30,7 @@ import {
   ProjectIcon,
   QuestionLibraryIcon,
   ShopIcon,
+  UserCopyIcon,
   UserIcon,
   UsersIcon,
 } from '../../images/icon'
@@ -39,7 +47,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { enabledModules, settings } = useApp()
-  const { permissions, currentUserRole, authToken} = useAuth()
+  const { permissions, currentUserRole, authToken } = useAuth()
   const { renderAdminMenu } = useCustomRenderer()
   const [openKeys, setOpenKeys] = useState<React.Key[]>([])
   const payload = authToken ? parsePayload(authToken) : null
@@ -56,29 +64,30 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     }[]
   }[] = [
     {
-      permissionIsAllowed: Boolean(permissions.BACKSTAGE_ENTER),
+      permissionIsAllowed: !!enabledModules.sale_manager,
       icon: () => <MoneyCircleIcon />,
       key: 'sales',
       name: formatMessage(adminMessages.AdminMenu.salesAdmin),
     },
     {
-      permissionIsAllowed: Boolean(permissions.MEDIA_LIBRARY_ADMIN),
+      permissionIsAllowed: !!enabledModules.media_library && Boolean(permissions.MEDIA_LIBRARY_ADMIN),
       key: 'media_library',
       icon: () => <DatabaseOutlined className="m-0" />,
       name: formatMessage(adminMessages.AdminMenu.mediaLibrary),
     },
     {
       permissionIsAllowed:
-        Boolean(permissions.PROGRAM_ADMIN) ||
-        Boolean(permissions.PROGRAM_ISSUE_ADMIN) ||
-        Boolean(permissions.PROGRAM_PACKAGE_ADMIN) ||
-        Boolean(permissions.PROGRAM_PROGRESS_READ) ||
-        Boolean(permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN) ||
-        Boolean(permissions.PROGRAM_CATEGORY_ADMIN) ||
-        Boolean(permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN) ||
-        Boolean(permissions.PRACTICE_ADMIN) ||
-        Boolean(permissions.PROGRAM_NORMAL) ||
-        Boolean(permissions.PROGRAM_ISSUE_NORMAL),
+        !!enabledModules.program &&
+        (Boolean(permissions.PROGRAM_ADMIN) ||
+          Boolean(permissions.PROGRAM_ISSUE_ADMIN) ||
+          Boolean(permissions.PROGRAM_PACKAGE_ADMIN) ||
+          Boolean(permissions.PROGRAM_PROGRESS_READ) ||
+          Boolean(permissions.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN) ||
+          Boolean(permissions.PROGRAM_CATEGORY_ADMIN) ||
+          Boolean(permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN) ||
+          Boolean(permissions.PRACTICE_ADMIN) ||
+          Boolean(permissions.PROGRAM_NORMAL) ||
+          Boolean(permissions.PROGRAM_ISSUE_NORMAL)),
       icon: () => <BookIcon />,
       key: 'program_admin',
       name: formatMessage(adminMessages.AdminMenu.programAdmin),
@@ -396,12 +405,13 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     },
     {
       permissionIsAllowed:
-        Boolean(permissions.COUPON_PLAN_ADMIN) ||
-        Boolean(permissions.COUPON_PLAN_NORMAL) ||
-        Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
-        Boolean(permissions.VOUCHER_PLAN_NORMAL) ||
-        Boolean(permissions.GIFT_PLAN_ADMIN) ||
-        Boolean(permissions.GIFT_PLAN_NORMAL),
+        !!enabledModules.promotion &&
+        (Boolean(permissions.COUPON_PLAN_ADMIN) ||
+          Boolean(permissions.COUPON_PLAN_NORMAL) ||
+          Boolean(permissions.VOUCHER_PLAN_ADMIN) ||
+          Boolean(permissions.VOUCHER_PLAN_NORMAL) ||
+          Boolean(permissions.GIFT_PLAN_ADMIN) ||
+          Boolean(permissions.GIFT_PLAN_NORMAL)),
       key: 'promotion_admin',
       icon: () => <DiscountIcon />,
       name: formatMessage(adminMessages.AdminMenu.promotionAdmin),
@@ -428,6 +438,60 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
             !!enabledModules.gift && (Boolean(permissions.GIFT_PLAN_ADMIN) || Boolean(permissions.GIFT_PLAN_NORMAL)),
           key: 'gift_plans',
           name: formatMessage(adminMessages.AdminMenu.gift),
+        },
+      ],
+    },
+    {
+      permissionIsAllowed:
+        !!enabledModules.member_contract_manager &&
+        Boolean(permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL),
+      key: 'member_contract_collection',
+      icon: () => <UserCopyIcon />,
+      name: '合約資料管理',
+    },
+    {
+      permissionIsAllowed: !!enabledModules.sales_call && !!permissions.SALES_CALL_ADMIN,
+      key: 'sales_call_admin',
+      icon: () => <PhoneIcon />,
+      name: '業務查詢',
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'sales_status',
+          name: '即時戰況查詢',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'chailease_lookup',
+          name: `${settings['name']}報名表查詢`,
+        },
+      ],
+    },
+    {
+      permissionIsAllowed: !!enabledModules.analytics && !!permissions.ANALYSIS_ADMIN,
+      key: 'analytics',
+      icon: () => <BarChartOutlined style={{ margin: 0 }} />,
+      name: '數據分析',
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_sales_materials',
+          name: '素材表現',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_sales_member_categories',
+          name: '業務表現',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_sales_activeness',
+          name: '活動量',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_advertising_audience',
+          name: '廣告受眾',
         },
       ],
     },
@@ -609,6 +673,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
     <>
       {renderAdminMenu?.({
         settings,
+        enabledModules,
         role: currentUserRole,
         permissions,
         menuItems: defaultMenuItems,
@@ -617,7 +682,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         <StyledMenu
           {...menuProps}
           mode="inline"
-          openKeys={openKeys.map(key => key.toString())}
+          openKeys={
+            settings['admin_menu.expand.enable'] === '1'
+              ? defaultMenuItems.filter(v => !isEmpty(v.subMenuItems)).map(v => v.key)
+              : openKeys.map(key => key.toString())
+          }
           onOpenChange={handleOpenChange}
           onClick={handleClick}
         >

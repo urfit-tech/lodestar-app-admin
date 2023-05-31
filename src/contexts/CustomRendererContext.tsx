@@ -1,3 +1,4 @@
+import { Module } from 'lodestar-app-element/src/types/app'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import React, { useContext } from 'react'
 import { renderMemberAdminLayoutProps } from '../pages/MemberAdminPage/MemberAdminLayout'
@@ -23,6 +24,9 @@ export type CustomRendererProps = {
       }[]
     }[]
     onClick?: MenuClickEventHandler
+    enabledModules: {
+      [key in Module]?: boolean
+    }
   }) => React.ReactNode
 }
 

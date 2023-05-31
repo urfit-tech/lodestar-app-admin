@@ -75,6 +75,8 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               status,
               duration,
               description,
+              lastMemberNoteCalled: type === 'outbound' && status !== 'answered' ? new Date() : undefined,
+              lastMemberNoteAnswered: type === 'outbound' && status === 'answered' ? new Date() : undefined,
             },
           })
             .then(async ({ data }) => {
@@ -99,7 +101,6 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
             <MemberNoteAdminItem
               key={note.id}
               note={note}
-              memberAdmin={memberAdmin}
               onRefetch={() => {
                 refetchMemberAdmin()
                 refetchNotes()

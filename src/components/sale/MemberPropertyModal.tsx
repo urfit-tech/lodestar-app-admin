@@ -1,7 +1,6 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Form, Input, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -55,14 +54,14 @@ const MemberPropertyModal: React.FC<
       name: string
       categoryNames: string[]
     } | null
-    sales: {
+    manager: {
       id: string
       name: string
       email: string
     }
     onClose?: () => void
   }
-> = ({ member, sales, onClose, ...modalProps }) => {
+> = ({ member, manager, onClose, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { loadingProperties, properties } = useProperty()
@@ -99,7 +98,6 @@ const MemberPropertyModal: React.FC<
         return Promise.allSettled([
           updateMemberProperty({
             variables: {
-              memberId: member.id,
               memberProperties: properties.map(property => {
                 const displayPropertiesName = displayProperties.map(displayProperty => displayProperty.name)
                 if (displayPropertiesName.includes(property.name)) {
@@ -119,7 +117,7 @@ const MemberPropertyModal: React.FC<
             insertMemberNote({
               variables: {
                 memberId: member.id,
-                authorId: sales.id,
+                authorId: manager.id,
                 status: values.note.status,
                 description: values.note.description || '',
                 duration: 0,

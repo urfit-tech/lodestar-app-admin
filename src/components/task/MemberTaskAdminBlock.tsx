@@ -49,6 +49,7 @@ const StyledCategory = styled.span`
   display: flex;
   align-items: center;
 `
+
 export const StyledCategoryDot = styled.span<{ color?: string }>`
   display: inline-block;
   width: 8px;
@@ -67,6 +68,7 @@ const StyledFullCalendarWrapper = styled.div`
     color: var(--gray-darker);
   }
 `
+
 export const StyledEventTime = styled.span`
   margin-right: 3px;
   font-weight: normal;
