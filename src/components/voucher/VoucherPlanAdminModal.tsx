@@ -154,7 +154,14 @@ const VoucherPlanAdminModal: React.FC<
         >
           <ProductSelector
             multiple
-            allowTypes={['ProgramPlan', 'ProgramPackagePlan', 'ActivityTicket', 'PodcastProgram', 'Card']}
+            allowTypes={[
+              'ProgramPlan',
+              'ProgramPackagePlan',
+              'ActivityTicket',
+              'PodcastProgram',
+              'Card',
+              'ProjectPlan',
+            ]}
           />
         </Form.Item>
 

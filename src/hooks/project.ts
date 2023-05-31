@@ -33,7 +33,7 @@ export const useProject = () => {
       $projectId: uuid!
       $memberId: String!
       $identityId: uuid!
-      $hasSendedMarkedNotification: Boolean
+      $markedNotificationStatus: String!
     ) {
       insert_project_role(
         objects: {
@@ -41,7 +41,7 @@ export const useProject = () => {
           member_id: $memberId
           identity_id: $identityId
           agreed_at: "now()"
-          has_sended_marked_notification: $hasSendedMarkedNotification
+          marked_notification_status: $markedNotificationStatus
         }
       ) {
         affected_rows
@@ -57,15 +57,11 @@ export const useProject = () => {
       $id: uuid!
       $memberId: String!
       $identityId: uuid!
-      $hasSendedMarkedNotification: Boolean!
+      $markedNotificationStatus: String!
     ) {
       update_project_role_by_pk(
         pk_columns: { id: $id }
-        _set: {
-          member_id: $memberId
-          identity_id: $identityId
-          has_sended_marked_notification: $hasSendedMarkedNotification
-        }
+        _set: { member_id: $memberId, identity_id: $identityId, marked_notification_status: $markedNotificationStatus }
       ) {
         member_id
         identity_id
@@ -73,12 +69,15 @@ export const useProject = () => {
     }
   `)
 
-  const [updateHasSendNotification] = useMutation<
-    hasura.UPDATE_HAS_SENDED_NOTIFICATION,
-    hasura.UPDATE_HAS_SENDED_NOTIFICATIONVariables
+  const [updateMarkedNotificationStatus] = useMutation<
+    hasura.updateMarkedNotificationStatus,
+    hasura.updateMarkedNotificationStatusVariables
   >(gql`
-    mutation UPDATE_HAS_SENDED_NOTIFICATION($projectId: uuid!) {
-      update_project_role(where: { project_id: { _eq: $projectId } }, _set: { has_sended_marked_notification: true }) {
+    mutation updateMarkedNotificationStatus($projectId: uuid!, $oldStatus: String!, $newStatus: String!) {
+      update_project_role(
+        where: { project_id: { _eq: $projectId }, marked_notification_status: { _eq: $oldStatus } }
+        _set: { marked_notification_status: $newStatus }
+      ) {
         affected_rows
       }
     }
@@ -93,10 +92,10 @@ export const useProject = () => {
   `)
 
   const [agreeProjectRole] = useMutation<hasura.AGREE_PROJECT_ROLE, hasura.AGREE_PROJECT_ROLEVariables>(gql`
-    mutation AGREE_PROJECT_ROLE($projectRoleId: uuid!) {
+    mutation AGREE_PROJECT_ROLE($projectRoleId: uuid!, $markedNotificationStatus: String!) {
       update_project_role_by_pk(
         pk_columns: { id: $projectRoleId }
-        _set: { agreed_at: "now()", has_sended_marked_notification: true }
+        _set: { agreed_at: "now()", marked_notification_status: $markedNotificationStatus }
       ) {
         id
       }
@@ -104,10 +103,14 @@ export const useProject = () => {
   `)
 
   const [rejectProjectRole] = useMutation<hasura.REJECT_PROJECT_ROLE, hasura.REJECT_PROJECT_ROLEVariables>(gql`
-    mutation REJECT_PROJECT_ROLE($projectRoleId: uuid!, $rejectedReason: String) {
+    mutation REJECT_PROJECT_ROLE($projectRoleId: uuid!, $rejectedReason: String, $markedNotificationStatus: String) {
       update_project_role_by_pk(
         pk_columns: { id: $projectRoleId }
-        _set: { rejected_reason: $rejectedReason, rejected_at: "now()" }
+        _set: {
+          rejected_reason: $rejectedReason
+          rejected_at: "now()"
+          marked_notification_status: $markedNotificationStatus
+        }
       ) {
         id
       }
@@ -133,7 +136,6 @@ export const useProject = () => {
         member {
           id
           name
-          email
           picture_url
           created_at
           status
@@ -156,7 +158,6 @@ export const useProject = () => {
         projectRoleId: projectRole.id,
         member: {
           id: projectRole.member?.id || '',
-          email: projectRole.member?.email || '',
           name: projectRole.member?.name || '',
           pictureUrl: projectRole.member?.picture_url || '',
           status: projectRole.member?.status || 'invited',
@@ -178,6 +179,6 @@ export const useProject = () => {
     deleteProjectRole,
     agreeProjectRole,
     rejectProjectRole,
-    updateHasSendNotification,
+    updateMarkedNotificationStatus,
   }
 }

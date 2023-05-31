@@ -8,13 +8,13 @@ import {
   SwapOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
-import { Button, Input, message, Table } from 'antd'
+import { gql, useMutation } from '@apollo/client'
+import { Button, Input, message, Table, Tag } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
+import { uniq } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -23,7 +23,7 @@ import { call, handleError } from '../../helpers'
 import { commonMessages, memberMessages, salesMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
-import { LeadProps, SalesProps } from '../../types/sales'
+import { LeadProps, Manager } from '../../types/sales'
 import AdminCard from '../admin/AdminCard'
 import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
@@ -50,11 +50,11 @@ const TableWrapper = styled.div`
 `
 
 const SalesLeadTable: React.VFC<{
-  variant?: 'starred'
-  sales: SalesProps
+  variant?: 'followed'
+  manager: Manager
   leads: LeadProps[]
   onRefetch?: () => void
-}> = ({ variant, sales, leads, onRefetch }) => {
+}> = ({ variant, manager, leads, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken } = useAuth()
@@ -69,6 +69,7 @@ const SalesLeadTable: React.VFC<{
     nameAndEmail?: string
     phone?: string
     lastTaskCategoryName?: string
+    leadLevel?: string
     categoryName?: string
     materialName?: string
     status?: string
@@ -127,11 +128,60 @@ const SalesLeadTable: React.VFC<{
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
+  const dataSource = leads
+    .filter(
+      v =>
+        (!filters.nameAndEmail ||
+          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
+          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
+        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
+        (!filters.categoryName ||
+          v.categoryNames.find(categoryName =>
+            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
+          )) &&
+        (!filters.materialName ||
+          v.properties.find(
+            property =>
+              property.name === '廣告素材' &&
+              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
+          )),
+    )
+    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
+
+  const categoryNames = uniq(dataSource.flatMap(data => data.categoryNames))
+
   const columns: ColumnsType<LeadProps> = [
     {
       key: 'memberId',
       dataIndex: 'id',
-      title: '',
+      width: 80,
+      title: formatMessage(commonMessages.label.leadLevel),
+      filters: [
+        {
+          text: 'SSR',
+          value: 'SSR',
+        },
+        {
+          text: 'SR',
+          value: 'SR',
+        },
+        {
+          text: 'R',
+          value: 'R',
+        },
+        {
+          text: 'N',
+          value: 'N',
+        },
+      ],
+      sorter: (a, b) =>
+        (a.properties.find(property => property.name === '名單分級')?.value || 'N') >
+        (b.properties.find(property => property.name === '名單分級')?.value || 'N')
+          ? 1
+          : -1,
+      defaultSortOrder: 'descend',
+      onFilter: (value, lead) =>
+        value === (lead.properties.find(property => property.name === '名單分級')?.value || 'N'),
       render: (memberId, record) => (
         <div className="d-flex flex-row justify-content-end">
           {/* <Button
@@ -148,7 +198,7 @@ const SalesLeadTable: React.VFC<{
           /> */}
           <Button
             icon={<CheckSquareOutlined />}
-            className="mr-2"
+            className="mr-1"
             onClick={() => {
               setSelectedMember({
                 id: record.id,
@@ -159,7 +209,7 @@ const SalesLeadTable: React.VFC<{
             }}
           />
           <Button
-            className="mr-2"
+            className="mr-1"
             icon={<FileAddOutlined />}
             onClick={() => {
               setSelectedMember({
@@ -176,6 +226,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'nameAndEmail',
       dataIndex: 'nameAndEmail',
+      width: 200,
       title: formatMessage(salesMessages.studentName),
       ...getColumnSearchProps((value?: string) =>
         setFilters({
@@ -183,11 +234,15 @@ const SalesLeadTable: React.VFC<{
           nameAndEmail: value,
         }),
       ),
-
       render: (nameAndEmail, lead) => {
+        const leadLevel = lead.properties.find(property => property.name === '名單分級')?.value || 'N'
+        const color = leadLevel === 'SSR' ? 'red' : leadLevel === 'SR' ? 'orange' : leadLevel === 'R' ? 'yellow' : ''
         return (
           <a href={`/admin/members/${lead.id}`} target="_blank" rel="noreferrer" className="d-flex flex-column">
-            {lead.name}
+            <span>
+              <Tag color={color}>{leadLevel}</Tag>
+              {lead.name}
+            </span>
             <small>{lead.email}</small>
           </a>
         )
@@ -196,6 +251,7 @@ const SalesLeadTable: React.VFC<{
     {
       key: 'phones',
       dataIndex: 'phones',
+      width: 100,
       title: formatMessage(salesMessages.tel),
       render: (phones: string[]) =>
         phones.map((phone, idx) => (
@@ -208,7 +264,7 @@ const SalesLeadTable: React.VFC<{
                 appId,
                 authToken,
                 phone,
-                salesTelephone: sales.telephone || '',
+                salesTelephone: manager.telephone,
               })
             }}
           >
@@ -226,12 +282,11 @@ const SalesLeadTable: React.VFC<{
       key: 'categoryNames',
       dataIndex: 'categoryNames',
       title: formatMessage(commonMessages.label.category),
-      ...getColumnSearchProps((value?: string) =>
-        setFilters({
-          ...filters,
-          categoryName: value,
-        }),
-      ),
+      filters: categoryNames.map(categoryName => ({
+        text: categoryName,
+        value: categoryName,
+      })),
+      onFilter: (value, lead) => lead.categoryNames.includes(value.toString()),
       render: (categoryNames: string[]) =>
         categoryNames.map((categoryName, idx) => <div key={idx}>{categoryName}</div>),
     },
@@ -256,50 +311,24 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
-      defaultSortOrder: 'descend',
       render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
     },
-    // {
-    //   key: 'recentContactedAt',
-    //   dataIndex: 'recentContactedAt',
-    //   title: formatMessage(salesMessages.recentContactedAt),
-    //   defaultSortOrder: 'descend',
-    //   sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
-    //   render: recentContactedAt => <time>{recentContactedAt && moment(recentContactedAt).fromNow()}</time>,
-    // },
-    // {
-    //   key: 'recentTaskedAt',
-    //   dataIndex: 'recentTaskedAt',
-    //   title: formatMessage(salesMessages.recentTaskedAt),
-    //   sorter: (a, b) => (a.recentTaskedAt?.getTime() || 0) - (b.recentTaskedAt?.getTime() || 0),
-    //   render: recentTaskedAt => <time>{recentTaskedAt && moment(recentTaskedAt).fromNow()}</time>,
-    // },
-    // {
-    //   key: 'paid',
-    //   dataIndex: 'paid',
-    //   title: formatMessage(salesMessages.paidPrice),
-    //   sorter: (a, b) => a.paid - b.paid,
-    // },
+    {
+      key: 'recentContactedAt',
+      dataIndex: 'recentContactedAt',
+      title: formatMessage(salesMessages.recentContactedAt),
+      sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
+      render: recentContactedAt => recentContactedAt && <time>{moment(recentContactedAt).fromNow()}</time>,
+    },
+    {
+      key: 'recentAnsweredAt',
+      dataIndex: 'recentAnsweredAt',
+      title: formatMessage(salesMessages.recentAnsweredAt),
+      sorter: (a, b) => (a.recentAnsweredAt?.getTime() || 0) - (b.recentAnsweredAt?.getTime() || 0),
+      render: recentAnsweredAt =>
+        recentAnsweredAt && <time>{recentAnsweredAt && moment(recentAnsweredAt).fromNow()}</time>,
+    },
   ]
-  const dataSource = leads
-    .filter(
-      v =>
-        (!filters.nameAndEmail ||
-          v.name.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase()) ||
-          v.email.toLowerCase().includes(filters.nameAndEmail.trim().toLowerCase())) &&
-        (!filters.phone || v.phones.some(v => v.includes(filters.phone?.trim() || ''))) &&
-        (!filters.categoryName ||
-          v.categoryNames.find(categoryName =>
-            categoryName.toLowerCase().includes(filters.categoryName?.trim().toLowerCase() || ''),
-          )) &&
-        (!filters.materialName ||
-          v.properties.find(
-            property =>
-              property.name === '廣告素材' &&
-              property.value.toLowerCase().includes(filters.materialName?.trim().toLowerCase() || ''),
-          )),
-    )
-    .map(v => ({ ...v, nameAndEmail: v.name + v.email }))
 
   return (
     <StyledAdminCard>
@@ -309,10 +338,10 @@ const SalesLeadTable: React.VFC<{
           visible={propertyModalVisible}
           onCancel={() => setPropertyModalVisible(false)}
           member={selectedMember}
-          sales={{
-            id: sales.id,
-            name: sales.name,
-            email: sales.email,
+          manager={{
+            id: manager.id,
+            name: manager.name,
+            email: manager.email,
           }}
           onClose={() => {
             setPropertyModalVisible(false)
@@ -326,7 +355,7 @@ const SalesLeadTable: React.VFC<{
           onCancel={() => setTaskModalVisible(false)}
           title={formatMessage(memberMessages.ui.newTask)}
           initialMemberId={selectedMember.id}
-          initialExecutorId={sales.id}
+          initialExecutorId={manager.id}
           onRefetch={() => {
             setTaskModalVisible(false)
           }}
@@ -342,11 +371,13 @@ const SalesLeadTable: React.VFC<{
             insertMemberNote({
               variables: {
                 memberId: selectedMember.id,
-                authorId: sales.id,
+                authorId: manager.id,
                 type,
                 status,
                 duration,
                 description,
+                lastMemberNoteCalled: type === 'outbound' && status !== 'answered' ? new Date() : undefined,
+                lastMemberNoteAnswered: type === 'outbound' && status === 'answered' ? new Date() : undefined,
               },
             })
               .then(async ({ data }) => {
@@ -365,7 +396,7 @@ const SalesLeadTable: React.VFC<{
       <TableWrapper>
         {selectedRowKeys.length > 0 && (
           <div className="d-flex flex-row justify-content-end mb-3">
-            {variant !== 'starred' && (
+            {variant !== 'followed' && (
               <Button
                 icon={<StarOutlined />}
                 className="mr-2"
@@ -374,8 +405,8 @@ const SalesLeadTable: React.VFC<{
                     updateLeads({
                       variables: {
                         memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: sales.id,
-                        newStar: Number(sales.telephone),
+                        newMemberId: manager.id,
+                        followedAt: new Date(),
                       },
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
@@ -391,7 +422,7 @@ const SalesLeadTable: React.VFC<{
                 收藏
               </Button>
             )}
-            {variant === 'starred' && (
+            {variant === 'followed' && (
               <Button
                 className="mr-2"
                 onClick={() => {
@@ -399,8 +430,8 @@ const SalesLeadTable: React.VFC<{
                     updateLeads({
                       variables: {
                         memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: sales.id,
-                        newStar: 0,
+                        newMemberId: manager.id,
+                        followedAt: null,
                       },
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
@@ -425,7 +456,7 @@ const SalesLeadTable: React.VFC<{
                     variables: {
                       memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
                       newMemberId: null,
-                      newStar: -Number(sales.telephone),
+                      newStar: -Number(manager.telephone),
                     },
                   }).then(({ data }) => {
                     if (data?.update_member?.affected_rows) {
@@ -521,18 +552,20 @@ const SalesLeadTable: React.VFC<{
             selectedRowKeys,
             onChange: onSelectChange,
           }}
+          rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}
+          pagination={{ defaultPageSize: 100, pageSizeOptions: ['20', '50', '100', '300', '500', '1000'] }}
           className="mb-3"
         />
       </TableWrapper>
-      {sales && (
+      {
         <JitsiDemoModal
           member={selectedMember}
           salesMember={{
-            id: sales.id,
-            name: sales.name,
-            email: sales.email,
+            id: manager.id,
+            name: manager.name,
+            email: manager.email,
           }}
           visible={jitsiModalVisible}
           onCancel={() => setJitsiModalVisible(false)}
@@ -544,7 +577,7 @@ const SalesLeadTable: React.VFC<{
             insertMemberNote({
               variables: {
                 memberId: selectedMember.id,
-                authorId: sales.id,
+                authorId: manager.id,
                 type: 'demo',
                 status: 'answered',
                 duration: duration,
@@ -559,14 +592,17 @@ const SalesLeadTable: React.VFC<{
               .catch(handleError)
           }}
         />
-      )}
+      }
     </StyledAdminCard>
   )
 }
 
 const UPDATE_LEADS = gql`
-  mutation UPDATE_LEADS($memberIds: [String!]!, $newMemberId: String, $newStar: numeric) {
-    update_member(_set: { manager_id: $newMemberId, star: $newStar }, where: { id: { _in: $memberIds } }) {
+  mutation UPDATE_LEADS($memberIds: [String!]!, $newMemberId: String, $newStar: numeric, $followedAt: timestamptz) {
+    update_member(
+      _set: { manager_id: $newMemberId, star: $newStar, followed_at: $followedAt }
+      where: { id: { _in: $memberIds } }
+    ) {
       affected_rows
     }
   }

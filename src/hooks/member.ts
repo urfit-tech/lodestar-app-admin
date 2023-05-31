@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import { isEmpty } from 'lodash'
-import { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
@@ -17,6 +16,7 @@ import {
   MemberPublicProps,
   NoteAdminProps,
   UserRole,
+  MemberNote,
 } from '../types/member'
 
 export const useMember = (memberId: string) => {
@@ -291,91 +291,33 @@ export const useMemberAdmin = (memberId: string) => {
 export const useMemberNotesAdmin = (
   orderBy: hasura.member_note_order_by,
   filters?: {
-    range?: [Moment, Moment]
-    author?: string
-    manager?: string
     member?: string
-    categories?: string[]
-    tags?: string[]
   },
   keyword?: string,
 ) => {
-  const splitedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({
+  const splittedOrderBy: Array<hasura.member_note_order_by> = Object.entries(orderBy).map(([key, value]) => ({
     [key as keyof Partial<hasura.member_note_order_by>]: value,
   }))
   const { permissions, currentMemberId } = useAuth()
   const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     deleted_at: { _is_null: true },
-    created_at: filters?.range
-      ? {
-          _gte: filters.range[0].toDate(),
-          _lte: filters.range[1].toDate(),
-        }
-      : undefined,
-    author: filters?.author
-      ? {
-          _or: [
-            { name: { _ilike: `%${filters.author}%` } },
-            { username: { _ilike: `%${filters.author}%` } },
-            { email: { _ilike: `%${filters.author}%` } },
-          ],
-        }
-      : permissions.VIEW_ALL_MEMBER_NOTE
+    author: permissions.VIEW_ALL_MEMBER_NOTE
       ? undefined
       : {
           id: {
             _eq: currentMemberId,
           },
         },
-    member: {
-      manager: filters?.manager
-        ? {
-            _or: [
-              { name: { _ilike: `%${filters.manager}%` } },
-              { username: { _ilike: `%${filters.manager}%` } },
-              { email: { _ilike: `%${filters.manager}%` } },
-            ],
-          }
-        : undefined,
-      _or: filters?.member
-        ? [
-            { id: { _eq: filters.member } },
-            { name: { _ilike: `%${filters.member}%` } },
-            { username: { _ilike: `%${filters.member}%` } },
-            { email: { _ilike: `%${filters.member}%` } },
-          ]
-        : undefined,
-      _and:
-        filters?.categories || filters?.tags
-          ? [
-              {
-                _or: filters.categories?.map(categoryId => ({
-                  member_categories: { category_id: { _eq: categoryId } },
-                })),
-              },
-              {
-                _or: filters.tags?.map(tag => ({
-                  member_tags: { tag_name: { _eq: tag } },
-                })),
-              },
-            ]
-          : undefined,
-    },
+    member: filters?.member ? { id: { _eq: filters.member } } : undefined,
     description: keyword ? { _like: `%${keyword}%` } : undefined,
   }
+
   const { loading, error, data, refetch, fetchMore } = useQuery<
     hasura.GET_MEMBER_NOTES_ADMIN,
     hasura.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: [member_note_order_by!]!, $condition: member_note_bool_exp) {
-        category {
-          id
-          name
-        }
-        member_tag(distinct_on: tag_name) {
-          tag_name
-        }
         member_note_aggregate(where: $condition) {
           aggregate {
             count
@@ -390,50 +332,16 @@ export const useMemberNotesAdmin = (
             id
             picture_url
             name
-            username
           }
           member {
             id
             picture_url
             name
-            username
             email
-            manager {
-              id
-              name
-              username
-            }
-            member_categories {
-              id
-              category {
-                id
-                name
-              }
-            }
-            member_tags {
-              tag_name
-            }
-            order_logs {
-              id
-              order_products_aggregate {
-                aggregate {
-                  sum {
-                    price
-                  }
-                }
-              }
-              order_discounts_aggregate {
-                aggregate {
-                  sum {
-                    price
-                  }
-                }
-              }
-            }
+            username
           }
           duration
           description
-          metadata
           note
           member_note_attachments(where: { data: { _is_null: false } }) {
             attachment_id
@@ -443,20 +351,13 @@ export const useMemberNotesAdmin = (
         }
       }
     `,
-    { variables: { condition, orderBy: splitedOrderBy } },
+    { variables: { condition, orderBy: splittedOrderBy } },
   )
 
-  const allMemberCategories: {
-    id: string
-    name: string
-  }[] =
-    data?.category.map(v => ({
-      id: v.id,
-      name: v.name,
-    })) || []
-  const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
-
-  const notes: NoteAdminProps[] =
+  const notes: Pick<
+    MemberNote,
+    'id' | 'createdAt' | 'type' | 'status' | 'author' | 'member' | 'duration' | 'description' | 'note' | 'attachments'
+  >[] =
     data?.member_note.map(v => ({
       id: v.id,
       createdAt: new Date(v.created_at),
@@ -467,33 +368,14 @@ export const useMemberNotesAdmin = (
         pictureUrl: v.author.picture_url || null,
         name: v.author.name,
       },
-      manager: v.member?.manager
-        ? {
-            id: v.member.manager.id,
-            name: v.member.manager.name || v.member.manager.username,
-          }
-        : null,
-      member: v.member
-        ? {
-            id: v.member.id,
-            pictureUrl: v.member.picture_url || null,
-            name: v.member.name || v.member.username,
-            email: v.member.email,
-          }
-        : null,
-      memberCategories:
-        v.member?.member_categories.map(u => ({
-          id: u.category.id,
-          name: u.category.name,
-        })) || [],
-      memberTags: v.member?.member_tags.map(u => u.tag_name) || [],
-      consumption:
-        sum(v.member?.order_logs.map(u => u.order_products_aggregate.aggregate?.sum?.price || 0) || []) -
-        sum(v.member?.order_logs.map(u => u.order_discounts_aggregate.aggregate?.sum?.price || 0) || []),
+      member: {
+        id: v.member?.id || '',
+        pictureUrl: v.member?.picture_url || '',
+        name: v.member?.name || v.member?.username || '',
+        email: v.member?.email || '',
+      },
       duration: v.duration || 0,
-      audioFilePath: v.metadata?.recordfile || null,
-      description: v.description || '',
-      metadata: v.metadata,
+      description: v.description || null,
       note: v.note || '',
       attachments: v.member_note_attachments.map(u => ({
         id: u.attachment_id,
@@ -507,15 +389,16 @@ export const useMemberNotesAdmin = (
       ? () =>
           fetchMore({
             variables: {
-              orderBy: splitedOrderBy,
+              orderBy: splittedOrderBy,
               condition: {
-                ...condition,
-                created_at: orderBy.created_at
-                  ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
-                  : undefined,
-                duration: orderBy.duration
-                  ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
-                  : undefined,
+                _or: [
+                  { ...condition, created_at: { _lt: data?.member_note.slice(-1)[0]?.created_at } },
+                  {
+                    ...condition,
+                    created_at: { _eq: data?.member_note.slice(-1)[0]?.created_at },
+                    id: { _gt: data?.member_note.slice(-1)[0]?.id },
+                  },
+                ],
               },
             },
             updateQuery: (prev, { fetchMoreResult }) => {
@@ -525,7 +408,7 @@ export const useMemberNotesAdmin = (
               const result = prev ? prev.member_note : []
               return {
                 ...prev,
-                member_note_aggregate: fetchMoreResult.member_note_aggregate,
+                member_note_aggregate: fetchMoreResult?.member_note_aggregate,
                 member_note: [...result, ...fetchMoreResult.member_note],
               }
             },
@@ -535,8 +418,6 @@ export const useMemberNotesAdmin = (
   return {
     loadingNotes: loading,
     errorNotes: error,
-    allMemberCategories,
-    allMemberTags,
     notes,
     refetchNotes: refetch,
     loadMoreNotes,
@@ -554,6 +435,8 @@ export const useMutateMemberNote = () => {
       $description: String
       $note: String
       $rejectedAt: timestamptz
+      $lastMemberNoteCalled: timestamptz
+      $lastMemberNoteAnswered: timestamptz
     ) {
       insert_member_note_one(
         object: {
@@ -568,6 +451,16 @@ export const useMutateMemberNote = () => {
         }
       ) {
         id
+      }
+      update_member(
+        where: { id: { _eq: $memberId } }
+        _set: {
+          last_member_note_created: "now()"
+          last_member_note_called: $lastMemberNoteCalled
+          last_member_note_answered: $lastMemberNoteAnswered
+        }
+      ) {
+        affected_rows
       }
     }
   `)
@@ -1132,11 +1025,11 @@ export const useMemberPropertyCollection = (memberId: string) => {
 
 export const useMutateMemberProperty = () => {
   const [updateMemberProperty] = useMutation<hasura.UPDATE_MEMBER_PROPERTY, hasura.UPDATE_MEMBER_PROPERTYVariables>(gql`
-    mutation UPDATE_MEMBER_PROPERTY($memberId: String!, $memberProperties: [member_property_insert_input!]!) {
-      delete_member_property(where: { member_id: { _eq: $memberId } }) {
-        affected_rows
-      }
-      insert_member_property(objects: $memberProperties) {
+    mutation UPDATE_MEMBER_PROPERTY($memberProperties: [member_property_insert_input!]!) {
+      insert_member_property(
+        objects: $memberProperties
+        on_conflict: { constraint: member_property_member_id_property_id_key, update_columns: [value] }
+      ) {
         affected_rows
       }
     }

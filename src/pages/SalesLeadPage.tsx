@@ -1,7 +1,6 @@
 import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Button, notification, Skeleton, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -9,12 +8,13 @@ import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
-import SalesMemberInput from '../components/common/SalesMemberInput'
+import ManagerInput from '../components/common/ManagerInput'
 import AdminLayout from '../components/layout/AdminLayout'
 import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
 import { salesMessages } from '../helpers/translation'
-import { useSales, useSalesLeads } from '../hooks/sales'
+import { useManagerLeads, useManagers } from '../hooks/sales'
+import { Manager } from '../types/sales'
 import ForbiddenPage from './ForbiddenPage'
 
 const StyledManagerBlock = styled.div`
@@ -24,12 +24,16 @@ const StyledManagerBlock = styled.div`
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
+  const { managers } = useManagers()
   const { currentMemberId, currentMember, permissions } = useAuth()
-  const [activeKey, setActiveKey] = useState('idled')
-  const [saleId, setSaleId] = useState<string | undefined>()
+  const [activeKey, setActiveKey] = useState('followed')
+  const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
 
-  if (!enabledModules.sales || !permissions.SALES_LEAD_ADMIN) {
+  const manager =
+    managers.find(manager => manager.id === managerId) || (permissions.SALES_LEAD_ADMIN ? managers?.[0] : null)
+
+  if (!enabledModules.sales || (!permissions.SALES_LEAD_ADMIN && !permissions.SALES_LEAD_NORMAL && !manager)) {
     return <ForbiddenPage />
   }
 
@@ -40,74 +44,104 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {permissions.SALES_LEAD_SELECTOR_ADMIN && currentMemberId ? (
+        {permissions.SALES_LEAD_SELECTOR_ADMIN && manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">承辦人：</span>
-            <SalesMemberInput value={saleId ? saleId : currentMemberId} onChange={value => setSaleId(value)} />
+            <ManagerInput value={manager.id} onChange={value => setManagerId(value)} />
           </StyledManagerBlock>
-        ) : currentMember?.role === 'general-member' ? (
+        ) : currentMember ? (
           <div>承辦編號：{currentMember.id}</div>
         ) : null}
       </div>
-      {currentMemberId ? (
-        <SalesLeadTabs
-          activeKey={activeKey}
-          managerId={saleId ? saleId : currentMemberId}
-          onActiveKeyChanged={setActiveKey}
-        />
-      ) : (
-        <Skeleton active />
-      )}
+      {manager && <SalesLeadTabs activeKey={activeKey} manager={manager} onActiveKeyChanged={setActiveKey} />}
     </AdminLayout>
   )
 }
 
 const SalesLeadTabs: React.VFC<{
+  manager: Manager
   activeKey: string
-  managerId: string
   onActiveKeyChanged?: (activeKey: string) => void
-}> = ({ activeKey, managerId, onActiveKeyChanged }) => {
+}> = ({ activeKey, manager, onActiveKeyChanged }) => {
   const { formatMessage } = useIntl()
-  const { sales } = useSales(managerId)
   const {
     loading,
     refetch,
+    loadingMembers,
+    refetchMembers,
+    followedLeads,
     totalLeads,
     idledLeads,
     contactedLeads,
+    answeredLeads,
     invitedLeads,
     presentedLeads,
-    paidLeads,
+    signedLeads,
     closedLeads,
-  } = useSalesLeads(managerId, lead => (sales ? lead.star !== Number(sales.telephone) : false))
+  } = useManagerLeads(manager)
 
-  if (loading || !sales) {
+  if (loading || loadingMembers) {
     return <Skeleton active />
   }
-
-  const starredLeads = totalLeads.filter(lead => lead.star === Number(sales.telephone))
 
   return (
     <Tabs
       activeKey={activeKey}
       onChange={onActiveKeyChanged}
       tabBarExtraContent={
-        <Button onClick={() => refetch?.()}>
+        <Button
+          onClick={() => {
+            refetch?.()
+            refetchMembers?.()
+          }}
+        >
           <RedoOutlined />
         </Button>
       }
     >
       <Tabs.TabPane
-        key="starred"
+        key="followed"
         tab={
           <div>
-            {formatMessage(salesMessages.starredLead)}
-            <span>({starredLeads.length})</span>
+            {formatMessage(salesMessages.followedLead)}
+            <span>({followedLeads.length})</span>
           </div>
         }
       >
-        {<SalesLeadTable variant="starred" sales={sales} leads={starredLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            variant="followed"
+            manager={manager}
+            leads={followedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="total"
+        tab={
+          <div>
+            {formatMessage(salesMessages.totalLead)}
+            <span>({totalLeads.length})</span>
+          </div>
+        }
+      >
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={totalLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
+      </Tabs.TabPane>
+
       <Tabs.TabPane
         key="idled"
         tab={
@@ -117,7 +151,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={idledLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={idledLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -129,7 +172,35 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={contactedLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={contactedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="answered"
+        tab={
+          <div>
+            {formatMessage(salesMessages.answeredLeads)}
+            <span>({answeredLeads.length})</span>
+          </div>
+        }
+      >
+        <SalesLeadTable
+          manager={manager}
+          leads={answeredLeads}
+          onRefetch={() => {
+            refetch?.()
+            refetchMembers?.()
+          }}
+        />
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -141,7 +212,16 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={invitedLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={invitedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       <Tabs.TabPane
@@ -153,19 +233,37 @@ const SalesLeadTabs: React.VFC<{
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={presentedLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={presentedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       <Tabs.TabPane
-        key="paid"
+        key="signed"
         tab={
           <div>
-            {formatMessage(salesMessages.paidLead)}
-            <span>({paidLeads.length})</span>
+            {formatMessage(salesMessages.signedLead)}
+            <span>({signedLeads.length})</span>
           </div>
         }
       >
-        {<SalesLeadTable sales={sales} leads={paidLeads} onRefetch={refetch} />}
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={signedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
       </Tabs.TabPane>
 
       {closedLeads.length > 0 && (
@@ -178,7 +276,16 @@ const SalesLeadTabs: React.VFC<{
             </div>
           }
         >
-          {<SalesLeadTable sales={sales} leads={closedLeads} onRefetch={refetch} />}
+          {
+            <SalesLeadTable
+              manager={manager}
+              leads={closedLeads}
+              onRefetch={() => {
+                refetch?.()
+                refetchMembers?.()
+              }}
+            />
+          }
         </Tabs.TabPane>
       )}
     </Tabs>

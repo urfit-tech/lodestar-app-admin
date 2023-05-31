@@ -159,6 +159,7 @@ export type MemberTaskProps = {
   } | null
   dueAt: Date | null
   createdAt: Date | null
+  hasMeeting: boolean
   description: string | null
   member: {
     id: string
@@ -174,4 +175,34 @@ export type MemberTaskProps = {
     name: string
     avatarUrl: string | null
   } | null
+}
+
+export type MemberNote = {
+  id: string
+  type: 'inbound' | 'outbound' | 'demo' | 'sms' | null
+  status: string | null
+  duration: number
+  description: string | null
+  createdAt: Date
+  updatedAt: Date
+  metadata: any
+  note: string | null
+  rejectedAt: Date | null
+  deletedFrom: string | null
+  member: {
+    id: string
+    email: string
+    name: string
+    pictureUrl: string | null
+  }
+  author: {
+    id: string
+    name: string
+    pictureUrl: string | null
+  }
+  attachments?: {
+    id: string
+    data: any
+    options: any
+  }[]
 }

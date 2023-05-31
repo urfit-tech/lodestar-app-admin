@@ -4,14 +4,14 @@ export type LeadProps = {
   email: string
   phones: string[]
   categoryNames: string[]
-  properties: { id: string, name: string; value: string }[]
-  paid: number
+  properties: { id: string; name: string; value: string }[]
   star: number
   createdAt: Date
-  status: 'IDLED' | 'CONTACTED' | 'INVITED' | 'PRESENTED' | 'SIGNED' | 'CLOSED'
+  assignedAt: Date | null
+  status: LeadStatus
   notified: Boolean
-  recentTaskedAt: Date | null
   recentContactedAt: Date | null
+  recentAnsweredAt: Date | null
 }
 
 export type SalesProps = {
@@ -62,3 +62,27 @@ export type CurrentLeadProps = {
     value: string
   }[]
 }
+
+export type Manager = {
+  id: string
+  avatarUrl: string | null
+  name: string
+  username: string
+  email: string
+  // disabled?: boolean
+  telephone: string
+}
+
+export type LeadStatus =
+  | 'IDLED'
+  | 'CONTACTED'
+  | 'INVITED'
+  | 'PRESENTED'
+  | 'TODO'
+  | 'SIGNED'
+  | 'CLOSED'
+  | 'DEDICATED'
+  | 'EXISTED'
+  | 'DEAD'
+  | 'FOLLOWED'
+  | 'ANSWERED'

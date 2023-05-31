@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Alert, Button, message } from 'antd'
 import { FormInstance } from 'antd/lib/form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -89,6 +88,21 @@ const MemberContractCreationBlock: React.FC<{
         ratio: orderExecutor.ratio || 0,
       })) || []),
     ].filter(v => v.member_id && v.ratio)
+
+    if (contractProducts.length < 1) {
+      message.warn('請至少要新增一個合約內容')
+      return
+    }
+
+    if (!fieldValue.paymentMethod) {
+      message.warn('請選擇付款方式')
+      return
+    }
+
+    if (!fieldValue.installmentPlan) {
+      message.warn('請選擇分期期數')
+      return
+    }
 
     if (sum(orderExecutors.map(v => v.ratio)) !== 1) {
       message.warn('承辦人分潤比例加總必須為 1')

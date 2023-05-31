@@ -48,8 +48,8 @@ const ProfileAccountAdminCard: React.FC<
     updateMemberAccount({
       variables: {
         memberId,
-        email: values.email,
-        username: values.username,
+        email: values.email.trim().toLowerCase(),
+        username: values.username.trim().toLowerCase(),
       },
     })
       .then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))

@@ -1,7 +1,6 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -131,7 +130,7 @@ const MemberProfileBasicForm: React.FC<{
           name="managerId"
           extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
         >
-          <AllMemberSelector allowClear />
+          <AllMemberSelector allowClear allowedPermissions={['BACKSTAGE_ENTER']} />
         </Form.Item>
       )}
 

@@ -13,7 +13,7 @@ import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
 import { ReactComponent as DemoIcon } from '../../images/icon/demo.svg'
-import { MemberAdminProps, NoteAdminProps } from '../../types/member'
+import { MemberNote } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { StyledModalParagraph } from '../common'
 import { CustomRatioImage } from '../common/Image'
@@ -47,10 +47,12 @@ const StyledAuthorName = styled.div`
 `
 
 const MemberNoteAdminItem: React.FC<{
-  note: NoteAdminProps
-  memberAdmin: MemberAdminProps
+  note: Pick<
+    MemberNote,
+    'id' | 'createdAt' | 'type' | 'status' | 'author' | 'member' | 'duration' | 'description' | 'note' | 'attachments'
+  >
   onRefetch?: () => void
-}> = ({ note, memberAdmin, onRefetch }) => {
+}> = ({ note, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
@@ -119,17 +121,18 @@ const MemberNoteAdminItem: React.FC<{
                   })
                     .then(async ({ data }) => {
                       const memberNoteId = data?.update_member_note_by_pk?.id
-                      const deletedAttachmentIds = note.attachments
-                        .filter(noteAttachment =>
-                          attachments.every(
-                            attachment =>
-                              attachment.name !== noteAttachment.data.name &&
-                              attachment.lastModified !== noteAttachment.data.lastModified,
-                          ),
-                        )
-                        .map(attachment => attachment.id)
+                      const deletedAttachmentIds =
+                        note.attachments
+                          ?.filter(noteAttachment =>
+                            attachments.every(
+                              attachment =>
+                                attachment.name !== noteAttachment.data.name &&
+                                attachment.lastModified !== noteAttachment.data.lastModified,
+                            ),
+                          )
+                          .map(attachment => attachment.id) || []
                       const newAttachments = attachments.filter(attachment =>
-                        note.attachments.every(
+                        note.attachments?.every(
                           noteAttachment =>
                             noteAttachment.data.name !== attachment.name &&
                             noteAttachment.data.lastModified !== attachment.lastModified,
