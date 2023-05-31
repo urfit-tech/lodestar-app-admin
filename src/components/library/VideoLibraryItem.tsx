@@ -1,33 +1,25 @@
-import { DeleteOutlined, EyeOutlined, FileWordOutlined, UploadOutlined } from '@ant-design/icons'
+import { DeleteOutlined, FileWordOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons'
+import { Box, CircularProgress, CircularProgressLabel, Flex, Button as ChakraButton } from '@chakra-ui/react'
 import Uppy from '@uppy/core'
 import { StatusBar, useUppy } from '@uppy/react'
 import Tus from '@uppy/tus'
-import { Button, List, Modal, Select, Tag } from 'antd'
+import { Button, List, message, Modal, Select, Tag } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import { ModalProps } from 'antd/lib/modal'
 import axios from 'axios'
+import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError } from 'lodestar-app-element/src/helpers'
 import React, { useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import ReactPlayer from 'react-player'
 import { DeepPick } from 'ts-deep-pick'
-import { commonMessages } from '../../helpers/translation'
+import { getFileDownloadableLink } from '../../helpers'
 import { useCaptions, useMutateAttachment } from '../../hooks/data'
 import { Attachment, UploadState } from '../../types/general'
+import libraryMessages from './translation'
 import VideoPlayer from './VideoPlayer'
-
-const messages = defineMessages({
-  preview: { id: 'program.ui.preview', defaultMessage: '預覽' },
-  reUpload: { id: 'program.ui.reUpload', defaultMessage: '重新上傳' },
-  chooseFile: { id: 'program.ui.chooseFile', defaultMessage: '選擇檔案' },
-  manageCaption: { id: 'program.ui.manageCaption', defaultMessage: '管理字幕' },
-  uploadCaptions: { id: 'program.ui.uploadCaptions', defaultMessage: '上傳字幕' },
-  uploadedCaptions: { id: 'program.ui.uploadedCaptions', defaultMessage: '已上傳字幕' },
-  delete: { id: 'program.ui.delete', defaultMessage: '刪除檔案' },
-  duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
-  chooseCaptionLanguage: { id: 'program.label.chooseCaptionLanguage', defaultMessage: '選擇字幕語系' },
-})
+import { CheckIcon } from '../../images/icon'
 
 const VideoLibraryItem: React.VFC<
   Pick<Attachment, 'id' | 'name'> &
@@ -72,9 +64,11 @@ const VideoLibraryItem: React.VFC<
   )
 }
 
-export const DeleteButton: React.VFC<
-  { videoId: string; isExternalLink: boolean; onDelete?: () => void } & ButtonProps
-> = ({ videoId, isExternalLink, onDelete, ...buttonProps }) => {
+export const DeleteButton: React.VFC<{ videoId: string; isExternalLink: boolean; onDelete?: () => void }> = ({
+  videoId,
+  isExternalLink,
+  onDelete,
+}) => {
   const { formatMessage } = useIntl()
   const { authToken } = useAuth()
   const [deleting, setDeleting] = useState(false)
@@ -109,66 +103,165 @@ export const DeleteButton: React.VFC<
     }
   }
   return (
-    <>
+    <div>
       <Button
-        title={formatMessage(messages.delete)}
+        title={formatMessage(libraryMessages.VideoLibraryItem.delete)}
         size="small"
         loading={deleting}
-        danger
         onClick={handleClick}
-        {...buttonProps}
+        type="primary"
         icon={<DeleteOutlined />}
       />
-    </>
+    </div>
   )
 }
 
-export const PreviewButton: React.VFC<
-  { videoId: string; title: string; isExternalLink: boolean; videoUrl?: string } & ButtonProps
-> = ({ videoId, title, isExternalLink, videoUrl, ...buttonProps }) => {
-  const { formatMessage } = useIntl()
+export const TitleBlock: React.VFC<{
+  attachment: DeepPick<Attachment, 'id' | 'name' | 'data' | 'options' | 'filename' | '~author.name'>
+  text: string
+}> = ({ attachment, text }) => {
   const [isModalVisible, setIsModalVisible] = useState(false)
   return (
-    <>
-      <Modal title={title} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
-        {isExternalLink ? (
-          <ReactPlayer url={videoUrl} width="100%" controls />
+    <div style={{ cursor: 'pointer' }}>
+      <Modal title={attachment.name} footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
+        {!!attachment.data?.source ? (
+          <ReactPlayer url={attachment.data.url} width="100%" controls />
         ) : (
-          <VideoPlayer videoId={videoId} width="100%" />
+          <VideoPlayer videoId={attachment.id} width="100%" />
         )}
       </Modal>
-      <Button
-        size="small"
-        title={formatMessage(commonMessages.ui.preview)}
-        type="primary"
-        onClick={() => setIsModalVisible(true)}
-        {...buttonProps}
-        icon={<EyeOutlined />}
-      />
-    </>
+      <div onClick={() => setIsModalVisible(true)}>
+        <Box fontWeight="bold">{text}</Box>
+        <small>
+          <span className="mr-1">{attachment.filename}</span>
+          {attachment.author?.name ? '@' + attachment.author.name : ''}
+        </small>
+      </div>
+    </div>
   )
 }
 
-export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: boolean } & ButtonProps> = ({
+export const DownloadButton: React.VFC<{
+  className: string
+  videoId: string
+  isExternalLink: boolean
+  options: Pick<Attachment, 'options'>
+  fileName?: string
+}> = ({ className, videoId, isExternalLink, options, fileName }) => {
+  const theme = useAppTheme()
+  const { formatMessage } = useIntl()
+  const { authToken } = useAuth()
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [currentProcess, setCurrentProcess] = useState(0)
+
+  const handleDownload = async () => {
+    setIsModalVisible(true)
+    if (options) {
+      // cloudflare
+      axios.post(``).then(({ data }) => {
+        if (data.success) {
+          const status = data.result.default.status
+          const url = data.result.default.url
+          const percentComplete = data.result.default.percentComplete
+          setCurrentProcess(percentComplete)
+        } else if (data.errors) {
+          message.error(data.errors)
+        } else {
+          message.error(formatMessage(libraryMessages['*'].systemErrorText))
+        }
+      })
+    } else if (fileName) {
+      const url: string = await getFileDownloadableLink(`attachments/${videoId}`, authToken)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = fileName || ''
+      link.click()
+    } else {
+      message.error(formatMessage(libraryMessages.VideoLibraryItem.downloadFileError))
+    }
+  }
+
+  return (
+    <div>
+      <Modal footer={null} visible={isModalVisible} onCancel={() => setIsModalVisible(false)}>
+        <Box py="40px" textAlign="center">
+          <Flex justifyContent="center" alignItems="center">
+            <CircularProgress
+              min={0}
+              max={100}
+              value={currentProcess}
+              color={currentProcess === 100 ? '#198754' : theme.colors.primary[500]}
+              size="75px"
+              thickness="0.5rem"
+            >
+              <CircularProgressLabel
+                color={currentProcess === 100 ? '#198754' : '#585858'}
+                d="flex"
+                justifyContent="center"
+                fontSize="1rem"
+              >
+                {currentProcess === 100 ? <CheckIcon fontSize="1rem" /> : `${currentProcess}%`}
+              </CircularProgressLabel>
+            </CircularProgress>
+          </Flex>
+          {currentProcess === 100 ? (
+            <>
+              <Box mt="1rem" lineHeight="24px">
+                <Box>{formatMessage(libraryMessages['*'].finish)}</Box>
+                {/* FIXME: change expired time */}
+                <Box>{formatMessage(libraryMessages.VideoLibraryItem.expiredDate, { expiredDate: '2023-05-30' })}</Box>
+              </Box>
+              <ChakraButton
+                mt="2rem"
+                variant="ghost"
+                border="1px solid #cdcdcd"
+                borderRadius="4px"
+                onClick={() => handleDownload()}
+              >
+                {formatMessage(libraryMessages['*'].downloadFile)}
+              </ChakraButton>
+            </>
+          ) : (
+            <Box mt="1rem" fontSize="16px">
+              {formatMessage(libraryMessages.VideoLibraryItem.downloadingText)}
+            </Box>
+          )}
+        </Box>
+      </Modal>
+
+      <Button
+        disabled={isExternalLink}
+        className={className}
+        size="small"
+        title={formatMessage(libraryMessages['*'].download)}
+        type="primary"
+        onClick={() => handleDownload()}
+        icon={<DownloadOutlined />}
+      />
+    </div>
+  )
+}
+
+export const CaptionUploadButton: React.VFC<{ videoId: string; isExternalLink: boolean; className: string }> = ({
   videoId,
   isExternalLink,
-  ...buttonProps
+  className,
 }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
-    <>
+    <div className={className}>
       <Button
         size="small"
         disabled={isExternalLink}
-        title={formatMessage(messages.reUpload)}
+        title={formatMessage(libraryMessages.VideoLibraryItem.reUpload)}
         onClick={() => setIsModalVisible(true)}
-        {...buttonProps}
+        type="primary"
         icon={<FileWordOutlined />}
       />
       {isModalVisible && <CaptionModal videoId={videoId} onCancel={() => setIsModalVisible(false)} destroyOnClose />}
-    </>
+    </div>
   )
 }
 
@@ -178,9 +271,9 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
   const { captions, captionLanguages, refetch: refetchCaptions, deleteCaption, addCaption, uppy } = useCaptions(videoId)
   const [languageCode, setLanguageCode] = useState<typeof captionLanguages[number]['code']>()
   return (
-    <Modal visible footer={null} title={formatMessage(messages.manageCaption)} {...modalProps}>
+    <Modal visible footer={null} title={formatMessage(libraryMessages.VideoLibraryItem.manageCaption)} {...modalProps}>
       <div className="d-flex mb-2">
-        {formatMessage(messages.uploadedCaptions)}：
+        {formatMessage(libraryMessages.VideoLibraryItem.uploadedCaptions)}：
         {captions.map(caption => (
           <Tag key={caption.language} className="mr-1" closable onClose={() => deleteCaption(caption.language)}>
             {caption.label}
@@ -192,7 +285,7 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
         style={{ width: '100%' }}
         showSearch
         allowClear
-        placeholder={formatMessage(messages.chooseCaptionLanguage)}
+        placeholder={formatMessage(libraryMessages.VideoLibraryItem.chooseCaptionLanguage)}
         value={languageCode}
         onChange={code =>
           addCaption(code).then(() => {
@@ -209,7 +302,7 @@ const CaptionModal: React.VFC<{ videoId: string } & ModalProps> = ({ videoId, ..
       </Select>
       {uppy && (
         <Button block onClick={() => inputRef.current?.click()}>
-          {formatMessage(messages.chooseFile)}
+          {formatMessage(libraryMessages.VideoLibraryItem.chooseFile)}
         </Button>
       )}
       {uppy && (
@@ -283,13 +376,13 @@ export const ReUploadButton: React.VFC<
       })
   })
   return (
-    <>
+    <div>
       <Button
         size="small"
         disabled={uploadState === 'uploading' || isExternalLink}
-        title={formatMessage(messages.reUpload)}
+        title={formatMessage(libraryMessages.VideoLibraryItem.reUpload)}
         onClick={() => inputRef.current?.click()}
-        {...buttonProps}
+        type="primary"
         icon={<UploadOutlined />}
       />
       <input
@@ -323,7 +416,7 @@ export const ReUploadButton: React.VFC<
         }}
       />
       <StatusBar uppy={uppy} hideUploadButton hideAfterFinish />
-    </>
+    </div>
   )
 }
 

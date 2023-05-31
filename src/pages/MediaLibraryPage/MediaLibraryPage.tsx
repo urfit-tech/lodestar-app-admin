@@ -4,7 +4,6 @@ import { DashboardModal } from '@uppy/react'
 import Tus from '@uppy/tus'
 import { Button, Input, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -15,7 +14,8 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import {
   CaptionUploadButton,
   DeleteButton,
-  PreviewButton,
+  DownloadButton,
+  TitleBlock,
   ReUploadButton,
 } from '../../components/library/VideoLibraryItem'
 import { commonMessages } from '../../helpers/translation'
@@ -24,22 +24,13 @@ import ForbiddenPage from '../ForbiddenPage'
 import MediaLibraryUsageCard from './MediaLibraryUsageCard'
 
 const MediaLibraryPage: React.FC = () => {
-  const { settings } = useApp()
   const [uppy, setUppy] = useState<Uppy>()
   const [searchText, setSearchText] = useState('')
   const [activeTabKey, setActiveTabKey] = useQueryParam('tab', StringParam)
   const [defaultVisibleModal] = useQueryParam('open', StringParam)
   const { formatMessage } = useIntl()
   const { authToken, permissions } = useAuth()
-  const {
-    totalDuration,
-    totalSize,
-    maxDuration,
-    maxSize,
-    attachments,
-    loading: loadingAttachments,
-    refetch: refetchAttachments,
-  } = useAttachments()
+  const { attachments, loading: loadingAttachments, refetch: refetchAttachments } = useAttachments()
 
   const handleVideoAdd = useCallback(() => {
     const tusEndpoint = `${process.env.REACT_APP_API_BASE_ROOT}/videos/`
@@ -82,13 +73,7 @@ const MediaLibraryPage: React.FC = () => {
       render: (_, attachment) => (
         <div>
           <div className="d-flex mb-1">
-            <PreviewButton
-              className="mr-1"
-              videoId={attachment.id}
-              title={attachment.name}
-              isExternalLink={!!attachment.data?.source}
-              videoUrl={attachment?.data?.url}
-            />
+            <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
             <ReUploadButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
@@ -96,7 +81,13 @@ const MediaLibraryPage: React.FC = () => {
             />
           </div>
           <div className="d-flex">
-            <CaptionUploadButton className="mr-1" videoId={attachment.id} isExternalLink={!!attachment.data?.source} />
+            <DownloadButton
+              className="mr-1"
+              videoId={attachment.id}
+              isExternalLink={!!attachment.data?.source}
+              options={attachment.options}
+              fileName={attachment.data?.name}
+            />
             <DeleteButton
               videoId={attachment.id}
               isExternalLink={!!attachment.data?.source}
@@ -116,15 +107,7 @@ const MediaLibraryPage: React.FC = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: (text, attachment) => (
-        <div>
-          <div>{text}</div>
-          <small>
-            <span className="mr-1">{attachment.filename}</span>
-            {attachment.author?.name ? '@' + attachment.author.name : ''}
-          </small>
-        </div>
-      ),
+      render: (text, attachment) => <TitleBlock attachment={attachment} text={text} />,
     },
     {
       title: 'Duration',
