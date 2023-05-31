@@ -84,5 +84,5 @@ export type LeadStatus =
   | 'DEDICATED'
   | 'EXISTED'
   | 'DEAD'
-  | 'STARRED'
+  | 'FOLLOWED'
   | 'ANSWERED'

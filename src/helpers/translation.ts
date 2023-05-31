@@ -1419,7 +1419,7 @@ export const salesMessages = defineMessages({
   chaileaseLookup: { id: 'sales.label.chaileaseLookup', defaultMessage: '報名查詢' },
   chaileaseApply: { id: 'sales.label.chaileaseApply', defaultMessage: '申請資融' },
   autoStartCalls: { id: 'sales.label.autoStartCalls', defaultMessage: '自動撥號' },
-  starredLead: { id: 'sales.label.starredLead', defaultMessage: '收藏名單' },
+  followedLead: { id: 'sales.label.followedLead', defaultMessage: '收藏名單' },
   idledLead: { id: 'sales.label.idledLead', defaultMessage: '未聯繫名單' },
   contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '已聯繫名單' },
   invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '已邀約名單' },

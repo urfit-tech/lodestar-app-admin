@@ -171,30 +171,29 @@ export const useManagerLeads = (manager: Manager) => {
 
     const star = Number(v.star) || 0
     const signed = v.member_contracts.length > 0
-    const status: LeadStatus =
-      Number(v.star) === Number(manager.telephone)
-        ? 'STARRED'
-        : star < -999
-        ? 'DEAD'
-        : star === -999
-        ? 'CLOSED'
-        : signed
-        ? 'SIGNED'
-        : data?.member_task
-            .filter(u => u.status === 'done')
-            .map(u => u.member_id)
-            .includes(v.id)
-        ? 'PRESENTED'
-        : data?.member_task
-            .filter(u => u.status !== 'done')
-            .map(u => u.member_id)
-            .includes(v.id)
-        ? 'INVITED'
-        : v.last_member_note_answered
-        ? 'ANSWERED'
-        : v.last_member_note_called
-        ? 'CONTACTED'
-        : 'IDLED'
+    const status: LeadStatus = v.followed_at
+      ? 'FOLLOWED'
+      : star < -999
+      ? 'DEAD'
+      : star === -999
+      ? 'CLOSED'
+      : signed
+      ? 'SIGNED'
+      : data?.member_task
+          .filter(u => u.status === 'done')
+          .map(u => u.member_id)
+          .includes(v.id)
+      ? 'PRESENTED'
+      : data?.member_task
+          .filter(u => u.status !== 'done')
+          .map(u => u.member_id)
+          .includes(v.id)
+      ? 'INVITED'
+      : v.last_member_note_answered
+      ? 'ANSWERED'
+      : v.last_member_note_called
+      ? 'CONTACTED'
+      : 'IDLED'
     return {
       id: v.id,
       star: v.star,
@@ -224,6 +223,7 @@ export const useManagerLeads = (manager: Manager) => {
     errorMembers,
     refetchMembers,
     totalLeads,
+    followedLeads: totalLeads.filter(lead => lead.status === 'FOLLOWED'),
     idledLeads: totalLeads.filter(lead => lead.status === 'IDLED'),
     contactedLeads: totalLeads.filter(lead => lead.status === 'CONTACTED'),
     answeredLeads: totalLeads.filter(lead => lead.status === 'ANSWERED'),
@@ -251,6 +251,7 @@ const GET_SALES_LEAD_MEMBERS = gql`
       star
       created_at
       assigned_at
+      followed_at
       last_member_note_created
       last_member_note_called
       last_member_note_answered
