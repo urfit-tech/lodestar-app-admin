@@ -76,8 +76,8 @@ const MemberContractAdminBlock: React.FC<{
                 parentProductId:
                   values?.projectPlanProductId ||
                   values?.orderProducts?.find(
-                    (v: { name: string; product_id: string }) =>
-                      v.name.includes(title) && v.product_id.includes('ProjectPlan'),
+                    (v: { name: string; product_id?: string }) =>
+                      v.name.includes(title) && v.product_id?.includes('ProjectPlan'),
                   )?.product_id ||
                   '',
               },
