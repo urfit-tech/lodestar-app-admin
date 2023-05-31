@@ -1,28 +1,47 @@
 import Icon, { SwapOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/client'
-import { Button, Checkbox, DatePicker, Form, Input, Result, Slider, Statistic, Steps } from 'antd'
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import { Box, Text } from '@chakra-ui/react'
+import {
+  Button,
+  Checkbox,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Result,
+  Row,
+  Select,
+  Slider,
+  Spin,
+  Statistic,
+  Steps,
+} from 'antd'
 import { ResultProps } from 'antd/lib/result'
-import { gql } from '@apollo/client'
+import { isEmpty } from 'lodash'
+import { DESKTOP_BREAK_POINT } from 'lodestar-app-element/src/components/common/Responsive'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
 import React, { useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
 import CategoryInput from '../../components/common/CategoryInput'
-import SalesMemberInput from '../../components/common/SalesMemberInput'
+import ManagerInput from '../../components/common/ManagerInput'
 import AdminLayout from '../../components/layout/AdminLayout'
-import hasura from '../../hasura'
-import { notEmpty } from '../../helpers'
+import hasura, { member_bool_exp } from '../../hasura'
+import { useProperty } from '../../hooks/member'
 import { salesLeadDeliveryPageMessages } from './translation'
 
 type Filter = {
+  [key: string]: any
   categoryIds: string[]
   createdAtRange: [Date, Date] | null
-  assignedAtRange: [Date, Date] | null
+  lastCalledRange: [Date, Date] | null
+  lastAnsweredRange: [Date, Date] | null
   managerId?: string
   starRange: [number, number]
   starRangeIsNull: boolean
-  marketingActivity: string
-  adMaterials: string
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -37,13 +56,16 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     categoryIds: [],
     starRange: [-999, 999],
     createdAtRange: null,
-    assignedAtRange: null,
+    lastCalledRange: null,
+    lastAnsweredRange: null,
     starRangeIsNull: false,
-    marketingActivity: '',
-    adMaterials: '',
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
+  )
+
+  const [getLeadManager] = useLazyQuery<hasura.GET_LEAD_CANDIDATES, hasura.GET_LEAD_CANDIDATESVariables>(
+    GET_LEAD_CANDIDATES,
   )
 
   return (
@@ -74,17 +96,27 @@ const SalesLeadDeliveryPage: React.VFC = () => {
       {currentStep === 1 && (
         <ConfirmSection
           filter={filter}
-          onNext={({ memberIds, managerId }) => {
+          onNext={({ condition, limit, managerId }) => {
             setCurrentStep(step => step + 1)
             setAssignedResult({
               status: 'info',
             })
-            updateLeadManager({ variables: { memberIds, managerId } })
+            getLeadManager({ variables: { condition, limit } })
               .then(({ data }) => {
-                setAssignedResult({
-                  status: 'success',
-                  data: data?.update_member?.affected_rows || 0,
-                })
+                const memberIds = data?.member.map(m => m.id)
+                updateLeadManager({ variables: { memberIds, managerId } })
+                  .then(({ data }) => {
+                    setAssignedResult({
+                      status: 'success',
+                      data: data?.update_member?.affected_rows || 0,
+                    })
+                  })
+                  .catch(error => {
+                    setAssignedResult({
+                      status: 'error',
+                      error,
+                    })
+                  })
               })
               .catch(error => {
                 setAssignedResult({
@@ -95,30 +127,52 @@ const SalesLeadDeliveryPage: React.VFC = () => {
           }}
         />
       )}
-      {currentStep === 2 && assignedResult && <ResultSection result={assignedResult} />}
+      {currentStep === 2 && assignedResult && (
+        <ResultSection result={assignedResult} onBack={() => setCurrentStep(0)} />
+      )}
     </AdminLayout>
   )
 }
 
-const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => void }> = ({ filter, onNext }) => {
+const FilterSection: React.FC<{
+  filter: Filter
+  onNext?: (filter: Filter) => void
+}> = ({ filter, onNext }) => {
   const { formatMessage } = useIntl()
   const [starRangeIsNull, setStarRangeIsNull] = useState(false)
-
+  const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
+  const { loadingProperties, properties } = useProperty()
+  const { currentMemberId } = useAuth()
+  const ExactMatchCheckBox = styled(Form.Item)`
+    left: 0%;
+    bottom: -150%;
+    display: flex;
+    position: absolute;
+    @media (min-width: ${DESKTOP_BREAK_POINT}px) {
+      left: auto;
+      bottom: auto;
+      right: -120px;
+    }
+  `
+  const PropertiesItem = styled(Form.Item)`
+    margin-bottom: 40px;
+    @media (min-width: ${DESKTOP_BREAK_POINT}px) {
+      margin-bottom: 24px;
+    }
+  `
   return (
     <Form<Filter>
       layout="horizontal"
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 12 }}
       initialValues={filter}
-      onFinish={values => {
-        onNext?.(values)
-      }}
+      onFinish={values => onNext?.({ ...values, starRange })}
     >
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.originalManager)}
         name="managerId"
       >
-        <SalesMemberInput />
+        <ManagerInput />
       </Form.Item>
       <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.field)} name="categoryIds">
         <CategoryInput categoryClass="member" />
@@ -130,21 +184,76 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
       >
         <Checkbox onChange={e => setStarRangeIsNull(e.target.checked)} />
       </Form.Item>
-      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRange)} name="starRange">
-        <Slider range min={-999} max={999} disabled={starRangeIsNull} />
+
+      <Form.Item label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.starRange)}>
+        <Slider
+          range
+          min={-999}
+          max={999}
+          disabled={starRangeIsNull}
+          value={[starRange[0], starRange[1]]}
+          onChange={v => setStarRange(v)}
+        />
       </Form.Item>
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.marketingActivity)}
-        name="marketingActivity"
-      >
-        <Input />
+      <Form.Item label=" " colon={false}>
+        <Input.Group compact>
+          <Form.Item noStyle>
+            <InputNumber
+              min={-999}
+              max={999}
+              disabled={starRangeIsNull}
+              value={starRange[0]}
+              onChange={v => v && (+v > starRange[1] ? setStarRange([+v, +v]) : setStarRange([+v, starRange[1]]))}
+            />
+          </Form.Item>
+          <div style={{ height: '43px', marginLeft: '0.25rem', marginRight: '0.25rem' }}>
+            <div className="d-flex align-items-center" style={{ height: '100%' }}>
+              ~
+            </div>
+          </div>
+          <Form.Item noStyle>
+            <InputNumber
+              min={-999}
+              max={999}
+              disabled={starRangeIsNull}
+              value={starRange[1]}
+              onChange={v => v && (+v < starRange[0] ? setStarRange([+v, +v]) : setStarRange([starRange[0], +v]))}
+            />
+          </Form.Item>
+        </Input.Group>
       </Form.Item>
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.adMaterials)}
-        name="adMaterials"
-      >
-        <Input />
-      </Form.Item>
+      {!currentMemberId || loadingProperties ? (
+        <Spin />
+      ) : (
+        properties.map(property => (
+          <PropertiesItem label={property.name}>
+            {property?.placeholder?.includes('/') ? (
+              <Form.Item name={property.name} style={{ width: '100%', margin: '0px' }}>
+                <Select>
+                  {property?.placeholder?.split('/').map((value: string, idx: number) => (
+                    <Select.Option key={idx} value={value}>
+                      {value}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            ) : (
+              <Box position="relative" w="100%" display="flex">
+                <Form.Item name={property.name} style={{ width: '100%', margin: '0px' }}>
+                  <Input style={{ width: '100%' }} />
+                </Form.Item>
+                <ExactMatchCheckBox name={`is${property.name}ExactMatch`} valuePropName="checked">
+                  <Checkbox style={{ display: 'flex', alignItems: 'center' }}>
+                    <Text color="var(--gary-dark)" size="sm">
+                      {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.exactMatch)}
+                    </Text>
+                  </Checkbox>
+                </ExactMatchCheckBox>
+              </Box>
+            )}
+          </PropertiesItem>
+        ))
+      )}
       <Form.Item
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
         name="createdAtRange"
@@ -152,8 +261,14 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
         <DatePicker.RangePicker allowClear />
       </Form.Item>
       <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.assignedAtRange)}
-        name="assignedAtRange"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}
+        name="lastCalledRange"
+      >
+        <DatePicker.RangePicker allowClear />
+      </Form.Item>
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
+        name="lastAnsweredRange"
       >
         <DatePicker.RangePicker allowClear />
       </Form.Item>
@@ -168,108 +283,96 @@ const FilterSection: React.FC<{ filter: Filter; onNext?: (filter: Filter) => voi
 
 const ConfirmSection: React.FC<{
   filter: Filter
-  onNext?: (values: { memberIds: string[]; managerId: string | null }) => void
+  onNext?: (values: { condition: member_bool_exp; limit: number; managerId: string | null }) => void
 }> = ({ filter, onNext }) => {
   const { formatMessage } = useIntl()
   const [managerId, setManagerId] = useState<string>()
   const [numDeliver, setNumDeliver] = useState(1)
-  const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
-    hasura.GET_LEAD_CANDIDATES,
-    hasura.GET_LEAD_CANDIDATESVariables
-  >(
-    gql`
-      query GET_LEAD_CANDIDATES($condition: member_bool_exp) {
-        member(where: $condition) {
-          id
-        }
-      }
-    `,
-    {
-      fetchPolicy: 'no-cache',
-      variables: {
-        condition: {
-          manager_id: {
-            _is_null: !filter.managerId,
-            _eq: filter.managerId || undefined,
-          },
-          member_categories:
-            filter.categoryIds.length > 0
-              ? {
-                  category: {
-                    name: {
-                      _in: filter.categoryIds,
-                    },
-                  },
-                }
-              : undefined,
-          created_at: filter.createdAtRange
-            ? {
-                _gte: moment(filter.createdAtRange[0]).startOf('day'),
-                _lte: moment(filter.createdAtRange[1]).endOf('day'),
-              }
-            : undefined,
-          star: filter.starRangeIsNull
-            ? {
-                _is_null: true,
-              }
-            : {
-                _gte: filter.starRange[0],
-                _lte: filter.starRange[1],
-              },
-          _and: [
-            {
-              member_properties:
-                filter.marketingActivity !== ''
-                  ? { property: { name: { _eq: '行銷活動' } }, value: { _like: `%${filter.marketingActivity}%` } }
-                  : undefined,
-            },
-            {
-              member_properties:
-                filter.adMaterials !== ''
-                  ? { property: { name: { _eq: '廣告素材' } }, value: { _like: `%${filter.adMaterials}%` } }
-                  : undefined,
-            },
-          ],
-        },
-      },
+  const { properties } = useProperty()
+
+  const leadCandidatesCondition = {
+    member_phones: { phone: { _neq: '' } },
+    manager_id: {
+      _is_null: !filter.managerId,
+      _eq: filter.managerId || undefined,
     },
-  )
-  const { data: assignedLeadsData, loading: isAssignedLeadsLoading } = useQuery<
-    hasura.GET_ASSIGNED_LEADS,
-    hasura.GET_ASSIGNED_LEADSVariables
-  >(
-    gql`
-      query GET_ASSIGNED_LEADS($memberIds: [String!], $assignedAtCondition: timestamptz_comparison_exp) {
-        audit_log(
-          distinct_on: [member_id]
-          where: { member_id: { _in: $memberIds }, created_at: $assignedAtCondition }
-        ) {
-          member_id
+    member_categories:
+      filter.categoryIds.length > 0
+        ? {
+            category: {
+              name: {
+                _in: filter.categoryIds,
+              },
+            },
+          }
+        : undefined,
+    created_at: filter.createdAtRange
+      ? {
+          _gte: moment(filter.createdAtRange[0]).startOf('day'),
+          _lte: moment(filter.createdAtRange[1]).endOf('day'),
         }
-      }
-    `,
-    {
-      fetchPolicy: 'no-cache',
-      variables: {
-        memberIds: filter.assignedAtRange ? leadCandidatesData?.member.map(v => v.id) || [] : [],
-        assignedAtCondition: filter.assignedAtRange
+      : undefined,
+    star: filter.starRangeIsNull
+      ? {
+          _is_null: true,
+        }
+      : {
+          _gte: filter.starRange[0],
+          _lte: filter.starRange[1],
+        },
+    last_member_note_called: filter.lastCalledRange
+      ? {
+          _gte: moment(filter.lastCalledRange[0]).startOf('day'),
+          _lte: moment(filter.lastCalledRange[1]).endOf('day'),
+        }
+      : undefined,
+    last_member_note_answered: filter.lastAnsweredRange
+      ? {
+          _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
+          _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+        }
+      : undefined,
+    _and: properties.map(property => {
+      return {
+        member_properties: !isEmpty(filter[property.name])
           ? {
-              _gte: moment(filter.assignedAtRange[0]).startOf('day'),
-              _lte: moment(filter.assignedAtRange[1]).endOf('day'),
+              property: { name: { _eq: property.name } },
+              value: filter[`is${property.name}ExactMatch`]
+                ? { _eq: `${filter[property.name]}` }
+                : { _like: `%${filter[property.name]}%` },
             }
           : undefined,
+      }
+    }),
+  }
+
+  const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<
+    hasura.GET_LEAD_CANDIDATES_AGGREGATE,
+    hasura.GET_LEAD_CANDIDATES_AGGREGATEVariables
+  >(
+    gql`
+      query GET_LEAD_CANDIDATES_AGGREGATE($condition: member_bool_exp) {
+        member_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      fetchPolicy: 'no-cache',
+      variables: {
+        condition: leadCandidatesCondition,
       },
     },
   )
-  const filteredMemberIds = useMemo(() => {
-    const memberIds =
-      (filter.assignedAtRange
-        ? assignedLeadsData?.audit_log.map(v => v.member_id).filter(notEmpty)
-        : leadCandidatesData?.member.map(v => v.id)) || []
-    return memberIds
-  }, [assignedLeadsData, filter.assignedAtRange, leadCandidatesData?.member])
 
-  const isLoading = isAssignedLeadsLoading || isLeadCandidatesLoading
+  const filteredMemberIdCount = useMemo(() => {
+    const count = leadCandidatesData?.member_aggregate.aggregate?.count || 0
+    return count
+  }, [leadCandidatesData?.member_aggregate])
+
+  const isLoading = isLeadCandidatesLoading
 
   return (
     <div className="row">
@@ -278,16 +381,27 @@ const ConfirmSection: React.FC<{
           loading={isLoading}
           className="mb-3"
           title={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.expectedDeliveryAmount)}
-          value={`${numDeliver} / ${filteredMemberIds.length}`}
+          value={`${numDeliver} / ${filteredMemberIdCount}`}
         />
         <div className="mb-2">
-          <SalesMemberInput value={managerId} onChange={setManagerId} />
+          <ManagerInput value={managerId} onChange={setManagerId} />
         </div>
-        {!isLoading && <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIds.length} />}
+        {!isLoading && (
+          <Row className="mb-2">
+            <Col span={6}>
+              <InputNumber value={numDeliver} onChange={v => v && setNumDeliver(+v)} max={filteredMemberIdCount} />
+            </Col>
+            <Col span={18}>
+              <Slider value={numDeliver} onChange={setNumDeliver} max={filteredMemberIdCount} />
+            </Col>
+          </Row>
+        )}
         <Button
           type="primary"
           block
-          onClick={() => onNext?.({ memberIds: filteredMemberIds.slice(0, numDeliver), managerId: managerId || null })}
+          onClick={() =>
+            onNext?.({ condition: leadCandidatesCondition, limit: numDeliver, managerId: managerId || null })
+          }
         >
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.deliverSalesLead)}
         </Button>
@@ -330,6 +444,14 @@ const UPDATE_LEAD_MANAGER = gql`
   mutation UPDATE_LEAD_MANAGER($memberIds: [String!], $managerId: String) {
     update_member(where: { id: { _in: $memberIds } }, _set: { manager_id: $managerId }) {
       affected_rows
+    }
+  }
+`
+
+const GET_LEAD_CANDIDATES = gql`
+  query GET_LEAD_CANDIDATES($condition: member_bool_exp, $limit: Int!) {
+    member(where: $condition, limit: $limit) {
+      id
     }
   }
 `

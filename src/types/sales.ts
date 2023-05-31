@@ -4,7 +4,7 @@ export type LeadProps = {
   email: string
   phones: string[]
   categoryNames: string[]
-  properties: { id: string, name: string; value: string }[]
+  properties: { id: string; name: string; value: string }[]
   paid: number
   star: number
   createdAt: Date
@@ -61,4 +61,14 @@ export type CurrentLeadProps = {
     name: string
     value: string
   }[]
+}
+
+export type Manager = {
+  id: string
+  avatarUrl: string | null
+  name: string
+  username: string
+  email: string
+  // disabled?: boolean
+  telephone: string
 }

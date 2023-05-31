@@ -3,9 +3,10 @@ import { gql } from '@apollo/client'
 import moment from 'moment'
 import { sum, prop, sortBy } from 'ramda'
 import hasura from '../hasura'
-import { SalesProps, LeadProps } from '../types/sales'
+import { SalesProps, LeadProps, Manager } from '../types/sales'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { notEmpty } from '../helpers'
+import { useMemo } from 'react'
 
 export const useSales = (salesId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_SALES, hasura.GET_SALESVariables>(
@@ -178,3 +179,45 @@ const GET_SALES_LEADS = gql`
     }
   }
 `
+
+export const useManagers = () => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
+    gql`
+      query GET_MANAGER_COLLECTION {
+        member_property(where: { property: { name: { _eq: "分機號碼" } } }) {
+          id
+          value
+          member {
+            id
+            name
+            picture_url
+            username
+            email
+          }
+        }
+      }
+    `,
+  )
+
+  const managers: Manager[] = useMemo(
+    () =>
+      data?.member_property
+        .filter(v => v.value)
+        .map(v => ({
+          id: v.member?.id || '',
+          name: v.member?.name || '',
+          username: v.member?.username || '',
+          avatarUrl: v.member?.picture_url || null,
+          email: v.member?.email || '',
+          telephone: v.value,
+        })) || [],
+    [data],
+  )
+
+  return {
+    loading,
+    error,
+    managers,
+    refetch,
+  }
+}
