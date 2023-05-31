@@ -26,5 +26,8 @@ export const salesLeadDeliveryPageMessages = {
     deliveredCount: { id: 'page.salesLeadDeliveryPage.deliveredCount', defaultMessage: '已派發 {count} 筆名單' },
     deliveringMessage: { id: 'page.salesLeadDeliveryPage.deliveringMessage', defaultMessage: '正在派發名單中，請稍等' },
     deliverAgain: { id: 'page.salesLeadDeliveryPage.deliverAgain', defaultMessage: '再次派發' },
+    exactMatch: { id: 'page.salesLeadDeliveryPage.exactMatch', defaultMessage: '完全匹配' },
+    lastCalledRange: { id: 'page.salesLeadDeliveryPage.lastCalledRange', defaultMessage: '上次撥打日期' },
+    lastAnsweredRange: { id: 'page.salesLeadDeliveryPage.lastContactRange', defaultMessage: '上次接通日期' },
   }),
 }
