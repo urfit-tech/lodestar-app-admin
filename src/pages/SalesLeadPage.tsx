@@ -26,7 +26,7 @@ const SalesLeadPage: React.VFC = () => {
   const { enabledModules } = useApp()
   const { managers } = useManagers()
   const { currentMemberId, currentMember, permissions } = useAuth()
-  const [activeKey, setActiveKey] = useState('starred')
+  const [activeKey, setActiveKey] = useState('followed')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
   useMemberContractNotification()
 
@@ -69,6 +69,7 @@ const SalesLeadTabs: React.VFC<{
     refetch,
     loadingMembers,
     refetchMembers,
+    followedLeads,
     totalLeads,
     idledLeads,
     contactedLeads,
@@ -82,8 +83,6 @@ const SalesLeadTabs: React.VFC<{
   if (loading || loadingMembers) {
     return <Skeleton active />
   }
-
-  const starredLeads = totalLeads.filter(lead => lead.star === Number(manager.telephone))
 
   return (
     <Tabs
@@ -101,19 +100,19 @@ const SalesLeadTabs: React.VFC<{
       }
     >
       <Tabs.TabPane
-        key="starred"
+        key="followed"
         tab={
           <div>
-            {formatMessage(salesMessages.starredLead)}
-            <span>({starredLeads.length})</span>
+            {formatMessage(salesMessages.followedLead)}
+            <span>({followedLeads.length})</span>
           </div>
         }
       >
         {
           <SalesLeadTable
-            variant="starred"
+            variant="followed"
             manager={manager}
-            leads={starredLeads}
+            leads={followedLeads}
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
