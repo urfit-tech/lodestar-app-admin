@@ -1,17 +1,14 @@
 import Icon, { DollarOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { DatePicker, Select, Skeleton, Table } from 'antd'
 import { ColumnsType } from 'antd/lib/table'
-import { gql } from '@apollo/client'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment-timezone'
-import { sum } from 'ramda'
+import { sum, uniqBy } from 'ramda'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
 import { v4 } from 'uuid'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
@@ -34,7 +31,8 @@ export type MemberContract = {
   executor: {
     id: string
     name: string
-    agency: string
+    groupName: string
+    department: string
   }
   member: {
     id: string
@@ -57,12 +55,13 @@ const TableWrapper = styled.div`
 `
 
 const SalesPerformancePage: React.VFC = () => {
-  const [month, setMonth] = useState(moment().startOf('month'))
-  const [activeManagerId, setActiveManagerId] = useState<string>()
   const { formatMessage } = useIntl()
+  const [month, setMonth] = useState(moment().startOf('month'))
+  const [activeGroupName, setActiveGroupName] = useState<string>()
+  const [activeManagerId, setActiveManagerId] = useState<string>()
+  const [activeDepartment, setActiveDepartment] = useState<string>()
   const { memberContracts, managers, loading } = useMemberContract(month, month.clone().endOf('month'))
-  const { currentMemberId, permissions } = useAuth()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { currentMemberId, permissions, currentUserRole } = useAuth()
 
   useEffect(() => {
     currentMemberId && setActiveManagerId(currentMemberId)
@@ -101,6 +100,42 @@ const SalesPerformancePage: React.VFC = () => {
               ))}
             </Select>
           )}
+
+          <Select
+            className="mr-3"
+            style={{ width: 200 }}
+            showSearch
+            allowClear
+            placeholder="組別"
+            value={activeGroupName}
+            optionFilterProp="children"
+            onChange={setActiveGroupName}
+          >
+            {uniqBy(manager => manager.groupName, managers || []).map(manager => (
+              <Select.Option key={manager.id} value={manager.groupName}>
+                {manager.groupName}
+              </Select.Option>
+            ))}
+          </Select>
+
+          {currentUserRole === 'app-owner' && (
+            <Select
+              className="mr-3"
+              style={{ width: 200 }}
+              showSearch
+              allowClear
+              placeholder="機構"
+              value={activeDepartment}
+              optionFilterProp="children"
+              onChange={setActiveDepartment}
+            >
+              {uniqBy(manager => manager.department, managers || []).map(manager => (
+                <Select.Option key={manager.id} value={manager.department}>
+                  {manager.department}
+                </Select.Option>
+              ))}
+            </Select>
+          )}
         </div>
       </AdminPageTitle>
       {currentMemberId ? (
@@ -108,7 +143,38 @@ const SalesPerformancePage: React.VFC = () => {
           loading={loading}
           memberContracts={
             activeManagerId
-              ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
+              ? activeGroupName
+                ? activeDepartment
+                  ? memberContracts.filter(
+                      memberContract =>
+                        memberContract.executor.id === activeManagerId &&
+                        memberContract.executor.groupName === activeGroupName &&
+                        memberContract.executor.department === activeDepartment,
+                    )
+                  : memberContracts.filter(
+                      memberContract =>
+                        memberContract.executor.id === activeManagerId &&
+                        memberContract.executor.groupName === activeGroupName,
+                    )
+                : activeDepartment
+                ? memberContracts.filter(
+                    memberContract =>
+                      memberContract.executor.id === activeManagerId &&
+                      memberContract.executor.department === activeDepartment,
+                  )
+                : memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
+              : activeGroupName
+              ? activeDepartment
+                ? memberContracts.filter(
+                    memberContract =>
+                      memberContract.executor.groupName === activeGroupName &&
+                      memberContract.executor.department === activeDepartment,
+                  )
+                : activeDepartment
+                ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
+                : memberContracts.filter(memberContract => memberContract.executor.groupName === activeGroupName)
+              : activeDepartment
+              ? memberContracts.filter(memberContract => memberContract.executor.department === activeDepartment)
               : memberContracts
           }
         />
@@ -121,9 +187,8 @@ const SalesPerformancePage: React.VFC = () => {
 
 const SalesPerformanceTable: React.VFC<{
   loading: boolean
-  activeManagerId?: string
   memberContracts: MemberContract[]
-}> = ({ loading, activeManagerId, memberContracts }) => {
+}> = ({ loading, memberContracts }) => {
   const columns: ColumnsType<MemberContract> = [
     {
       title: '簽署日',
@@ -200,10 +265,6 @@ const SalesPerformanceTable: React.VFC<{
     },
   ]
 
-  const managerMemberContracts = activeManagerId
-    ? memberContracts.filter(memberContract => memberContract.executor.id === activeManagerId)
-    : memberContracts
-
   const isCanceled = (mc: MemberContract) => !!mc.canceledAt && !!mc.agreedAt && !mc.approvedAt
   const isRevoked = (mc: MemberContract) => !!mc.revokedAt && !!mc.agreedAt && !mc.canceledAt
   const isRefundApplied = (mc: MemberContract) =>
@@ -213,9 +274,9 @@ const SalesPerformanceTable: React.VFC<{
     !!mc.agreedAt && !mc.approvedAt && !mc.refundAppliedAt && !mc.revokedAt && !mc.canceledAt
 
   const calculatePerformance = (condition: (mc: MemberContract) => boolean) =>
-    sum(managerMemberContracts.filter(condition).map(mc => mc.performance))
+    sum(memberContracts.filter(condition).map(mc => mc.performance))
   const calculateRecognizePerformance = (condition: (mc: MemberContract) => boolean) =>
-    sum(managerMemberContracts.filter(condition).map(mc => mc.recognizePerformance))
+    sum(memberContracts.filter(condition).map(mc => mc.recognizePerformance))
 
   const performance = {
     currentPerformance: calculateRecognizePerformance(isApproved),
@@ -249,7 +310,7 @@ const SalesPerformanceTable: React.VFC<{
 }
 
 const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => {
-  const { id: appId } = useApp()
+  const { currentMemberId, currentUserRole } = useAuth()
   const { data, loading } = useQuery<hasura.GET_MEMBER_CONTRACT_LIST, hasura.GET_MEMBER_CONTRACT_LISTVariables>(
     gql`
       query GET_MEMBER_CONTRACT_LIST($startedAt: timestamptz!, $endedAt: timestamptz!) {
@@ -259,6 +320,12 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
             name
             email
             app_id
+            groupNames: member_properties(where: { property: { name: { _eq: "組別" } } }) {
+              value
+            }
+            departments: member_properties(where: { property: { name: { _eq: "機構" } } }) {
+              value
+            }
           }
         }
         member_contract(
@@ -300,53 +367,66 @@ const useMemberContract = (startedAt: moment.Moment, endedAt: moment.Moment) => 
           id: v.member?.id || v4(),
           name: v.member?.name || 'unknown',
           email: v.member?.email || 'unknown',
-          agency: v.member?.app_id || appId,
+          groupName: v.member?.groupNames[0]?.value || 'unknown',
+          department: v.member?.departments[0]?.value || 'unknown',
         }
       }) || [],
     [data?.order_executor],
   )
+
   const memberContracts: MemberContract[] = useMemo(
     () =>
       data?.member_contract
         .map(
           v =>
-            v.values.orderExecutors?.map((orderExecutor: any) => {
-              const executor = managers.find(v => v.id === orderExecutor.member_id)
-              const isGuaranteed = v.options?.note?.includes('保買') || false
-              const performance = orderExecutor.ratio * v.values.price
-              const recognizePerformance = Math.round(
-                orderExecutor.ratio * (v.values.orderOptions?.recognizePerformance || v.values.price),
-              )
-              return {
-                id: v.id,
-                author: {
-                  id: v.author?.id,
-                  name: v.author?.name,
-                },
-                executor: {
-                  id: executor?.id,
-                  name: executor?.name,
-                  agency: executor?.agency,
-                },
-                member: {
-                  id: v.member.id,
-                  name: v.member.name,
-                },
-                agreedAt: v.agreed_at,
-                revokedAt: v.revoked_at,
-                approvedAt: v.options?.approvedAt,
-                canceledAt: v.options?.loanCanceledAt,
-                refundAppliedAt: v.options?.refundAppliedAt,
-                performance: isGuaranteed ? performance * 0.7 : performance,
-                recognizePerformance,
-                products: v.values.orderProducts
-                  ?.filter((op: any) => op.price >= 1500)
-                  .map((op: any) => op.name + (op.options ? `(${op.options.quantity})` : '')),
-                paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
-                paymentNumber: v.values.paymentOptions.paymentNumber,
-                note: v.options?.note || '',
-              }
-            }) || [],
+            v.values.orderExecutors
+              ?.map((orderExecutor: any) => {
+                const executor = managers.find(v => v.id === orderExecutor.member_id)
+                const isGuaranteed = v.options?.note?.includes('保買') || false
+                const performance = orderExecutor.ratio * v.values.price
+                const recognizePerformance = Math.round(
+                  orderExecutor.ratio * (v.values.orderOptions?.recognizePerformance || v.values.price),
+                )
+                return {
+                  id: v.id,
+                  author: {
+                    id: v.author?.id,
+                    name: v.author?.name,
+                  },
+                  executor: {
+                    id: executor?.id,
+                    name: executor?.name,
+                    groupName: executor?.groupName,
+                    department: executor?.department,
+                  },
+                  member: {
+                    id: v.member.id,
+                    name: v.member.name,
+                  },
+                  agreedAt: v.agreed_at,
+                  revokedAt: v.revoked_at,
+                  approvedAt: v.options?.approvedAt,
+                  canceledAt: v.options?.loanCanceledAt,
+                  refundAppliedAt: v.options?.refundAppliedAt,
+                  performance: isGuaranteed ? performance * 0.7 : performance,
+                  recognizePerformance,
+                  products: v.values.orderProducts?.map(
+                    (op: any) => op.name + (op.options ? `(${op.options.quantity})` : ''),
+                  ),
+                  paymentMethod: `${v.values.paymentOptions.paymentMethod}/${v.values.paymentOptions.installmentPlan}`,
+                  paymentNumber: v.values.paymentOptions.paymentNumber,
+                  note: v.options?.note || '',
+                }
+              })
+              .filter((orderExecutor: any) => {
+                if (currentUserRole === 'app-owner') {
+                  return true
+                } else {
+                  const currentExecutor = managers.find(v => v.id === currentMemberId)
+                  if (orderExecutor.executor.department === currentExecutor?.department) return true
+                  return false
+                }
+              }) || [],
         )
         .flat() || [],
     [data?.member_contract],

@@ -28,9 +28,8 @@ const MemberPropertyAdminForm: React.FC<{
     setLoading(true)
     updateMemberProperty({
       variables: {
-        memberId,
         memberProperties: Object.keys(values)
-          .filter(propertyId => values[propertyId])
+          .filter(propertyId => values[propertyId] || values[propertyId] === '')
           .map(propertyId => ({
             member_id: memberId,
             property_id: propertyId,
