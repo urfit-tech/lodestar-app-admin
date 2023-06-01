@@ -1,9 +1,9 @@
 // organize-imports-ignore
 import { useQuery } from '@apollo/client'
-import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
+import { FileAddOutlined, SearchOutlined, LoadingOutlined } from '@ant-design/icons'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import { Button, DatePicker, Input, Select, Spin, Table, Skeleton, Checkbox, Tooltip } from 'antd'
+import { Button, DatePicker, Input, Select, Spin, Table, Skeleton, Checkbox, Tooltip, message } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { gql } from '@apollo/client'
 import moment from 'moment'
@@ -17,7 +17,14 @@ import hasura from '../../hasura'
 import { MemberTaskProps } from '../../types/member'
 import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
+import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
+import axios from 'axios'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import JitsiDemoModal from '../sale/JitsiDemoModal'
+import { useMutateMemberNote } from '../../hooks/member'
+import { handleError } from '../../helpers'
+import { useToast } from '@chakra-ui/toast'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -111,6 +118,16 @@ const MemberTaskAdminBlock: React.FC<{
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const { authToken, currentMember } = useAuth()
+  const [jitsiModalVisible, setJitsiModalVisible] = useState(false)
+  const [meetingLoading, setMeetingLoading] = useState<{ index: number; loading: boolean } | null>()
+  const [meetingMember, setMeetingMember] = useState<{
+    id: string
+    name: string
+  }>({ id: '', name: '' })
+  const { enabledModules, id: appId } = useApp()
+  const { insertMemberNote } = useMutateMemberNote()
+  const toast = useToast()
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -173,9 +190,59 @@ const MemberTaskAdminBlock: React.FC<{
     categories.map((category, index) => [category.id, categoryColors[index % categoryColors.length]]),
   )
 
+  const onCellClick = (record: MemberTaskProps) => {
+    return {
+      onClick: () => {
+        setMeetingMember(() => record.member)
+        setSelectedMemberTask(() => record)
+        setVisible(() => true)
+      },
+    }
+  }
+
+  const meetingButtonOnClick = async (meetingMember: { id: string; name: string }) => {
+    if (!enabledModules.meet_service) {
+      setJitsiModalVisible(true)
+      return
+    }
+    const currentTime = new Date()
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+        {
+          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMember.id}`,
+          autoRecording: true,
+          service: 'zoom',
+          nbf: null,
+          exp: null,
+          startedAt: currentTime,
+          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'x-api-key': 'kolable',
+          },
+        },
+      )
+      window.open(response.data.data.options.startUrl)
+    } catch {
+      toast({
+        title: '已達同時會議上限額度，請升級方案',
+        status: 'error',
+        duration: 3000,
+        position: 'top',
+      })
+      setJitsiModalVisible(true)
+    } finally {
+      setMeetingLoading(null)
+    }
+  }
+
   const columns: ColumnProps<MemberTaskProps>[] = [
     {
       dataIndex: 'title',
+      width: '20%',
       title: formatMessage(memberMessages.label.taskTitle),
       render: (text, record, index) => (
         <div>
@@ -183,7 +250,41 @@ const MemberTaskAdminBlock: React.FC<{
           <StyledSubTitle>/ {record.member.name}</StyledSubTitle>
         </div>
       ),
+      onCell: onCellClick,
       ...getColumnSearchProps('title'),
+    },
+    {
+      dataIndex: 'meeting',
+      title: formatMessage(memberMessages.label.meeting),
+      render: (text, record, index) => (
+        <div>
+          {record.hasMeeting && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => {
+                if (meetingLoading?.loading) return
+                setMeetingLoading(() => {
+                  return {
+                    index,
+                    loading: true,
+                  }
+                })
+                meetingButtonOnClick(record.member)
+              }}
+              style={{ width: 30, height: 30, alignItems: 'center' }}
+            >
+              {meetingLoading?.index === index && meetingLoading.loading ? (
+                <div>
+                  <Spin size="small" className="mb-2" indicator={<LoadingOutlined style={{ color: 'white' }} />} />
+                </div>
+              ) : (
+                <MeetingIcon />
+              )}
+            </Button>
+          )}
+        </div>
+      ),
     },
     {
       dataIndex: 'priority',
@@ -196,6 +297,7 @@ const MemberTaskAdminBlock: React.FC<{
         ) : (
           <MemberTaskTag variant="low">{formatMessage(memberMessages.status.priorityLow)}</MemberTaskTag>
         ),
+      onCell: onCellClick,
       sorter: (a, b) => priorityLevel[a.priority] - priorityLevel[b.priority],
     },
     {
@@ -209,6 +311,7 @@ const MemberTaskAdminBlock: React.FC<{
         ) : (
           <MemberTaskTag variant="done">{formatMessage(memberMessages.status.statusDone)}</MemberTaskTag>
         ),
+      onCell: onCellClick,
     },
     {
       dataIndex: 'category',
@@ -219,6 +322,7 @@ const MemberTaskAdminBlock: React.FC<{
           {record.category?.name}
         </StyledCategory>
       ),
+      onCell: onCellClick,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div className="p-2">
           <StyledFilterWrapper>
@@ -274,6 +378,7 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.dueDate),
       render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
       sorter: (a, b) => (b.dueAt?.getTime() || 0) - (a.dueAt?.getTime() || 0),
+      onCell: onCellClick,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div className="p-2">
           <DatePicker.RangePicker
@@ -322,6 +427,7 @@ const MemberTaskAdminBlock: React.FC<{
     {
       dataIndex: 'executor',
       title: formatMessage(messages.executor),
+      onCell: onCellClick,
       render: (text, record, index) =>
         record.executor ? (
           <div className="d-flex align-items-center justify-content-start">
@@ -333,6 +439,7 @@ const MemberTaskAdminBlock: React.FC<{
     {
       dataIndex: 'author',
       title: formatMessage(messages.author),
+      onCell: onCellClick,
       render: (text, record, index) =>
         record.author ? (
           <div className="d-flex align-items-center justify-content-start">
@@ -357,6 +464,37 @@ const MemberTaskAdminBlock: React.FC<{
           initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
           onRefetch={refetchMemberTasks}
         />
+
+        {currentMember && jitsiModalVisible && (
+          <JitsiDemoModal
+            member={meetingMember}
+            salesMember={{
+              id: currentMember.id,
+              name: currentMember.name,
+              email: currentMember.email,
+            }}
+            visible
+            onCancel={() => setJitsiModalVisible(false)}
+            onFinishCall={(duration: number) => {
+              insertMemberNote({
+                variables: {
+                  memberId: meetingMember.id,
+                  authorId: currentMember.id,
+                  type: 'demo',
+                  status: 'answered',
+                  duration: duration,
+                  description: '',
+                  note: 'jitsi demo',
+                },
+              })
+                .then(() => {
+                  message.success(formatMessage(commonMessages.event.successfullySaved))
+                  setJitsiModalVisible(false)
+                })
+                .catch(handleError)
+            }}
+          />
+        )}
 
         <div>
           <Select
@@ -491,12 +629,6 @@ const MemberTaskAdminBlock: React.FC<{
             showSorterTooltip={false}
             rowClassName="cursor-pointer"
             pagination={false}
-            onRow={record => ({
-              onClick: () => {
-                setSelectedMemberTask(record)
-                setVisible(true)
-              },
-            })}
           />
         ) : null}
 
@@ -524,6 +656,7 @@ const MemberTaskAdminBlock: React.FC<{
             refetchMemberTasks()
             setSelectedMemberTask(null)
           }}
+          meetingButtonOnClick={() => meetingButtonOnClick(meetingMember)}
           onCancel={() => setSelectedMemberTask(null)}
         />
       )}
@@ -588,6 +721,7 @@ const useMemberTaskCollection = (options?: {
           status
           due_at
           created_at
+          has_meeting
           category {
             id
             name
@@ -654,6 +788,7 @@ const useMemberTaskCollection = (options?: {
             : null,
           dueAt: v.due_at && new Date(v.due_at),
           createdAt: v.created_at && new Date(v.created_at),
+          hasMeeting: v.has_meeting,
           description: v.description || '',
           member: {
             id: v.member.id,

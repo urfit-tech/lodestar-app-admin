@@ -1,7 +1,6 @@
 import Icon, { RadarChartOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Card, Skeleton, Statistic } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import { sum } from 'ramda'
@@ -52,7 +51,7 @@ const LearningOverviewPage: React.VFC = () => {
             {loadingLearningStatus ? (
               <Skeleton active paragraph={{ rows: 1 }} />
             ) : (
-              <Statistic title="近七天學習人數" value={recentLearningCount} suffix="人" />
+              <Statistic title="近三十天學習人數" value={recentLearningCount} suffix="人" />
             )}
           </Card>
         </div>
@@ -61,7 +60,12 @@ const LearningOverviewPage: React.VFC = () => {
             {loadingLearningStatus ? (
               <Skeleton active paragraph={{ rows: 1 }} />
             ) : (
-              <Statistic title="近七天學習時數" value={recentLearningDuration / 60 / 60} precision={0} suffix="小時" />
+              <Statistic
+                title="近三十天學習時數"
+                value={recentLearningDuration / 60 / 60}
+                precision={0}
+                suffix="小時"
+              />
             )}
           </Card>
         </div>
@@ -208,12 +212,12 @@ const useLearningReport = (appId: string) => {
     loadingProgramCategoryCompleteness,
     recentLearningCount: sum(
       dataLearningStatus?.app_learning_status
-        .filter(v => moment(v.date) >= moment().startOf('day').subtract(1, 'week'))
+        .filter(v => moment(v.date) >= moment().startOf('day').subtract(30, 'day'))
         .map(v => v.total_count) || [],
     ),
     recentLearningDuration: sum(
       dataLearningStatus?.app_learning_status
-        .filter(v => moment(v.date) >= moment().startOf('day').subtract(1, 'week'))
+        .filter(v => moment(v.date) >= moment().startOf('day').subtract(30, 'day'))
         .map(v => v.total_duration || 0) || [],
     ),
     learningStatus:
