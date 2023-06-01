@@ -54,6 +54,11 @@ const SalesMaterialsPage: React.FC = () => {
         startedAt: range[0].toDate(),
         endedAt: range[1].toDate(),
         sales: isSelectedAllSales ? {} : { _eq: selectedSalesId },
+        memberConditionForTotalCount: {
+          app_id: { _eq: appId },
+          manager_id: isSelectedAllSales ? undefined : { _eq: selectedSalesId },
+          member_notes: isSelectedAllSales ? undefined : { author_id: { _eq: selectedSalesId } },
+        },
         materialName: selectedMaterialName,
       },
     },
@@ -218,14 +223,11 @@ const GET_SALES_MATERIALS = gql`
     $startedAt: timestamptz!
     $endedAt: timestamptz!
     $sales: String_comparison_exp!
+    $memberConditionForTotalCount: member_public_bool_exp!
     $materialName: String!
   ) {
     total: member_property(
-      where: {
-        property: { name: { _eq: $materialName } }
-        value: { _neq: "" }
-        member: { app_id: { _eq: $appId }, manager_id: $sales, member_notes: { author_id: $sales } }
-      }
+      where: { property: { name: { _eq: $materialName } }, value: { _neq: "" }, member: $memberConditionForTotalCount }
     ) {
       v: value
     }
