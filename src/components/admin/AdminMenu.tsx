@@ -1,9 +1,16 @@
-import Icon, { DatabaseOutlined, GlobalOutlined, GoldenFilled, ShoppingFilled } from '@ant-design/icons'
+import Icon, {
+  BarChartOutlined,
+  DatabaseOutlined,
+  GlobalOutlined,
+  GoldenFilled,
+  ShoppingFilled,
+} from '@ant-design/icons'
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { parsePayload } from 'lodestar-app-element/src/hooks/util'
+import { isEmpty } from 'ramda'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -23,6 +30,7 @@ import {
   ProjectIcon,
   QuestionLibraryIcon,
   ShopIcon,
+  UserCopyIcon,
   UserIcon,
   UsersIcon,
 } from '../../images/icon'
@@ -434,6 +442,60 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       ],
     },
     {
+      permissionIsAllowed:
+        !!enabledModules.member_contract_manager &&
+        Boolean(permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL),
+      key: 'member_contract_collection',
+      icon: () => <UserCopyIcon />,
+      name: '合約資料管理',
+    },
+    {
+      permissionIsAllowed: !!enabledModules.sales_call && !!permissions.SALES_CALL_ADMIN,
+      key: 'sales_call_admin',
+      icon: () => <PhoneIcon />,
+      name: '業務查詢',
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'sales_status',
+          name: '即時戰況查詢',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'chailease_lookup',
+          name: `${settings['name']}報名表查詢`,
+        },
+      ],
+    },
+    {
+      permissionIsAllowed: !!enabledModules.analytics && !!permissions.ANALYSIS_ADMIN,
+      key: 'analytics',
+      icon: () => <BarChartOutlined style={{ margin: 0 }} />,
+      name: '數據分析',
+      subMenuItems: [
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_sales_materials',
+          name: '素材表現',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_sales_member_categories',
+          name: '業務表現',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_sales_activeness',
+          name: '活動量',
+        },
+        {
+          permissionIsAllowed: true,
+          key: 'analytics_advertising_audience',
+          name: '廣告受眾',
+        },
+      ],
+    },
+    {
       permissionIsAllowed: !!enabledModules.coin && Boolean(permissions.COIN_ADMIN),
       key: 'credit_admin',
       icon: () => <PointIcon />,
@@ -620,7 +682,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         <StyledMenu
           {...menuProps}
           mode="inline"
-          openKeys={openKeys.map(key => key.toString())}
+          openKeys={
+            settings['admin_menu.expand.enable'] === '1'
+              ? defaultMenuItems.filter(v => !isEmpty(v.subMenuItems)).map(v => v.key)
+              : openKeys.map(key => key.toString())
+          }
           onOpenChange={handleOpenChange}
           onClick={handleClick}
         >

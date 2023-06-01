@@ -277,7 +277,7 @@ const SaleCollectionAdminCard: React.VFC<{
                       })})`}
                     </span>
                   )}
-                  {v.quantity && <span>{` X ${v.quantity} `}</span>}
+                  {v.quantity ? <span>{` X ${v.quantity} `}</span> : null}
                 </div>
                 <div className="col-3 d-flex justify-content-between">
                   <div>

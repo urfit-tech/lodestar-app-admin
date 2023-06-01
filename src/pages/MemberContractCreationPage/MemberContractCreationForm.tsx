@@ -66,7 +66,7 @@ const MemberContractCreationForm: React.FC<
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <div className="mb-5">
           <AdminBlockTitle>合約內容</AdminBlockTitle>
-          <Form.List name="contractProducts">
+          <Form.List initialValue={[{ amount: 1 }]} name="contractProducts">
             {(fields, { add, remove }) => {
               return (
                 <>
@@ -79,18 +79,11 @@ const MemberContractCreationForm: React.FC<
                       <div key={field.key} className="d-flex align-items-center justify-content-start">
                         <Form.Item
                           name={[field.name, 'id']}
+                          rules={[{ required: true, message: '請選擇合約' }]}
                           fieldKey={[field.fieldKey, 'id']}
                           label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                         >
-                          <Select<string>
-                            className="mr-3"
-                            style={{ width: '300px' }}
-                            showSearch
-                            optionFilterProp="children"
-                            filterOption={(input, option) =>
-                              option?.title.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                          >
+                          <Select<string> className="mr-3" style={{ width: '250px' }} defaultValue={products[0].id}>
                             {products.map(product => (
                               <Select.Option key={product.id} value={product.id} title={product.name}>
                                 {product.name}
@@ -115,9 +108,11 @@ const MemberContractCreationForm: React.FC<
                           <InputNumber min={1} className="mr-3" />
                         </Form.Item>
 
-                        <div className={index === 0 ? 'mt-2' : 'mb-4'}>
-                          <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
-                        </div>
+                        {fields.length > 1 && (
+                          <div className={index === 0 ? 'mt-2' : 'mb-4'}>
+                            <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
+                          </div>
+                        )}
                       </div>
                     )
                   })}

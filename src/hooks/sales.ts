@@ -6,6 +6,64 @@ import hasura from '../hasura'
 import { SalesProps, LeadProps, LeadStatus, Manager } from '../types/sales'
 import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
+
+export const useManagers = () => {
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION_BY_MEMBER_PERMISSION>(
+    gql`
+      query GET_MANAGER_COLLECTION_BY_MEMBER_PERMISSION {
+        member_permission(where: { permission_id: { _eq: "BACKSTAGE_ENTER" } }) {
+          member {
+            id
+            name
+            picture_url
+            username
+            email
+          }
+        }
+      }
+    `,
+  )
+
+  const { data: managerTelephoneExtData } = useQuery<
+    hasura.GET_MANAGER_TELEPHONE_EXT,
+    hasura.GET_MANAGER_TELEPHONE_EXTVariables
+  >(
+    gql`
+      query GET_MANAGER_TELEPHONE_EXT($memberIds: [String!]!) {
+        member_property(where: { member_id: { _in: $memberIds }, property: { name: { _eq: "分機號碼" } } }) {
+          value
+          member_id
+        }
+      }
+    `,
+    {
+      variables: {
+        memberIds: data?.member_permission.map(d => d.member?.id || '') || [],
+      },
+    },
+  )
+
+  const managers: Manager[] = useMemo(
+    () =>
+      data?.member_permission.map(v => ({
+        id: v.member?.id || '',
+        name: v.member?.name || '',
+        username: v.member?.username || '',
+        avatarUrl: v.member?.picture_url || null,
+        email: v.member?.email || '',
+        telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
+      })) || [],
+    [data],
+  )
+
+  return {
+    loading,
+    error,
+    managers,
+    refetch,
+  }
+}
 
 export const useSales = (salesId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_SALES, hasura.GET_SALESVariables>(
@@ -93,12 +151,8 @@ export const useSales = (salesId: string) => {
 }
 
 export const useManagerLeads = (manager: Manager) => {
-  const { data, error, loading, refetch } = useQuery<
-    hasura.GET_SALES_LEAD_MEMBER_TASKS,
-    hasura.GET_SALES_LEAD_MEMBER_TASKSVariables
-  >(GET_SALES_LEAD_MEMBER_TASKS, { variables: { managerId: manager.id } })
   const {
-    data: dataMembers,
+    data: salesLeadMemberPhoneData,
     error: errorMembers,
     loading: loadingMembers,
     refetch: refetchMembers,
@@ -106,37 +160,52 @@ export const useManagerLeads = (manager: Manager) => {
     variables: { managerId: manager.id },
   })
 
+  const {
+    data: salesLeadMemberData,
+    error,
+    loading,
+    refetch,
+  } = useQuery<hasura.GET_SALES_LEAD_MEMBER_DATA, hasura.GET_SALES_LEAD_MEMBER_DATAVariables>(
+    GET_SALES_LEAD_MEMBER_DATA,
+    {
+      variables: {
+        memberIds: salesLeadMemberPhoneData?.member.map(v => v.id) || [],
+      },
+    },
+  )
+
   const convertToLead = (v: hasura.GET_SALES_LEAD_MEMBERS['member'][number] | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
     }
 
     const star = Number(v.star) || 0
-    const signed = v.member_contracts.length > 0
-    const status: LeadStatus =
-      Number(v.star) === Number(manager.telephone)
-        ? 'STARRED'
-        : star < -999
-        ? 'DEAD'
-        : star === -999
-        ? 'CLOSED'
-        : signed
-        ? 'SIGNED'
-        : data?.member_task
-            .filter(u => u.status === 'done')
-            .map(u => u.member_id)
-            .includes(v.id)
-        ? 'PRESENTED'
-        : data?.member_task
-            .filter(u => u.status !== 'done')
-            .map(u => u.member_id)
-            .includes(v.id)
-        ? 'INVITED'
-        : v.last_member_note_answered
-        ? 'ANSWERED'
-        : v.last_member_note_called
-        ? 'CONTACTED'
-        : 'IDLED'
+    const signed = Number(salesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
+    const status: LeadStatus = v.followed_at
+      ? 'FOLLOWED'
+      : star < -999
+      ? 'DEAD'
+      : star === -999
+      ? 'CLOSED'
+      : signed
+      ? 'SIGNED'
+      : salesLeadMemberData?.member_task
+          .filter(mt => mt.member_id === v.id)
+          .filter(u => u.status === 'done')
+          .map(u => u.member_id)
+          .includes(v.id)
+      ? 'PRESENTED'
+      : salesLeadMemberData?.member_task
+          .filter(mt => mt.member_id === v.id)
+          .filter(u => u.status !== 'done')
+          .map(u => u.member_id)
+          .includes(v.id)
+      ? 'INVITED'
+      : v.last_member_note_answered
+      ? 'ANSWERED'
+      : v.last_member_note_called
+      ? 'CONTACTED'
+      : 'IDLED'
     return {
       id: v.id,
       star: v.star,
@@ -144,12 +213,16 @@ export const useManagerLeads = (manager: Manager) => {
       email: v.email,
       createdAt: moment(v.created_at).toDate(),
       phones: v.member_phones.map(_v => _v.phone),
-      categoryNames: v.member_categories.map(_v => _v.category.name),
-      properties: v.member_properties.map(v => ({
-        id: v.property.id,
-        name: v.property.name,
-        value: v.value,
-      })),
+      categoryNames:
+        salesLeadMemberData?.member_category.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) || [],
+      properties:
+        salesLeadMemberData?.member_property
+          .filter(mp => mp.member_id === v.id)
+          .map(v => ({
+            id: v.property.id,
+            name: v.property.name,
+            value: v.value,
+          })) || [],
       status,
       assignedAt: v.assigned_at ? dayjs(v.assigned_at).toDate() : null,
       notified: !v.last_member_note_created,
@@ -157,7 +230,9 @@ export const useManagerLeads = (manager: Manager) => {
       recentAnsweredAt: v.last_member_note_answered ? dayjs(v.last_member_note_answered).toDate() : null,
     }
   }
-  const totalLeads: LeadProps[] = sortBy(prop('id'))(dataMembers?.member.map(convertToLead).filter(notEmpty) || [])
+  const totalLeads: LeadProps[] = sortBy(prop('id'))(
+    salesLeadMemberPhoneData?.member.map(convertToLead).filter(notEmpty) || [],
+  )
   return {
     loading,
     error,
@@ -166,6 +241,7 @@ export const useManagerLeads = (manager: Manager) => {
     errorMembers,
     refetchMembers,
     totalLeads,
+    followedLeads: totalLeads.filter(lead => lead.status === 'FOLLOWED'),
     idledLeads: totalLeads.filter(lead => lead.status === 'IDLED'),
     contactedLeads: totalLeads.filter(lead => lead.status === 'CONTACTED'),
     answeredLeads: totalLeads.filter(lead => lead.status === 'ANSWERED'),
@@ -176,11 +252,35 @@ export const useManagerLeads = (manager: Manager) => {
   }
 }
 
-const GET_SALES_LEAD_MEMBER_TASKS = gql`
-  query GET_SALES_LEAD_MEMBER_TASKS($managerId: String!) {
-    member_task(where: { member: { manager_id: { _eq: $managerId } } }, distinct_on: [member_id]) {
+const GET_SALES_LEAD_MEMBER_DATA = gql`
+  query GET_SALES_LEAD_MEMBER_DATA($memberIds: [String!]!) {
+    member_task(where: { member_id: { _in: $memberIds } }, distinct_on: [member_id]) {
       member_id
       status
+    }
+    member_property(where: { member_id: { _in: $memberIds } }) {
+      member_id
+      property {
+        id
+        name
+      }
+      value
+    }
+    member_phone(where: { member_id: { _in: $memberIds } }) {
+      member_id
+      phone
+    }
+    member_category(where: { member_id: { _in: $memberIds } }) {
+      member_id
+      category {
+        name
+      }
+    }
+    active_member_contract: member_contract(where: { member_id: { _in: $memberIds }, agreed_at: { _is_null: false } }) {
+      member_id
+      agreed_at
+      revoked_at
+      values
     }
   }
 `
@@ -193,28 +293,12 @@ const GET_SALES_LEAD_MEMBERS = gql`
       star
       created_at
       assigned_at
+      followed_at
       last_member_note_created
       last_member_note_called
       last_member_note_answered
-      member_properties {
-        property {
-          id
-          name
-        }
-        value
-      }
       member_phones {
         phone
-      }
-      member_categories {
-        category {
-          name
-        }
-      }
-      member_contracts(where: { agreed_at: { _is_null: false } }) {
-        agreed_at
-        revoked_at
-        values
       }
     }
   }

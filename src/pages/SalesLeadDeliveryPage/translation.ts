@@ -14,8 +14,6 @@ export const salesLeadDeliveryPageMessages = {
     adMaterials: { id: 'page.salesLeadDeliveryPage.adMaterials', defaultMessage: '廣告素材' },
     leadLevel: { id: 'page.salesLeadDeliveryPage.leadLevel', defaultMessage: '名單分級' },
     createdAtRange: { id: 'page.salesLeadDeliveryPage.createdAtRange', defaultMessage: '名單建立日期' },
-    lastCalledRange: { id: 'page.salesLeadDeliveryPage.lastCalledRange', defaultMessage: '上次撥打日期' },
-    lastAnsweredRange: { id: 'page.salesLeadDeliveryPage.lastContactRange', defaultMessage: '上次接通日期' },
     nextStep: { id: 'page.salesLeadDeliveryPage.nextStep', defaultMessage: '下一步' },
     expectedDeliveryAmount: {
       id: 'page.salesLeadDeliveryPage.expectedDeliveryAmount',
@@ -29,5 +27,7 @@ export const salesLeadDeliveryPageMessages = {
     deliveringMessage: { id: 'page.salesLeadDeliveryPage.deliveringMessage', defaultMessage: '正在派發名單中，請稍等' },
     deliverAgain: { id: 'page.salesLeadDeliveryPage.deliverAgain', defaultMessage: '再次派發' },
     exactMatch: { id: 'page.salesLeadDeliveryPage.exactMatch', defaultMessage: '完全匹配' },
+    lastCalledRange: { id: 'page.salesLeadDeliveryPage.lastCalledRange', defaultMessage: '上次撥打日期' },
+    lastAnsweredRange: { id: 'page.salesLeadDeliveryPage.lastContactRange', defaultMessage: '上次接通日期' },
   }),
 }

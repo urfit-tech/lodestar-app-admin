@@ -1,7 +1,7 @@
 import { Spin } from 'antd'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
-import { useManagers } from '../../hooks'
+import { useManagers } from '../../hooks/sales'
 import MemberSelector from '../form/MemberSelector'
 
 const ManagerInput: React.FC<{

@@ -316,9 +316,9 @@ export const useMutateMemberContract = () => {
 }
 
 export const useManagers = () => {
-  const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION_BY_MEMBER_PROPERTY>(
     gql`
-      query GET_MANAGER_COLLECTION {
+      query GET_MANAGER_COLLECTION_BY_MEMBER_PROPERTY {
         member_property(where: { property: { name: { _eq: "分機號碼" } } }) {
           id
           value

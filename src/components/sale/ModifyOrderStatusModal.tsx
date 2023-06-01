@@ -1,4 +1,4 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, DatePicker, Form, InputNumber, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -34,7 +34,6 @@ const ModifyOrderStatusModal: React.VFC<{
 }> = ({ orderLogId, defaultPrice = 0, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const apolloClient = useApolloClient()
   const { currentMemberId } = useAuth()
   const [insertPaymentLog] = useMutation<hasura.INSERT_PAYMENT_LOG, hasura.INSERT_PAYMENT_LOGVariables>(
     INSERT_PAYMENT_LOG,
@@ -48,40 +47,33 @@ const ModifyOrderStatusModal: React.VFC<{
     try {
       setLoading(true)
       const values = await form.validateFields()
+      const status = values.type === 'paid' ? 'SUCCESS' : 'REFUND'
+      const paidAt = values.paidAt.toISOString(true)
+
       await insertPaymentLog({
         variables: {
           data: {
             order_id: orderLogId,
             no: `${Date.now()}`,
-            status: values.type === 'paid' ? 'SUCCESS' : 'REFUND',
+            status: status,
             price: values.price,
             gateway: 'lodestar',
             options: {
               authorId: currentMemberId,
             },
-            paid_at: values.paidAt.toISOString(true),
+            paid_at: paidAt,
           },
         },
       })
 
-      const { data } = await apolloClient.query<
-        hasura.GET_ORDER_PAYMENT_STATUS,
-        hasura.GET_ORDER_PAYMENT_STATUSVariables
-      >({
-        query: GET_ORDER_PAYMENT_STATUS,
-        variables: {
-          orderLogId,
-        },
-        fetchPolicy: 'no-cache',
-      })
-      const status = data.order_payment_status?.[0].status || 'UNPAID'
       await updateOrderLogStatus({
         variables: {
           orderLogId,
           status: status,
-          lastPaidAt: data.order_payment_status?.[0].last_paid_at,
+          lastPaidAt: paidAt,
         },
       })
+
       onRefetch?.(status)
       onFinished?.()
     } catch (error) {
@@ -158,15 +150,6 @@ const INSERT_PAYMENT_LOG = gql`
   mutation INSERT_PAYMENT_LOG($data: payment_log_insert_input!) {
     insert_payment_log_one(object: $data) {
       no
-    }
-  }
-`
-const GET_ORDER_PAYMENT_STATUS = gql`
-  query GET_ORDER_PAYMENT_STATUS($orderLogId: String!) {
-    order_payment_status(where: { order_id: { _eq: $orderLogId } }) {
-      order_id
-      status
-      last_paid_at
     }
   }
 `

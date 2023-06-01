@@ -107,6 +107,21 @@ const MemberContractCreationBlock: React.FC<{
       })) || []),
     ].filter(v => v.member_id && v.ratio)
 
+    if (contractProducts.length < 1) {
+      message.warn('請至少要新增一個合約內容')
+      return
+    }
+
+    if (!fieldValue.paymentMethod) {
+      message.warn('請選擇付款方式')
+      return
+    }
+
+    if (!fieldValue.installmentPlan) {
+      message.warn('請選擇分期期數')
+      return
+    }
+
     if (sum(orderExecutors.map(v => v.ratio)) !== 1) {
       message.warn('承辦人分潤比例加總必須為 1')
       return

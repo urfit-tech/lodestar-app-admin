@@ -50,7 +50,7 @@ const TableWrapper = styled.div`
 `
 
 const SalesLeadTable: React.VFC<{
-  variant?: 'starred'
+  variant?: 'followed'
   manager: Manager
   leads: LeadProps[]
   onRefetch?: () => void
@@ -396,7 +396,7 @@ const SalesLeadTable: React.VFC<{
       <TableWrapper>
         {selectedRowKeys.length > 0 && (
           <div className="d-flex flex-row justify-content-end mb-3">
-            {variant !== 'starred' && (
+            {variant !== 'followed' && (
               <Button
                 icon={<StarOutlined />}
                 className="mr-2"
@@ -406,7 +406,7 @@ const SalesLeadTable: React.VFC<{
                       variables: {
                         memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
                         newMemberId: manager.id,
-                        newStar: Number(manager.telephone),
+                        followedAt: new Date(),
                       },
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
@@ -422,7 +422,7 @@ const SalesLeadTable: React.VFC<{
                 收藏
               </Button>
             )}
-            {variant === 'starred' && (
+            {variant === 'followed' && (
               <Button
                 className="mr-2"
                 onClick={() => {
@@ -431,7 +431,7 @@ const SalesLeadTable: React.VFC<{
                       variables: {
                         memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
                         newMemberId: manager.id,
-                        newStar: 0,
+                        followedAt: null,
                       },
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
@@ -598,8 +598,11 @@ const SalesLeadTable: React.VFC<{
 }
 
 const UPDATE_LEADS = gql`
-  mutation UPDATE_LEADS($memberIds: [String!]!, $newMemberId: String, $newStar: numeric) {
-    update_member(_set: { manager_id: $newMemberId, star: $newStar }, where: { id: { _in: $memberIds } }) {
+  mutation UPDATE_LEADS($memberIds: [String!]!, $newMemberId: String, $newStar: numeric, $followedAt: timestamptz) {
+    update_member(
+      _set: { manager_id: $newMemberId, star: $newStar, followed_at: $followedAt }
+      where: { id: { _in: $memberIds } }
+    ) {
       affected_rows
     }
   }
