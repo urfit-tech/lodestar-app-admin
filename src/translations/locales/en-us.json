@@ -1144,6 +1144,7 @@
   "craft.SectionSettings.layout": "Layout",
   "craft.SectionSettings.left": "Left",
   "craft.SectionSettings.link": "Link",
+  "craft.SectionSettings.none": "none",
   "craft.SectionSettings.normal": "Normal",
   "craft.SectionSettings.openNewTab": "Open New Tab",
   "craft.SectionSettings.right": "Right",
