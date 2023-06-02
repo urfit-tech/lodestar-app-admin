@@ -33,7 +33,7 @@ const programMessages = {
     allProgramPackage: { id: 'program.ProgramPackageSelector.allProgramPackage', defaultMessage: '全部課程組合' },
   }),
   ProgramPlanAdminModal: defineMessages({
-    productLevel: { id: 'program.ProgramPlanAdminModal.memberLevel', defaultMessage: '方案等級' },
+    productLevel: { id: 'program.ProgramPlanAdminModal.productLevel', defaultMessage: '方案等級' },
     isPublished: { id: 'program.ProgramPlanAdminModal.isPublished', defaultMessage: '是否顯示方案' },
     published: { id: 'program.ProgramPlanAdminModal.published', defaultMessage: '發售，上架後立即開賣' },
     unpublished: { id: 'program.ProgramPlanAdminModal.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
