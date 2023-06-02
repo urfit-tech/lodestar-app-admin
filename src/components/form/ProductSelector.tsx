@@ -141,8 +141,8 @@ const useProductSelections = () => {
       query GET_PRODUCT_SELECTION_COLLECTION {
         program_plan(
           where: {
-            program: { is_deleted: { _eq: false } }
-            _and: [{ is_deleted: { _eq: false } }, { published_at: { _is_null: false } }]
+            program: { _and: [{ is_deleted: { _eq: false } }, { published_at: { _is_null: false } }] }
+            is_deleted: { _eq: false }
           }
           order_by: { published_at: desc_nulls_last }
         ) {
