@@ -1,3 +1,4 @@
+import { PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -181,12 +182,13 @@ const PhoneCollectionInput: React.FC<{
   value?: string[]
   onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
+  const { formatMessage } = useIntl()
   return (
     <>
       {value?.map((phone, index) => (
         <Input
           key={index}
-          className={index !== value.length - 1 ? 'mb-4' : 'mb-0'}
+          className={'mb-3'}
           value={phone}
           onChange={e => {
             const newValue = [...value]
@@ -195,6 +197,19 @@ const PhoneCollectionInput: React.FC<{
           }}
         />
       ))}
+      <Button
+        icon={<PlusOutlined />}
+        type="link"
+        onClick={() => {
+          if (value) {
+            const newValue = [...value]
+            newValue.splice(newValue.length, 0, '')
+            onChange && onChange(newValue)
+          }
+        }}
+      >
+        {formatMessage(commonMessages.label.addPhones)}
+      </Button>
     </>
   )
 }
