@@ -1,3 +1,4 @@
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -7,6 +8,7 @@ import moment from 'moment'
 import { includes } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -14,6 +16,17 @@ import { MemberAdminProps } from '../../types/member'
 import CategorySelector from '../form/CategorySelector'
 import { AllMemberSelector } from '../form/MemberSelector'
 import TagSelector from '../form/TagSelector'
+
+const StyledCloseIcon = styled.div`
+  position: absolute;
+  right: -25px;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 100%;
+`
 
 type FieldProps = {
   name: string
@@ -181,20 +194,47 @@ const PhoneCollectionInput: React.FC<{
   value?: string[]
   onChange?: (value: string[]) => void
 }> = ({ value, onChange }) => {
+  const { formatMessage } = useIntl()
   return (
     <>
       {value?.map((phone, index) => (
-        <Input
-          key={index}
-          className={index !== value.length - 1 ? 'mb-4' : 'mb-0'}
-          value={phone}
-          onChange={e => {
-            const newValue = [...value]
-            newValue.splice(index, 1, e.target.value)
-            onChange && onChange(newValue)
-          }}
-        />
+        <div className="mb-3 position-relative">
+          <Input
+            key={index}
+            className={'mr-3 mb-0'}
+            value={phone}
+            onChange={e => {
+              const newValue = [...value]
+              newValue.splice(index, 1, e.target.value)
+              onChange && onChange(newValue)
+            }}
+          />
+          {index !== 0 && (
+            <StyledCloseIcon
+              onClick={() => {
+                const newValue = [...value]
+                newValue.splice(index, 1)
+                onChange && onChange(newValue)
+              }}
+            >
+              <CloseOutlined />
+            </StyledCloseIcon>
+          )}
+        </div>
       ))}
+      <Button
+        icon={<PlusOutlined />}
+        type="link"
+        onClick={() => {
+          if (value) {
+            const newValue = [...value]
+            newValue.splice(newValue.length, 0, '')
+            onChange && onChange(newValue)
+          }
+        }}
+      >
+        {formatMessage(commonMessages.label.addPhones)}
+      </Button>
     </>
   )
 }

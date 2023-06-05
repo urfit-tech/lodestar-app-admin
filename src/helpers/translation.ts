@@ -286,6 +286,7 @@ export const commonMessages = {
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
     emailForEnglish: { id: 'common.label.emailForEnglish', defaultMessage: 'Email' },
+    addPhones: { id: 'common.label.addPhones', defaultMessage: 'Add phone number' },
   }),
   text: defineMessages({
     memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
