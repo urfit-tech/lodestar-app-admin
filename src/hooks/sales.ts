@@ -189,6 +189,8 @@ export const useManagerLeads = (manager: Manager) => {
       ? 'CLOSED'
       : signed
       ? 'SIGNED'
+      : v.completed_at
+      ? 'COMPLETED'
       : salesLeadMemberData?.member_task
           .filter(mt => mt.member_id === v.id)
           .filter(u => u.status === 'done')
@@ -249,6 +251,7 @@ export const useManagerLeads = (manager: Manager) => {
     presentedLeads: totalLeads.filter(lead => lead?.status === 'PRESENTED'),
     signedLeads: totalLeads.filter(lead => lead?.status === 'SIGNED'),
     closedLeads: totalLeads.filter(lead => lead?.status === 'CLOSED'),
+    completedLeads: totalLeads.filter(lead => lead?.status === 'COMPLETED'),
   }
 }
 

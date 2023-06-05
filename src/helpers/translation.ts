@@ -1429,6 +1429,7 @@ export const salesMessages = defineMessages({
   invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '已邀約名單' },
   presentedLead: { id: 'sales.label.presentedLead', defaultMessage: '已示範名單' },
   closedLead: { id: 'sales.label.closedLead', defaultMessage: '結案名單' },
+  completedLead: { id: 'sales.label.completedLead', defaultMessage: '已完成名單' },
   paidLead: { id: 'sales.label.paidLead', defaultMessage: '既有學員' },
   potentials: { id: 'sales.label.potentials', defaultMessage: '待開發' },
   keepInTouch: { id: 'sales.label.keepInTouch', defaultMessage: '開發中' },

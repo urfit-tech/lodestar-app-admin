@@ -1,5 +1,7 @@
 import {
+  CheckOutlined,
   CheckSquareOutlined,
+  CloseOutlined,
   DeleteOutlined,
   FileAddOutlined,
   SearchOutlined,
@@ -50,7 +52,7 @@ const TableWrapper = styled.div`
 `
 
 const SalesLeadTable: React.VFC<{
-  variant?: 'followed'
+  variant?: 'followed' | 'completed'
   manager: Manager
   leads: LeadProps[]
   onRefetch?: () => void
@@ -447,6 +449,58 @@ const SalesLeadTable: React.VFC<{
                 取消收藏
               </Button>
             )}
+            {variant !== 'completed' && (
+              <Button
+                icon={<CheckOutlined />}
+                className="mr-2"
+                onClick={() => {
+                  if (window.confirm('確定這些名單已完成？')) {
+                    updateLeads({
+                      variables: {
+                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                        newMemberId: manager.id,
+                        completedAt: new Date(),
+                      },
+                    }).then(({ data }) => {
+                      if (data?.update_member?.affected_rows) {
+                        message.success('已成功完成此名單！')
+                        onRefetch?.()
+                      } else {
+                        message.error('系統錯誤ＱＱ')
+                      }
+                    })
+                  }
+                }}
+              >
+                完成
+              </Button>
+            )}
+            {variant === 'completed' && (
+              <Button
+                icon={<CloseOutlined />}
+                className="mr-2"
+                onClick={() => {
+                  if (window.confirm('確定取消這些已完成的名單？')) {
+                    updateLeads({
+                      variables: {
+                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                        newMemberId: manager.id,
+                        completedAt: null,
+                      },
+                    }).then(({ data }) => {
+                      if (data?.update_member?.affected_rows) {
+                        message.success('已取消已完成名單！')
+                        onRefetch?.()
+                      } else {
+                        message.error('系統錯誤ＱＱ')
+                      }
+                    })
+                  }
+                }}
+              >
+                取消完成
+              </Button>
+            )}
             <Button
               icon={<SyncOutlined />}
               className="mr-2"
@@ -604,9 +658,16 @@ const UPDATE_LEADS = gql`
     $newStar: numeric
     $followedAt: timestamptz
     $closedAt: timestamptz
+    $completedAt: timestamptz
   ) {
     update_member(
-      _set: { manager_id: $newMemberId, star: $newStar, followed_at: $followedAt, closed_at: $closedAt }
+      _set: {
+        manager_id: $newMemberId
+        star: $newStar
+        followed_at: $followedAt
+        closed_at: $closedAt
+        completed_at: $completedAt
+      }
       where: { id: { _in: $memberIds } }
     ) {
       affected_rows

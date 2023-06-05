@@ -78,6 +78,7 @@ const SalesLeadTabs: React.VFC<{
     presentedLeads,
     signedLeads,
     closedLeads,
+    completedLeads,
   } = useManagerLeads(manager)
 
   if (loading || loadingMembers) {
@@ -258,6 +259,28 @@ const SalesLeadTabs: React.VFC<{
           <SalesLeadTable
             manager={manager}
             leads={signedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="completed"
+        tab={
+          <div>
+            {formatMessage(salesMessages.completedLead)}
+            <span>({completedLeads.length})</span>
+          </div>
+        }
+      >
+        {
+          <SalesLeadTable
+            variant="completed"
+            manager={manager}
+            leads={completedLeads}
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
