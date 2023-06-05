@@ -332,6 +332,7 @@ export const commonMessages = {
       defaultMessage: 'Recommend image size: 1200*630px',
     },
     applyingProjectRole: { id: 'common.text.applyingProjectRole', defaultMessage: '{name} 申請標成為「{identity}」' },
+    exportMember: { id: 'common.text.exportMember', defaultMessage: '已成功送出匯出請求，完成後將會將下載連結寄送到信箱。' },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },

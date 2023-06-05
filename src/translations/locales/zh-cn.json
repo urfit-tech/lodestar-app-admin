@@ -836,6 +836,7 @@
   "common.text.emailNotReceived": "收不到信？",
   "common.text.emptyNotification": "目前没有任何通知",
   "common.text.enterRegisteredEmail": "输入你注册的信箱",
+  "common.text.exportMember": "已成功送出匯出請求，完成後將會將下載連結寄送到信箱。",
   "common.text.forgotPassword": "忘记密码？",
   "common.text.locale": "当前台为指定语系时才会显示，若不选择全语系皆显示",
   "common.text.memberEditable": "會員可編輯",

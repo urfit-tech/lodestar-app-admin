@@ -836,6 +836,7 @@
   "common.text.emailNotReceived": "Email tidak diterima?",
   "common.text.emptyNotification": "Tidak ada pemberitahuan sekarang",
   "common.text.enterRegisteredEmail": "Isi email terdaftar Anda",
+  "common.text.exportMember": "已成功送出匯出請求，完成後將會將下載連結寄送到信箱。",
   "common.text.forgotPassword": "Lupa kata sandi?",
   "common.text.locale": "Ini hanya akan ditampilkan ketika meja depan adalah keluarga bahasa yang ditunjuk.",
   "common.text.memberEditable": "會員可編輯",
