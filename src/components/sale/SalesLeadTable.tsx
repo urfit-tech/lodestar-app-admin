@@ -479,8 +479,8 @@ const SalesLeadTable: React.VFC<{
                   updateLeads({
                     variables: {
                       memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                      newMemberId: null,
-                      newStar: -999,
+                      newMemberId: manager.id,
+                      closedAt: new Date(),
                     },
                   }).then(({ data }) => {
                     if (data?.update_member?.affected_rows) {
@@ -598,9 +598,15 @@ const SalesLeadTable: React.VFC<{
 }
 
 const UPDATE_LEADS = gql`
-  mutation UPDATE_LEADS($memberIds: [String!]!, $newMemberId: String, $newStar: numeric, $followedAt: timestamptz) {
+  mutation UPDATE_LEADS(
+    $memberIds: [String!]!
+    $newMemberId: String
+    $newStar: numeric
+    $followedAt: timestamptz
+    $closedAt: timestamptz
+  ) {
     update_member(
-      _set: { manager_id: $newMemberId, star: $newStar, followed_at: $followedAt }
+      _set: { manager_id: $newMemberId, star: $newStar, followed_at: $followedAt, closed_at: $closedAt }
       where: { id: { _in: $memberIds } }
     ) {
       affected_rows

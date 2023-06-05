@@ -54,7 +54,7 @@ export const useManagers = () => {
         email: v.member?.email || '',
         telephone: managerTelephoneExtData?.member_property.find(d => d.member_id === v.member?.id)?.value || '',
       })) || [],
-    [data],
+    [data, managerTelephoneExtData],
   )
 
   return {
@@ -185,7 +185,7 @@ export const useManagerLeads = (manager: Manager) => {
       ? 'FOLLOWED'
       : star < -999
       ? 'DEAD'
-      : star === -999
+      : v.closed_at
       ? 'CLOSED'
       : signed
       ? 'SIGNED'
@@ -294,6 +294,8 @@ const GET_SALES_LEAD_MEMBERS = gql`
       created_at
       assigned_at
       followed_at
+      closed_at
+      completed_at
       last_member_note_created
       last_member_note_called
       last_member_note_answered
