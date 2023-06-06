@@ -247,27 +247,6 @@ const SalesLeadTabs: React.VFC<{
       </Tabs.TabPane>
 
       <Tabs.TabPane
-        key="signed"
-        tab={
-          <div>
-            {formatMessage(salesMessages.signedLead)}
-            <span>({signedLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            manager={manager}
-            leads={signedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
         key="completed"
         tab={
           <div>
@@ -281,6 +260,27 @@ const SalesLeadTabs: React.VFC<{
             variant="completed"
             manager={manager}
             leads={completedLeads}
+            onRefetch={() => {
+              refetch?.()
+              refetchMembers?.()
+            }}
+          />
+        }
+      </Tabs.TabPane>
+
+      <Tabs.TabPane
+        key="signed"
+        tab={
+          <div>
+            {formatMessage(salesMessages.signedLead)}
+            <span>({signedLeads.length})</span>
+          </div>
+        }
+      >
+        {
+          <SalesLeadTable
+            manager={manager}
+            leads={signedLeads}
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
