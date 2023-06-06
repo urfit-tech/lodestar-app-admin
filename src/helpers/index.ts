@@ -54,6 +54,46 @@ export const uploadFile = async (key: string, file: Blob, authToken: string | nu
       })
     })
 
+export const uploadFileV2 = async (
+  key: string,
+  file: Blob,
+  authToken: string | null,
+  appId: string,
+  config?: AxiosRequestConfig,
+) => {
+  const signUrl = await axios.post(
+    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/storage/storage/upload`,
+    {
+      appId,
+      fileName: key,
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
+
+  const s3UploadRes = await axios.put<{ status: number; data: string }>(signUrl.data, file, {
+    ...config,
+    headers: {
+      'Content-Type': file.type,
+    },
+  })
+  const eTag = s3UploadRes.headers.Etag
+  const importRes =  await axios.post(
+    `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/import`,
+    {
+      appId,
+      fileInfos: [{ key, checksum: eTag }],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    },
+  )
+  return importRes;
+}
+
 export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
   const { data } = await axios.post(
     `${process.env.REACT_APP_API_BASE_ROOT}/sys/sign-url`,
