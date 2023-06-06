@@ -51,7 +51,7 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const [loading, setLoading] = useState(false)
 
-  const { insertMemberNote } = useMutateMemberNote()
+  const { insertMemberNote, updateLastMemberNoteAnswered, updateLastMemberNoteCalled } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
   if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
@@ -75,11 +75,20 @@ const MemberNoteCollectionBlock: React.FC<{ memberId: string; searchText: string
               status,
               duration,
               description,
-              lastMemberNoteCalled: type === 'outbound' && status !== 'answered' ? new Date() : undefined,
-              lastMemberNoteAnswered: type === 'outbound' && status === 'answered' ? new Date() : undefined,
             },
           })
             .then(async ({ data }) => {
+              if (type === 'outbound') {
+                if (status !== 'answered') {
+                  await updateLastMemberNoteCalled({
+                    variables: { memberId: memberAdmin.id, lastMemberNoteCalled: new Date() },
+                  }).catch(handleError)
+                } else if (status === 'answered') {
+                  await updateLastMemberNoteAnswered({
+                    variables: { memberId: memberAdmin.id, lastMemberNoteAnswered: new Date() },
+                  }).catch(handleError)
+                }
+              }
               const memberNoteId = data?.insert_member_note_one?.id
               if (memberNoteId && attachments.length) {
                 await uploadAttachments('MemberNote', memberNoteId, attachments)
