@@ -97,6 +97,8 @@ export const useMemberAdmin = (memberId: string) => {
           created_at
           logined_at
           assigned_at
+          last_member_note_answered
+          last_member_note_called
           manager {
             id
             email
@@ -278,6 +280,8 @@ export const useMemberAdmin = (memberId: string) => {
             id: v.permission_group.id,
             name: v.permission_group.name,
           })),
+          lastMemberNoteAnswered: data.member_by_pk.last_member_note_answered,
+          lastMemberNoteCalled: data.member_by_pk.last_member_note_called,
         }
 
   return {
@@ -435,8 +439,6 @@ export const useMutateMemberNote = () => {
       $description: String
       $note: String
       $rejectedAt: timestamptz
-      $lastMemberNoteCalled: timestamptz
-      $lastMemberNoteAnswered: timestamptz
     ) {
       insert_member_note_one(
         object: {
@@ -452,14 +454,28 @@ export const useMutateMemberNote = () => {
       ) {
         id
       }
-      update_member(
-        where: { id: { _eq: $memberId } }
-        _set: {
-          last_member_note_created: "now()"
-          last_member_note_called: $lastMemberNoteCalled
-          last_member_note_answered: $lastMemberNoteAnswered
-        }
-      ) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_created: "now()" }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const [updateLastMemberNoteCalled] = useMutation<
+    hasura.UPDATE_LAST_MEMBER_NOTE_CALLED,
+    hasura.UPDATE_LAST_MEMBER_NOTE_CALLEDVariables
+  >(gql`
+    mutation UPDATE_LAST_MEMBER_NOTE_CALLED($memberId: String!, $lastMemberNoteCalled: timestamptz) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_called: $lastMemberNoteCalled }) {
+        affected_rows
+      }
+    }
+  `)
+  const [updateLastMemberNoteAnswered] = useMutation<
+    hasura.UPDATE_LAST_MEMBER_NOTE_ANSWERED,
+    hasura.UPDATE_LAST_MEMBER_NOTE_ANSWEREDVariables
+  >(gql`
+    mutation UPDATE_LAST_MEMBER_NOTE_ANSWERED($memberId: String!, $lastMemberNoteAnswered: timestamptz) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { last_member_note_answered: $lastMemberNoteAnswered }) {
         affected_rows
       }
     }
@@ -488,6 +504,8 @@ export const useMutateMemberNote = () => {
     insertMemberNote,
     updateMemberNote,
     deleteMemberNote,
+    updateLastMemberNoteAnswered,
+    updateLastMemberNoteCalled,
   }
 }
 
