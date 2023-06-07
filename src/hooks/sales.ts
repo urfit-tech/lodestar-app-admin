@@ -187,10 +187,10 @@ export const useManagerLeads = (manager: Manager) => {
       ? 'DEAD'
       : v.closed_at
       ? 'CLOSED'
-      : signed
-      ? 'SIGNED'
       : v.completed_at
       ? 'COMPLETED'
+      : signed
+      ? 'SIGNED'
       : salesLeadMemberData?.member_task
           .filter(mt => mt.member_id === v.id)
           .filter(u => u.status === 'done')

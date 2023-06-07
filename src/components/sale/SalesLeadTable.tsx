@@ -61,7 +61,7 @@ const SalesLeadTable: React.VFC<{
   const { id: appId } = useApp()
   const { authToken } = useAuth()
 
-  const { insertMemberNote } = useMutateMemberNote()
+  const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const [transferLeads] = useMutation<hasura.TRANSFER_LEADS, hasura.TRANSFER_LEADSVariables>(TRANSFER_LEADS)
 
@@ -378,11 +378,20 @@ const SalesLeadTable: React.VFC<{
                 status,
                 duration,
                 description,
-                lastMemberNoteCalled: type === 'outbound' && status !== 'answered' ? new Date() : undefined,
-                lastMemberNoteAnswered: type === 'outbound' && status === 'answered' ? new Date() : undefined,
               },
             })
               .then(async ({ data }) => {
+                if (type === 'outbound') {
+                  if (status !== 'answered') {
+                    updateLastMemberNoteCalled({
+                      variables: { memberId: selectedMember.id, lastMemberNoteCalled: new Date() },
+                    }).catch(handleError)
+                  } else if (status === 'answered') {
+                    updateLastMemberNoteAnswered({
+                      variables: { memberId: selectedMember.id, lastMemberNoteAnswered: new Date() },
+                    }).catch(handleError)
+                  }
+                }
                 const memberNoteId = data?.insert_member_note_one?.id
                 if (memberNoteId && attachments.length) {
                   await uploadAttachments('MemberNote', memberNoteId, attachments)
@@ -501,78 +510,82 @@ const SalesLeadTable: React.VFC<{
                 取消完成
               </Button>
             )}
-            <Button
-              icon={<SyncOutlined />}
-              className="mr-2"
-              onClick={() => {
-                if (window.confirm('確定回收這些名單？')) {
-                  updateLeads({
-                    variables: {
-                      memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                      newMemberId: null,
-                      newStar: -Number(manager.telephone),
-                    },
-                  }).then(({ data }) => {
-                    if (data?.update_member?.affected_rows) {
-                      message.success('已成功回收此名單！')
-                      onRefetch?.()
-                    } else {
-                      message.error('系統錯誤ＱＱ')
+            {variant !== 'completed' && (
+              <>
+                <Button
+                  icon={<SyncOutlined />}
+                  className="mr-2"
+                  onClick={() => {
+                    if (window.confirm('確定回收這些名單？')) {
+                      updateLeads({
+                        variables: {
+                          memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                          newMemberId: null,
+                          newStar: -Number(manager.telephone),
+                        },
+                      }).then(({ data }) => {
+                        if (data?.update_member?.affected_rows) {
+                          message.success('已成功回收此名單！')
+                          onRefetch?.()
+                        } else {
+                          message.error('系統錯誤ＱＱ')
+                        }
+                      })
                     }
-                  })
-                }
-              }}
-            >
-              回收
-            </Button>
-            <Button
-              icon={<StopOutlined />}
-              className="mr-2"
-              onClick={() => {
-                if (window.confirm('確定拒絕這些名單？')) {
-                  updateLeads({
-                    variables: {
-                      memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                      newMemberId: manager.id,
-                      closedAt: new Date(),
-                    },
-                  }).then(({ data }) => {
-                    if (data?.update_member?.affected_rows) {
-                      message.success('已成功拒絕此名單！')
-                      onRefetch?.()
-                    } else {
-                      message.error('系統錯誤ＱＱ')
+                  }}
+                >
+                  回收
+                </Button>
+                <Button
+                  icon={<StopOutlined />}
+                  className="mr-2"
+                  onClick={() => {
+                    if (window.confirm('確定拒絕這些名單？')) {
+                      updateLeads({
+                        variables: {
+                          memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                          newMemberId: null,
+                          closedAt: new Date(),
+                        },
+                      }).then(({ data }) => {
+                        if (data?.update_member?.affected_rows) {
+                          message.success('已成功拒絕此名單！')
+                          onRefetch?.()
+                        } else {
+                          message.error('系統錯誤ＱＱ')
+                        }
+                      })
                     }
-                  })
-                }
-              }}
-            >
-              拒絕
-            </Button>
-            <Button
-              icon={<DeleteOutlined />}
-              className="mr-2"
-              onClick={() => {
-                if (window.confirm('確定永久刪除這些名單？此動作無法復原！')) {
-                  updateLeads({
-                    variables: {
-                      memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                      newMemberId: null,
-                      newStar: -9999,
-                    },
-                  }).then(({ data }) => {
-                    if (data?.update_member?.affected_rows) {
-                      message.success('已成功刪除此名單！')
-                      onRefetch?.()
-                    } else {
-                      message.error('系統錯誤ＱＱ')
+                  }}
+                >
+                  拒絕
+                </Button>
+                <Button
+                  icon={<DeleteOutlined />}
+                  className="mr-2"
+                  onClick={() => {
+                    if (window.confirm('確定永久刪除這些名單？此動作無法復原！')) {
+                      updateLeads({
+                        variables: {
+                          memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
+                          newMemberId: null,
+                          newStar: -9999,
+                        },
+                      }).then(({ data }) => {
+                        if (data?.update_member?.affected_rows) {
+                          message.success('已成功刪除此名單！')
+                          onRefetch?.()
+                        } else {
+                          message.error('系統錯誤ＱＱ')
+                        }
+                      })
                     }
-                  })
-                }
-              }}
-            >
-              刪除
-            </Button>
+                  }}
+                >
+                  刪除
+                </Button>
+              </>
+            )}
             <Button
               icon={<SwapOutlined />}
               className="mr-2"
