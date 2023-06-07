@@ -72,6 +72,8 @@ const pageMessages = {
     expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
     upload: { id: 'page.*.upload', defaultMessage: '上傳' },
     discontinued: { id: 'page.*.discontinued', defaultMessage: '已下架' },
+    materialName: { id: 'page.*.materialName', defaultMessage: '教材檔名' },
+    downloadedAt: { id: 'page.*.downloadedAt', defaultMessage: '初次下載時間' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -156,6 +158,10 @@ const pageMessages = {
     exportProgramProgress: {
       id: 'page.ProgramProcessBlock.exportProgramProgress',
       defaultMessage: '匯出學習進度',
+    },
+    exportMaterialAuditLog: {
+      id: 'page.ProgramProcessBlock.exportMaterialAuditLog',
+      defaultMessage: '匯出教材下載紀錄',
     },
     lastUpdatedAtText: {
       id: 'page.ProgramProcessBlock.lastUpdatedAtText',
