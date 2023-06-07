@@ -589,7 +589,7 @@ export const useSimpleProduct = (
           id: data.appointment_plan_by_pk.id,
           productType: 'AppointmentPlan',
           title: data.appointment_plan_by_pk.title || '',
-          coverUrl: data.appointment_plan_by_pk.creator && data.appointment_plan_by_pk.creator.picture_url || null,
+          coverUrl: (data.appointment_plan_by_pk.creator && data.appointment_plan_by_pk.creator.picture_url) || null,
           startedAt: data.appointment_plan_by_pk.appointment_periods[0]?.started_at,
           endedAt: data.appointment_plan_by_pk.appointment_periods[0]?.ended_at,
         }
@@ -833,6 +833,39 @@ export const useProductSku = (productId: string) => {
     errorProduct: error,
     product,
     refetchProduct: refetch,
+  }
+}
+
+export const useProductLevel = (productId: string) => {
+  const { loading, data } = useQuery<hasura.GetProductLevel, hasura.GetProductLevelVariables>(
+    gql`
+      query GetProductLevel($productId: String!) {
+        product_by_pk(id: $productId) {
+          id
+          level
+        }
+      }
+    `,
+    { variables: { productId } },
+  )
+  const productLevel: number = data?.product_by_pk?.level || 0
+
+  return {
+    loading,
+    productLevel,
+  }
+}
+
+export const useMutateProductLevel = () => {
+  const [updateProductLevel] = useMutation<hasura.UpdateProductLevel, hasura.UpdateProductLevelVariables>(gql`
+    mutation UpdateProductLevel($productId: String, $level: numeric) {
+      update_product(where: { id: { _eq: $productId } }, _set: { level: $level }) {
+        affected_rows
+      }
+    }
+  `)
+  return {
+    updateProductLevel,
   }
 }
 

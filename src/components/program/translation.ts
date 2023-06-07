@@ -33,6 +33,7 @@ const programMessages = {
     allProgramPackage: { id: 'program.ProgramPackageSelector.allProgramPackage', defaultMessage: '全部課程組合' },
   }),
   ProgramPlanAdminModal: defineMessages({
+    productLevel: { id: 'program.ProgramPlanAdminModal.productLevel', defaultMessage: '方案等級' },
     isPublished: { id: 'program.ProgramPlanAdminModal.isPublished', defaultMessage: '是否顯示方案' },
     published: { id: 'program.ProgramPlanAdminModal.published', defaultMessage: '發售，上架後立即開賣' },
     unpublished: { id: 'program.ProgramPlanAdminModal.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
@@ -172,8 +173,14 @@ const programMessages = {
     videoContent: { id: 'program.ProgramContentSectionAdminCard.videoContent', defaultMessage: 'Video content' },
     articleContent: { id: 'program.ProgramContentSectionAdminCard.articleContent', defaultMessage: 'Article content' },
     audioContent: { id: 'program.ProgramContentSectionAdminCard.audioContent', defaultMessage: 'Audio content' },
-    programPractice: { id: 'program.ProgramContentSectionAdminCard.practiceContent', defaultMessage: 'Practice content' },
-    programExercise: { id: 'program.ProgramContentSectionAdminCard.programExercise', defaultMessage: 'Program exercise' },
+    programPractice: {
+      id: 'program.ProgramContentSectionAdminCard.practiceContent',
+      defaultMessage: 'Practice content',
+    },
+    programExercise: {
+      id: 'program.ProgramContentSectionAdminCard.programExercise',
+      defaultMessage: 'Program exercise',
+    },
   }),
 }
 
