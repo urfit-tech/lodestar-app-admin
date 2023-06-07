@@ -66,6 +66,7 @@ const SalesLeadDeliveryPage: React.VFC = () => {
 
   const [getLeadManager] = useLazyQuery<hasura.GET_LEAD_CANDIDATES, hasura.GET_LEAD_CANDIDATESVariables>(
     GET_LEAD_CANDIDATES,
+    { fetchPolicy: 'no-cache' },
   )
 
   return (

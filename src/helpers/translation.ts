@@ -286,6 +286,7 @@ export const commonMessages = {
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
     emailForEnglish: { id: 'common.label.emailForEnglish', defaultMessage: 'Email' },
+    addPhones: { id: 'common.label.addPhones', defaultMessage: 'Add phone number' },
   }),
   text: defineMessages({
     memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
@@ -332,6 +333,7 @@ export const commonMessages = {
       defaultMessage: 'Recommend image size: 1200*630px',
     },
     applyingProjectRole: { id: 'common.text.applyingProjectRole', defaultMessage: '{name} 申請標成為「{identity}」' },
+    exportMember: { id: 'common.text.exportMember', defaultMessage: '已成功送出匯出請求，完成後將會將下載連結寄送到信箱。' },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
@@ -1429,6 +1431,7 @@ export const salesMessages = defineMessages({
   invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '已邀約名單' },
   presentedLead: { id: 'sales.label.presentedLead', defaultMessage: '已示範名單' },
   closedLead: { id: 'sales.label.closedLead', defaultMessage: '結案名單' },
+  completedLead: { id: 'sales.label.completedLead', defaultMessage: '已完成名單' },
   paidLead: { id: 'sales.label.paidLead', defaultMessage: '既有學員' },
   potentials: { id: 'sales.label.potentials', defaultMessage: '待開發' },
   keepInTouch: { id: 'sales.label.keepInTouch', defaultMessage: '開發中' },
