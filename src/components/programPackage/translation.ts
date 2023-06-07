@@ -18,6 +18,9 @@ const programPackageMessages = {
     sku: { id: 'programPackage.ProgramPackagePlanCollectionBlock.sku', defaultMessage: 'SKU' },
     skuSetting: { id: 'programPackage.ProgramPackagePlanCollectionBlock.skuSetting', defaultMessage: '設定料號' },
   }),
+  ProgramPackagePlanAdminModal: defineMessages({
+    productLevel: { id: 'programPackage.ProgramPackagePlanAdminModal.productLevel', defaultMessage: '方案等級' },
+  }),
 }
 
 export default programPackageMessages
