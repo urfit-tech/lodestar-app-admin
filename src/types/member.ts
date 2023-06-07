@@ -102,6 +102,8 @@ export type MemberAdminProps = {
 
   consumption?: number
   coins?: number
+  lastMemberNoteCalled?: Date
+  lastMemberNoteAnswered?: Date
 }
 
 export type MemberPropertyProps = {

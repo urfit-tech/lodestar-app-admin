@@ -59,7 +59,7 @@ const SalesLeadTable: React.VFC<{
   const { id: appId } = useApp()
   const { authToken } = useAuth()
 
-  const { insertMemberNote } = useMutateMemberNote()
+  const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const [transferLeads] = useMutation<hasura.TRANSFER_LEADS, hasura.TRANSFER_LEADSVariables>(TRANSFER_LEADS)
 
@@ -376,11 +376,20 @@ const SalesLeadTable: React.VFC<{
                 status,
                 duration,
                 description,
-                lastMemberNoteCalled: type === 'outbound' && status !== 'answered' ? new Date() : undefined,
-                lastMemberNoteAnswered: type === 'outbound' && status === 'answered' ? new Date() : undefined,
               },
             })
               .then(async ({ data }) => {
+                if (type === 'outbound') {
+                  if (status !== 'answered') {
+                    updateLastMemberNoteCalled({
+                      variables: { memberId: selectedMember.id, lastMemberNoteCalled: new Date() },
+                    }).catch(handleError)
+                  } else if (status === 'answered') {
+                    updateLastMemberNoteAnswered({
+                      variables: { memberId: selectedMember.id, lastMemberNoteAnswered: new Date() },
+                    }).catch(handleError)
+                  }
+                }
                 const memberNoteId = data?.insert_member_note_one?.id
                 if (memberNoteId && attachments.length) {
                   await uploadAttachments('MemberNote', memberNoteId, attachments)
