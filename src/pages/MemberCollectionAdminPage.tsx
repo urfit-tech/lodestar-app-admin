@@ -18,7 +18,7 @@ import { UserRoleName } from '../components/common/UserRole'
 import AdminLayout from '../components/layout/AdminLayout'
 import MemberCreationModal from '../components/member/MemberCreationModal'
 import MemberExportModal from '../components/member/MemberExportModal'
-import MemberImportModal from '../components/member/MemberImportModal'
+import XuemiMemberImportModal from '../components/member/XuemiMemberImportModal'
 import { currencyFormatter } from '../helpers'
 import { commonMessages, memberMessages } from '../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../hooks/member'
@@ -507,7 +507,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           </Popover>
           <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal onRefetch={refetchMembers} />}</div>
           <div className="mr-2">
-            <MemberImportModal onRefetch={refetchMembers} />
+            <XuemiMemberImportModal onRefetch={refetchMembers} />
           </div>
           {enabledModules.member_info_export ? (
             <MemberExportModal
