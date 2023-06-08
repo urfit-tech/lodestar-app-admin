@@ -18,12 +18,12 @@ const MediaLibraryUsageCard: React.VFC = () => {
     const data = ticks.map(tick => ({
       dateHour: tick.dateHour.format('MM/DD HH:00'),
       videoDuration: Math.round(tick.videoDuration / 60),
-      watchedSeconds: Math.round(tick.watchedSeconds / 60),
+      watchedMinutes: Math.round(tick.watchedSeconds / 60),
     }))
     const config: DualAxesConfig = {
       data: [data, data],
       xField: 'dateHour',
-      yField: ['videoDuration', 'watchedSeconds'],
+      yField: ['videoDuration', 'watchedMinutes'],
       xAxis: {
         label: {
           autoRotate: true,
@@ -33,9 +33,11 @@ const MediaLibraryUsageCard: React.VFC = () => {
       geometryOptions: [
         {
           geometry: 'column',
+          color: '#4ED1B3',
         },
         {
           geometry: 'line',
+          color: '#4C5B8F',
           lineStyle: {
             lineWidth: 2,
           },

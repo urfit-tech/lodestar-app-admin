@@ -286,6 +286,7 @@ export const commonMessages = {
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
     emailForEnglish: { id: 'common.label.emailForEnglish', defaultMessage: 'Email' },
+    addPhones: { id: 'common.label.addPhones', defaultMessage: 'Add phone number' },
   }),
   text: defineMessages({
     memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
@@ -1443,7 +1444,9 @@ export const salesMessages = defineMessages({
   contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '已聯繫名單' },
   invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '已邀約名單' },
   presentedLead: { id: 'sales.label.presentedLead', defaultMessage: '已示範名單' },
-  closedLead: { id: 'sales.label.closedLead', defaultMessage: '已結案' },
+  closedLead: { id: 'sales.label.closedLead', defaultMessage: '結案名單' },
+  completedLead: { id: 'sales.label.completedLead', defaultMessage: '已完成名單' },
+  paidLead: { id: 'sales.label.paidLead', defaultMessage: '既有學員' },
   potentials: { id: 'sales.label.potentials', defaultMessage: '待開發' },
   keepInTouch: { id: 'sales.label.keepInTouch', defaultMessage: '開發中' },
   deals: { id: 'sales.label.deals', defaultMessage: '已成交' },

@@ -1,5 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
+import { Spinner } from '@chakra-ui/react'
 import { Button, Checkbox, Form, Input, InputNumber, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
@@ -14,6 +15,7 @@ import { v4 as uuid } from 'uuid'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
+import { useMutateProductLevel, useProductLevel } from '../../hooks/data'
 import { PeriodType } from '../../types/general'
 import { ProductGiftPlan } from '../../types/giftPlan'
 import { ProgramPlan } from '../../types/program'
@@ -55,6 +57,7 @@ type FieldProps = {
   giftPlanProductId: string
   giftPlanStartedAt?: Moment | null
   giftPlanEndedAt?: Moment | null
+  productLevel?: number
 }
 
 type ProgramPlanType = 'perpetual' | 'period' | 'subscription'
@@ -92,6 +95,9 @@ const ProgramPlanAdminModal: React.FC<
     UPSERT_PROGRAM_PLAN,
   )
   const { upsertProductGiftPlan, deleteProductGiftPlan } = useGiftPlanMutation()
+  const { loading: loadingProductLevel, productLevel } = useProductLevel(`ProgramPlan_${programPlan?.id}`)
+  const { updateProductLevel } = useMutateProductLevel()
+
   const [loading, setLoading] = useState(false)
   const currencyId = programPlan?.currencyId || ''
 
@@ -120,7 +126,7 @@ const ProgramPlanAdminModal: React.FC<
       .validateFields()
       .then(() => {
         setLoading(true)
-        const values = form.getFieldsValue()
+        const values: FieldProps = form.getFieldsValue()
         const newProgramPlanId = uuid()
 
         upsertProgramPlan({
@@ -146,6 +152,14 @@ const ProgramPlanAdminModal: React.FC<
             isParticipantsVisible: values.isParticipantsVisible,
           },
         })
+          .then(res => {
+            const programPlanId = res.data?.insert_program_plan?.returning?.[0].id
+            if (enabledModules.product_level && programPlanId) {
+              updateProductLevel({
+                variables: { productId: `ProgramPlan_${programPlanId}`, level: values.productLevel },
+              }).catch(e => handleError(e))
+            }
+          })
           .catch(handleError)
           .finally(() => {
             if (values.hasGiftPlan) {
@@ -256,6 +270,7 @@ const ProgramPlanAdminModal: React.FC<
           giftPlanProductId: productGiftPlan?.giftPlan.id || undefined,
           giftPlanStartedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.startedAt) : '',
           giftPlanEndedAt: productGiftPlan?.startedAt ? moment(productGiftPlan.endedAt) : '',
+          productLevel: productLevel,
         }}
       >
         <Form.Item
@@ -342,6 +357,16 @@ const ProgramPlanAdminModal: React.FC<
             )}
           </div>
         )}
+        {enabledModules.product_level ? (
+          loadingProductLevel ? (
+            <Spinner />
+          ) : (
+            <Form.Item label={formatMessage(programMessages.ProgramPlanAdminModal.productLevel)} name="productLevel">
+              <InputNumber />
+            </Form.Item>
+          )
+        ) : null}
+
         {enabledModules?.currency && (
           <Form.Item
             label={formatMessage(commonMessages.label.currency)}
@@ -471,6 +496,9 @@ const UPSERT_PROGRAM_PLAN = gql`
       }
     ) {
       affected_rows
+      returning {
+        id
+      }
     }
   }
 `
