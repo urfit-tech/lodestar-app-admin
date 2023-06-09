@@ -74,11 +74,11 @@ const ProgramProcessBlock: React.VFC = () => {
       .then(({ data }) => {
         const rows: string[][] = [
           [
-            formatMessage(pageMessages.ProgramProcessBlock.categories),
+            formatMessage(pageMessages['*'].programCategories),
             formatMessage(pageMessages['*'].programTitle),
             formatMessage(pageMessages['*'].programContentSectionTitle),
             formatMessage(pageMessages['*'].programContentTitle),
-            formatMessage(pageMessages.ProgramProcessBlock.programContentType),
+            formatMessage(pageMessages['*'].programContentType),
             formatMessage(pageMessages.ProgramProcessBlock.programContentDuration),
             formatMessage(pageMessages['*'].memberName),
             formatMessage(pageMessages['*'].memberEmail),
@@ -218,82 +218,87 @@ const ProgramProcessBlock: React.VFC = () => {
 
   const handleExportMaterialLog = async () => {
     setExporting(true)
-    const programContentData = await apolloClient.query<
-      hasura.GetMaterialLogProgramContent,
-      hasura.GetMaterialLogProgramContentVariables
-    >({
-      query: GetMaterialLogProgramContent,
-      variables: {
-        programCondition,
-      },
-    })
-    await apolloClient
-      .query<hasura.GetMaterialAuditLog, hasura.GetMaterialAuditLogVariables>({
+    try {
+      const { data: programContentData } = await apolloClient.query<
+        hasura.GetProgramContentByProgramCondition,
+        hasura.GetProgramContentByProgramConditionVariables
+      >({
+        query: GetProgramContentByProgramCondition,
+        variables: {
+          programCondition,
+        },
+      })
+      const { data: materialAuditLogData } = await apolloClient.query<
+        hasura.GetMaterialAuditLog,
+        hasura.GetMaterialAuditLogVariables
+      >({
         query: GetMaterialAuditLog,
         variables: {
           memberCondition: memberCondition,
-          programContentIds: programContentData.data.program_content.map(pc => pc.id),
+          programContentIds: programContentData.program_content.map(pc => pc.id),
           lastUpdatedAt: lastUpdatedAt?.toDate(),
         },
       })
-      .then(async res => {
-        const memberData = await apolloClient.query<
-          hasura.GetMaterialLogMembers,
-          hasura.GetMaterialLogMembersVariables
-        >({
-          query: GetMaterialLogMembers,
-          variables: { memberCondition },
-        })
-        const rows: string[][] = [
-          [
-            formatMessage(pageMessages.ProgramProcessBlock.categories),
-            formatMessage(pageMessages['*'].programTitle),
-            formatMessage(pageMessages['*'].programContentSectionTitle),
-            formatMessage(pageMessages['*'].programContentTitle),
-            formatMessage(pageMessages.ProgramProcessBlock.programContentType),
-            formatMessage(pageMessages['*'].materialName),
-            formatMessage(pageMessages['*'].downloadedAt),
-            formatMessage(pageMessages['*'].memberName),
-            formatMessage(pageMessages['*'].memberEmail),
-            ...memberData.data.property.map(property => property.name),
-          ],
-        ]
-        res.data.material_audit_log.forEach(v => {
-          const member = memberData.data.member.find(m => m.id === v.member_id)
-          const programContent = programContentData.data.program_content.find(
-            pc => pc.id === v.program_content_material?.program_content_id,
-          )
-          const categories = programContent?.program_content_section.program.program_categories
-            .map(programCategory => programCategory.category.name)
-            .join(',')
-          const programTitle = programContent?.program_content_section.program.title
-          const programContentSectionTitle = programContent?.program_content_section.title
-          const programContentTitle = programContent?.title
-          const programContentType = programContent?.content_type
-          const materialName = v.program_content_material?.data?.name
-          const downloadedAt = v.created_at
-          const memberName = member?.name
-          const memberEmail = member?.email
-
-          rows.push([
-            categories,
-            programTitle,
-            programContentSectionTitle,
-            programContentTitle,
-            programContentType,
-            materialName,
-            downloadedAt,
-            memberName,
-            memberEmail,
-            ...memberData.data.property.map(
-              p => member?.member_properties.find(mp => mp.property_id === p.id)?.value || '',
-            ),
-          ])
-        })
-        downloadCSV('programMaterial_' + moment().format('MMDDSSS'), toCSV(rows))
+      const { data: memberData } = await apolloClient.query<
+        hasura.GetMaterialLogMembers,
+        hasura.GetMaterialLogMembersVariables
+      >({
+        query: GetMaterialLogMembers,
+        variables: { memberIds: materialAuditLogData.material_audit_log.map(mal => mal.member_id) },
       })
-      .catch(error => message.error(error))
-      .finally(() => setExporting(false))
+
+      const rows: string[][] = [
+        [
+          formatMessage(pageMessages['*'].programCategories),
+          formatMessage(pageMessages['*'].programTitle),
+          formatMessage(pageMessages['*'].programContentSectionTitle),
+          formatMessage(pageMessages['*'].programContentTitle),
+          formatMessage(pageMessages['*'].programContentType),
+          formatMessage(pageMessages['*'].materialName),
+          formatMessage(pageMessages['*'].downloadedAt),
+          formatMessage(pageMessages['*'].memberName),
+          formatMessage(pageMessages['*'].memberEmail),
+          ...memberData.property.map(property => property.name),
+        ],
+      ]
+      materialAuditLogData.material_audit_log.forEach(v => {
+        const member = memberData.member.find(m => m.id === v.member_id)
+        const programContent = programContentData.program_content.find(
+          pc => pc.id === v.program_content_material?.program_content_id,
+        )
+        const categories = programContent?.program_content_section.program.program_categories
+          .map(programCategory => programCategory.category.name)
+          .join(',')
+        const programTitle = programContent?.program_content_section.program.title
+        const programContentSectionTitle = programContent?.program_content_section.title
+        const programContentTitle = programContent?.title
+        const programContentType = programContent?.content_type
+        const materialName = v.program_content_material?.data?.name
+        const downloadedAt = v.created_at
+        const memberName = member?.name
+        const memberEmail = member?.email
+
+        rows.push([
+          categories,
+          programTitle,
+          programContentSectionTitle,
+          programContentTitle,
+          programContentType,
+          materialName,
+          downloadedAt,
+          memberName,
+          memberEmail,
+          ...memberData.property.map(p => member?.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
+        ])
+      })
+      downloadCSV('programMateriaDownloadLog_' + moment().format('MMDDSSS'), toCSV(rows))
+    } catch (error) {
+      if (error instanceof Error) {
+        message.error(error.message)
+      }
+    } finally {
+      setExporting(false)
+    }
   }
 
   return (
@@ -505,7 +510,7 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
   }
 `
 
-const GetMaterialAuditLog = gql`
+export const GetMaterialAuditLog = gql`
   query GetMaterialAuditLog(
     $memberCondition: member_bool_exp
     $programContentIds: [uuid!]
@@ -532,9 +537,9 @@ const GetMaterialAuditLog = gql`
   }
 `
 
-const GetMaterialLogMembers = gql`
-  query GetMaterialLogMembers($memberCondition: member_bool_exp) {
-    member(where: $memberCondition) {
+export const GetMaterialLogMembers = gql`
+  query GetMaterialLogMembers($memberIds: [String!]) {
+    member(where: { id: { _in: $memberIds } }) {
       id
       name
       email
@@ -550,8 +555,8 @@ const GetMaterialLogMembers = gql`
   }
 `
 
-const GetMaterialLogProgramContent = gql`
-  query GetMaterialLogProgramContent($programCondition: program_bool_exp) {
+const GetProgramContentByProgramCondition = gql`
+  query GetProgramContentByProgramCondition($programCondition: program_bool_exp) {
     program_content(where: { program_content_section: { program: $programCondition } }) {
       id
       title
