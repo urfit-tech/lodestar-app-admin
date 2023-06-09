@@ -78,8 +78,8 @@ export const uploadFileV2 = async (
       'Content-Type': file.type,
     },
   })
-  const eTag = s3UploadRes.headers.Etag
-  const importRes =  await axios.post(
+  const eTag = s3UploadRes.headers.etag.replaceAll('"', '')
+  const importRes = await axios.post(
     `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/import`,
     {
       appId,
@@ -91,7 +91,7 @@ export const uploadFileV2 = async (
       },
     },
   )
-  return importRes;
+  return importRes
 }
 
 export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
