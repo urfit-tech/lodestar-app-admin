@@ -19,6 +19,8 @@ import AdminLayout from '../components/layout/AdminLayout'
 import MemberCreationModal from '../components/member/MemberCreationModal'
 import MemberExportModal from '../components/member/MemberExportModal'
 import MemberImportModal from '../components/member/MemberImportModal'
+import OldMemberExportModal from '../components/member/OldMemberExportModal'
+import OldMemberImportModal from '../components/member/OldMemberImportModal'
 import { currencyFormatter } from '../helpers'
 import { commonMessages, memberMessages } from '../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../hooks/member'
@@ -151,8 +153,8 @@ const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const theme = useAppTheme()
   const { permissions, currentUserRole } = useAuth()
-  const { id: appId, enabledModules } = useApp()
-
+  const { id: appId, enabledModules, settings } = useApp()
+  const exportImportVersionTag = settings['feature.member.import_export'] === '1' // TODO: remove this after new export import completed
   // table column filter
   const { properties } = useProperty()
   const allColumns: ({
@@ -506,16 +508,24 @@ const MemberCollectionAdminPage: React.FC = () => {
           </Popover>
           <div className="mr-2">{permissions.MEMBER_CREATE && <MemberCreationModal onRefetch={refetchMembers} />}</div>
           <div className="mr-2">
-            <MemberImportModal onRefetch={refetchMembers} />
+            {exportImportVersionTag ? (
+              <MemberImportModal onRefetch={refetchMembers} />
+            ) : (
+              <OldMemberImportModal onRefetch={refetchMembers} /> // TODO: remove this after new export import completed
+            )}
           </div>
           {enabledModules.member_info_export ? (
-            <MemberExportModal
-              appId={appId}
-              visibleFields={visibleColumnIds}
-              columns={columns}
-              filter={fieldFilter}
-              sortOrder={sortOrder}
-            />
+            exportImportVersionTag ? (
+              <MemberExportModal appId={appId} filter={fieldFilter} sortOrder={sortOrder} />
+            ) : (
+              <OldMemberExportModal // TODO: remove this after new export import completed
+                appId={appId}
+                visibleFields={visibleColumnIds}
+                columns={columns}
+                filter={fieldFilter}
+                sortOrder={sortOrder}
+              />
+            )
           ) : null}
         </div>
       </div>

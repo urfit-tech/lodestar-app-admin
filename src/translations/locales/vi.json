@@ -837,6 +837,7 @@
   "common.text.emailNotReceived": "khôngThểNhậnĐượcMộtLáThư?",
   "common.text.emptyNotification": "Hiện không có thông báo",
   "common.text.enterRegisteredEmail": "Điền vào email đã đăng ký của bạn",
+  "common.text.exportMember": "已成功送出匯出請求，完成後將會將下載連結寄送到信箱。",
   "common.text.forgotPassword": "Quên mật khẩu?",
   "common.text.locale": "Nó sẽ chỉ được hiển thị khi quầy lễ tân là họ ngôn ngữ được chỉ định.",
   "common.text.memberEditable": "會員可編輯",

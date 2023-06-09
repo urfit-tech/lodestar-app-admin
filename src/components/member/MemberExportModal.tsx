@@ -1,39 +1,19 @@
 import { ExportOutlined } from '@ant-design/icons'
 import { gql, useApolloClient } from '@apollo/client'
+import { useToast } from '@chakra-ui/toast'
 import { Button } from 'antd'
-import { ColumnProps } from 'antd/lib/table'
 import { SortOrder } from 'antd/lib/table/interface'
-import moment from 'moment'
-import { repeat } from 'ramda'
+import axios from 'axios'
+import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
-import { downloadCSV, handleError, toCSV } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { MemberInfoProps, UserRole } from '../../types/member'
+import { UserRole } from '../../types/member'
 
-type ExportMemberProps = {
-  id: string
-  name: string
-  username: string
-  email: string
-  role: UserRole
-  createdAt: Date | null
-  loginedAt: Date | null
-  phones: string[]
-  categories: string[]
-  consumption: number
-  managerName: string
-  tags: string[]
-  properties: {
-    [id: string]: string
-  }
-  permissionGroupNames: string[]
-}
 const MemberExportModal: React.FC<{
   appId: string
-  columns: ColumnProps<MemberInfoProps>[]
-  visibleFields?: string[]
   filter?: {
     role?: UserRole
     name?: string
@@ -54,17 +34,16 @@ const MemberExportModal: React.FC<{
     loginedAt?: SortOrder
     consumption?: SortOrder
   }
-}> = ({ appId, filter, visibleFields = [], columns, sortOrder = {} }) => {
+}> = ({ appId, filter, sortOrder = {} }) => {
   const { formatMessage } = useIntl()
+  const { authToken } = useAuth()
   const client = useApolloClient()
+  const toast = useToast()
   const [loadingMembers, setLoadingMembers] = useState(false)
 
   const exportMemberList = async () => {
     try {
       setLoadingMembers(true)
-
-      const visibleColumns = columns.filter(column => visibleFields.includes(column.key as string))
-
       const condition: hasura.GET_MEMBER_EXPORT_COLLECTIONVariables['condition'] = {
         role: filter?.role ? { _eq: filter?.role } : undefined,
         name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
@@ -119,99 +98,30 @@ const MemberExportModal: React.FC<{
         },
       })
 
-      let maxPhoneAmounts = 1
-      let members: ExportMemberProps[]
-
-      members =
-        data?.member_export.map(v => {
-          const phones = v.phones?.split(',') || []
-          if (phones.length > maxPhoneAmounts) {
-            maxPhoneAmounts = phones.length
-          }
-          return {
-            id: v.id || '',
-            name: v.name || '',
-            username: v.username || '',
-            email: v.email || '',
-            role: v.role as UserRole,
-            createdAt: v.created_at ? new Date(v.created_at) : null,
-            loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-            phones,
-            categories: v.categories?.split(',') || [],
-            managerName: v.manager_name || '',
-            consumption: v.consumption || 0,
-            tags: v.tags?.split(',') || [],
-            properties: v.properties,
-            permissionGroupNames: v.permission_groups?.split(',') || [],
-          }
-        }) || []
-
-      if (filter?.properties && Object.keys(filter.properties).length) {
-        const propertyFilter = Object.entries(filter.properties)
-        members = members.filter(member => {
-          return propertyFilter.every(
-            ([propertyId, value]) => member.properties[propertyId]?.includes(value || '') || false,
-          )
-        })
-      }
-
-      const csvColumns = [
-        formatMessage(commonMessages.label.memberName),
-        formatMessage(commonMessages.label.memberIdentity),
-        ...visibleColumns
-          ?.map(column => {
-            if (column.key === 'phone') {
-              return repeat(column.title?.toString() || '', maxPhoneAmounts)
-            }
-            return column.title?.toString() || ''
-          })
-          ?.flat(),
-      ]
-
-      const csvRows: string[][] = members.map(member => [
-        member.name,
-        member.role === 'general-member'
-          ? formatMessage(commonMessages.label.generalMember)
-          : member.role === 'content-creator'
-          ? formatMessage(commonMessages.label.contentCreator)
-          : member.role === 'app-owner'
-          ? formatMessage(commonMessages.label.appOwner)
-          : formatMessage(commonMessages.label.anonymousUser),
-        ...visibleColumns.flatMap(column => {
-          switch (column.key) {
-            case 'email':
-              return member.email
-            case 'username':
-              return member.username
-            case 'phone':
-              return [...member.phones, ...repeat('', maxPhoneAmounts - member.phones.length)]
-            case 'categories':
-              return member.categories.join(',')
-            case 'createdAt':
-              return member.createdAt ? moment(member.createdAt).format('YYYY-MM-DD') : ''
-            case 'loginedAt':
-              return member.loginedAt ? moment(member.loginedAt).format('YYYY-MM-DD') : ''
-            case 'consumption':
-              return member.consumption.toString()
-            case 'tags':
-              return member.tags.join(',')
-            case 'managerName':
-              return member.managerName
-            default:
-              if (column.key && Object.keys(member.properties).includes(column.key.toString())) {
-                return member.properties[column.key.toString()]
-              }
-              return ''
-          }
-        }),
-      ])
-
-      downloadCSV(`members-${appId}.csv`, toCSV([csvColumns, ...csvRows]))
+      const memberIds: string[] = data?.member_export.map(v => v.id || '') || []
+      await axios.post(
+        `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members/export`,
+        {
+          appId,
+          memberIds: memberIds,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      )
+      toast({
+        title: formatMessage(commonMessages.text.exportMember),
+        status: 'success',
+        duration: 1500,
+        position: 'top',
+      })
     } catch (error) {
       handleError(error)
+    } finally {
+      setLoadingMembers(false)
     }
-
-    setLoadingMembers(false)
   }
 
   return (
@@ -225,19 +135,6 @@ const GET_MEMBER_EXPORT_COLLECTION = gql`
   query GET_MEMBER_EXPORT_COLLECTION($condition: member_export_bool_exp!, $orderBy: [member_export_order_by!]) {
     member_export(where: $condition, order_by: $orderBy) {
       id
-      name
-      username
-      email
-      created_at
-      logined_at
-      role
-      phones
-      categories
-      tags
-      consumption
-      manager_name
-      properties
-      permission_groups
     }
   }
 `
