@@ -618,6 +618,9 @@ export const appointmentMessages = {
       defaultMessage: 'automatically generated',
     },
     manuallyDistributed: { id: 'appointment.label.manuallyDistributed', defaultMessage: 'manually distributed' },
+    maximumCapacity: { id: 'appointment.label.maximumCapacity', defaultMessage: 'Maximum Capacity' },
+    unlimited: { id: 'appointment.label.unlimited', defaultMessage: 'unlimited' },
+    limited: { id: 'appointment.label.limited', defaultMessage: 'limited' },
   }),
   status: defineMessages({
     aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
