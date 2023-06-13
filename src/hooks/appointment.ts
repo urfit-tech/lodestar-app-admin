@@ -4,7 +4,7 @@ import moment from 'moment'
 import { useMemo } from 'react'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import hasura from '../hasura'
-import { AppointmentPlanAdminProps, ReservationType } from '../types/appointment'
+import { AppointmentPlanAdminProps, MeetGenerationMethod, ReservationType } from '../types/appointment'
 import { PeriodType } from '../types/general'
 
 export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
@@ -28,6 +28,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           is_private
           reservation_amount
           reservation_type
+          capacity
+          meet_generation_method
           appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
             started_at
@@ -67,6 +69,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
       listPrice: data.appointment_plan_by_pk.price,
       reservationAmount: data.appointment_plan_by_pk.reservation_amount,
       reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
+      capacity: data.appointment_plan_by_pk.capacity,
+      meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
       schedules: data.appointment_plan_by_pk.appointment_schedules.map(s => ({
         id: s.id,
         startedAt: new Date(s.started_at),

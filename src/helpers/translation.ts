@@ -333,7 +333,10 @@ export const commonMessages = {
       defaultMessage: 'Recommend image size: 1200*630px',
     },
     applyingProjectRole: { id: 'common.text.applyingProjectRole', defaultMessage: '{name} 申請標成為「{identity}」' },
-    exportMember: { id: 'common.text.exportMember', defaultMessage: '已成功送出匯出請求，完成後將會將下載連結寄送到信箱。' },
+    exportMember: {
+      id: 'common.text.exportMember',
+      defaultMessage: '已成功送出匯出請求，完成後將會將下載連結寄送到信箱。',
+    },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
@@ -609,6 +612,12 @@ export const appointmentMessages = {
     reservationType: { id: 'appointment.label.reservationType', defaultMessage: '時間單位' },
     creator: { id: 'appointment.label.creator', defaultMessage: '講師' },
     member: { id: 'appointment.label.member', defaultMessage: '學生' },
+    meetingLink: { id: 'appointment.label.meetingLink', defaultMessage: 'Meeting Link' },
+    automaticallyGenerated: {
+      id: 'appointment.label.automaticallyGenerated',
+      defaultMessage: 'automatically generated',
+    },
+    manuallyDistributed: { id: 'appointment.label.manuallyDistributed', defaultMessage: 'manually distributed' },
   }),
   status: defineMessages({
     aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
