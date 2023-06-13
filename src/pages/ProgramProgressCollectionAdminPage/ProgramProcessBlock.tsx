@@ -40,7 +40,7 @@ const ProgramProcessBlock: React.VFC = () => {
 
   const memberCondition =
     memberFilter.type === 'all'
-      ? undefined
+      ? {}
       : memberFilter.type === 'selectedMember'
       ? { id: { _in: memberFilter.memberIds } }
       : {
@@ -51,7 +51,7 @@ const ProgramProcessBlock: React.VFC = () => {
         }
   const programCondition =
     programFilter.type === 'all'
-      ? undefined
+      ? {}
       : programFilter.type === 'selectedCategory'
       ? {
           program_categories: { category_id: { _in: programFilter.categoryIds } },

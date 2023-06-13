@@ -36,7 +36,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
 
   const programPackageCondition =
     programPackageFilter.type === 'all'
-      ? undefined
+      ? {}
       : programPackageFilter.type === 'selectedCategory'
       ? {
           program_package_categories: { category_id: { _in: programPackageFilter.categoryIds } },
@@ -47,7 +47,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
 
   const memberCondition =
     memberFilter.type === 'enrolledMember'
-      ? undefined
+      ? {}
       : memberFilter.type === 'selectedMember'
       ? {
           id: { _in: memberFilter.memberIds },
