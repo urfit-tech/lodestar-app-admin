@@ -83,7 +83,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
         scheduleId: period.appointment_schedule_id,
         startedAt: new Date(period.started_at),
         endedAt: new Date(period.ended_at),
-        isEnrolled: !!period.booked,
+        isEnrolled: period.booked > 0,
         isExcluded: !period.available,
       })),
       isPublished: !!data.appointment_plan_by_pk.published_at,
