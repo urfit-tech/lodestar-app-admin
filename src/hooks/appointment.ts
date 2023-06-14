@@ -201,10 +201,14 @@ export const useAppointmentEnrollmentCollection = (
       ) {
         appointment_enrollment(where: $condition, limit: $limit, order_by: $sort) {
           id
+          order_product {
+            options
+          }
           appointment_plan {
             id
             title
             duration
+            meet_generation_method
             creator {
               id
               name
@@ -268,7 +272,8 @@ export const useAppointmentEnrollmentCollection = (
         id: v.appointment_plan?.creator?.id || '',
         name: v.appointment_plan?.creator?.name || '',
       },
-      orderProductId: v.order_product_id,
+      orderProduct: { id: v.order_product_id, options: v.order_product?.options },
+      meetGenerationMethod: (v.appointment_plan?.meet_generation_method as MeetGenerationMethod) || 'auto',
     })) || []
 
   const loadMoreAppointmentEnrollments =
