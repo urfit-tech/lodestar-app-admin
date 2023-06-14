@@ -4,7 +4,7 @@ import moment from 'moment'
 import { useMemo } from 'react'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import hasura from '../hasura'
-import { AppointmentPlanAdminProps, ReservationType } from '../types/appointment'
+import { AppointmentPlanAdminProps, MeetGenerationMethod, ReservationType } from '../types/appointment'
 import { PeriodType } from '../types/general'
 
 export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
@@ -28,6 +28,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           is_private
           reservation_amount
           reservation_type
+          capacity
+          meet_generation_method
           appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
             started_at
@@ -67,6 +69,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
       listPrice: data.appointment_plan_by_pk.price,
       reservationAmount: data.appointment_plan_by_pk.reservation_amount,
       reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
+      capacity: data.appointment_plan_by_pk.capacity,
+      meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
       schedules: data.appointment_plan_by_pk.appointment_schedules.map(s => ({
         id: s.id,
         startedAt: new Date(s.started_at),
@@ -79,7 +83,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
         scheduleId: period.appointment_schedule_id,
         startedAt: new Date(period.started_at),
         endedAt: new Date(period.ended_at),
-        isEnrolled: !!period.booked,
+        isEnrolled: period.booked > 0,
         isExcluded: !period.available,
       })),
       isPublished: !!data.appointment_plan_by_pk.published_at,
@@ -197,10 +201,14 @@ export const useAppointmentEnrollmentCollection = (
       ) {
         appointment_enrollment(where: $condition, limit: $limit, order_by: $sort) {
           id
+          order_product {
+            options
+          }
           appointment_plan {
             id
             title
             duration
+            meet_generation_method
             creator {
               id
               name
@@ -264,7 +272,8 @@ export const useAppointmentEnrollmentCollection = (
         id: v.appointment_plan?.creator?.id || '',
         name: v.appointment_plan?.creator?.name || '',
       },
-      orderProductId: v.order_product_id,
+      orderProduct: { id: v.order_product_id, options: v.order_product?.options },
+      meetGenerationMethod: (v.appointment_plan?.meet_generation_method as MeetGenerationMethod) || 'auto',
     })) || []
 
   const loadMoreAppointmentEnrollments =
