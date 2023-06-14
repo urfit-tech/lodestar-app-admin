@@ -45,7 +45,14 @@ const ProjectPlanProductSelector: React.FC<ProjectPlanProductSelectorProps> = ({
                     ...projectPlanProducts.slice(idx + 1),
                   ])
                 }
-                allowTypes={['ProgramPlan', 'ProgramPackagePlan', 'ActivityTicket', 'PodcastProgram', 'Card']}
+                allowTypes={[
+                  'ProgramPlan',
+                  'ProgramPackagePlan',
+                  'ActivityTicket',
+                  'PodcastProgram',
+                  'Card',
+                  'VoucherPlan',
+                ]}
               />
               <InputNumber
                 className="ml-3"
