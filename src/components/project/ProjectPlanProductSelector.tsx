@@ -38,6 +38,7 @@ const ProjectPlanProductSelector: React.FC<ProjectPlanProductSelectorProps> = ({
             <div className="d-flex mb-2">
               <ProductSelector
                 value={projectPlanProduct.id ? [projectPlanProduct.id] : []}
+                onlyValid={true}
                 onChange={products =>
                   onChange?.([
                     ...projectPlanProducts.slice(0, idx),
