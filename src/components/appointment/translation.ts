@@ -4,6 +4,10 @@ const appointmentMessages = {
   '*': defineMessages({
     detail: { id: 'appointmentMessages.*.detail', defaultMessage: '詳情' },
     appointmentIssueAndResult: { id: 'appointmentMessages.*.appointmentIssueAndResult', defaultMessage: '提問紀錄單' },
+    appointmentConfigureMeetingRoom: {
+      id: 'appointmentMessages.*.appointmentConfigureMeetingRoom',
+      defaultMessage: 'Configure a meeting room',
+    },
     fetchDataError: {
       id: 'appointmentMessages.*.fetchDataError',
       defaultMessage: '讀取錯誤',
@@ -22,6 +26,10 @@ const appointmentMessages = {
       defaultMessage: '已於 {time} 取消預約',
     },
     cancelAppointment: { id: 'appointment.AppointmentPeriodCard.cancelAppointment', defaultMessage: '取消預約' },
+    notYetConfigured: {
+      id: 'appointment.AppointmentPeriodCard.notYetConfigured',
+      defaultMessage: 'not yet configured',
+    },
   }),
   AppointmentDetailModal: defineMessages({
     email: { id: 'appointmentMessages.AppointmentDetailModal.email', defaultMessage: '信箱' },
@@ -64,6 +72,12 @@ const appointmentMessages = {
     canceledReason: {
       id: 'appointmentMessages.AppointmentCancelModal.canceledReason',
       defaultMessage: '取消原因',
+    },
+  }),
+  AppointmentConfigureMeetingRoomModal: defineMessages({
+    meetingLink: {
+      id: 'appointmentMessages.AppointmentCancelModal.meetingLink',
+      defaultMessage: 'meeting link',
     },
   }),
 }

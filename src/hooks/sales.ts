@@ -161,6 +161,18 @@ export const useManagerLeads = (manager: Manager) => {
   })
 
   const {
+    data: phoneData,
+    error: errorPhoneData,
+    loading: loadingPhoneData,
+    refetch: refetchPhoneData,
+  } = useQuery<hasura.GET_SALES_LEAD_MEMBERS_PHONE, hasura.GET_SALES_LEAD_MEMBERS_PHONEVariables>(
+    GET_SALES_LEAD_MEMBERS_PHONE,
+    {
+      variables: { managerId: manager.id },
+    },
+  )
+
+  const {
     data: salesLeadMemberData,
     error,
     loading,
@@ -175,7 +187,7 @@ export const useManagerLeads = (manager: Manager) => {
   )
 
   const convertToLead = (v: hasura.GET_SALES_LEAD_MEMBERS['member'][number] | null): LeadProps | null => {
-    if (!v || v.member_phones.length === 0) {
+    if (!v || !phoneData) {
       return null
     }
 
@@ -214,7 +226,7 @@ export const useManagerLeads = (manager: Manager) => {
       name: v.name,
       email: v.email,
       createdAt: moment(v.created_at).toDate(),
-      phones: v.member_phones.map(_v => _v.phone),
+      phones: phoneData?.member_phone.filter(p => p.member_id === v.id).map(p => p.phone),
       categoryNames:
         salesLeadMemberData?.member_category.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) || [],
       properties:
@@ -232,9 +244,10 @@ export const useManagerLeads = (manager: Manager) => {
       recentAnsweredAt: v.last_member_note_answered ? dayjs(v.last_member_note_answered).toDate() : null,
     }
   }
-  const totalLeads: LeadProps[] = sortBy(prop('id'))(
-    salesLeadMemberPhoneData?.member.map(convertToLead).filter(notEmpty) || [],
-  )
+  const totalLeads: LeadProps[] = useMemo(() => {
+    return sortBy(prop('id'))(salesLeadMemberPhoneData?.member.map(convertToLead).filter(notEmpty) || [])
+  }, [salesLeadMemberPhoneData, phoneData, salesLeadMemberData])
+
   return {
     loading,
     error,
@@ -243,6 +256,9 @@ export const useManagerLeads = (manager: Manager) => {
     errorMembers,
     refetchMembers,
     totalLeads,
+    errorPhoneData,
+    loadingPhoneData,
+    refetchPhoneData,
     followedLeads: totalLeads.filter(lead => lead.status === 'FOLLOWED'),
     idledLeads: totalLeads.filter(lead => lead.status === 'IDLED'),
     contactedLeads: totalLeads.filter(lead => lead.status === 'CONTACTED'),
@@ -289,7 +305,7 @@ const GET_SALES_LEAD_MEMBER_DATA = gql`
 `
 const GET_SALES_LEAD_MEMBERS = gql`
   query GET_SALES_LEAD_MEMBERS($managerId: String!) {
-    member(where: { manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }) {
+    member(where: { manager_id: { _eq: $managerId } }) {
       id
       name
       email
@@ -302,9 +318,15 @@ const GET_SALES_LEAD_MEMBERS = gql`
       last_member_note_created
       last_member_note_called
       last_member_note_answered
-      member_phones {
-        phone
-      }
+    }
+  }
+`
+
+const GET_SALES_LEAD_MEMBERS_PHONE = gql`
+  query GET_SALES_LEAD_MEMBERS_PHONE($managerId: String!) {
+    member_phone(where: { member: { manager_id: { _eq: $managerId } } }) {
+      phone
+      member_id
     }
   }
 `

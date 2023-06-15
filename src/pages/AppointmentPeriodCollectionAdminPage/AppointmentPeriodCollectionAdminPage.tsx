@@ -25,7 +25,7 @@ const StyledFilterBlock = styled.div`
 const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { permissions,currentMemberId } = useAuth()
+  const { permissions, currentMemberId } = useAuth()
   const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('month').startOf('minute').toDate())
   const [endedAt, setEndedAt] = useState<Date | null>(moment().endOf('month').startOf('minute').toDate())
   const defaultSelectedCreatorId = permissions.APPOINTMENT_PERIOD_ADMIN ? '' : currentMemberId || ''
