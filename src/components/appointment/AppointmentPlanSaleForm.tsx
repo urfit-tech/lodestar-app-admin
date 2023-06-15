@@ -1,9 +1,8 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
-import { Button, Form, InputNumber, message, Skeleton, Tooltip } from 'antd'
+import { gql, useMutation } from '@apollo/client'
+import { Button, Form, InputNumber, message, Radio, Skeleton, Space, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -17,6 +16,7 @@ type FieldProps = {
   duration: number
   listPrice: number
   currencyId: string
+  capacity: number
 }
 
 const AppointmentPlanSaleForm: React.FC<{
@@ -30,6 +30,11 @@ const AppointmentPlanSaleForm: React.FC<{
     hasura.UPDATE_APPOINTMENT_PLAN_SALEVariables
   >(UPDATE_APPOINTMENT_PLAN_SALE)
   const [loading, setLoading] = useState(false)
+  const [isLimited, setIsLimited] = useState(appointmentPlanAdmin?.capacity !== -1)
+
+  useEffect(() => {
+    setIsLimited(appointmentPlanAdmin?.capacity !== -1)
+  }, [appointmentPlanAdmin?.capacity])
 
   if (!appointmentPlanAdmin) {
     return <Skeleton active />
@@ -43,6 +48,7 @@ const AppointmentPlanSaleForm: React.FC<{
         duration: values.duration,
         listPrice: values.listPrice,
         currencyId: values.currencyId,
+        capacity: values.capacity,
       },
     })
       .then(() => {
@@ -52,7 +58,6 @@ const AppointmentPlanSaleForm: React.FC<{
       .catch(handleError)
       .finally(() => setLoading(false))
   }
-
   return (
     <Form
       form={form}
@@ -63,6 +68,7 @@ const AppointmentPlanSaleForm: React.FC<{
         duration: appointmentPlanAdmin.duration,
         listPrice: appointmentPlanAdmin.listPrice,
         currencyId: appointmentPlanAdmin.currencyId,
+        capacity: appointmentPlanAdmin.capacity,
       }}
       onFinish={handleSubmit}
     >
@@ -82,6 +88,26 @@ const AppointmentPlanSaleForm: React.FC<{
         rules={[{ required: true, message: formatMessage(errorMessages.form.duration) }]}
       >
         <InputNumber min={0} />
+      </Form.Item>
+
+      <div className="mb-2">{formatMessage(appointmentMessages.label.maximumCapacity)}</div>
+      <Radio.Group
+        value={isLimited}
+        onChange={e => {
+          setIsLimited(e.target.value)
+          form.setFieldsValue({ capacity: e.target.value ? 1 : -1 })
+        }}
+      >
+        <Space direction="vertical">
+          <Radio value={false} className="mb-2">
+            {formatMessage(appointmentMessages.label.unlimited)}
+          </Radio>
+          <Radio value={true}>{formatMessage(appointmentMessages.label.limited)}</Radio>
+        </Space>
+      </Radio.Group>
+
+      <Form.Item name="capacity">
+        <InputNumber min={1} className="ml-4 mt-2" />
       </Form.Item>
 
       <Form.Item
@@ -132,10 +158,11 @@ const UPDATE_APPOINTMENT_PLAN_SALE = gql`
     $duration: numeric
     $listPrice: numeric
     $currencyId: String
+    $capacity: Int
   ) {
     update_appointment_plan(
       where: { id: { _eq: $appointmentPlanId } }
-      _set: { duration: $duration, price: $listPrice, currency_id: $currencyId }
+      _set: { duration: $duration, price: $listPrice, currency_id: $currencyId, capacity: $capacity }
     ) {
       affected_rows
     }

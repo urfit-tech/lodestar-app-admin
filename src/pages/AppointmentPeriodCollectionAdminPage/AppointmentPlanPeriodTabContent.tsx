@@ -69,8 +69,9 @@ const AppointmentPlanPeriodTabContent: React.FC<{
           endedAt={v.endedAt}
           canceledAt={v.canceledAt}
           creator={v.creator}
-          orderProductId={v.orderProductId}
+          orderProduct={v.orderProduct}
           onRefetch={refetchEnrolledAppointments}
+          meetGenerationMethod={v.meetGenerationMethod}
         />
       ))}
 
