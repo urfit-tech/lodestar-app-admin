@@ -349,5 +349,23 @@ const formMessages = {
     memberIsUnregistered: { id: 'form.MemberSelector.memberIsUnregistered', defaultMessage: '非站上註冊會員' },
     memberIsInvited: { id: 'form.MemberSelector.memberIsInvited', defaultMessage: '會員邀請中' },
   }),
+  ProductSelector: defineMessages({
+    generalPhysicalMerchandiseSpec: {
+      id: 'form.ProductSelector.generalPhysicalMerchandiseSpec',
+      defaultMessage: '一般實體商品規格',
+    },
+    generalVirtualMerchandiseSpec: {
+      id: 'form.ProductSelector.generalVirtualMerchandiseSpec',
+      defaultMessage: '一般虛擬商品規格',
+    },
+    customizedPhysicalMerchandiseSpec: {
+      id: 'form.ProductSelector.customizedPhysicalMerchandiseSpec',
+      defaultMessage: '客製實體商品規格',
+    },
+    customizedVirtualMerchandiseSpec: {
+      id: 'form.ProductSelector.customizedVirtualMerchandiseSpec',
+      defaultMessage: '客製虛擬商品規格',
+    },
+  }),
 }
 export default formMessages
