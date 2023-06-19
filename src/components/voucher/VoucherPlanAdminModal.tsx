@@ -161,6 +161,7 @@ const VoucherPlanAdminModal: React.FC<
               'PodcastProgram',
               'Card',
               'ProjectPlan',
+              'GeneralVirtualMerchandiseSpec',
             ]}
           />
         </Form.Item>
