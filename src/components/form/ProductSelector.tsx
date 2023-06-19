@@ -64,6 +64,7 @@ const ProductSelector: React.FC<{
   )[]
   multiple?: boolean
   value?: string[]
+  onlyValid?: boolean
   onChange?: (value: string[]) => void
   onProductChange?: (
     value: {
@@ -75,9 +76,9 @@ const ProductSelector: React.FC<{
     }[],
   ) => void
   onFullSelected?: (types: (ProductType | 'CouponPlan')[]) => void
-}> = ({ allowTypes, multiple, value, onChange, onProductChange, onFullSelected }) => {
+}> = ({ allowTypes, multiple, value, onlyValid, onChange, onProductChange, onFullSelected }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, productSelections } = useProductSelections()
+  const { loading, error, productSelections } = useProductSelections(onlyValid)
 
   if (loading) {
     return <Spin />
@@ -150,6 +151,7 @@ const ProductSelector: React.FC<{
 }
 
 const useProductSelections = (
+  onlyValid?: boolean,
   merchandiseType?:
     | 'MerchandiseSpec'
     | 'GeneralPhysicalMerchandiseSpec'
@@ -159,9 +161,21 @@ const useProductSelections = (
 ) => {
   const { formatMessage } = useIntl()
 
+  const voucherCondition = onlyValid
+    ? {
+        _or: [
+          { ended_at: { _gte: 'now()' } },
+          { started_at: { _is_null: true }, ended_at: { _is_null: true } },
+          { ended_at: { _is_null: true } },
+          { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
+        ],
+        voucher_codes: { remaining: { _nin: [0] } },
+      }
+    : {}
+
   const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SELECTION_COLLECTION>(
     gql`
-      query GET_PRODUCT_SELECTION_COLLECTION {
+      query GET_PRODUCT_SELECTION_COLLECTION($voucherCondition: voucher_plan_bool_exp) {
         program_plan(
           where: {
             program: { is_deleted: { _eq: false } }
@@ -269,14 +283,13 @@ const useProductSelections = (
           id
           title
         }
-        voucher_plan {
+        voucher_plan(where: $voucherCondition) {
           id
           title
         }
       }
     `,
-
-    { fetchPolicy: 'no-cache' },
+    { variables: { voucherCondition }, fetchPolicy: 'no-cache' },
   )
 
   const productSelections: {

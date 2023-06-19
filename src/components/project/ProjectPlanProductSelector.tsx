@@ -38,6 +38,7 @@ const ProjectPlanProductSelector: React.FC<ProjectPlanProductSelectorProps> = ({
             <div className="d-flex mb-2">
               <ProductSelector
                 value={projectPlanProduct.id ? [projectPlanProduct.id] : []}
+                onlyValid={true}
                 onChange={products =>
                   onChange?.([
                     ...projectPlanProducts.slice(0, idx),
@@ -45,7 +46,14 @@ const ProjectPlanProductSelector: React.FC<ProjectPlanProductSelectorProps> = ({
                     ...projectPlanProducts.slice(idx + 1),
                   ])
                 }
-                allowTypes={['ProgramPlan', 'ProgramPackagePlan', 'ActivityTicket', 'PodcastProgram', 'Card']}
+                allowTypes={[
+                  'ProgramPlan',
+                  'ProgramPackagePlan',
+                  'ActivityTicket',
+                  'PodcastProgram',
+                  'Card',
+                  'VoucherPlan',
+                ]}
               />
               <InputNumber
                 className="ml-3"
