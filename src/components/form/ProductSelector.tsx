@@ -150,15 +150,7 @@ const ProductSelector: React.FC<{
   )
 }
 
-const useProductSelections = (
-  onlyValid?: boolean,
-  merchandiseType?:
-    | 'MerchandiseSpec'
-    | 'GeneralPhysicalMerchandiseSpec'
-    | 'GeneralVirtualMerchandiseSpec'
-    | 'CustomizedPhysicalMerchandiseSpec'
-    | 'CustomizedVirtualMerchandiseSpec',
-) => {
+const useProductSelections = (onlyValid?: boolean) => {
   const { formatMessage } = useIntl()
 
   const voucherCondition = onlyValid
