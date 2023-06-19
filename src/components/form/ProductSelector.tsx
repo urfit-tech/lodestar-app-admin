@@ -6,6 +6,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { commonMessages, errorMessages } from '../../helpers/translation'
+import formMessages from './translation'
 
 const productTypeLabel = (productType: string) => {
   switch (productType) {
@@ -25,6 +26,14 @@ const productTypeLabel = (productType: string) => {
       return commonMessages.label.allMerchandise
     case 'MerchandiseSpec':
       return commonMessages.label.allMerchandiseSpec
+    case 'GeneralPhysicalMerchandiseSpec':
+      return formMessages.ProductSelector.generalPhysicalMerchandiseSpec
+    case 'GeneralVirtualMerchandiseSpec':
+      return formMessages.ProductSelector.generalVirtualMerchandiseSpec
+    case 'CustomizedPhysicalMerchandiseSpec':
+      return formMessages.ProductSelector.customizedPhysicalMerchandiseSpec
+    case 'CustomizedVirtualMerchandiseSpec':
+      return formMessages.ProductSelector.customizedVirtualMerchandiseSpec
     case 'ProjectPlan':
       return commonMessages.label.allProjectPlan
     case 'AppointmentPlan':
@@ -45,9 +54,17 @@ const messages = defineMessages({
 })
 
 const ProductSelector: React.FC<{
-  allowTypes: (ProductType | 'CouponPlan')[]
+  allowTypes: (
+    | ProductType
+    | 'CouponPlan'
+    | 'GeneralPhysicalMerchandiseSpec'
+    | 'GeneralVirtualMerchandiseSpec'
+    | 'CustomizedPhysicalMerchandiseSpec'
+    | 'CustomizedVirtualMerchandiseSpec'
+  )[]
   multiple?: boolean
   value?: string[]
+  onlyValid?: boolean
   onChange?: (value: string[]) => void
   onProductChange?: (
     value: {
@@ -59,9 +76,9 @@ const ProductSelector: React.FC<{
     }[],
   ) => void
   onFullSelected?: (types: (ProductType | 'CouponPlan')[]) => void
-}> = ({ allowTypes, multiple, value, onChange, onProductChange, onFullSelected }) => {
+}> = ({ allowTypes, multiple, value, onlyValid, onChange, onProductChange, onFullSelected }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, productSelections } = useProductSelections()
+  const { loading, error, productSelections } = useProductSelections(onlyValid)
 
   if (loading) {
     return <Spin />
@@ -133,12 +150,32 @@ const ProductSelector: React.FC<{
   )
 }
 
-const useProductSelections = () => {
+const useProductSelections = (
+  onlyValid?: boolean,
+  merchandiseType?:
+    | 'MerchandiseSpec'
+    | 'GeneralPhysicalMerchandiseSpec'
+    | 'GeneralVirtualMerchandiseSpec'
+    | 'CustomizedPhysicalMerchandiseSpec'
+    | 'CustomizedVirtualMerchandiseSpec',
+) => {
   const { formatMessage } = useIntl()
+
+  const voucherCondition = onlyValid
+    ? {
+        _or: [
+          { ended_at: { _gte: 'now()' } },
+          { started_at: { _is_null: true }, ended_at: { _is_null: true } },
+          { ended_at: { _is_null: true } },
+          { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
+        ],
+        voucher_codes: { remaining: { _nin: [0] } },
+      }
+    : {}
 
   const { loading, error, data, refetch } = useQuery<hasura.GET_PRODUCT_SELECTION_COLLECTION>(
     gql`
-      query GET_PRODUCT_SELECTION_COLLECTION {
+      query GET_PRODUCT_SELECTION_COLLECTION($voucherCondition: voucher_plan_bool_exp) {
         program_plan(
           where: {
             program: { is_deleted: { _eq: false } }
@@ -208,6 +245,8 @@ const useProductSelections = () => {
           id
           title
           published_at
+          is_customized
+          is_physical
           merchandise_specs {
             id
             title
@@ -244,17 +283,23 @@ const useProductSelections = () => {
           id
           title
         }
-        voucher_plan {
+        voucher_plan(where: $voucherCondition) {
           id
           title
         }
       }
     `,
-    { fetchPolicy: 'no-cache' },
+    { variables: { voucherCondition }, fetchPolicy: 'no-cache' },
   )
 
   const productSelections: {
-    productType: ProductType | 'CouponPlan'
+    productType:
+      | ProductType
+      | 'CouponPlan'
+      | 'GeneralPhysicalMerchandiseSpec'
+      | 'GeneralVirtualMerchandiseSpec'
+      | 'CustomizedPhysicalMerchandiseSpec'
+      | 'CustomizedVirtualMerchandiseSpec'
     products: {
       id: string
       title: string
@@ -330,13 +375,65 @@ const useProductSelections = () => {
     {
       productType: 'MerchandiseSpec',
       products:
-        data?.merchandise.flatMap(v =>
-          v.merchandise_specs.flatMap(spec => ({
+        data?.merchandise.flatMap(w =>
+          w.merchandise_specs.flatMap(spec => ({
             id: `MerchandiseSpec_${spec.id}`,
-            title: `${v.title} - ${spec.title}`,
-            publishedAt: v.published_at ? new Date(v.published_at) : null,
+            title: `${w.title} - ${spec.title}`,
+            publishedAt: w.published_at ? new Date(w.published_at) : null,
           })),
         ) || [],
+    },
+    {
+      productType: 'GeneralPhysicalMerchandiseSpec',
+      products:
+        data?.merchandise
+          .filter(v => !v.is_customized && v.is_physical)
+          .flatMap(w =>
+            w.merchandise_specs.flatMap(spec => ({
+              id: `MerchandiseSpec_${spec.id}`,
+              title: `${w.title} - ${spec.title}`,
+              publishedAt: w.published_at ? new Date(w.published_at) : null,
+            })),
+          ) || [],
+    },
+    {
+      productType: 'GeneralVirtualMerchandiseSpec',
+      products:
+        data?.merchandise
+          .filter(v => !v.is_customized && !v.is_physical)
+          .flatMap(w =>
+            w.merchandise_specs.flatMap(spec => ({
+              id: `MerchandiseSpec_${spec.id}`,
+              title: `${w.title} - ${spec.title}`,
+              publishedAt: w.published_at ? new Date(w.published_at) : null,
+            })),
+          ) || [],
+    },
+    {
+      productType: 'CustomizedPhysicalMerchandiseSpec',
+      products:
+        data?.merchandise
+          .filter(v => v.is_customized && v.is_physical)
+          .flatMap(w =>
+            w.merchandise_specs.flatMap(spec => ({
+              id: `MerchandiseSpec_${spec.id}`,
+              title: `${w.title} - ${spec.title}`,
+              publishedAt: w.published_at ? new Date(w.published_at) : null,
+            })),
+          ) || [],
+    },
+    {
+      productType: 'CustomizedVirtualMerchandiseSpec',
+      products:
+        data?.merchandise
+          .filter(v => v.is_customized && !v.is_physical)
+          .flatMap(w =>
+            w.merchandise_specs.flatMap(spec => ({
+              id: `MerchandiseSpec_${spec.id}`,
+              title: `${w.title} - ${spec.title}`,
+              publishedAt: w.published_at ? new Date(w.published_at) : null,
+            })),
+          ) || [],
     },
     {
       productType: 'ProjectPlan',
