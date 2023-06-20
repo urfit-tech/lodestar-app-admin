@@ -233,7 +233,7 @@ const useProductSelections = (onlyValid?: boolean) => {
           id
           title
         }
-        merchandise {
+        merchandise(where: { published_at: { _is_null: false } }) {
           id
           title
           published_at
