@@ -77,7 +77,7 @@ const ProjectCollectionBlock: React.FC<{
 
   return (
     <>
-      {withSortingButton && (
+      {withSortingButton && projectType !== 'portfolio' && (
         <div className="text-right">
           <ItemsSortingModal
             items={projectSorts}
@@ -193,7 +193,7 @@ const useProjectPreviewCollection = (
                 ...condition,
                 ...(Object.keys(Array.isArray(orderBy) ? orderBy[0] : orderBy)[0] === 'position'
                   ? { position: { _gt: data?.project.slice(-1)[0]?.position } }
-                  : { created_at: { _lt: data?.project.slice(-1)[0]?.created_at } }),
+                  : { published_at: { _lt: data?.project.slice(-1)[0]?.published_at } }),
               },
               limit: 10,
             },
