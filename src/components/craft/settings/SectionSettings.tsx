@@ -102,7 +102,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                     : e.target.value === 'center'
                     ? 'center'
                     : e.target.value === 'none'
-                    ? 'none'
+                    ? 'initial'
                     : undefined
                   : props.customStyle?.justifyContent,
                 alignItems: props.horizontal
@@ -114,7 +114,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                   : e.target.value === 'center'
                   ? 'center'
                   : e.target.value === 'none'
-                  ? 'none'
+                  ? 'initial'
                   : undefined,
               },
             })
@@ -144,7 +144,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                   : e.target.value === 'center'
                   ? 'center'
                   : e.target.value === 'none'
-                  ? ''
+                  ? 'initial'
                   : undefined,
                 alignItems: props.horizontal
                   ? e.target.value === 'top'
@@ -154,7 +154,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                     : e.target.value === 'center'
                     ? 'center'
                     : e.target.value === 'none'
-                    ? ''
+                    ? 'initial'
                     : undefined
                   : props.customStyle?.alignItems,
               },
