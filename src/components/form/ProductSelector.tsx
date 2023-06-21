@@ -162,6 +162,8 @@ const useProductSelections = (onlyValid?: boolean) => {
           { started_at: { _is_null: true }, ended_at: { _gte: 'now()' } },
         ],
         voucher_codes: { remaining: { _nin: [0] } },
+        sale_price: { _is_null: false },
+        sale_amount: { _is_null: false },
       }
     : {}
 
