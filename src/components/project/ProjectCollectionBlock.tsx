@@ -35,7 +35,6 @@ const ProjectCollectionBlock: React.FC<{
         ...condition,
         title: search ? { _like: `%${search}%` } : undefined,
       },
-      currentMemberId || '',
       orderBy,
     )
   const {
@@ -150,7 +149,6 @@ const ProjectCollectionBlock: React.FC<{
 
 const useProjectPreviewCollection = (
   condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition'],
-  memberId: string,
   orderBy: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy'] = [
     { created_at: 'desc_nulls_last' as hasura.order_by },
   ],
