@@ -35,7 +35,6 @@ const ProjectCollectionBlock: React.FC<{
         ...condition,
         title: search ? { _like: `%${search}%` } : undefined,
       },
-      currentMemberId || '',
       orderBy,
     )
   const {
@@ -77,7 +76,7 @@ const ProjectCollectionBlock: React.FC<{
 
   return (
     <>
-      {withSortingButton && (
+      {withSortingButton && projectType !== 'portfolio' && (
         <div className="text-right">
           <ItemsSortingModal
             items={projectSorts}
@@ -150,7 +149,6 @@ const ProjectCollectionBlock: React.FC<{
 
 const useProjectPreviewCollection = (
   condition: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition'],
-  memberId: string,
   orderBy: hasura.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy'] = [
     { created_at: 'desc_nulls_last' as hasura.order_by },
   ],
@@ -193,7 +191,7 @@ const useProjectPreviewCollection = (
                 ...condition,
                 ...(Object.keys(Array.isArray(orderBy) ? orderBy[0] : orderBy)[0] === 'position'
                   ? { position: { _gt: data?.project.slice(-1)[0]?.position } }
-                  : { created_at: { _lt: data?.project.slice(-1)[0]?.created_at } }),
+                  : { published_at: { _lt: data?.project.slice(-1)[0]?.published_at } }),
               },
               limit: 10,
             },

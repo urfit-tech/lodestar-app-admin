@@ -46,7 +46,10 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         _or: [{ expired_at: { _gt: 'now()' } }, { expired_at: { _is_null: true } }],
         creator_id: creatorId,
       },
-      orderBy: [{ published_at: 'desc' as hasura.order_by }, { position: 'asc' as hasura.order_by }],
+      orderBy:
+        projectType === 'portfolio'
+          ? { published_at: 'desc' as hasura.order_by }
+          : [{ published_at: 'desc' as hasura.order_by }, { position: 'asc' as hasura.order_by }],
       withSortingButton: true,
     },
     {
