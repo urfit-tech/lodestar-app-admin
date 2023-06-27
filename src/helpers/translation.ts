@@ -1197,6 +1197,7 @@ export const memberMessages = {
     meetingLink: { id: 'member.label.meetingLink', defaultMessage: '會議連結' },
     hasMeeting: { id: 'member.label.hasMeeting', defaultMessage: '新增線上會議連結' },
     createMeeting: { id: 'member.label.createMeeting', defaultMessage: '產生會議連結' },
+    meetingHours: { id: 'member.label.meetingHours', defaultMessage: '會議時長' },
   }),
   text: {
     duplicatedPhoneMember: {

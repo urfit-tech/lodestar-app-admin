@@ -26,7 +26,7 @@ const JitsiDemoModal: React.FC<
     member: {
       id: string
       name: string
-    } | null
+    } | undefined | null
     salesMember: {
       id: string
       name: string
