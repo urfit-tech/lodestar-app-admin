@@ -1144,6 +1144,7 @@
   "craft.SectionSettings.layout": "Tata Letak",
   "craft.SectionSettings.left": "Kiri",
   "craft.SectionSettings.link": "Tautan",
+  "craft.SectionSettings.none": "none",
   "craft.SectionSettings.normal": "Normal",
   "craft.SectionSettings.openNewTab": "Buka Tab Baru",
   "craft.SectionSettings.right": "Kanan",
