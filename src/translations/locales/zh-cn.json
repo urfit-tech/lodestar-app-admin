@@ -1144,6 +1144,7 @@
   "craft.SectionSettings.layout": "排列方式",
   "craft.SectionSettings.left": "置左",
   "craft.SectionSettings.link": "连结",
+  "craft.SectionSettings.none": "无",
   "craft.SectionSettings.normal": "正常",
   "craft.SectionSettings.openNewTab": "另开分页",
   "craft.SectionSettings.right": "置右",
