@@ -115,7 +115,7 @@ const MemberExportModal: React.FC<{
       toast({
         title: formatMessage(commonMessages.text.exportMember),
         status: 'success',
-        duration: 1500,
+        duration: 3000,
         position: 'top',
       })
     } catch (error) {
