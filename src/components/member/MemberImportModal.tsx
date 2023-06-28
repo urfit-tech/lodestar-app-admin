@@ -54,7 +54,6 @@ const MemberImportModal: React.FC<{
             }}
             accept=".csv,.xlsx,.xls"
             onChange={info => {
-              console.log(info)
               if (info.file.status === 'done') {
                 const response = info.file.response
                 response.name = info.file.name
