@@ -42,6 +42,8 @@ type Filter = {
   managerId?: string
   starRange: [number, number]
   starRangeIsNull: boolean
+  completedAtIsNull: boolean
+  closedAtIsNull: boolean
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -59,6 +61,8 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     lastCalledRange: null,
     lastAnsweredRange: null,
     starRangeIsNull: false,
+    completedAtIsNull: false,
+    closedAtIsNull: false,
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -141,6 +145,8 @@ const FilterSection: React.FC<{
 }> = ({ filter, onNext }) => {
   const { formatMessage } = useIntl()
   const [starRangeIsNull, setStarRangeIsNull] = useState(false)
+  const [completedAtIsNull, setCompletedAtIsNull] = useState(false)
+  const [closedAtIsNull, setClosedAtIsNull] = useState(false)
   const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
   const { loadingProperties, properties } = useProperty()
   const { currentMemberId } = useAuth()
@@ -222,6 +228,20 @@ const FilterSection: React.FC<{
             />
           </Form.Item>
         </Input.Group>
+      </Form.Item>
+      <Form.Item
+        name="completedAtIsNull"
+        valuePropName="checked"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.completedAtIsNull)}
+      >
+        <Checkbox onChange={e => setCompletedAtIsNull(e.target.checked)} />
+      </Form.Item>
+      <Form.Item
+        name="closedAtIsNull"
+        valuePropName="checked"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedAtIsNull)}
+      >
+        <Checkbox onChange={e => setClosedAtIsNull(e.target.checked)} />
       </Form.Item>
       {!currentMemberId || loadingProperties ? (
         <Spin />
@@ -331,6 +351,16 @@ const ConfirmSection: React.FC<{
       ? {
           _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
           _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
+        }
+      : undefined,
+    completed_at: filter.completedAtIsNull
+      ? {
+          _is_null: true,
+        }
+      : undefined,
+    closed_at: filter.closedAtIsNull
+      ? {
+          _is_null: true,
         }
       : undefined,
     _and: properties.map(property => {

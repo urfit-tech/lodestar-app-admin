@@ -29,5 +29,10 @@ export const salesLeadDeliveryPageMessages = {
     exactMatch: { id: 'page.salesLeadDeliveryPage.exactMatch', defaultMessage: '完全匹配' },
     lastCalledRange: { id: 'page.salesLeadDeliveryPage.lastCalledRange', defaultMessage: '上次撥打日期' },
     lastAnsweredRange: { id: 'page.salesLeadDeliveryPage.lastContactRange', defaultMessage: '上次接通日期' },
+    completedAtIsNull: {
+      id: 'page.salesLeadDeliveryPage.completedAtIsNull',
+      defaultMessage: 'exclude the completed ones',
+    },
+    closedAtIsNull: { id: 'page.salesLeadDeliveryPage.closedAtIsNull', defaultMessage: 'exclude the closed ones' },
   }),
 }
