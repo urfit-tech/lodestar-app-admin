@@ -30,7 +30,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
         ? 'right'
         : props.customStyle?.justifyContent === 'center'
         ? 'center'
-        : ''
+        : 'none'
     verticalAlign =
       props.customStyle?.alignItems === 'start'
         ? 'top'
@@ -38,7 +38,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
         ? 'bottom'
         : props.customStyle?.alignItems === 'center'
         ? 'center'
-        : ''
+        : 'none'
   } else {
     horizontalAlign =
       props.customStyle?.alignItems === 'start'
@@ -47,7 +47,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
         ? 'right'
         : props.customStyle?.alignItems === 'center'
         ? 'center'
-        : ''
+        : 'none'
     verticalAlign =
       props.customStyle?.justifyContent === 'start'
         ? 'top'
@@ -55,7 +55,7 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
         ? 'bottom'
         : props.customStyle?.justifyContent === 'center'
         ? 'center'
-        : ''
+        : 'none'
   }
   return (
     <Form form={form} layout="vertical" colon={false} requiredMark={false} onValuesChange={handleChange}>
@@ -101,6 +101,8 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                     ? 'end'
                     : e.target.value === 'center'
                     ? 'center'
+                    : e.target.value === 'none'
+                    ? 'initial'
                     : undefined
                   : props.customStyle?.justifyContent,
                 alignItems: props.horizontal
@@ -111,11 +113,14 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                   ? 'end'
                   : e.target.value === 'center'
                   ? 'center'
+                  : e.target.value === 'none'
+                  ? 'initial'
                   : undefined,
               },
             })
           }
         >
+          <Radio.Button value="none">{formatMessage(craftMessages.SectionSettings.none)}</Radio.Button>
           <Radio.Button value="left">{formatMessage(craftMessages.SectionSettings.left)}</Radio.Button>
           <Radio.Button value="center">{formatMessage(craftMessages.SectionSettings.center)}</Radio.Button>
           <Radio.Button value="right">{formatMessage(craftMessages.SectionSettings.right)}</Radio.Button>
@@ -138,6 +143,8 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                   ? 'end'
                   : e.target.value === 'center'
                   ? 'center'
+                  : e.target.value === 'none'
+                  ? 'initial'
                   : undefined,
                 alignItems: props.horizontal
                   ? e.target.value === 'top'
@@ -146,12 +153,15 @@ const SectionSettings: CraftElementSettings<SectionProps> = ({ props, onPropsCha
                     ? 'end'
                     : e.target.value === 'center'
                     ? 'center'
+                    : e.target.value === 'none'
+                    ? 'initial'
                     : undefined
                   : props.customStyle?.alignItems,
               },
             })
           }
         >
+          <Radio.Button value="none">{formatMessage(craftMessages.SectionSettings.none)}</Radio.Button>
           <Radio.Button value="top">{formatMessage(craftMessages.SectionSettings.top)}</Radio.Button>
           <Radio.Button value="center">{formatMessage(craftMessages.SectionSettings.center)}</Radio.Button>
           <Radio.Button value="bottom">{formatMessage(craftMessages.SectionSettings.bottom)}</Radio.Button>

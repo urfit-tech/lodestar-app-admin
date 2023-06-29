@@ -23,10 +23,13 @@ const JitsiWrapper = styled.div`
 
 const JitsiDemoModal: React.FC<
   ModalProps & {
-    member: {
-      id: string
-      name: string
-    } | null
+    member:
+      | {
+          id: string
+          name: string
+        }
+      | undefined
+      | null
     salesMember: {
       id: string
       name: string

@@ -162,6 +162,12 @@ export type MemberTaskProps = {
   dueAt: Date | null
   createdAt: Date | null
   hasMeeting: boolean
+  meetingHours: number
+  meet: {
+    id: string | any
+    nbfAt: Date | null
+    expAt: Date | null
+  }
   description: string | null
   member: {
     id: string
