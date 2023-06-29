@@ -1,20 +1,20 @@
-import Icon, { LoadingOutlined, MoreOutlined } from '@ant-design/icons'
+import Icon, { MoreOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Text } from '@chakra-ui/react'
-import { Button, DatePicker, Dropdown, Form, Input, Menu, Select, Spin } from 'antd'
+import { Button, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Select } from 'antd'
 import Checkbox from 'antd/lib/checkbox/Checkbox'
 import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
-import { handleError } from '../../helpers'
+import { createMeeting, deleteMeeting, handleError, updateMeeting } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
-import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import { MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -33,11 +33,6 @@ const StyledFormItemWrapper = styled.div`
     width: 100%;
   }
 `
-const MeetingButton = styled(Button)`
-  width: 100%;
-  border-radius: 4px;
-  justify-content: center;
-`
 
 type FieldProps = {
   title: string
@@ -49,6 +44,7 @@ type FieldProps = {
   dueAt: Moment | null
   description: string | null
   hasMeeting: boolean
+  meetingHours: number
 }
 
 const MemberTaskAdminModal: React.FC<
@@ -56,79 +52,85 @@ const MemberTaskAdminModal: React.FC<
     memberTask?: MemberTaskProps
     initialMemberId?: string
     initialExecutorId?: string
-    meetingButtonOnClick?: () => void
     onRefetch?: () => void
   } & AdminModalProps
-> = ({ memberTask, initialMemberId, meetingButtonOnClick, initialExecutorId, onRefetch, onCancel, ...props }) => {
-  const { currentMemberId } = useAuth()
+> = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
+  const { currentMemberId, authToken } = useAuth()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [insertTask] = useMutation<hasura.INSERT_TASK, hasura.INSERT_TASKVariables>(INSERT_TASK)
   const [deleteTask] = useMutation<hasura.DELETE_TASK, hasura.DELETE_TASKVariables>(DELETE_TASK)
   const [loading, setLoading] = useState(false)
-  const [meetingLoading, setMeetingLoading] = useState(false)
+  const { id: appId } = useApp()
 
   const handleSubmit = (onSuccess?: () => void) => {
+    setLoading(true)
     form
       .validateFields()
-      .then(() => {
-        setLoading(true)
+      .then(async () => {
         const values = form.getFieldsValue()
-        if (memberTask) {
-          insertTask({
-            variables: {
-              data: [
-                {
-                  id: memberTask.id,
-                  title: values.title || '',
-                  category_id: values.categoryId,
-                  member_id: values.memberId,
-                  executor_id: values.executorId,
-                  priority: values.priority,
-                  status: values.status,
-                  due_at: values.dueAt?.toDate(),
-                  description: values.description || '',
-                  has_meeting: values.hasMeeting,
-                  author_id: currentMemberId,
-                },
-              ],
-            },
-          })
-            .then(() => {
-              onRefetch?.()
-              onSuccess?.()
-            })
-            .catch(handleError)
-            .finally(() => setLoading(false))
-        } else {
-          insertTask({
-            variables: {
-              data: [
-                {
-                  title: values.title || '',
-                  category_id: values.categoryId,
-                  member_id: values.memberId,
-                  executor_id: values.executorId,
-                  priority: values.priority,
-                  status: values.status,
-                  due_at: values.dueAt?.toDate(),
-                  description: values.description || '',
-                  has_meeting: values.hasMeeting,
-                  author_id: currentMemberId,
-                },
-              ],
-            },
-          })
-            .then(() => {
-              onRefetch?.()
-              onSuccess?.()
-              form.resetFields()
-            })
-            .catch(handleError)
-            .finally(() => setLoading(false))
+        let meetId = memberTask?.meet.id
+        // check if meeting time changed
+        const isMeetingTimeChanged =
+          values.dueAt?.format('YYYY-MM-DD HH:mm:ss') !== moment(memberTask?.dueAt).format('YYYY-MM-DD HH:mm:ss') ||
+          values.meetingHours !== memberTask?.meetingHours
+
+        // if hasMeeting is true and there is no meet id => create meet
+        if (values.hasMeeting && !memberTask?.meet.id) {
+          const createResult = await createMeeting(values.memberId, values.dueAt, values.meetingHours, appId, authToken)
+          meetId = createResult?.meetId
+          if (!createResult?.continueInsertTask) return
         }
+        // if hasMeeting is true, meeting time change and there is meet id => update meet
+        if (values.hasMeeting && memberTask?.meet.id && isMeetingTimeChanged) {
+          const updateResult = await updateMeeting(
+            memberTask?.meet.id,
+            values.memberId,
+            values.dueAt,
+            values.meetingHours,
+            appId,
+            authToken,
+          )
+          meetId = updateResult?.meetId
+          if (!updateResult?.continueInsertTask) return
+          // if user want to use jitsi instead of zoom , delete meeting
+          if (updateResult?.continueInsertTask && !meetId) {
+            await deleteMeeting(memberTask?.meet.id, authToken)
+          }
+        }
+        // if hasMeeting is false and there is meet id => soft delete meet
+        if (!values.hasMeeting && memberTask?.meet.id) {
+          await deleteMeeting(memberTask?.meet.id, authToken)
+          meetId = null
+        }
+        const insertTaskData = {
+          title: values.title || '',
+          category_id: values.categoryId,
+          member_id: values.memberId,
+          executor_id: values.executorId,
+          priority: values.priority,
+          status: values.status,
+          due_at: values.dueAt?.toDate(),
+          description: values.description || '',
+          has_meeting: values.hasMeeting,
+          author_id: currentMemberId,
+          meet_id: meetId,
+          meeting_hours: values.meetingHours,
+        }
+        if (memberTask) {
+          Object.assign(insertTaskData, { id: memberTask.id })
+        }
+        await insertTask({
+          variables: {
+            data: [insertTaskData],
+          },
+        })
+        onRefetch?.()
+        onSuccess?.()
+        if (!memberTask) form.resetFields() //reset field when using createTask button
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -155,11 +157,12 @@ const MemberTaskAdminModal: React.FC<
                 <Menu>
                   <Menu.Item
                     className="cursor-pointer"
-                    onClick={() =>
-                      deleteTask({ variables: { taskId: memberTask.id } })
-                        .then(() => onRefetch?.())
-                        .catch(handleError)
-                    }
+                    onClick={async () => {
+                      setLoading(true)
+                      await deleteTask({ variables: { taskId: memberTask.id } }).catch(handleError)
+                      await deleteMeeting(memberTask.meet.id, authToken).catch(handleError)
+                      onRefetch?.()
+                    }}
                   >
                     {formatMessage(commonMessages.ui.delete)}
                   </Menu.Item>
@@ -188,6 +191,7 @@ const MemberTaskAdminModal: React.FC<
           status: memberTask?.status || 'pending',
           dueAt: memberTask?.dueAt ? moment(memberTask.dueAt) : null,
           hasMeeting: memberTask?.hasMeeting,
+          meetingHours: memberTask?.meetingHours,
           description: memberTask?.description || '',
         }}
       >
@@ -280,7 +284,22 @@ const MemberTaskAdminModal: React.FC<
           </div>
         </div>
 
-        <Form.Item label={formatMessage(memberMessages.label.dueDate)} name="dueAt">
+        <Form.Item
+          label={formatMessage(memberMessages.label.dueDate)}
+          name="dueAt"
+          rules={[
+            formInstance => ({
+              message: '若要開啟會議，到期日為必填。',
+              validator(_, value) {
+                const hasMeeting = formInstance.getFieldValue('hasMeeting')
+                if (hasMeeting && !value) {
+                  return Promise.reject(new Error())
+                }
+                return Promise.resolve()
+              },
+            }),
+          ]}
+        >
           <DatePicker
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
@@ -288,35 +307,29 @@ const MemberTaskAdminModal: React.FC<
           />
         </Form.Item>
         <Form.Item label={formatMessage(memberMessages.label.meetingLink)} name="hasMeeting" valuePropName="checked">
-          {memberTask?.hasMeeting ? (
-            <MeetingButton
-              size="large"
-              type="primary"
-              onClick={async () => {
-                if (meetingLoading) return
-                setMeetingLoading(() => true)
-                await meetingButtonOnClick?.()
-                setMeetingLoading(() => false)
-              }}
-            >
-              <div className="d-flex align-items-center">
-                {meetingLoading ? (
-                  <div className="mr-2">
-                    <Spin size="small" className="mb-2" indicator={<LoadingOutlined style={{ color: 'white' }} />} />
-                  </div>
-                ) : (
-                  <MeetingIcon className="mr-2" />
-                )}
-                {formatMessage(memberMessages.label.createMeeting)}
-              </div>
-            </MeetingButton>
-          ) : (
-            <Checkbox style={{ display: 'flex', alignItems: 'center' }}>
-              <Text color="var(--gary-dark)" size="sm">
-                {formatMessage(memberMessages.label.hasMeeting)}
-              </Text>
-            </Checkbox>
-          )}
+          <Checkbox style={{ display: 'flex', alignItems: 'center' }}>
+            <Text color="var(--gary-dark)" size="sm">
+              {formatMessage(memberMessages.label.hasMeeting)}
+            </Text>
+          </Checkbox>
+        </Form.Item>
+        <Form.Item
+          label={formatMessage(memberMessages.label.meetingHours)}
+          name="meetingHours"
+          rules={[
+            formInstance => ({
+              message: '若要開啟會議，會議時長為必填。',
+              validator(_, value) {
+                const hasMeeting = formInstance.getFieldValue('hasMeeting')
+                if (hasMeeting && !value) {
+                  return Promise.reject(new Error())
+                }
+                return Promise.resolve()
+              },
+            }),
+          ]}
+        >
+          <InputNumber min={0} />
         </Form.Item>
         <Form.Item label={formatMessage(memberMessages.label.taskDescription)} name="description">
           <TextArea />
@@ -332,7 +345,19 @@ const INSERT_TASK = gql`
       objects: $data
       on_conflict: {
         constraint: member_task_pkey
-        update_columns: [title, category_id, member_id, executor_id, priority, status, due_at, description, has_meeting]
+        update_columns: [
+          title
+          category_id
+          member_id
+          executor_id
+          priority
+          status
+          due_at
+          description
+          has_meeting
+          meet_id
+          meeting_hours
+        ]
       }
     ) {
       affected_rows

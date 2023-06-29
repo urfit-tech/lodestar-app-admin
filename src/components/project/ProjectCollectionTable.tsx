@@ -63,12 +63,6 @@ const ProjectCollectionTable: React.FC<{
       ),
     },
     {
-      key: 'author',
-      width: '20%',
-      title: formatMessage(projectMessages.ProjectCollectionTable.author),
-      render: (text, record, index) => <StyledAuthorName>{record.author?.name}</StyledAuthorName>,
-    },
-    {
       width: '10%',
       filterDropdown: () => (
         <div className="p-2">
@@ -84,6 +78,12 @@ const ProjectCollectionTable: React.FC<{
         </div>
       ),
       filterIcon,
+    },
+    {
+      key: 'author',
+      width: '20%',
+      title: formatMessage(projectMessages.ProjectCollectionTable.author),
+      render: (text, record, index) => <StyledAuthorName>{record.author?.name}</StyledAuthorName>,
     },
   ]
 
