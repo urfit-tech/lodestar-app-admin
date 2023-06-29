@@ -11,6 +11,8 @@ export type LeadStatus =
   | 'DEAD'
   | 'FOLLOWED'
   | 'ANSWERED'
+  | 'COMPLETED'
+  
 export type Manager = {
   id: string
   avatarUrl: string | null

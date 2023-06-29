@@ -286,6 +286,7 @@ export const commonMessages = {
     portfolioPublishSettings: { id: 'common.label.portfolioPublishSettings', defaultMessage: 'Publish settings' },
     reason: { id: 'common.label.reason', defaultMessage: 'reason' },
     emailForEnglish: { id: 'common.label.emailForEnglish', defaultMessage: 'Email' },
+    addPhones: { id: 'common.label.addPhones', defaultMessage: 'Add phone number' },
   }),
   text: defineMessages({
     memberEditable: { id: 'common.text.memberEditable', defaultMessage: '會員可編輯' },
@@ -332,6 +333,10 @@ export const commonMessages = {
       defaultMessage: 'Recommend image size: 1200*630px',
     },
     applyingProjectRole: { id: 'common.text.applyingProjectRole', defaultMessage: '{name} 申請標成為「{identity}」' },
+    exportMember: {
+      id: 'common.text.exportMember',
+      defaultMessage: '已成功送出匯出請求，完成後將會將下載連結寄送到信箱。',
+    },
   }),
   event: defineMessages({
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
@@ -607,6 +612,15 @@ export const appointmentMessages = {
     reservationType: { id: 'appointment.label.reservationType', defaultMessage: '時間單位' },
     creator: { id: 'appointment.label.creator', defaultMessage: '講師' },
     member: { id: 'appointment.label.member', defaultMessage: '學生' },
+    meetingLink: { id: 'appointment.label.meetingLink', defaultMessage: 'Meeting Link' },
+    automaticallyGenerated: {
+      id: 'appointment.label.automaticallyGenerated',
+      defaultMessage: 'automatically generated',
+    },
+    manuallyDistributed: { id: 'appointment.label.manuallyDistributed', defaultMessage: 'manually distributed' },
+    maximumCapacity: { id: 'appointment.label.maximumCapacity', defaultMessage: 'Maximum Capacity' },
+    unlimited: { id: 'appointment.label.unlimited', defaultMessage: 'unlimited' },
+    limited: { id: 'appointment.label.limited', defaultMessage: 'limited' },
   }),
   status: defineMessages({
     aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
@@ -1192,6 +1206,7 @@ export const memberMessages = {
     meetingLink: { id: 'member.label.meetingLink', defaultMessage: '會議連結' },
     hasMeeting: { id: 'member.label.hasMeeting', defaultMessage: '新增線上會議連結' },
     createMeeting: { id: 'member.label.createMeeting', defaultMessage: '產生會議連結' },
+    meetingHours: { id: 'member.label.meetingHours', defaultMessage: '會議時長' },
   }),
   text: {
     duplicatedPhoneMember: {
@@ -1443,7 +1458,9 @@ export const salesMessages = defineMessages({
   contactedLead: { id: 'sales.label.contactedLead', defaultMessage: '已聯繫名單' },
   invitedLead: { id: 'sales.label.invitedLead', defaultMessage: '已邀約名單' },
   presentedLead: { id: 'sales.label.presentedLead', defaultMessage: '已示範名單' },
-  closedLead: { id: 'sales.label.closedLead', defaultMessage: '已結案' },
+  closedLead: { id: 'sales.label.closedLead', defaultMessage: '結案名單' },
+  completedLead: { id: 'sales.label.completedLead', defaultMessage: '已完成名單' },
+  paidLead: { id: 'sales.label.paidLead', defaultMessage: '既有學員' },
   potentials: { id: 'sales.label.potentials', defaultMessage: '待開發' },
   keepInTouch: { id: 'sales.label.keepInTouch', defaultMessage: '開發中' },
   deals: { id: 'sales.label.deals', defaultMessage: '已成交' },

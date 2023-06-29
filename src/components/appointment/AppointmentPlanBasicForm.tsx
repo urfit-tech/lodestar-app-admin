@@ -7,7 +7,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import { AppointmentPlanAdminProps, ReservationType } from '../../types/appointment'
+import { AppointmentPlanAdminProps, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
 const messages = defineMessages({
@@ -24,6 +24,7 @@ type FieldProps = {
   phone: string
   reservationAmount: number
   reservationType: ReservationType
+  meetGenerationMethod: MeetGenerationMethod
 }
 
 const AppointmentPlanBasicForm: React.FC<{
@@ -52,6 +53,7 @@ const AppointmentPlanBasicForm: React.FC<{
         phone: values.phone,
         reservationAmount: values.reservationAmount,
         reservationType: values.reservationType,
+        meetGenerationMethod: values.meetGenerationMethod,
       },
     })
       .then(() => {
@@ -75,6 +77,7 @@ const AppointmentPlanBasicForm: React.FC<{
         phone: appointmentPlanAdmin.phone,
         reservationAmount: appointmentPlanAdmin.reservationAmount || 0,
         reservationType: appointmentPlanAdmin.reservationType || 'hour',
+        meetGenerationMethod: appointmentPlanAdmin.meetGenerationMethod,
       }}
       onFinish={handleSubmit}
     >
@@ -108,6 +111,7 @@ const AppointmentPlanBasicForm: React.FC<{
       </Form.Item>
 
       <Form.Item
+        className="mb-0"
         label={
           <span className="d-flex align-items-center">
             {formatMessage(appointmentMessages.label.reservationPlan)}
@@ -156,6 +160,17 @@ const AppointmentPlanBasicForm: React.FC<{
         </Input.Group>
       </Form.Item>
 
+      <Form.Item label={formatMessage(appointmentMessages.label.meetingLink)} name="meetGenerationMethod">
+        <Select style={{ width: '150px' }}>
+          <Select.Option key="auto" value="auto">
+            {formatMessage(appointmentMessages.label.automaticallyGenerated)}
+          </Select.Option>
+          <Select.Option key="manual" value="manual">
+            {formatMessage(appointmentMessages.label.manuallyDistributed)}
+          </Select.Option>
+        </Select>
+      </Form.Item>
+
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
@@ -175,10 +190,17 @@ const UPDATE_APPOINTMENT_PLAN_TITLE = gql`
     $phone: String!
     $reservationAmount: numeric
     $reservationType: String
+    $meetGenerationMethod: String
   ) {
     update_appointment_plan(
       where: { id: { _eq: $appointmentPlanId } }
-      _set: { title: $title, phone: $phone, reservation_amount: $reservationAmount, reservation_type: $reservationType }
+      _set: {
+        title: $title
+        phone: $phone
+        reservation_amount: $reservationAmount
+        reservation_type: $reservationType
+        meet_generation_method: $meetGenerationMethod
+      }
     ) {
       affected_rows
     }

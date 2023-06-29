@@ -84,6 +84,7 @@ const craftMessages = {
     left: { id: 'craft.SectionSettings.left', defaultMessage: '置左' },
     right: { id: 'craft.SectionSettings.right', defaultMessage: '置右' },
     center: { id: 'craft.SectionSettings.center', defaultMessage: '置中' },
+    none: { id: 'craft.SectionSettings.none', defaultMessage: 'none' },
     top: { id: 'craft.SectionSettings.top', defaultMessage: '置頂' },
     bottom: { id: 'craft.SectionSettings.bottom', defaultMessage: '置底' },
     normal: { id: 'craft.SectionSettings.normal', defaultMessage: '正常' },

@@ -1,5 +1,6 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
+import { Spinner } from '@chakra-ui/react'
 import { Button, Checkbox, Form, Input, InputNumber, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ModalProps } from 'antd/lib/modal'
@@ -10,12 +11,14 @@ import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
+import { useMutateProductLevel, useProductLevel } from '../../hooks/data'
 import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminModal from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
+import programPackageMessages from './translation'
 
 const messages = defineMessages({
   allowTempoDelivery: { id: 'programPackage.ui.allowTempoDelivery', defaultMessage: '啟用節奏交付' },
@@ -58,6 +61,7 @@ type FieldProps = {
   sale: SaleProps
   discountDownPrice?: number
   description: EditorState
+  productLevel?: number
 }
 
 type ProgramPackagePlanType = 'perpetual' | 'period' | 'subscription'
@@ -79,6 +83,8 @@ const ProgramPackagePlanAdminModal: React.FC<
     hasura.INSERT_PROGRAM_PACKAGE_PLAN,
     hasura.INSERT_PROGRAM_PACKAGE_PLANVariables
   >(INSERT_PROGRAM_PACKAGE_PLAN)
+  const { loading: loadingProductLevel, productLevel } = useProductLevel(`ProgramPackagePlan_${plan?.id}`)
+  const { updateProductLevel } = useMutateProductLevel()
 
   const [loading, setLoading] = useState(false)
 
@@ -95,7 +101,8 @@ const ProgramPackagePlanAdminModal: React.FC<
       .validateFields()
       .then(() => {
         setLoading(true)
-        const values = form.getFieldsValue()
+        const values: FieldProps = form.getFieldsValue()
+
         insertProgramPackagePlan({
           variables: {
             data: {
@@ -117,7 +124,14 @@ const ProgramPackagePlanAdminModal: React.FC<
             },
           },
         })
-          .then(() => {
+          .then(res => {
+            const programPackagePlanId = res.data?.insert_program_package_plan?.returning?.[0].id
+            if (enabledModules.product_level && programPackagePlanId) {
+              updateProductLevel({
+                variables: { productId: `ProgramPackagePlan_${programPackagePlanId}`, level: values.productLevel },
+              }).catch(e => handleError(e))
+            }
+
             setVisible && setVisible(false)
             onRefetch?.()
           })
@@ -179,6 +193,7 @@ const ProgramPackagePlanAdminModal: React.FC<
 
           discountDownPrice: plan?.discountDownPrice || null,
           description: BraftEditor.createEditorState(plan?.description),
+          productLevel: productLevel,
         }}
       >
         <Form.Item
@@ -239,6 +254,19 @@ const ProgramPackagePlanAdminModal: React.FC<
             </Form.Item>
           </Form.Item>
         )}
+
+        {enabledModules.product_level ? (
+          loadingProductLevel ? (
+            <Spinner />
+          ) : (
+            <Form.Item
+              label={formatMessage(programPackageMessages.ProgramPackagePlanAdminModal.productLevel)}
+              name="productLevel"
+            >
+              <InputNumber />
+            </Form.Item>
+          )
+        ) : null}
 
         <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
           <InputNumber
@@ -313,6 +341,9 @@ const INSERT_PROGRAM_PACKAGE_PLAN = gql`
       }
     ) {
       affected_rows
+      returning {
+        id
+      }
     }
   }
 `

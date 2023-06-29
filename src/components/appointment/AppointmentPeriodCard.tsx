@@ -15,6 +15,7 @@ import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-a
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AvatarImage } from '../common/Image'
 import AppointmentCancelModal from './AppointmentCancelModal'
+import AppointmentConfigureMeetingRoomModal from './AppointmentConfigureMeetingRoomModal'
 import AppointMentDetailModal from './AppointMentDetailModal'
 import AppointmentIssueAndResultModal from './AppointmentIssueAndResultModal'
 import appointmentMessages from './translation'
@@ -58,6 +59,18 @@ const StyledCanceledText = styled.span`
   color: var(--gray-dark);
   font-size: 14px;
   letter-spacing: 0.4px;
+  min-width: 105px;
+  text-align: center;
+`
+
+const StyledDot = styled.div`
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--error);
+  position: absolute;
+  right: -5px;
+  top: 0;
 `
 
 export type AppointmentPeriodCardProps = {
@@ -77,8 +90,11 @@ export type AppointmentPeriodCardProps = {
     id: string
     name: string
   }
-  orderProductId: string
+  orderProduct: { id: string; options: any }
+  meetGenerationMethod: MeetGenerationMethod
 }
+
+export type MeetGenerationMethod = 'auto' | 'manual'
 
 const AppointmentPeriodCard: React.FC<
   AppointmentPeriodCardProps & {
@@ -93,8 +109,9 @@ const AppointmentPeriodCard: React.FC<
   endedAt,
   canceledAt,
   creator,
-  orderProductId,
+  orderProduct,
   onRefetch,
+  meetGenerationMethod,
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId, enabledModules } = useApp()
@@ -105,10 +122,13 @@ const AppointmentPeriodCard: React.FC<
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
   const isCanceled = !!canceledAt
+  const joinUrl =
+    orderProduct.options?.joinUrl ||
+    `https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`
 
   const handleJoin = async () => {
     setLoading(true)
-    if (enabledModules.meet_service) {
+    if (enabledModules.meet_service && !orderProduct.options?.joinUrl) {
       const { data } = await apolloClient.query<
         hasura.GET_APPOINTMENT_PERIOD_MEET_ID,
         hasura.GET_APPOINTMENT_PERIOD_MEET_IDVariables
@@ -121,7 +141,7 @@ const AppointmentPeriodCard: React.FC<
             }
           }
         `,
-        variables: { orderProductId },
+        variables: { orderProductId: orderProduct.id },
       })
       const meetId = data.order_product?.[0]?.options?.meetId
 
@@ -143,14 +163,10 @@ const AppointmentPeriodCard: React.FC<
           .then(({ data: { code, message, data } }) => window.open(data.target))
       } catch (error) {
         console.log(`get meets error: ${error}`)
-        window.open(
-          `https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`,
-        )
+        window.open(joinUrl)
       }
     } else {
-      window.open(
-        `https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`,
-      )
+      window.open(joinUrl)
     }
     setLoading(false)
   }
@@ -206,6 +222,20 @@ const AppointmentPeriodCard: React.FC<
         />
         <Divider type="vertical" />
 
+        <AppointmentConfigureMeetingRoomModal
+          renderTrigger={({ setVisible }) => (
+            <Button type="link" size="small" onClick={() => setVisible(true)} className="position-relative">
+              {formatMessage(appointmentMessages['*'].appointmentConfigureMeetingRoom)}
+              {meetGenerationMethod === 'manual' && !orderProduct.options?.joinUrl && <StyledDot></StyledDot>}
+            </Button>
+          )}
+          appointmentEnrollmentId={id}
+          onRefetch={onRefetch}
+          orderProduct={orderProduct}
+        />
+
+        <Divider type="vertical" />
+
         {isCanceled ? (
           <StyledCanceledText className="ml-2">
             {formatMessage(appointmentMessages.AppointmentPeriodCard.appointmentCanceledAt, {
@@ -227,17 +257,23 @@ const AppointmentPeriodCard: React.FC<
                 {formatMessage(appointmentMessages.AppointmentPeriodCard.addToCalendar)}
               </Button>
             </a>
-            <StyledButton
-              loading={loading}
-              type="primary"
-              className="ml-2"
-              disabled={!orderProductId}
-              onClick={() => handleJoin()}
-            >
-              {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
-            </StyledButton>
+            {meetGenerationMethod === 'manual' && !orderProduct.options?.joinUrl ? (
+              <StyledCanceledText className="ml-2">
+                {formatMessage(appointmentMessages.AppointmentPeriodCard.notYetConfigured)}
+              </StyledCanceledText>
+            ) : (
+              <StyledButton
+                loading={loading}
+                type="primary"
+                className="ml-2"
+                disabled={!orderProduct.id}
+                onClick={() => handleJoin()}
+              >
+                {formatMessage(appointmentMessages.AppointmentPeriodCard.joinMeeting)}
+              </StyledButton>
+            )}
             <AppointmentCancelModal
-              orderProductId={orderProductId}
+              orderProductId={orderProduct.id}
               onRefetch={onRefetch}
               renderTrigger={({ setVisible }) => (
                 <Dropdown

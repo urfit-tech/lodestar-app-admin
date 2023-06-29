@@ -1,6 +1,7 @@
 import { PeriodType } from './general'
 
 export type ReservationType = 'hour' | 'day'
+export type MeetGenerationMethod = 'auto' | 'manual'
 
 export type AppointmentPlanAdminProps = {
   id: string
@@ -19,6 +20,9 @@ export type AppointmentPlanAdminProps = {
   isPrivate: boolean
   reservationAmount: number
   reservationType: ReservationType | null
+  // capacity=-1 represents no limit
+  capacity: number
+  meetGenerationMethod: MeetGenerationMethod
 }
 
 export type AppointmentPeriodProps = {
