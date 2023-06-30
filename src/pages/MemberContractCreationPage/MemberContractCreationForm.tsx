@@ -1,6 +1,7 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Descriptions, Form, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import styled from 'styled-components'
@@ -58,6 +59,7 @@ const MemberContractCreationForm: React.FC<
     form,
     ...formProps
   }) => {
+    const { id: appId } = useApp()
     const appCustom = useAppCustom()
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
@@ -85,7 +87,10 @@ const MemberContractCreationForm: React.FC<
                         >
                           <Select<string> className="mr-3" style={{ width: '250px' }} defaultValue={products[0].id}>
                             {products
-                              .filter(product => product.name !== '服務展延券')
+                              .filter(
+                                product =>
+                                  appId !== 'sixdigital' || (appId === 'sixdigital' && product.name !== '服務展延券'),
+                              )
                               .map(product => (
                                 <Select.Option key={product.id} value={product.id} title={product.name}>
                                   {product.name}

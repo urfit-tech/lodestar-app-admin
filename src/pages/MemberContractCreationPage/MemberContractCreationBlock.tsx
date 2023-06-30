@@ -330,8 +330,8 @@ const MemberContractCreationBlock: React.FC<{
               })),
             // xuemi-only: consultant
             ...[
-              totalAppointments > 0
-                ? products.find(p => p.name === '業師諮詢') && {
+              totalAppointments > 0 && products.find(p => p.name === '業師諮詢')
+                ? {
                     product_id: `ProjectPlan_${products.find(p => p.name === '業師諮詢')?.id}`,
                     name: products.find(p => p.name === '業師諮詢')?.name,
                     price: 0,
@@ -346,8 +346,8 @@ const MemberContractCreationBlock: React.FC<{
             ].filter(notEmpty),
             // ooschool-only: bonus extended service coupons
             ...[
-              totalBonusExtendedServiceCoupons > 0
-                ? products.find(p => p.name === '服務展延券') && {
+              totalBonusExtendedServiceCoupons > 0 && products.find(p => p.name === '服務展延券')
+                ? {
                     product_id: `ProjectPlan_${products.find(p => p.name === '服務展延券')?.id}`,
                     name: products.find(p => p.name === '服務展延券')?.name,
                     price: 0,
