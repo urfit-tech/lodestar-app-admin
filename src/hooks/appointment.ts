@@ -144,7 +144,7 @@ export const useAppointmentEnrollmentCollection = (
     tabKey === 'scheduled'
       ? {
           appointment_plan: {
-            creator_id: { _eq: '' || undefined },
+            creator_id: { _eq: selectedCreatorId || undefined },
           },
           started_at: { _gte: startedAt },
           canceled_at: { _is_null: true },
@@ -156,7 +156,7 @@ export const useAppointmentEnrollmentCollection = (
       : tabKey === 'canceled'
       ? {
           appointment_plan: {
-            creator_id: { _eq: '' || undefined },
+            creator_id: { _eq: selectedCreatorId || undefined },
           },
           started_at: { _gte: startedAt },
           canceled_at: { _is_null: false },
@@ -165,7 +165,7 @@ export const useAppointmentEnrollmentCollection = (
       : tabKey === 'finished'
       ? {
           appointment_plan: {
-            creator_id: { _eq: '' || undefined },
+            creator_id: { _eq: selectedCreatorId || undefined },
           },
           started_at: { _gte: startedAt },
           canceled_at: { _is_null: true },
