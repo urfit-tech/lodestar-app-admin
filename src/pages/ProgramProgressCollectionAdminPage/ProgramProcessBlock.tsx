@@ -1,10 +1,9 @@
 import { DownloadOutlined } from '@ant-design/icons'
-import { useApolloClient } from '@apollo/client'
+import { gql, useApolloClient } from '@apollo/client'
 import { Button, Col, DatePicker, Form, Input, message, Row, Select } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { gql } from '@apollo/client'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useState } from 'react'
@@ -39,44 +38,47 @@ const ProgramProcessBlock: React.VFC = () => {
   const [programFilter, setProgramFilter] = useState<ProgramFilter>({ type: 'all' })
   const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'selectedMember', memberIds: [] })
 
-  const handleExport = () => {
+  const memberCondition =
+    memberFilter.type === 'all'
+      ? {}
+      : memberFilter.type === 'selectedMember'
+      ? { id: { _in: memberFilter.memberIds } }
+      : {
+          member_properties: {
+            property_id: { _eq: memberFilter.propertyId },
+            value: { _ilike: `%${memberFilter.valueLike}%` },
+          },
+        }
+  const programCondition =
+    programFilter.type === 'all'
+      ? {}
+      : programFilter.type === 'selectedCategory'
+      ? {
+          program_categories: { category_id: { _in: programFilter.categoryIds } },
+        }
+      : {
+          id: { _in: programFilter.programIds },
+        }
+
+  const handleExportProgramProgress = () => {
     setExporting(true)
     apolloClient
       .query<hasura.GET_ADVANCED_PROGRAM_CONTENT_PROGRESS, hasura.GET_ADVANCED_PROGRAM_CONTENT_PROGRESSVariables>({
         query: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS,
         variables: {
-          memberCondition:
-            memberFilter.type === 'all'
-              ? undefined
-              : memberFilter.type === 'selectedMember'
-              ? { id: { _in: memberFilter.memberIds } }
-              : {
-                  member_properties: {
-                    property_id: { _eq: memberFilter.propertyId },
-                    value: { _ilike: `%${memberFilter.valueLike}%` },
-                  },
-                },
-          programCondition:
-            programFilter.type === 'all'
-              ? undefined
-              : programFilter.type === 'selectedCategory'
-              ? {
-                  program_categories: { category_id: { _in: programFilter.categoryIds } },
-                }
-              : {
-                  id: { _in: programFilter.programIds },
-                },
+          memberCondition: memberCondition,
+          programCondition: programCondition,
           lastUpdatedAt: lastUpdatedAt?.toDate(),
         },
       })
       .then(({ data }) => {
         const rows: string[][] = [
           [
-            formatMessage(pageMessages.ProgramProcessBlock.categories),
+            formatMessage(pageMessages['*'].programCategories),
             formatMessage(pageMessages['*'].programTitle),
             formatMessage(pageMessages['*'].programContentSectionTitle),
             formatMessage(pageMessages['*'].programContentTitle),
-            formatMessage(pageMessages.ProgramProcessBlock.programContentType),
+            formatMessage(pageMessages['*'].programContentType),
             formatMessage(pageMessages.ProgramProcessBlock.programContentDuration),
             formatMessage(pageMessages['*'].memberName),
             formatMessage(pageMessages['*'].memberEmail),
@@ -214,6 +216,91 @@ const ProgramProcessBlock: React.VFC = () => {
       .finally(() => setExporting(false))
   }
 
+  const handleExportMaterialLog = async () => {
+    setExporting(true)
+    try {
+      const { data: programContentData } = await apolloClient.query<
+        hasura.GetProgramContentByProgramCondition,
+        hasura.GetProgramContentByProgramConditionVariables
+      >({
+        query: GetProgramContentByProgramCondition,
+        variables: {
+          programCondition,
+        },
+      })
+      const { data: materialAuditLogData } = await apolloClient.query<
+        hasura.GetMaterialAuditLog,
+        hasura.GetMaterialAuditLogVariables
+      >({
+        query: GetMaterialAuditLog,
+        variables: {
+          memberCondition: memberCondition,
+          programContentIds: programContentData.program_content.map(pc => pc.id),
+          lastUpdatedAt: lastUpdatedAt?.toDate(),
+        },
+      })
+      const { data: memberData } = await apolloClient.query<
+        hasura.GetMaterialLogMembers,
+        hasura.GetMaterialLogMembersVariables
+      >({
+        query: GetMaterialLogMembers,
+        variables: { memberIds: materialAuditLogData.material_audit_log.map(mal => mal.member_id) },
+      })
+
+      const rows: string[][] = [
+        [
+          formatMessage(pageMessages['*'].programCategories),
+          formatMessage(pageMessages['*'].programTitle),
+          formatMessage(pageMessages['*'].programContentSectionTitle),
+          formatMessage(pageMessages['*'].programContentTitle),
+          formatMessage(pageMessages['*'].programContentType),
+          formatMessage(pageMessages['*'].materialName),
+          formatMessage(pageMessages['*'].downloadedAt),
+          formatMessage(pageMessages['*'].memberName),
+          formatMessage(pageMessages['*'].memberEmail),
+          ...memberData.property.map(property => property.name),
+        ],
+      ]
+      materialAuditLogData.material_audit_log.forEach(v => {
+        const member = memberData.member.find(m => m.id === v.member_id)
+        const programContent = programContentData.program_content.find(
+          pc => pc.id === v.program_content_material?.program_content_id,
+        )
+        const categories = programContent?.program_content_section.program.program_categories
+          .map(programCategory => programCategory.category.name)
+          .join(',')
+        const programTitle = programContent?.program_content_section.program.title
+        const programContentSectionTitle = programContent?.program_content_section.title
+        const programContentTitle = programContent?.title
+        const programContentType = programContent?.content_type
+        const materialName = v.program_content_material?.data?.name
+        const downloadedAt = v.created_at
+        const memberName = member?.name
+        const memberEmail = member?.email
+
+        rows.push([
+          categories,
+          programTitle,
+          programContentSectionTitle,
+          programContentTitle,
+          programContentType,
+          materialName,
+          downloadedAt,
+          memberName,
+          memberEmail,
+          ...memberData.property.map(p => member?.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
+        ])
+      })
+      downloadCSV('programMateriaDownloadLog_' + moment().format('MMDDSSS'), toCSV(rows))
+    } catch (error) {
+      if (error instanceof Error) {
+        message.error(error.message)
+      }
+    } finally {
+      setExporting(false)
+    }
+  }
+
   return (
     <Form labelCol={{ span: 3 }} wrapperCol={{ span: 13 }} layout="horizontal">
       <Form.Item label={formatMessage(pageMessages['*'].program)}>
@@ -348,8 +435,17 @@ const ProgramProcessBlock: React.VFC = () => {
         <DatePicker onChange={setLastUpdatedAt} showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 2 }}>
-        <Button loading={exporting} type="primary" icon={<DownloadOutlined />} className="mb-4" onClick={handleExport}>
+        <Button
+          className="mr-4"
+          loading={exporting}
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleExportProgramProgress}
+        >
           {formatMessage(pageMessages.ProgramProcessBlock.exportProgramProgress)}
+        </Button>
+        <Button loading={exporting} type="primary" icon={<DownloadOutlined />} onClick={handleExportMaterialLog}>
+          {formatMessage(pageMessages.ProgramProcessBlock.exportMaterialAuditLog)}
         </Button>
       </Form.Item>
     </Form>
@@ -407,6 +503,74 @@ const GET_ADVANCED_PROGRAM_CONTENT_PROGRESS = gql`
           }
           program_content_body {
             type
+          }
+        }
+      }
+    }
+  }
+`
+
+export const GetMaterialAuditLog = gql`
+  query GetMaterialAuditLog(
+    $memberCondition: member_bool_exp
+    $programContentIds: [uuid!]
+    $lastUpdatedAt: timestamptz
+  ) {
+    material_audit_log(
+      where: {
+        member: $memberCondition
+        program_content_material: { program_content_id: { _in: $programContentIds } }
+        created_at: { _lte: $lastUpdatedAt }
+      }
+      order_by: { created_at: desc }
+    ) {
+      id
+      member_id
+      target
+      program_content_material {
+        id
+        data
+        program_content_id
+      }
+      created_at
+    }
+  }
+`
+
+export const GetMaterialLogMembers = gql`
+  query GetMaterialLogMembers($memberIds: [String!]) {
+    member(where: { id: { _in: $memberIds } }) {
+      id
+      name
+      email
+      member_properties {
+        property_id
+        value
+      }
+    }
+    property(where: { type: { _eq: "member" } }) {
+      id
+      name
+    }
+  }
+`
+
+const GetProgramContentByProgramCondition = gql`
+  query GetProgramContentByProgramCondition($programCondition: program_bool_exp) {
+    program_content(where: { program_content_section: { program: $programCondition } }) {
+      id
+      title
+      content_type
+      program_content_section {
+        id
+        title
+        program {
+          id
+          title
+          program_categories(order_by: { position: asc }) {
+            category {
+              name
+            }
           }
         }
       }
