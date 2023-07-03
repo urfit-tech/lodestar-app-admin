@@ -33,7 +33,8 @@ let currentTimeZone = dayjs.tz.guess()
 const ProgramProcessBlock: React.VFC = () => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const [exporting, setExporting] = useState(false)
+  const [programProcessExporting, setProgramProcessExporting] = useState(false)
+  const [materialAuditLogExporting, setMaterialAuditLogExporting] = useState(false)
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Moment | null>(null)
   const [programFilter, setProgramFilter] = useState<ProgramFilter>({ type: 'all' })
   const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'selectedMember', memberIds: [] })
@@ -60,8 +61,8 @@ const ProgramProcessBlock: React.VFC = () => {
           id: { _in: programFilter.programIds },
         }
 
-  const handleExportProgramProgress = () => {
-    setExporting(true)
+  const handleProgramProgressExport = () => {
+    setProgramProcessExporting(true)
     apolloClient
       .query<hasura.GET_ADVANCED_PROGRAM_CONTENT_PROGRESS, hasura.GET_ADVANCED_PROGRAM_CONTENT_PROGRESSVariables>({
         query: GET_ADVANCED_PROGRAM_CONTENT_PROGRESS,
@@ -213,11 +214,11 @@ const ProgramProcessBlock: React.VFC = () => {
       .catch(error => {
         message.error(error)
       })
-      .finally(() => setExporting(false))
+      .finally(() => setProgramProcessExporting(false))
   }
 
-  const handleExportMaterialLog = async () => {
-    setExporting(true)
+  const handleMaterialAuditLogExport = async () => {
+    setMaterialAuditLogExporting(true)
     try {
       const { data: programContentData } = await apolloClient.query<
         hasura.GetProgramContentByProgramCondition,
@@ -297,7 +298,7 @@ const ProgramProcessBlock: React.VFC = () => {
         message.error(error.message)
       }
     } finally {
-      setExporting(false)
+      setMaterialAuditLogExporting(false)
     }
   }
 
@@ -437,14 +438,21 @@ const ProgramProcessBlock: React.VFC = () => {
       <Form.Item wrapperCol={{ offset: 2 }}>
         <Button
           className="mr-4"
-          loading={exporting}
+          loading={programProcessExporting}
+          disabled={materialAuditLogExporting}
           type="primary"
           icon={<DownloadOutlined />}
-          onClick={handleExportProgramProgress}
+          onClick={handleProgramProgressExport}
         >
           {formatMessage(pageMessages.ProgramProcessBlock.exportProgramProgress)}
         </Button>
-        <Button loading={exporting} type="primary" icon={<DownloadOutlined />} onClick={handleExportMaterialLog}>
+        <Button
+          loading={materialAuditLogExporting}
+          disabled={programProcessExporting}
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleMaterialAuditLogExport}
+        >
           {formatMessage(pageMessages.ProgramProcessBlock.exportMaterialAuditLog)}
         </Button>
       </Form.Item>
