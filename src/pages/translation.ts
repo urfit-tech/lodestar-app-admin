@@ -72,6 +72,13 @@ const pageMessages = {
     expiryDate: { id: 'page.*.expiryDate', defaultMessage: '到期日' },
     upload: { id: 'page.*.upload', defaultMessage: '上傳' },
     discontinued: { id: 'page.*.discontinued', defaultMessage: '已下架' },
+    materialName: { id: 'page.*.materialName', defaultMessage: '教材檔名' },
+    downloadedAt: { id: 'page.*.downloadedAt', defaultMessage: '初次下載時間' },
+    programCategories: { id: 'page.*.programCategories', defaultMessage: '課程分類' },
+    programContentType: {
+      id: 'page.*.programContentType',
+      defaultMessage: '單元類型',
+    },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -125,11 +132,6 @@ const pageMessages = {
     allMembers: { id: 'page.ProgramProcessBlock.allMembers', defaultMessage: '全部會員' },
     chooseProperty: { id: 'page.ProgramProcessBlock.chooseProperty', defaultMessage: '選擇欄位' },
     containKeyword: { id: 'page.ProgramProcessBlock.containKeyword', defaultMessage: '關鍵字包含' },
-    categories: { id: 'page.ProgramProcessBlock.categories', defaultMessage: '課程分類' },
-    programContentType: {
-      id: 'page.ProgramProcessBlock.programContentType',
-      defaultMessage: '單元類型',
-    },
     programContentDuration: {
       id: 'page.ProgramProcessBlock.programContentDuration',
       defaultMessage: '單元時長(分)',
@@ -156,6 +158,10 @@ const pageMessages = {
     exportProgramProgress: {
       id: 'page.ProgramProcessBlock.exportProgramProgress',
       defaultMessage: '匯出學習進度',
+    },
+    exportMaterialAuditLog: {
+      id: 'page.ProgramProcessBlock.exportMaterialAuditLog',
+      defaultMessage: '匯出教材下載紀錄',
     },
     lastUpdatedAtText: {
       id: 'page.ProgramProcessBlock.lastUpdatedAtText',
