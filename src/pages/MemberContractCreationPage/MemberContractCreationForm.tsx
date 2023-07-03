@@ -1,6 +1,7 @@
 import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Descriptions, Form, InputNumber, Radio, Select, Space } from 'antd'
 import { FormProps } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React, { useState } from 'react'
 import styled from 'styled-components'
@@ -58,6 +59,7 @@ const MemberContractCreationForm: React.FC<
     form,
     ...formProps
   }) => {
+    const { id: appId } = useApp()
     const appCustom = useAppCustom()
     const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
     const [certificationPath, setCertificationPath] = useState('')
@@ -66,7 +68,7 @@ const MemberContractCreationForm: React.FC<
       <Form layout="vertical" colon={false} hideRequiredMark form={form} {...formProps}>
         <div className="mb-5">
           <AdminBlockTitle>合約內容</AdminBlockTitle>
-          <Form.List initialValue={[{ amount: 1 }]} name="contractProducts">
+          <Form.List name="contractProducts">
             {(fields, { add, remove }) => {
               return (
                 <>
@@ -84,11 +86,16 @@ const MemberContractCreationForm: React.FC<
                           label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                         >
                           <Select<string> className="mr-3" style={{ width: '250px' }} defaultValue={products[0].id}>
-                            {products.map(product => (
-                              <Select.Option key={product.id} value={product.id} title={product.name}>
-                                {product.name}
-                              </Select.Option>
-                            ))}
+                            {products
+                              .filter(
+                                product =>
+                                  appId !== 'sixdigital' || (appId === 'sixdigital' && product.name !== '服務展延券'),
+                              )
+                              .map(product => (
+                                <Select.Option key={product.id} value={product.id} title={product.name}>
+                                  {product.name}
+                                </Select.Option>
+                              ))}
                           </Select>
                         </Form.Item>
 
@@ -116,7 +123,7 @@ const MemberContractCreationForm: React.FC<
                       </div>
                     )
                   })}
-                  <Button icon={<PlusOutlined />} onClick={() => add({ amount: 1 })}>
+                  <Button icon={<PlusOutlined />} onClick={() => add({ id: products[0].id, amount: 1 })}>
                     新增項目
                   </Button>
                 </>
