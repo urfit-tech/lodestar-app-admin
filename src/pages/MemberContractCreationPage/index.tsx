@@ -150,6 +150,26 @@ const MemberContractCreationPage: React.VFC = () => {
     products.find(product => product.id === contractProduct.id && product.price),
   )
 
+  // for ooschool bonus extended service coupons
+  const planProducts = selectedProducts
+    .map(contractProduct => products.filter(product => contractProduct.id === product.id))
+    .flatMap(v => v)
+    .filter(
+      planProduct =>
+        planProduct.name.includes('基本方案') ||
+        planProduct.name.includes('標準方案') ||
+        planProduct.name.includes('專業方案'),
+    )
+
+  const totalPlanStarCount = planProducts.reduce((accum, product) => {
+    const [field, _, plan] = product.name.split('-')
+    return (accum += appCustom.coachCoursePlanStarList[field][plan])
+  }, 0)
+  const totalBonusExtendedServiceCoupons =
+    totalPlanStarCount > 0
+      ? appCustom.bonusExtendedServiceCoupons[totalPlanStarCount >= 10 ? '10' : totalPlanStarCount.toString()]
+      : 0
+
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
     products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
@@ -374,6 +394,7 @@ const MemberContractCreationPage: React.VFC = () => {
             totalCoins={totalCoins}
             customContractCard={appCustom.contractCard}
             customContractProduct={appCustom.contractProduct}
+            totalBonusExtendedServiceCoupons={totalBonusExtendedServiceCoupons}
           />
         </AdminBlock>
       </div>
