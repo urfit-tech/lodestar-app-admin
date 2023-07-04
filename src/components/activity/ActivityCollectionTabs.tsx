@@ -44,7 +44,6 @@ const ActivityCollectionTabs: React.FC<{
     },
     finished: {
       organizer_id: { _eq: memberId },
-      is_private: { _eq: false },
       published_at: { _is_null: false },
       activity_during_period: { ended_at: { _lt: 'now()' } },
     },
