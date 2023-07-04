@@ -28,7 +28,8 @@ type MemberFilter =
 const ProgramPackageProcessBlock: React.VFC = () => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const [exporting, setExporting] = useState(false)
+  const [programProcessExporting, setProgramProcessExporting] = useState(false)
+  const [materialAuditLogExporting, setMaterialAuditLogExporting] = useState(false)
   const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('month').startOf('minute').toDate())
   const [endedAt, setEndedAt] = useState<Date | null>(moment().endOf('month').startOf('minute').toDate())
   const [programPackageFilter, setProgramPackageFilter] = useState<ProgramPackageFilter>({ type: 'all' })
@@ -59,8 +60,8 @@ const ProgramPackageProcessBlock: React.VFC = () => {
           },
         }
 
-  const handleExport = () => {
-    setExporting(true)
+  const handleProgramProcessExport = () => {
+    setProgramProcessExporting(true)
     apolloClient
       .query<
         hasura.GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS,
@@ -159,17 +160,17 @@ const ProgramPackageProcessBlock: React.VFC = () => {
       .catch(error => {
         message.error(error)
       })
-      .finally(() => setExporting(false))
+      .finally(() => setProgramProcessExporting(false))
   }
 
-  const handleExportMaterialLog = async () => {
-    setExporting(true)
+  const handleMaterialAuditLogExport = async () => {
+    setMaterialAuditLogExporting(true)
     try {
       const { data: enrolledProgramPackageData } = await apolloClient.query<
-        hasura.GetMaterialAuditLogEnrolledProgramPackage,
-        hasura.GetMaterialAuditLogEnrolledProgramPackageVariables
+        hasura.GetEnrolledProgramPackage,
+        hasura.GetEnrolledProgramPackageVariables
       >({
-        query: GetMaterialAuditLogEnrolledProgramPackage,
+        query: GetEnrolledProgramPackage,
         variables: {
           programPackageCondition,
           memberCondition,
@@ -191,15 +192,6 @@ const ProgramPackageProcessBlock: React.VFC = () => {
           programIds: programIds,
         },
       })
-      const { data: programData } = await apolloClient.query<
-        hasura.GetProgramPackageByProgramId,
-        hasura.GetProgramPackageByProgramIdVariables
-      >({
-        query: GetProgramPackageByProgramId,
-        variables: {
-          programIds: programIds,
-        },
-      })
       const { data: materialAuditLogData } = await apolloClient.query<
         hasura.GetMaterialAuditLog,
         hasura.GetMaterialAuditLogVariables
@@ -217,7 +209,17 @@ const ProgramPackageProcessBlock: React.VFC = () => {
         query: GetMaterialLogMembers,
         variables: { memberIds: materialAuditLogData.material_audit_log.map(mal => mal.member_id) },
       })
-
+      const { data: materialProgramContentData } = await apolloClient.query<
+        hasura.GetProgramContentProgramPackageByProgramContentIds,
+        hasura.GetProgramContentProgramPackageByProgramContentIdsVariables
+      >({
+        query: GetProgramContentProgramPackageByProgramContentIds,
+        variables: {
+          programContentIds: materialAuditLogData.material_audit_log.map(
+            mal => mal.program_content_material?.program_content_id,
+          ),
+        },
+      })
       const rows: string[][] = [
         [
           formatMessage(pageMessages.ProgramPackageProcessBlock.programPackageCategories),
@@ -241,19 +243,23 @@ const ProgramPackageProcessBlock: React.VFC = () => {
         const member = memberData.member.find(m => m.id === v.member_id)
         const programPackageCategories = uniq(
           flatten(
-            programData.program.map(p =>
-              p.program_package_programs.map(ppp =>
+            materialProgramContentData.program_content.map(pc =>
+              pc.program_content_section.program.program_package_programs.map(ppp =>
                 ppp.program_package.program_package_categories.map(ppc => ppc.category.name),
               ),
             ),
           ),
-        ).join('')
+        ).join(',')
         const programPackageTitle = uniq(
-          flatten(programData.program.map(p => p.program_package_programs.map(ppp => ppp.program_package.title))),
-        )
-        const programCategories = programContent?.program_content_section.program.program_categories
-          .map(ppc => ppc.category.name)
-          .join(',')
+          flatten(
+            materialProgramContentData.program_content.map(pc =>
+              pc.program_content_section.program.program_package_programs.map(ppp => ppp.program_package.title),
+            ),
+          ),
+        ).join(',')
+        const programCategories = uniq(
+          programContent?.program_content_section.program.program_categories.map(ppc => ppc.category.name) || [],
+        ).join(',')
         const programTitle = programContent?.program_content_section.program.title
         const programContentSectionTitle = programContent?.program_content_section.title
         const programContentTitle = programContent?.title
@@ -281,7 +287,7 @@ const ProgramPackageProcessBlock: React.VFC = () => {
         message.error(error.message)
       }
     } finally {
-      setExporting(false)
+      setMaterialAuditLogExporting(false)
     }
   }
 
@@ -434,10 +440,23 @@ const ProgramPackageProcessBlock: React.VFC = () => {
         />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 2 }}>
-        <Button className="mr-4" loading={exporting} type="primary" icon={<DownloadOutlined />} onClick={handleExport}>
+        <Button
+          className="mr-4"
+          loading={programProcessExporting}
+          disabled={materialAuditLogExporting}
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleProgramProcessExport}
+        >
           {formatMessage(pageMessages.ProgramProcessBlock.exportProgramProgress)}
         </Button>
-        <Button loading={exporting} type="primary" icon={<DownloadOutlined />} onClick={handleExportMaterialLog}>
+        <Button
+          loading={materialAuditLogExporting}
+          disabled={programProcessExporting}
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleMaterialAuditLogExport}
+        >
           {formatMessage(pageMessages.ProgramProcessBlock.exportMaterialAuditLog)}
         </Button>
       </Form.Item>
@@ -509,8 +528,8 @@ const GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = gql`
   }
 `
 
-const GetMaterialAuditLogEnrolledProgramPackage = gql`
-  query GetMaterialAuditLogEnrolledProgramPackage(
+const GetEnrolledProgramPackage = gql`
+  query GetEnrolledProgramPackage(
     $programPackageCondition: program_package_bool_exp
     $memberCondition: member_bool_exp
   ) {
@@ -532,18 +551,23 @@ const GetMaterialAuditLogEnrolledProgramPackage = gql`
     }
   }
 `
-const GetProgramPackageByProgramId = gql`
-  query GetProgramPackageByProgramId($programIds: [uuid!]) {
-    program(where: { id: { _in: $programIds } }) {
+const GetProgramContentProgramPackageByProgramContentIds = gql`
+  query GetProgramContentProgramPackageByProgramContentIds($programContentIds: [uuid!]) {
+    program_content(where: { id: { _in: $programContentIds } }) {
       id
-      program_package_programs {
+      program_content_section {
         id
-        program_package {
+        program {
           id
-          title
-          program_package_categories(order_by: { position: asc }) {
-            category {
-              name
+          program_package_programs {
+            program_package {
+              id
+              title
+              program_package_categories(order_by: { position: asc }) {
+                category {
+                  name
+                }
+              }
             }
           }
         }
