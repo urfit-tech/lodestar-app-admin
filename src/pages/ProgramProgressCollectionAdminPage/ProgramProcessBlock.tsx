@@ -265,7 +265,7 @@ const ProgramProcessBlock: React.VFC = () => {
       materialAuditLogData.material_audit_log.forEach(v => {
         const member = memberData.member.find(m => m.id === v.member_id)
         const programContent = programContentData.program_content.find(
-          pc => pc.id === v.program_content_material?.program_content_id,
+          pc => pc.id === v.program_content_material?.program_content?.id,
         )
         const categories = programContent?.program_content_section.program.program_categories
           .map(programCategory => programCategory.category.name)
@@ -535,12 +535,24 @@ export const GetMaterialAuditLog = gql`
       id
       member_id
       target
+      created_at
       program_content_material {
         id
         data
-        program_content_id
+        program_content {
+          id
+          title
+          content_type
+          program_content_section {
+            id
+            title
+            program {
+              id
+              title
+            }
+          }
+        }
       }
-      created_at
     }
   }
 `
