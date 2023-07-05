@@ -183,6 +183,7 @@ export const useManagerLeads = (manager: Manager) => {
       variables: {
         memberIds: salesLeadMemberPhoneData?.member.map(v => v.id) || [],
       },
+      notifyOnNetworkStatusChange: true,
     },
   )
 
