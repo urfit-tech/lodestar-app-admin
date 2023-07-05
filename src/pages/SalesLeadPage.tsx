@@ -63,11 +63,10 @@ const SalesLeadTabs: React.VFC<{
   activeKey: string
   onActiveKeyChanged?: (activeKey: string) => void
 }> = ({ activeKey, manager, onActiveKeyChanged }) => {
+  const [refetchLoading, setRefetchLoading] = useState(true)
   const { formatMessage } = useIntl()
   const {
-    loading,
     refetch,
-    loadingMembers,
     refetchMembers,
     followedLeads,
     totalLeads,
@@ -79,9 +78,17 @@ const SalesLeadTabs: React.VFC<{
     signedLeads,
     closedLeads,
     completedLeads,
+    loading,
+    loadingMembers,
   } = useManagerLeads(manager)
 
-  if (loading || loadingMembers) {
+  useEffect(() => {
+    if (!loading && !loadingMembers) {
+      setRefetchLoading(false)
+    }
+  }, [loading, loadingMembers])
+
+  if (refetchLoading) {
     return <Skeleton active />
   }
 
@@ -94,6 +101,7 @@ const SalesLeadTabs: React.VFC<{
           onClick={() => {
             refetch?.()
             refetchMembers?.()
+            setRefetchLoading(true)
           }}
         >
           <RedoOutlined />
