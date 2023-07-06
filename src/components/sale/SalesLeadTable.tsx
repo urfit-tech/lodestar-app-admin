@@ -13,6 +13,8 @@ import {
 import { gql, useMutation } from '@apollo/client'
 import { Button, Input, message, Table, Tag } from 'antd'
 import { ColumnProps, ColumnsType } from 'antd/lib/table'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -31,6 +33,8 @@ import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import JitsiDemoModal from './JitsiDemoModal'
 import MemberPropertyModal from './MemberPropertyModal'
+
+dayjs.extend(utc)
 
 const StyledAdminCard = styled(AdminCard)`
   position: relative;
@@ -331,6 +335,7 @@ const SalesLeadTable: React.VFC<{
         recentAnsweredAt && <time>{recentAnsweredAt && moment(recentAnsweredAt).fromNow()}</time>,
     },
   ]
+  const selectedRowLeads = leads.filter(lead => selectedRowKeys.includes(lead.id))
 
   return (
     <StyledAdminCard>
@@ -415,16 +420,30 @@ const SalesLeadTable: React.VFC<{
                   if (window.confirm('確定收錄這些名單？')) {
                     updateLeads({
                       variables: {
-                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: manager.id,
-                        followedAt: new Date(),
+                        updateLeads: selectedRowLeads.map(lead => ({
+                          where: {
+                            id: { _eq: lead.id },
+                          },
+                          _set: {
+                            manager_id: manager.id,
+                            star: lead.star,
+                            followed_at: dayjs().utc().toISOString(),
+                            completed_at: lead.completedAt,
+                            closed_at: lead.closedAt,
+                            excluded_at: lead.excludedAt,
+                            recycled_at: lead.recycledAt,
+                          },
+                        })),
                       },
                     }).then(({ data }) => {
-                      if (data?.update_member?.affected_rows) {
+                      if (
+                        data?.update_member_many &&
+                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                      ) {
                         message.success('已成功收錄！')
                         onRefetch?.()
                       } else {
-                        message.error('系統錯誤ＱＱ')
+                        message.error('系統錯誤')
                       }
                     })
                   }
@@ -440,16 +459,30 @@ const SalesLeadTable: React.VFC<{
                   if (window.confirm('確定取消收藏這些名單？')) {
                     updateLeads({
                       variables: {
-                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: manager.id,
-                        followedAt: null,
+                        updateLeads: selectedRowLeads.map(lead => ({
+                          where: {
+                            id: { _eq: lead.id },
+                          },
+                          _set: {
+                            manager_id: manager.id,
+                            star: lead.star,
+                            followed_at: null,
+                            completed_at: lead.completedAt,
+                            closed_at: lead.closedAt,
+                            excluded_at: lead.excludedAt,
+                            recycled_at: lead.recycledAt,
+                          },
+                        })),
                       },
                     }).then(({ data }) => {
-                      if (data?.update_member?.affected_rows) {
+                      if (
+                        data?.update_member_many &&
+                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                      ) {
                         message.success('已成功取消收藏！')
                         onRefetch?.()
                       } else {
-                        message.error('系統錯誤ＱＱ')
+                        message.error('系統錯誤')
                       }
                     })
                   }
@@ -466,16 +499,30 @@ const SalesLeadTable: React.VFC<{
                   if (window.confirm('確定這些名單已完成？')) {
                     updateLeads({
                       variables: {
-                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: manager.id,
-                        completedAt: new Date(),
+                        updateLeads: selectedRowLeads.map(lead => ({
+                          where: {
+                            id: { _eq: lead.id },
+                          },
+                          _set: {
+                            manager_id: manager.id,
+                            star: lead.star,
+                            followed_at: lead.followedAt,
+                            completed_at: dayjs().utc().toISOString(),
+                            closed_at: lead.closedAt,
+                            excluded_at: lead.excludedAt,
+                            recycled_at: lead.recycledAt,
+                          },
+                        })),
                       },
                     }).then(({ data }) => {
-                      if (data?.update_member?.affected_rows) {
+                      if (
+                        data?.update_member_many &&
+                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                      ) {
                         message.success('已成功完成此名單！')
                         onRefetch?.()
                       } else {
-                        message.error('系統錯誤ＱＱ')
+                        message.error('系統錯誤')
                       }
                     })
                   }
@@ -492,16 +539,30 @@ const SalesLeadTable: React.VFC<{
                   if (window.confirm('確定取消這些已完成的名單？')) {
                     updateLeads({
                       variables: {
-                        memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                        newMemberId: manager.id,
-                        completedAt: null,
+                        updateLeads: selectedRowLeads.map(lead => ({
+                          where: {
+                            id: { _eq: lead.id },
+                          },
+                          _set: {
+                            manager_id: manager.id,
+                            star: lead.star,
+                            followed_at: lead.followedAt,
+                            completed_at: null,
+                            closed_at: lead.closedAt,
+                            excluded_at: lead.excludedAt,
+                            recycled_at: lead.recycledAt,
+                          },
+                        })),
                       },
                     }).then(({ data }) => {
-                      if (data?.update_member?.affected_rows) {
+                      if (
+                        data?.update_member_many &&
+                        data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                      ) {
                         message.success('已取消已完成名單！')
                         onRefetch?.()
                       } else {
-                        message.error('系統錯誤ＱＱ')
+                        message.error('系統錯誤')
                       }
                     })
                   }
@@ -519,16 +580,30 @@ const SalesLeadTable: React.VFC<{
                     if (window.confirm('確定回收這些名單？')) {
                       updateLeads({
                         variables: {
-                          memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                          newMemberId: null,
-                          newStar: -Number(manager.telephone),
+                          updateLeads: selectedRowLeads.map(lead => ({
+                            where: {
+                              id: { _eq: lead.id },
+                            },
+                            _set: {
+                              manager_id: null,
+                              star: lead.star,
+                              followed_at: lead.followedAt,
+                              completed_at: lead.completedAt,
+                              closed_at: lead.closedAt,
+                              excluded_at: lead.excludedAt,
+                              recycled_at: dayjs().utc().toISOString(),
+                            },
+                          })),
                         },
                       }).then(({ data }) => {
-                        if (data?.update_member?.affected_rows) {
+                        if (
+                          data?.update_member_many &&
+                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                        ) {
                           message.success('已成功回收此名單！')
                           onRefetch?.()
                         } else {
-                          message.error('系統錯誤ＱＱ')
+                          message.error('系統錯誤')
                         }
                       })
                     }
@@ -543,16 +618,30 @@ const SalesLeadTable: React.VFC<{
                     if (window.confirm('確定拒絕這些名單？')) {
                       updateLeads({
                         variables: {
-                          memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                          newMemberId: null,
-                          closedAt: new Date(),
+                          updateLeads: selectedRowLeads.map(lead => ({
+                            where: {
+                              id: { _eq: lead.id },
+                            },
+                            _set: {
+                              manager_id: null,
+                              star: -999,
+                              followed_at: lead.followedAt,
+                              completed_at: lead.completedAt,
+                              closed_at: dayjs().utc().toISOString(),
+                              excluded_at: lead.excludedAt,
+                              recycled_at: lead.recycledAt,
+                            },
+                          })),
                         },
                       }).then(({ data }) => {
-                        if (data?.update_member?.affected_rows) {
+                        if (
+                          data?.update_member_many &&
+                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                        ) {
                           message.success('已成功拒絕此名單！')
                           onRefetch?.()
                         } else {
-                          message.error('系統錯誤ＱＱ')
+                          message.error('系統錯誤')
                         }
                       })
                     }
@@ -567,16 +656,30 @@ const SalesLeadTable: React.VFC<{
                     if (window.confirm('確定永久刪除這些名單？此動作無法復原！')) {
                       updateLeads({
                         variables: {
-                          memberIds: selectedRowKeys.map(rowKey => rowKey.toString()),
-                          newMemberId: null,
-                          newStar: -9999,
+                          updateLeads: selectedRowLeads.map(lead => ({
+                            where: {
+                              id: { _eq: lead.id },
+                            },
+                            _set: {
+                              manager_id: null,
+                              star: -9999,
+                              followed_at: lead.followedAt,
+                              completed_at: lead.completedAt,
+                              closed_at: lead.closedAt,
+                              excluded_at: dayjs().utc().toISOString(),
+                              recycled_at: lead.recycledAt,
+                            },
+                          })),
                         },
                       }).then(({ data }) => {
-                        if (data?.update_member?.affected_rows) {
+                        if (
+                          data?.update_member_many &&
+                          data.update_member_many.filter(v => v?.affected_rows && v?.affected_rows > 0).length > 0
+                        ) {
                           message.success('已成功刪除此名單！')
                           onRefetch?.()
                         } else {
-                          message.error('系統錯誤ＱＱ')
+                          message.error('系統錯誤')
                         }
                       })
                     }
@@ -665,24 +768,8 @@ const SalesLeadTable: React.VFC<{
 }
 
 const UPDATE_LEADS = gql`
-  mutation UPDATE_LEADS(
-    $memberIds: [String!]!
-    $newMemberId: String
-    $newStar: numeric
-    $followedAt: timestamptz
-    $closedAt: timestamptz
-    $completedAt: timestamptz
-  ) {
-    update_member(
-      _set: {
-        manager_id: $newMemberId
-        star: $newStar
-        followed_at: $followedAt
-        closed_at: $closedAt
-        completed_at: $completedAt
-      }
-      where: { id: { _in: $memberIds } }
-    ) {
+  mutation UPDATE_LEADS($updateLeads: [member_updates!]!) {
+    update_member_many(updates: $updateLeads) {
       affected_rows
     }
   }
