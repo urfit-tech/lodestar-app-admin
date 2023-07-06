@@ -11,7 +11,6 @@ import { useProgramProgressCollection } from '../../hooks/program'
 const messages = defineMessages({
   learningDuration: { id: 'common.label.learningDuration', defaultMessage: '學習時數' },
   learningProgress: { id: 'common.label.learningProgress', defaultMessage: '學習進度' },
-  exportProgramProgress: { id: 'common.ui.exportProgramProgress', defaultMessage: '匯出學習進度' },
 })
 
 const StyledProgress = styled(Progress)`

@@ -46,6 +46,7 @@ const MemberContractCreationBlock: React.FC<{
   totalCoins: number
   customContractCard?: { id: string; title: string } | null
   customContractProduct?: { periodAmount: number; periodType: 'y' | 'M' | 'd' } | null
+  totalBonusExtendedServiceCoupons: number
 }> = ({
   member,
   products,
@@ -65,6 +66,7 @@ const MemberContractCreationBlock: React.FC<{
   totalCoins,
   customContractCard,
   customContractProduct,
+  totalBonusExtendedServiceCoupons,
 }) => {
   const appCustom = useAppCustom()
   const [addMemberContract] = useMutation<hasura.ADD_MEMBER_CONTRACT, hasura.ADD_MEMBER_CONTRACTVariables>(
@@ -160,39 +162,77 @@ const MemberContractCreationBlock: React.FC<{
       ),
     )
 
-    // generate coupons
-    const couponPlanId = v4()
-    const coupons = range(0, totalAppointments).map((v, index) => ({
-      member_id: member.id,
-      coupon_code: {
-        data: {
-          code: moment().format('x') + v,
-          count: 1,
-          remaining: 0,
-          app_id: appId,
-          coupon_plan_id: index !== 0 ? couponPlanId : undefined,
-          coupon_plan:
-            index === 0
-              ? {
-                  on_conflict: {
-                    constraint: 'coupon_plan_pkey',
-                    update_columns: ['title'],
-                  },
-                  data: {
-                    id: couponPlanId,
-                    type: 2,
-                    amount: 100,
-                    title: appCustom.contractCoupon.title,
-                    description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
-                    started_at: serviceStartedAt.toISOString(),
-                    ended_at: serviceEndedAt?.toISOString(),
-                    scope: ['AppointmentPlan'],
-                  },
-                }
-              : undefined,
+    // generate appointment coupons
+    const appointmentCouponPlanId = v4()
+    const appointmentCoupons = range(0, totalAppointments).map((v, index) => {
+      return {
+        member_id: member.id,
+        coupon_code: {
+          data: {
+            code: moment().format('x') + v,
+            count: 1,
+            remaining: 0,
+            app_id: appId,
+            coupon_plan_id: index !== 0 ? appointmentCouponPlanId : undefined,
+            coupon_plan:
+              index === 0
+                ? {
+                    on_conflict: {
+                      constraint: 'coupon_plan_pkey',
+                      update_columns: ['title'],
+                    },
+                    data: {
+                      id: appointmentCouponPlanId,
+                      type: 2,
+                      amount: 100,
+                      title: appCustom.contractCoupon.title,
+                      description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
+                      started_at: serviceStartedAt.toISOString(),
+                      ended_at: serviceEndedAt?.toISOString(),
+                      scope: ['AppointmentPlan'],
+                    },
+                  }
+                : undefined,
+          },
         },
-      },
-    }))
+      }
+    })
+
+    // generate bonus extended service coupons
+    const bonusExtendedServiceCouponPlanId = v4()
+    const bonusExtendedServiceCoupons = range(0, totalBonusExtendedServiceCoupons).map((v, index) => {
+      return {
+        member_id: member.id,
+        coupon_code: {
+          data: {
+            code: `extendedService-${moment().format('x')}-${v}`,
+            count: 1,
+            remaining: 0,
+            app_id: appId,
+            coupon_plan_id: index !== 0 ? bonusExtendedServiceCouponPlanId : undefined,
+            coupon_plan:
+              index === 0
+                ? {
+                    on_conflict: {
+                      constraint: 'coupon_plan_pkey',
+                      update_columns: ['title'],
+                    },
+                    data: {
+                      id: bonusExtendedServiceCouponPlanId,
+                      type: 2,
+                      amount: 100,
+                      title: appCustom.bonusExtendedServiceCoupon.title,
+                      description: `學員編號：${member.id}, 合約編號：${fieldValue.contractId}`,
+                      started_at: serviceStartedAt.toISOString(),
+                      ended_at: serviceEndedAt?.toISOString(),
+                      scope: ['ProjectPlan'],
+                    },
+                  }
+                : undefined,
+          },
+        },
+      }
+    })
 
     const contractCoupons = contractDiscounts.map(v => ({
       id: v4(),
@@ -245,7 +285,8 @@ const MemberContractCreationBlock: React.FC<{
               member_id: v.member_id,
               coupon_code: v.coupon_code,
             })),
-            ...coupons,
+            ...appointmentCoupons,
+            ...bonusExtendedServiceCoupons,
           ],
           orderId: `${moment().format('YYYYMMDDHHmmssSSS')}00`,
           orderOptions: {
@@ -289,8 +330,8 @@ const MemberContractCreationBlock: React.FC<{
               })),
             // xuemi-only: consultant
             ...[
-              totalAppointments > 0
-                ? products.find(p => p.name === '業師諮詢') && {
+              appId === 'xuemi' && totalAppointments > 0 && products.find(p => p.name === '業師諮詢')
+                ? {
                     product_id: `ProjectPlan_${products.find(p => p.name === '業師諮詢')?.id}`,
                     name: products.find(p => p.name === '業師諮詢')?.name,
                     price: 0,
@@ -299,6 +340,24 @@ const MemberContractCreationBlock: React.FC<{
                     delivered_at: new Date(),
                     options: {
                       quantity: totalAppointments,
+                    },
+                  }
+                : null,
+            ].filter(notEmpty),
+            // ooschool-only: bonus extended service coupons
+            ...[
+              appId === 'sixdigital' &&
+              totalBonusExtendedServiceCoupons > 0 &&
+              products.find(p => p.name === '服務展延券')
+                ? {
+                    product_id: `ProjectPlan_${products.find(p => p.name === '服務展延券')?.id}`,
+                    name: products.find(p => p.name === '服務展延券')?.name,
+                    price: 0,
+                    started_at: serviceStartedAt.toISOString(),
+                    ended_at: serviceEndedAt?.toISOString(),
+                    delivered_at: new Date(),
+                    options: {
+                      quantity: totalBonusExtendedServiceCoupons,
                     },
                   }
                 : null,

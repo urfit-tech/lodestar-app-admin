@@ -377,6 +377,11 @@ type CustomSettingCondition = {
   contractCoupon: {
     title: string
   }
+  bonusExtendedServiceCoupon: {
+    title: string
+  }
+  coachCoursePlanStarList: {[key: string]: any}
+  bonusExtendedServiceCoupons: {[key: string]: number}
   contractCard: { id: string; title: string } | null
 }
 export const useAppCustom = () => {
@@ -396,8 +401,13 @@ export const useAppCustom = () => {
     contractCoupon: {
       title: '未知折價券',
     },
+    bonusExtendedServiceCoupon: {
+      title: '未知折價券',
+    },
     serviceExtend: [],
     paymentMethods: [],
+    coachCoursePlanStarList: {},
+    bonusExtendedServiceCoupons: {},
   }
 
   const customSettingCondition: typeof defaultCustomSettingCondition = useMemo(() => {
