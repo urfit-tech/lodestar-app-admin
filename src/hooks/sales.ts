@@ -6,7 +6,7 @@ import hasura from '../hasura'
 import { SalesProps, LeadProps, LeadStatus, Manager } from '../types/sales'
 import { notEmpty } from '../helpers'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
@@ -151,6 +151,9 @@ export const useSales = (salesId: string) => {
 }
 
 export const useManagerLeads = (manager: Manager) => {
+  const [temporarySalesLeadMemberData, setTemporarySalesLeadMemberData] = useState<
+    hasura.GET_SALES_LEAD_MEMBER_DATA | undefined
+  >(undefined)
   const {
     data: salesLeadMemberPhoneData,
     error: errorMembers,
@@ -171,16 +174,22 @@ export const useManagerLeads = (manager: Manager) => {
       variables: {
         memberIds: salesLeadMemberPhoneData?.member.map(v => v.id) || [],
       },
+      notifyOnNetworkStatusChange: true,
     },
   )
-
+  useEffect(() => {
+    if (salesLeadMemberData) {
+      setTemporarySalesLeadMemberData(salesLeadMemberData)
+    }
+  }, [salesLeadMemberData])
   const convertToLead = (v: hasura.GET_SALES_LEAD_MEMBERS['member'][number] | null): LeadProps | null => {
     if (!v || v.member_phones.length === 0) {
       return null
     }
 
     const star = Number(v.star) || 0
-    const signed = Number(salesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
+    const signed =
+      Number(temporarySalesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
     const status: LeadStatus = v.followed_at
       ? 'FOLLOWED'
       : star < -999
@@ -191,13 +200,13 @@ export const useManagerLeads = (manager: Manager) => {
       ? 'COMPLETED'
       : signed
       ? 'SIGNED'
-      : salesLeadMemberData?.member_task
+      : temporarySalesLeadMemberData?.member_task
           .filter(mt => mt.member_id === v.id)
           .filter(u => u.status === 'done')
           .map(u => u.member_id)
           .includes(v.id)
       ? 'PRESENTED'
-      : salesLeadMemberData?.member_task
+      : temporarySalesLeadMemberData?.member_task
           .filter(mt => mt.member_id === v.id)
           .filter(u => u.status !== 'done')
           .map(u => u.member_id)
@@ -216,9 +225,10 @@ export const useManagerLeads = (manager: Manager) => {
       createdAt: moment(v.created_at).toDate(),
       phones: v.member_phones.map(_v => _v.phone),
       categoryNames:
-        salesLeadMemberData?.member_category.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) || [],
+        temporarySalesLeadMemberData?.member_category.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) ||
+        [],
       properties:
-        salesLeadMemberData?.member_property
+        temporarySalesLeadMemberData?.member_property
           .filter(mp => mp.member_id === v.id)
           .map(v => ({
             id: v.property.id,
