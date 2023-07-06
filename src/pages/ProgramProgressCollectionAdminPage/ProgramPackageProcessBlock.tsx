@@ -1,6 +1,10 @@
 import { DownloadOutlined } from '@ant-design/icons'
 import { gql, useApolloClient } from '@apollo/client'
 import { Button, Col, DatePicker, Form, Input, message, Row, Select } from 'antd'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+import { notEmpty } from 'lodestar-app-element/src/helpers'
 import moment from 'moment'
 import { flatten, uniq } from 'ramda'
 import { RangeValue } from 'rc-picker/lib/interface'
@@ -13,6 +17,11 @@ import { OwnedProgramPackageSelector } from '../../components/programPackage/Pro
 import hasura from '../../hasura'
 import { downloadCSV, toCSV } from '../../helpers'
 import pageMessages from '../translation'
+import { GetMaterialAuditLog, GetMaterialLogMembers } from './ProgramProcessBlock'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+const currentTimeZone = dayjs.tz.guess()
 
 type ProgramPackageFilter =
   | { type: 'all' }
@@ -27,15 +36,40 @@ type MemberFilter =
 const ProgramPackageProcessBlock: React.VFC = () => {
   const apolloClient = useApolloClient()
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState(false)
+  const [programProcessExporting, setProgramProcessExporting] = useState(false)
+  const [materialAuditLogExporting, setMaterialAuditLogExporting] = useState(false)
   const [startedAt, setStartedAt] = useState<Date | null>(moment().startOf('month').startOf('minute').toDate())
   const [endedAt, setEndedAt] = useState<Date | null>(moment().endOf('month').startOf('minute').toDate())
   const [programPackageFilter, setProgramPackageFilter] = useState<ProgramPackageFilter>({ type: 'all' })
   const [memberFilter, setMemberFilter] = useState<MemberFilter>({ type: 'enrolledMember' })
 
-  const handleExport = () => {
-    setLoading(true)
+  const programPackageCondition =
+    programPackageFilter.type === 'all'
+      ? {}
+      : programPackageFilter.type === 'selectedCategory'
+      ? {
+          program_package_categories: { category_id: { _in: programPackageFilter.categoryIds } },
+        }
+      : {
+          id: { _in: programPackageFilter.programPackageIds },
+        }
 
+  const memberCondition =
+    memberFilter.type === 'enrolledMember'
+      ? {}
+      : memberFilter.type === 'selectedMember'
+      ? {
+          id: { _in: memberFilter.memberIds },
+        }
+      : {
+          member_properties: {
+            property_id: { _eq: memberFilter.propertyId },
+            value: { _ilike: `%${memberFilter.valueLike}%` },
+          },
+        }
+
+  const handleProgramProcessExport = () => {
+    setProgramProcessExporting(true)
     apolloClient
       .query<
         hasura.GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS,
@@ -43,33 +77,8 @@ const ProgramPackageProcessBlock: React.VFC = () => {
       >({
         query: GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS,
         variables: {
-          programPackageCondition:
-            programPackageFilter.type === 'all'
-              ? {}
-              : programPackageFilter.type === 'selectedProgramPackage'
-              ? {
-                  id: { _in: programPackageFilter.programPackageIds },
-                }
-              : programPackageFilter.type === 'selectedCategory'
-              ? {
-                  program_package_categories: { category_id: { _in: programPackageFilter.categoryIds } },
-                }
-              : {},
-          memberCondition:
-            memberFilter.type === 'enrolledMember'
-              ? {}
-              : memberFilter.type === 'selectedMember'
-              ? {
-                  id: { _in: memberFilter.memberIds },
-                }
-              : memberFilter.type === 'property'
-              ? {
-                  member_properties: {
-                    property_id: { _eq: memberFilter.propertyId },
-                    value: { _ilike: `%${memberFilter.valueLike}%` },
-                  },
-                }
-              : {},
+          programPackageCondition,
+          memberCondition,
           startedAt,
           endedAt,
         },
@@ -159,7 +168,161 @@ const ProgramPackageProcessBlock: React.VFC = () => {
       .catch(error => {
         message.error(error)
       })
-      .finally(() => setLoading(false))
+      .finally(() => setProgramProcessExporting(false))
+  }
+
+  const handleMaterialAuditLogExport = async () => {
+    setMaterialAuditLogExporting(true)
+    try {
+      const { data: processProgramPackageData } = await apolloClient.query<
+        hasura.GetProcessProgramPackage,
+        hasura.GetProcessProgramPackageVariables
+      >({
+        query: GetProcessProgramPackage,
+        variables: {
+          programPackageCondition,
+        },
+      })
+      const programPackageIds = processProgramPackageData.program_package.map(pp => pp.id)
+      const { data: programPackageCategoriesData } = await apolloClient.query<
+        hasura.GetProgramPackageCategories,
+        hasura.GetProgramPackageCategoriesVariables
+      >({
+        query: gql`
+          query GetProgramPackageCategories($programPackageIds: [uuid!]) {
+            program_package_category(
+              where: { program_package_id: { _in: $programPackageIds } }
+              order_by: { position: asc }
+            ) {
+              program_package_id
+              category {
+                name
+              }
+            }
+          }
+        `,
+        variables: {
+          programPackageIds,
+        },
+      })
+      const { data: programCategoriesData } = await apolloClient.query<
+        hasura.GetProgramCategories,
+        hasura.GetProgramCategoriesVariables
+      >({
+        query: gql`
+          query GetProgramCategories($programIds: [uuid!]) {
+            program_category(where: { program_id: { _in: $programIds } }, order_by: { position: asc }) {
+              program_id
+              category {
+                name
+              }
+            }
+          }
+        `,
+        variables: {
+          programIds: uniq(
+            flatten(
+              processProgramPackageData.program_package.map(pp =>
+                pp.program_package_programs.map(ppp => ppp.program.id),
+              ),
+            ),
+          ),
+        },
+      })
+      const { data: materialAuditLogData } = await apolloClient.query<
+        hasura.GetMaterialAuditLog,
+        hasura.GetMaterialAuditLogVariables
+      >({
+        query: GetMaterialAuditLog,
+        variables: {
+          memberCondition,
+          programContentIds: uniq(
+            flatten(
+              processProgramPackageData.program_package.map(pp =>
+                pp.program_package_programs.map(ppp =>
+                  ppp.program.program_content_sections.map(pcs => pcs.program_contents.map(pc => pc.id)),
+                ),
+              ),
+            ),
+          ),
+        },
+      })
+      const { data: memberData } = await apolloClient.query<
+        hasura.GetMaterialLogMembers,
+        hasura.GetMaterialLogMembersVariables
+      >({
+        query: GetMaterialLogMembers,
+        variables: { memberIds: materialAuditLogData.material_audit_log.map(mal => mal.member_id) },
+      })
+
+      const rows: string[][] = [
+        [
+          formatMessage(pageMessages.ProgramPackageProcessBlock.programPackageCategories),
+          formatMessage(pageMessages.ProgramPackageProcessBlock.programPackageTitle),
+          formatMessage(pageMessages['*'].programCategories),
+          formatMessage(pageMessages['*'].programTitle),
+          formatMessage(pageMessages['*'].programContentSectionTitle),
+          formatMessage(pageMessages['*'].programContentTitle),
+          formatMessage(pageMessages['*'].programContentType),
+          formatMessage(pageMessages['*'].materialName),
+          formatMessage(pageMessages['*'].downloadedAt),
+          formatMessage(pageMessages['*'].memberName),
+          formatMessage(pageMessages['*'].memberEmail),
+          ...memberData.property.map(property => property.name),
+        ],
+      ]
+      materialAuditLogData.material_audit_log.forEach(mal => {
+        const member = memberData.member.find(m => m.id === mal.member_id)
+        const programPackageCategories = uniq(
+          flatten(
+            programPackageCategoriesData.program_package_category.map(ppc =>
+              programPackageIds.some(ppi => ppi === ppc.program_package_id) ? ppc.category.name : null,
+            ),
+          ).filter(notEmpty),
+        ).join(',')
+        const programPackageTitle = uniq(flatten(processProgramPackageData.program_package.map(pp => pp.title))).join(
+          ',',
+        )
+        const programCategories = uniq(
+          flatten(
+            programCategoriesData.program_category
+              .filter(
+                pc =>
+                  mal.program_content_material?.program_content?.program_content_section.program.id === pc.program_id,
+              )
+              .map(pc => pc.category.name),
+          ),
+        ).join(',')
+        const programTitle = mal.program_content_material?.program_content?.program_content_section.program.title || ''
+        const programContentSectionTitle =
+          mal.program_content_material?.program_content?.program_content_section.title || ''
+        const programContentTitle = mal.program_content_material?.program_content?.title || ''
+        const programContentType = mal.program_content_material?.program_content?.content_type || ''
+        const materialName = mal.program_content_material?.data?.name
+        const downloadedAt = dayjs(mal.created_at).tz(currentTimeZone).format('YYYY-MM-DD HH:mm')
+        rows.push([
+          programPackageCategories,
+          programPackageTitle,
+          programCategories,
+          programTitle,
+          programContentSectionTitle,
+          programContentTitle,
+          programContentType,
+          materialName,
+          downloadedAt,
+          member?.name,
+          member?.email,
+          ...memberData.property.map(p => member?.member_properties.find(mp => mp.property_id === p.id)?.value || ''),
+        ])
+      })
+      downloadCSV('programPackageMaterialDownloadLog_' + moment().format('MMDDSSS'), toCSV(rows))
+    } catch (error) {
+      if (error instanceof Error) {
+        message.error(error.message)
+      }
+    } finally {
+      setMaterialAuditLogExporting(false)
+    }
   }
 
   const handleRangePickerChange = (v: RangeValue<moment.Moment>) => {
@@ -311,8 +474,24 @@ const ProgramPackageProcessBlock: React.VFC = () => {
         />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 2 }}>
-        <Button loading={loading} type="primary" icon={<DownloadOutlined />} className="mb-4" onClick={handleExport}>
+        <Button
+          className="mr-4"
+          loading={programProcessExporting}
+          disabled={materialAuditLogExporting}
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleProgramProcessExport}
+        >
           {formatMessage(pageMessages.ProgramProcessBlock.exportProgramProgress)}
+        </Button>
+        <Button
+          loading={materialAuditLogExporting}
+          disabled={programProcessExporting}
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={handleMaterialAuditLogExport}
+        >
+          {formatMessage(pageMessages.ProgramProcessBlock.exportMaterialAuditLog)}
         </Button>
       </Form.Item>
     </Form>
@@ -382,4 +561,27 @@ const GET_ADVANCED_PROGRAM_PACKAGE_CONTENT_PROGRESS = gql`
     }
   }
 `
+const GetProcessProgramPackage = gql`
+  query GetProcessProgramPackage($programPackageCondition: program_package_bool_exp) {
+    program_package(where: $programPackageCondition) {
+      id
+      title
+      program_package_programs {
+        id
+        program {
+          id
+          title
+          program_content_sections {
+            id
+            title
+            program_contents {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 export default ProgramPackageProcessBlock
