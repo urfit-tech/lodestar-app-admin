@@ -69,8 +69,6 @@ const SalesLeadTabs: React.VFC<{
     refetch,
     loadingMembers,
     refetchMembers,
-    loadingPhoneData,
-    refetchPhoneData,
     followedLeads,
     totalLeads,
     idledLeads,
@@ -83,7 +81,7 @@ const SalesLeadTabs: React.VFC<{
     completedLeads,
   } = useManagerLeads(manager)
 
-  if (loading || loadingMembers || loadingPhoneData) {
+  if (loading || loadingMembers) {
     return <Skeleton active />
   }
 
@@ -96,7 +94,6 @@ const SalesLeadTabs: React.VFC<{
           onClick={() => {
             refetch?.()
             refetchMembers?.()
-            refetchPhoneData?.()
           }}
         >
           <RedoOutlined />
@@ -120,7 +117,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -142,7 +138,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -164,7 +159,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -186,7 +180,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -207,7 +200,6 @@ const SalesLeadTabs: React.VFC<{
           onRefetch={() => {
             refetch?.()
             refetchMembers?.()
-            refetchPhoneData?.()
           }}
         />
       </Tabs.TabPane>
@@ -228,7 +220,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -250,7 +241,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -273,7 +263,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -295,7 +284,6 @@ const SalesLeadTabs: React.VFC<{
             onRefetch={() => {
               refetch?.()
               refetchMembers?.()
-              refetchPhoneData?.()
             }}
           />
         }
@@ -318,7 +306,6 @@ const SalesLeadTabs: React.VFC<{
               onRefetch={() => {
                 refetch?.()
                 refetchMembers?.()
-                refetchPhoneData?.()
               }}
             />
           }
