@@ -57,8 +57,10 @@ const ActivityCollectionTabs: React.FC<{
       activity_during_period: { ended_at: { _gt: 'now()' } },
     },
   }
-  const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities, refetchActivities } =
-    useActivityCollection(condition[currentTab], selectedCategoryId)
+  const { loadingActivities, activities, currentTabActivityCount, loadMoreActivities } = useActivityCollection(
+    condition[currentTab],
+    selectedCategoryId,
+  )
   const { categories } = useCategoryCollection(condition[currentTab])
 
   if (!loadingActivities && currentTabActivityCount && !counts[currentTab]) {
@@ -91,7 +93,6 @@ const ActivityCollectionTabs: React.FC<{
   return (
     <Tabs
       defaultActiveKey={'holding'}
-      onChange={() => refetchActivities()}
       onTabClick={key => {
         setCurrentTab(key as Tab)
         setSelectedCategoryId(null)
