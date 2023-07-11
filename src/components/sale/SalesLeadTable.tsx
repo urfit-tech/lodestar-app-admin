@@ -1,7 +1,3 @@
-import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import utc from 'dayjs/plugin/utc'
 import {
   CheckOutlined,
   CheckSquareOutlined,
@@ -17,6 +13,10 @@ import {
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Input, message, Table, Tag } from 'antd'
 import { ColumnProps, ColumnsType, TablePaginationConfig } from 'antd/lib/table'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { uniq } from 'ramda'
@@ -105,19 +105,11 @@ const SalesLeadTable: React.VFC<{
       total: aggregate,
     },
   })
-  console.log(filters)
-  const { loading, statusSalesLeadMembers, refetch } = useStatusSalesLeadMember(
-    {
-      ...condition,
-      member_categories: {
-        category: { name: { _ilike: filters.categoryName ? `%${filters.categoryName}%` : undefined } },
-      },
-    },
-    {
-      offset: ((tableParams.pagination?.current || 1) - 1) * (tableParams.pagination?.pageSize || 100),
-      limit: tableParams.pagination?.pageSize || 100,
-    },
-  )
+
+  const { loading, statusSalesLeadMembers, refetch } = useStatusSalesLeadMember(condition, {
+    offset: ((tableParams.pagination?.current || 1) - 1) * (tableParams.pagination?.pageSize || 100),
+    limit: tableParams.pagination?.pageSize || 100,
+  })
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
