@@ -1,12 +1,10 @@
 import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import moment from 'moment'
-import { sum, prop, sortBy } from 'ramda'
+import { sum } from 'ramda'
 import hasura from '../hasura'
-import { SalesProps, LeadProps, LeadStatus, Manager } from '../types/sales'
-import { notEmpty } from '../helpers'
-import dayjs from 'dayjs'
-import { useEffect, useMemo, useState } from 'react'
+import { SalesProps, Manager } from '../types/sales'
+import { useMemo } from 'react'
 
 export const useManagers = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_MANAGER_COLLECTION>(
@@ -150,171 +148,448 @@ export const useSales = (salesId: string) => {
   }
 }
 
-export const useManagerLeads = (manager: Manager) => {
-  const [temporarySalesLeadMemberData, setTemporarySalesLeadMemberData] = useState<
-    hasura.GET_SALES_LEAD_MEMBER_DATA | undefined
-  >(undefined)
-  const {
-    data: salesLeadMemberPhoneData,
-    error: errorMembers,
-    loading: loadingMembers,
-    refetch: refetchMembers,
-  } = useQuery<hasura.GET_SALES_LEAD_MEMBERS, hasura.GET_SALES_LEAD_MEMBERSVariables>(GET_SALES_LEAD_MEMBERS, {
-    variables: { managerId: manager.id },
-  })
-
-  const {
-    data: salesLeadMemberData,
-    error,
-    loading,
-    refetch,
-  } = useQuery<hasura.GET_SALES_LEAD_MEMBER_DATA, hasura.GET_SALES_LEAD_MEMBER_DATAVariables>(
-    GET_SALES_LEAD_MEMBER_DATA,
+export const useValidManagerMemberIds = (managerId: string) => {
+  const { data, loading, refetch } = useQuery<hasura.GetValidManagerMembers, hasura.GetValidManagerMembersVariables>(
+    gql`
+      query GetValidManagerMembers($managerId: String!) {
+        member(where: { manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }) {
+          id
+        }
+      }
+    `,
     {
-      variables: {
-        memberIds: salesLeadMemberPhoneData?.member.map(v => v.id) || [],
-      },
-      notifyOnNetworkStatusChange: true,
+      variables: { managerId: managerId },
     },
   )
-  useEffect(() => {
-    if (salesLeadMemberData) {
-      setTemporarySalesLeadMemberData(salesLeadMemberData)
-    }
-  }, [salesLeadMemberData])
-  const convertToLead = (v: hasura.GET_SALES_LEAD_MEMBERS['member'][number] | null): LeadProps | null => {
-    if (!v || v.member_phones.length === 0) {
-      return null
-    }
-
-    const star = Number(v.star) || 0
-    const signed =
-      Number(temporarySalesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
-    const status: LeadStatus = v.followed_at
-      ? 'FOLLOWED'
-      : star < -999
-      ? 'DEAD'
-      : v.closed_at
-      ? 'CLOSED'
-      : v.completed_at
-      ? 'COMPLETED'
-      : signed
-      ? 'SIGNED'
-      : temporarySalesLeadMemberData?.member_task
-          .filter(mt => mt.member_id === v.id)
-          .filter(u => u.status === 'done')
-          .map(u => u.member_id)
-          .includes(v.id)
-      ? 'PRESENTED'
-      : temporarySalesLeadMemberData?.member_task
-          .filter(mt => mt.member_id === v.id)
-          .filter(u => u.status !== 'done')
-          .map(u => u.member_id)
-          .includes(v.id)
-      ? 'INVITED'
-      : v.last_member_note_answered
-      ? 'ANSWERED'
-      : v.last_member_note_called
-      ? 'CONTACTED'
-      : 'IDLED'
-    return {
-      id: v.id,
-      star: v.star,
-      name: v.name,
-      email: v.email,
-      createdAt: moment(v.created_at).toDate(),
-      phones: v.member_phones.map(_v => _v.phone),
-      categoryNames:
-        temporarySalesLeadMemberData?.member_category.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) ||
-        [],
-      properties:
-        temporarySalesLeadMemberData?.member_property
-          .filter(mp => mp.member_id === v.id)
-          .map(v => ({
-            id: v.property.id,
-            name: v.property.name,
-            value: v.value,
-          })) || [],
-      status,
-      assignedAt: v.assigned_at ? dayjs(v.assigned_at).toDate() : null,
-      notified: !v.last_member_note_created,
-      recentContactedAt: v.last_member_note_called ? dayjs(v.last_member_note_called).toDate() : null,
-      recentAnsweredAt: v.last_member_note_answered ? dayjs(v.last_member_note_answered).toDate() : null,
-    }
-  }
-  const totalLeads: LeadProps[] = sortBy(prop('id'))(
-    salesLeadMemberPhoneData?.member.map(convertToLead).filter(notEmpty) || [],
-  )
+  const validManagerMemberIds: string[] = data?.member.map(v => v.id) || []
   return {
+    validManagerMemberIds,
     loading,
-    error,
     refetch,
-    loadingMembers,
-    errorMembers,
-    refetchMembers,
-    totalLeads,
-    followedLeads: totalLeads.filter(lead => lead.status === 'FOLLOWED'),
-    idledLeads: totalLeads.filter(lead => lead.status === 'IDLED'),
-    contactedLeads: totalLeads.filter(lead => lead.status === 'CONTACTED'),
-    answeredLeads: totalLeads.filter(lead => lead.status === 'ANSWERED'),
-    invitedLeads: totalLeads.filter(lead => lead?.status === 'INVITED'),
-    presentedLeads: totalLeads.filter(lead => lead?.status === 'PRESENTED'),
-    signedLeads: totalLeads.filter(lead => lead?.status === 'SIGNED'),
-    closedLeads: totalLeads.filter(lead => lead?.status === 'CLOSED'),
-    completedLeads: totalLeads.filter(lead => lead?.status === 'COMPLETED'),
   }
 }
 
-const GET_SALES_LEAD_MEMBER_DATA = gql`
-  query GET_SALES_LEAD_MEMBER_DATA($memberIds: [String!]!) {
-    member_task(where: { member_id: { _in: $memberIds } }, distinct_on: [member_id]) {
-      member_id
-      status
-    }
-    member_property(where: { member_id: { _in: $memberIds } }) {
-      member_id
-      property {
-        id
-        name
+export const useActiveContractMemberIds = (managerMemberIds: string) => {
+  const { data, loading, refetch } = useQuery<
+    hasura.GetActiveContractMemberIds,
+    hasura.GetActiveContractMemberIdsVariables
+  >(
+    gql`
+      query GetActiveContractMemberIds($memberIds: [String!]!) {
+        member_contract(where: { member_id: { _in: $memberIds }, agreed_at: { _is_null: false } }) {
+          member_id
+        }
       }
-      value
-    }
-    member_phone(where: { member_id: { _in: $memberIds } }) {
-      member_id
-      phone
-    }
-    member_category(where: { member_id: { _in: $memberIds } }) {
-      member_id
-      category {
-        name
-      }
-    }
-    active_member_contract: member_contract(where: { member_id: { _in: $memberIds }, agreed_at: { _is_null: false } }) {
-      member_id
-      agreed_at
-      revoked_at
-      values
-    }
+    `,
+    { variables: { memberIds: managerMemberIds } },
+  )
+  const activeContractMemberIds = data?.member_contract.map(v => v.member_id) || []
+  return {
+    activeContractMemberIds,
+    loading,
+    refetch,
   }
-`
-const GET_SALES_LEAD_MEMBERS = gql`
-  query GET_SALES_LEAD_MEMBERS($managerId: String!) {
-    member(where: { manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }) {
-      id
-      name
-      email
-      star
-      created_at
-      assigned_at
-      followed_at
-      closed_at
-      completed_at
-      last_member_note_created
-      last_member_note_called
-      last_member_note_answered
-      member_phones {
-        phone
+}
+
+export const useMemberTasks = (memberIds: string[]) => {
+  const { loading, error, data, refetch } = useQuery<hasura.GetMemberTasks, hasura.GetMemberTasksVariables>(
+    gql`
+      query GetMemberTasks($memberIds: [String!]!) {
+        member_task(where: { member_id: { _in: $memberIds } }, distinct_on: [member_id]) {
+          member_id
+          status
+        }
       }
-    }
+    `,
+    { variables: { memberIds } },
+  )
+
+  const memberTasks: {
+    memberId: string
+    status: string
+  }[] =
+    data?.member_task.map(v => ({
+      memberId: v.member_id,
+      status: v.status,
+    })) || []
+
+  return {
+    loading,
+    error,
+    memberTasks,
+    refetch,
   }
-`
+}
+
+export const useSalesLeadMemberCount = (
+  managerId: string,
+  activeContractMemberIds: string[],
+  validManagerMemberIds: string[],
+  memberTasks: { memberId: string; status: string }[],
+) => {
+  const {
+    loading: loadingTotalSalesLeadMemberAggregate,
+    data: totalSalesLeadMemberAggregateData,
+    refetch: refetchTotalSalesLeadMembersAggregate,
+  } = useQuery<hasura.GetTotalSalesLeadMemberAggregate, hasura.GetTotalSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetTotalSalesLeadMemberAggregate($managerId: String!) {
+        member_aggregate(where: { manager_id: { _eq: $managerId }, member_phones: { phone: { _is_null: false } } }) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    { variables: { managerId } },
+  )
+  const {
+    loading: loadingFollowedSalesLeadMemberAggregate,
+    data: followedSalesLeadMemberAggregateData,
+    refetch: refetchFollowedSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetFollowedSalesLeadMemberAggregate, hasura.GetFollowedSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetFollowedSalesLeadMemberAggregate($managerId: String!) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: false }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    { variables: { managerId } },
+  )
+  const {
+    loading: loadingClosedSalesLeadMemberAggregate,
+    data: closedSalesLeadMemberAggregateData,
+    refetch: refetchClosedSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetClosedSalesLeadMemberAggregate, hasura.GetClosedSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetClosedSalesLeadMemberAggregate($managerId: String!) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: false }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    { variables: { managerId } },
+  )
+  const {
+    loading: loadingCompletedSalesLeadMemberAggregate,
+    data: completedSalesLeadMemberAggregateData,
+    refetch: refetchCompletedSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetCompletedSalesLeadMemberAggregate, hasura.GetCompletedSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetCompletedSalesLeadMemberAggregate($managerId: String!) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: true }
+            completed_at: { _is_null: false }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    { variables: { managerId } },
+  )
+  const {
+    loading: loadingSignedSalesLeadMemberAggregate,
+    data: signedSalesLeadMemberAggregateData,
+    refetch: refetchSignedSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetSignedSalesLeadMemberAggregate, hasura.GetSignedSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetSignedSalesLeadMemberAggregate($managerId: String!, $activeContractMemberIds: [String!]) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: true }
+            completed_at: { _is_null: true }
+            id: { _in: $activeContractMemberIds }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    { variables: { managerId, activeContractMemberIds } },
+  )
+  const {
+    loading: loadingPresentedSalesLeadMemberAggregate,
+    data: presentedSalesLeadMemberAggregateData,
+    refetch: refetchPresentedSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetPresentedSalesLeadMemberAggregate, hasura.GetPresentedSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetPresentedSalesLeadMemberAggregate(
+        $managerId: String!
+        $activeContractMemberIds: [String!]
+        $doneTaskMembers: [String!]
+      ) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: true }
+            completed_at: { _is_null: true }
+            id: { _nin: $activeContractMemberIds, _in: $doneTaskMembers }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        managerId,
+        activeContractMemberIds,
+        doneTaskMembers: validManagerMemberIds.filter(validManagerMemberId =>
+          memberTasks
+            .filter(memberTask => memberTask.status === 'done')
+            .some(memberTask => memberTask.memberId === validManagerMemberId),
+        ),
+      },
+    },
+  )
+  const {
+    loading: loadingInvitedSalesLeadMemberAggregate,
+    data: invitedSalesLeadMemberAggregateData,
+    refetch: refetchInvitedSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetInvitedSalesLeadMemberAggregate, hasura.GetInvitedSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetInvitedSalesLeadMemberAggregate(
+        $managerId: String!
+        $activeContractMemberIds: [String!]
+        $unDoneTaskMembers: [String!]
+      ) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: true }
+            completed_at: { _is_null: true }
+            id: { _nin: $activeContractMemberIds, _in: $unDoneTaskMembers }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        managerId,
+        activeContractMemberIds,
+        unDoneTaskMembers: validManagerMemberIds.filter(validManagerMemberId =>
+          memberTasks
+            .filter(memberTask => memberTask.status !== 'done')
+            .some(memberTask => memberTask.memberId === validManagerMemberId),
+        ),
+      },
+    },
+  )
+  const {
+    loading: loadingAnsweredSalesLeadMemberAggregate,
+    data: answeredSalesLeadMemberAggregateData,
+    refetch: refetchAnsweredSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetAnsweredSalesLeadMemberAggregate, hasura.GetAnsweredSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetAnsweredSalesLeadMemberAggregate(
+        $managerId: String!
+        $activeContractMemberIds: [String!]
+        $filterMemberIds: [String!]
+      ) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: true }
+            completed_at: { _is_null: true }
+            id: { _nin: $filterMemberIds }
+            last_member_note_answered: { _is_null: false }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        managerId,
+        activeContractMemberIds,
+        filterMemberIds: validManagerMemberIds?.filter(
+          validManagerMemberId =>
+            memberTasks.some(memberTask => memberTask.memberId === validManagerMemberId) ||
+            activeContractMemberIds?.some(activeContractMemberId => activeContractMemberId === validManagerMemberId),
+        ),
+      },
+    },
+  )
+  const {
+    loading: loadingContactedSalesLeadMemberAggregate,
+    data: contactedSalesLeadMemberAggregateData,
+    refetch: refetchContactedSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetContactedSalesLeadMemberAggregate, hasura.GetContactedSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetContactedSalesLeadMemberAggregate(
+        $managerId: String!
+        $activeContractMemberIds: [String!]
+        $filterMemberIds: [String!]
+      ) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: true }
+            completed_at: { _is_null: true }
+            id: { _nin: $filterMemberIds }
+            last_member_note_answered: { _is_null: true }
+            last_member_note_called: { _is_null: false }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        managerId,
+        activeContractMemberIds,
+        filterMemberIds: validManagerMemberIds?.filter(
+          validManagerMemberId =>
+            memberTasks.some(memberTask => memberTask.memberId === validManagerMemberId) ||
+            activeContractMemberIds?.some(activeContractMemberId => activeContractMemberId === validManagerMemberId),
+        ),
+      },
+    },
+  )
+  const {
+    loading: loadingIdledSalesLeadMemberAggregate,
+    data: idledSalesLeadMemberAggregateData,
+    refetch: refetchIdledSalesLeadMemberAggregate,
+  } = useQuery<hasura.GetIdledSalesLeadMemberAggregate, hasura.GetIdledSalesLeadMemberAggregateVariables>(
+    gql`
+      query GetIdledSalesLeadMemberAggregate(
+        $managerId: String!
+        $activeContractMemberIds: [String!]
+        $filterMemberIds: [String!]
+      ) {
+        member_aggregate(
+          where: {
+            manager_id: { _eq: $managerId }
+            member_phones: { phone: { _is_null: false } }
+            followed_at: { _is_null: true }
+            star: { _gte: -999 }
+            closed_at: { _is_null: true }
+            completed_at: { _is_null: true }
+            id: { _nin: $filterMemberIds }
+            last_member_note_answered: { _is_null: true }
+            last_member_note_called: { _is_null: true }
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        managerId,
+        activeContractMemberIds,
+        filterMemberIds: validManagerMemberIds?.filter(
+          validManagerMemberId =>
+            memberTasks.some(memberTask => memberTask.memberId === validManagerMemberId) ||
+            activeContractMemberIds?.some(activeContractMemberId => activeContractMemberId === validManagerMemberId),
+        ),
+      },
+    },
+  )
+
+  const totalSalesLeadMemberAggregate = totalSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const followedSalesLeadMemberAggregate = followedSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const closedSalesLeadMemberAggregate = closedSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const completedSalesLeadMemberAggregate =
+    completedSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const signedSalesLeadMemberAggregate = signedSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const presentedSalesLeadMemberAggregate =
+    presentedSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const invitedSalesLeadMemberAggregate = invitedSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const answeredSalesLeadMemberAggregate = answeredSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const contactedSalesLeadMemberAggregate =
+    contactedSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+  const idledSalesLeadMemberAggregate = idledSalesLeadMemberAggregateData?.member_aggregate.aggregate?.count || 0
+
+  return {
+    loadingTotalSalesLeadMemberAggregate,
+    loadingFollowedSalesLeadMemberAggregate,
+    loadingClosedSalesLeadMemberAggregate,
+    loadingCompletedSalesLeadMemberAggregate,
+    loadingSignedSalesLeadMemberAggregate,
+    loadingPresentedSalesLeadMemberAggregate,
+    loadingInvitedSalesLeadMemberAggregate,
+    loadingAnsweredSalesLeadMemberAggregate,
+    loadingContactedSalesLeadMemberAggregate,
+    loadingIdledSalesLeadMemberAggregate,
+    totalSalesLeadMemberAggregate,
+    followedSalesLeadMemberAggregate,
+    closedSalesLeadMemberAggregate,
+    completedSalesLeadMemberAggregate,
+    signedSalesLeadMemberAggregate,
+    presentedSalesLeadMemberAggregate,
+    invitedSalesLeadMemberAggregate,
+    answeredSalesLeadMemberAggregate,
+    contactedSalesLeadMemberAggregate,
+    idledSalesLeadMemberAggregate,
+    refetchTotalSalesLeadMembersAggregate,
+    refetchFollowedSalesLeadMemberAggregate,
+    refetchClosedSalesLeadMemberAggregate,
+    refetchCompletedSalesLeadMemberAggregate,
+    refetchSignedSalesLeadMemberAggregate,
+    refetchPresentedSalesLeadMemberAggregate,
+    refetchInvitedSalesLeadMemberAggregate,
+    refetchAnsweredSalesLeadMemberAggregate,
+    refetchContactedSalesLeadMemberAggregate,
+    refetchIdledSalesLeadMemberAggregate,
+  }
+}

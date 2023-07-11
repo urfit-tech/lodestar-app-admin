@@ -1,3 +1,7 @@
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
 import {
   CheckOutlined,
   CheckSquareOutlined,
@@ -10,14 +14,13 @@ import {
   SwapOutlined,
   SyncOutlined,
 } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button, Input, message, Table, Tag } from 'antd'
-import { ColumnProps, ColumnsType } from 'antd/lib/table'
+import { ColumnProps, ColumnsType, TablePaginationConfig } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment from 'moment'
 import { uniq } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import hasura from '../../hasura'
@@ -31,6 +34,12 @@ import MemberNoteAdminModal from '../member/MemberNoteAdminModal'
 import MemberTaskAdminModal from '../task/MemberTaskAdminModal'
 import JitsiDemoModal from './JitsiDemoModal'
 import MemberPropertyModal from './MemberPropertyModal'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(relativeTime)
+
+const currentTimeZone = dayjs.tz.guess()
 
 const StyledAdminCard = styled(AdminCard)`
   position: relative;
@@ -54,9 +63,12 @@ const TableWrapper = styled.div`
 const SalesLeadTable: React.VFC<{
   variant?: 'followed' | 'completed'
   manager: Manager
-  leads: LeadProps[]
+  condition: hasura.GetStatusSalesLeadMembersVariables['condition']
+  aggregate: number
   onRefetch?: () => void
-}> = ({ variant, manager, leads, onRefetch }) => {
+  refetchLoading: boolean
+  onRefetchLoading?: (status: boolean) => void
+}> = ({ variant, manager, condition, aggregate, onRefetch, refetchLoading, onRefetchLoading }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { authToken } = useAuth()
@@ -64,7 +76,6 @@ const SalesLeadTable: React.VFC<{
   const { insertMemberNote, updateLastMemberNoteCalled, updateLastMemberNoteAnswered } = useMutateMemberNote()
   const [updateLeads] = useMutation<hasura.UPDATE_LEADS, hasura.UPDATE_LEADSVariables>(UPDATE_LEADS)
   const [transferLeads] = useMutation<hasura.TRANSFER_LEADS, hasura.TRANSFER_LEADSVariables>(TRANSFER_LEADS)
-
   const uploadAttachments = useUploadAttachments()
 
   const [filters, setFilters] = useState<{
@@ -84,6 +95,30 @@ const SalesLeadTable: React.VFC<{
   const [selectedMember, setSelectedMember] = useState<{ id: string; name: string; categoryNames: string[] } | null>(
     null,
   )
+  const [tableParams, setTableParams] = useState<{
+    pagination: TablePaginationConfig
+  }>({
+    pagination: {
+      current: 1,
+      pageSize: 100,
+      pageSizeOptions: ['20', '50', '100', '300', '500', '1000'],
+      total: aggregate,
+    },
+  })
+  console.log(filters)
+  const { loading, statusSalesLeadMembers, refetch } = useStatusSalesLeadMember(
+    {
+      ...condition,
+      member_categories: {
+        category: { name: { _ilike: filters.categoryName ? `%${filters.categoryName}%` : undefined } },
+      },
+    },
+    {
+      offset: ((tableParams.pagination?.current || 1) - 1) * (tableParams.pagination?.pageSize || 100),
+      limit: tableParams.pagination?.pageSize || 100,
+    },
+  )
+
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys)
   }
@@ -130,7 +165,7 @@ const SalesLeadTable: React.VFC<{
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
-  const dataSource = leads
+  const dataSource = statusSalesLeadMembers
     .filter(
       v =>
         (!filters.nameAndEmail ||
@@ -313,14 +348,15 @@ const SalesLeadTable: React.VFC<{
       dataIndex: 'createdAt',
       title: formatMessage(salesMessages.createdAt),
       sorter: (a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0),
-      render: createdAt => <time>{moment(createdAt).fromNow()}</time>,
+      render: createdAt => <time>{dayjs(dayjs(createdAt).tz(currentTimeZone)).fromNow()}</time>,
     },
     {
       key: 'recentContactedAt',
       dataIndex: 'recentContactedAt',
       title: formatMessage(salesMessages.recentContactedAt),
       sorter: (a, b) => (a.recentContactedAt?.getTime() || 0) - (b.recentContactedAt?.getTime() || 0),
-      render: recentContactedAt => recentContactedAt && <time>{moment(recentContactedAt).fromNow()}</time>,
+      render: recentContactedAt =>
+        recentContactedAt && <time>{dayjs(dayjs(recentContactedAt).tz(currentTimeZone)).fromNow()}</time>,
     },
     {
       key: 'recentAnsweredAt',
@@ -328,9 +364,25 @@ const SalesLeadTable: React.VFC<{
       title: formatMessage(salesMessages.recentAnsweredAt),
       sorter: (a, b) => (a.recentAnsweredAt?.getTime() || 0) - (b.recentAnsweredAt?.getTime() || 0),
       render: recentAnsweredAt =>
-        recentAnsweredAt && <time>{recentAnsweredAt && moment(recentAnsweredAt).fromNow()}</time>,
+        recentAnsweredAt && (
+          <time>{recentAnsweredAt && dayjs(dayjs(recentAnsweredAt).tz(currentTimeZone)).fromNow()}</time>
+        ),
     },
   ]
+
+  const fetchData = () => {
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        total: aggregate,
+      },
+    })
+    refetch()
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => fetchData(), [JSON.stringify(tableParams), JSON.stringify(filters), aggregate])
 
   return (
     <StyledAdminCard>
@@ -345,9 +397,7 @@ const SalesLeadTable: React.VFC<{
             name: manager.name,
             email: manager.email,
           }}
-          onClose={() => {
-            setPropertyModalVisible(false)
-          }}
+          onClose={() => setPropertyModalVisible(false)}
         />
       )}
       {selectedMember && (
@@ -358,9 +408,7 @@ const SalesLeadTable: React.VFC<{
           title={formatMessage(memberMessages.ui.newTask)}
           initialMemberId={selectedMember.id}
           initialExecutorId={manager.id}
-          onRefetch={() => {
-            setTaskModalVisible(false)
-          }}
+          onRefetch={() => setTaskModalVisible(false)}
         />
       )}
       {selectedMember && (
@@ -404,6 +452,7 @@ const SalesLeadTable: React.VFC<{
           }
         />
       )}
+
       <TableWrapper>
         {selectedRowKeys.length > 0 && (
           <div className="d-flex flex-row justify-content-end mb-3">
@@ -422,6 +471,7 @@ const SalesLeadTable: React.VFC<{
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
                         message.success('已成功收錄！')
+                        refetch()
                         onRefetch?.()
                       } else {
                         message.error('系統錯誤ＱＱ')
@@ -447,6 +497,7 @@ const SalesLeadTable: React.VFC<{
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
                         message.success('已成功取消收藏！')
+                        refetch()
                         onRefetch?.()
                       } else {
                         message.error('系統錯誤ＱＱ')
@@ -473,6 +524,7 @@ const SalesLeadTable: React.VFC<{
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
                         message.success('已成功完成此名單！')
+                        refetch()
                         onRefetch?.()
                       } else {
                         message.error('系統錯誤ＱＱ')
@@ -499,6 +551,7 @@ const SalesLeadTable: React.VFC<{
                     }).then(({ data }) => {
                       if (data?.update_member?.affected_rows) {
                         message.success('已取消已完成名單！')
+                        refetch()
                         onRefetch?.()
                       } else {
                         message.error('系統錯誤ＱＱ')
@@ -526,6 +579,7 @@ const SalesLeadTable: React.VFC<{
                       }).then(({ data }) => {
                         if (data?.update_member?.affected_rows) {
                           message.success('已成功回收此名單！')
+                          refetch()
                           onRefetch?.()
                         } else {
                           message.error('系統錯誤ＱＱ')
@@ -550,6 +604,7 @@ const SalesLeadTable: React.VFC<{
                       }).then(({ data }) => {
                         if (data?.update_member?.affected_rows) {
                           message.success('已成功拒絕此名單！')
+                          refetch()
                           onRefetch?.()
                         } else {
                           message.error('系統錯誤ＱＱ')
@@ -574,6 +629,7 @@ const SalesLeadTable: React.VFC<{
                       }).then(({ data }) => {
                         if (data?.update_member?.affected_rows) {
                           message.success('已成功刪除此名單！')
+                          refetch()
                           onRefetch?.()
                         } else {
                           message.error('系統錯誤ＱＱ')
@@ -598,6 +654,7 @@ const SalesLeadTable: React.VFC<{
                     .then(({ data, errors }) => {
                       if (data?.update_member?.affected_rows) {
                         window.alert('已成功轉移此名單！')
+                        refetch()
                         onRefetch?.()
                       } else {
                         window.alert(`轉移失敗：${errors?.join(', ')}`)
@@ -614,6 +671,7 @@ const SalesLeadTable: React.VFC<{
           </div>
         )}
         <Table<LeadProps>
+          loading={loading}
           rowKey="id"
           rowSelection={{
             selectedRowKeys,
@@ -622,10 +680,12 @@ const SalesLeadTable: React.VFC<{
           rowClassName={lead => lead.notified && 'notified'}
           columns={columns}
           dataSource={dataSource}
-          pagination={{ defaultPageSize: 100, pageSizeOptions: ['20', '50', '100', '300', '500', '1000'] }}
+          pagination={tableParams.pagination}
           className="mb-3"
+          onChange={(pagination: TablePaginationConfig) => setTableParams({ pagination })}
         />
       </TableWrapper>
+
       {
         <JitsiDemoModal
           member={selectedMember}
@@ -695,5 +755,109 @@ const TRANSFER_LEADS = gql`
     }
   }
 `
+
+const useStatusSalesLeadMember = (
+  condition: hasura.GetStatusSalesLeadMembersVariables['condition'],
+  pagination: {
+    offset: number
+    limit: number
+  },
+) => {
+  const { loading, error, data, refetch } = useQuery<
+    hasura.GetStatusSalesLeadMembers,
+    hasura.GetStatusSalesLeadMembersVariables
+  >(
+    gql`
+      query GetStatusSalesLeadMembers($condition: member_bool_exp, $offset: Int, $limit: Int) {
+        member(
+          where: $condition
+          offset: $offset
+          order_by: { last_member_note_called: desc_nulls_last }
+          limit: $limit
+        ) {
+          id
+          name
+          email
+          star
+          created_at
+          assigned_at
+          followed_at
+          closed_at
+          completed_at
+          last_member_note_created
+          last_member_note_called
+          last_member_note_answered
+          member_phones {
+            phone
+          }
+          member_properties {
+            member_id
+            value
+            property {
+              id
+              name
+            }
+          }
+          member_categories {
+            member_id
+            category {
+              name
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        condition,
+        offset: pagination.offset,
+        limit: pagination.limit,
+      },
+    },
+  )
+
+  const statusSalesLeadMembers: {
+    id: string
+    name: string
+    email: string
+    star: number
+    createdAt: Date
+    phones: string[]
+    categoryNames: string[]
+    properties: { id: string; name: string; value: string }[]
+    assignedAt: Date | null
+    notified: boolean
+    recentContactedAt: Date | null
+    recentAnsweredAt: Date | null
+  }[] =
+    data?.member.map(v => ({
+      id: v.id,
+      name: v.name,
+      email: v.email,
+      phones: v.member_phones.map(w => w.phone),
+      categoryNames: v.member_categories.filter(mc => mc.member_id === v.id).map(_v => _v.category.name) || [],
+      properties:
+        v.member_properties
+          .filter(mp => mp.member_id === v.id)
+          .map(v => ({
+            id: v.property.id,
+            name: v.property.name,
+            value: v.value,
+          })) || [],
+      star: v.star,
+      createdAt: new Date(v.created_at),
+      assignedAt: v.assigned_at ? dayjs(v.assigned_at).toDate() : null,
+      notified: !v.last_member_note_created,
+      recentContactedAt: v.last_member_note_called ? dayjs(v.last_member_note_called).toDate() : null,
+      recentAnsweredAt: v.last_member_note_answered ? dayjs(v.last_member_note_answered).toDate() : null,
+    })) || []
+
+  return {
+    loading: loading,
+    error,
+    statusSalesLeadMembers,
+    refetch,
+  }
+}
 
 export default SalesLeadTable

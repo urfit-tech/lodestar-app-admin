@@ -8,7 +8,6 @@ export type LeadProps = {
   star: number
   createdAt: Date
   assignedAt: Date | null
-  status: LeadStatus
   notified: Boolean
   recentContactedAt: Date | null
   recentAnsweredAt: Date | null
@@ -72,18 +71,3 @@ export type Manager = {
   // disabled?: boolean
   telephone: string
 }
-
-export type LeadStatus =
-  | 'IDLED'
-  | 'CONTACTED'
-  | 'INVITED'
-  | 'PRESENTED'
-  | 'TODO'
-  | 'SIGNED'
-  | 'CLOSED'
-  | 'DEDICATED'
-  | 'EXISTED'
-  | 'DEAD'
-  | 'FOLLOWED'
-  | 'ANSWERED'
-  | 'COMPLETED'
