@@ -20,11 +20,9 @@ import { AvatarImage } from '../common/Image'
 import { ReactComponent as MeetingIcon } from '../../images/icon/video-o.svg'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 import axios from 'axios'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import JitsiDemoModal from '../sale/JitsiDemoModal'
 import { useMutateMemberNote } from '../../hooks/member'
 import { handleError } from '../../helpers'
-import { useToast } from '@chakra-ui/toast'
 
 const messages = defineMessages({
   switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
@@ -125,9 +123,7 @@ const MemberTaskAdminBlock: React.FC<{
     id: string
     name: string
   }>({ id: '', name: '' })
-  const { enabledModules, id: appId } = useApp()
   const { insertMemberNote } = useMutateMemberNote()
-  const toast = useToast()
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -193,30 +189,30 @@ const MemberTaskAdminBlock: React.FC<{
   const onCellClick = (record: MemberTaskProps) => {
     return {
       onClick: () => {
-        setMeetingMember(() => record.member)
         setSelectedMemberTask(() => record)
         setVisible(() => true)
       },
     }
   }
 
-  const meetingButtonOnClick = async (meetingMember: { id: string; name: string }) => {
-    if (!enabledModules.meet_service) {
+  const getMeetingLink = async (meetId: string | null, nbfAt: Date | null, expAt: Date | null) => {
+    const isCurrentTimeInMeetingPeriod = moment(new Date()).isBetween(nbfAt, expAt, null, '[)')
+    if (!meetId) {
       setJitsiModalVisible(true)
+      setMeetingLoading(null)
       return
     }
-    const currentTime = new Date()
+    if (!isCurrentTimeInMeetingPeriod) {
+      setJitsiModalVisible(true)
+      setMeetingLoading(null)
+      message.error('非會議時間，開啟jitsi代替')
+      return
+    }
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+        `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`,
         {
-          name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMember.id}`,
-          autoRecording: true,
-          service: 'zoom',
-          nbf: null,
-          exp: null,
-          startedAt: currentTime,
-          endedAt: new Date(currentTime.getTime() + 2 * 60 * 60 * 1000),
+          role: 'host',
         },
         {
           headers: {
@@ -225,15 +221,9 @@ const MemberTaskAdminBlock: React.FC<{
           },
         },
       )
-      window.open(response.data.data.options.startUrl)
-    } catch {
-      toast({
-        title: '已達同時會議上限額度，請升級方案',
-        status: 'error',
-        duration: 3000,
-        position: 'top',
-      })
-      setJitsiModalVisible(true)
+      window.open(response.data.data.target)
+    } catch (error) {
+      handleError(error)
     } finally {
       setMeetingLoading(null)
     }
@@ -270,7 +260,8 @@ const MemberTaskAdminBlock: React.FC<{
                     loading: true,
                   }
                 })
-                meetingButtonOnClick(record.member)
+                setMeetingMember(() => record.member)
+                getMeetingLink(record.meet.id, record.meet.nbfAt, record.meet.expAt)
               }}
               style={{ width: 30, height: 30, alignItems: 'center' }}
             >
@@ -656,7 +647,6 @@ const MemberTaskAdminBlock: React.FC<{
             refetchMemberTasks()
             setSelectedMemberTask(null)
           }}
-          meetingButtonOnClick={() => meetingButtonOnClick(meetingMember)}
           onCancel={() => setSelectedMemberTask(null)}
         />
       )}
@@ -722,6 +712,12 @@ const useMemberTaskCollection = (options?: {
           due_at
           created_at
           has_meeting
+          meeting_hours
+          meet {
+            id
+            exp_at
+            nbf_at
+          }
           category {
             id
             name
@@ -789,6 +785,12 @@ const useMemberTaskCollection = (options?: {
           dueAt: v.due_at && new Date(v.due_at),
           createdAt: v.created_at && new Date(v.created_at),
           hasMeeting: v.has_meeting,
+          meetingHours: v.meeting_hours,
+          meet: {
+            id: v.meet?.id,
+            nbfAt: v.meet?.nbf_at,
+            expAt: v.meet?.exp_at,
+          },
           description: v.description || '',
           member: {
             id: v.member.id,
