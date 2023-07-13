@@ -141,7 +141,7 @@ const useCoinUsage = () => {
               }) => coinLog?.amount,
             )
             .reduce((a: any, b: any) => a + b, 0) || 0
-        const achievedUnTaxedIncome = totalCoinUsage * (unTaxedPrice / totalCoin)
+        const achievedUnTaxedIncome = Math.round(totalCoinUsage * (unTaxedPrice / totalCoin))
 
         return {
           memberContractId: c.member_contract_id,
