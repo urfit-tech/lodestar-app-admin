@@ -1922,6 +1922,7 @@
   "permissionAdmin.ui.createPermissionGroup": "Tambahkan grup izin",
   "permissionAdmin.ui.deletePermissionGroup": "Hapus Grup Izin",
   "permissionAdmin.ui.editPermissionGroup": "Edit grup izin",
+  "podcast.PodcastProgramPlanForm.notIndividuallySale": "Not individually sale",
   "podcast.label.abstract": "Album Abstrak",
   "podcast.label.audioFile": "Audio",
   "podcast.label.description": "Deskripsi",

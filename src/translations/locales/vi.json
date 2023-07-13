@@ -1922,6 +1922,7 @@
   "permissionAdmin.ui.createPermissionGroup": "Nhóm thẩm quyền mới",
   "permissionAdmin.ui.deletePermissionGroup": "Xóa quyền",
   "permissionAdmin.ui.editPermissionGroup": "Chỉnh sửa quyền",
+  "podcast.PodcastProgramPlanForm.notIndividuallySale": "Not individually sale",
   "podcast.label.abstract": " Tóm tắt album ",
   "podcast.label.audioFile": " Âm thanh ",
   "podcast.label.description": "Mô tả",

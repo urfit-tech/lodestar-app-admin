@@ -1,14 +1,14 @@
-import { useMutation } from '@apollo/client'
-import { Button, Form, InputNumber, message, Skeleton } from 'antd'
+import { gql, useMutation } from '@apollo/client'
+import { Button, Checkbox, Form, InputNumber, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { gql } from '@apollo/client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import SaleInput, { SaleProps } from '../form/SaleInput'
+import podcastMessages from './translation'
 
 type FieldProps = {
   listPrice: number
@@ -26,6 +26,13 @@ const PodcastProgramPlanForm: React.FC<{
     hasura.UPDATE_PODCAST_PROGRAM_PLANVariables
   >(UPDATE_PODCAST_PROGRAM_PLAN)
   const [loading, setLoading] = useState(false)
+  const [isIndividuallySale, setIsIndividuallySale] = useState(true)
+
+  useEffect(() => {
+    if (podcastProgramAdmin) {
+      setIsIndividuallySale(podcastProgramAdmin.isIndividuallySale)
+    }
+  }, [podcastProgramAdmin])
 
   if (!podcastProgramAdmin) {
     return <Skeleton active />
@@ -37,7 +44,8 @@ const PodcastProgramPlanForm: React.FC<{
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
-        listPrice: values.listPrice,
+        isIndividuallySale: isIndividuallySale,
+        listPrice: values.listPrice ? values.listPrice : podcastProgramAdmin.listPrice,
         salePrice: values.sale ? values.sale.price : null,
         soldAt: values.sale?.soldAt || null,
       },
@@ -67,20 +75,36 @@ const PodcastProgramPlanForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
-        <InputNumber
-          min={0}
-          formatter={value => `NT$ ${value}`}
-          parser={value => (value ? value.replace(/\D/g, '') : '')}
-        />
-      </Form.Item>
-
-      <Form.Item
-        name="sale"
-        rules={[{ validator: (rule, value: SaleProps, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
+      <Checkbox
+        className="mb-4"
+        checked={!isIndividuallySale}
+        onChange={e => {
+          setIsIndividuallySale(!e.target.checked)
+        }}
       >
-        <SaleInput />
-      </Form.Item>
+        {formatMessage(podcastMessages.PodcastProgramPlanForm.notIndividuallySale)}
+      </Checkbox>
+
+      {isIndividuallySale ? (
+        <>
+          <Form.Item label={formatMessage(commonMessages.label.listPrice)} name="listPrice">
+            <InputNumber
+              min={0}
+              formatter={value => `NT$ ${value}`}
+              parser={value => (value ? value.replace(/\D/g, '') : '')}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="sale"
+            rules={[
+              { validator: (rule, value: SaleProps, callback) => callback(value && !value.soldAt ? '' : undefined) },
+            ]}
+          >
+            <SaleInput />
+          </Form.Item>
+        </>
+      ) : null}
 
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
@@ -100,11 +124,18 @@ const UPDATE_PODCAST_PROGRAM_PLAN = gql`
     $listPrice: numeric
     $salePrice: numeric
     $soldAt: timestamptz
+    $isIndividuallySale: Boolean!
     $updatedAt: timestamptz!
   ) {
     update_podcast_program(
       where: { id: { _eq: $podcastProgramId } }
-      _set: { list_price: $listPrice, sale_price: $salePrice, sold_at: $soldAt, updated_at: $updatedAt }
+      _set: {
+        list_price: $listPrice
+        sale_price: $salePrice
+        sold_at: $soldAt
+        is_individually_sale: $isIndividuallySale
+        updated_at: $updatedAt
+      }
     ) {
       affected_rows
     }

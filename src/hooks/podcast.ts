@@ -111,6 +111,7 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
           published_at
           creator_id
           support_locales
+          is_individually_sale
           podcast_program_audios(where: { deleted_at: { _is_null: true } }, order_by: { position: asc }) {
             id
             data
@@ -189,6 +190,7 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
       })),
       tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag?.name || ''),
       audios: podcastProgramAudiosFromRawAudios(data.podcast_program_by_pk.podcast_program_audios),
+      isIndividuallySale: data.podcast_program_by_pk.is_individually_sale,
     }
   }, [loading, error, data])
 
