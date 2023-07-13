@@ -1,7 +1,6 @@
 import Icon from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Input, Select, Skeleton } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useCallback, useRef, useState } from 'react'
@@ -177,6 +176,7 @@ const usePracticePreviewCollection = (
   const condition: hasura.GET_PRACTICE_PREVIEW_COLLECTIONVariables['condition'] = {
     _or: [
       { member: { username: { _like: options?.searchText ? `%${options.searchText}%` : undefined } } },
+      { member: { name: { _like: options?.searchText ? `%${options.searchText}%` : undefined } } },
       { title: { _like: options?.searchText ? `%${options.searchText}%` : undefined } },
     ],
     program_content: {
