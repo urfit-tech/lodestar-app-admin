@@ -176,6 +176,7 @@ const usePracticePreviewCollection = (
   const condition: hasura.GET_PRACTICE_PREVIEW_COLLECTIONVariables['condition'] = {
     _or: [
       { member: { username: { _like: options?.searchText ? `%${options.searchText}%` : undefined } } },
+      { member: { name: { _like: options?.searchText ? `%${options.searchText}%` : undefined } } },
       { title: { _like: options?.searchText ? `%${options.searchText}%` : undefined } },
     ],
     program_content: {
