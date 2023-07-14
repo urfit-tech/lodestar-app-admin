@@ -24,6 +24,7 @@ export type VoucherPlanFields = {
   description: string
   isTransferable: boolean
   sale?: { amount: number; price: number }
+  PINCode: string
   editorId: string
 }
 
@@ -105,6 +106,7 @@ const VoucherPlanAdminModal: React.FC<
           description: voucherPlan?.description || '',
           isTransferable: !!voucherPlan?.isTransferable,
           sale: voucherPlan?.sale,
+          PINCode: voucherPlan?.pinCode,
           categoryId: voucherPlan?.category?.id,
         }}
       >
@@ -189,6 +191,31 @@ const VoucherPlanAdminModal: React.FC<
             <SaleVoucherInput />
           </Form.Item>
         )}
+
+        {enabledModules.voucher_pin_code ? (
+          <Form.Item
+            name="PINCode"
+            rules={[
+              {
+                validator: async (_, PINCode) => {
+                  if (typeof PINCode === 'string' && PINCode.length <= 0) {
+                    return Promise.reject(
+                      new Error(formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder)),
+                    )
+                  }
+                },
+              },
+              {
+                min: 4,
+                message: formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder),
+              },
+              { max: 6, message: formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder) },
+            ]}
+          >
+            <PINCodeInput />
+          </Form.Item>
+        ) : null}
+
         <Form.Item label={formatMessage(voucherMessages.VoucherPlanAdminModal.availableDateRange)}>
           <Form.Item className="d-inline-block m-0" name="startedAt">
             <DatePicker
@@ -242,6 +269,42 @@ const SaleVoucherInput: React.VFC<{
             addonAfter="元"
           />
         </Input.Group>
+      )}
+    </div>
+  )
+}
+
+const PINCodeInput: React.VFC<{
+  value?: string | null
+  onChange?: (value?: string | null) => void
+}> = ({ value, onChange }) => {
+  const { formatMessage } = useIntl()
+
+  return (
+    <div>
+      <Checkbox
+        className="mb-2"
+        checked={typeof value === 'string'}
+        onChange={e => {
+          if (e.target.checked) {
+            onChange?.('')
+          } else {
+            onChange?.(undefined)
+          }
+        }}
+      >
+        {formatMessage(voucherMessages.VoucherPlanAdminModal.exchangePINCode)}
+      </Checkbox>
+
+      {typeof value === 'string' && (
+        <Input
+          placeholder={formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder)}
+          value={value}
+          onChange={e => {
+            if (isNaN(Number(e.target.value)) || e.target.value.length > 6) return
+            onChange?.(e.target.value)
+          }}
+        />
       )}
     </div>
   )
