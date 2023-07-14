@@ -17,6 +17,10 @@ const voucherMessages = {
       id: 'voucher.VoucherPlanCard.exchangedCount',
       defaultMessage: '{exchanged}/{total} 張',
     },
+    PINCode: {
+      id: 'voucher.VoucherPlanCard.PINCode',
+      defaultMessage: 'PIN碼：{PINCode}',
+    },
   }),
   VoucherPlanAdminModal: defineMessages({
     voucherCodes: { id: 'voucher.VoucherPlanAdminModal.voucherCodes', defaultMessage: '兌換碼' },
