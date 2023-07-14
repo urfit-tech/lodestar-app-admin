@@ -592,6 +592,12 @@ export const activityMessages = {
       defaultMessage: '你確定要刪除此票券？此動作無法還原',
     },
   }),
+  message: defineMessages({
+    pleaseSelectAtLeastOneSession: {
+      id: 'activity.message.pleaseSelectAtLeastOneSession',
+      defaultMessage: 'Please select at least one session.',
+    },
+  }),
 }
 
 export const appointmentMessages = {
