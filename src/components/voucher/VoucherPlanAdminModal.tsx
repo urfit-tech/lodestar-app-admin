@@ -106,7 +106,7 @@ const VoucherPlanAdminModal: React.FC<
           description: voucherPlan?.description || '',
           isTransferable: !!voucherPlan?.isTransferable,
           sale: voucherPlan?.sale,
-          PINCode: voucherPlan?.pinCode,
+          PINCode: voucherPlan?.PINCode,
           categoryId: voucherPlan?.category?.id,
         }}
       >

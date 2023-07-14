@@ -53,7 +53,7 @@ export type VoucherPlanBriefProps = {
   remaining: number
   sale?: { amount: number; price: number }
   category?: { id: string; name: string }
-  pinCode: string | null
+  PINCode: string | null
 }
 
 export type VoucherPlanProps = VoucherPlanBriefProps & {

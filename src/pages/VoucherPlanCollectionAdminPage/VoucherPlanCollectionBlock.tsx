@@ -49,7 +49,7 @@ const VoucherPlanCollectionBlock: React.VFC<{
                 isTransferable={voucherPlan.isTransferable}
                 count={voucherPlan.count}
                 remaining={voucherPlan.remaining}
-                pinCode={voucherPlan.pinCode}
+                PINCode={voucherPlan.PINCode}
                 renderEditDropdown={
                   <Dropdown
                     trigger={['click']}
