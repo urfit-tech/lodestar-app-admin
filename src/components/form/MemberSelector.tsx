@@ -82,6 +82,7 @@ export const InhibitInputMemberSelector: React.FC<
     ? {
         member_permissions: { permission_id: { _in: allowedPermissions } },
         _or: [
+          { id: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
@@ -89,6 +90,7 @@ export const InhibitInputMemberSelector: React.FC<
       }
     : {
         _or: [
+          { id: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { name: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { username: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
           { email: { _ilike: `%${Array.isArray(search) ? search[0] : search}%` } },
