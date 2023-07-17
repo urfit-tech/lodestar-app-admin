@@ -26,7 +26,7 @@ const PodcastProgramPlanForm: React.FC<{
     hasura.UPDATE_PODCAST_PROGRAM_PLANVariables
   >(UPDATE_PODCAST_PROGRAM_PLAN)
   const [loading, setLoading] = useState(false)
-  const [isIndividuallySale, setIsIndividuallySale] = useState(true)
+  const [isIndividuallySale, setIsIndividuallySale] = useState(!!podcastProgramAdmin?.isIndividuallySale)
 
   useEffect(() => {
     if (podcastProgramAdmin) {
@@ -45,9 +45,9 @@ const PodcastProgramPlanForm: React.FC<{
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
         isIndividuallySale: isIndividuallySale,
-        listPrice: values.listPrice ? values.listPrice : podcastProgramAdmin.listPrice,
-        salePrice: values.sale ? values.sale.price : null,
-        soldAt: values.sale?.soldAt || null,
+        listPrice: isIndividuallySale ? values.listPrice : 0,
+        salePrice: isIndividuallySale && values.sale ? values.sale.price : null,
+        soldAt: isIndividuallySale ? values.sale?.soldAt : null,
       },
     })
       .then(() => {
