@@ -96,6 +96,7 @@ const VoucherPlanCard: React.FC<VoucherPlanBriefProps & { renderEditDropdown?: R
   count,
   remaining,
   renderEditDropdown,
+  PINCode,
 }) => {
   const { formatMessage } = useIntl()
 
@@ -118,9 +119,17 @@ const VoucherPlanCard: React.FC<VoucherPlanBriefProps & { renderEditDropdown?: R
 
           <StyledExtra className="d-flex align-items-center justify-content-between mt-4">
             <div>
-              {formatMessage(voucherMessages.VoucherPlanCard.exchangeItemsNumber, {
-                number: productQuantityLimit,
-              })}
+              <span>
+                {formatMessage(voucherMessages.VoucherPlanCard.exchangeItemsNumber, {
+                  number: productQuantityLimit,
+                })}
+              </span>
+              {PINCode ? (
+                <>
+                  <span> / </span>
+                  <span>{formatMessage(voucherMessages.VoucherPlanCard.PINCode, { PINCode })}</span>
+                </>
+              ) : null}
             </div>
           </StyledExtra>
         </StyledContent>
