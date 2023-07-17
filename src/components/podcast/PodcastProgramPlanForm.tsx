@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { Button, Checkbox, Form, InputNumber, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
@@ -27,12 +27,6 @@ const PodcastProgramPlanForm: React.FC<{
   >(UPDATE_PODCAST_PROGRAM_PLAN)
   const [loading, setLoading] = useState(false)
   const [isIndividuallySale, setIsIndividuallySale] = useState(!!podcastProgramAdmin?.isIndividuallySale)
-
-  useEffect(() => {
-    if (podcastProgramAdmin) {
-      setIsIndividuallySale(podcastProgramAdmin.isIndividuallySale)
-    }
-  }, [podcastProgramAdmin])
 
   if (!podcastProgramAdmin) {
     return <Skeleton active />

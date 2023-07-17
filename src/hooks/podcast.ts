@@ -157,40 +157,42 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
       })
     | null
   >(() => {
-    if (loading || error || !data || !data.podcast_program_by_pk) {
-      return null
-    }
-
     return {
-      id: data.podcast_program_by_pk.id,
-      title: data.podcast_program_by_pk.title || '',
-      contentType: data.podcast_program_by_pk.content_type || null,
-      filename: data.podcast_program_by_pk.filename || null,
-      duration: data.podcast_program_by_pk.duration,
-      durationSecond: data.podcast_program_by_pk.duration_second,
-      description: data.podcast_program_by_pk.podcast_program_bodies[0]
-        ? data.podcast_program_by_pk.podcast_program_bodies[0].description || ''
+      id: data?.podcast_program_by_pk?.id,
+      title: data?.podcast_program_by_pk?.title || '',
+      contentType: data?.podcast_program_by_pk?.content_type || null,
+      filename: data?.podcast_program_by_pk?.filename || null,
+      duration: data?.podcast_program_by_pk?.duration,
+      durationSecond: data?.podcast_program_by_pk?.duration_second,
+      description: data?.podcast_program_by_pk?.podcast_program_bodies[0]
+        ? data?.podcast_program_by_pk?.podcast_program_bodies[0].description || ''
         : '',
-      coverUrl: data.podcast_program_by_pk.cover_url || null,
-      abstract: data.podcast_program_by_pk.abstract || '',
-      listPrice: data.podcast_program_by_pk.list_price,
-      salePrice: data.podcast_program_by_pk.sale_price,
-      soldAt: data.podcast_program_by_pk.sold_at,
-      creatorId: data.podcast_program_by_pk.creator_id,
-      instructors: data.podcast_program_by_pk.podcast_program_roles.map(podcastProgramRole => ({
-        id: podcastProgramRole.member?.id || '',
-        name: podcastProgramRole.member?.name || '',
-        pictureUrl: podcastProgramRole.member?.picture_url || '',
-      })),
-      publishedAt: data.podcast_program_by_pk.published_at ? new Date(data.podcast_program_by_pk.published_at) : null,
-      supportLocales: data.podcast_program_by_pk.support_locales || [],
-      categories: data.podcast_program_by_pk.podcast_program_categories.map(podcastProgramCategory => ({
-        id: podcastProgramCategory.category.id,
-        name: podcastProgramCategory.category.name,
-      })),
-      tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag?.name || ''),
-      audios: podcastProgramAudiosFromRawAudios(data.podcast_program_by_pk.podcast_program_audios),
-      isIndividuallySale: data.podcast_program_by_pk.is_individually_sale,
+      coverUrl: data?.podcast_program_by_pk?.cover_url || null,
+      abstract: data?.podcast_program_by_pk?.abstract || '',
+      listPrice: data?.podcast_program_by_pk?.list_price,
+      salePrice: data?.podcast_program_by_pk?.sale_price,
+      soldAt: data?.podcast_program_by_pk?.sold_at,
+      creatorId: data?.podcast_program_by_pk?.creator_id || '',
+      instructors:
+        data?.podcast_program_by_pk?.podcast_program_roles.map(podcastProgramRole => ({
+          id: podcastProgramRole.member?.id || '',
+          name: podcastProgramRole.member?.name || '',
+          pictureUrl: podcastProgramRole.member?.picture_url || '',
+        })) || [],
+      publishedAt: data?.podcast_program_by_pk?.published_at
+        ? new Date(data?.podcast_program_by_pk?.published_at)
+        : null,
+      supportLocales: data?.podcast_program_by_pk?.support_locales || [],
+      categories:
+        data?.podcast_program_by_pk?.podcast_program_categories.map(podcastProgramCategory => ({
+          id: podcastProgramCategory.category.id,
+          name: podcastProgramCategory.category.name,
+        })) || [],
+      tags:
+        data?.podcast_program_by_pk?.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag?.name || '') ||
+        [],
+      audios: podcastProgramAudiosFromRawAudios(data?.podcast_program_by_pk?.podcast_program_audios || []) || [],
+      isIndividuallySale: data?.podcast_program_by_pk?.is_individually_sale,
     }
   }, [loading, error, data])
 

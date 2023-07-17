@@ -18,7 +18,7 @@ export type PodcastProgram = {
   publishedAt: Date | null
   supportLocales: string[]
   audios: PodcastProgramAudio[]
-  isIndividuallySale: boolean
+  isIndividuallySale?: boolean
 }
 
 export type PodcastProgramAdminProps = PodcastProgram
