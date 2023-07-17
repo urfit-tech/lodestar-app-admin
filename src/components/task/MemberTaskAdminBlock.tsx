@@ -216,8 +216,7 @@ const MemberTaskAdminBlock: React.FC<{
         },
         {
           headers: {
-            Authorization: `Bearer ${authToken}`,
-            'x-api-key': 'kolable',
+            authorization: `Bearer ${authToken}`,
           },
         },
       )

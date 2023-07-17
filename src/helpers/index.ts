@@ -429,8 +429,7 @@ export const deleteMeeting = async (meetId: string, authToken: string | null) =>
   if (!meetId) return
   const response = await axios.delete(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`, {
     headers: {
-      Authorization: `Bearer ${authToken}`,
-      'x-api-key': 'kolable',
+      authorization: `Bearer ${authToken}`,
     },
   })
   return response.status
@@ -458,8 +457,7 @@ export const updateMeeting = async (
       },
       {
         headers: {
-          Authorization: `Bearer ${authToken}`,
-          'x-api-key': 'kolable',
+          authorization: `Bearer ${authToken}`,
         },
       },
     )
@@ -497,8 +495,7 @@ export const createMeeting = async (
       },
       {
         headers: {
-          Authorization: `Bearer ${authToken}`,
-          'x-api-key': 'kolable',
+          authorization: `Bearer ${authToken}`,
         },
       },
     )
