@@ -1,6 +1,6 @@
 import Icon, { PhoneOutlined, RedoOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
-import { Button, notification, Skeleton, Tabs } from 'antd'
+import { Button, notification, Spin, Tabs } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -13,7 +13,13 @@ import AdminLayout from '../components/layout/AdminLayout'
 import SalesLeadTable from '../components/sale/SalesLeadTable'
 import hasura from '../hasura'
 import { salesMessages } from '../helpers/translation'
-import { useManagerLeads, useManagers } from '../hooks/sales'
+import {
+  useActiveContractMemberIds,
+  useManagers,
+  useMemberTasks,
+  useValidManagerMemberIds,
+  useSalesLeadMemberCount,
+} from '../hooks/sales'
 import { Manager } from '../types/sales'
 import ForbiddenPage from './ForbiddenPage'
 
@@ -24,7 +30,7 @@ const StyledManagerBlock = styled.div`
 const SalesLeadPage: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { managers } = useManagers()
+  const { loading, managers } = useManagers()
   const { currentMemberId, currentMember, permissions } = useAuth()
   const [activeKey, setActiveKey] = useState('followed')
   const [managerId, setManagerId] = useState<string | null>(currentMemberId)
@@ -44,7 +50,9 @@ const SalesLeadPage: React.VFC = () => {
           <Icon className="mr-3" component={() => <PhoneOutlined />} />
           <span>{formatMessage(salesMessages.salesLead)}</span>
         </AdminPageTitle>
-        {permissions.SALES_LEAD_SELECTOR_ADMIN && manager ? (
+        {loading ? (
+          <Spin />
+        ) : permissions.SALES_LEAD_SELECTOR_ADMIN && manager ? (
           <StyledManagerBlock className="d-flex flex-row align-items-center">
             <span className="flex-shrink-0">承辦人：</span>
             <ManagerInput value={manager.id} onChange={value => setManagerId(value)} />
@@ -53,7 +61,13 @@ const SalesLeadPage: React.VFC = () => {
           <div>承辦編號：{currentMember.id}</div>
         ) : null}
       </div>
-      {manager && <SalesLeadTabs activeKey={activeKey} manager={manager} onActiveKeyChanged={setActiveKey} />}
+      {manager ? (
+        <SalesLeadTabs activeKey={activeKey} manager={manager} onActiveKeyChanged={setActiveKey} />
+      ) : (
+        <div className="pt-2">
+          <Spin />
+        </div>
+      )}
     </AdminLayout>
   )
 }
@@ -63,33 +77,284 @@ const SalesLeadTabs: React.VFC<{
   activeKey: string
   onActiveKeyChanged?: (activeKey: string) => void
 }> = ({ activeKey, manager, onActiveKeyChanged }) => {
-  const [refetchLoading, setRefetchLoading] = useState(true)
+  const [refetchLoading, setRefetchLoading] = useState(false)
   const { formatMessage } = useIntl()
+
   const {
-    refetch,
-    refetchMembers,
-    followedLeads,
-    totalLeads,
-    idledLeads,
-    contactedLeads,
-    answeredLeads,
-    invitedLeads,
-    presentedLeads,
-    signedLeads,
-    closedLeads,
-    completedLeads,
-    loading,
-    loadingMembers,
-  } = useManagerLeads(manager)
+    loading: loadingActiveContractMemberIds,
+    activeContractMemberIds,
+    refetch: refetchActiveContractMemberIds,
+  } = useActiveContractMemberIds(manager.id)
+
+  const {
+    loading: loadingValidManagerMemberIds,
+    validManagerMemberIds,
+    refetch: refetchValidManagerMemberIds,
+  } = useValidManagerMemberIds(manager.id)
+
+  const {
+    loading: loadingMemberTasks,
+    memberTasks,
+    refetch: refetchMemberTasks,
+  } = useMemberTasks(validManagerMemberIds)
+
+  const {
+    loadingTotalSalesLeadMemberAggregate,
+    loadingFollowedSalesLeadMemberAggregate,
+    loadingClosedSalesLeadMemberAggregate,
+    loadingCompletedSalesLeadMemberAggregate,
+    loadingSignedSalesLeadMemberAggregate,
+    loadingPresentedSalesLeadMemberAggregate,
+    loadingInvitedSalesLeadMemberAggregate,
+    loadingAnsweredSalesLeadMemberAggregate,
+    loadingContactedSalesLeadMemberAggregate,
+    loadingIdledSalesLeadMemberAggregate,
+    totalSalesLeadMemberAggregate,
+    followedSalesLeadMemberAggregate,
+    closedSalesLeadMemberAggregate,
+    completedSalesLeadMemberAggregate,
+    signedSalesLeadMemberAggregate,
+    presentedSalesLeadMemberAggregate,
+    invitedSalesLeadMemberAggregate,
+    answeredSalesLeadMemberAggregate,
+    contactedSalesLeadMemberAggregate,
+    idledSalesLeadMemberAggregate,
+    refetchTotalSalesLeadMembersAggregate,
+    refetchFollowedSalesLeadMemberAggregate,
+    refetchClosedSalesLeadMemberAggregate,
+    refetchCompletedSalesLeadMemberAggregate,
+    refetchSignedSalesLeadMemberAggregate,
+    refetchPresentedSalesLeadMemberAggregate,
+    refetchInvitedSalesLeadMemberAggregate,
+    refetchAnsweredSalesLeadMemberAggregate,
+    refetchContactedSalesLeadMemberAggregate,
+    refetchIdledSalesLeadMemberAggregate,
+  } = useSalesLeadMemberCount(manager.id, activeContractMemberIds, validManagerMemberIds, memberTasks)
+
+  const salesLeadTabs = [
+    {
+      status: 'followed',
+      message: formatMessage(salesMessages.followedLead),
+      aggregate: followedSalesLeadMemberAggregate,
+      loadingAggregate: loadingFollowedSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: false },
+      },
+      refetch: refetchFollowedSalesLeadMemberAggregate,
+    },
+    {
+      status: 'total',
+      message: formatMessage(salesMessages.totalLead),
+      loadingAggregate: loadingTotalSalesLeadMemberAggregate,
+      aggregate: totalSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+      },
+      refetch: refetchTotalSalesLeadMembersAggregate,
+    },
+    {
+      status: 'idled',
+      message: formatMessage(salesMessages.idledLead),
+      loadingAggregate: loadingIdledSalesLeadMemberAggregate,
+      aggregate: idledSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: true },
+        completed_at: { _is_null: true },
+        id: {
+          _nin: validManagerMemberIds?.filter(
+            validManagerMemberId =>
+              memberTasks.some(memberTask => memberTask.memberId === validManagerMemberId) ||
+              activeContractMemberIds?.some(activeContractMemberId => activeContractMemberId === validManagerMemberId),
+          ),
+        },
+        last_member_note_answered: { _is_null: true },
+        last_member_note_called: { _is_null: true },
+      },
+      refetch: refetchIdledSalesLeadMemberAggregate,
+    },
+    {
+      status: 'contacted',
+      message: formatMessage(salesMessages.contactedLead),
+      loadingAggregate: loadingContactedSalesLeadMemberAggregate,
+      aggregate: contactedSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: true },
+        completed_at: { _is_null: true },
+        id: {
+          _nin: validManagerMemberIds?.filter(
+            validManagerMemberId =>
+              memberTasks.some(memberTask => memberTask.memberId === validManagerMemberId) ||
+              activeContractMemberIds?.some(activeContractMemberId => activeContractMemberId === validManagerMemberId),
+          ),
+        },
+        last_member_note_answered: { _is_null: true },
+        last_member_note_called: { _is_null: false },
+      },
+      refetch: refetchContactedSalesLeadMemberAggregate,
+    },
+    {
+      status: 'answered',
+      message: formatMessage(salesMessages.answeredLeads),
+      loadingAggregate: loadingAnsweredSalesLeadMemberAggregate,
+      aggregate: answeredSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: true },
+        completed_at: { _is_null: true },
+        id: {
+          _nin: validManagerMemberIds?.filter(
+            validManagerMemberId =>
+              memberTasks.some(memberTask => memberTask.memberId === validManagerMemberId) ||
+              activeContractMemberIds?.some(activeContractMemberId => activeContractMemberId === validManagerMemberId),
+          ),
+        },
+        last_member_note_answered: { _is_null: false },
+      },
+      refetch: refetchAnsweredSalesLeadMemberAggregate,
+    },
+    {
+      status: 'invited',
+      message: formatMessage(salesMessages.invitedLead),
+      loadingAggregate: loadingInvitedSalesLeadMemberAggregate,
+      aggregate: invitedSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: true },
+        completed_at: { _is_null: true },
+        id: {
+          _nin: activeContractMemberIds,
+          _in: validManagerMemberIds?.filter(validManagerMemberId =>
+            memberTasks
+              .filter(memberTask => memberTask.status !== 'done')
+              .some(memberTask => memberTask.memberId === validManagerMemberId),
+          ),
+        },
+      },
+      refetch: refetchInvitedSalesLeadMemberAggregate,
+    },
+    {
+      status: 'presented',
+      message: formatMessage(salesMessages.presentedLead),
+      loadingAggregate: loadingPresentedSalesLeadMemberAggregate,
+      aggregate: presentedSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: true },
+        completed_at: { _is_null: true },
+        id: {
+          _nin: activeContractMemberIds,
+          _in: validManagerMemberIds?.filter(validManagerMemberId =>
+            memberTasks
+              .filter(memberTask => memberTask.status === 'done')
+              .some(memberTask => memberTask.memberId === validManagerMemberId),
+          ),
+        },
+      },
+      refetch: refetchPresentedSalesLeadMemberAggregate,
+    },
+    {
+      status: 'completed',
+      message: formatMessage(salesMessages.completedLead),
+      loadingAggregate: loadingCompletedSalesLeadMemberAggregate,
+      aggregate: completedSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: true },
+        completed_at: { _is_null: false },
+      },
+      refetch: refetchCompletedSalesLeadMemberAggregate,
+    },
+    {
+      status: 'signed',
+      message: formatMessage(salesMessages.signedLead),
+      loadingAggregate: loadingSignedSalesLeadMemberAggregate,
+      aggregate: signedSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: true },
+        completed_at: { _is_null: true },
+        id: {
+          _in: activeContractMemberIds,
+        },
+      },
+      refetch: refetchSignedSalesLeadMemberAggregate,
+    },
+    {
+      status: 'closed',
+      message: formatMessage(salesMessages.closedLead),
+      loadingAggregate: loadingClosedSalesLeadMemberAggregate,
+      aggregate: closedSalesLeadMemberAggregate,
+      condition: {
+        manager_id: { _eq: manager.id },
+        member_phones: { phone: { _is_null: false } },
+        followed_at: { _is_null: true },
+        star: { _gte: -999 },
+        closed_at: { _is_null: false },
+      },
+      refetch: refetchClosedSalesLeadMemberAggregate,
+    },
+  ]
 
   useEffect(() => {
-    if (!loading && !loadingMembers) {
+    if (
+      !loadingTotalSalesLeadMemberAggregate &&
+      !loadingFollowedSalesLeadMemberAggregate &&
+      !loadingClosedSalesLeadMemberAggregate &&
+      !loadingCompletedSalesLeadMemberAggregate &&
+      !loadingSignedSalesLeadMemberAggregate &&
+      !loadingPresentedSalesLeadMemberAggregate &&
+      !loadingInvitedSalesLeadMemberAggregate &&
+      !loadingAnsweredSalesLeadMemberAggregate &&
+      !loadingContactedSalesLeadMemberAggregate &&
+      !loadingIdledSalesLeadMemberAggregate
+    ) {
       setRefetchLoading(false)
     }
-  }, [loading, loadingMembers])
+  }, [
+    loadingAnsweredSalesLeadMemberAggregate,
+    loadingClosedSalesLeadMemberAggregate,
+    loadingCompletedSalesLeadMemberAggregate,
+    loadingContactedSalesLeadMemberAggregate,
+    loadingFollowedSalesLeadMemberAggregate,
+    loadingIdledSalesLeadMemberAggregate,
+    loadingInvitedSalesLeadMemberAggregate,
+    loadingPresentedSalesLeadMemberAggregate,
+    loadingSignedSalesLeadMemberAggregate,
+    loadingTotalSalesLeadMemberAggregate,
+  ])
 
-  if (refetchLoading) {
-    return <Skeleton active />
+  if (loadingActiveContractMemberIds || loadingMemberTasks || loadingValidManagerMemberIds) {
+    return (
+      <div className="pt-2">
+        <Spin />
+      </div>
+    )
   }
 
   return (
@@ -99,8 +364,19 @@ const SalesLeadTabs: React.VFC<{
       tabBarExtraContent={
         <Button
           onClick={() => {
-            refetch?.()
-            refetchMembers?.()
+            refetchActiveContractMemberIds()
+            refetchValidManagerMemberIds()
+            refetchMemberTasks()
+            refetchTotalSalesLeadMembersAggregate()
+            refetchFollowedSalesLeadMemberAggregate()
+            refetchClosedSalesLeadMemberAggregate()
+            refetchCompletedSalesLeadMemberAggregate()
+            refetchSignedSalesLeadMemberAggregate()
+            refetchPresentedSalesLeadMemberAggregate()
+            refetchInvitedSalesLeadMemberAggregate()
+            refetchAnsweredSalesLeadMemberAggregate()
+            refetchContactedSalesLeadMemberAggregate()
+            refetchIdledSalesLeadMemberAggregate()
             setRefetchLoading(true)
           }}
         >
@@ -108,217 +384,57 @@ const SalesLeadTabs: React.VFC<{
         </Button>
       }
     >
-      <Tabs.TabPane
-        key="followed"
-        tab={
-          <div>
-            {formatMessage(salesMessages.followedLead)}
-            <span>({followedLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            variant="followed"
-            manager={manager}
-            leads={followedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="total"
-        tab={
-          <div>
-            {formatMessage(salesMessages.totalLead)}
-            <span>({totalLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            manager={manager}
-            leads={totalLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="idled"
-        tab={
-          <div>
-            {formatMessage(salesMessages.idledLead)}
-            <span>({idledLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            manager={manager}
-            leads={idledLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="contacted"
-        tab={
-          <div>
-            {formatMessage(salesMessages.contactedLead)}
-            <span>({contactedLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            manager={manager}
-            leads={contactedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="answered"
-        tab={
-          <div>
-            {formatMessage(salesMessages.answeredLeads)}
-            <span>({answeredLeads.length})</span>
-          </div>
-        }
-      >
-        <SalesLeadTable
-          manager={manager}
-          leads={answeredLeads}
-          onRefetch={() => {
-            refetch?.()
-            refetchMembers?.()
-          }}
-        />
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="invited"
-        tab={
-          <div>
-            {formatMessage(salesMessages.invitedLead)}
-            <span>({invitedLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            manager={manager}
-            leads={invitedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="presented"
-        tab={
-          <div>
-            {formatMessage(salesMessages.presentedLead)}
-            <span>({presentedLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            manager={manager}
-            leads={presentedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="completed"
-        tab={
-          <div>
-            {formatMessage(salesMessages.completedLead)}
-            <span>({completedLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            variant="completed"
-            manager={manager}
-            leads={completedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      <Tabs.TabPane
-        key="signed"
-        tab={
-          <div>
-            {formatMessage(salesMessages.signedLead)}
-            <span>({signedLeads.length})</span>
-          </div>
-        }
-      >
-        {
-          <SalesLeadTable
-            manager={manager}
-            leads={signedLeads}
-            onRefetch={() => {
-              refetch?.()
-              refetchMembers?.()
-            }}
-          />
-        }
-      </Tabs.TabPane>
-
-      {closedLeads.length > 0 && (
+      {salesLeadTabs.map(salesLeadTab => (
         <Tabs.TabPane
-          key="closed"
+          key={salesLeadTab.status}
           tab={
             <div>
-              {formatMessage(salesMessages.closedLead)}
-              <span>({closedLeads.length})</span>
+              {salesLeadTab.message}
+              <span className="ml-1">{salesLeadTab.loadingAggregate ? <Spin /> : salesLeadTab.aggregate}</span>
             </div>
           }
         >
-          {
+          {(
+            salesLeadTab.loadingAggregate ? (
+              <div>
+                <Spin />
+              </div>
+            ) : (
+              salesLeadTab.status !== 'closed' || (salesLeadTab.status === 'closed' && salesLeadTab.aggregate > 0)
+            )
+          ) ? (
             <SalesLeadTable
+              variant={
+                salesLeadTab.status === 'followed'
+                  ? 'followed'
+                  : salesLeadTab.status === 'completed'
+                  ? 'completed'
+                  : undefined
+              }
               manager={manager}
-              leads={closedLeads}
+              condition={salesLeadTab.condition}
+              aggregate={salesLeadTab.aggregate}
               onRefetch={() => {
-                refetch?.()
-                refetchMembers?.()
+                refetchActiveContractMemberIds()
+                refetchValidManagerMemberIds()
+                refetchMemberTasks()
+                refetchTotalSalesLeadMembersAggregate()
+                refetchFollowedSalesLeadMemberAggregate()
+                refetchClosedSalesLeadMemberAggregate()
+                refetchCompletedSalesLeadMemberAggregate()
+                refetchSignedSalesLeadMemberAggregate()
+                refetchPresentedSalesLeadMemberAggregate()
+                refetchInvitedSalesLeadMemberAggregate()
+                refetchAnsweredSalesLeadMemberAggregate()
+                refetchContactedSalesLeadMemberAggregate()
+                refetchIdledSalesLeadMemberAggregate()
               }}
+              refetchLoading={refetchLoading}
+              onRefetchLoading={(status: boolean) => setRefetchLoading(status)}
             />
-          }
+          ) : null}
         </Tabs.TabPane>
-      )}
+      ))}
     </Tabs>
   )
 }
