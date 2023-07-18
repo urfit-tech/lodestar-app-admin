@@ -1922,6 +1922,7 @@
   "permissionAdmin.ui.createPermissionGroup": "Add permission group",
   "permissionAdmin.ui.deletePermissionGroup": "Delete Permission Group",
   "permissionAdmin.ui.editPermissionGroup": "Edit permission group",
+  "podcast.PodcastProgramPlanForm.notIndividuallySale": "Not individually sale",
   "podcast.label.abstract": "Album Abstract",
   "podcast.label.audioFile": "Audio",
   "podcast.label.description": "Description",
