@@ -24,7 +24,7 @@ export type VoucherPlanFields = {
   description: string
   isTransferable: boolean
   sale?: { amount: number; price: number }
-  PINCode: string
+  pinCode: string
   editorId: string
 }
 
@@ -106,7 +106,7 @@ const VoucherPlanAdminModal: React.FC<
           description: voucherPlan?.description || '',
           isTransferable: !!voucherPlan?.isTransferable,
           sale: voucherPlan?.sale,
-          PINCode: voucherPlan?.PINCode,
+          pinCode: voucherPlan?.pinCode,
           categoryId: voucherPlan?.category?.id,
         }}
       >
@@ -194,25 +194,25 @@ const VoucherPlanAdminModal: React.FC<
 
         {enabledModules.voucher_pin_code ? (
           <Form.Item
-            name="PINCode"
+            name="pinCode"
             rules={[
               {
-                validator: async (_, PINCode) => {
-                  if (typeof PINCode === 'string' && PINCode.length <= 0) {
+                validator: async (_, pinCode) => {
+                  if (typeof pinCode === 'string' && pinCode.length <= 0) {
                     return Promise.reject(
-                      new Error(formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder)),
+                      new Error(formatMessage(voucherMessages.VoucherPlanAdminModal.pinCodePlaceholder)),
                     )
                   }
                 },
               },
               {
                 min: 4,
-                message: formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder),
+                message: formatMessage(voucherMessages.VoucherPlanAdminModal.pinCodePlaceholder),
               },
-              { max: 6, message: formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder) },
+              { max: 6, message: formatMessage(voucherMessages.VoucherPlanAdminModal.pinCodePlaceholder) },
             ]}
           >
-            <PINCodeInput />
+            <PinCodeInput />
           </Form.Item>
         ) : null}
 
@@ -274,7 +274,7 @@ const SaleVoucherInput: React.VFC<{
   )
 }
 
-const PINCodeInput: React.VFC<{
+const PinCodeInput: React.VFC<{
   value?: string | null
   onChange?: (value?: string | null) => void
 }> = ({ value, onChange }) => {
@@ -293,12 +293,12 @@ const PINCodeInput: React.VFC<{
           }
         }}
       >
-        {formatMessage(voucherMessages.VoucherPlanAdminModal.exchangePINCode)}
+        {formatMessage(voucherMessages.VoucherPlanAdminModal.exchangePinCode)}
       </Checkbox>
 
       {typeof value === 'string' && (
         <Input
-          placeholder={formatMessage(voucherMessages.VoucherPlanAdminModal.PINCodePlaceholder)}
+          placeholder={formatMessage(voucherMessages.VoucherPlanAdminModal.pinCodePlaceholder)}
           value={value}
           onChange={e => {
             if (isNaN(Number(e.target.value)) || e.target.value.length > 6) return

@@ -268,7 +268,7 @@ export const useVoucherPlanCollection = (condition: hasura.GET_VOUCHER_PLAN_COLL
         productIds: v.voucher_plan_products.map(product => product.product_id),
         isTransferable: v.is_transferable,
         sale: v.sale_amount ? { amount: v.sale_amount, price: v.sale_price } : undefined,
-        PINCode: v?.pin_code || null,
+        pinCode: v?.pin_code || null,
         category: {
           id: v.voucher_plan_category?.category?.id || '',
           name: v.voucher_plan_category?.category?.name || '',
@@ -416,7 +416,7 @@ export const useMutateVoucherPlan = () => {
         $saleAmount: Int
         $salePrice: numeric
         $editorId: String
-        $PINCode: String
+        $pinCode: String
       ) {
         insert_voucher_plan(
           objects: {
@@ -433,7 +433,7 @@ export const useMutateVoucherPlan = () => {
             sale_amount: $saleAmount
             sale_price: $salePrice
             editor_id: $editorId
-            pin_code: $PINCode
+            pin_code: $pinCode
           }
         ) {
           affected_rows
@@ -495,7 +495,7 @@ export const useMutateVoucherPlan = () => {
         $isTransferable: Boolean
         $saleAmount: Int
         $salePrice: numeric
-        $PINCode: String
+        $pinCode: String
       ) {
         update_voucher_plan(
           where: { id: { _eq: $voucherPlanId } }
@@ -509,7 +509,7 @@ export const useMutateVoucherPlan = () => {
             is_transferable: $isTransferable
             sale_amount: $saleAmount
             sale_price: $salePrice
-            pin_code: $PINCode
+            pin_code: $pinCode
           }
         ) {
           affected_rows
@@ -544,7 +544,7 @@ export const useMutateVoucherPlan = () => {
           voucher_plan_id: voucherPlanId,
           product_id: productId,
         })),
-        PINCode: restValues?.PINCode || null,
+        pinCode: restValues?.pinCode || null,
       },
     })
   }

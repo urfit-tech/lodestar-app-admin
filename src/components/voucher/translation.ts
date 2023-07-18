@@ -17,9 +17,9 @@ const voucherMessages = {
       id: 'voucher.VoucherPlanCard.exchangedCount',
       defaultMessage: '{exchanged}/{total} 張',
     },
-    PINCode: {
-      id: 'voucher.VoucherPlanCard.PINCode',
-      defaultMessage: 'PIN碼：{PINCode}',
+    pinCode: {
+      id: 'voucher.VoucherPlanCard.pinCode',
+      defaultMessage: 'PIN碼：{pinCode}',
     },
   }),
   VoucherPlanAdminModal: defineMessages({
@@ -80,12 +80,12 @@ const voucherMessages = {
       defaultMessage: '使用限制與描述',
     },
     optional: { id: 'voucher.VoucherPlanAdminModal.optional', defaultMessage: '非必填' },
-    exchangePINCode: {
-      id: 'voucher.VoucherPlanAdminModal.exchangePINCode',
+    exchangePinCode: {
+      id: 'voucher.VoucherPlanAdminModal.exchangePinCode',
       defaultMessage: '需使用 PIN 碼兌換',
     },
-    PINCodePlaceholder: {
-      id: 'voucher.VoucherPlanAdminModal.PINCodePlaceholder',
+    pinCodePlaceholder: {
+      id: 'voucher.VoucherPlanAdminModal.pinCodePlaceholder',
       defaultMessage: '請設定 4 - 6 碼數字',
     },
   }),
