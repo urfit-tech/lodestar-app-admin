@@ -1923,7 +1923,7 @@
   "permissionAdmin.ui.createPermissionGroup": "新增权限组",
   "permissionAdmin.ui.deletePermissionGroup": "删除权限组",
   "permissionAdmin.ui.editPermissionGroup": "编辑权限组",
-  "podcast.PodcastProgramPlanForm.notIndividuallySale": "Not individually sale",
+  "podcast.PodcastProgramPlanForm.notIndividuallySale": "无单集销售",
   "podcast.label.abstract": "专辑摘要",
   "podcast.label.audioFile": "音频",
   "podcast.label.description": "内容描述",

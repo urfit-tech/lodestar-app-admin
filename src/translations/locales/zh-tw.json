@@ -1927,7 +1927,7 @@
   "permissionAdmin.ui.createPermissionGroup": "新增權限組",
   "permissionAdmin.ui.deletePermissionGroup": "刪除權限組",
   "permissionAdmin.ui.editPermissionGroup": "編輯權限組",
-  "podcast.PodcastProgramPlanForm.notIndividuallySale": "Not individually sale",
+  "podcast.PodcastProgramPlanForm.notIndividuallySale": "無單集銷售",
   "podcast.label.abstract": "專輯摘要",
   "podcast.label.audioFile": "音頻",
   "podcast.label.description": "內容描述",
