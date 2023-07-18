@@ -153,6 +153,7 @@
   "activity.label.ticketPlanTitle": "票券名稱",
   "activity.label.ticketStartedAt": "售票開始時間",
   "activity.label.ticketType": "票種",
+  "activity.message.pleaseSelectAtLeastOneSession": "請至少選擇一個場次",
   "activity.status.draft": "未上架",
   "activity.status.expired": "已截止",
   "activity.status.finished": "已結束",

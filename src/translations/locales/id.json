@@ -153,6 +153,7 @@
   "activity.label.ticketPlanTitle": "TicketName",
   "activity.label.ticketStartedAt": "Waktu Mulai Tiket",
   "activity.label.ticketType": "Jenis Tiket",
+  "activity.message.pleaseSelectAtLeastOneSession": "Please select at least one session.",
   "activity.status.draft": "Draf",
   "activity.status.expired": "Kedaluwarsa",
   "activity.status.finished": "Selesai",
