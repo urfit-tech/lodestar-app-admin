@@ -68,9 +68,10 @@ const ActivityTicketAdminModal: React.FC<
         if (!onSubmit) {
           return
         }
+
         setLoading(true)
         const values = form.getFieldsValue()
-        const sessions = values.sessions.filter(notEmpty)
+        const sessions = values.sessions ? values.sessions.filter(notEmpty) : []
 
         if (sessions.length === 0) {
           message.warning(formatMessage(activityMessages.message.pleaseSelectAtLeastOneSession))
@@ -107,7 +108,9 @@ const ActivityTicketAdminModal: React.FC<
           .catch(handleError)
           .finally(() => setLoading(false))
       })
-      .catch(() => {})
+      .catch(e => {
+        console.log(e)
+      })
   }
 
   return (
