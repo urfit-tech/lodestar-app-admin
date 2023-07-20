@@ -23,10 +23,12 @@ const ProjectPreOrderPage: React.FC<{}> = () => {
 
   if (
     !enabledModules.project ||
-    (Boolean(permissions.PROJECT_ADMIN) &&
-      Boolean(permissions.PROJECT_PRE_ORDER_ADMIN) &&
-      Boolean(permissions.PROJECT_NORMAL) &&
-      Boolean(permissions.PROJECT_PRE_ORDER_NORMAL))
+    !(
+      Boolean(permissions.PROJECT_ADMIN) ||
+      Boolean(permissions.PROJECT_PRE_ORDER_ADMIN) ||
+      Boolean(permissions.PROJECT_NORMAL) ||
+      Boolean(permissions.PROJECT_PRE_ORDER_NORMAL)
+    )
   ) {
     return <ForbiddenPage />
   }

@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   InputNumber,
+  Radio,
   Result,
   Row,
   Select,
@@ -33,6 +34,8 @@ import hasura, { member_bool_exp } from '../../hasura'
 import { useProperty } from '../../hooks/member'
 import { salesLeadDeliveryPageMessages } from './translation'
 
+type LeadTypeFilter = 'contained' | 'only' | 'excluded'
+
 type Filter = {
   [key: string]: any
   categoryIds: string[]
@@ -42,8 +45,9 @@ type Filter = {
   managerId?: string
   starRange: [number, number]
   starRangeIsNull: boolean
-  completedAtIsNull: boolean
-  closedAtIsNull: boolean
+  completedLead: LeadTypeFilter
+  closedLead: LeadTypeFilter
+  recycledLead: LeadTypeFilter
 }
 type AssignResult = {
   status: ResultProps['status']
@@ -61,8 +65,9 @@ const SalesLeadDeliveryPage: React.VFC = () => {
     lastCalledRange: null,
     lastAnsweredRange: null,
     starRangeIsNull: false,
-    completedAtIsNull: false,
-    closedAtIsNull: false,
+    completedLead: 'excluded',
+    closedLead: 'excluded',
+    recycledLead: 'excluded',
   })
   const [updateLeadManager] = useMutation<hasura.UPDATE_LEAD_MANAGER, hasura.UPDATE_LEAD_MANAGERVariables>(
     UPDATE_LEAD_MANAGER,
@@ -145,8 +150,6 @@ const FilterSection: React.FC<{
 }> = ({ filter, onNext }) => {
   const { formatMessage } = useIntl()
   const [starRangeIsNull, setStarRangeIsNull] = useState(false)
-  const [completedAtIsNull, setCompletedAtIsNull] = useState(false)
-  const [closedAtIsNull, setClosedAtIsNull] = useState(false)
   const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
   const { loadingProperties, properties } = useProperty()
   const { currentMemberId } = useAuth()
@@ -230,18 +233,61 @@ const FilterSection: React.FC<{
         </Input.Group>
       </Form.Item>
       <Form.Item
-        name="completedAtIsNull"
-        valuePropName="checked"
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.completedAtIsNull)}
+        name="completedLead"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.completedLead)}
       >
-        <Checkbox onChange={e => setCompletedAtIsNull(e.target.checked)} />
+        <Radio.Group>
+          <Radio value="contained">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.contained)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.completedLead)}
+          </Radio>
+          <Radio value="only">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.onlyFilter)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.completedLead)}
+          </Radio>
+          <Radio value="excluded">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.excluded)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.completedLead)}
+          </Radio>
+        </Radio.Group>
       </Form.Item>
       <Form.Item
-        name="closedAtIsNull"
-        valuePropName="checked"
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedAtIsNull)}
+        name="closedLead"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedLead)}
       >
-        <Checkbox onChange={e => setClosedAtIsNull(e.target.checked)} />
+        <Radio.Group>
+          <Radio value="contained">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.contained)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedLead)}
+          </Radio>
+          <Radio value="only">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.onlyFilter)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedLead)}
+          </Radio>
+          <Radio value="excluded">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.excluded)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.closedLead)}
+          </Radio>
+        </Radio.Group>
+      </Form.Item>
+      <Form.Item
+        name="recycledLead"
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.recycledLead)}
+      >
+        <Radio.Group>
+          <Radio value="contained">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.contained)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.recycledLead)}
+          </Radio>
+          <Radio value="only">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.onlyFilter)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.recycledLead)}
+          </Radio>
+          <Radio value="excluded">
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.excluded)}
+            {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.recycledLead)}
+          </Radio>
+        </Radio.Group>
       </Form.Item>
       {!currentMemberId || loadingProperties ? (
         <Spin />
@@ -353,16 +399,6 @@ const ConfirmSection: React.FC<{
           _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),
         }
       : undefined,
-    completed_at: filter.completedAtIsNull
-      ? {
-          _is_null: true,
-        }
-      : undefined,
-    closed_at: filter.closedAtIsNull
-      ? {
-          _is_null: true,
-        }
-      : undefined,
     _and: properties.map(property => {
       return {
         member_properties: !isEmpty(filter[property.name])
@@ -375,6 +411,24 @@ const ConfirmSection: React.FC<{
           : undefined,
       }
     }),
+    completed_at:
+      filter.completedLead === 'contained'
+        ? undefined
+        : {
+            _is_null: filter.completedLead === 'excluded',
+          },
+    closed_at:
+      filter.closedLead === 'contained'
+        ? undefined
+        : {
+            _is_null: filter.closedLead === 'excluded',
+          },
+    recycled_at:
+      filter.recycledLead === 'contained'
+        ? undefined
+        : {
+            _is_null: filter.recycledLead === 'excluded',
+          },
   }
 
   const { data: leadCandidatesData, loading: isLeadCandidatesLoading } = useQuery<

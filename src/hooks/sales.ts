@@ -187,12 +187,11 @@ export const useManagerLeads = (manager: Manager) => {
       return null
     }
 
-    const star = Number(v.star) || 0
     const signed =
       Number(temporarySalesLeadMemberData?.active_member_contract.filter(mc => mc.member_id === v.id).length) > 0
     const status: LeadStatus = v.followed_at
       ? 'FOLLOWED'
-      : star < -999
+      : v.excluded_at
       ? 'DEAD'
       : v.closed_at
       ? 'CLOSED'
@@ -240,6 +239,11 @@ export const useManagerLeads = (manager: Manager) => {
       notified: !v.last_member_note_created,
       recentContactedAt: v.last_member_note_called ? dayjs(v.last_member_note_called).toDate() : null,
       recentAnsweredAt: v.last_member_note_answered ? dayjs(v.last_member_note_answered).toDate() : null,
+      completedAt: v.completed_at ? dayjs(v.completed_at).toDate() : null,
+      closedAt: v.closed_at ? dayjs(v.closed_at).toDate() : null,
+      followedAt: v.followed_at ? dayjs(v.followed_at).toDate() : null,
+      excludedAt: v.excluded_at ? dayjs(v.excluded_at).toDate() : null,
+      recycledAt: v.recycled_at ? dayjs(v.recycled_at).toDate() : null,
     }
   }
   const totalLeads: LeadProps[] = sortBy(prop('id'))(
@@ -309,6 +313,8 @@ const GET_SALES_LEAD_MEMBERS = gql`
       followed_at
       closed_at
       completed_at
+      excluded_at
+      recycled_at
       last_member_note_created
       last_member_note_called
       last_member_note_answered

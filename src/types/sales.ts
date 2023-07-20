@@ -37,6 +37,11 @@ export type LeadProps = {
   notified: Boolean
   recentContactedAt: Date | null
   recentAnsweredAt: Date | null
+  completedAt: Date | null
+  closedAt: Date | null
+  followedAt: Date | null
+  excludedAt: Date | null
+  recycledAt: Date | null
 }
 
 export type SalesProps = {
