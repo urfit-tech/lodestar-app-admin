@@ -450,13 +450,11 @@ export const deleteMeeting = async (meetId: string, authToken: string | null) =>
   if (!meetId) return
   const response = await axios.delete(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`, {
     headers: {
-      Authorization: `Bearer ${authToken}`,
-      'x-api-key': 'kolable',
+      authorization: `Bearer ${authToken}`,
     },
   })
   return response.status
 }
-
 export const updateMeeting = async (
   meetId: string,
   meetingMemberId: string | null,
@@ -480,8 +478,7 @@ export const updateMeeting = async (
       },
       {
         headers: {
-          Authorization: `Bearer ${authToken}`,
-          'x-api-key': 'kolable',
+          authorization: `Bearer ${authToken}`,
         },
       },
     )
@@ -495,12 +492,9 @@ export const updateMeeting = async (
     const continueInsertTask = window.confirm(
       `此時段的zoom會議室額度已達上限，此會議連結將以改使用jitsi會議室為主，確定是否建立會議`,
     )
-    if (continueInsertTask)
-      message.info(`已達同時會議上限額度，請升級方案，創建的代辦將以 jitsi 開啟會議\n ${errorMessage}`)
     return { meetId: null, continueInsertTask }
   }
 }
-
 export const createMeeting = async (
   meetingMemberId: string | null,
   meetingStartedAt: Moment | null,
@@ -522,8 +516,7 @@ export const createMeeting = async (
       },
       {
         headers: {
-          Authorization: `Bearer ${authToken}`,
-          'x-api-key': 'kolable',
+          authorization: `Bearer ${authToken}`,
         },
       },
     )
@@ -537,8 +530,6 @@ export const createMeeting = async (
     const continueInsertTask = window.confirm(
       `此時段的zoom會議室額度已達上限，此會議連結將以改使用jitsi會議室為主，確定是否建立會議\n`,
     )
-    if (continueInsertTask)
-      message.info(`已達同時會議上限額度，請升級方案，創建的代辦將以 jitsi 開啟會議\n ${errorMessage}`)
     return { meetId: null, continueInsertTask }
   }
 }

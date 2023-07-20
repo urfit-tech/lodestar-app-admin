@@ -29,10 +29,14 @@ export const salesLeadDeliveryPageMessages = {
     exactMatch: { id: 'page.salesLeadDeliveryPage.exactMatch', defaultMessage: '完全匹配' },
     lastCalledRange: { id: 'page.salesLeadDeliveryPage.lastCalledRange', defaultMessage: '上次撥打日期' },
     lastAnsweredRange: { id: 'page.salesLeadDeliveryPage.lastContactRange', defaultMessage: '上次接通日期' },
-    completedAtIsNull: {
-      id: 'page.salesLeadDeliveryPage.completedAtIsNull',
-      defaultMessage: 'exclude the completed ones',
+    completedLead: {
+      id: 'page.salesLeadDeliveryPage.completedLead',
+      defaultMessage: 'completed lead ',
     },
-    closedAtIsNull: { id: 'page.salesLeadDeliveryPage.closedAtIsNull', defaultMessage: 'exclude the closed ones' },
+    closedLead: { id: 'page.salesLeadDeliveryPage.closedLead', defaultMessage: 'closed Lead ' },
+    recycledLead: { id: 'page.salesLeadDeliveryPage.recycledLead', defaultMessage: 'recycled Lead ' },
+    contained: { id: 'page.salesLeadDeliveryPage.contained', defaultMessage: 'contained ' },
+    onlyFilter: { id: 'page.salesLeadDeliveryPage.onlyFilter', defaultMessage: 'only filter ' },
+    excluded: { id: 'page.salesLeadDeliveryPage.excluded', defaultMessage: 'excluded ' },
   }),
 }
