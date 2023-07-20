@@ -23,10 +23,12 @@ const ProjectFundingPage: React.FC<{}> = () => {
 
   if (
     !enabledModules.project ||
-    (Boolean(permissions.PROJECT_ADMIN) &&
-      Boolean(permissions.PROJECT_FUNDING_ADMIN) &&
-      Boolean(permissions.PROJECT_NORMAL) &&
-      Boolean(permissions.PROJECT_FUNDING_NORMAL))
+    !(
+      Boolean(permissions.PROJECT_ADMIN) ||
+      Boolean(permissions.PROJECT_FUNDING_ADMIN) ||
+      Boolean(permissions.PROJECT_NORMAL) ||
+      Boolean(permissions.PROJECT_FUNDING_NORMAL)
+    )
   ) {
     return <ForbiddenPage />
   }

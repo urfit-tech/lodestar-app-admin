@@ -592,6 +592,12 @@ export const activityMessages = {
       defaultMessage: '你確定要刪除此票券？此動作無法還原',
     },
   }),
+  message: defineMessages({
+    pleaseSelectAtLeastOneSession: {
+      id: 'activity.message.pleaseSelectAtLeastOneSession',
+      defaultMessage: 'Please select at least one session.',
+    },
+  }),
 }
 
 export const appointmentMessages = {
@@ -1197,6 +1203,7 @@ export const memberMessages = {
     meetingLink: { id: 'member.label.meetingLink', defaultMessage: '會議連結' },
     hasMeeting: { id: 'member.label.hasMeeting', defaultMessage: '新增線上會議連結' },
     createMeeting: { id: 'member.label.createMeeting', defaultMessage: '產生會議連結' },
+    meetingHours: { id: 'member.label.meetingHours', defaultMessage: '會議時長(小時)' },
   }),
   text: {
     duplicatedPhoneMember: {

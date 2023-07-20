@@ -1,4 +1,4 @@
-import { Button, Cascader, DatePicker, Form, Input, InputNumber, Radio } from 'antd'
+import { Button, Cascader, DatePicker, Form, Input, InputNumber, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -68,18 +68,25 @@ const ActivityTicketAdminModal: React.FC<
         if (!onSubmit) {
           return
         }
+
         setLoading(true)
         const values = form.getFieldsValue()
+        const sessions = values.sessions ? values.sessions.filter(notEmpty) : []
+
+        if (sessions.length === 0) {
+          message.warning(formatMessage(activityMessages.message.pleaseSelectAtLeastOneSession))
+          setLoading(false)
+          return
+        }
+
         onSubmit({
           title: values.title || '',
           sessions: uniq(
-            values.sessions
-              .filter(notEmpty)
-              .map(([session, sessionType]) =>
-                session.includes('_')
-                  ? { id: session.split('_')[0], type: session.split('_')[1] }
-                  : { id: session, type: sessionType },
-              ),
+            sessions.map(([session, sessionType]) =>
+              session.includes('_')
+                ? { id: session.split('_')[0], type: session.split('_')[1] }
+                : { id: session, type: sessionType },
+            ),
           ),
           isPublished: values.isPublished === 'public',
           startedAt: values.startedAt.toDate(),
@@ -90,13 +97,20 @@ const ActivityTicketAdminModal: React.FC<
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
         })
           .then(() => {
+            message.success(
+              formatMessage(
+                activityTicket ? commonMessages.event.successfullySaved : commonMessages.event.successfullyCreated,
+              ),
+            )
             onSuccess()
             onRefetch?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
       })
-      .catch(() => {})
+      .catch(e => {
+        console.log(e)
+      })
   }
 
   return (

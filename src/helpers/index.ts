@@ -1,7 +1,7 @@
 import { message } from 'antd'
 import { RcFile } from 'antd/lib/upload'
-import axios, { AxiosRequestConfig } from 'axios'
-import moment from 'moment'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
+import moment, { Moment } from 'moment'
 import queryString from 'query-string'
 import { css, FlattenSimpleInterpolation } from 'styled-components'
 import { BREAK_POINT } from '../components/common/Responsive'
@@ -423,4 +423,92 @@ export const isImageUrlResized = (imageUrl: string) => {
 
 export const isValidEmail = (email: string) => {
   return /^\w+((-\w+)|(\.\w+))*@\w+((\.|-)\w+)*\.[A-Za-z]+$/.test(email)
+}
+
+export const deleteMeeting = async (meetId: string, authToken: string | null) => {
+  if (!meetId) return
+  const response = await axios.delete(`${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`, {
+    headers: {
+      authorization: `Bearer ${authToken}`,
+    },
+  })
+  return response.status
+}
+export const updateMeeting = async (
+  meetId: string,
+  meetingMemberId: string | null,
+  meetingStartedAt: Moment | null,
+  meetingHours: number,
+  appId: string,
+  authToken: string | null,
+) => {
+  if (!meetId) return
+  try {
+    await axios.put(
+      `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets/${meetId}`,
+      {
+        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMemberId}`,
+        autoRecording: true,
+        service: 'zoom',
+        nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),
+        expAt: moment(meetingStartedAt).add(meetingHours, 'hours').toDate(),
+        startedAt: meetingStartedAt?.toDate(),
+        endedAt: moment(meetingStartedAt).add(meetingHours, 'hours').toDate(),
+      },
+      {
+        headers: {
+          authorization: `Bearer ${authToken}`,
+        },
+      },
+    )
+    return { meetId, continueInsertTask: true }
+  } catch (error) {
+    const err = error as AxiosError
+    const errorMessage = err.response?.data.message.split(':')[0]
+    // if service not found, means the user does not use zoom , webex etc,
+    // jitsi will be default meeting service, so don't need alert
+    if ('E_MEET_SERVICES_NOTFOUND' === errorMessage) return { meetId: null, continueInsertTask: true }
+    const continueInsertTask = window.confirm(
+      `此時段的zoom會議室額度已達上限，此會議連結將以改使用jitsi會議室為主，確定是否建立會議`,
+    )
+    return { meetId: null, continueInsertTask }
+  }
+}
+export const createMeeting = async (
+  meetingMemberId: string | null,
+  meetingStartedAt: Moment | null,
+  meetingHours: number,
+  appId: string,
+  authToken: string | null,
+) => {
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_KOLABLE_SERVER_ENDPOINT}/kolable/meets`,
+      {
+        name: `${process.env.NODE_ENV === 'development' ? 'dev' : appId}-${meetingMemberId}`,
+        autoRecording: true,
+        service: 'zoom',
+        nbfAt: moment(meetingStartedAt).add(-10, 'minutes').toDate(),
+        expAt: moment(meetingStartedAt).add(meetingHours, 'hours').toDate(),
+        startedAt: meetingStartedAt?.toDate(),
+        endedAt: moment(meetingStartedAt).add(meetingHours, 'hours').toDate(),
+      },
+      {
+        headers: {
+          authorization: `Bearer ${authToken}`,
+        },
+      },
+    )
+    return { meetId: response.data.data.id, continueInsertTask: true }
+  } catch (error) {
+    const err = error as AxiosError
+    const errorMessage = err.response?.data.message.split(':')[0]
+    // if service not found, means the user does not use zoom , webex etc,
+    // jitsi will be default meeting service, so don't need alert
+    if ('E_MEET_SERVICES_NOTFOUND' === errorMessage) return { meetId: null, continueInsertTask: true }
+    const continueInsertTask = window.confirm(
+      `此時段的zoom會議室額度已達上限，此會議連結將以改使用jitsi會議室為主，確定是否建立會議\n`,
+    )
+    return { meetId: null, continueInsertTask }
+  }
 }
