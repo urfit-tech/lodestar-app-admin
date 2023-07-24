@@ -165,6 +165,7 @@ export const commonMessages = {
     allCouponPlan: { id: 'common.label.allCouponPlan', defaultMessage: '所有折價方案' },
     allVoucherPlan: { id: 'common.label.allVoucherPlan', defaultMessage: '所有兌換方案' },
     allGiftPlan: { id: 'common.label.allGiftPlan', defaultMessage: '所有贈品方案' },
+    allEstimator: { id: 'common.label.allEstimator', defaultMessage: '所有測算方案' },
     publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
     publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
     all: { id: 'common.label.all', defaultMessage: '全部' },
@@ -468,6 +469,7 @@ export const commonMessages = {
     allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
+    estimator:{ id: 'common.product.estimator', defaultMessage: '測算方案' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
   }),
   unit: defineMessages({
