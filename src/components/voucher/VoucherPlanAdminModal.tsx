@@ -340,7 +340,7 @@ const BonusCoinsInput: React.VFC<{
         {formatMessage(voucherMessages.VoucherPlanAdminModal.exchangeBonusCoins)}
       </Checkbox>
 
-      {value && (
+      {value ? (
         <div className="mt-2">
           <InputNumber
             className="d-inline-block mr-4"
@@ -365,7 +365,7 @@ const BonusCoinsInput: React.VFC<{
             }}
           />
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
