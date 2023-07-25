@@ -88,6 +88,22 @@ const voucherMessages = {
       id: 'voucher.VoucherPlanAdminModal.pinCodePlaceholder',
       defaultMessage: '請設定 4 - 6 碼數字',
     },
+    exchangeBonusCoins: {
+      id: 'voucher.VoucherPlanAdminModal.exchangeBonusCoins',
+      defaultMessage: '兌換完成加贈代幣',
+    },
+    bonusCoinAmount: {
+      id: 'voucher.VoucherPlanAdminModal.bonusCoinAmount',
+      defaultMessage: '加贈數量',
+    },
+    bonusCoinsEndedAt: {
+      id: 'voucher.VoucherPlanAdminModal.bonusCoinsEndedAt',
+      defaultMessage: '有效期限',
+    },
+    bonusCoinsPlaceholder: {
+      id: 'voucher.VoucherPlanAdminModal.bonusCoinsPlaceholder',
+      defaultMessage: '加贈代幣不可為0',
+    },
   }),
 }
 
