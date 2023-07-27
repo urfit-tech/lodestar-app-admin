@@ -114,7 +114,6 @@ export const commonMessages = {
     discountDownPrice: { id: 'common.label.discountDownPrice', defaultMessage: '首期折扣' },
     unavailableSelling: { id: 'common.label.unavailableSelling', defaultMessage: '暫不販售' },
     roleAdmin: { id: 'common.label.roleAdmin', defaultMessage: '身份管理' },
-    totalPrice: { id: 'common.label.totalPrice', defaultMessage: '總金額' },
     orderLogId: { id: 'common.label.orderLogId', defaultMessage: '訂單編號' },
     orderLogDate: { id: 'common.label.orderLogDate', defaultMessage: '訂單日期' },
     orderLogPaymentDate: { id: 'common.label.orderLogPaymentDate', defaultMessage: '付款日期' },
@@ -318,7 +317,6 @@ export const commonMessages = {
       id: 'programPackage.label.availableForLimitTime',
       defaultMessage: '可觀看 {amount} {unit}',
     },
-    cancelSubscriptionDate: { id: 'common.text.cancelSubscriptionDate', defaultMessage: '已於 {date} 取消訂閱' },
     deleteCategoryNotation: {
       id: 'common.text.deleteCategoryNotation',
       defaultMessage: '確定要刪除此類別？此動作無法復原',

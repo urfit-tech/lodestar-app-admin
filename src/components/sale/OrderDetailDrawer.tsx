@@ -1,18 +1,21 @@
+import { gql, useQuery } from '@apollo/client'
 import { CloseButton, Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, HStack } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
-import { useOrderLogs, usePaymentLogs, useSharingCodes } from '../../hooks/order'
 import InvoiceCard from './InvoiceCard'
 import OrderCard from './OrderCard'
 import OrderOtherInfoCard from './OrderOtherInfoCard'
 import PaymentCard from './PaymentCard'
 import saleMessages from './translation'
+import hasura from '../../hasura'
+import { OrderDiscount, OrderLog, OrderProduct, PaymentLog } from '../../types/general'
+import { sum } from 'ramda'
+import { Skeleton } from 'antd'
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
@@ -41,18 +44,22 @@ const OrderDetailDrawer: React.FC<{
   renderTrigger?: React.FC
 }> = ({ orderLogId, onClose, renderTrigger }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, permissions } = useAuth()
-  const { orderLogs } = useOrderLogs(
-    currentMemberId || '',
-    permissions.SALES_RECORDS_ADMIN ? 'Admin' : permissions.SALES_RECORDS_NORMAL ? 'Personal' : 'None',
-    { orderId: orderLogId },
-  )
-  const { paymentLogs } = usePaymentLogs({ orderLogId })
-  const orderLog = orderLogs[0]
-  const { sharingCodes } = useSharingCodes(
-    orderLog?.orderProducts.map(orderProduct => orderProduct.options?.from).filter(path => path !== '') || [],
-  )
   const isOpen = Boolean(orderLogId)
+
+  const {
+    loadingOrderDetail,
+    loadingOrderDetailMemberInfo,
+    loadingSharingCode,
+    loadingPaymentLogsByOrderId,
+    orderLog,
+    sharingCodes,
+    orderProducts,
+    orderDiscounts,
+    totalPrice,
+    orderExecutors,
+    paymentLogs,
+  } = useOrderDetail(orderLogId)
+
   return (
     <>
       {renderTrigger?.({})}
@@ -66,29 +73,33 @@ const OrderDetailDrawer: React.FC<{
             </HStack>
           </DrawerHeader>
           <DrawerBody>
-            {orderLog && (
+            {loadingOrderDetail ? (
+              <Skeleton />
+            ) : (
               <OrderCard
                 orderId={orderLogId || ''}
                 status={orderLog.status}
                 createdAt={dayjs(orderLog.createdAt).tz(currentTimeZone).format('YYYY-MM-DD HH:mm')}
                 name={orderLog.name}
                 email={orderLog.email}
-                totalPrice={currencyFormatter(orderLog.totalPrice) || ''}
-                orderProducts={orderLog.orderProducts}
-                orderDiscounts={orderLog.orderDiscounts}
+                totalPrice={currencyFormatter(totalPrice) || ''}
+                orderProducts={orderProducts}
+                orderDiscounts={orderDiscounts}
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.otherInfo)}</StyledTitle>
-            {orderLog && (
+            {loadingOrderDetail && loadingOrderDetailMemberInfo && loadingSharingCode ? (
+              <Skeleton />
+            ) : (
               <OrderOtherInfoCard
                 country={`${orderLog.options?.country || ''}${
                   (orderLog.options?.countryCode && `(${orderLog.options?.countryCode})`) || ''
                 }`}
                 referrer={orderLog.invoiceOptions?.referrerEmail || ''}
-                sharingCode={sharingCodes?.map(c => c.code).join(', ') || ''}
-                sharingNote={sharingCodes?.map(c => c.note).join(', ') || ''}
-                orderLogExecutor={orderLog.orderExecutors.map(v => `${v.name} - ${v.ratio}`).join('\\') || ''}
-                giftPlan={orderLog.orderProducts.reduce(
+                sharingCode={sharingCodes.sharingCode}
+                sharingNote={sharingCodes.sharingNote}
+                orderLogExecutor={orderExecutors.map(v => `${v.name} - ${v.ratio}`).join('\\') || ''}
+                giftPlan={orderProducts.reduce(
                   (accu, orderProduct) => (orderProduct.options?.type === 'gift' ? accu + orderProduct.name : accu),
                   '',
                 )}
@@ -106,7 +117,9 @@ const OrderDetailDrawer: React.FC<{
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.invoiceInfo)}</StyledTitle>
-            {orderLog && (
+            {loadingOrderDetail ? (
+              <Skeleton />
+            ) : (
               <InvoiceCard
                 status={orderLog.invoiceOptions?.status || ''}
                 invoiceIssuedAt={
@@ -139,12 +152,197 @@ const OrderDetailDrawer: React.FC<{
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
-            <PaymentCard payments={paymentLogs} />
+            {loadingPaymentLogsByOrderId ? <Skeleton /> : <PaymentCard payments={paymentLogs} />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
     </>
   )
+}
+
+const useOrderDetail = (orderLogId: string | null) => {
+  const {
+    loading: loadingOrderDetail,
+    error: errorOrderDetail,
+    data: orderDetailData,
+  } = useQuery<hasura.GetOrderDetail, hasura.GetOrderDetailVariables>(
+    gql`
+      query GetOrderDetail($orderLogId: String!) {
+        order_log_by_pk(id: $orderLogId) {
+          id
+          status
+          created_at
+          member_id
+          options
+          invoice_options
+          invoice_issued_at
+          shipping
+        }
+        order_product(where: { order_id: { _eq: $orderLogId } }) {
+          id
+          price
+          name
+          options
+        }
+        order_discount(where: { order_id: { _eq: $orderLogId } }) {
+          id
+          price
+          name
+        }
+        payment_log(where: { order_id: { _eq: $orderLogId } }) {
+          no
+          created_at
+          status
+          price
+          gateway
+          paid_at
+          method
+          custom_no
+        }
+        order_executor(where: { order_id: { _eq: $orderLogId } }) {
+          id
+          ratio
+          member {
+            id
+            name
+          }
+        }
+      }
+    `,
+    { variables: { orderLogId: orderLogId || '' } },
+  )
+
+  const {
+    loading: loadingOrderDetailMemberInfo,
+    error: errorOrderDetailMemberInfo,
+    data: orderDetailMemberInfo,
+  } = useQuery<hasura.GetOrderDetailMemberInfo, hasura.GetOrderDetailMemberInfoVariables>(
+    gql`
+      query GetOrderDetailMemberInfo($memberId: String!) {
+        member_by_pk(id: $memberId) {
+          id
+          name
+          email
+        }
+      }
+    `,
+    { variables: { memberId: orderDetailData?.order_log?.[0]?.member_id || '' } },
+  )
+
+  const {
+    loading: loadingSharingCode,
+    error: errorSharingCode,
+    data: sharingCodeData,
+  } = useQuery<hasura.GetSharingCode, hasura.GetSharingCodeVariables>(
+    gql`
+      query GetSharingCode($paths: [String!]) {
+        sharing_code(where: { path: { _in: $paths } }) {
+          id
+          code
+          note
+        }
+      }
+    `,
+    {
+      variables: {
+        paths: orderDetailData?.order_product.map(v => v.options?.from).filter(path => path !== '') || [],
+      },
+    },
+  )
+
+  const {
+    loading: loadingPaymentLogsByOrderId,
+    error: errorPaymentLogsByOrderId,
+    data: paymentLogsByOrderIdData,
+  } = useQuery<hasura.GetPaymentLogsByOrderId, hasura.GetPaymentLogsByOrderIdVariables>(gql`
+    query GetPaymentLogsByOrderId($orderLogId: String!) {
+      payment_log(where: { order_id: { _eq: $orderLogId } }) {
+        no
+        status
+        price
+        gateway
+        paid_at
+      }
+    }
+  `)
+
+  const orderLog: Pick<
+    OrderLog,
+    'id' | 'status' | 'createdAt' | 'name' | 'email' | 'shipping' | 'options' | 'invoiceOptions' | 'invoiceIssuedAt'
+  > = {
+    id: orderDetailData?.order_log?.[0].id || '',
+    status: orderDetailData?.order_log?.[0].status || '',
+    createdAt: orderDetailData?.order_log?.[0].created_at,
+    name: orderDetailMemberInfo?.member_by_pk?.name || '',
+    email: orderDetailMemberInfo?.member_by_pk?.email || '',
+    shipping: orderDetailData?.order_log?.[0].shipping,
+    options: orderDetailData?.order_log?.[0].options,
+    invoiceOptions: orderDetailData?.order_log?.[0].invoice_options,
+    invoiceIssuedAt: orderDetailData?.order_log?.[0].invoice_issued_at,
+  }
+
+  const orderProducts: Pick<OrderProduct, 'id' | 'name' | 'price' | 'options'>[] =
+    orderDetailData?.order_product.map(v => ({
+      id: v.id,
+      name: v.name,
+      price: v.price,
+      options: v.options,
+    })) || []
+
+  const orderDiscounts: Pick<OrderDiscount, 'id' | 'price' | 'name'>[] =
+    orderDetailData?.order_discount.map(v => ({
+      id: v.id,
+      price: v.price,
+      name: v.name,
+    })) || []
+
+  const productPrice = sum(orderProducts.map(v => v.price))
+  const discountPrice = sum(orderDiscounts.map(orderDiscount => orderDiscount.price))
+  const shippingFee = orderLog.shipping?.fee || 0
+  const totalPrice = Math.max(productPrice - discountPrice + shippingFee)
+
+  const orderExecutors: {
+    id: string
+    ratio: number
+    name: string
+  }[] =
+    orderDetailData?.order_executor.map(v => ({
+      id: v.id,
+      ratio: v.ratio,
+      name: v.member.name,
+    })) || []
+
+  const sharingCodes: { sharingCode: string; sharingNote: string } = {
+    sharingCode: sharingCodeData?.sharing_code?.map(v => v.code).join(', ') || '',
+    sharingNote: sharingCodeData?.sharing_code?.map(v => v.code).join(', ') || '',
+  }
+
+  const paymentLogs: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt'>[] =
+    paymentLogsByOrderIdData?.payment_log.map(v => ({
+      no: v.no,
+      status: v.status || '',
+      price: v.price,
+      gateway: v.gateway || '',
+      paidAt: v.paid_at,
+    })) || []
+
+  return {
+    loadingOrderDetail,
+    loadingOrderDetailMemberInfo,
+    loadingSharingCode,
+    loadingPaymentLogsByOrderId,
+    errorOrderDetail,
+    errorOrderDetailMemberInfo,
+    errorSharingCode,
+    errorPaymentLogsByOrderId,
+    orderLog,
+    sharingCodes,
+    orderProducts,
+    orderDiscounts,
+    totalPrice,
+    orderExecutors,
+    paymentLogs,
+  }
 }
 
 export default OrderDetailDrawer
