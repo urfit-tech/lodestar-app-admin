@@ -261,3 +261,169 @@ export const useOrderLogPreviewCollection = (
     loadMoreOrderLogPreviewCollection,
   }
 }
+
+export const useOrderLogExpandRow = (orderId: string) => {
+  const {
+    loading: loadingExpandRowOrderLog,
+    data: expandRowOrderLog,
+    error: errorExpandRowOrderLog,
+  } = useQuery<hasura.GetExpandRowOrderLog, hasura.GetExpandRowOrderLogVariables>(
+    gql`
+      query GetExpandRowOrderLog($orderId: String!) {
+        order_log_by_pk(id: $orderId) {
+          id
+          expired_at
+          shipping
+        }
+      }
+    `,
+    { variables: { orderId } },
+  )
+
+  const {
+    loading: loadingExpandRowOrderProduct,
+    data: expandRowOrderProduct,
+    error: errorExpandRowOrderProduct,
+    refetch: refetchExpandRowOrderProduct,
+  } = useQuery<hasura.GetExpandRowOrderProduct, hasura.GetExpandRowOrderProductVariables>(
+    gql`
+      query GetExpandRowOrderProduct($orderId: String) {
+        order_product(where: { order_id: { _eq: $orderId } }) {
+          id
+          delivered_at
+          name
+          started_at
+          ended_at
+          price
+          options
+          product {
+            id
+            type
+          }
+        }
+      }
+    `,
+    { variables: { orderId } },
+  )
+
+  const {
+    loading: loadingOrderExecutors,
+    error: errorOrderExecutors,
+    data: orderExecutorsData,
+  } = useQuery<hasura.GetOrderExecutors, hasura.GetOrderExecutorsVariables>(
+    gql`
+      query GetOrderExecutors($orderId: String!) {
+        order_executor(where: { order_id: { _eq: $orderId } }) {
+          id
+          ratio
+        }
+      }
+    `,
+    {
+      variables: { orderId },
+    },
+  )
+
+  const {
+    loading: loadingPaymentLogByOrderId,
+    error: errorPaymentLogByOrderId,
+    data: paymentLogByOrderIdData,
+  } = useQuery<hasura.GetPaymentLogByOrderId, hasura.GetPaymentLogByOrderIdVariables>(
+    gql`
+      query GetPaymentLogByOrderId($orderId: String!) {
+        payment_log(where: { order_id: { _eq: $orderId } }) {
+          no
+          order_id
+          gateway
+          price
+          status
+        }
+      }
+    `,
+    { variables: { orderId } },
+  )
+
+  const {
+    loading: loadingOrderDiscountByOrderId,
+    error: errorOrderDiscountByOrderId,
+    data: orderDiscountByOrderIdData,
+  } = useQuery<hasura.GetOrderDiscountByOrderId, hasura.GetOrderDiscountByOrderIdVariables>(
+    gql`
+      query GetOrderDiscountByOrderId($orderId: String!) {
+        order_discount(where: { order_id: { _eq: $orderId } }) {
+          id
+          name
+          type
+          target
+          price
+          options
+        }
+      }
+    `,
+    { variables: { orderId } },
+  )
+
+  const orderLog = {
+    id: expandRowOrderLog?.order_log_by_pk?.id,
+    expiredAt: expandRowOrderLog?.order_log_by_pk?.expired_at,
+    shipping: expandRowOrderLog?.order_log_by_pk?.shipping,
+  }
+
+  const orderProducts =
+    expandRowOrderProduct?.order_product.map(v => ({
+      id: v.id,
+      type: v.product.type,
+      deliveredAt: v.delivered_at,
+      name: v.name,
+      endedAt: v.ended_at,
+      startedAt: v.started_at,
+      price: v.price,
+      options: v.options,
+      currencyId: v.options?.currencyId,
+      currencyPrice: v.options?.currencyPrice,
+      quantity: v.options?.quantity,
+      unsubscribedAt: v.options?.unsubscribedAt,
+    })) || []
+
+  const orderExecutors =
+    orderExecutorsData?.order_executor.map(v => ({
+      id: v.id,
+      ratio: v.ratio,
+    })) || []
+
+  const paymentMethod = paymentLogByOrderIdData?.payment_log[0]?.gateway || null
+  const paymentLogs = paymentLogByOrderIdData?.payment_log.map(p => ({
+    status: p.status,
+    price: p.price,
+  })) || []
+
+  const orderDiscounts =
+    orderDiscountByOrderIdData?.order_discount.map(v => ({
+      id: v.id,
+      name: v.name,
+      type: v.type,
+      target: v.target,
+      price: v.price,
+      coins: v.options?.coins || 0,
+    })) || []
+
+  return {
+    loadingExpandRowOrderLog,
+    loadingExpandRowOrderProduct,
+    loadingOrderExecutors,
+    loadingPaymentLogByOrderId,
+    loadingOrderDiscountByOrderId,
+    errorExpandRowOrderLog,
+    errorExpandRowOrderProduct,
+    errorOrderExecutors,
+    errorPaymentLogByOrderId,
+    errorOrderDiscountByOrderId,
+    orderLog,
+    orderProducts,
+    orderExecutors,
+    paymentMethod,
+    paymentLogs,
+    orderDiscounts,
+    refetchExpandRowOrderProduct,
+  }
+}
