@@ -98,7 +98,11 @@ const CouponPlanDescriptionScopeBlock: React.FC<{
             </div>
             <div className="pl-4">
               {productIds.map(productId => (
-                <ProductItem key={productId} id={productId} variant="coupon-product" />
+                <ProductItem
+                  key={productId}
+                  id={productId}
+                  variant={productId.includes('Estimator') ? 'estimator' : 'coupon-product'} // TODO: 以後 estimator 改用 token
+                />
               ))}
             </div>
           </>

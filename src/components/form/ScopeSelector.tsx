@@ -145,6 +145,7 @@ const ScopeSelector: React.FC<{
             'AppointmentPlan',
             'MerchandiseSpec',
             'ProjectPlan',
+            'Estimator', // TODO: 以後 estimator 改用 token
           ]}
         />
       </div>

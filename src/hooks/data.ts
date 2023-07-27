@@ -641,6 +641,47 @@ export const useSimpleProduct = (
   }
 }
 
+export const useEstimator = (
+  targetId: string,
+  options: {
+    startedAt?: Date
+    quantity?: number
+  },
+) => {
+  const { loading, error, data } = useQuery<hasura.GET_ESTIMATOR, hasura.GET_ESTIMATORVariables>(
+    gql`
+      query GET_ESTIMATOR($id: String!, $startedAt: timestamptz) {
+        estimator_by_pk(id: $id) {
+          id
+          title: name
+        }
+      }
+    `,
+    {
+      variables: {
+        id: targetId,
+        startedAt: options.startedAt,
+      },
+    },
+  )
+  const target: {
+    id: string | undefined,
+    title: string | undefined,
+  } | null =
+    loading || error || !data
+      ? null
+      : {
+          id: data?.estimator_by_pk?.id,
+          title: data?.estimator_by_pk?.title,
+        }
+
+  return {
+    loading,
+    error,
+    target,
+  }
+}
+
 export const useUploadAttachments = () => {
   const { authToken } = useAuth()
   const { id: appId } = useApp()

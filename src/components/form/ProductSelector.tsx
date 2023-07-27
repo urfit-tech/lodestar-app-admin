@@ -44,6 +44,8 @@ const productTypeLabel = (productType: string) => {
       return commonMessages.label.allCouponPlan
     case 'VoucherPlan':
       return commonMessages.label.allVoucherPlan
+    case 'Estimator': // customized : for taotaoxi
+      return commonMessages.label.allEstimator
     default:
       return commonMessages.label.unknownProduct
   }
@@ -281,6 +283,10 @@ const useProductSelections = (onlyValid?: boolean) => {
           id
           title
         }
+        estimator {
+          id
+          title: name
+        }
       }
     `,
     { variables: { voucherCondition }, fetchPolicy: 'no-cache' },
@@ -469,6 +475,14 @@ const useProductSelections = (onlyValid?: boolean) => {
       products:
         data?.voucher_plan.map(v => ({
           id: `VoucherPlan_${v.id}`,
+          title: v.title || '',
+        })) || [],
+    },
+    {
+      productType: 'Estimator',
+      products:
+        data?.estimator.map(v => ({
+          id: `Estimator_${v.id}`,
           title: v.title || '',
         })) || [],
     },
