@@ -25,6 +25,7 @@ export type VoucherPlanFields = {
   isTransferable: boolean
   sale?: { amount: number; price: number }
   pinCode: string
+  bonusCoins: { amount: number; endedAt?: Date | null }
   editorId: string
 }
 
@@ -107,6 +108,7 @@ const VoucherPlanAdminModal: React.FC<
           isTransferable: !!voucherPlan?.isTransferable,
           sale: voucherPlan?.sale,
           pinCode: voucherPlan?.pinCode,
+          bonusCoins: voucherPlan?.bonusCoins,
           categoryId: voucherPlan?.category?.id,
         }}
       >
@@ -216,6 +218,12 @@ const VoucherPlanAdminModal: React.FC<
           </Form.Item>
         ) : null}
 
+        {enabledModules.coin && enabledModules.coin_back ? (
+          <Form.Item name="bonusCoins">
+            <BonusCoinsInput />
+          </Form.Item>
+        ) : null}
+
         <Form.Item label={formatMessage(voucherMessages.VoucherPlanAdminModal.availableDateRange)}>
           <Form.Item className="d-inline-block m-0" name="startedAt">
             <DatePicker
@@ -306,6 +314,58 @@ const PinCodeInput: React.VFC<{
           }}
         />
       )}
+    </div>
+  )
+}
+
+const BonusCoinsInput: React.VFC<{
+  value?: { amount: number; endedAt: Date } | null
+  onChange?: (value?: { amount?: number; endedAt?: Date | null } | null) => void
+}> = ({ value, onChange }) => {
+  const { formatMessage } = useIntl()
+
+  return (
+    <div>
+      <Checkbox
+        className="mb-2"
+        checked={value ? true : false}
+        onChange={e => {
+          if (e.target.checked) {
+            onChange?.({})
+          } else {
+            onChange?.(null)
+          }
+        }}
+      >
+        {formatMessage(voucherMessages.VoucherPlanAdminModal.exchangeBonusCoins)}
+      </Checkbox>
+
+      {value ? (
+        <div className="mt-2">
+          <InputNumber
+            className="d-inline-block mr-4"
+            placeholder={formatMessage(voucherMessages.VoucherPlanAdminModal.bonusCoinAmount)}
+            min={1}
+            value={value.amount}
+            onChange={v => {
+              if (typeof v === 'number' && v > 0) {
+                onChange?.({ ...value, amount: v })
+              }
+            }}
+          />
+
+          <DatePicker
+            className="d-inline-block"
+            value={value.endedAt ? moment(value.endedAt) : null}
+            format="YYYY-MM-DD HH:mm"
+            showTime={{ defaultValue: moment('23:59:59', 'HH:mm:ss') }}
+            placeholder={formatMessage(voucherMessages.VoucherPlanAdminModal.bonusCoinsEndedAt)}
+            onChange={v => {
+              v ? onChange?.({ ...value, endedAt: v.toDate() }) : onChange?.({ ...value, endedAt: null })
+            }}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }
