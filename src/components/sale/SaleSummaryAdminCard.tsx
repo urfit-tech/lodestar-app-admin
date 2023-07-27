@@ -17,7 +17,7 @@ const messages = defineMessages({
 
 const SaleSummaryAdminCard: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { permissions, currentMemberId: memberId } = useAuth()
+  const { isAuthenticating, permissions, currentMemberId: memberId } = useAuth()
   const [loading, setLoading] = useState<boolean>(true)
   const apolloClient = useApolloClient()
   const [totalOrderAmountResult, setTotalOrderAmountResult] = useState<hasura.GET_TOTAL_ORDER_AMOUNT>()
@@ -76,8 +76,8 @@ const SaleSummaryAdminCard: React.FC = () => {
 
   return (
     <>
-      {grossSalesPermission === 'None' && <UnAuthCover />}
-      <AdminCard loading={loading}>
+      {!isAuthenticating && grossSalesPermission === 'None' ? <UnAuthCover /> : null}
+      <AdminCard loading={loading || isAuthenticating}>
         <Statistic
           title={formatMessage(messages.totalSales)}
           value={grossSalesPermission !== 'None' && totalSales >= 0 ? totalSales : '- -'}
