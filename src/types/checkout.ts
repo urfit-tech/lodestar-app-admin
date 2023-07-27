@@ -54,7 +54,6 @@ export type VoucherPlanBriefProps = {
   sale?: { amount: number; price: number }
   category?: { id: string; name: string }
   pinCode: string | null
-  bonusCoins: {amount: number, endedAt?: Date} | null
 }
 
 export type VoucherPlanProps = VoucherPlanBriefProps & {
