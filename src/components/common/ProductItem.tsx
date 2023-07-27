@@ -8,7 +8,7 @@ import styled, { css } from 'styled-components'
 import ProductTypeLabel from '../../components/common/ProductTypeLabel'
 import { currencyFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useSimpleProduct } from '../../hooks/data'
+import { useEstimator, useSimpleProduct } from '../../hooks/data'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { CustomRatioImage } from './Image'
 
@@ -83,15 +83,15 @@ const StyledListTitleBlock = styled.div`
 const ProductItem: React.FC<{
   id: string
   startedAt?: Date
-  variant?: 'default' | 'simple' | 'cartProduct' | 'simpleCartProduct' | 'checkout' | 'coupon-product'
+  variant?: 'default' | 'simple' | 'cartProduct' | 'simpleCartProduct' | 'checkout' | 'coupon-product' | 'estimator'
   quantity?: number
 }> = ({ id, startedAt, variant, quantity }) => {
   const { formatMessage } = useIntl()
   const [productType, targetId] = id.split('_') as [ProductType, string]
-  const { target } = useSimpleProduct(targetId, { startedAt, quantity })
-
-  if (!target) {
-    if (variant === 'coupon-product') {
+  let { target } = useSimpleProduct(targetId, { startedAt, quantity })
+  const { target: estimator } = useEstimator(targetId, { startedAt, quantity }) // customized : for taotaoxi
+  if (!target && !estimator) {
+    if (variant === 'coupon-product' || variant === 'estimator') {
       return <Spin size="small" className="d-block" />
     }
 
@@ -108,7 +108,7 @@ const ProductItem: React.FC<{
     periodType,
     endedAt,
     isSubscription,
-  } = target
+  } = target || {}
 
   switch (variant) {
     case 'simple':
@@ -119,6 +119,15 @@ const ProductItem: React.FC<{
           </StyledTitle>
           <StyledCoverImage src={coverUrl || EmptyCover} alt={id} className="flex-shrink-0" />
         </>
+      )
+    case 'estimator': // customized : for taotaoxi
+      return (
+        <div className="d-flex mb-1">
+          <StyledListLabelBLock className="flex-shrink-0">
+            <ProductTypeLabel productType={productType} />
+          </StyledListLabelBLock>
+          <StyledListTitleBlock className="flex-grow-1">{estimator?.title}</StyledListTitleBlock>
+        </div>
       )
     case 'coupon-product':
       return (
