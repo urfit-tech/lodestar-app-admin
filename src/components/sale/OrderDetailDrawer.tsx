@@ -48,9 +48,7 @@ const OrderDetailDrawer: React.FC<{
 
   const {
     loadingOrderDetail,
-    loadingOrderDetailMemberInfo,
     loadingSharingCode,
-    loadingPaymentLogsByOrderId,
     orderLog,
     sharingCodes,
     orderProducts,
@@ -88,7 +86,7 @@ const OrderDetailDrawer: React.FC<{
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.otherInfo)}</StyledTitle>
-            {loadingOrderDetail && loadingOrderDetailMemberInfo && loadingSharingCode ? (
+            {loadingOrderDetail && loadingSharingCode ? (
               <Skeleton />
             ) : (
               <OrderOtherInfoCard
@@ -152,7 +150,7 @@ const OrderDetailDrawer: React.FC<{
               />
             )}
             <StyledTitle>{formatMessage(saleMessages.OrderDetailDrawer.paymentInfo)}</StyledTitle>
-            {loadingPaymentLogsByOrderId ? <Skeleton /> : <PaymentCard payments={paymentLogs} />}
+            {loadingOrderDetail ? <Skeleton /> : <PaymentCard payments={paymentLogs} />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
@@ -172,7 +170,11 @@ const useOrderDetail = (orderLogId: string | null) => {
           id
           status
           created_at
-          member_id
+          member {
+            id
+            name
+            email
+          }
           options
           invoice_options
           invoice_issued_at
@@ -213,23 +215,6 @@ const useOrderDetail = (orderLogId: string | null) => {
   )
 
   const {
-    loading: loadingOrderDetailMemberInfo,
-    error: errorOrderDetailMemberInfo,
-    data: orderDetailMemberInfo,
-  } = useQuery<hasura.GetOrderDetailMemberInfo, hasura.GetOrderDetailMemberInfoVariables>(
-    gql`
-      query GetOrderDetailMemberInfo($memberId: String!) {
-        member_by_pk(id: $memberId) {
-          id
-          name
-          email
-        }
-      }
-    `,
-    { variables: { memberId: orderDetailData?.order_log?.[0]?.member_id || '' } },
-  )
-
-  const {
     loading: loadingSharingCode,
     error: errorSharingCode,
     data: sharingCodeData,
@@ -250,35 +235,19 @@ const useOrderDetail = (orderLogId: string | null) => {
     },
   )
 
-  const {
-    loading: loadingPaymentLogsByOrderId,
-    error: errorPaymentLogsByOrderId,
-    data: paymentLogsByOrderIdData,
-  } = useQuery<hasura.GetPaymentLogsByOrderId, hasura.GetPaymentLogsByOrderIdVariables>(gql`
-    query GetPaymentLogsByOrderId($orderLogId: String!) {
-      payment_log(where: { order_id: { _eq: $orderLogId } }) {
-        no
-        status
-        price
-        gateway
-        paid_at
-      }
-    }
-  `)
-
   const orderLog: Pick<
     OrderLog,
     'id' | 'status' | 'createdAt' | 'name' | 'email' | 'shipping' | 'options' | 'invoiceOptions' | 'invoiceIssuedAt'
   > = {
-    id: orderDetailData?.order_log?.[0].id || '',
-    status: orderDetailData?.order_log?.[0].status || '',
-    createdAt: orderDetailData?.order_log?.[0].created_at,
-    name: orderDetailMemberInfo?.member_by_pk?.name || '',
-    email: orderDetailMemberInfo?.member_by_pk?.email || '',
-    shipping: orderDetailData?.order_log?.[0].shipping,
-    options: orderDetailData?.order_log?.[0].options,
-    invoiceOptions: orderDetailData?.order_log?.[0].invoice_options,
-    invoiceIssuedAt: orderDetailData?.order_log?.[0].invoice_issued_at,
+    id: orderDetailData?.order_log_by_pk?.id || '',
+    status: orderDetailData?.order_log_by_pk?.status || '',
+    createdAt: orderDetailData?.order_log_by_pk?.created_at,
+    name: orderDetailData?.order_log_by_pk?.member?.name || '',
+    email: orderDetailData?.order_log_by_pk?.member?.email || '',
+    shipping: orderDetailData?.order_log_by_pk?.shipping,
+    options: orderDetailData?.order_log_by_pk?.options,
+    invoiceOptions: orderDetailData?.order_log_by_pk?.invoice_options,
+    invoiceIssuedAt: orderDetailData?.order_log_by_pk?.invoice_issued_at,
   }
 
   const orderProducts: Pick<OrderProduct, 'id' | 'name' | 'price' | 'options'>[] =
@@ -318,7 +287,7 @@ const useOrderDetail = (orderLogId: string | null) => {
   }
 
   const paymentLogs: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt'>[] =
-    paymentLogsByOrderIdData?.payment_log.map(v => ({
+    orderDetailData?.payment_log.map(v => ({
       no: v.no,
       status: v.status || '',
       price: v.price,
@@ -328,13 +297,9 @@ const useOrderDetail = (orderLogId: string | null) => {
 
   return {
     loadingOrderDetail,
-    loadingOrderDetailMemberInfo,
     loadingSharingCode,
-    loadingPaymentLogsByOrderId,
     errorOrderDetail,
-    errorOrderDetailMemberInfo,
     errorSharingCode,
-    errorPaymentLogsByOrderId,
     orderLog,
     sharingCodes,
     orderProducts,
