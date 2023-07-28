@@ -260,10 +260,6 @@ export const commonMessages = {
     skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
     roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
     permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
-    permissionGroupsSelectorPlaceholder: {
-      id: 'common.label.permissionGroupsSelectorPlaceholder',
-      defaultMessage: '選擇權限組',
-    },
     default: { id: 'common.label.default', defaultMessage: '預設' },
     desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
     unPublished: { id: 'common.label.unPublished', defaultMessage: '停售' },
@@ -469,7 +465,7 @@ export const commonMessages = {
     allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
-    estimator:{ id: 'common.product.estimator', defaultMessage: '測算方案' },
+    estimator: { id: 'common.product.estimator', defaultMessage: '測算方案' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
   }),
   unit: defineMessages({
@@ -1208,14 +1204,6 @@ export const memberMessages = {
     meetingHours: { id: 'member.label.meetingHours', defaultMessage: '會議時長(小時)' },
   }),
   text: {
-    duplicatedPhoneMember: {
-      id: 'member.text.duplicatedPhoneMember',
-      defaultMessage: '重複手機的會員',
-    },
-    duplicatedPhoneMemberExist: {
-      id: 'member.text.duplicatedPhoneMemberExist',
-      defaultMessage: '系統存在重複手機的會員',
-    },
     deleteMemberNoteConfirmation: {
       id: 'member.text.deleteMemberNoteConfirmation',
       defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',

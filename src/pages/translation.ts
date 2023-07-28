@@ -79,6 +79,8 @@ const pageMessages = {
       id: 'page.*.programContentType',
       defaultMessage: '單元類型',
     },
+    view: { id: 'page.*.view', defaultMessage: '查看' },
+    allMembers: { id: 'page.*.allMembers', defaultMessage: '全部會員' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -129,7 +131,6 @@ const pageMessages = {
     chooseProgram: { id: 'page.ProgramProcessBlock.chooseProgram', defaultMessage: '選擇課程' },
     allPrograms: { id: 'page.ProgramProcessBlock.allPrograms', defaultMessage: '全部課程' },
     selectedProgram: { id: 'page.ProgramProcessBlock.selectedProgram', defaultMessage: '指定課程' },
-    allMembers: { id: 'page.ProgramProcessBlock.allMembers', defaultMessage: '全部會員' },
     chooseProperty: { id: 'page.ProgramProcessBlock.chooseProperty', defaultMessage: '選擇欄位' },
     containKeyword: { id: 'page.ProgramProcessBlock.containKeyword', defaultMessage: '關鍵字包含' },
     programContentDuration: {
@@ -381,19 +382,22 @@ const pageMessages = {
   VoucherCategoryPage: defineMessages({
     voucherCategory: { id: 'page.VoucherCategoryPage.voucherCategory', defaultMessage: 'Voucher Category' },
   }),
+  DuplicatePhoneBlock: defineMessages({
+    duplicatedPhoneMemberExist: {
+      id: 'page.DuplicatePhoneBlock.duplicatedPhoneMemberExist',
+      defaultMessage: '系統存在重複手機的會員',
+    },
+    duplicatedPhoneMember: {
+      id: 'page.DuplicatePhoneBlock.duplicatedPhoneMember',
+      defaultMessage: '重複手機的會員',
+    },
+  }),
+  PermissionGroupsDropDownSelector: {
+    permissionGroupsSelectorPlaceholder: {
+      id: 'page.PermissionGroupsDropDownSelector.permissionGroupsSelectorPlaceholder',
+      defaultMessage: '選擇權限組',
+    },
+  },
 }
-
-// fundingTerm: { id: 'project.*.fundingTerm', defaultMessage: '募資條件' },
-// participantsAmount: { id: 'project.*.participantsAmount', defaultMessage: '參與人數' },
-// projectCountdownTimer: { id: 'project.*.projectCountdownTimer', defaultMessage: '專案倒數' },
-// projectCover: { id: 'project.*.projectCover', defaultMessage: '專案封面' },
-// projectAbstract: { id: 'project.*.projectAbstract', defaultMessage: '專案摘要' },
-// projectContent: { id: 'project.*.projectContent', defaultMessage: '專案內容' },
-// expireAt: { id: 'project.*.expireAt', defaultMessage: '截止日' },
-// sortProject: { id: 'project.*.sortProject', defaultMessage: '專案排序' },
-// sortProjectPlan: { id: 'project.*.sortProjectPlan', defaultMessage: '方案排序' },
-// editProject: { id: 'project.*.editProject', defaultMessage: '編輯方案' },
-// noProject: { id: 'project.*.noProject', defaultMessage: '尚未有任何專案' },
-// soldOutProjectCount: { id: 'project.*.soldOutProjectCount', defaultMessage: '已售 {count}' },
 
 export default pageMessages
