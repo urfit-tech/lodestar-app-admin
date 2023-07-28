@@ -30,7 +30,7 @@ type FieldProps = {
 const ModifyOrderStatusModal: React.VFC<{
   orderLogId: string
   defaultPrice?: number
-  onRefetch?: (status: string) => void
+  onRefetch?: () => void
 }> = ({ orderLogId, defaultPrice = 0, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
@@ -74,7 +74,7 @@ const ModifyOrderStatusModal: React.VFC<{
         },
       })
 
-      onRefetch?.(status)
+      onRefetch?.()
       onFinished?.()
     } catch (error) {
       handleError(error)

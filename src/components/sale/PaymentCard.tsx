@@ -31,8 +31,11 @@ const StyledInfoMessage = styled.div`
   width: 65%;
 `
 
-const PaymentCard: React.FC<{ payments: PaymentLog[] }> = ({ payments }) => {
+const PaymentCard: React.FC<{ payments: Pick<PaymentLog, 'no' | 'status' | 'price' | 'gateway' | 'paidAt'>[] }> = ({
+  payments,
+}) => {
   const { formatMessage } = useIntl()
+
   return (
     <>
       {payments.map(payment => {
@@ -54,14 +57,13 @@ const PaymentCard: React.FC<{ payments: PaymentLog[] }> = ({ payments }) => {
         return (
           <StyledCard key={payment.no}>
             <div className="container">
-              {contentList.map(
-                (row, idx) =>
-                  row.isRender && (
-                    <div className="row mb-2 justify-content-between" key={idx}>
-                      <StyledInfoTitle className="column">{row.title}</StyledInfoTitle>
-                      <StyledInfoMessage className="column">{row.message}</StyledInfoMessage>
-                    </div>
-                  ),
+              {contentList.map((row, idx) =>
+                row.isRender ? (
+                  <div className="row mb-2 justify-content-between" key={idx}>
+                    <StyledInfoTitle className="column">{row.title}</StyledInfoTitle>
+                    <StyledInfoMessage className="column">{row.message}</StyledInfoMessage>
+                  </div>
+                ) : null,
               )}
             </div>
           </StyledCard>

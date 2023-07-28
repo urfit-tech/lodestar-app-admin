@@ -17,22 +17,35 @@ const saleMessages = {
     isRequired: { id: 'sale.*.isRequired', defaultMessage: '請輸入{field}' },
   }),
   SaleCollectionAdminCard: defineMessages({
-    openEquity: { id: 'sale.SaleCollectionAdminCard.openEquity', defaultMessage: '開通權益' },
-    removeEquity: { id: 'sale.SaleCollectionAdminCard.removeEquity', defaultMessage: '移除權益' },
-    remove: { id: 'sale.SaleCollectionAdminCard.remove', defaultMessage: '移除' },
-    open: { id: 'sale.SaleCollectionAdminCard.open', defaultMessage: '開通' },
+    calculatingTotalCount: {
+      id: 'sale.SaleCollectionAdminCard.calculatingTotalCount',
+      defaultMessage: '計算總筆數中',
+    },
+  }),
+  SaleCollectionExpandRow: defineMessages({
+    productExpired: { id: 'sale.SaleCollectionExpandRow.productExpired', defaultMessage: '到期' },
+    openEquity: { id: 'sale.SaleCollectionExpandRow.openEquity', defaultMessage: '開通權益' },
+    removeEquity: { id: 'sale.SaleCollectionExpandRow.removeEquity', defaultMessage: '移除權益' },
+    deliver: { id: 'sale.SaleCollectionExpandRow.deliver', defaultMessage: '交付' },
+    remove: { id: 'sale.SaleCollectionExpandRow.remove', defaultMessage: '移除' },
+    open: { id: 'sale.SaleCollectionExpandRow.open', defaultMessage: '開通' },
     updateEquitySuccessfully: {
-      id: 'sale.SaleCollectionAdminCard.updateEquitySuccessfully',
+      id: 'sale.SaleCollectionExpandRow.updateEquitySuccessfully',
       defaultMessage: '權益異動成功',
     },
-    deliver: { id: 'sale.SaleCollectionAdminCard.deliver', defaultMessage: '交付' },
+
     removeEquityWarning: {
-      id: 'sale.SaleCollectionAdminCard.removeEquityWarning',
+      id: 'sale.SaleCollectionExpandRow.removeEquityWarning',
       defaultMessage: '此操作將移除 {productName} 的使用權益，確定要移除嗎？',
     },
     openEquityWarning: {
-      id: 'sale.SaleCollectionAdminCard.openEquityWarning',
+      id: 'sale.SaleCollectionExpandRow.openEquityWarning',
       defaultMessage: '此操作將開通 {productName} 的使用權益，確定要開通嗎？',
+    },
+    totalPrice: { id: 'sale.SaleCollectionExpandRow.totalPrice', defaultMessage: '總金額' },
+    cancelSubscriptionDate: {
+      id: 'sale.SaleCollectionExpandRow.cancelSubscriptionDate',
+      defaultMessage: '已於 {date} 取消訂閱',
     },
   }),
   OrderDetailDrawer: defineMessages({
