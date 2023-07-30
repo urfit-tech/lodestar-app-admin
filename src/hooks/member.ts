@@ -19,6 +19,7 @@ import {
   MemberNote,
 } from '../types/member'
 import { notEmpty } from '../helpers'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
@@ -724,7 +725,9 @@ export const useMemberCollection = (filter?: {
   }[]
   permissionGroup?: string | null
 }) => {
+  const { id: appId } = useApp()
   const condition: hasura.GetMemberCollectionVariables['condition'] = {
+    app_id: { _eq: appId },
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     username: filter?.username ? { _ilike: `%${filter.username}%` } : undefined,
