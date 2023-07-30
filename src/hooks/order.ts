@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 import hasura from '../hasura'
 import { sum } from 'ramda'
 import { OrderLog } from '../types/general'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<hasura.GET_ORDER_LOG_STATUS>(gql`
@@ -35,6 +36,7 @@ export const useOrderLogPreviewCollection = (
     memberId?: string
   },
 ) => {
+  const { id: appId } = useApp()
   const limit = 20
   const condition: hasura.GetOrderLogPreviewCollectionVariables['condition'] = {
     id: filters?.orderId ? { _ilike: `%${filters.orderId}%` } : undefined,
@@ -42,9 +44,10 @@ export const useOrderLogPreviewCollection = (
     member:
       authStatus !== 'None'
         ? filters?.memberId
-          ? { id: { _eq: filters.memberId } }
+          ? { id: { _eq: filters.memberId }, app_id: { _eq: appId } }
           : filters?.memberNameAndEmail
           ? {
+              app_id: { _eq: appId },
               _or: filters?.memberNameAndEmail
                 ? [
                     { name: { _ilike: `%${filters.memberNameAndEmail}%` } },
