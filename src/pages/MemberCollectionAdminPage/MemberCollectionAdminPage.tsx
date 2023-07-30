@@ -113,9 +113,12 @@ const MemberCollectionAdminPage: React.FC = () => {
   const { properties } = useProperty()
   const {
     loadingMemberAggregate,
-    loadingMemberOrderProductPrice,
-    loadingManagerInfo,
     loadingMemberCollection,
+    loadingMemberPhones,
+    loadingManagerInfo,
+    loadingMemberOrderProductPrice,
+    loadingMemberTags,
+    loadingMemberProperties,
     members,
     refetchMemberAggregate,
     refetchMemberCollection,
@@ -246,7 +249,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       title: formatMessage(commonMessages.label.phone),
       dataIndex: 'phone',
       key: 'phone',
-      render: (text, record, index) => record.phones.join(', '),
+      render: (text, record, index) => (loadingMemberPhones ? <Spin /> : record.phones.join(', ')),
       ...getColumnSearchProps('phone'),
     },
     {
@@ -288,15 +291,18 @@ const MemberCollectionAdminPage: React.FC = () => {
       title: formatMessage(commonMessages.label.tags),
       dataIndex: 'tags',
       key: 'tags',
-      render: (text, record, index) => (
-        <>
-          {record.tags.map(tag => (
-            <Tag key={tag} className="mr-1 mb-1">
-              {tag}
-            </Tag>
-          ))}
-        </>
-      ),
+      render: (text, record, index) =>
+        loadingMemberTags ? (
+          <Spin />
+        ) : (
+          <>
+            {record.tags.map(tag => (
+              <Tag key={tag} className="mr-1 mb-1">
+                {tag}
+              </Tag>
+            ))}
+          </>
+        ),
       ...getColumnSearchProps('tag'),
     },
     {
@@ -315,7 +321,7 @@ const MemberCollectionAdminPage: React.FC = () => {
         const column: ColumnProps<MemberInfoProps> = {
           title: property.name,
           key: property.id,
-          render: (text, record, index) => record?.properties?.[property.id],
+          render: (text, record, index) => (loadingMemberProperties ? <Spin /> : record?.properties?.[property.id]),
           ...getColumnSearchProps(property.id, true),
         }
         return column
