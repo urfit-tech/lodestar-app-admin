@@ -933,7 +933,6 @@ export const useMemberCollection = (filter?: {
       variables: { memberIdList: memberCollectionData?.member.map(v => v.id) },
     },
   )
-  const managers: { id: string; name: string }[] = managerInfoData?.member.map(v => ({ id: v.id, name: v.name })) || []
 
   const memberOrderProductPrice: { memberId: string; price: number }[] =
     memberOrderProductPriceData?.order_log.map(v => ({
@@ -941,7 +940,7 @@ export const useMemberCollection = (filter?: {
       price: v.order_products_aggregate.aggregate?.sum?.price || 0,
     })) || []
 
-  let members: MemberInfoProps[] =
+  const members: MemberInfoProps[] =
     memberCollectionData?.member.map(v => ({
       id: v.id,
       avatarUrl: v.picture_url || null,
@@ -951,12 +950,34 @@ export const useMemberCollection = (filter?: {
       role: v.role as UserRole,
       createdAt: v.created_at ? new Date(v.created_at) : null,
       loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-      phones: [],
-      consumption: 0,
-      manager: null,
-      categories: [],
-      tags: [],
-      properties: null,
+      phones: memberPhonesData?.member_phone.map(memberPhone => memberPhone.phone) || [],
+      consumption: sum(
+        memberOrderProductPrice
+          .filter(memberOrderProduct => memberOrderProduct.memberId === v.id)
+          .map(memberOrderProduct => memberOrderProduct.price),
+      ),
+      manager: managerInfoData?.member.find(manager => manager.id === v.id)
+        ? {
+            id: managerInfoData?.member.find(manager => manager.id === v.id)?.id || '',
+            name: managerInfoData?.member.find(manager => manager.id === v.id)?.name || '',
+          }
+        : null,
+      categories:
+        memberCategoriesData?.member_category
+          .filter(memberCategory => memberCategory.member_id === v.id)
+          .map(memberCategory => ({
+            id: memberCategory.category.id,
+            name: memberCategory.category.name,
+          })) || [],
+      tags:
+        memberTagsData?.member_tag
+          .filter(memberTag => memberTag.member_id === v.id)
+          .map(memberTag => memberTag.tag_name) || [],
+      properties: memberPropertiesData?.member_property
+        .filter(memberProperty => memberProperty.member_id === v.id)
+        .reduce((acc, cur) => {
+          return { ...acc, [cur.property_id]: cur.value }
+        }, {} as MemberInfoProps['properties']),
     })) || []
 
   const loadMoreMembers = () =>
@@ -989,31 +1010,6 @@ export const useMemberCollection = (filter?: {
         })
       },
     })
-
-  members.forEach(member => ({
-    ...member,
-    phones: memberPhonesData?.member_phone.map(memberPhone => memberPhone.phone),
-    manager: managers.filter(manager => manager.id === member.id),
-    consumption: sum(
-      memberOrderProductPrice
-        .filter(memberOrderProduct => memberOrderProduct.memberId === member.id)
-        .map(memberOrderProduct => memberOrderProduct.price),
-    ),
-    categories: memberCategoriesData?.member_category
-      .filter(memberCategory => memberCategory.member_id === member.id)
-      .map(memberCategory => ({
-        id: memberCategory.category.id,
-        name: memberCategory.category.name,
-      })),
-    tags: memberTagsData?.member_tag
-      .filter(memberTag => memberTag.member_id === member.id)
-      .map(memberTag => memberTag.tag_name),
-    properties: memberPropertiesData?.member_property
-      .filter(memberProperty => memberProperty.member_id === member.id)
-      .reduce((acc, cur) => {
-        return { ...acc, [cur.property_id]: cur.value }
-      }, {} as MemberInfoProps['properties']),
-  }))
 
   return {
     loadingMemberAggregate,

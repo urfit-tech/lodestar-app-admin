@@ -40,9 +40,9 @@ export type MemberInfoProps = {
     name: string
   }[]
   tags: string[]
-  properties: {
+  properties?: {
     [propertyId: string]: string
-  } | null
+  }
 }
 
 export type MemberPublicProps = {

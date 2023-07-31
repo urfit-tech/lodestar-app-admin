@@ -212,7 +212,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
     })
 
-  const columns: ColumnProps<MemberInfoProps>[] = [
+    const columns: ColumnProps<MemberInfoProps>[] = [
     {
       title: '#',
       key: '#',

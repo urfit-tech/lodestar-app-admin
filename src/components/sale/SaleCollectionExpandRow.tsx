@@ -56,7 +56,7 @@ const SaleCollectionExpandRow = ({
     orderDiscounts,
     refetchExpandRowOrderProduct,
   } = useOrderLogExpandRow(orderLogId)
-  
+
   return (
     <div>
       {loadingExpandRowOrderProduct ? (
@@ -77,20 +77,20 @@ const SaleCollectionExpandRow = ({
                       <span>{orderProduct.name}</span>
                       {orderProduct.endedAt && orderProduct.type !== 'AppointmentPlan' ? (
                         <span className="ml-2">
-                          {`${dayjs(orderProduct.endedAt)
+                          {`(${dayjs(orderProduct.endedAt)
                             .tz(currentTimeZone)
-                            .format('YYYY-MM-DD HH:mm')} ${formatMessage(
+                            .format('YYYY-MM-DD')} ${formatMessage(
                             saleMessages.SaleCollectionExpandRow.productExpired,
-                          )}`}
+                          )})`}
                         </span>
                       ) : null}
                       {orderProduct.startedAt && orderProduct.endedAt && orderProduct.type === 'AppointmentPlan' ? (
                         <span>
-                          {`${dateRangeFormatter({
+                          {`(${dateRangeFormatter({
                             startedAt: orderProduct.startedAt,
                             endedAt: orderProduct.endedAt,
                             dateFormat: 'YYYY-MM-DD',
-                          })}`}
+                          })})`}
                         </span>
                       ) : null}
                       {orderProduct.quantity ? <span>{` X ${orderProduct.quantity} `}</span> : null}
