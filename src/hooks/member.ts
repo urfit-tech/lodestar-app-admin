@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
 import { isEmpty } from 'lodash'
-import { groupBy, sum } from 'ramda'
+import { sum } from 'ramda'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import hasura from '../hasura'
 import { commonMessages } from '../helpers/translation'
