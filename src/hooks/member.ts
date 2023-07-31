@@ -18,6 +18,8 @@ import {
   UserRole,
   MemberNote,
 } from '../types/member'
+import { notEmpty } from '../helpers'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
@@ -723,7 +725,9 @@ export const useMemberCollection = (filter?: {
   }[]
   permissionGroup?: string | null
 }) => {
-  const condition: hasura.GET_PAGE_MEMBER_COLLECTIONVariables['condition'] = {
+  const { id: appId } = useApp()
+  const condition: hasura.GetMemberCollectionVariables['condition'] = {
+    app_id: { _eq: appId },
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     username: filter?.username ? { _ilike: `%${filter.username}%` } : undefined,
@@ -772,67 +776,43 @@ export const useMemberCollection = (filter?: {
       : undefined,
   }
 
-  const { loading, error, data, refetch, fetchMore } = useQuery<
-    hasura.GET_PAGE_MEMBER_COLLECTION,
-    hasura.GET_PAGE_MEMBER_COLLECTIONVariables
-  >(
+  const {
+    loading: loadingMemberAggregate,
+    error: errorMemberAggregate,
+    data: memberAggregateData,
+    refetch: refetchMemberAggregate,
+  } = useQuery<hasura.GetMemberAggregate, hasura.GetMemberAggregateVariables>(
     gql`
-      query GET_PAGE_MEMBER_COLLECTION($condition: member_bool_exp, $limit: Int!) {
+      query GetMemberAggregate($condition: member_bool_exp) {
         member_aggregate(where: $condition) {
           aggregate {
             count
           }
         }
+      }
+    `,
+    { variables: { condition } },
+  )
+
+  const {
+    loading: loadingMemberCollection,
+    error: errorMemberCollection,
+    data: memberCollectionData,
+    refetch: refetchMemberCollection,
+    fetchMore: fetchMoreMemberCollection,
+  } = useQuery<hasura.GetMemberCollection, hasura.GetMemberCollectionVariables>(
+    gql`
+      query GetMemberCollection($condition: member_bool_exp, $limit: Int!) {
         member(where: $condition, order_by: [{ created_at: desc_nulls_last }, { id: asc }], limit: $limit) {
           id
           picture_url
           name
-          username
           email
-          created_at
-          logined_at
           role
-          manager {
-            id
-            name
-          }
-          assigned_at
-          member_phones {
-            id
-            phone
-          }
-          member_categories {
-            id
-            category {
-              id
-              name
-            }
-          }
-          member_tags {
-            id
-            tag_name
-          }
-          member_properties {
-            id
-            property_id
-            value
-          }
-          member_permission_groups {
-            id
-            permission_group {
-              id
-              name
-            }
-          }
-          order_logs(where: { status: { _eq: "SUCCESS" } }) {
-            order_products_aggregate {
-              aggregate {
-                sum {
-                  price
-                }
-              }
-            }
-          }
+          created_at
+          username
+          logined_at
+          manager_id
         }
       }
     `,
@@ -841,46 +821,146 @@ export const useMemberCollection = (filter?: {
         condition,
         limit: 10,
       },
-      context: {
-        important: true,
-      },
     },
   )
 
-  const members: MemberInfoProps[] =
-    loading || error || !data
-      ? []
-      : data.member.map(v => ({
-          id: v.id,
-          avatarUrl: v.picture_url || null,
-          name: v.name,
-          username: v.username,
-          email: v.email,
-          role: v.role as UserRole,
-          createdAt: v.created_at ? new Date(v.created_at) : null,
-          loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-          manager: v.manager || null,
-          assignedAt: v.assigned_at ? new Date(v.assigned_at) : null,
-          phones: v.member_phones.map(v => v.phone),
-          consumption: sum(
-            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-          ),
-          categories: v.member_categories.map(w => ({
-            id: w.category.id,
-            name: w.category.name,
-          })),
-          tags: v.member_tags.map(w => w.tag_name),
-          properties: v.member_properties.reduce((accumulator, currentValue) => {
-            return {
-              ...accumulator,
-              [currentValue.property_id]: currentValue.value,
+  const { loading: loadingMemberPhones, data: memberPhonesData } = useQuery<
+    hasura.GetMemberPhones,
+    hasura.GetMemberPhonesVariables
+  >(
+    gql`
+      query GetMemberPhones($memberIdList: [String!]) {
+        member_phone(where: { member_id: { _in: $memberIdList } }) {
+          id
+          phone
+        }
+      }
+    `,
+    { variables: { memberIdList: memberCollectionData?.member.map(v => v.id) } },
+  )
+
+  const {
+    loading: loadingMemberOrderProductPrice,
+    data: memberOrderProductPriceData,
+    refetch: refetchMemberOrderProductPrice,
+  } = useQuery<hasura.GetMemberOrderProductPrice, hasura.GetMemberOrderProductPriceVariables>(
+    gql`
+      query GetMemberOrderProductPrice($memberIdList: [String!]) {
+        order_log(where: { member_id: { _in: $memberIdList }, status: { _eq: "SUCCESS" } }) {
+          id
+          member_id
+          order_products_aggregate {
+            aggregate {
+              sum {
+                price
+              }
             }
-          }, {} as MemberInfoProps['properties']),
-          permissionGroupNames: v.member_permission_groups.map(w => w.permission_group.name),
-        }))
+          }
+        }
+      }
+    `,
+    { variables: { memberIdList: memberCollectionData?.member.map(v => v.id) } },
+  )
+
+  const { loading: loadingManagerInfo, data: managerInfoData } = useQuery<
+    hasura.GetManagerInfo,
+    hasura.GetManagerInfoVariables
+  >(
+    gql`
+      query GetManagerInfo($managerIdList: [String!]) {
+        member(where: { id: { _in: $managerIdList } }) {
+          id
+          name
+        }
+      }
+    `,
+    { variables: { managerIdList: memberCollectionData?.member.map(v => v.manager_id).filter(notEmpty) } },
+  )
+
+  const {
+    loading: loadingMemberCategories,
+    data: memberCategoriesData,
+    refetch: refetchMemberCategories,
+  } = useQuery<hasura.GetMemberCategories, hasura.GetMemberCategoriesVariables>(
+    gql`
+      query GetMemberCategories($memberIdList: [String!]) {
+        member_category(where: { member_id: { _in: $memberIdList } }) {
+          id
+          member_id
+          category {
+            id
+            name
+          }
+        }
+      }
+    `,
+    { variables: { memberIdList: memberCollectionData?.member.map(v => v.id) } },
+  )
+  const {
+    loading: loadingMemberTags,
+    data: memberTagsData,
+    refetch: refetchMemberTags,
+  } = useQuery<hasura.GetMemberTags, hasura.GetMemberTagsVariables>(
+    gql`
+      query GetMemberTags($memberIdList: [String!]) {
+        member_tag(where: { member_id: { _in: $memberIdList } }) {
+          id
+          member_id
+          tag_name
+        }
+      }
+    `,
+    {
+      variables: { memberIdList: memberCollectionData?.member.map(v => v.id) },
+    },
+  )
+  const {
+    loading: loadingMemberProperties,
+    data: memberPropertiesData,
+    refetch: refetchMemberProperties,
+  } = useQuery<hasura.GetMemberProperties, hasura.GetMemberPropertiesVariables>(
+    gql`
+      query GetMemberProperties($memberIdList: [String!]) {
+        member_property(where: { member_id: { _in: $memberIdList } }) {
+          id
+          member_id
+          property_id
+          value
+        }
+      }
+    `,
+    {
+      variables: { memberIdList: memberCollectionData?.member.map(v => v.id) },
+    },
+  )
+  const managers: { id: string; name: string }[] = managerInfoData?.member.map(v => ({ id: v.id, name: v.name })) || []
+
+  const memberOrderProductPrice: { memberId: string; price: number }[] =
+    memberOrderProductPriceData?.order_log.map(v => ({
+      memberId: v.member_id,
+      price: v.order_products_aggregate.aggregate?.sum?.price || 0,
+    })) || []
+
+  let members: MemberInfoProps[] =
+    memberCollectionData?.member.map(v => ({
+      id: v.id,
+      avatarUrl: v.picture_url || null,
+      name: v.name,
+      username: v.username,
+      email: v.email,
+      role: v.role as UserRole,
+      createdAt: v.created_at ? new Date(v.created_at) : null,
+      loginedAt: v.logined_at ? new Date(v.logined_at) : null,
+      phones: [],
+      consumption: 0,
+      manager: null,
+      categories: [],
+      tags: [],
+      properties: null,
+    })) || []
 
   const loadMoreMembers = () =>
-    fetchMore({
+    fetchMoreMemberCollection({
       variables: {
         condition: {
           _and: [
@@ -889,11 +969,11 @@ export const useMemberCollection = (filter?: {
               _or: [
                 {
                   _and: [
-                    { created_at: { _eq: data?.member.slice(-1)[0]?.created_at } },
-                    { id: { _gt: data?.member.slice(-1)[0]?.id } },
+                    { created_at: { _eq: memberCollectionData?.member.slice(-1)[0]?.created_at } },
+                    { id: { _gt: memberCollectionData?.member.slice(-1)[0]?.id } },
                   ],
                 },
-                { created_at: { _lt: data?.member.slice(-1)[0]?.created_at } },
+                { created_at: { _lt: memberCollectionData?.member.slice(-1)[0]?.created_at } },
               ],
             },
           ],
@@ -905,18 +985,55 @@ export const useMemberCollection = (filter?: {
           return prev
         }
         return Object.assign({}, prev, {
-          member_aggregate: fetchMoreResult.member_aggregate,
           member: [...prev.member, ...fetchMoreResult.member],
         })
       },
     })
 
+  members.forEach(member => ({
+    ...member,
+    phones: memberPhonesData?.member_phone.map(memberPhone => memberPhone.phone),
+    manager: managers.filter(manager => manager.id === member.id),
+    consumption: sum(
+      memberOrderProductPrice
+        .filter(memberOrderProduct => memberOrderProduct.memberId === member.id)
+        .map(memberOrderProduct => memberOrderProduct.price),
+    ),
+    categories: memberCategoriesData?.member_category
+      .filter(memberCategory => memberCategory.member_id === member.id)
+      .map(memberCategory => ({
+        id: memberCategory.category.id,
+        name: memberCategory.category.name,
+      })),
+    tags: memberTagsData?.member_tag
+      .filter(memberTag => memberTag.member_id === member.id)
+      .map(memberTag => memberTag.tag_name),
+    properties: memberPropertiesData?.member_property
+      .filter(memberProperty => memberProperty.member_id === member.id)
+      .reduce((acc, cur) => {
+        return { ...acc, [cur.property_id]: cur.value }
+      }, {} as MemberInfoProps['properties']),
+  }))
+
   return {
-    loadingMembers: loading,
-    errorMembers: error,
+    loadingMemberAggregate,
+    loadingMemberCollection,
+    loadingMemberPhones,
+    loadingManagerInfo,
+    loadingMemberOrderProductPrice,
+    loadingMemberCategories,
+    loadingMemberTags,
+    loadingMemberProperties,
+    errorMemberCollection,
+    errorMemberAggregate,
     members,
-    refetchMembers: refetch,
-    loadMoreMembers: (data?.member_aggregate.aggregate?.count || 0) > 10 ? loadMoreMembers : undefined,
+    refetchMemberAggregate,
+    refetchMemberCollection,
+    refetchMemberOrderProductPrice,
+    refetchMemberCategories,
+    refetchMemberTags,
+    refetchMemberProperties,
+    loadMoreMembers: (memberAggregateData?.member_aggregate?.aggregate?.count || 0) > 10 ? loadMoreMembers : undefined,
   }
 }
 

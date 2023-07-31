@@ -33,7 +33,6 @@ export type MemberInfoProps = {
     id: string
     name: string
   } | null
-  assignedAt: Date | null
   phones: string[]
   consumption: number
   categories: {
@@ -43,7 +42,7 @@ export type MemberInfoProps = {
   tags: string[]
   properties: {
     [propertyId: string]: string
-  }
+  } | null
 }
 
 export type MemberPublicProps = {
