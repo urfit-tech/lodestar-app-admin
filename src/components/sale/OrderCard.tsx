@@ -34,8 +34,8 @@ const OrderCard: React.FC<{
   name: string
   email: string
   totalPrice: string
-  orderProducts: OrderProduct[]
-  orderDiscounts: OrderDiscount[]
+  orderProducts: Pick<OrderProduct, 'id' | 'name' | 'price' | 'options'>[]
+  orderDiscounts: Pick<OrderDiscount, 'id' | 'price' | 'name'>[]
 }> = ({ orderId, status, createdAt, name, email, totalPrice, orderProducts, orderDiscounts }) => {
   const { formatMessage } = useIntl()
   const contentList = [
@@ -55,14 +55,13 @@ const OrderCard: React.FC<{
         <StyledInfoContent className="row">{orderId}</StyledInfoContent>
       </div>
 
-      {contentList.map(
-        (row, idx) =>
-          row.isRender && (
-            <div className="container mb-2" key={idx}>
-              <StyledInfoTitle className="row">{row.title}</StyledInfoTitle>
-              <StyledInfoContent className="row">{row.message}</StyledInfoContent>
-            </div>
-          ),
+      {contentList.map((row, idx) =>
+        row.isRender ? (
+          <div className="container mb-2" key={idx}>
+            <StyledInfoTitle className="row">{row.title}</StyledInfoTitle>
+            <StyledInfoContent className="row">{row.message}</StyledInfoContent>
+          </div>
+        ) : null,
       )}
 
       <div className="container mb-2">
