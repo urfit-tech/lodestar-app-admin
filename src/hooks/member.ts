@@ -832,6 +832,7 @@ export const useMemberCollection = (filter?: {
       query GetMemberPhones($memberIdList: [String!]) {
         member_phone(where: { member_id: { _in: $memberIdList } }) {
           id
+          member_id
           phone
         }
       }
@@ -952,7 +953,7 @@ export const useMemberCollection = (filter?: {
       loginedAt: v.logined_at ? new Date(v.logined_at) : null,
       phones:
         memberPhonesData?.member_phone
-          .filter(memberPhone => memberPhone.id === v.id)
+          .filter(memberPhone => memberPhone.member_id === v.id)
           .map(memberPhone => memberPhone.phone) || [],
       consumption: sum(
         memberOrderProductPrice
