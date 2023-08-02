@@ -950,7 +950,10 @@ export const useMemberCollection = (filter?: {
       role: v.role as UserRole,
       createdAt: v.created_at ? new Date(v.created_at) : null,
       loginedAt: v.logined_at ? new Date(v.logined_at) : null,
-      phones: memberPhonesData?.member_phone.map(memberPhone => memberPhone.phone) || [],
+      phones:
+        memberPhonesData?.member_phone
+          .filter(memberPhone => memberPhone.id === v.id)
+          .map(memberPhone => memberPhone.phone) || [],
       consumption: sum(
         memberOrderProductPrice
           .filter(memberOrderProduct => memberOrderProduct.memberId === v.id)
