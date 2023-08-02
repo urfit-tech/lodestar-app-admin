@@ -89,7 +89,7 @@ const ProductItem: React.FC<{
   const { formatMessage } = useIntl()
   const [productType, targetId] = id.split('_') as [ProductType, string]
   let { target } = useSimpleProduct(targetId, { startedAt, quantity })
-  const { target: estimator } = useEstimator(targetId, { startedAt, quantity }) // customized : for taotaoxi
+  const { target: estimator } = useEstimator(targetId, { startedAt, quantity }) // customized
   if (!target && !estimator) {
     if (variant === 'coupon-product' || variant === 'estimator') {
       return <Spin size="small" className="d-block" />
@@ -120,7 +120,7 @@ const ProductItem: React.FC<{
           <StyledCoverImage src={coverUrl || EmptyCover} alt={id} className="flex-shrink-0" />
         </>
       )
-    case 'estimator': // customized : for taotaoxi
+    case 'estimator': // customized
       return (
         <div className="d-flex mb-1">
           <StyledListLabelBLock className="flex-shrink-0">
