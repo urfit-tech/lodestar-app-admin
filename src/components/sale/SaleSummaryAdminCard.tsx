@@ -8,6 +8,7 @@ import hasura from '../../hasura'
 import { promotionMessages } from '../../helpers/translation'
 import AdminCard from '../admin/AdminCard'
 import UnAuthCover from '../common/UnAuthCover'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 type SalesStatus = 'Admin' | 'Creator' | 'None'
 
@@ -17,6 +18,7 @@ const messages = defineMessages({
 
 const SaleSummaryAdminCard: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
   const { isAuthenticating, permissions, currentMemberId: memberId } = useAuth()
   const [loading, setLoading] = useState<boolean>(true)
   const apolloClient = useApolloClient()
@@ -34,6 +36,7 @@ const SaleSummaryAdminCard: React.FC = () => {
       apolloClient
         .query<hasura.GET_TOTAL_ORDER_AMOUNT>({
           query: GET_TOTAL_ORDER_AMOUNT,
+          variables: { appId },
         })
         .then(({ data }) => {
           setTotalOrderAmountResult(data)
@@ -55,6 +58,7 @@ const SaleSummaryAdminCard: React.FC = () => {
           query: GET_SELF_ORDER_AMOUNT,
           variables: {
             memberId,
+            appId,
           },
         })
         .then(({ data }: { data?: hasura.GET_SELF_ORDER_AMOUNT }) => {
@@ -89,15 +93,17 @@ const SaleSummaryAdminCard: React.FC = () => {
 }
 
 const GET_TOTAL_ORDER_AMOUNT = gql`
-  query GET_TOTAL_ORDER_AMOUNT {
-    order_product_aggregate(where: { order_log: { status: { _eq: "SUCCESS" } } }) {
+  query GET_TOTAL_ORDER_AMOUNT($appId: String!) {
+    order_product_aggregate(where: { order_log: { status: { _eq: "SUCCESS" }, member: { app_id: { _eq: $appId } } } }) {
       aggregate {
         sum {
           price
         }
       }
     }
-    order_discount_aggregate(where: { order_log: { status: { _eq: "SUCCESS" } } }) {
+    order_discount_aggregate(
+      where: { order_log: { status: { _eq: "SUCCESS" }, member: { app_id: { _eq: $appId } } } }
+    ) {
       aggregate {
         sum {
           price
@@ -108,10 +114,10 @@ const GET_TOTAL_ORDER_AMOUNT = gql`
 `
 
 const GET_SELF_ORDER_AMOUNT = gql`
-  query GET_SELF_ORDER_AMOUNT($memberId: String!) {
+  query GET_SELF_ORDER_AMOUNT($memberId: String!, $appId: String!) {
     order_product_aggregate(
       where: {
-        order_log: { status: { _eq: "SUCCESS" }, member_id: { _eq: $memberId } }
+        order_log: { status: { _eq: "SUCCESS" }, member_id: { _eq: $memberId }, member: { app_id: { _eq: $appId } } }
         product: { product_owner: { member_id: { _neq: $memberId } } }
       }
     ) {
@@ -126,6 +132,7 @@ const GET_SELF_ORDER_AMOUNT = gql`
         order_log: {
           status: { _eq: "SUCCESS" }
           member_id: { _eq: $memberId }
+          member: { app_id: { _eq: $appId } }
           order_products: { product: { product_owner: { member_id: { _neq: $memberId } } } }
         }
       }
