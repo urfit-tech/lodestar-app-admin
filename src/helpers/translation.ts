@@ -114,7 +114,6 @@ export const commonMessages = {
     discountDownPrice: { id: 'common.label.discountDownPrice', defaultMessage: '首期折扣' },
     unavailableSelling: { id: 'common.label.unavailableSelling', defaultMessage: '暫不販售' },
     roleAdmin: { id: 'common.label.roleAdmin', defaultMessage: '身份管理' },
-    totalPrice: { id: 'common.label.totalPrice', defaultMessage: '總金額' },
     orderLogId: { id: 'common.label.orderLogId', defaultMessage: '訂單編號' },
     orderLogDate: { id: 'common.label.orderLogDate', defaultMessage: '訂單日期' },
     orderLogPaymentDate: { id: 'common.label.orderLogPaymentDate', defaultMessage: '付款日期' },
@@ -260,10 +259,6 @@ export const commonMessages = {
     skuSetting: { id: 'common.label.skuSetting', defaultMessage: '設定料號' },
     roleSettings: { id: 'common.label.roleSettings', defaultMessage: '身份設定' },
     permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
-    permissionGroupsSelectorPlaceholder: {
-      id: 'common.label.permissionGroupsSelectorPlaceholder',
-      defaultMessage: '選擇權限組',
-    },
     default: { id: 'common.label.default', defaultMessage: '預設' },
     desktop: { id: 'common.label.desktop', defaultMessage: '電腦版' },
     unPublished: { id: 'common.label.unPublished', defaultMessage: '停售' },
@@ -318,7 +313,6 @@ export const commonMessages = {
       id: 'programPackage.label.availableForLimitTime',
       defaultMessage: '可觀看 {amount} {unit}',
     },
-    cancelSubscriptionDate: { id: 'common.text.cancelSubscriptionDate', defaultMessage: '已於 {date} 取消訂閱' },
     deleteCategoryNotation: {
       id: 'common.text.deleteCategoryNotation',
       defaultMessage: '確定要刪除此類別？此動作無法復原',
@@ -469,7 +463,7 @@ export const commonMessages = {
     allProjectPlan: { id: 'common.product.allProjectPlan', defaultMessage: '全部專案' },
     allProgramPackagePlan: { id: 'common.product.allProgramPackagePlan', defaultMessage: '全部課程組合' },
     selectProducts: { id: 'promotion.text.selectProducts', defaultMessage: '選擇指定項目' },
-    estimator:{ id: 'common.product.estimator', defaultMessage: '測算方案' },
+    estimator: { id: 'common.product.estimator', defaultMessage: '測算方案' },
     otherSpecificProduct: { id: 'common.product.otherSpecificProduct', defaultMessage: '其他特定項目' },
   }),
   unit: defineMessages({
@@ -1217,14 +1211,6 @@ export const memberMessages = {
     meetingHours: { id: 'member.label.meetingHours', defaultMessage: '會議時長(小時)' },
   }),
   text: {
-    duplicatedPhoneMember: {
-      id: 'member.text.duplicatedPhoneMember',
-      defaultMessage: '重複手機的會員',
-    },
-    duplicatedPhoneMemberExist: {
-      id: 'member.text.duplicatedPhoneMemberExist',
-      defaultMessage: '系統存在重複手機的會員',
-    },
     deleteMemberNoteConfirmation: {
       id: 'member.text.deleteMemberNoteConfirmation',
       defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',

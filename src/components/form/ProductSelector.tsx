@@ -44,7 +44,7 @@ const productTypeLabel = (productType: string) => {
       return commonMessages.label.allCouponPlan
     case 'VoucherPlan':
       return commonMessages.label.allVoucherPlan
-    case 'Estimator': // customized : for taotaoxi
+    case 'Estimator': // customized
       return commonMessages.label.allEstimator
     default:
       return commonMessages.label.unknownProduct
