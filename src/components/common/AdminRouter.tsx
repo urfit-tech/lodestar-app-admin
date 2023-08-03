@@ -542,6 +542,17 @@ export const routesProps = {
     allowedUserRole: 'app-owner',
   },
 
+  report_collection: {
+    path: '/report',
+    pageName: 'ReportCollectionPage',
+    authenticated: true,
+  },
+  report: {
+    path: '/report/:reportId',
+    pageName: 'ReportPage',
+    authenticated: true,
+  },
+
   // xuemi extra router
   // member_contract_collection: {
   //   path: '/member-contracts',
