@@ -3,6 +3,7 @@ import { Button, DatePicker, Form, InputNumber, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment, { Moment } from 'moment'
+import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -29,9 +30,14 @@ type FieldProps = {
 
 const ModifyOrderStatusModal: React.VFC<{
   orderLogId: string
+  defaultOrderStatus: string
+  paymentLogs: {
+    price: number
+    status: string | null | undefined
+  }[]
   defaultPrice?: number
-  onRefetch?: () => void
-}> = ({ orderLogId, defaultPrice = 0, onRefetch }) => {
+  onRefetch?: (status: string) => void
+}> = ({ orderLogId, defaultOrderStatus, paymentLogs, defaultPrice = 0, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentMemberId } = useAuth()
@@ -47,15 +53,14 @@ const ModifyOrderStatusModal: React.VFC<{
     try {
       setLoading(true)
       const values = await form.validateFields()
-      const status = values.type === 'paid' ? 'SUCCESS' : 'REFUND'
+      const paymentStatus = values.type === 'paid' ? 'SUCCESS' : 'REFUND'
       const paidAt = values.paidAt.toISOString(true)
-
       await insertPaymentLog({
         variables: {
           data: {
             order_id: orderLogId,
             no: `${Date.now()}`,
-            status: status,
+            status: paymentStatus,
             price: values.price,
             gateway: 'lodestar',
             options: {
@@ -66,15 +71,30 @@ const ModifyOrderStatusModal: React.VFC<{
         },
       })
 
+      paymentLogs.push({ status: paymentStatus, price: values.price })
+      const totalAmount = defaultPrice
+      const hasRefundPayment = paymentLogs.filter(v => v.status === 'REFUND').length > 0 || paymentStatus === 'REFUND'
+      const paidAmount = sum(paymentLogs.filter(v => v.status === 'SUCCESS').map(v => v.price))
+      const refundAmount = sum(paymentLogs.filter(v => v.status === 'REFUND').map(v => v.price))
+      let orderStatus = defaultOrderStatus
+      if (totalAmount <= 0 || paidAmount - refundAmount >= totalAmount) {
+        orderStatus = 'SUCCESS'
+      } else if (hasRefundPayment && paidAmount <= refundAmount) {
+        orderStatus = 'REFUND'
+      } else if (!hasRefundPayment && totalAmount > 0 && paidAmount - refundAmount < totalAmount) {
+        orderStatus = 'PARTIAL_PAID'
+      } else if (hasRefundPayment && paidAmount > refundAmount) {
+        orderStatus = 'PARTIAL_REFUND'
+      }
+
       await updateOrderLogStatus({
         variables: {
           orderLogId,
-          status: status,
+          status: orderStatus,
           lastPaidAt: paidAt,
         },
       })
-
-      onRefetch?.()
+      onRefetch?.(orderStatus)
       onFinished?.()
     } catch (error) {
       handleError(error)
@@ -122,9 +142,25 @@ const ModifyOrderStatusModal: React.VFC<{
             </Form.Item>
           </div>
           <div className="col-6">
-            <Form.Item label={formatMessage(messages.paidPrice)} name="price">
+            <Form.Item
+              label={formatMessage(messages.paidPrice)}
+              name="price"
+              rules={[
+                formInstance => ({
+                  message: `金額不能超過 ${defaultPrice}`,
+                  validator() {
+                    const price = formInstance.getFieldValue('price')
+                    if (price > defaultPrice) {
+                      return Promise.reject(new Error())
+                    }
+                    return Promise.resolve()
+                  },
+                }),
+              ]}
+            >
               <InputNumber
                 min={0}
+                max={defaultPrice}
                 formatter={value => `NT$ ${value}`}
                 parser={value => value?.replace(/\D/g, '') || ''}
               />
