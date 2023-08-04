@@ -7,7 +7,7 @@ import AdminLayout from '../components/layout/AdminLayout'
 import OrderExportModal from '../components/sale/OrderExportModal'
 import OrderImportModal from '../components/sale/OrderImportModal'
 import SaleCollectionAdminCard from '../components/sale/SaleCollectionAdminCard'
-import SaleSummaryCard from '../components/sale/SaleSummaryAdminCard'
+import SaleSummaryCard from '../components/sale/SaleSummaryCard'
 import { commonMessages } from '../helpers/translation'
 
 const messages = defineMessages({
