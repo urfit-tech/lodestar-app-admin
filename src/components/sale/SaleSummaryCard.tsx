@@ -1,6 +1,6 @@
-import { useApolloClient } from '@apollo/client'
+import { gql, useApolloClient } from '@apollo/client'
 import { Statistic } from 'antd'
-import { gql } from '@apollo/client'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -8,7 +8,6 @@ import hasura from '../../hasura'
 import { promotionMessages } from '../../helpers/translation'
 import AdminCard from '../admin/AdminCard'
 import UnAuthCover from '../common/UnAuthCover'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 
 type SalesStatus = 'Admin' | 'Creator' | 'None'
 
@@ -16,7 +15,7 @@ const messages = defineMessages({
   totalSales: { id: 'common.label.totalSales', defaultMessage: '銷售總額' },
 })
 
-const SaleSummaryAdminCard: React.FC = () => {
+const SaleSummaryCard: React.FC = () => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { isAuthenticating, permissions, currentMemberId: memberId } = useAuth()
@@ -49,7 +48,7 @@ const SaleSummaryAdminCard: React.FC = () => {
     } else {
       setLoading(false)
     }
-  }, [grossSalesPermission])
+  }, [appId, grossSalesPermission, memberId])
 
   useEffect(() => {
     if (grossSalesPermission === 'Creator' && memberId) {
@@ -70,7 +69,7 @@ const SaleSummaryAdminCard: React.FC = () => {
           console.log(error)
         })
     }
-  }, [grossSalesPermission])
+  }, [appId, grossSalesPermission, memberId])
 
   const totalSales =
     (totalOrderAmountResult?.order_product_aggregate.aggregate?.sum?.price || 0) -
@@ -146,4 +145,4 @@ const GET_SELF_ORDER_AMOUNT = gql`
   }
 `
 
-export default SaleSummaryAdminCard
+export default SaleSummaryCard
