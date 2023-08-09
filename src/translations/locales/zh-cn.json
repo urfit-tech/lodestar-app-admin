@@ -841,7 +841,7 @@
   "common.text.cancelSubscriptionTitle": "确定要取消订阅吗?",
   "common.text.checkEmailNotation": "请至信箱收信更换密码",
   "common.text.copiedToClipboard": "已复制到剪贴簿",
-  "common.text.deleteCategoryNotation": "确定要删除此类别？此动作无法复原",
+  "common.text.deleteCategoryNotation": "删除后会直接移除曾挂此项目的分类，确定要删除吗？",
   "common.text.deletePropertyNotation": "确定要删除此栏位？此动作无法复原",
   "common.text.dueDate": "{date} 到期",
   "common.text.emailNotReceived": "收不到信？",
