@@ -1,11 +1,14 @@
-import { DownloadOutlined } from '@ant-design/icons'
-import { Button, Modal, Tabs } from 'antd'
+import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
+import { gql, useMutation } from '@apollo/client'
+import { Button, message, Modal, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { downloadCSV, toCSV } from '../../helpers'
+import hasura from '../../hasura'
+import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { useVoucherCode, useVouchersStatus } from '../../hooks/checkout'
+import AdminModal from '../admin/AdminModal'
 
 const StyledTriggerText = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -46,8 +49,12 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ id, tit
 
 const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }> = ({ title, voucherPlanId }) => {
   const { formatMessage } = useIntl()
-  const { loadingVoucherCodes, errorVoucherCodes, voucherCodes } = useVoucherCode(voucherPlanId)
+  const { loadingVoucherCodes, errorVoucherCodes, voucherCodes, refetchVoucherCodes } = useVoucherCode(voucherPlanId)
   const vouchersStatus = useVouchersStatus(voucherPlanId)
+  const [archiveVoucherCode] = useMutation<hasura.ARCHIVE_VOUCHER_CODE, hasura.ARCHIVE_VOUCHER_CODEVariables>(
+    ARCHIVE_VOUCHER_CODE,
+  )
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const [activeKey, setActiveKey] = useState('codes')
 
@@ -79,6 +86,20 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
     downloadCSV(`${title}.csv`, toCSV(data))
   }
 
+  const handleDeleteVoucherCode = (voucherCodeId: string, setVisible: (visible: boolean) => void) => {
+    setDeleteLoading(true)
+    archiveVoucherCode({ variables: { voucherCodeId: voucherCodeId } })
+      .then(() => {
+        refetchVoucherCodes()
+        message.success(formatMessage(promotionMessages.message.successDeletedVoucherCode), 3)
+      })
+      .catch(handleError)
+      .finally(() => {
+        setDeleteLoading(false)
+        setVisible(false)
+      })
+  }
+
   return (
     <>
       <StyledTitle className="mb-4">{title}</StyledTitle>
@@ -103,10 +124,63 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
             >
               <code>{voucherCode.code}</code>
               <div>
-                {formatMessage(promotionMessages.text.exchangedCount, {
-                  exchanged: voucherCode.count - voucherCode.remaining,
-                  total: voucherCode.count,
-                })}
+                <span>
+                  {formatMessage(promotionMessages.text.exchangedCount, {
+                    exchanged: voucherCode.count - voucherCode.remaining,
+                    total: voucherCode.count,
+                  })}
+                  <AdminModal
+                    renderTrigger={({ setVisible }) => (
+                      <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />
+                    )}
+                    title={formatMessage(promotionMessages.label.deleteVoucherCode)}
+                    footer={null}
+                    renderFooter={({ setVisible }) =>
+                      voucherCode.vouchers.some(voucher => voucher.used === true) ? (
+                        <Button
+                          type="primary"
+                          loading={deleteLoading}
+                          onClick={() => {
+                            setVisible(false)
+                          }}
+                        >
+                          {formatMessage(commonMessages.ui.confirm)}
+                        </Button>
+                      ) : (
+                        <div>
+                          <Button
+                            className="mr-2"
+                            onClick={() => {
+                              setVisible(false)
+                            }}
+                          >
+                            {formatMessage(commonMessages.ui.cancel)}
+                          </Button>
+                          <Button
+                            type="primary"
+                            danger={true}
+                            loading={deleteLoading}
+                            onClick={() => {
+                              handleDeleteVoucherCode(voucherCode.id, setVisible)
+                            }}
+                          >
+                            {formatMessage(commonMessages.ui.confirm)}
+                          </Button>
+                        </div>
+                      )
+                    }
+                  >
+                    <p className="mb-4">
+                      {voucherCode.vouchers.some(voucher => voucher.used === true)
+                        ? formatMessage(promotionMessages.text.codeUsedMessage, {
+                            voucherCode: voucherCode.code,
+                          })
+                        : formatMessage(promotionMessages.text.deleteCodeMessage, {
+                            voucherCode: voucherCode.code,
+                          })}
+                    </p>
+                  </AdminModal>
+                </span>
               </div>
             </StyledVoucherCode>
           ))}
@@ -115,5 +189,13 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
     </>
   )
 }
+
+const ARCHIVE_VOUCHER_CODE = gql`
+  mutation ARCHIVE_VOUCHER_CODE($voucherCodeId: uuid!) {
+    update_voucher_code(where: { id: { _eq: $voucherCodeId } }, _set: { deleted_at: "now()" }) {
+      affected_rows
+    }
+  }
+`
 
 export default VoucherPlanDetailModal

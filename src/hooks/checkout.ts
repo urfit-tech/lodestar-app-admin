@@ -684,7 +684,7 @@ const GET_COUPON_CODE = gql`
 
 const GET_VOUCHER_CODE = gql`
   query GET_VOUCHER_CODE($voucherPlanId: uuid!) {
-    voucher_code(where: { voucher_plan: { id: { _eq: $voucherPlanId } } }) {
+    voucher_code(where: { voucher_plan: { id: { _eq: $voucherPlanId } }, deleted_at: { _is_null: true } }) {
       id
       code
       count
