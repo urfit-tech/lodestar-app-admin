@@ -125,14 +125,21 @@ export const DefaultLayoutHeader: React.FC<{
   useEffect(() => {
     if (
       currentUserRole === 'app-owner' &&
-      !appOptions.close_site_at &&
-      (isSiteExpiringSoon || isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage)
+      ((!isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage) ||
+        isSiteExpiringSoon ||
+        isVideoDurationExceedsUsage ||
+        isWatchedSecondsExceedsUsage)
     ) {
-      console.log('enter')
       updateAppointmentPlanDescription({
         variables: {
           appId: appId,
-          options: { ...appOptions, close_site_at: closeSiteAt.utc().format('YYYY-MM-DDTHH:mm:ss.SSSZ') },
+          options: {
+            ...appOptions,
+            close_site_at:
+              !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
+                ? undefined
+                : closeSiteAt.utc().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          },
         },
       })
     }
