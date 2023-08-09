@@ -697,6 +697,7 @@ export const promotionMessages = {
     amount: { id: 'promotion.label.amount', defaultMessage: '數量' },
     dollar: { id: 'promotion.label.dollar', defaultMessage: '元' },
     deleteVoucherCode: { id: 'promotion.label.deleteVoucherCode', defaultMessage: '刪除兌換碼' },
+    canNotDeleteVoucherCode: { id: 'promotion.label.canNotDeleteVoucherCode', defaultMessage: '無法刪除兌換碼' },
   }),
   text: defineMessages({
     exchangeNotation: {

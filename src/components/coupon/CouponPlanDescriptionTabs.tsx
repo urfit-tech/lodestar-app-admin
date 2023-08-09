@@ -127,7 +127,11 @@ const CouponPlanDescriptionTabs: React.FC<{
               </Typography.Text>
               <AdminModal
                 renderTrigger={({ setVisible }) => <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />}
-                title={formatMessage(couponMessages.CouponPlanDescriptionTabs.deleteCouponCode)}
+                title={formatMessage(
+                  couponPlanCode.coupons.some(coupon => coupon.used === true)
+                    ? couponMessages.CouponPlanDescriptionTabs.canNotDeleteCouponCode
+                    : couponMessages.CouponPlanDescriptionTabs.deleteCouponCode,
+                )}
                 footer={null}
                 renderFooter={({ setVisible }) =>
                   couponPlanCode.coupons.some(coupon => coupon.used === true) ? (
@@ -158,7 +162,7 @@ const CouponPlanDescriptionTabs: React.FC<{
                           handleDeleteCouponCode(couponPlanCode.id, setVisible)
                         }}
                       >
-                        {formatMessage(couponMessages['*'].confirm)}
+                        {formatMessage(couponMessages['*'].delete)}
                       </Button>
                     </div>
                   )

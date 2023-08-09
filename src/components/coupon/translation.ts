@@ -8,6 +8,7 @@ const couponMessages = {
     rules: { id: 'coupon.*.rules', defaultMessage: '使用規則' },
     couponCodes: { id: 'coupon.*.couponCodes', defaultMessage: '折扣碼' },
     cancel: { id: 'coupon.*.cancel', defaultMessage: '取消' },
+    delete: { id: 'coupon.*.delete', defaultMessage: '刪除' },
     confirm: { id: 'coupon.*.confirm', defaultMessage: '確定' },
   }),
   CouponCard: defineMessages({
@@ -87,6 +88,7 @@ const couponMessages = {
     exportSuccessfully: { id: 'coupon.CouponPlanDescriptionTabs.exportSuccessfully', defaultMessage: '匯出成功' },
     exportFailed: { id: 'coupon.CouponPlanDescriptionTabs.exportFailed', defaultMessage: '匯出失敗' },
     deleteCouponCode: { id: 'coupon.CouponPlanDescriptionTabs.deleteCouponCode', defaultMessage: '刪除折扣碼' },
+    canNotDeleteCouponCode: { id: 'coupon.CouponPlanDescriptionTabs.canNotDeleteCouponCode', defaultMessage: '無法刪除折扣碼' },
     successDeletedCouponCode: { id: 'coupon.CouponPlanDescriptionTabs.successDeletedCouponCode', defaultMessage: '成功刪除折扣碼' },
     codeUsedMessage: { id: 'coupon.CouponPlanDescriptionTabs.codeUsedMessage', defaultMessage: '此代碼 {couponCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款' },
     deleteCodeMessage: { id: 'coupon.CouponPlanDescriptionTabs.deleteCodeMessage', defaultMessage: '確定要註銷此代碼 {couponCode} 嗎？註銷後將移除此代碼使用權。' },
