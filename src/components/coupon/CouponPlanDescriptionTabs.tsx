@@ -18,6 +18,9 @@ import couponMessages from './translation'
 const StyledCouponCodeBlock = styled.div`
   display: flex;
   justify-content: space-between;
+  &:hover {
+    background-color: rgba(76, 91, 143, 0.1);
+  }
 `
 
 const StyledCouponCode = styled.span`

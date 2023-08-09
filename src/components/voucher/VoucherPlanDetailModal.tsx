@@ -22,8 +22,16 @@ const StyledTitle = styled.div`
   line-height: 1.3;
   letter-spacing: 0.77px;
 `
+const StyledVoucherCodeAmountBlock = styled.div`
+  display: flex;
+  align-items: center;
+`
+
 const StyledVoucherCode = styled.div<{ isFinished: boolean }>`
   color: ${props => (props.isFinished ? 'var(--gray)' : 'var(--gray-darker)')};
+  &:hover {
+    background-color: rgba(76, 91, 143, 0.1);
+  }
 `
 
 type VoucherPlanDetailModalProps = {
@@ -123,65 +131,63 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
               isFinished={voucherCode.used === voucherCode.count}
             >
               <code>{voucherCode.code}</code>
-              <div>
-                <span>
-                  {formatMessage(promotionMessages.text.exchangedCount, {
-                    exchanged: voucherCode.count - voucherCode.remaining,
-                    total: voucherCode.count,
-                  })}
-                  <AdminModal
-                    renderTrigger={({ setVisible }) => (
-                      <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />
-                    )}
-                    title={formatMessage(promotionMessages.label.deleteVoucherCode)}
-                    footer={null}
-                    renderFooter={({ setVisible }) =>
-                      voucherCode.vouchers.some(voucher => voucher.used === true) ? (
+              <StyledVoucherCodeAmountBlock>
+                {formatMessage(promotionMessages.text.exchangedCount, {
+                  exchanged: voucherCode.count - voucherCode.remaining,
+                  total: voucherCode.count,
+                })}
+                <AdminModal
+                  renderTrigger={({ setVisible }) => (
+                    <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />
+                  )}
+                  title={formatMessage(promotionMessages.label.deleteVoucherCode)}
+                  footer={null}
+                  renderFooter={({ setVisible }) =>
+                    voucherCode.vouchers.some(voucher => voucher.used === true) ? (
+                      <Button
+                        type="primary"
+                        loading={deleteLoading}
+                        onClick={() => {
+                          setVisible(false)
+                        }}
+                      >
+                        {formatMessage(commonMessages.ui.confirm)}
+                      </Button>
+                    ) : (
+                      <div>
                         <Button
-                          type="primary"
-                          loading={deleteLoading}
+                          className="mr-2"
                           onClick={() => {
                             setVisible(false)
                           }}
                         >
+                          {formatMessage(commonMessages.ui.cancel)}
+                        </Button>
+                        <Button
+                          type="primary"
+                          danger={true}
+                          loading={deleteLoading}
+                          onClick={() => {
+                            handleDeleteVoucherCode(voucherCode.id, setVisible)
+                          }}
+                        >
                           {formatMessage(commonMessages.ui.confirm)}
                         </Button>
-                      ) : (
-                        <div>
-                          <Button
-                            className="mr-2"
-                            onClick={() => {
-                              setVisible(false)
-                            }}
-                          >
-                            {formatMessage(commonMessages.ui.cancel)}
-                          </Button>
-                          <Button
-                            type="primary"
-                            danger={true}
-                            loading={deleteLoading}
-                            onClick={() => {
-                              handleDeleteVoucherCode(voucherCode.id, setVisible)
-                            }}
-                          >
-                            {formatMessage(commonMessages.ui.confirm)}
-                          </Button>
-                        </div>
-                      )
-                    }
-                  >
-                    <p className="mb-4">
-                      {voucherCode.vouchers.some(voucher => voucher.used === true)
-                        ? formatMessage(promotionMessages.text.codeUsedMessage, {
-                            voucherCode: voucherCode.code,
-                          })
-                        : formatMessage(promotionMessages.text.deleteCodeMessage, {
-                            voucherCode: voucherCode.code,
-                          })}
-                    </p>
-                  </AdminModal>
-                </span>
-              </div>
+                      </div>
+                    )
+                  }
+                >
+                  <p className="mb-4">
+                    {voucherCode.vouchers.some(voucher => voucher.used === true)
+                      ? formatMessage(promotionMessages.text.codeUsedMessage, {
+                          voucherCode: voucherCode.code,
+                        })
+                      : formatMessage(promotionMessages.text.deleteCodeMessage, {
+                          voucherCode: voucherCode.code,
+                        })}
+                  </p>
+                </AdminModal>
+              </StyledVoucherCodeAmountBlock>
             </StyledVoucherCode>
           ))}
         </Tabs.TabPane>
