@@ -1,4 +1,5 @@
-import { DownloadOutlined } from '@ant-design/icons'
+import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons'
+import { gql, useMutation } from '@apollo/client'
 import { Button, message, Tabs, Typography } from 'antd'
 import BraftEditor, { EditorState } from 'braft-editor'
 import { BraftContent } from 'lodestar-app-element/src/components/common/StyledBraftEditor'
@@ -6,15 +7,26 @@ import { ProductType } from 'lodestar-app-element/src/types/product'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { downloadCSV, toCSV } from '../../helpers'
+import AdminModal from '../../components/admin/AdminModal'
+import hasura from '../../hasura'
+import { downloadCSV, handleError, toCSV } from '../../helpers'
 import { useCouponCode, useCouponsStatus } from '../../hooks/checkout'
 import { CouponPlanType } from '../../types/checkout'
 import CouponPlanDescriptionScopeBlock from './CouponPlanDescriptionScopeBlock'
 import couponMessages from './translation'
 
+const StyledCouponCodeBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
 const StyledCouponCode = styled.span`
-  width: 7.5rem;
   text-align: justify;
+`
+
+const StyledCouponCodeAmountBlock = styled.div`
+  display: flex;
+  align-items: center;
 `
 
 const CouponPlanDescriptionTabs: React.FC<{
@@ -28,9 +40,13 @@ const CouponPlanDescriptionTabs: React.FC<{
   productIds: string[]
 }> = ({ couponPlanId, title, description, constraint, type, amount, scope, productIds }) => {
   const { formatMessage } = useIntl()
-  const { loadingCouponCodes, errorCouponCodes, couponCodes } = useCouponCode(couponPlanId)
+  const { loadingCouponCodes, errorCouponCodes, couponCodes, refetchCouponCodes } = useCouponCode(couponPlanId)
   const couponsStatus = useCouponsStatus(couponPlanId)
   const [activeKey, setActiveKey] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [archiveCouponCode] = useMutation<hasura.ARCHIVE_COUPON_CODE, hasura.ARCHIVE_COUPON_CODEVariables>(
+    ARCHIVE_COUPON_CODE,
+  )
   const withDescription = !(BraftEditor.createEditorState(description || '') as EditorState).isEmpty()
 
   const mergedCouponCodes = couponCodes.map(couponCode => ({
@@ -65,6 +81,21 @@ const CouponPlanDescriptionTabs: React.FC<{
     message.success(formatMessage(couponMessages.CouponPlanDescriptionTabs.exportSuccessfully))
     return downloadCSV(`${title}.csv`, toCSV(data))
   }
+
+  const handleDeleteCouponCode = (couponCodeId: string, setVisible: (visible: boolean) => void) => {
+    setDeleteLoading(true)
+    archiveCouponCode({ variables: { couponCodeId: couponCodeId } })
+      .then(() => {
+        refetchCouponCodes()
+        message.success(formatMessage(couponMessages.CouponPlanDescriptionTabs.successDeletedCouponCode), 3)
+      })
+      .catch(handleError)
+      .finally(() => {
+        setDeleteLoading(false)
+        setVisible(false)
+      })
+  }
+
   return (
     <Tabs activeKey={activeKey || 'coupon-codes'} onChange={key => setActiveKey(key)}>
       <Tabs.TabPane
@@ -83,14 +114,65 @@ const CouponPlanDescriptionTabs: React.FC<{
         </Button>
 
         {mergedCouponCodes.map(couponPlanCode => (
-          <div key={couponPlanCode.id}>
-            <StyledCouponCode className="mr-3">{couponPlanCode.code}</StyledCouponCode>
-            <Typography.Text strong>
-              {`${couponPlanCode.count - couponPlanCode.remaining}/${couponPlanCode.count} ${formatMessage(
-                couponMessages.CouponPlanDescriptionTabs.unit,
-              )}`}
-            </Typography.Text>
-          </div>
+          <StyledCouponCodeBlock key={couponPlanCode.id}>
+            <StyledCouponCode>{couponPlanCode.code}</StyledCouponCode>
+            <StyledCouponCodeAmountBlock>
+              <Typography.Text strong>
+                {`${couponPlanCode.count - couponPlanCode.remaining}/${couponPlanCode.count} ${formatMessage(
+                  couponMessages.CouponPlanDescriptionTabs.unit,
+                )}`}
+              </Typography.Text>
+              <AdminModal
+                renderTrigger={({ setVisible }) => <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />}
+                title={formatMessage(couponMessages.CouponPlanDescriptionTabs.deleteCouponCode)}
+                footer={null}
+                renderFooter={({ setVisible }) =>
+                  couponPlanCode.coupons.some(coupon => coupon.used === true) ? (
+                    <Button
+                      type="primary"
+                      loading={deleteLoading}
+                      onClick={() => {
+                        setVisible(false)
+                      }}
+                    >
+                      {formatMessage(couponMessages['*'].confirm)}
+                    </Button>
+                  ) : (
+                    <div>
+                      <Button
+                        className="mr-2"
+                        onClick={() => {
+                          setVisible(false)
+                        }}
+                      >
+                        {formatMessage(couponMessages['*'].cancel)}
+                      </Button>
+                      <Button
+                        type="primary"
+                        danger={true}
+                        loading={deleteLoading}
+                        onClick={() => {
+                          handleDeleteCouponCode(couponPlanCode.id, setVisible)
+                        }}
+                      >
+                        {formatMessage(couponMessages['*'].confirm)}
+                      </Button>
+                    </div>
+                  )
+                }
+              >
+                <p className="mb-4">
+                  {couponPlanCode.coupons.some(coupon => coupon.used === true)
+                    ? formatMessage(couponMessages.CouponPlanDescriptionTabs.codeUsedMessage, {
+                        couponCode: couponPlanCode.code,
+                      })
+                    : formatMessage(couponMessages.CouponPlanDescriptionTabs.deleteCodeMessage, {
+                        couponCode: couponPlanCode.code,
+                      })}
+                </p>
+              </AdminModal>
+            </StyledCouponCodeAmountBlock>
+          </StyledCouponCodeBlock>
         ))}
       </Tabs.TabPane>
 
@@ -116,5 +198,13 @@ const CouponPlanDescriptionTabs: React.FC<{
     </Tabs>
   )
 }
+
+const ARCHIVE_COUPON_CODE = gql`
+  mutation ARCHIVE_COUPON_CODE($couponCodeId: uuid!) {
+    update_coupon_code(where: { id: { _eq: $couponCodeId } }, _set: { deleted_at: "now()" }) {
+      affected_rows
+    }
+  }
+`
 
 export default CouponPlanDescriptionTabs

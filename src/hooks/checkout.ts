@@ -666,7 +666,7 @@ export const useCheck = (
 
 const GET_COUPON_CODE = gql`
   query GET_COUPON_CODE($couponPlanId: uuid!) {
-    coupon_code(where: { coupon_plan: { id: { _eq: $couponPlanId } } }) {
+    coupon_code(where: { coupon_plan: { id: { _eq: $couponPlanId } }, deleted_at: { _is_null: true } }) {
       id
       code
       count
