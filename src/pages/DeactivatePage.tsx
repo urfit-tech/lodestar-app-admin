@@ -3,10 +3,12 @@ import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { Redirect } from 'react-router'
 import styled from 'styled-components'
 import { useAppUsage } from '../hooks/data'
 import { ErrorBrowserIcon } from '../images/icon'
+import pageMessages from './translation'
 
 const StyledLayout = styled.div`
   display: flex;
@@ -47,6 +49,7 @@ const StyledDeactivateDescription = styled.div`
 `
 
 const DeactivatePage = () => {
+  const { formatMessage } = useIntl()
   const { loading, options: appOptions, endedAt: appEndedAt } = useApp()
   const { totalVideoDuration, totalWatchedSeconds } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
   const isSiteContractExpired = dayjs(appEndedAt).diff(dayjs(), 'day') <= 0
@@ -67,20 +70,43 @@ const DeactivatePage = () => {
         <ErrorBrowserIcon />
         {isSiteContractExpired && (isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage) ? (
           <>
-            <StyledDeactivateTitle>方案已到期且超出用量</StyledDeactivateTitle>
-            <StyledDeactivateTitle>請升級方案</StyledDeactivateTitle>
+            <StyledDeactivateTitle>
+              {formatMessage(pageMessages.DeactivatePage.contactExpiredAndUsageExceeded)}
+            </StyledDeactivateTitle>
+            <StyledDeactivateTitle>{formatMessage(pageMessages.DeactivatePage.pleaseUpdatePlan)}</StyledDeactivateTitle>
           </>
         ) : isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage ? (
-          <StyledDeactivateTitle>超出用量請升級方案</StyledDeactivateTitle>
+          <StyledDeactivateTitle>
+            {formatMessage(pageMessages.DeactivatePage.usageExceededAndPleaseUpdatePlan)}
+          </StyledDeactivateTitle>
+        ) : isSiteContractExpired ? (
+          <StyledDeactivateTitle>{formatMessage(pageMessages.DeactivatePage.planHadExpired)}</StyledDeactivateTitle>
         ) : (
-          <StyledDeactivateTitle>方案已到期</StyledDeactivateTitle>
+          <Skeleton active />
         )}
         <StyledDeactivateDescription>
-          {isSiteContractExpired && (isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage)
-            ? '因您尚未進行續約且影片儲存/流量使用量已超過您的方案上限，請聯繫 KOLABLE 官方 us@urfit.com.tw 洽談續約事宜，逾期將全數刪除站點資料。'
-            : isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage
-            ? '您的影片儲存/流量使用量已超過您的方案上限請聯繫 KOLABLE 官方 us@urfit.com.tw 洽談方案升級'
-            : '因您尚未進行續約，網站後台已關閉請您儘速聯繫 KOLABLE 官方 us@urfit.com.tw 洽談續約事宜'}
+          {isSiteContractExpired && (isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage) ? (
+            <>
+              <p>{formatMessage(pageMessages.DeactivatePage.contactExpiredAndUsageExceededDescription1)}</p>
+              <p>{formatMessage(pageMessages.DeactivatePage.contactExpiredAndUsageExceededDescription2)}</p>
+              <p>{formatMessage(pageMessages.DeactivatePage.contactExpiredAndUsageExceededDescription3)}</p>
+              <p>{formatMessage(pageMessages.DeactivatePage.contactExpiredAndUsageExceededDescription4)}</p>
+            </>
+          ) : isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage ? (
+            <>
+              <p>{formatMessage(pageMessages.DeactivatePage.usageExceededAndPleaseUpdatePlanDescription1)}</p>
+              <p>{formatMessage(pageMessages.DeactivatePage.usageExceededAndPleaseUpdatePlanDescription2)}</p>
+              <p>{formatMessage(pageMessages.DeactivatePage.usageExceededAndPleaseUpdatePlanDescription3)}</p>
+            </>
+          ) : isSiteContractExpired ? (
+            <>
+              <p>{formatMessage(pageMessages.DeactivatePage.planHadExpiredDescription1)}</p>
+              <p>{formatMessage(pageMessages.DeactivatePage.planHadExpiredDescription2)}</p>
+              <p>{formatMessage(pageMessages.DeactivatePage.planHadExpiredDescription3)}</p>
+            </>
+          ) : (
+            <Skeleton active />
+          )}
         </StyledDeactivateDescription>
       </StyledDeactivateSiteCard>
     </StyledLayout>
