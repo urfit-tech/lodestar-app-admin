@@ -141,13 +141,13 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
                     <DeleteOutlined className="ml-4" onClick={() => setVisible(true)} />
                   )}
                   title={formatMessage(
-                    voucherCode.vouchers.some(voucher => voucher.used === true)
+                    voucherCode.vouchers.some(voucher => voucher.used)
                       ? promotionMessages.label.canNotDeleteVoucherCode
                       : promotionMessages.label.deleteVoucherCode,
                   )}
                   footer={null}
                   renderFooter={({ setVisible }) =>
-                    voucherCode.vouchers.some(voucher => voucher.used === true) ? (
+                    voucherCode.vouchers.some(voucher => voucher.used) ? (
                       <Button
                         type="primary"
                         loading={deleteLoading}
@@ -182,7 +182,7 @@ const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }>
                   }
                 >
                   <p className="mb-4">
-                    {voucherCode.vouchers.some(voucher => voucher.used === true)
+                    {voucherCode.vouchers.some(voucher => voucher.used)
                       ? formatMessage(promotionMessages.text.codeUsedMessage, {
                           voucherCode: voucherCode.code,
                         })
