@@ -315,7 +315,7 @@ export const commonMessages = {
     },
     deleteCategoryNotation: {
       id: 'common.text.deleteCategoryNotation',
-      defaultMessage: '確定要刪除此類別？此動作無法復原',
+      defaultMessage: '刪除後會直接移除曾掛此項目的分類，確定要刪除嗎？',
     },
     deletePropertyNotation: {
       id: 'common.text.deletePropertyNotation',
@@ -696,6 +696,8 @@ export const promotionMessages = {
     voucherCodes: { id: 'promotion.label.voucherCodes', defaultMessage: '兌換碼' },
     amount: { id: 'promotion.label.amount', defaultMessage: '數量' },
     dollar: { id: 'promotion.label.dollar', defaultMessage: '元' },
+    deleteVoucherCode: { id: 'promotion.label.deleteVoucherCode', defaultMessage: '刪除兌換碼' },
+    canNotDeleteVoucherCode: { id: 'promotion.label.canNotDeleteVoucherCode', defaultMessage: '無法刪除兌換碼' },
   }),
   text: defineMessages({
     exchangeNotation: {
@@ -708,12 +710,18 @@ export const promotionMessages = {
       id: 'promotion.text.sentUsedCount',
       defaultMessage: '總量{total} / 發送{exchanged}',
     },
+    codeUsedMessage: { id: 'promotion.text.codeUsedMessage', defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款' },
+    deleteCodeMessage: { id: 'promotion.text.deleteCodeMessage', defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。' },
+
   }),
   status: defineMessages({
     notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
     used: { id: 'promotion.status.used', defaultMessage: '已使用' },
+  }),
+  message: defineMessages({
+    successDeletedVoucherCode: { id: 'promotion.message.successDeletedVoucherCode', defaultMessage: '成功刪除兌換碼' },
   }),
 }
 

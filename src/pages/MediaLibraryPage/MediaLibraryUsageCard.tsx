@@ -1,14 +1,12 @@
 import { DualAxes } from '@ant-design/charts'
 import { DualAxesConfig } from '@ant-design/plots'
-import { gql, useQuery } from '@apollo/client'
 import { DatePicker } from 'antd'
-import { max, sum } from 'lodash'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
-import moment, { Moment } from 'moment'
+import moment from 'moment'
 import { RangeValue } from 'rc-picker/lib/interface'
 import React, { useState } from 'react'
 import AdminCard from '../../components/admin/AdminCard'
-import hasura from '../../hasura'
+import { useAppUsage } from '../../hooks/data'
 
 const MediaLibraryUsageCard: React.VFC = () => {
   const { settings } = useApp()
@@ -75,56 +73,6 @@ const MediaLibraryUsageCard: React.VFC = () => {
       <DemoDualAxes />
     </AdminCard>
   )
-}
-
-const useAppUsage = (dateRange: RangeValue<Moment>) => {
-  const startedAt = dateRange?.[0] || moment().subtract(1, 'day')
-  const endedAt = dateRange?.[1] || moment()
-  const { data } = useQuery<hasura.GET_APP_USAGE, hasura.GET_APP_USAGEVariables>(
-    gql`
-      query GET_APP_USAGE($startedDateHour: String!, $endedDateHour: String!) {
-        app_usage(where: { date_hour: { _gte: $startedDateHour, _lte: $endedDateHour } }) {
-          date_hour
-          video_duration
-          watched_seconds
-        }
-        last_app_usage: app_usage(
-          where: { date_hour: { _lt: $startedDateHour }, video_duration: { _gte: 0 } }
-          limit: 1
-        ) {
-          video_duration
-        }
-      }
-    `,
-    {
-      variables: {
-        startedDateHour: startedAt.clone().utc().format('YYYYMMDDHH'),
-        endedDateHour: endedAt.clone().utc().format('YYYYMMDDHH'),
-      },
-    },
-  )
-  const dateHours = []
-  for (let dateHour = startedAt; dateHour <= endedAt; dateHour = dateHour.clone().add(1, 'hour')) {
-    dateHours.push(dateHour)
-  }
-  let videoDuration = Number(data?.last_app_usage[0]?.video_duration) || 0
-  const ticks = dateHours.map(dateHour => {
-    const usage = data?.app_usage.find(v => v.date_hour === dateHour.clone().utc().format('YYYYMMDDHH'))
-    const tickVideoDuration = Number(usage?.video_duration) || -1
-    // if videoDuration not exist, use last one
-    // else, if videoDuration is wierd, set 0
-    videoDuration = tickVideoDuration === -1 ? videoDuration : tickVideoDuration
-    return {
-      dateHour,
-      videoDuration,
-      watchedSeconds: Number(usage?.watched_seconds) || 0,
-    }
-  })
-  return {
-    totalVideoDuration: max(ticks.map(tick => tick.videoDuration)) || 0,
-    totalWatchedSeconds: sum(data?.app_usage.map(v => v.watched_seconds || 0) || []),
-    ticks,
-  }
 }
 
 export default MediaLibraryUsageCard
