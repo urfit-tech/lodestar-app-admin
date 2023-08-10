@@ -734,6 +734,18 @@ export const checkoutMessages = {
   },
 }
 
+export const reportMessages = {
+  '*': defineMessages({
+    pageTitle: { id: 'report.*.pageTitle', defaultMessage: '報表分析' },
+    addReport: { id: 'report.*.addReport', defaultMessage: '新增報表' },
+  }),
+  label: defineMessages({
+    title: { id: 'report.label.title', defaultMessage: '報表名稱' },
+    type: { id: 'report.label.type', defaultMessage: '種類' },
+    options: { id: 'report.label.options', defaultMessage: '報表設定' },
+  }),
+}
+
 export const programMessages = {
   status: defineMessages({
     issueOpen: { id: 'program.status.issueOpen', defaultMessage: '解決中' },
