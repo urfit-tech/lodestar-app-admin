@@ -109,7 +109,7 @@ export const DefaultLayoutHeader: React.FC<{
   const { enabledModules, id: appId, endedAt: appEndedAt, options: appOptions } = useApp()
   const { currentLocale, setCurrentLocale } = useContext(LocaleContext)
   const { totalVideoDuration, totalWatchedSeconds } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
-  const [updateAppointmentPlanDescription] = useMutation<hasura.UPDATE_APP_OPTIONS, hasura.UPDATE_APP_OPTIONSVariables>(
+  const [updateAppOptions] = useMutation<hasura.UPDATE_APP_OPTIONS, hasura.UPDATE_APP_OPTIONSVariables>(
     UPDATE_APP_OPTIONS,
   )
 
@@ -130,7 +130,7 @@ export const DefaultLayoutHeader: React.FC<{
         isVideoDurationExceedsUsage ||
         isWatchedSecondsExceedsUsage)
     ) {
-      updateAppointmentPlanDescription({
+      updateAppOptions({
         variables: {
           appId: appId,
           options: {
