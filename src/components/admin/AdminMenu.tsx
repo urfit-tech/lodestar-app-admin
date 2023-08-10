@@ -1,4 +1,5 @@
 import Icon, {
+  AreaChartOutlined,
   BarChartOutlined,
   DatabaseOutlined,
   GlobalOutlined,
@@ -466,6 +467,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: `${settings['name']}報名表查詢`,
         },
       ],
+    },
+    {
+      permissionIsAllowed: !!enabledModules.report && !!permissions.REPORT_ADMIN,
+      key: 'report_collection',
+      icon: () => <AreaChartOutlined style={{ margin: 0 }} />,
+      name: formatMessage(adminMessages.AdminMenu.report),
     },
     {
       permissionIsAllowed: !!enabledModules.analytics && !!permissions.ANALYSIS_ADMIN,
