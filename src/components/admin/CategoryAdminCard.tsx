@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { Button, Typography } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -115,6 +114,44 @@ const UPDATE_CATEGORY_POSITION = gql`
 `
 const DELETE_CATEGORY = gql`
   mutation DELETE_CATEGORY($categoryId: String!) {
+    delete_program_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_project_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_podcast_program_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_podcast_album_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_activity_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_post_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_merchandise_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_program_package_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_member_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_creator_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    delete_voucher_category(where: { category_id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+    update_member_task(where: { category_id: { _eq: $categoryId } }, _set: { category_id: null }) {
+      returning {
+        id
+      }
+    }
     delete_category(where: { id: { _eq: $categoryId } }) {
       affected_rows
     }

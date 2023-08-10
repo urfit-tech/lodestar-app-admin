@@ -315,7 +315,7 @@ export const commonMessages = {
     },
     deleteCategoryNotation: {
       id: 'common.text.deleteCategoryNotation',
-      defaultMessage: '確定要刪除此類別？此動作無法復原',
+      defaultMessage: '刪除後會直接移除曾掛此項目的分類，確定要刪除嗎？',
     },
     deletePropertyNotation: {
       id: 'common.text.deletePropertyNotation',

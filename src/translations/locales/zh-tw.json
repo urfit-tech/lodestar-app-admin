@@ -841,7 +841,7 @@
   "common.text.cancelSubscriptionTitle": "確定要取消訂閱嗎?",
   "common.text.checkEmailNotation": "請至信箱收信更換密碼",
   "common.text.copiedToClipboard": "已複製到剪貼簿",
-  "common.text.deleteCategoryNotation": "確定要刪除此類別？此動作無法復原",
+  "common.text.deleteCategoryNotation": "刪除後會直接移除曾掛此項目的分類，確定要刪除嗎？",
   "common.text.deletePropertyNotation": "確定要刪除此欄位？此動作無法復原",
   "common.text.dueDate": "{date} 到期",
   "common.text.emailNotReceived": "收不到信？",
