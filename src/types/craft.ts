@@ -1,4 +1,4 @@
-import { MetaTag } from "./general"
+import { MetaTag } from './general'
 
 export type CraftPageAdminProps = {
   id: string
@@ -7,7 +7,7 @@ export type CraftPageAdminProps = {
   publishedAt: Date | null
   editorId: string | null
   craftData: { [key: string]: string } | null
-  options: { customStyle?: string } | null
+  options: { customStyle?: string; noHeader?: boolean; noFooter?: boolean } | null
   metaTag?: MetaTag | null
 }
 

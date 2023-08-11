@@ -17,6 +17,10 @@ const craftPageCollectionPageMessages = {
     pathTips: { id: 'CraftPageCollectionPage.*.pathTips', defaultMessage: '請填入頁面網址路徑，ex：/path' },
     slashIsRequest: { id: 'CraftPageCollectionPage.*.slashIsRequest', defaultMessage: '斜線是必須的' },
     pathIsExistWarning: { id: 'CraftPageCollectionPage.*.pathIsExist', defaultMessage: '網址路徑重複，請更換' },
+    header: { id: 'CraftPageCollectionPage.*.header', defaultMessage: '頁首選單' },
+    footer: { id: 'CraftPageCollectionPage.*.footer', defaultMessage: '頁尾選單' },
+    enable: { id: 'CraftPageCollectionPage.*.enable', defaultMessage: '顯示' },
+    disable: { id: 'CraftPageCollectionPage.*.disable', defaultMessage: '隱藏' },
   }),
   CraftPageCollectionTable: defineMessages({
     url: { id: 'CraftPageCollectionPage.CraftPageCollectionTable.url', defaultMessage: '網址' },

@@ -1,6 +1,6 @@
 import { FileAddOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/client'
-import { Button, Form, Input, Tooltip } from 'antd'
+import { Button, Form, Input, Radio, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -14,7 +14,7 @@ import AdminModal, { AdminModalProps } from '../../components/admin/AdminModal'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMutateAppPage } from '../../hooks/appPage'
 import { templateAImage, templateBImage, templateCImage } from '../../images/default'
 import { PlusIcon } from '../../images/icon'
@@ -91,11 +91,13 @@ const StyledFormItem = styled(Form.Item)`
 type FieldProps = {
   pageName: string
   path: string
+  noHeader: boolean
+  noFooter: boolean
 }
 
 const CraftPageCreationModal: React.VFC<
   AdminModalProps & {
-    defaultPageInfo?: { pageName: string; path: string }
+    defaultPageInfo?: { pageName: string; path: string; noHeader?: boolean; noFooter?: boolean }
     defaultStep?: 'page' | 'template'
     setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
     onRefetch?: () => Promise<any>
@@ -110,11 +112,11 @@ const CraftPageCreationModal: React.VFC<
   const { insertAppPage } = useMutateAppPage()
   const [loading, setLoading] = useState(false)
   const [currentTemplate, setCurrentTemplate] = useState<'A' | 'B' | 'C' | 'empty'>('empty')
-
-  const [pageInfo, setPageInfo] = useState<{ pageName: string; path: string }>(
-    defaultPageInfo || { pageName: '', path: '' },
+  const [pageInfo, setPageInfo] = useState<{ pageName: string; path: string; noHeader?: boolean; noFooter?: boolean }>(
+    defaultPageInfo || { pageName: '', path: '', noHeader: false, noFooter: false },
   )
   const [createStep, setCreateStep] = useState<'page' | 'template'>(defaultStep || 'page')
+  
 
   const handleResetModal = () => {
     stepOneForm.resetFields()
@@ -124,9 +126,9 @@ const CraftPageCreationModal: React.VFC<
 
   const handleStepOneSubmit = (values: FieldProps) => {
     stepOneForm
-      .validateFields(['pageName', 'path'])
+      .validateFields(['pageName', 'path', 'noHeader', 'noFooter'])
       .then(() => {
-        setPageInfo({ path: values.path, pageName: values.pageName })
+        setPageInfo({ ...values })
         setCreateStep('template')
       })
       .catch(err => {
@@ -134,29 +136,28 @@ const CraftPageCreationModal: React.VFC<
       })
   }
 
-  const handleStepTwoSubmit = () => {
+  const handleStepTwoSubmit = async () => {
     if (!currentMemberId) {
       return
     }
-
-    insertAppPage({
-      path: pageInfo.path,
-      title: pageInfo.pageName,
-      editorId: currentMemberId,
-      craftData: { empty: templateDefault, A: templateA, B: templateB, C: templateC }[currentTemplate],
-    })
-      .then(({ data }) => {
-        onRefetch?.().then(() => {
-          const pageId = data?.insert_app_page_one?.id
-          history.push('/craft-page/' + pageId)
-        })
+    setLoading(true)
+    try {
+      const { path, pageName, noFooter, noHeader } = pageInfo
+      const insertRes = await insertAppPage({
+        path: path,
+        title: pageName,
+        editorId: currentMemberId,
+        craftData: { empty: templateDefault, A: templateA, B: templateB, C: templateC }[currentTemplate],
+        options: { white: true, noFooter, noHeader },
       })
-      .catch(handleError)
-      .finally(() => {
-        setLoading(false)
-        setModalVisible(false)
-        handleResetModal()
-      })
+      await onRefetch?.()
+      setLoading(false)
+      setModalVisible(false)
+      handleResetModal()
+      history.push('/craft-page/' + insertRes?.data?.insert_app_page_one?.id) 
+    } catch (err) {
+      handleError(err)
+    }
   }
 
   return (
@@ -303,8 +304,47 @@ const CraftPageCreationModal: React.VFC<
                 onChange={e => setPageInfo({ ...pageInfo, path: e.target.value })}
               />
             </Form.Item>
-
             <StyledDemoUrl>{window.location.host + pageInfo.path}</StyledDemoUrl>
+          </Form.Item>
+          <Form.Item label={formatMessage(craftPageCollectionPageMessages['*'].header)}>
+            <Form.Item
+              name="noHeader"
+              initialValue={false}
+              noStyle
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(craftPageCollectionPageMessages['*'].header),
+                  }),
+                },
+              ]}
+            >
+              <Radio.Group defaultValue={false} onChange={e => setPageInfo({ ...pageInfo, noHeader: e.target.value })}>
+                <Radio value={false}>{formatMessage(craftPageCollectionPageMessages['*'].enable)}</Radio>
+                <Radio value={true}>{formatMessage(craftPageCollectionPageMessages['*'].disable)}</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Form.Item>
+          <Form.Item label={formatMessage(craftPageCollectionPageMessages['*'].footer)}>
+            <Form.Item
+              name="noFooter"
+              initialValue={false}
+              noStyle
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(craftPageCollectionPageMessages['*'].footer),
+                  }),
+                },
+              ]}
+            >
+              <Radio.Group defaultValue={false} onChange={e => setPageInfo({ ...pageInfo, noFooter: e.target.value })}>
+                <Radio value={false}>{formatMessage(craftPageCollectionPageMessages['*'].enable)}</Radio>
+                <Radio value={true}>{formatMessage(craftPageCollectionPageMessages['*'].disable)}</Radio>
+              </Radio.Group>
+            </Form.Item>
           </Form.Item>
           <div className="text-right">
             <div>
