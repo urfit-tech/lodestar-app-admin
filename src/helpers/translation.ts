@@ -381,7 +381,6 @@ export const commonMessages = {
   menu: defineMessages({
     mediaLibrary: { id: 'common.menu.mediaLibrary', defaultMessage: '媒體庫' },
     learningOverviewAdmin: { id: 'common.menu.learningOverviewAdmin', defaultMessage: '學習總覽' },
-    salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
     appBasicAdmin: { id: 'common.menu.appBasicAdmin', defaultMessage: '基本設定' },
     appSettingAdmin: { id: 'common.menu.appSettingAdmin', defaultMessage: '參數設定' },
     appSecretAdmin: { id: 'common.menu.appSecretAdmin', defaultMessage: '金鑰設定' },
@@ -695,7 +694,6 @@ export const promotionMessages = {
     couponCodes: { id: 'promotion.label.couponCodes', defaultMessage: '折扣碼' },
     voucherCodes: { id: 'promotion.label.voucherCodes', defaultMessage: '兌換碼' },
     amount: { id: 'promotion.label.amount', defaultMessage: '數量' },
-    dollar: { id: 'promotion.label.dollar', defaultMessage: '元' },
     deleteVoucherCode: { id: 'promotion.label.deleteVoucherCode', defaultMessage: '刪除兌換碼' },
     canNotDeleteVoucherCode: { id: 'promotion.label.canNotDeleteVoucherCode', defaultMessage: '無法刪除兌換碼' },
   }),

@@ -38,6 +38,9 @@ const commonMessages = {
       defaultMessage: '通路料號 {channelSku} 與「{productName}」重複，請重新設定',
     },
   }),
+  UnAuthCover: defineMessages({
+    unAuth: { id: 'common.UnAuthCover.unAuth', defaultMessage: '無此權限' },
+  }),
 }
 
 export default commonMessages
