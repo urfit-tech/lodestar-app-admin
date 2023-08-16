@@ -18,16 +18,9 @@ const SaleSummaryCard: React.VFC = () => {
     <>
       {!isAuthenticating && !permissions.GROSS_SALES_ADMIN && !permissions.GROSS_SALES_NORMAL ? <UnAuthCover /> : null}
       <AdminCard>
-        {isAuthenticating && !appId ? (
-          <Statistic
-            loading={true}
-            title={formatMessage(pageMessages['*'].totalSales)}
-            suffix={formatMessage(pageMessages['*'].dollar)}
-            value="- -"
-          />
-        ) : permissions.GROSS_SALES_ADMIN ? (
+        {!isAuthenticating && appId && permissions.GROSS_SALES_ADMIN ? (
           <SalesSummaryAdminCard appId={appId} />
-        ) : memberId && permissions.GROSS_SALES_NORMAL ? (
+        ) : !isAuthenticating && appId && memberId && permissions.GROSS_SALES_NORMAL ? (
           <SalesSummaryNormalCard memberId={memberId} appId={appId} />
         ) : (
           <Statistic
