@@ -1,6 +1,6 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/client'
-import { Button, Form, Input, Tooltip } from 'antd'
+import { Button, Form, Input, Radio, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { useState } from 'react'
@@ -12,6 +12,7 @@ import { StyledTips } from '../../components/admin'
 import AdminModal, { AdminModalProps } from '../../components/admin/AdminModal'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
+import { errorMessages } from '../../helpers/translation'
 import { AppPageProps, useMutateAppPage } from '../../hooks/appPage'
 import craftPageCollectionPageMessages from './translation'
 
@@ -25,11 +26,13 @@ const StyledDemoUrl = styled.div`
 type FieldProps = {
   pageName: string
   path: string
+  noHeader: boolean
+  noFooter: boolean
 }
 
 const CraftPageReplicateModal: React.FC<
   AdminModalProps & {
-    originCraftPage: Pick<AppPageProps, 'id' | 'path' | 'title' | 'craftData'>
+    originCraftPage: Pick<AppPageProps, 'id' | 'path' | 'title' | 'options' | 'craftData'>
     onRefetch?: () => Promise<any>
   }
 > = ({ originCraftPage, onCancel, onRefetch, ...props }) => {
@@ -39,33 +42,38 @@ const CraftPageReplicateModal: React.FC<
   const history = useHistory()
   const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
-  const [pageInfo, setPageInfo] = useState<{ pageName: string; path: string }>({ pageName: '', path: '' })
+  const [pageInfo, setPageInfo] = useState<{ pageName: string; path: string; noHeader?: boolean; noFooter?: boolean }>({
+    pageName: '',
+    path: '',
+    noHeader: originCraftPage?.options?.noHeader,
+    noFooter: originCraftPage?.options?.noFooter,
+  })
   const { insertAppPage } = useMutateAppPage()
 
   const handleResetModal = () => {
     form.resetFields()
-    setPageInfo({ pageName: '', path: '' })
+    setPageInfo({ pageName: '', path: '', noHeader: false, noFooter: false })
   }
 
   const handleSubmit = () => {
     setLoading(true)
     form
       .validateFields()
-      .then(value => {
-        insertAppPage({
-          path: value.path,
-          title: value.pageName,
+      .then(async value => {
+        const { path, pageName, noHeader, noFooter } = value
+        const insertRes = await insertAppPage({
+          path: path,
+          title: pageName,
           editorId: currentMemberId || '',
           craftData: originCraftPage.craftData,
+          options: { white: true, noHeader, noFooter },
         })
-          .then(res => {
-            onRefetch?.().then(() => {
-              const pageId = res.data?.insert_app_page_one?.id
-              history.push('/craft-page/' + pageId)
-            })
-          })
-          .catch(handleError)
+
+        await onRefetch?.()
+        const pageId = insertRes.data?.insert_app_page_one?.id
+        history.push('/craft-page/' + pageId)
       })
+      .catch(handleError)
       .finally(() => {
         setLoading(false)
         handleResetModal()
@@ -179,8 +187,53 @@ const CraftPageReplicateModal: React.FC<
               onChange={e => setPageInfo({ ...pageInfo, path: e.target.value })}
             />
           </Form.Item>
-
           <StyledDemoUrl>{window.location.host + pageInfo.path}</StyledDemoUrl>
+        </Form.Item>
+        <Form.Item label={formatMessage(craftPageCollectionPageMessages['*'].header)}>
+          <Form.Item
+            initialValue={pageInfo.noHeader}
+            name="noHeader"
+            noStyle
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(craftPageCollectionPageMessages['*'].header),
+                }),
+              },
+            ]}
+          >
+            <Radio.Group
+              defaultValue={pageInfo.noHeader}
+              onChange={e => setPageInfo({ ...pageInfo, noHeader: e.target.value })}
+            >
+              <Radio value={false}>{formatMessage(craftPageCollectionPageMessages['*'].enable)}</Radio>
+              <Radio value={true}>{formatMessage(craftPageCollectionPageMessages['*'].disable)}</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form.Item>
+        <Form.Item label={formatMessage(craftPageCollectionPageMessages['*'].footer)}>
+          <Form.Item
+            initialValue={pageInfo.noFooter}
+            name="noFooter"
+            noStyle
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(craftPageCollectionPageMessages['*'].footer),
+                }),
+              },
+            ]}
+          >
+            <Radio.Group
+              defaultValue={pageInfo.noFooter}
+              onChange={e => setPageInfo({ ...pageInfo, noFooter: e.target.value })}
+            >
+              <Radio value={false}>{formatMessage(craftPageCollectionPageMessages['*'].enable)}</Radio>
+              <Radio value={true}>{formatMessage(craftPageCollectionPageMessages['*'].disable)}</Radio>
+            </Radio.Group>
+          </Form.Item>
         </Form.Item>
       </Form>
     </AdminModal>
