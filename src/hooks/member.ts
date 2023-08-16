@@ -571,7 +571,7 @@ export const useMemberRoleCount = (
     permissionGroup?: string
   },
 ) => {
-  const conditionAll: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionAll'] = {
+  const condition: hasura.GET_MEMBER_ROLE_COUNTVariables['condition'] = {
     app_id: { _eq: appId },
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
@@ -618,85 +618,49 @@ export const useMemberRoleCount = (
           }))
       : undefined,
   }
-  const conditionAppOwner: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionAppOwner'] = {
-    role: { _eq: 'app-owner' },
-    ...conditionAll,
-  }
-  const conditionContentCreator: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionContentCreator'] = {
-    role: { _eq: 'content-creator' },
-    ...conditionAll,
-  }
-  const conditionGeneralMember: hasura.GET_MEMBER_ROLE_COUNTVariables['conditionGeneralMember'] = {
-    role: { _eq: 'general-member' },
-    ...conditionAll,
-  }
 
   const { loading, error, data, refetch } = useQuery<
     hasura.GET_MEMBER_ROLE_COUNT,
     hasura.GET_MEMBER_ROLE_COUNTVariables
   >(
     gql`
-      query GET_MEMBER_ROLE_COUNT(
-        $conditionAll: member_bool_exp
-        $conditionAppOwner: member_bool_exp
-        $conditionContentCreator: member_bool_exp
-        $conditionGeneralMember: member_bool_exp
-      ) {
-        all: member_aggregate(where: $conditionAll) {
-          aggregate {
-            count
-          }
-        }
-        app_owner: member_aggregate(where: $conditionAppOwner) {
-          aggregate {
-            count
-          }
-        }
-        content_creator: member_aggregate(where: $conditionContentCreator) {
-          aggregate {
-            count
-          }
-        }
-        general_member: member_aggregate(where: $conditionGeneralMember) {
-          aggregate {
-            count
-          }
+      query GET_MEMBER_ROLE_COUNT($condition: member_bool_exp) {
+        member(where: $condition) {
+          id
+          role
         }
       }
     `,
     {
       variables: {
-        conditionAll,
-        conditionAppOwner,
-        conditionContentCreator,
-        conditionGeneralMember,
+        condition,
       },
     },
   )
 
   const menu: {
     role: string | null
-    count: number
+    count: number | null
     intlKey: { id: string; defaultMessage: string }
   }[] = [
     {
       role: null,
-      count: data?.all?.aggregate?.count || 0,
+      count: data?.member.length || null,
       intlKey: commonMessages.label.allMembers,
     },
     {
       role: 'app-owner',
-      count: data?.app_owner?.aggregate?.count || 0,
+      count: data?.member.filter(v => v.role === 'app-owner').length || null,
       intlKey: commonMessages.label.appOwner,
     },
     {
       role: 'content-creator',
-      count: data?.content_creator?.aggregate?.count || 0,
+      count: data?.member.filter(v => v.role === 'content-creator').length || null,
       intlKey: commonMessages.label.contentCreator,
     },
     {
       role: 'general-member',
-      count: data?.general_member?.aggregate?.count || 0,
+      count: data?.member.filter(v => v.role === 'general-member').length || null,
       intlKey: commonMessages.label.generalMember,
     },
   ]
@@ -709,23 +673,25 @@ export const useMemberRoleCount = (
   }
 }
 
-export const useMemberCollection = (filter?: {
-  role?: UserRole
-  name?: string
-  username?: string
-  email?: string
-  phone?: string
-  category?: string
-  managerName?: string
-  managerId?: string
-  tag?: string
-  properties?: {
-    id: string
-    value?: string
-  }[]
-  permissionGroup?: string | null
-}) => {
-  const { id: appId } = useApp()
+export const useMemberCollection = (
+  appId: string,
+  filter?: {
+    role?: UserRole
+    name?: string
+    username?: string
+    email?: string
+    phone?: string
+    category?: string
+    managerName?: string
+    managerId?: string
+    tag?: string
+    properties?: {
+      id: string
+      value?: string
+    }[]
+    permissionGroup?: string | null
+  },
+) => {
   const condition: hasura.GetMemberCollectionVariables['condition'] = {
     app_id: { _eq: appId },
     role: filter?.role ? { _eq: filter.role } : undefined,
