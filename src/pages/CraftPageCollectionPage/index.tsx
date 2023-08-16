@@ -42,6 +42,7 @@ const CraftPageCollectionPage: React.VFC = () => {
           updatedAt: appPage.updatedAt,
           editorName: appPage.editorName,
           craftData: appPage.craftData,
+          options: appPage.options,
         })),
     },
     {
@@ -56,6 +57,7 @@ const CraftPageCollectionPage: React.VFC = () => {
           updatedAt: appPage.updatedAt,
           editorName: appPage.editorName,
           craftData: appPage.craftData,
+          options: appPage.options,
         })),
     },
   ]

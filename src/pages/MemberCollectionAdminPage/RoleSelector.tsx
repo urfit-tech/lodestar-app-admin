@@ -1,5 +1,5 @@
 import { CaretDownOutlined } from '@ant-design/icons'
-import { Button, Dropdown, Menu } from 'antd'
+import { Button, Dropdown, Menu, Spin } from 'antd'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -24,28 +24,24 @@ const RoleSelector: React.VFC<{ fieldFilter: FiledFilter; onFiledFilterChange: (
   onFiledFilterChange,
 }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
+  const { loading, id: appId } = useApp()
 
-  const { menu } = useMemberRoleCount(appId, {
+  const { loading: loadingMemberRoleCount, menu } = useMemberRoleCount(appId, {
     ...fieldFilter,
     properties: Object.entries(fieldFilter.properties || {}).map(([propertyId, value]) => ({
       id: propertyId,
       value,
     })),
   })
-  const dropdownMenu = menu.map(menuItem => ({
-    ...menuItem,
-    text: formatMessage(menuItem.intlKey),
-  }))
 
   return (
     <StyledDropdown
       trigger={['click']}
       overlay={
         <Menu>
-          {dropdownMenu.map(item => (
+          {menu.map(item => (
             <StyledMenuItem
-              key={item.text}
+              key={item.intlKey.id}
               onClick={() =>
                 onFiledFilterChange({
                   ...fieldFilter,
@@ -53,7 +49,8 @@ const RoleSelector: React.VFC<{ fieldFilter: FiledFilter; onFiledFilterChange: (
                 })
               }
             >
-              {item.text} ({item.count})
+              {formatMessage(item.intlKey)} (
+              {loading || loadingMemberRoleCount || !item.count ? <Spin className="ml-2" /> : item.count})
             </StyledMenuItem>
           ))}
         </Menu>
@@ -66,7 +63,13 @@ const RoleSelector: React.VFC<{ fieldFilter: FiledFilter; onFiledFilterChange: (
           ) : (
             formatMessage(pageMessages['*'].allMembers)
           )}
-          {` (${menu.filter(item => item.role === (fieldFilter.role || null))[0].count})`}
+          {loading ||
+          loadingMemberRoleCount ||
+          !menu.filter(item => item.role === (fieldFilter.role || null))[0].count ? (
+            <Spin className="ml-2" />
+          ) : (
+            ` (${menu.filter(item => item.role === (fieldFilter.role || null))[0].count})`
+          )}
         </span>
         <CaretDownOutlined />
       </Button>

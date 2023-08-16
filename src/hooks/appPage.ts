@@ -13,7 +13,7 @@ export type AppPageProps = {
   editorName: string | null
   publishedAt: Date | null
   updatedAt: Date
-  options: { [key: string]: string } | null
+  options: { [key: string]: any } | null
   metaTag: { [key: string]: any } | null
 }
 
@@ -160,9 +160,10 @@ export const useMutateAppPage = () => {
     title: string
     editorId: string
     craftData: { [key: string]: any } | null
+    options: { [key: string]: any } 
   }) => {
     return insertAppPageHandler({
-      variables: { appId, ...values, options: { white: true } },
+      variables: { appId, ...values },
     })
   }
   const [updateAppPageHandler] = useMutation<hasura.UPDATE_APP_PAGE, hasura.UPDATE_APP_PAGEVariables>(gql`
@@ -179,6 +180,7 @@ export const useMutateAppPage = () => {
     editorId?: string
     publishedAt?: Date | null
     craftData?: { [key: string]: any }
+    options?: { [key: string]: any }
     isDeleted?: boolean
   }) => {
     return updateAppPageHandler({
@@ -189,6 +191,7 @@ export const useMutateAppPage = () => {
           title: values.title,
           editor_id: values.editorId,
           craft_data: values.craftData,
+          options: values.options,
           is_deleted: values.isDeleted,
           published_at: values.publishedAt,
         },
