@@ -605,16 +605,16 @@ const TableBlock: React.VFC<{
               .post<ResponseMembers>(
                 `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members`,
                 {
-                  option: {
-                    limit,
-                    nextToken: currentNextToken,
-                  },
                   condition: {
                     role: fieldFilter?.role ? fieldFilter.role : undefined,
                     name: fieldFilter?.name ? `%${fieldFilter.name}%` : undefined,
                     email: fieldFilter?.email ? `%${fieldFilter.email}%` : undefined,
                     username: fieldFilter?.username ? `%${fieldFilter.username}%` : undefined,
                     managerName: fieldFilter?.managerName ? `%${fieldFilter.managerName}%` : undefined,
+                  },
+                  option: {
+                    limit,
+                    nextToken: currentNextToken,
                   },
                 },
                 {
