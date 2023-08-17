@@ -5,6 +5,7 @@ import { SorterResult, SortOrder } from 'antd/lib/table/interface'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAppTheme } from 'lodestar-app-element/src/contexts/AppThemeContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
+import { AppProps, Permission } from 'lodestar-app-element/src/types/app'
 import moment from 'moment'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -91,10 +92,44 @@ const StyledTag = styled(Tag)`
 `
 
 const MemberCollectionAdminPage: React.FC = () => {
-  const theme = useAppTheme()
   const { formatMessage } = useIntl()
   const { isAuthenticating, permissions, currentUserRole } = useAuth()
-  const { id: appId, enabledModules, settings } = useApp()
+  const { loading, id: appId, enabledModules, settings } = useApp()
+
+  if (!isAuthenticating && !permissions.MEMBER_ADMIN) {
+    return <ForbiddenPage />
+  }
+
+  return (
+    <AdminLayout>
+      <AdminPageTitle className="mb-4">
+        <UserOutlined className="mr-3" />
+        <span>{formatMessage(commonMessages.menu.members)}</span>
+      </AdminPageTitle>
+      {loading || isAuthenticating ? (
+        <Spin />
+      ) : (
+        <MemberCollectionBlock
+          currentUserRole={currentUserRole}
+          appId={appId}
+          enabledModules={enabledModules}
+          permissions={permissions}
+          settings={settings}
+        />
+      )}
+    </AdminLayout>
+  )
+}
+
+const MemberCollectionBlock: React.VFC<
+  Pick<AppProps, 'enabledModules' | 'settings'> & {
+    currentUserRole: string
+    appId: string
+    permissions: { [key in Permission]?: boolean }
+  }
+> = ({ currentUserRole, appId, enabledModules, settings, permissions }) => {
+  const { formatMessage } = useIntl()
+  const theme = useAppTheme()
   const exportImportVersionTag = settings['feature.member.import_export'] === '1' // TODO: remove this after new export import completed
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['#', 'email', 'createdAt', 'consumption'])
   const [fieldFilter, setFieldFilter] = useState<FiledFilter>({})
@@ -111,6 +146,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const searchInputRef = useRef<Input | null>(null)
 
   const { properties } = useProperty()
+
   const {
     loadingMemberAggregate,
     loadingMemberCollection,
@@ -127,7 +163,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     refetchMemberTags,
     refetchMemberProperties,
     loadMoreMembers,
-  } = useMemberCollection({
+  } = useMemberCollection(appId, {
     ...fieldFilter,
     properties: Object.entries(fieldFilter.properties || {}).map(([propertyId, value]) => ({
       id: propertyId,
@@ -212,7 +248,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
     })
 
-    const columns: ColumnProps<MemberInfoProps>[] = [
+  const columns: ColumnProps<MemberInfoProps>[] = [
     {
       title: '#',
       key: '#',
@@ -328,17 +364,8 @@ const MemberCollectionAdminPage: React.FC = () => {
       }),
   ]
 
-  if (!isAuthenticating && !permissions.MEMBER_ADMIN) {
-    return <ForbiddenPage />
-  }
-
   return (
-    <AdminLayout>
-      <AdminPageTitle className="mb-4">
-        <UserOutlined className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.members)}</span>
-      </AdminPageTitle>
-
+    <>
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex">
           <div className="mr-3">
@@ -449,7 +476,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           </div>
         )}
       </AdminCard>
-    </AdminLayout>
+    </>
   )
 }
 

@@ -453,7 +453,7 @@ export const routesProps = {
   },
   sales: {
     path: '/sales',
-    pageName: 'SalesAdminPage',
+    pageName: 'SalesPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
