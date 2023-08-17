@@ -723,10 +723,10 @@ export const useMembers = (
         const { data: res } = await axios.post<ResponseMembers>(
           `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members`,
           {
+            condition,
             option: {
               limit,
             },
-            condition,
           },
           {
             headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
@@ -753,7 +753,7 @@ export const useMembers = (
         setLoading(false)
       }
     })()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken, limit, JSON.stringify(condition)])
 
   return {
