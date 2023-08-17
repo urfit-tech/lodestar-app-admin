@@ -81,6 +81,8 @@ const pageMessages = {
     },
     view: { id: 'page.*.view', defaultMessage: '查看' },
     allMembers: { id: 'page.*.allMembers', defaultMessage: '全部會員' },
+    totalSales: { id: 'page.*.totalSales', defaultMessage: '銷售總額' },
+    dollar: { id: 'page.*.dollar', defaultMessage: '元' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -411,6 +413,63 @@ const pageMessages = {
       defaultMessage: '選擇權限組',
     },
   },
+  DeactivatePage: defineMessages({
+    contactExpiredAndUsageExceeded: {
+      id: 'page.DeactivatePage.contactExpiredAndUsageExceeded',
+      defaultMessage: '方案已到期且超出用量',
+    },
+    contactExpiredAndUsageExceededDescription1: {
+      id: 'page.DeactivatePage.contactExpiredAndUsageExceededDescription1',
+      defaultMessage: '因您尚未進行續約且影片儲存/流量使用量，',
+    },
+    contactExpiredAndUsageExceededDescription2: {
+      id: 'page.DeactivatePage.contactExpiredAndUsageExceededDescription2',
+      defaultMessage: '已超過您的方案上限。',
+    },
+    contactExpiredAndUsageExceededDescription3: {
+      id: 'page.DeactivatePage.contactExpiredAndUsageExceededDescription3',
+      defaultMessage: '請聯繫 KOLABLE 官方 us@urfit.com.tw，',
+    },
+    contactExpiredAndUsageExceededDescription4: {
+      id: 'page.DeactivatePage.contactExpiredAndUsageExceededDescription4',
+      defaultMessage: '洽談續約事宜，逾期將全數刪除站點資料。',
+    },
+    pleaseUpdatePlan: { id: 'page.DeactivatePage.pleaseUpdatePlan', defaultMessage: '請升級方案' },
+    usageExceededAndPleaseUpdatePlan: {
+      id: 'page.DeactivatePage.usageExceededAndPleaseUpdatePlan',
+      defaultMessage: '超出用量請升級方案',
+    },
+    usageExceededAndPleaseUpdatePlanDescription1: {
+      id: 'page.DeactivatePage.usageExceededAndPleaseUpdatePlanDescription1',
+      defaultMessage: '您的影片儲存/流量使用量已超過您的方案上限。',
+    },
+    usageExceededAndPleaseUpdatePlanDescription2: {
+      id: 'page.DeactivatePage.usageExceededAndPleaseUpdatePlanDescription2',
+      defaultMessage: '請聯繫 KOLABLE 官方 us@urfit.com.tw，',
+    },
+    usageExceededAndPleaseUpdatePlanDescription3: {
+      id: 'page.DeactivatePage.usageExceededAndPleaseUpdatePlanDescription3',
+      defaultMessage: '洽談方案升級。',
+    },
+    planHadExpired: { id: 'page.DeactivatePage.planHadExpired', defaultMessage: '方案已到期' },
+    planHadExpiredDescription1: {
+      id: 'page.DeactivatePage.planHadExpiredDescription1',
+      defaultMessage: '因您尚未進行續約，網站後台已關閉。',
+    },
+    planHadExpiredDescription2: {
+      id: 'page.DeactivatePage.planHadExpiredDescription2',
+      defaultMessage: '請您儘速聯繫 KOLABLE 官方 us@urfit.com.tw，',
+    },
+    planHadExpiredDescription3: {
+      id: 'page.DeactivatePage.planHadExpiredDescription3',
+      defaultMessage: '洽談續約事宜。',
+    },
+  }),
+  SalesPage: defineMessages({
+    salesAdmin: { id: 'page.SalesPage.salesAdmin', defaultMessage: '銷售管理' },
+    import: { id: 'page.SalesPage.import', defaultMessage: '匯入資料' },
+    export: { id: 'page.SalesPage.export', defaultMessage: '匯出資料' },
+  }),
 }
 
 export default pageMessages

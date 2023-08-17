@@ -1,5 +1,5 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
-import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import React, { useState } from 'react'
@@ -19,6 +19,8 @@ import { CraftSettingLabel } from './CraftSettingsPanel'
 type FieldProps = {
   pageName: string
   path: string
+  noHeader: boolean
+  noFooter: boolean
 }
 
 const CraftPageBasicSettingBlock: React.VFC<{
@@ -45,6 +47,7 @@ const CraftPageBasicSettingBlock: React.VFC<{
       pageId: pageAdmin.id,
       path: values.path,
       title: values.pageName,
+      options: { ...pageAdmin.options, noHeader: values.noHeader, noFooter: values.noFooter },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
@@ -69,6 +72,8 @@ const CraftPageBasicSettingBlock: React.VFC<{
           initialValues={{
             pageName: pageAdmin?.title || '',
             path: pageAdmin?.path,
+            noHeader: pageAdmin?.options?.noHeader,
+            noFooter: pageAdmin?.options?.noFooter,
           }}
           onFinish={handleSubmit}
         >
@@ -122,6 +127,44 @@ const CraftPageBasicSettingBlock: React.VFC<{
               <Input className="mb-2" onChange={e => setPath(e.target.value)} />
             </Form.Item>
             <CraftSettingLabel>{window.location.host + path}</CraftSettingLabel>
+          </Form.Item>
+          <Form.Item label={formatMessage(craftPageMessages.label.header)}>
+            <Form.Item
+              name="noHeader"
+              noStyle
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(craftPageMessages.label.header),
+                  }),
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={false}>{formatMessage(craftPageMessages.label.enable)}</Radio>
+                <Radio value={true}>{formatMessage(craftPageMessages.label.disable)}</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Form.Item>
+          <Form.Item label={formatMessage(craftPageMessages.label.footer)}>
+            <Form.Item
+              name="noFooter"
+              noStyle
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(craftPageMessages.label.footer),
+                  }),
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={false}>{formatMessage(craftPageMessages.label.enable)}</Radio>
+                <Radio value={true}>{formatMessage(craftPageMessages.label.disable)}</Radio>
+              </Radio.Group>
+            </Form.Item>
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button
