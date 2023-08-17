@@ -81,6 +81,8 @@ const pageMessages = {
     },
     view: { id: 'page.*.view', defaultMessage: '查看' },
     allMembers: { id: 'page.*.allMembers', defaultMessage: '全部會員' },
+    totalSales: { id: 'page.*.totalSales', defaultMessage: '銷售總額' },
+    dollar: { id: 'page.*.dollar', defaultMessage: '元' },
   }),
   ProjectAdminPage: defineMessages({
     settings: { id: 'page.ProjectAdminPage.settings', defaultMessage: '專案設定' },
@@ -449,6 +451,11 @@ const pageMessages = {
       id: 'page.DeactivatePage.planHadExpiredDescription3',
       defaultMessage: '洽談續約事宜。',
     },
+  }),
+  SalesPage: defineMessages({
+    salesAdmin: { id: 'page.SalesPage.salesAdmin', defaultMessage: '銷售管理' },
+    import: { id: 'page.SalesPage.import', defaultMessage: '匯入資料' },
+    export: { id: 'page.SalesPage.export', defaultMessage: '匯出資料' },
   }),
 }
 
