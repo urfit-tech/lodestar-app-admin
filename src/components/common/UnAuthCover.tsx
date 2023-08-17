@@ -1,6 +1,7 @@
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { LockIcon } from '../../images/icon'
+import commonMessages from './translation'
 
 const StyledCover = styled.div`
   background-color: rgba(255, 255, 255, 0.8);
@@ -26,18 +27,15 @@ const StyledCover = styled.div`
     }
   }
 `
-const messages = defineMessages({
-  unAuth: { id: 'common.label.unAuth', defaultMessage: '無此權限' },
-})
 
-const UnAuthCover: React.VFC<{}> = ({}) => {
+const UnAuthCover: React.VFC<{}> = () => {
   const { formatMessage } = useIntl()
 
   return (
     <StyledCover>
       <div className="unauth__label">
         <LockIcon className="mr-2" />
-        <span>{formatMessage(messages.unAuth)}</span>
+        <span>{formatMessage(commonMessages.UnAuthCover.unAuth)}</span>
       </div>
     </StyledCover>
   )

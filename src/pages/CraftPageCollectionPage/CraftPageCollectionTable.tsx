@@ -25,7 +25,10 @@ const StyledUpdatedAtAndEditor = styled.div`
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-type CraftPageColumnProps = Pick<AppPageProps, 'id' | 'title' | 'path' | 'updatedAt' | 'editorName' | 'craftData'>
+type CraftPageColumnProps = Pick<
+  AppPageProps,
+  'id' | 'title' | 'path' | 'updatedAt' | 'editorName' | 'craftData' | 'options'
+>
 
 const CraftPageCollectionTable: React.VFC<{
   loading: boolean
@@ -92,6 +95,7 @@ const CraftPageCollectionTable: React.VFC<{
                     id: record.id,
                     path: record?.path || '',
                     title: record?.title || '',
+                    options: record?.options || {},
                     craftData: record.craftData,
                   }}
                   renderTrigger={({ setVisible }) => (

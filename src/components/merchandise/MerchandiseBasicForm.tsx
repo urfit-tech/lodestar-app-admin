@@ -15,7 +15,6 @@ type FieldProps = {
   title: string
   categoryIds: string[]
   tags: string[]
-  isLimited?: boolean
 }
 
 const MerchandiseBasicForm: React.FC<{
@@ -54,7 +53,6 @@ const MerchandiseBasicForm: React.FC<{
             tag_name: tag,
             position: index,
           })) || [],
-        isLimited: values.isLimited ?? true,
       },
     })
       .then(() => {
@@ -77,7 +75,6 @@ const MerchandiseBasicForm: React.FC<{
         title: merchandise.title || '',
         categoryIds: merchandise.categories.map(category => category.id),
         tags: merchandise.tags,
-        isLimited: merchandise.isLimited,
       }}
       onFinish={handleSubmit}
     >
@@ -121,9 +118,8 @@ const UPDATE_MERCHANDISE_BASIC = gql`
     $categories: [merchandise_category_insert_input!]!
     $tags: [tag_insert_input!]!
     $merchandiseTags: [merchandise_tag_insert_input!]!
-    $isLimited: Boolean!
   ) {
-    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title, is_limited: $isLimited }) {
+    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title }) {
       affected_rows
     }
 

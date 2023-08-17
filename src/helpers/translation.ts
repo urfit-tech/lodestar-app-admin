@@ -315,7 +315,7 @@ export const commonMessages = {
     },
     deleteCategoryNotation: {
       id: 'common.text.deleteCategoryNotation',
-      defaultMessage: '確定要刪除此類別？此動作無法復原',
+      defaultMessage: '刪除後會直接移除曾掛此項目的分類，確定要刪除嗎？',
     },
     deletePropertyNotation: {
       id: 'common.text.deletePropertyNotation',
@@ -381,7 +381,6 @@ export const commonMessages = {
   menu: defineMessages({
     mediaLibrary: { id: 'common.menu.mediaLibrary', defaultMessage: '媒體庫' },
     learningOverviewAdmin: { id: 'common.menu.learningOverviewAdmin', defaultMessage: '學習總覽' },
-    salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
     appBasicAdmin: { id: 'common.menu.appBasicAdmin', defaultMessage: '基本設定' },
     appSettingAdmin: { id: 'common.menu.appSettingAdmin', defaultMessage: '參數設定' },
     appSecretAdmin: { id: 'common.menu.appSecretAdmin', defaultMessage: '金鑰設定' },
@@ -695,7 +694,8 @@ export const promotionMessages = {
     couponCodes: { id: 'promotion.label.couponCodes', defaultMessage: '折扣碼' },
     voucherCodes: { id: 'promotion.label.voucherCodes', defaultMessage: '兌換碼' },
     amount: { id: 'promotion.label.amount', defaultMessage: '數量' },
-    dollar: { id: 'promotion.label.dollar', defaultMessage: '元' },
+    deleteVoucherCode: { id: 'promotion.label.deleteVoucherCode', defaultMessage: '刪除兌換碼' },
+    canNotDeleteVoucherCode: { id: 'promotion.label.canNotDeleteVoucherCode', defaultMessage: '無法刪除兌換碼' },
   }),
   text: defineMessages({
     exchangeNotation: {
@@ -708,12 +708,18 @@ export const promotionMessages = {
       id: 'promotion.text.sentUsedCount',
       defaultMessage: '總量{total} / 發送{exchanged}',
     },
+    codeUsedMessage: { id: 'promotion.text.codeUsedMessage', defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款' },
+    deleteCodeMessage: { id: 'promotion.text.deleteCodeMessage', defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。' },
+
   }),
   status: defineMessages({
     notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
     used: { id: 'promotion.status.used', defaultMessage: '已使用' },
+  }),
+  message: defineMessages({
+    successDeletedVoucherCode: { id: 'promotion.message.successDeletedVoucherCode', defaultMessage: '成功刪除兌換碼' },
   }),
 }
 
@@ -1285,6 +1291,10 @@ export const craftPageMessages = {
     editPage: { id: 'craft.label.editPage', defaultMessage: '編輯頁面' },
     choiceTemplate: { id: 'craft.label.choiceTemplate', defaultMessage: '選擇版型' },
     pageName: { id: 'craft.label.pageName', defaultMessage: '頁面名稱' },
+    header: { id: 'craft.label.header', defaultMessage: '頁首選單' },
+    footer: { id: 'craft.label.footer', defaultMessage: '頁尾選單' },
+    enable: { id: 'craft.label.enable', defaultMessage: '顯示' },
+    disable: { id: 'craft.label.disable', defaultMessage: '隱藏' },
     path: { id: 'craft.label.urlPath', defaultMessage: '網址路徑' },
     url: { id: 'craft.label.url', defaultMessage: '網址' },
     latestUpdatedAt: { id: 'craft.label.latestUpdatedAt', defaultMessage: '最後修改時間' },
