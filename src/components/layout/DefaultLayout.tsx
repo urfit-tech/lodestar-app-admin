@@ -1,18 +1,12 @@
 import { DownOutlined } from '@ant-design/icons'
-import { gql, useMutation } from '@apollo/client'
 import { Button, Divider, Dropdown, Layout, Menu } from 'antd'
-import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
-import { useIntl } from 'react-intl'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
 import LocaleContext, { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
-import hasura from '../../hasura'
-import { useAppUsage } from '../../hooks/data'
 import defaultSettings from '../../settings'
 import AttendButton from '../attend/AttendButton'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
@@ -20,7 +14,6 @@ import Footer from '../common/Footer'
 import MemberProfileButton from '../common/MemberProfileButton'
 import { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
-import layoutMessages from './translation'
 
 const StyledLayout = styled(Layout)`
   &.bg-white {
@@ -65,16 +58,6 @@ const StyledButton = styled(Button)`
   }
 `
 
-const StyledWarningBar = styled.div`
-  background-color: var(--error);
-  color: #fff;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.8px;
-  padding: 8px 0;
-`
-
 const DefaultLayout: React.FC<{
   white?: boolean
   noFooter?: boolean
@@ -104,46 +87,9 @@ const DefaultLayout: React.FC<{
 export const DefaultLayoutHeader: React.FC<{
   renderTitle?: () => React.ReactNode
 }> = ({ renderTitle }) => {
-  const { formatMessage } = useIntl()
-  const { currentMemberId, permissions, currentUserRole } = useAuth()
-  const { enabledModules, id: appId, endedAt: appEndedAt, options: appOptions } = useApp()
+  const { currentMemberId, permissions } = useAuth()
+  const { enabledModules, id: appId, settings } = useApp()
   const { currentLocale, setCurrentLocale } = useContext(LocaleContext)
-  const { totalVideoDuration, totalWatchedSeconds } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
-  const [updateAppOptions] = useMutation<hasura.UPDATE_APP_OPTIONS, hasura.UPDATE_APP_OPTIONSVariables>(
-    UPDATE_APP_OPTIONS,
-  )
-
-  const isSiteExpiringSoon = dayjs(appEndedAt).diff(dayjs(), 'day') <= 20
-  const isVideoDurationExceedsUsage = Math.round(totalVideoDuration / 60) > appOptions.video_duration
-  const isWatchedSecondsExceedsUsage = totalWatchedSeconds > appOptions.video_duration
-  const closeSiteAt = appOptions.close_site_at
-    ? dayjs(appOptions.close_site_at)
-    : dayjs().add(15, 'days').diff(dayjs(appEndedAt)) < 0
-    ? dayjs().add(15, 'days').endOf('day')
-    : dayjs(appEndedAt).endOf('day')
-
-  useEffect(() => {
-    if (
-      currentUserRole === 'app-owner' &&
-      ((!isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage) ||
-        isSiteExpiringSoon ||
-        isVideoDurationExceedsUsage ||
-        isWatchedSecondsExceedsUsage)
-    ) {
-      updateAppOptions({
-        variables: {
-          appId: appId,
-          options: {
-            ...appOptions,
-            close_site_at:
-              !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
-                ? undefined
-                : closeSiteAt.utc().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          },
-        },
-      })
-    }
-  }, [currentUserRole, appOptions, totalVideoDuration, totalWatchedSeconds])
 
   let Logo: string | undefined
   try {
@@ -161,85 +107,49 @@ export const DefaultLayoutHeader: React.FC<{
   }
 
   return (
-    <>
-      <StyledLayoutHeader className="d-flex align-items-center justify-content-between">
-        {renderTitle ? (
-          renderTitle()
-        ) : (
-          <Link to={`/`} className="d-flex align-items-center">
-            {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : defaultSettings.seo.name || 'Home'}
-          </Link>
-        )}
+    <StyledLayoutHeader className="d-flex align-items-center justify-content-between">
+      {renderTitle ? (
+        renderTitle()
+      ) : (
+        <Link to={`/`} className="d-flex align-items-center">
+          {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : defaultSettings.seo.name || 'Home'}
+        </Link>
+      )}
 
-        <div className="d-flex align-items-center">
-          {enabledModules.locale && (
-            <>
-              <Dropdown
-                trigger={['click']}
-                overlay={
-                  <Menu>
-                    {SUPPORTED_LOCALES.map(supportedLocale => (
-                      <Menu.Item key={supportedLocale.locale}>
-                        <StyledButton
-                          type="link"
-                          size="small"
-                          onClick={() => setCurrentLocale?.(supportedLocale.locale)}
-                        >
-                          {supportedLocale.label}
-                        </StyledButton>
-                      </Menu.Item>
-                    ))}
-                  </Menu>
-                }
-              >
-                <StyledButton type="link" size="small">
-                  {SUPPORTED_LOCALES.find(supportedLocale => currentLocale === supportedLocale.locale)?.label ||
-                    'Unknown'}
-                  <DownOutlined />
-                </StyledButton>
-              </Dropdown>
-              <Divider type="vertical" />
-            </>
-          )}
-          {currentMemberId && enabledModules.attend && permissions.MEMBER_ATTENDANT && (
-            <AttendButton memberId={currentMemberId} />
-          )}
-          {currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
-          {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
-        </div>
-      </StyledLayoutHeader>
-      {currentUserRole === 'app-owner' &&
-      (isSiteExpiringSoon || isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage) ? (
-        <StyledWarningBar>
-          <p>
-            {isSiteExpiringSoon && (isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage)
-              ? formatMessage(
-                  layoutMessages.DefaultLayout.contractWillExpiredAndStorageAndWatchTrafficIsExceededNotice,
-                  {
-                    contractExpiredAt: dayjs(appEndedAt).format('YYYY-MM-DD'),
-                    closeSiteAt: closeSiteAt.format('YYYY-MM-DD'),
-                  },
-                )
-              : isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage
-              ? formatMessage(layoutMessages.DefaultLayout.storageAndWatchTrafficIsExceededNotice, {
-                  closeSiteAt: closeSiteAt.format('YYYY-MM-DD'),
-                })
-              : formatMessage(layoutMessages.DefaultLayout.contractWillExpiredNotice, {
-                  contractExpiredAt: dayjs(appEndedAt).format('YYYY-MM-DD'),
-                })}
-          </p>
-        </StyledWarningBar>
-      ) : null}
-    </>
+      <div className="d-flex align-items-center">
+        {enabledModules.locale && (
+          <>
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu>
+                  {SUPPORTED_LOCALES.map(supportedLocale => (
+                    <Menu.Item key={supportedLocale.locale}>
+                      <StyledButton type="link" size="small" onClick={() => setCurrentLocale?.(supportedLocale.locale)}>
+                        {supportedLocale.label}
+                      </StyledButton>
+                    </Menu.Item>
+                  ))}
+                </Menu>
+              }
+            >
+              <StyledButton type="link" size="small">
+                {SUPPORTED_LOCALES.find(supportedLocale => currentLocale === supportedLocale.locale)?.label ||
+                  'Unknown'}
+                <DownOutlined />
+              </StyledButton>
+            </Dropdown>
+            <Divider type="vertical" />
+          </>
+        )}
+        {currentMemberId && enabledModules.attend && permissions.MEMBER_ATTENDANT && (
+          <AttendButton memberId={currentMemberId} />
+        )}
+        {currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
+        {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
+      </div>
+    </StyledLayoutHeader>
   )
 }
-
-const UPDATE_APP_OPTIONS = gql`
-  mutation UPDATE_APP_OPTIONS($appId: String!, $options: jsonb!) {
-    update_app(where: { id: { _eq: $appId } }, _set: { options: $options }) {
-      affected_rows
-    }
-  }
-`
 
 export default DefaultLayout
