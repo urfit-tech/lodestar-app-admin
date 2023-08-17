@@ -17,9 +17,11 @@ import {
   NoteAdminProps,
   UserRole,
   MemberNote,
+  ResponseMembers,
 } from '../types/member'
 import { notEmpty } from '../helpers'
-import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
+import axios from 'axios'
+import { useEffect, useMemo, useState } from 'react'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<hasura.GET_MEMBER, hasura.GET_MEMBERVariables>(
@@ -673,123 +675,109 @@ export const useMemberRoleCount = (
   }
 }
 
-export const useMemberCollection = (
-  appId: string,
+export const useMembers = (
+  authToken: string,
+  limit: number,
   filter?: {
-    role?: UserRole
+    role?: string
     name?: string
-    username?: string
     email?: string
-    phone?: string
-    category?: string
+    username?: string
     managerName?: string
     managerId?: string
-    tag?: string
-    properties?: {
-      id: string
-      value?: string
-    }[]
-    permissionGroup?: string | null
   },
 ) => {
-  const condition: hasura.GetMemberCollectionVariables['condition'] = {
-    app_id: { _eq: appId },
-    role: filter?.role ? { _eq: filter.role } : undefined,
-    name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
-    username: filter?.username ? { _ilike: `%${filter.username}%` } : undefined,
-    email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
-    manager: filter?.managerName
-      ? {
-          name: { _ilike: `%${filter.managerName}%` },
-        }
-      : undefined,
-    manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
-    member_phones: filter?.phone
-      ? {
-          phone: { _ilike: `%${filter.phone}%` },
-        }
-      : undefined,
-    member_categories: filter?.category
-      ? {
-          category: {
-            name: {
-              _ilike: `%${filter.category}%`,
-            },
-          },
-        }
-      : undefined,
-    member_tags: filter?.tag
-      ? {
-          tag_name: {
-            _ilike: filter.tag,
-          },
-        }
-      : undefined,
-    member_permission_groups: filter?.permissionGroup
-      ? {
-          permission_group: { name: { _like: `${filter.permissionGroup}` } },
-        }
-      : undefined,
-    _and: filter?.properties?.length
-      ? filter.properties
-          .filter(property => property.value)
-          .map(property => ({
-            member_properties: {
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            },
-          }))
-      : undefined,
-  }
-
-  const {
-    loading: loadingMemberAggregate,
-    error: errorMemberAggregate,
-    data: memberAggregateData,
-    refetch: refetchMemberAggregate,
-  } = useQuery<hasura.GetMemberAggregate, hasura.GetMemberAggregateVariables>(
-    gql`
-      query GetMemberAggregate($condition: member_bool_exp) {
-        member_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    { variables: { condition } },
-  )
-
-  const {
-    loading: loadingMemberCollection,
-    error: errorMemberCollection,
-    data: memberCollectionData,
-    refetch: refetchMemberCollection,
-    fetchMore: fetchMoreMemberCollection,
-  } = useQuery<hasura.GetMemberCollection, hasura.GetMemberCollectionVariables>(
-    gql`
-      query GetMemberCollection($condition: member_bool_exp, $limit: Int!) {
-        member(where: $condition, order_by: [{ created_at: desc_nulls_last }, { id: asc }], limit: $limit) {
-          id
-          picture_url
-          name
-          email
-          role
-          created_at
-          username
-          logined_at
-          manager_id
-        }
-      }
-    `,
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<any>('')
+  const [members, setMembers] = useState<
     {
-      variables: {
-        condition,
-        limit: 10,
-      },
-    },
+      id: string
+      pictureUrl: string | null
+      name: string
+      email: string
+      role: 'general-member' | 'content-creator' | 'app-owner'
+      createdAt: Date
+      username: string
+      loginedAt: Date | null
+      managerId: string | null
+    }[]
+  >([])
+  const [prevToken, setPrevToken] = useState<string | null>(null)
+  const [nextToken, setNextToken] = useState<string | null>(null)
+
+  const condition = useMemo(
+    () => ({
+      role: filter?.role ? filter.role : undefined,
+      name: filter?.name ? `%${filter.name}%` : undefined,
+      email: filter?.email ? `%${filter.email}%` : undefined,
+      username: filter?.username ? `%${filter.username}%` : undefined,
+      managerName: filter?.managerName ? `%${filter.managerName}%` : undefined,
+    }),
+    [filter],
   )
 
+  useEffect(() => {
+    setLoading(true)
+    ;(async () => {
+      try {
+        const { data: res } = await axios.post<ResponseMembers>(
+          `${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/members`,
+          {
+            option: {
+              limit,
+            },
+            condition,
+          },
+          {
+            headers: { 'Content-Type': 'application/json', authorization: `Bearer ${authToken}` },
+          },
+        )
+        setMembers(() =>
+          res.data.map(v => ({
+            id: v.id,
+            pictureUrl: v.picture_url,
+            name: v.name,
+            email: v.email,
+            role: v.role,
+            createdAt: new Date(v.created_at),
+            username: v.username,
+            loginedAt: v.logined_at ? new Date(v.logined_at) : null,
+            managerId: v.manager_id,
+          })),
+        )
+        setPrevToken(() => res.cursor.beforeCursor)
+        setNextToken(() => res.cursor.afterCursor)
+      } catch (error) {
+        setError(error)
+      } finally {
+        setLoading(false)
+      }
+    })()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authToken, limit, JSON.stringify(condition)])
+
+  return {
+    loading,
+    error,
+    members,
+    prevToken,
+    nextToken,
+  }
+}
+
+export const useMemberCollection = (
+  members: {
+    id: string
+    pictureUrl: string | null
+    name: string
+    email: string
+    role: 'general-member' | 'content-creator' | 'app-owner'
+    createdAt: Date
+    username: string
+    loginedAt: Date | null
+    managerId: string | null
+  }[],
+) => {
   const { loading: loadingMemberPhones, data: memberPhonesData } = useQuery<
     hasura.GetMemberPhones,
     hasura.GetMemberPhonesVariables
@@ -803,7 +791,7 @@ export const useMemberCollection = (
         }
       }
     `,
-    { variables: { memberIdList: memberCollectionData?.member.map(v => v.id) } },
+    { variables: { memberIdList: members.map(member => member.id) } },
   )
 
   const {
@@ -826,7 +814,7 @@ export const useMemberCollection = (
         }
       }
     `,
-    { variables: { memberIdList: memberCollectionData?.member.map(v => v.id) } },
+    { variables: { memberIdList: members.map(member => member.id) } },
   )
 
   const { loading: loadingManagerInfo, data: managerInfoData } = useQuery<
@@ -841,7 +829,7 @@ export const useMemberCollection = (
         }
       }
     `,
-    { variables: { managerIdList: memberCollectionData?.member.map(v => v.manager_id).filter(notEmpty) } },
+    { variables: { managerIdList: members.map(member => member.managerId).filter(notEmpty) } },
   )
 
   const {
@@ -861,7 +849,11 @@ export const useMemberCollection = (
         }
       }
     `,
-    { variables: { memberIdList: memberCollectionData?.member.map(v => v.id) } },
+    {
+      variables: {
+        memberIdList: members.map(member => member.id),
+      },
+    },
   )
   const {
     loading: loadingMemberTags,
@@ -878,7 +870,7 @@ export const useMemberCollection = (
       }
     `,
     {
-      variables: { memberIdList: memberCollectionData?.member.map(v => v.id) },
+      variables: { memberIdList: members.map(member => member.id) },
     },
   )
   const {
@@ -897,7 +889,9 @@ export const useMemberCollection = (
       }
     `,
     {
-      variables: { memberIdList: memberCollectionData?.member.map(v => v.id) },
+      variables: {
+        memberIdList: members.map(member => member.id),
+      },
     },
   )
 
@@ -907,16 +901,10 @@ export const useMemberCollection = (
       price: v.order_products_aggregate.aggregate?.sum?.price || 0,
     })) || []
 
-  const members: MemberInfoProps[] =
-    memberCollectionData?.member.map(v => ({
-      id: v.id,
-      avatarUrl: v.picture_url || null,
-      name: v.name,
-      username: v.username,
-      email: v.email,
-      role: v.role as UserRole,
-      createdAt: v.created_at ? new Date(v.created_at) : null,
-      loginedAt: v.logined_at ? new Date(v.logined_at) : null,
+  const memberCollection: MemberInfoProps[] =
+    members.map(v => ({
+      ...v,
+      avatarUrl: v.pictureUrl,
       phones:
         memberPhonesData?.member_phone
           .filter(memberPhone => memberPhone.member_id === v.id)
@@ -950,56 +938,18 @@ export const useMemberCollection = (
         }, {} as MemberInfoProps['properties']),
     })) || []
 
-  const loadMoreMembers = () =>
-    fetchMoreMemberCollection({
-      variables: {
-        condition: {
-          _and: [
-            condition,
-            {
-              _or: [
-                {
-                  _and: [
-                    { created_at: { _eq: memberCollectionData?.member.slice(-1)[0]?.created_at } },
-                    { id: { _gt: memberCollectionData?.member.slice(-1)[0]?.id } },
-                  ],
-                },
-                { created_at: { _lt: memberCollectionData?.member.slice(-1)[0]?.created_at } },
-              ],
-            },
-          ],
-        },
-        limit: 10,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          return prev
-        }
-        return Object.assign({}, prev, {
-          member: [...prev.member, ...fetchMoreResult.member],
-        })
-      },
-    })
-
   return {
-    loadingMemberAggregate,
-    loadingMemberCollection,
     loadingMemberPhones,
     loadingManagerInfo,
     loadingMemberOrderProductPrice,
     loadingMemberCategories,
     loadingMemberTags,
     loadingMemberProperties,
-    errorMemberCollection,
-    errorMemberAggregate,
-    members,
-    refetchMemberAggregate,
-    refetchMemberCollection,
+    memberCollection,
     refetchMemberOrderProductPrice,
     refetchMemberCategories,
     refetchMemberTags,
     refetchMemberProperties,
-    loadMoreMembers: (memberAggregateData?.member_aggregate?.aggregate?.count || 0) > 10 ? loadMoreMembers : undefined,
   }
 }
 

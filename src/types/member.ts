@@ -213,3 +213,21 @@ export type MemberNote = {
     options: any
   }[]
 }
+
+export type ResponseMembers = {
+  data: {
+    id: string
+    picture_url: string | null
+    name: string
+    email: string
+    role: 'general-member' | 'content-creator' | 'app-owner'
+    created_at: string
+    username: string
+    logined_at: string | null
+    manager_id: string | null
+  }[]
+  cursor: {
+    afterCursor: string | null
+    beforeCursor: string | null
+  }
+}
