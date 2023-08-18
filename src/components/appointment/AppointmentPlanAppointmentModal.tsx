@@ -111,7 +111,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { authToken } = useAuth()
-  const { host } = useApp()
+  const { host, settings } = useApp()
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
     useAppointmentPlanAdmin(appointmentPlanId)
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
@@ -306,7 +306,11 @@ const AppointmentPlanAppointmentModal: React.FC<
               </div>
               <StyledPlanTitle className="d-flex align-items-center justify-content-between">
                 <div>{appointmentPlanAdmin.title}</div>
-                <PriceLabel listPrice={appointmentPlanAdmin.listPrice} />
+                <PriceLabel
+                  listPrice={appointmentPlanAdmin.listPrice}
+                  currencyId={appointmentPlanAdmin.currencyId}
+                  coinUnit={settings['coin_unit']}
+                />
               </StyledPlanTitle>
               <Divider className="my-3" />
               {appointmentStep === 'period' &&

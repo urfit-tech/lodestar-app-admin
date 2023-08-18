@@ -69,6 +69,7 @@ const DiscountSelectionCard: React.FC<{
           </span>
         )}
       </StyledRadio>
+      <StyledRadio value="Coin">{formatMessage(checkoutMessages.form.radio.useCoupon)}</StyledRadio>
       {enrolledMembershipCardIds.length > 0 && (
         <StyledRadio value="Card">
           <span>{formatMessage(checkoutMessages.content.useMemberCard)}</span>
