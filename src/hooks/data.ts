@@ -1399,9 +1399,9 @@ export const useAppUsage = (dateRange: RangeValue<Moment>) => {
 
 export const useAppPlan = () => {
   const { appPlanId } = useApp()
-  const { data } = useQuery<hasura.GET_APP_PLAN, hasura.GET_APP_PLANVariables>(
+  const { data } = useQuery<hasura.GetAppPlan, hasura.GetAppPlanVariables>(
     gql`
-      query GET_APP_PLAN($appPlanId: String!) {
+      query GetAppPlan($appPlanId: String!) {
         app_plan_by_pk(id: $appPlanId) {
           id
           name
