@@ -15,6 +15,36 @@ const StyledTextColor = styled.span`
   color: #ff7d62;
 `
 
+type VideoFlowInfoProps = {
+  info: {
+    title: string
+    remainingTime: number
+    totalMinutes: number
+    maxDuration?: number
+    unit: string
+    unitLabel: string
+  }
+}
+
+const formatUnit = (unit: string, mapping: Record<string, string>): string => {
+  return mapping[unit] || unit
+}
+
+const VideoFlowInfo: React.FC<VideoFlowInfoProps> = ({ info }) => {
+  return (
+    <>
+      {info.title} :{' '}
+      {info.remainingTime < 0 ? (
+        <StyledTextColor>{info.totalMinutes}</StyledTextColor>
+      ) : (
+        <span>{info.totalMinutes}</span>
+      )}
+      {info.maxDuration !== undefined && <span> / </span>}
+      {info.maxDuration} {formatUnit(info.unit, { minute: info.unitLabel })}
+    </>
+  )
+}
+
 const MediaLibraryUsageCard: React.VFC = () => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
@@ -22,12 +52,8 @@ const MediaLibraryUsageCard: React.VFC = () => {
   const { ticks, totalVideoDuration, totalWatchedSeconds } = useAppUsage(dateRange)
   const { appPlan } = useAppPlan()
   const { maxVideoDuration, maxVideoDurationUnit, maxVideoWatch, maxVideoWatchUnit } = appPlan.options
-  const totalVideoDurationMinutes = Math.round(totalWatchedSeconds / 60)
+  const totalVideoDurationMinutes = Math.round(totalVideoDuration / 60)
   const totalWatchedSecondsMinutes = Math.round(totalWatchedSeconds / 60)
-
-  const formatUnit = (unit: string, mapping: Record<string, string>): string => {
-    return mapping[unit] || unit
-  }
 
   const DemoDualAxes = () => {
     const data = ticks.map(tick => ({
@@ -84,30 +110,28 @@ const MediaLibraryUsageCard: React.VFC = () => {
           }
         />
         <div className="mr-3">
-          {formatMessage(pageMessages.MediaLibraryPage.maxVideoDuration)} :{' '}
-          {maxVideoDuration - totalVideoDurationMinutes < 0 ? (
-            <StyledTextColor>{totalVideoDurationMinutes}</StyledTextColor>
-          ) : (
-            <span>{totalVideoDurationMinutes}</span>
-          )}
-          {maxVideoDuration !== undefined && <span> / </span>}
-          {maxVideoDuration}{' '}
-          {formatUnit(maxVideoDurationUnit, {
-            minute: formatMessage(pageMessages.MediaLibraryPage.maxVideoDurationUnit),
-          })}
+          <VideoFlowInfo
+            info={{
+              title: formatMessage(pageMessages.MediaLibraryPage.maxVideoDuration),
+              remainingTime: maxVideoDuration - totalVideoDurationMinutes,
+              totalMinutes: totalVideoDurationMinutes,
+              maxDuration: maxVideoDuration,
+              unit: maxVideoDurationUnit,
+              unitLabel: formatMessage(pageMessages.MediaLibraryPage.maxVideoDurationUnit),
+            }}
+          />
         </div>
         <div>
-          {formatMessage(pageMessages.MediaLibraryPage.maxVideoWatch)} :{' '}
-          {maxVideoWatch - totalWatchedSecondsMinutes < 0 ? (
-            <StyledTextColor>{totalWatchedSecondsMinutes}</StyledTextColor>
-          ) : (
-            <span>{totalWatchedSecondsMinutes}</span>
-          )}
-          {maxVideoDuration !== undefined && <span> / </span>}
-          {maxVideoWatch}{' '}
-          {formatUnit(maxVideoWatchUnit, {
-            minute: formatMessage(pageMessages.MediaLibraryPage.maxVideoWatchUnit),
-          })}
+          <VideoFlowInfo
+            info={{
+              title: formatMessage(pageMessages.MediaLibraryPage.maxVideoWatch),
+              remainingTime: maxVideoWatch - totalWatchedSecondsMinutes,
+              totalMinutes: totalWatchedSecondsMinutes,
+              maxDuration: maxVideoWatch,
+              unit: maxVideoWatchUnit,
+              unitLabel: formatMessage(pageMessages.MediaLibraryPage.maxVideoWatchUnit),
+            }}
+          />
         </div>
       </div>
 
