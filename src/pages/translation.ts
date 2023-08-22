@@ -463,6 +463,36 @@ const pageMessages = {
     maxVideoDurationUnit: { id: 'page.MediaLibraryPage.maxVideoDurationUnit', defaultMessage: '分鐘' },
     maxVideoWatchUnit: { id: 'page.MediaLibraryPage.maxVideoWatchUnit', defaultMessage: '分鐘' },
   }),
+  SecretAdminPage: defineMessages({
+    temporaryPasswordRequest: {
+      id: 'page.SecretAdminPage.temporaryPasswordRequest',
+      defaultMessage: 'Temporary password request',
+    },
+    requestTemporaryPassword: {
+      id: 'page.SecretAdminPage.requestTemporaryPassword',
+      defaultMessage: 'Request temporary password',
+    },
+    applicant: {
+      id: 'page.SecretAdminPage.applicant',
+      defaultMessage: 'Applicant',
+    },
+    userEmail: {
+      id: 'page.SecretAdminPage.userEmail',
+      defaultMessage: 'User email',
+    },
+    purposeOfApplication: {
+      id: 'page.SecretAdminPage.purposeOfApplication',
+      defaultMessage: 'Purpose of application',
+    },
+    tempPassword: {
+      id: 'page.SecretAdminPage.tempPassword',
+      defaultMessage: 'Temporary password',
+    },
+    expirationDate: {
+      id: 'page.SecretAdminPage.expirationDate',
+      defaultMessage: 'Expiration Date',
+    },
+  }),
 }
 
 export default pageMessages
