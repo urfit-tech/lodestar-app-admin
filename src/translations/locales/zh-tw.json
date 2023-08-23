@@ -1963,6 +1963,7 @@
   "page.SalesPage.salesAdmin": "銷售管理",
   "page.SecretAdminPage.applicant": "申請人",
   "page.SecretAdminPage.expirationDate": "有效期限",
+  "page.SecretAdminPage.invalidEmail": "無效的信箱",
   "page.SecretAdminPage.purposeOfApplication": "申請目的",
   "page.SecretAdminPage.requestTemporaryPassword": "申請臨時密碼",
   "page.SecretAdminPage.tempPassword": "臨時密碼",

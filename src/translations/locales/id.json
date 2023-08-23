@@ -1943,6 +1943,7 @@
   "page.SalesPage.salesAdmin": "銷售管理",
   "page.SecretAdminPage.applicant": "Applicant",
   "page.SecretAdminPage.expirationDate": "Expiration Date",
+  "page.SecretAdminPage.invalidEmail": "Invalid email",
   "page.SecretAdminPage.purposeOfApplication": "Purpose of application",
   "page.SecretAdminPage.requestTemporaryPassword": "Request temporary password",
   "page.SecretAdminPage.tempPassword": "Temporary password",

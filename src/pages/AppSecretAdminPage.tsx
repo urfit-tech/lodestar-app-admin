@@ -5,6 +5,7 @@ import { Textarea } from '@chakra-ui/textarea'
 import { Button, Form, Input, InputNumber, message, Switch } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
@@ -16,7 +17,7 @@ import { AdminPageTitle } from '../components/admin'
 import AdminCard from '../components/admin/AdminCard'
 import AdminLayout from '../components/layout/AdminLayout'
 import * as hasura from '../hasura'
-import { copyToClipboard, handleError } from '../helpers'
+import { copyToClipboard, handleError, isValidEmail } from '../helpers'
 import { commonMessages, errorMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
 import pageMessages from './translation'
@@ -26,6 +27,11 @@ const StyledPassHashBlock = styled.div`
   border: 1px solid #cccccc;
   background-color: #cbe5f3;
   width: fit-content;
+`
+
+const StyledPassHashRow = styled.div`
+  display: flex;
+  align-items: center;
 `
 
 const AppSecretAdminPage: React.FC = () => {
@@ -187,8 +193,9 @@ const AppSecretCard: React.FC<
   )
 }
 
-const TemporaryPasswordRequestCard: React.FC<{}> = ({}) => {
+const TemporaryPasswordRequestCard: React.FC = () => {
   const { currentMember } = useAuth()
+  const { id } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [passHash, setPassHash] = useState<string | null>(null)
@@ -196,14 +203,32 @@ const TemporaryPasswordRequestCard: React.FC<{}> = ({}) => {
   const [expiredAt, setExpiredAt] = useState<string | null>(null)
 
   const handleSubmit = async (values: FieldProps) => {
-    form.validateFields().then(() => {
-      // call lodestar-server api
-      // create tmp password
-      setLoading(true)
-      setLoading(false)
-      setPassHash('ksdf@*(RJK@_#@R$JHB')
-      setExpiredAt(dayjs('2023-08-21T08:23:12Z').format('YYYY-MM-DD HH:mm:ss'))
-    })
+    form
+      .validateFields()
+      .then(async () => {
+        setLoading(true)
+        if (!isValidEmail(values.userEmail)) {
+          return message.error(formatMessage(pageMessages.SecretAdminPage.invalidEmail))
+        }
+        const {
+          data: {
+            result: { password, expiredAt },
+          },
+        } = await axios.post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/password/temporary`, {
+          appId: id,
+          account: values.applicantEmail,
+          email: values.userEmail,
+          purpose: values.purpose,
+        })
+        setPassHash(password)
+        setExpiredAt(dayjs(expiredAt).format('YYYY-MM-DD HH:mm:ss'))
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
   return (
     <AdminCard title={formatMessage(pageMessages.SecretAdminPage.temporaryPasswordRequest)}>
@@ -250,7 +275,7 @@ const TemporaryPasswordRequestCard: React.FC<{}> = ({}) => {
         </Form.Item>
         {passHash && expiredAt ? (
           <StyledPassHashBlock>
-            <div className="items-center flex">
+            <StyledPassHashRow>
               <div className="mr-2">
                 {formatMessage(pageMessages.SecretAdminPage.tempPassword)}：{passHash}
               </div>
@@ -262,7 +287,7 @@ const TemporaryPasswordRequestCard: React.FC<{}> = ({}) => {
                   message.success(formatMessage(commonMessages.text.copiedToClipboard))
                 }}
               />
-            </div>
+            </StyledPassHashRow>
             <div>
               {formatMessage(pageMessages.SecretAdminPage.expirationDate)}：{expiredAt}
             </div>

@@ -492,6 +492,10 @@ const pageMessages = {
       id: 'page.SecretAdminPage.expirationDate',
       defaultMessage: 'Expiration Date',
     },
+    invalidEmail: {
+      id: 'page.SecretAdminPage.invalidEmail',
+      defaultMessage: 'Invalid email',
+    },
   }),
 }
 
