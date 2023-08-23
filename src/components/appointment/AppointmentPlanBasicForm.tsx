@@ -177,7 +177,6 @@ const AppointmentPlanBasicForm: React.FC<{
           </Form.Item>
 
           <Form.Item
-            className="ml-2"
             name="reservationType"
             rules={[
               {
@@ -188,7 +187,7 @@ const AppointmentPlanBasicForm: React.FC<{
               },
             ]}
           >
-            <Select style={{ width: '100px' }}>
+            <Select style={{ width: '150px' }}>
               <Select.Option key="hour" value="hour">
                 {formatMessage(messages.hoursAgo)}
               </Select.Option>
@@ -277,12 +276,12 @@ const AppointmentPlanBasicForm: React.FC<{
 
       {enabledModules.zoom ? (
         <Form.Item label="預設會議系統">
-          <Select style={{ width: '150px' }}>
-            <Select.Option key="zoom" value="auto">
-              zoom
+          <Select style={{ width: '150px' }} defaultValue="zoom">
+            <Select.Option key="zoom" value="zoom">
+              Zoom
             </Select.Option>
             <Select.Option key="jitsi" value="jitsi">
-              jitsi
+              Jitsi
             </Select.Option>
           </Select>
         </Form.Item>
