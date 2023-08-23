@@ -36,7 +36,7 @@ const DiscountSelectionCard: React.FC<{
       value={discountType || 'None'}
       onChange={e => onChange && onChange(e.target.value)}
     >
-      <StyledRadio value="None">{formatMessage(checkoutMessages.form.radio.noDiscount)}</StyledRadio>
+      <StyledRadio value="None">{formatMessage(checkoutMessages.form.radio.useCoin)}</StyledRadio>
       <StyledRadio value="Coupon">
         <span>{formatMessage(checkoutMessages.form.radio.useCoupon)}</span>
         {discountType === 'Coupon' && (
@@ -69,7 +69,6 @@ const DiscountSelectionCard: React.FC<{
           </span>
         )}
       </StyledRadio>
-      <StyledRadio value="Coin">{formatMessage(checkoutMessages.form.radio.useCoupon)}</StyledRadio>
       {enrolledMembershipCardIds.length > 0 && (
         <StyledRadio value="Card">
           <span>{formatMessage(checkoutMessages.content.useMemberCard)}</span>

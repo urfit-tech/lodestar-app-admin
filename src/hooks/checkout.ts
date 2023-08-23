@@ -6,10 +6,11 @@ import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import hasura from '../hasura'
 import { CouponCodeProps, CouponPlanProps, VoucherCodeProps, VoucherPlanProps, VoucherProps } from '../types/checkout'
+import Axios from 'axios'
 
 import axios from 'axios'
 import { prop, sum } from 'ramda'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { InvoiceProps } from '../types/merchandise'
 import { ShippingProps } from '../types/merchandise'
@@ -620,36 +621,45 @@ export const useCheck = (
     JSON.stringify(shipping),
   ])
 
-  const placeOrder = useCallback(
-    async (paymentType: 'perpetual' | 'subscription' | 'groupBuying', invoice: InvoiceProps) => {
-      setOrderPlacing(true)
-      return axios
-        .post<{ code: string; message: string; result: { id: string } }>(
-          `${process.env.REACT_APP_API_BASE_ROOT}/tasks/order`,
-          {
-            paymentModel: { type: paymentType },
-            productIds,
-            discountId,
-            memberId,
-            shipping,
-            invoice,
-            options,
-          },
-          {
-            headers: { authorization: `Bearer ${authToken}` },
-          },
-        )
-        .then(({ data: { code, result, message } }) => {
-          if (code === 'SUCCESS') {
-            return result.id
-          } else {
-            throw new Error(message)
-          }
-        })
-        .finally(() => setOrderPlacing(false))
-    },
-    [authToken, discountId, memberId, options, productIds, shipping],
-  )
+  const placeOrder = async (
+    paymentType: 'perpetual' | 'subscription' | 'groupBuying',
+    invoice: InvoiceProps,
+  ) => {
+    setOrderPlacing(true)
+    const {
+      data: { code, message, result },
+    } = await Axios.post<{
+      code: string
+      message: string
+      result: {
+        orderId: string
+        totalAmount: number
+        paymentNo: string | null
+        payToken: string | null
+        products: { name: string; price: number }[]
+        discounts: { name: string; price: number }[]
+      }
+    }>(
+      `${process.env.REACT_APP_API_BASE_ROOT}/order/create`,
+      {
+        memberId,
+        paymentModel: { type: paymentType },
+        productIds,
+        discountId,
+        shipping,
+        invoice,
+        options,
+      },
+      {
+        headers: { authorization: `Bearer ${authToken}` },
+      },
+    )
+    if (code === 'SUCCESS') {
+      return result
+    } else {
+      throw new Error('create order failed: ' + message)
+    }
+  }
 
   return {
     check,
