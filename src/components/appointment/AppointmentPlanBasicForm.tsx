@@ -2,6 +2,7 @@ import { QuestionCircleFilled } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, InputNumber, message, Radio, Select, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
@@ -65,6 +66,7 @@ const AppointmentPlanBasicForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
+  const { enabledModules } = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const [isReschedule, setIsReschedule] = useState<boolean>(appointmentPlanAdmin?.rescheduleAmount !== -1)
@@ -272,6 +274,19 @@ const AppointmentPlanBasicForm: React.FC<{
           </Select.Option>
         </Select>
       </Form.Item>
+
+      {enabledModules.zoom ? (
+        <Form.Item label="預設會議系統">
+          <Select style={{ width: '150px' }}>
+            <Select.Option key="zoom" value="auto">
+              zoom
+            </Select.Option>
+            <Select.Option key="jitsi" value="jitsi">
+              jitsi
+            </Select.Option>
+          </Select>
+        </Form.Item>
+      ) : null}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
