@@ -668,8 +668,8 @@ export const useEstimator = (
     },
   )
   const target: {
-    id: string | undefined,
-    title: string | undefined,
+    id: string | undefined
+    title: string | undefined
   } | null =
     loading || error || !data
       ? null
@@ -1394,5 +1394,46 @@ export const useAppUsage = (dateRange: RangeValue<Moment>) => {
     totalVideoDuration: max(ticks.map(tick => tick.videoDuration)) || 0,
     totalWatchedSeconds: sum(data?.app_usage.map(v => v.watched_seconds || 0) || []),
     ticks,
+  }
+}
+
+export const useAppPlan = () => {
+  const { appPlanId } = useApp()
+  const { data } = useQuery<hasura.GetAppPlan, hasura.GetAppPlanVariables>(
+    gql`
+      query GetAppPlan($appPlanId: String!) {
+        app_plan_by_pk(id: $appPlanId) {
+          id
+          name
+          options
+        }
+      }
+    `,
+    {
+      variables: {
+        appPlanId,
+      },
+    },
+  )
+
+  const storage = data?.app_plan_by_pk?.options?.limit?.storage
+  const streaming = data?.app_plan_by_pk?.options?.limit?.streaming
+  const usage = data?.app_plan_by_pk?.options?.limit?.usage
+
+  return {
+    appPlan: {
+      id: data?.app_plan_by_pk?.id,
+      name: data?.app_plan_by_pk?.name,
+      options: {
+        maxVideoDuration: storage?.max_video_duration,
+        maxVideoDurationUnit: storage?.max_video_duration_unit,
+        maxOther: storage?.max_other,
+        maxOtherUnit: storage?.max_other_unit,
+        maxVideoWatch: streaming?.max_video_watch,
+        maxVideoWatchUnit: streaming?.max_video_watch_unit,
+        maxSms: usage?.max_sms,
+        maxSmsUnit: usage?.max_sms_unit,
+      },
+    },
   }
 }
