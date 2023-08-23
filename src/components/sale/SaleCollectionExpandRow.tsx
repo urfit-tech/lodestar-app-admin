@@ -1,25 +1,25 @@
-import { ApolloClient, gql, useApolloClient, useMutation, useQuery } from '@apollo/client'
-import hasura from '../../hasura'
-import styled from 'styled-components'
-import ProductTypeLabel from '../common/ProductTypeLabel'
+import { ApolloClient, gql, useApolloClient, useMutation } from '@apollo/client'
+import { Button, Divider, message, Skeleton, Switch } from 'antd'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
-import { useIntl } from 'react-intl'
-import saleMessages from './translation'
-import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
-import AdminModal from '../admin/AdminModal'
+import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
-import { Button, Divider, message, Skeleton, Switch } from 'antd'
-import TokenTypeLabel from 'lodestar-app-element/src/components/labels/TokenTypeLabel'
-import ShippingMethodLabel from '../common/ShippingMethodLabel'
 import { useEffect, useState } from 'react'
-import OrderDetailDrawer from './OrderDetailDrawer'
-import ModifyOrderStatusModal from './ModifyOrderStatusModal'
-import SubscriptionCancelModal from './SubscriptionCancelModal'
-import { OrderLogColumn } from './SaleCollectionAdminCard'
+import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import hasura from '../../hasura'
+import { currencyFormatter, dateFormatter, dateRangeFormatter, handleError } from '../../helpers'
 import { useOrderLogExpandRow } from '../../hooks/order'
+import AdminModal from '../admin/AdminModal'
+import ProductTypeLabel from '../common/ProductTypeLabel'
+import ShippingMethodLabel from '../common/ShippingMethodLabel'
+import ModifyOrderStatusModal from './ModifyOrderStatusModal'
+import OrderDetailDrawer from './OrderDetailDrawer'
+import { OrderLogColumn } from './SaleCollectionAdminCard'
+import SubscriptionCancelModal from './SubscriptionCancelModal'
+import saleMessages from './translation'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -98,7 +98,8 @@ const SaleCollectionExpandRow = ({
                     </div>
                     <div className="col-3 d-flex justify-content-between">
                       <div>
-                        {currentUserRole === 'app-owner' && settings['feature.modify_order_status.enabled'] === '1' ? (
+                        {(currentUserRole === 'app-owner' || Boolean(permissions.MODIFY_MEMBER_ORDER_EQUITY)) &&
+                        settings['feature.modify_order_status.enabled'] === '1' ? (
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}
@@ -136,7 +137,8 @@ const SaleCollectionExpandRow = ({
                     </div>
                     <div className="col-3 d-flex justify-content-between">
                       <div>
-                        {currentUserRole === 'app-owner' && settings['feature.modify_order_status.enabled'] === '1' ? (
+                        {(currentUserRole === 'app-owner' || Boolean(permissions.MODIFY_MEMBER_ORDER_EQUITY)) &&
+                        settings['feature.modify_order_status.enabled'] === '1' ? (
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}

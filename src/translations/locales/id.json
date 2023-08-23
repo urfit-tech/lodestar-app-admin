@@ -1410,6 +1410,7 @@
   "form.PermissionGroup.MERCHANDISE_ADMIN": "Semua manajemen e-niaga",
   "form.PermissionGroup.MERCHANDISE_CATEGORY_ADMIN": "Semua fungsi klasifikasi e-niaga",
   "form.PermissionGroup.MERCHANDISE_NORMAL": "Manajemen e-niaga pribadi",
+  "form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY": "調整會員訂單權益功能",
   "form.PermissionGroup.PERMISSION_GROUP_ADMIN": "Fungsi manajemen grup izin",
   "form.PermissionGroup.PODCAST_ADMIN": "Semua Manajemen Audio",
   "form.PermissionGroup.PODCAST_ALBUM_ADMIN": "Pengelolaan Album Audio",
