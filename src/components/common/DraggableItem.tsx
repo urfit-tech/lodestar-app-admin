@@ -13,6 +13,7 @@ const StyledDraggableItem = styled.div`
 const StyledChildren = styled.div`
   padding: 8px;
   padding-left: 0;
+  width: 100%;
 `
 
 const DraggableItem: React.FC<
@@ -24,7 +25,7 @@ const DraggableItem: React.FC<
 > = ({ dataId, handlerClassName, children, actions, ...divProps }) => {
   return (
     <StyledDraggableItem {...divProps} data-id={dataId}>
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-center" style={{ width: '100%' }}>
         <DragOutlined onClick={() => {}} className={handlerClassName + ' mr-3'} />
         <StyledChildren>{children}</StyledChildren>
       </div>
