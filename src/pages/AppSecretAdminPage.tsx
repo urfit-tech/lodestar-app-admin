@@ -44,7 +44,7 @@ const AppSecretAdminPage: React.FC = () => {
         return accum
       }, {} as Record<string, AppSecrets>) || {}
 
-  if (!permissions.APP_SETTING_ADMIN) {
+  if (!permissions.APP_SECRET_ADMIN) {
     return <ForbiddenPage />
   }
 

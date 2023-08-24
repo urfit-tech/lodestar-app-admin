@@ -41,7 +41,7 @@ const AppTmpPasswordPage: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [expiredAt, setExpiredAt] = useState<string | null>(null)
 
-  if (!permissions.APP_SETTING_ADMIN) {
+  if (!permissions.APP_TMP_PASSWORD_ADMIN) {
     return <ForbiddenPage />
   }
 
