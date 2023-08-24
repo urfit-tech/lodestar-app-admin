@@ -40,6 +40,7 @@ const AppTmpPasswordPage: React.FC = () => {
   const [passHash, setPassHash] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [expiredAt, setExpiredAt] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   if (!permissions.APP_TMP_PASSWORD_ADMIN) {
     return <ForbiddenPage />
@@ -49,25 +50,28 @@ const AppTmpPasswordPage: React.FC = () => {
     form
       .validateFields()
       .then(async () => {
+        setErrorMessage(null)
         setLoading(true)
         if (!isValidEmail(values.userEmail)) {
           return message.error(formatMessage(pageMessages.AppTmpPasswordPage.invalidEmail))
         }
         const {
-          data: {
-            result: { password, expiredAt },
-          },
+          data: { result, code, message: errorMessage },
         } = await axios.post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/password/temporary`, {
           appId,
           applicant: currentMemberId,
           email: values.userEmail,
           purpose: values.purpose,
         })
-        setPassHash(password)
-        setExpiredAt(dayjs(expiredAt).format('YYYY-MM-DD HH:mm:ss'))
+        if (code !== 'SUCCESS') {
+          throw errorMessage
+        }
+        setPassHash(result.password)
+        setExpiredAt(dayjs(result.expiredAt).format('YYYY-MM-DD HH:mm:ss'))
       })
       .catch(err => {
         console.log(err)
+        setErrorMessage(JSON.stringify(err))
       })
       .finally(() => {
         setLoading(false)
@@ -121,6 +125,7 @@ const AppTmpPasswordPage: React.FC = () => {
           >
             <Textarea />
           </Form.Item>
+          {errorMessage && <div style={{ color: 'red', marginBottom: 12 }}>{errorMessage}</div>}
           {passHash && expiredAt ? (
             <StyledPassHashBlock>
               <StyledPassHashRow>
