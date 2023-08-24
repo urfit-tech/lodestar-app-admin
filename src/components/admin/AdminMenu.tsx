@@ -655,6 +655,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           key: 'app_secret',
           name: formatMessage(adminMessages.AdminMenu.appSecretAdmin),
         },
+        {
+          permissionIsAllowed: Boolean(permissions.APP_SETTING_ADMIN),
+          key: 'app_tmpPassword',
+          name: formatMessage(adminMessages.AdminMenu.tmpPassword),
+        },
       ],
     },
   ]

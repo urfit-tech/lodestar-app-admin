@@ -84,6 +84,7 @@ const adminMessages = {
     questionGroupManagement: { id: 'admin.AdminMenu.questionGroupManagement', defaultMessage: '題組管理' },
     gift: { id: 'admin.AdminMenu.giftPlans', defaultMessage: '贈品方案' },
     report: { id: 'admin.AdminMenu.report', defaultMessage: '報表分析' },
+    tmpPassword: { id: 'admin.AdminMenu.tmpPassword', defaultMessage: 'Temporary Password Request' },
   }),
 }
 export default adminMessages

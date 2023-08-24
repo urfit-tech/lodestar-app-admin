@@ -463,37 +463,37 @@ const pageMessages = {
     maxVideoDurationUnit: { id: 'page.MediaLibraryPage.maxVideoDurationUnit', defaultMessage: '分鐘' },
     maxVideoWatchUnit: { id: 'page.MediaLibraryPage.maxVideoWatchUnit', defaultMessage: '分鐘' },
   }),
-  SecretAdminPage: defineMessages({
+  AppTmpPasswordPage: defineMessages({
     temporaryPasswordRequest: {
-      id: 'page.SecretAdminPage.temporaryPasswordRequest',
+      id: 'page.AppTmpPasswordPage.temporaryPasswordRequest',
       defaultMessage: 'Temporary password request',
     },
     requestTemporaryPassword: {
-      id: 'page.SecretAdminPage.requestTemporaryPassword',
+      id: 'page.AppTmpPasswordPage.requestTemporaryPassword',
       defaultMessage: 'Request temporary password',
     },
     applicant: {
-      id: 'page.SecretAdminPage.applicant',
+      id: 'page.AppTmpPasswordPage.applicant',
       defaultMessage: 'Applicant',
     },
     userEmail: {
-      id: 'page.SecretAdminPage.userEmail',
+      id: 'page.AppTmpPasswordPage.userEmail',
       defaultMessage: 'User email',
     },
     purposeOfApplication: {
-      id: 'page.SecretAdminPage.purposeOfApplication',
+      id: 'page.AppTmpPasswordPage.purposeOfApplication',
       defaultMessage: 'Purpose of application',
     },
-    tempPassword: {
-      id: 'page.SecretAdminPage.tempPassword',
+    tmpPassword: {
+      id: 'page.AppTmpPasswordPage.tmpPassword',
       defaultMessage: 'Temporary password',
     },
     expirationDate: {
-      id: 'page.SecretAdminPage.expirationDate',
+      id: 'page.AppTmpPasswordPage.expirationDate',
       defaultMessage: 'Expiration Date',
     },
     invalidEmail: {
-      id: 'page.SecretAdminPage.invalidEmail',
+      id: 'page.AppTmpPasswordPage.invalidEmail',
       defaultMessage: 'Invalid email',
     },
   }),

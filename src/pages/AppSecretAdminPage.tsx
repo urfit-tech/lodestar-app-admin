@@ -1,38 +1,20 @@
-import { CopyOutlined, GlobalOutlined } from '@ant-design/icons'
+import { GlobalOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { IconButton } from '@chakra-ui/button'
-import { Textarea } from '@chakra-ui/textarea'
 import { Button, Form, Input, InputNumber, message, Switch } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
-import axios from 'axios'
-import dayjs from 'dayjs'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { keys, trim } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { AdminPageTitle } from '../components/admin'
 import AdminCard from '../components/admin/AdminCard'
 import AdminLayout from '../components/layout/AdminLayout'
 import * as hasura from '../hasura'
-import { copyToClipboard, handleError, isValidEmail } from '../helpers'
-import { commonMessages, errorMessages } from '../helpers/translation'
+import { handleError } from '../helpers'
+import { commonMessages } from '../helpers/translation'
 import ForbiddenPage from './ForbiddenPage'
-import pageMessages from './translation'
-
-const StyledPassHashBlock = styled.div`
-  padding: 12px;
-  border: 1px solid #cccccc;
-  background-color: #cbe5f3;
-  width: fit-content;
-`
-
-const StyledPassHashRow = styled.div`
-  display: flex;
-  align-items: center;
-`
 
 const AppSecretAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -84,7 +66,6 @@ const AppSecretAdminPage: React.FC = () => {
             className="mb-3"
           />
         ))}
-      <TemporaryPasswordRequestCard />
     </AdminLayout>
   )
 }
@@ -188,117 +169,6 @@ const AppSecretCard: React.FC<
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
-      </Form>
-    </AdminCard>
-  )
-}
-
-const TemporaryPasswordRequestCard: React.FC = () => {
-  const { currentMember } = useAuth()
-  const { id } = useApp()
-  const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
-  const [passHash, setPassHash] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [expiredAt, setExpiredAt] = useState<string | null>(null)
-
-  const handleSubmit = async (values: FieldProps) => {
-    form
-      .validateFields()
-      .then(async () => {
-        setLoading(true)
-        if (!isValidEmail(values.userEmail)) {
-          return message.error(formatMessage(pageMessages.SecretAdminPage.invalidEmail))
-        }
-        const {
-          data: {
-            result: { password, expiredAt },
-          },
-        } = await axios.post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/password/temporary`, {
-          appId: id,
-          account: values.applicantEmail,
-          email: values.userEmail,
-          purpose: values.purpose,
-        })
-        setPassHash(password)
-        setExpiredAt(dayjs(expiredAt).format('YYYY-MM-DD HH:mm:ss'))
-      })
-      .catch(err => {
-        console.log(err)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
-  return (
-    <AdminCard title={formatMessage(pageMessages.SecretAdminPage.temporaryPasswordRequest)}>
-      <Form
-        form={form}
-        labelAlign="left"
-        labelCol={{ md: { span: 6 } }}
-        wrapperCol={{ md: { span: 18 } }}
-        colon={false}
-        onFinish={handleSubmit}
-        initialValues={{ applicantEmail: currentMember?.email }}
-        requiredMark
-      >
-        <Form.Item label={formatMessage(pageMessages.SecretAdminPage.applicant)} name={'applicantEmail'} required>
-          <Input width={200} disabled />
-        </Form.Item>
-        <Form.Item
-          label={formatMessage(pageMessages.SecretAdminPage.userEmail)}
-          name={'userEmail'}
-          rules={[
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(pageMessages.SecretAdminPage.userEmail),
-              }),
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label={formatMessage(pageMessages.SecretAdminPage.purposeOfApplication)}
-          name={'purpose'}
-          rules={[
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(pageMessages.SecretAdminPage.purposeOfApplication),
-              }),
-            },
-          ]}
-        >
-          <Textarea />
-        </Form.Item>
-        {passHash && expiredAt ? (
-          <StyledPassHashBlock>
-            <StyledPassHashRow>
-              <div className="mr-2">
-                {formatMessage(pageMessages.SecretAdminPage.tempPassword)}：{passHash}
-              </div>
-              <IconButton
-                aria-label="copy password"
-                icon={<CopyOutlined />}
-                onClick={() => {
-                  copyToClipboard(passHash)
-                  message.success(formatMessage(commonMessages.text.copiedToClipboard))
-                }}
-              />
-            </StyledPassHashRow>
-            <div>
-              {formatMessage(pageMessages.SecretAdminPage.expirationDate)}：{expiredAt}
-            </div>
-          </StyledPassHashBlock>
-        ) : (
-          <Form.Item wrapperCol={{ md: { offset: 6 } }}>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              {formatMessage(pageMessages.SecretAdminPage.requestTemporaryPassword)}
-            </Button>
-          </Form.Item>
-        )}
       </Form>
     </AdminCard>
   )
