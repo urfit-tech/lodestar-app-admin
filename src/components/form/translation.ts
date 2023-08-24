@@ -44,6 +44,7 @@ const formMessages = {
     SALES_RECORDS_NORMAL: { id: 'form.PermissionGroup.SALES_RECORDS_NORMAL', defaultMessage: '查看個人銷售紀錄' },
     GROSS_SALES_ADMIN: { id: 'form.PermissionGroup.GROSS_SALES_ADMIN', defaultMessage: '查看所有銷售總額' },
     SALES_RECORDS_DETAILS: { id: 'form.PermissionGroup.SALES_RECORDS_DETAILS', defaultMessage: '查看消費者細項' },
+    MODIFY_MEMBER_ORDER_EQUITY: { id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY', defaultMessage: '調整會員訂單權益功能' },
 
     // program
     PROGRAM_ADMIN: { id: 'form.PermissionGroup.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },
@@ -205,7 +206,6 @@ const formMessages = {
     CHECK_MEMBER_COIN: { id: 'form.PermissionGroup.CHECK_MEMBER_COIN', defaultMessage: '查看會員代幣紀錄' },
     CHECK_MEMBER_HISTORY: { id: 'form.PermissionGroup.CHECK_MEMBER_HISTORY', defaultMessage: '查看會員歷程紀錄' },
     MEMBER_NOTE_ADMIN: { id: 'form.PermissionGroup.MEMBER_NOTE_ADMIN', defaultMessage: '聯絡記錄管理功能' },
-    MODIFY_MEMBER_ORDER_EQUITY: { id: 'form.PermissionGroup.MODIFY_MEMBER_ORDER_EQUITY', defaultMessage: '調整會員訂單權益功能' },
 
     // task
     TASK_ADMIN: { id: 'form.PermissionGroup.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
