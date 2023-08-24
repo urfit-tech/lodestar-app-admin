@@ -98,7 +98,8 @@ const SaleCollectionExpandRow = ({
                     </div>
                     <div className="col-3 d-flex justify-content-between">
                       <div>
-                        {currentUserRole === 'app-owner' && settings['feature.modify_order_status.enabled'] === '1' ? (
+                        {(currentUserRole === 'app-owner' || Boolean(permissions.MODIFY_MEMBER_ORDER_EQUITY)) &&
+                        settings['feature.modify_order_status.enabled'] === '1' ? (
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}
@@ -136,7 +137,8 @@ const SaleCollectionExpandRow = ({
                     </div>
                     <div className="col-3 d-flex justify-content-between">
                       <div>
-                        {currentUserRole === 'app-owner' && settings['feature.modify_order_status.enabled'] === '1' ? (
+                        {(currentUserRole === 'app-owner' || Boolean(permissions.MODIFY_MEMBER_ORDER_EQUITY)) &&
+                        settings['feature.modify_order_status.enabled'] === '1' ? (
                           <ModifyOrderDeliveredModal
                             orderProduct={orderProduct}
                             loading={loadingExpandRowOrderProduct}

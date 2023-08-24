@@ -10,6 +10,7 @@ import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import hasura from '../hasura'
+import { RangeValue } from 'rc-picker/lib/interface'
 import { Attachment, Category, ClassType, ProductInventoryLogProps } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
@@ -19,6 +20,8 @@ import XHRUpload from '@uppy/xhr-upload'
 import { MetaProductType } from 'lodestar-app-element/src/types/metaProduct'
 import { ProductType } from 'lodestar-app-element/src/types/product'
 import hooksMessages from './translation'
+import moment, { Moment } from 'moment'
+import { max, sum } from 'lodash'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_TAGS>(
@@ -665,8 +668,8 @@ export const useEstimator = (
     },
   )
   const target: {
-    id: string | undefined,
-    title: string | undefined,
+    id: string | undefined
+    title: string | undefined
   } | null =
     loading || error || !data
       ? null
@@ -1342,4 +1345,95 @@ export const useTransformProductToString = (productType: MetaProductType) => {
       break
   }
   return res
+}
+
+export const useAppUsage = (dateRange: RangeValue<Moment>) => {
+  const startedAt = dateRange?.[0] || moment().subtract(1, 'day')
+  const endedAt = dateRange?.[1] || moment()
+  const { data } = useQuery<hasura.GET_APP_USAGE, hasura.GET_APP_USAGEVariables>(
+    gql`
+      query GET_APP_USAGE($startedDateHour: String!, $endedDateHour: String!) {
+        app_usage(where: { date_hour: { _gte: $startedDateHour, _lte: $endedDateHour } }) {
+          date_hour
+          video_duration
+          watched_seconds
+        }
+        last_app_usage: app_usage(
+          where: { date_hour: { _lt: $startedDateHour }, video_duration: { _gte: 0 } }
+          limit: 1
+        ) {
+          video_duration
+        }
+      }
+    `,
+    {
+      variables: {
+        startedDateHour: startedAt.clone().utc().format('YYYYMMDDHH'),
+        endedDateHour: endedAt.clone().utc().format('YYYYMMDDHH'),
+      },
+    },
+  )
+  const dateHours = []
+  for (let dateHour = startedAt; dateHour <= endedAt; dateHour = dateHour.clone().add(1, 'hour')) {
+    dateHours.push(dateHour)
+  }
+  let videoDuration = Number(data?.last_app_usage[0]?.video_duration) || 0
+  const ticks = dateHours.map(dateHour => {
+    const usage = data?.app_usage.find(v => v.date_hour === dateHour.clone().utc().format('YYYYMMDDHH'))
+    const tickVideoDuration = Number(usage?.video_duration) || -1
+    // if videoDuration not exist, use last one
+    // else, if videoDuration is wierd, set 0
+    videoDuration = tickVideoDuration === -1 ? videoDuration : tickVideoDuration
+    return {
+      dateHour,
+      videoDuration,
+      watchedSeconds: Number(usage?.watched_seconds) || 0,
+    }
+  })
+  return {
+    totalVideoDuration: max(ticks.map(tick => tick.videoDuration)) || 0,
+    totalWatchedSeconds: sum(data?.app_usage.map(v => v.watched_seconds || 0) || []),
+    ticks,
+  }
+}
+
+export const useAppPlan = () => {
+  const { appPlanId } = useApp()
+  const { data } = useQuery<hasura.GetAppPlan, hasura.GetAppPlanVariables>(
+    gql`
+      query GetAppPlan($appPlanId: String!) {
+        app_plan_by_pk(id: $appPlanId) {
+          id
+          name
+          options
+        }
+      }
+    `,
+    {
+      variables: {
+        appPlanId,
+      },
+    },
+  )
+
+  const storage = data?.app_plan_by_pk?.options?.limit?.storage
+  const streaming = data?.app_plan_by_pk?.options?.limit?.streaming
+  const usage = data?.app_plan_by_pk?.options?.limit?.usage
+
+  return {
+    appPlan: {
+      id: data?.app_plan_by_pk?.id,
+      name: data?.app_plan_by_pk?.name,
+      options: {
+        maxVideoDuration: storage?.max_video_duration,
+        maxVideoDurationUnit: storage?.max_video_duration_unit,
+        maxOther: storage?.max_other,
+        maxOtherUnit: storage?.max_other_unit,
+        maxVideoWatch: streaming?.max_video_watch,
+        maxVideoWatchUnit: streaming?.max_video_watch_unit,
+        maxSms: usage?.max_sms,
+        maxSmsUnit: usage?.max_sms_unit,
+      },
+    },
+  }
 }
