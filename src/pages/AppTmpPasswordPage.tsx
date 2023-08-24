@@ -32,7 +32,7 @@ const StyledPassHashRow = styled.div`
 type FieldProps = { applicantEmail: string; userEmail: string; purpose: string }
 
 const AppTmpPasswordPage: React.FC = () => {
-  const { permissions, currentMember } = useAuth()
+  const { permissions, currentMember, currentMemberId } = useAuth()
 
   const { id: appId } = useApp()
   const { formatMessage } = useIntl()
@@ -59,7 +59,7 @@ const AppTmpPasswordPage: React.FC = () => {
           },
         } = await axios.post(`${process.env.REACT_APP_LODESTAR_SERVER_ENDPOINT}/auth/password/temporary`, {
           appId,
-          account: values.applicantEmail,
+          applicant: currentMemberId,
           email: values.userEmail,
           purpose: values.purpose,
         })
