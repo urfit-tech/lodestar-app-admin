@@ -1399,7 +1399,7 @@ export const useAppUsage = (dateRange: RangeValue<Moment>) => {
 
 export const useAppPlan = () => {
   const { appPlanId } = useApp()
-  const { data } = useQuery<hasura.GetAppPlan, hasura.GetAppPlanVariables>(
+  const { data, loading } = useQuery<hasura.GetAppPlan, hasura.GetAppPlanVariables>(
     gql`
       query GetAppPlan($appPlanId: String!) {
         app_plan_by_pk(id: $appPlanId) {
@@ -1420,20 +1420,36 @@ export const useAppPlan = () => {
   const streaming = data?.app_plan_by_pk?.options?.limit?.streaming
   const usage = data?.app_plan_by_pk?.options?.limit?.usage
 
-  return {
-    appPlan: {
-      id: data?.app_plan_by_pk?.id,
-      name: data?.app_plan_by_pk?.name,
-      options: {
-        maxVideoDuration: storage?.max_video_duration,
-        maxVideoDurationUnit: storage?.max_video_duration_unit,
-        maxOther: storage?.max_other,
-        maxOtherUnit: storage?.max_other_unit,
-        maxVideoWatch: streaming?.max_video_watch,
-        maxVideoWatchUnit: streaming?.max_video_watch_unit,
-        maxSms: usage?.max_sms,
-        maxSmsUnit: usage?.max_sms_unit,
-      },
+  const appPlan: {
+    id?: string
+    name?: string
+    options: {
+      maxVideoDuration: number
+      maxVideoDurationUnit: string
+      maxOther: number
+      maxOtherUnit: string
+      maxVideoWatch: number
+      maxVideoWatchUnit: string
+      maxSms: number
+      maxSmsUnit: string
+    }
+  } = {
+    id: data?.app_plan_by_pk?.id,
+    name: data?.app_plan_by_pk?.name,
+    options: {
+      maxVideoDuration: storage?.max_video_duration || 0,
+      maxVideoDurationUnit: storage?.max_video_duration_unit || 'minute',
+      maxOther: storage?.max_other || 0,
+      maxOtherUnit: storage?.max_other_unit || 'GB',
+      maxVideoWatch: streaming?.max_video_watch || 0,
+      maxVideoWatchUnit: streaming?.max_video_watch_unit || 'minute',
+      maxSms: usage?.max_sms || 0,
+      maxSmsUnit: usage?.max_sms_unit || 'letter',
     },
+  }
+
+  return {
+    appPlan: appPlan,
+    appPlanLoading: loading,
   }
 }
