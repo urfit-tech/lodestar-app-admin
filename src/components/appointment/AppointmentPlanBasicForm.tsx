@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
-import { AppointmentPlanAdminProps, MeetGenerationMethod, ReservationType } from '../../types/appointment'
+import { AppointmentPlanAdmin, MeetGenerationMethod, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
 const messages = defineMessages({
@@ -32,6 +32,7 @@ type FieldProps = {
   rescheduleAmount: number
   rescheduleType: ReservationType
   meetGenerationMethod: MeetGenerationMethod
+  defaultMeetSystem: string
 }
 
 const UpdateAppointmentPlan = gql`
@@ -63,7 +64,7 @@ const UpdateAppointmentPlan = gql`
 `
 
 const AppointmentPlanBasicForm: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { enabledModules } = useApp()
@@ -92,6 +93,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: values.rescheduleAmount ? values.rescheduleAmount : -1,
         rescheduleType: values.rescheduleType ? values.rescheduleType : null,
         meetGenerationMethod: values.meetGenerationMethod,
+        defaultMeetSystem: values.defaultMeetSystem,
       },
     })
       .then(() => {
@@ -118,6 +120,7 @@ const AppointmentPlanBasicForm: React.FC<{
         rescheduleAmount: appointmentPlanAdmin.rescheduleAmount || 1,
         rescheduleType: appointmentPlanAdmin.rescheduleType || 'hour',
         meetGenerationMethod: appointmentPlanAdmin.meetGenerationMethod,
+        defaultMeetSystem: appointmentPlanAdmin.defaultMeetSystem,
       }}
       onFinish={handleSubmit}
     >
@@ -275,7 +278,7 @@ const AppointmentPlanBasicForm: React.FC<{
       </Form.Item>
 
       {enabledModules.zoom ? (
-        <Form.Item label="預設會議系統">
+        <Form.Item label="預設會議系統" name="defaultMeetSystem">
           <Select style={{ width: '150px' }} defaultValue="zoom">
             <Select.Option key="zoom" value="zoom">
               Zoom

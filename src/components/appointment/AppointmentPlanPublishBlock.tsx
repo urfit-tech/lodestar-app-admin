@@ -13,11 +13,11 @@ import { ReactComponent as StatusAlertIcon } from '../../images/default/status-a
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdmin } from '../../types/appointment'
 import { AdminBlock } from '../admin'
 
 const AppointmentPlanPublishBlock: React.FC<{
-  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  appointmentPlanAdmin: AppointmentPlanAdmin | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -53,7 +53,7 @@ const AppointmentPlanPublishBlock: React.FC<{
   const appointmentPlanStatus =
     errors.length > 0
       ? 'notValidated'
-      : !appointmentPlanAdmin.isPublished
+      : appointmentPlanAdmin.publishedAt
       ? 'unpublished'
       : appointmentPlanAdmin.isPrivate
       ? 'publishedInPrivate'

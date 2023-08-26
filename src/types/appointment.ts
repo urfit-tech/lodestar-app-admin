@@ -2,7 +2,27 @@ import { PeriodType } from './general'
 
 export type ReservationType = 'hour' | 'day'
 export type MeetGenerationMethod = 'auto' | 'manual'
-export type RescheduleType = 'hour' | 'day'
+
+export type AppointmentPlan = {
+  id: string
+  title: string
+  description: string | null
+  duration: number
+  price: number
+  createdAt: Date
+  updatedAt: Date
+  creatorId: string
+  publishedAt: Date | null
+  phone: string | null
+  supportLocales: string[]
+  currencyId: string
+  isPrivate: boolean
+  reservationAmount: number
+  reservationType: string | null
+  capacity: number
+  meetGenerationMethod: string
+  defaultMeetSystem: string
+}
 
 export type AppointmentPlanAdminProps = {
   id: string
@@ -11,9 +31,8 @@ export type AppointmentPlanAdminProps = {
   description: string | null
   duration: number
   listPrice: number
-  schedules: AppointmentScheduleProps[]
-  periods: AppointmentPeriodProps[]
-  // enrollments: number
+  schedules: AppointmentSchedule[]
+  periods: AppointmentPeriod[]
   isPublished: boolean | null
   supportLocales: string[]
   currencyId: string
@@ -23,79 +42,51 @@ export type AppointmentPlanAdminProps = {
   reservationType: ReservationType | null
   // capacity=-1 represents no limit
   capacity: number
-  // rescheduleAmount =-1 represents not reschedule
-  rescheduleAmount: number
-  rescheduleType: ReservationType | null
   meetGenerationMethod: MeetGenerationMethod
 }
 
-export type AppointmentPeriodProps = {
-  id: string
-  scheduleId: string
+export type AppointmentPeriod = {
+  appointmentPlanId: string
+  appointmentScheduleId: string
   startedAt: Date
   endedAt: Date
-  isEnrolled?: boolean
-  isExcluded?: boolean
-  onClick?: () => void
-  targetMemberBooked?: boolean
-  isBookedReachLimit?: boolean
+  available: boolean
+  booked: number
 }
 
-export type AppointmentScheduleProps = {
+export type AppointmentSchedule = {
   id: string
+  appointmentPlanId: string
   startedAt: Date
-  intervalAmount: number | null
   intervalType: PeriodType | null
+  intervalAmount: number | null
   excludes: Date[]
+  createdAt: Date
+  updatedAt: Date
 }
 
-export type AppointmentPlanProps = {
-  id: string
-  creator: {
-    id: string
-    avatarUrl: string | null
-    name: string
-    abstract: string | null
-  }
-  title: string
-  duration: number
-  listPrice: number
-  currencyId: string
-  enrollments: number
-  isPublished: boolean
-}
-
-export type AppointmentPeriodPlanProps = {
-  id: string
-  creator?: {
-    id: string | null
-    avatarUrl: string | null
-    name: string | null
-  }
-  title: string
-  duration: number
-  rescheduleAmount: number
-  rescheduleType: RescheduleType
-}
-
-export type AppointmentPeriodCardProps = {
-  id: string
-  member: {
-    id: string
-    name: string
-    email: string | null
-    phone: string | null
-    avatarUrl: string | null
-  }
-  appointmentPlan: AppointmentPeriodPlanProps
-  startedAt: Date
-  endedAt: Date
-  canceledAt: Date | null
-  creator: {
-    id: string
-    name: string
-    avatarUrl: string
-  }
-  orderProduct: { id: string; options: any }
-  meetGenerationMethod: MeetGenerationMethod
+export type AppointmentPlanAdmin = Pick<
+  AppointmentPlan,
+  | 'id'
+  | 'title'
+  | 'phone'
+  | 'description'
+  | 'duration'
+  | 'price'
+  | 'reservationAmount'
+  | 'reservationType'
+  | 'capacity'
+  | 'meetGenerationMethod'
+  | 'publishedAt'
+  | 'supportLocales'
+  | 'currencyId'
+  | 'creatorId'
+  | 'isPrivate'
+  | 'defaultMeetSystem'
+> & {
+  schedules: Pick<AppointmentSchedule, 'id' | 'startedAt' | 'intervalAmount' | 'intervalType' | 'excludes'>[]
+  periods: (Pick<AppointmentPeriod, 'appointmentPlanId' | 'appointmentScheduleId' | 'startedAt' | 'endedAt'> & {
+    isEnrolled: boolean
+    isExcluded: boolean
+  })[]
 }

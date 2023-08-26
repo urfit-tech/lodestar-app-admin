@@ -4,7 +4,7 @@ import moment from 'moment'
 import { useMemo } from 'react'
 import hasura from '../hasura'
 import {
-  AppointmentPlanAdminProps,
+  AppointmentPlanAdmin,
   MeetGenerationMethod,
   ReservationType,
   AppointmentPeriodCardProps,
@@ -37,6 +37,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
           reschedule_amount
           reschedule_type
           meet_generation_method
+          default_meet_system
           appointment_schedules(where: { _not: { interval_type: { _is_null: true }, started_at: { _lt: $now } } }) {
             id
             started_at
@@ -69,56 +70,46 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string, targetMemberI
     },
   )
 
-  const appointmentPlanAdmin = useMemo<AppointmentPlanAdminProps | null>(() => {
-    if (!data?.appointment_plan_by_pk) {
-      return null
-    }
-
-    return {
-      id: appointmentPlanId,
-      title: data.appointment_plan_by_pk.title || '',
-      phone: data.appointment_plan_by_pk.phone || '',
-      description: data.appointment_plan_by_pk.description || '',
-      duration: data.appointment_plan_by_pk.duration,
-      listPrice: data.appointment_plan_by_pk.price,
-      reservationAmount: data.appointment_plan_by_pk.reservation_amount,
-      reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
-      capacity: data.appointment_plan_by_pk.capacity,
-      rescheduleAmount: data.appointment_plan_by_pk.reschedule_amount,
-      rescheduleType: (data.appointment_plan_by_pk.reschedule_type as ReservationType) || null,
-      meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
-      schedules: data.appointment_plan_by_pk.appointment_schedules.map(s => ({
-        id: s.id,
-        startedAt: new Date(s.started_at),
-        intervalAmount: s.interval_amount || null,
-        intervalType: s.interval_type as PeriodType,
-        excludes: s.excludes.map((e: string) => new Date(e)),
-      })),
-      periods: data.appointment_plan_by_pk.appointment_periods.map(period => ({
-        id: `${period.appointment_schedule_id || ''}-${period.started_at}`,
-        scheduleId: period.appointment_schedule_id,
-        startedAt: new Date(period.started_at),
-        endedAt: new Date(period.ended_at),
-        isEnrolled: period.booked > 0,
-        isExcluded: !period.available,
-        isBookedReachLimit: data?.appointment_plan_by_pk?.capacity
-          ? data.appointment_plan_by_pk.capacity !== -1 && period.booked >= data.appointment_plan_by_pk.capacity
-          : false,
-        booked: period.booked,
-        targetMemberBooked: data.appointment_plan_by_pk?.appointment_enrollments.some(
-          enrollment =>
-            enrollment.member_id === targetMemberId &&
-            enrollment.appointment_plan_id === data.appointment_plan_by_pk?.id &&
-            enrollment.started_at === period.started_at &&
-            !enrollment.canceled_at,
-        ),
-      })),
-      isPublished: !!data.appointment_plan_by_pk.published_at,
-      supportLocales: data?.appointment_plan_by_pk.support_locales || [],
-      currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
-      creatorId: data?.appointment_plan_by_pk.creator_id,
-      isPrivate: data?.appointment_plan_by_pk.is_private,
-    }
+  const appointmentPlanAdmin = useMemo<AppointmentPlanAdmin | null>(() => {
+    return data?.appointment_plan_by_pk
+      ? {
+          id: appointmentPlanId,
+          title: data.appointment_plan_by_pk.title || '',
+          phone: data.appointment_plan_by_pk.phone || '',
+          description: data.appointment_plan_by_pk.description || '',
+          duration: data.appointment_plan_by_pk.duration,
+          price: data.appointment_plan_by_pk.price,
+          reservationAmount: data.appointment_plan_by_pk.reservation_amount,
+          reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
+          capacity: data.appointment_plan_by_pk.capacity,
+          rescheduleAmount: data.appointment_plan_by_pk.reschedule_amount,
+          rescheduleType: (data.appointment_plan_by_pk.reschedule_type as ReservationType) || null,
+          meetGenerationMethod: data.appointment_plan_by_pk.meet_generation_method as MeetGenerationMethod,
+          defaultMeetSystem: data.appointment_plan_by_pk.default_meet_system,
+          schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => ({
+            id: appointmentSchedule.id,
+            startedAt: new Date(appointmentSchedule.started_at),
+            intervalAmount: appointmentSchedule.interval_amount || null,
+            intervalType: appointmentSchedule.interval_type as PeriodType,
+            excludes: appointmentSchedule.excludes.map((e: string) => new Date(e)),
+          })),
+          periods: data.appointment_plan_by_pk.appointment_periods.map(period => ({
+            appointmentPlanId: `${period.appointment_schedule_id || ''}-${period.started_at}`,
+            appointmentScheduleId: period.appointment_schedule_id,
+            startedAt: new Date(period.started_at),
+            endedAt: new Date(period.ended_at),
+            isEnrolled: period.booked > 0,
+            isExcluded: !period.available,
+          })),
+          publishedAt: data.appointment_plan_by_pk?.published_at
+            ? new Date(data.appointment_plan_by_pk.published_at)
+            : null,
+          supportLocales: data?.appointment_plan_by_pk.support_locales || [],
+          currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
+          creatorId: data?.appointment_plan_by_pk.creator_id,
+          isPrivate: data?.appointment_plan_by_pk.is_private,
+        }
+      : null
   }, [appointmentPlanId, data])
 
   return {
