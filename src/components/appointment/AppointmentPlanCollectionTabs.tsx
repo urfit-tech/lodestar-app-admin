@@ -1,6 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Skeleton, Tabs } from 'antd'
-import { gql } from '@apollo/client'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -23,7 +22,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
   const tabContents: {
     key: string
     tab: string
-    condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
+    condition: hasura.GetAppointmentPlanCollectionAdminVariables['condition']
     withAppointmentButton?: Boolean
     permissionIsAllowed: boolean
   }[] = [

@@ -1,5 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { gql, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
@@ -69,7 +70,7 @@ type AppointmentPlanProps = {
 }
 
 const AppointmentPlanCollectionTable: React.FC<{
-  condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
+  condition: hasura.GetAppointmentPlanCollectionAdminVariables['condition']
   withAppointmentButton?: Boolean
 }> = ({ condition, withAppointmentButton }) => {
   const { formatMessage } = useIntl()
@@ -193,13 +194,13 @@ const AppointmentPlanCollectionTable: React.FC<{
   )
 }
 
-const useAppointmentPlansAdmin = (condition: hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']) => {
+const useAppointmentPlansAdmin = (condition: hasura.GetAppointmentPlanCollectionAdminVariables['condition']) => {
   const { loading, error, data, refetch } = useQuery<
-    hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
-    hasura.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables
+    hasura.GetAppointmentPlanCollectionAdmin,
+    hasura.GetAppointmentPlanCollectionAdminVariables
   >(
     gql`
-      query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN($condition: appointment_plan_bool_exp!) {
+      query GetAppointmentPlanCollectionAdmin($condition: appointment_plan_bool_exp!) {
         appointment_plan(where: $condition) {
           id
           creator_id
