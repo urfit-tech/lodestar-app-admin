@@ -66,7 +66,7 @@ const AppointmentPlanCollectionTabs: React.VFC<{
       {tabContents
         .filter(v => v.permissionIsAllowed)
         .map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} ${`(${counts[tabContent.key]})`}`}>
+          <Tabs.TabPane key={tabContent.key} tab={counts ? `${tabContent.tab} ${`(${counts[tabContent.key]})`}` : null}>
             <AdminPageBlock>
               <AppointmentPlanCollectionTable
                 condition={tabContent.condition}
