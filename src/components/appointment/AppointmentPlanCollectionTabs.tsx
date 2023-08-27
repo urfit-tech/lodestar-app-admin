@@ -14,9 +14,9 @@ const AppointmentPlanCollectionTabs: React.VFC<{
 }> = ({ creatorId }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useApp()
-  const { counts } = useAppointmentPlansCounts(creatorId)
+  const { loading, counts } = useAppointmentPlansCounts(creatorId)
 
-  if (!counts) {
+  if (loading) {
     return <Skeleton active />
   }
 
@@ -80,9 +80,9 @@ const AppointmentPlanCollectionTabs: React.VFC<{
 }
 
 const useAppointmentPlansCounts = (creatorId?: string | null) => {
-  const { data } = useQuery<hasura.GET_APPOINTMENT_PLAN_COUNTS, hasura.GET_APPOINTMENT_PLAN_COUNTSVariables>(
+  const { loading, data } = useQuery<hasura.GetAppointmentPlanCounts, hasura.GetAppointmentPlanCountsVariables>(
     gql`
-      query GET_APPOINTMENT_PLAN_COUNTS($condition: appointment_plan_bool_exp!) {
+      query GetAppointmentPlanCounts($condition: appointment_plan_bool_exp!) {
         published: appointment_plan_aggregate(
           where: { _and: [$condition, { published_at: { _is_null: false }, is_private: { _eq: false } }] }
         ) {
@@ -119,6 +119,7 @@ const useAppointmentPlansCounts = (creatorId?: string | null) => {
     : null
 
   return {
+    loading,
     counts,
   }
 }
