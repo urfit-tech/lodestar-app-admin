@@ -183,9 +183,9 @@ const AppointmentPlanCollectionTable: React.FC<{
       />
       {selectedAppointment && (
         <AppointmentPlanAppointmentModal
+          visible={isModalVisible}
           appointmentPlanId={selectedAppointment.id}
           creator={selectedAppointment.creator}
-          visible={isModalVisible}
           setModalVisible={setIsModalVisible}
           onSuccess={() => refetchAppointmentPlans()}
         />

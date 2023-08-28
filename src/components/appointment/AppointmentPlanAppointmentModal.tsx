@@ -4,7 +4,7 @@ import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import { groupBy, sum } from 'ramda'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter, handleError } from '../../helpers'
@@ -132,7 +132,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   })
 
   const [loading, setLoading] = useState(false)
-  const { orderChecking, check, placeOrder, orderPlacing } = useCheck(
+  const { orderChecking, check, orderPlacing } = useCheck(
     [`AppointmentPlan_${appointmentPlanId}`],
     appointmentValues.discountId && appointmentValues.discountId.split('_')[1] ? appointmentValues.discountId : 'Coin',
     appointmentValues.member?.id || null,
@@ -141,6 +141,9 @@ const AppointmentPlanAppointmentModal: React.FC<
       [`AppointmentPlan_${appointmentPlanId}`]: { startedAt: appointmentValues.period.startedAt },
     },
   )
+  const [taskType, setTaskType] = useState<'order' | 'payment' | null>(null)
+  const [taskId, setTaskId] = useState<string | null>(null)
+  const { task } = useTask(taskType, taskId)
   const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
 
   const isPaymentAvailable =
@@ -157,10 +160,6 @@ const AppointmentPlanAppointmentModal: React.FC<
       discountId: null,
     })
   }
-
-  useEffect(() => {
-    refetchAppointmentPlanAdmin()
-  }, [appointmentPlanId, refetchAppointmentPlanAdmin])
 
   const handleMemberSubmit = () => {
     if (!appointmentValues.member || !appointmentValues.member.id) {
@@ -183,16 +182,15 @@ const AppointmentPlanAppointmentModal: React.FC<
       phone: values.phone,
       email: appointmentValues.member?.email || '',
     })
-      .then(() => {
-        onSuccess?.()
-        setSuccessTimestamp(new Date())
-        setLoading(false)
-        setAppointmentStep('success')
+      .then(taskId => {
+        setTaskType('order')
+        setTaskId(taskId)
       })
       .catch(error => {
-        setAppointmentStep('failed')
-        setLoading(false)
         handleError(error)
+        setAppointmentStep('failed')
+        handleError(error)
+        setLoading(false)
       })
   }
 
@@ -347,7 +345,7 @@ const AppointmentPlanAppointmentModal: React.FC<
             <div>
               <StyledStatusBlock>
                 <StatusSuccessIcon />
-                <StyledTitle className="my-2">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
+                <StyledTitle className="mb-1">{formatMessage(messages.appointmentSuccessfully)}</StyledTitle>
               </StyledStatusBlock>
               <Divider className="my-3" />
               <div>
