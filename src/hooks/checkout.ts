@@ -655,8 +655,10 @@ export const useCheck = (
       },
     )
     if (code === 'SUCCESS') {
+      setOrderPlacing(false)
       return result
     } else {
+      setOrderPlacing(false)
       throw new Error('create order failed: ' + message)
     }
   }
