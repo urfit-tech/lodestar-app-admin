@@ -1,5 +1,6 @@
-import { Button, Divider, Form, Input, Skeleton } from 'antd'
+import { Button, Divider, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios from 'axios'
 import PriceLabel from 'lodestar-app-element/src/components/labels/PriceLabel'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
@@ -112,8 +113,7 @@ const AppointmentPlanAppointmentModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { host, settings } = useApp()
-  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } =
-    useAppointmentPlanAdmin(appointmentPlanId)
+  const { loadingAppointmentPlanAdmin, appointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
   const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
     'period',
   )
@@ -141,9 +141,7 @@ const AppointmentPlanAppointmentModal: React.FC<
       [`AppointmentPlan_${appointmentPlanId}`]: { startedAt: appointmentValues.period.startedAt },
     },
   )
-  const [taskType, setTaskType] = useState<'order' | 'payment' | null>(null)
-  const [taskId, setTaskId] = useState<string | null>(null)
-  const { task } = useTask(taskType, taskId)
+
   const [successTimestamp, setSuccessTimestamp] = useState<Date | null>(null)
 
   const isPaymentAvailable =
@@ -177,19 +175,42 @@ const AppointmentPlanAppointmentModal: React.FC<
       return
     }
     setLoading(true)
-    placeOrder('perpetual', {
-      name: appointmentValues.member?.name || '',
-      phone: values.phone,
-      email: appointmentValues.member?.email || '',
-    })
-      .then(taskId => {
-        setTaskType('order')
-        setTaskId(taskId)
+    await axios
+      .post(
+        `${process.env.REACT_APP_API_BASE_ROOT}/order/create`,
+        {
+          paymentModel: { type: 'perpetual' },
+          discountId:
+            appointmentValues.discountId && appointmentValues.discountId.split('_')[1]
+              ? appointmentValues.discountId
+              : 'Coin',
+          productIds: [`AppointmentPlan_${appointmentPlanId}`],
+          invoice: {
+            name: appointmentValues.member?.name || '',
+            phone: values.phone,
+            email: appointmentValues.member?.email || '',
+          },
+          memberId: appointmentValues.member?.id,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+      .then(res => {
+        if (res.data.code.split('_')[0] === 'E') {
+          message.error('預約失敗')
+        } else {
+          message.success('預約成功')
+          onSuccess?.()
+          setAppointmentStep('success')
+          setSuccessTimestamp(new Date())
+        }
       })
       .catch(error => {
         handleError(error)
         setAppointmentStep('failed')
-        handleError(error)
+      })
+      .finally(() => {
         setLoading(false)
       })
   }
