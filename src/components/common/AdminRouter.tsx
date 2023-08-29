@@ -619,7 +619,7 @@ const AdminRouter: React.VFC<{ extraRouteProps: { [routeKey: string]: RouteProps
   const { options: appOptions } = useApp()
   const { isAuthenticating, permissions } = useAuth()
   routesMap = { ...routesMap, ...extraRouteProps }
-  const hasPassedCloseSiteTime = appOptions.close_site_at
+  const hasPassedCloseSiteTime = appOptions?.close_site_at
     ? dayjs(appOptions.close_site_at).diff(dayjs(), 'day') <= 0
     : false
 
