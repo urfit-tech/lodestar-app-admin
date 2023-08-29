@@ -734,6 +734,7 @@ export const checkoutMessages = {
     radio: defineMessages({
       noDiscount: { id: 'checkout.form.radio.coupon.noDiscount', defaultMessage: '無折扣' },
       useCoupon: { id: 'checkout.form.radio.coupon.use', defaultMessage: '使用折價券' },
+      useCoin: { id: 'checkout.form.radio.coin.use', defaultMessage: '使用代幣' },
       reselectCoupon: { id: 'checkout.form.radio.coupon.reselect', defaultMessage: '重新選擇' },
       chooseCoupon: { id: 'checkout.form.radio.coupon.choose', defaultMessage: '選擇折價券' },
     }),
