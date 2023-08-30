@@ -117,13 +117,16 @@ export const DefaultLayoutHeader: React.FC<{
   )
 
   const isSiteExpiringSoon = dayjs(appEndedAt).diff(dayjs(), 'day') <= 20
+  const isSiteExpired = dayjs().diff(appEndedAt, 'second') >= 0
   const isVideoDurationExceedsUsage =
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalVideoDuration / 60) : totalVideoDuration) >
     appPlan.options.maxVideoDuration
   const isWatchedSecondsExceedsUsage =
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalWatchedSeconds / 60) : totalWatchedSeconds) >
     appPlan.options.maxVideoWatch
-  const closeSiteAt = appOptions?.close_site_at
+  const closeSiteAt = isSiteExpired
+    ? dayjs()
+    : appOptions?.close_site_at
     ? dayjs(appOptions.close_site_at)
     : dayjs().add(15, 'days').diff(dayjs(appEndedAt)) < 0
     ? dayjs().add(15, 'days').endOf('day')
@@ -134,6 +137,7 @@ export const DefaultLayoutHeader: React.FC<{
       currentUserRole === 'app-owner' &&
       !appPlanLoading &&
       ((!isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage) ||
+        isSiteExpired ||
         isSiteExpiringSoon ||
         isVideoDurationExceedsUsage ||
         isWatchedSecondsExceedsUsage)
@@ -143,12 +147,15 @@ export const DefaultLayoutHeader: React.FC<{
           appId: appId,
           options: {
             close_site_at:
-              !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
+              !isSiteExpired && !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
                 ? undefined
                 : closeSiteAt.utc().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
           },
         },
       })
+      if (isSiteExpired) {
+        window.location.reload()
+      }
     }
   }, [currentUserRole, appPlanLoading, appOptions, totalVideoDuration, totalWatchedSeconds])
 
