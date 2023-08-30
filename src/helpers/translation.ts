@@ -228,6 +228,7 @@ export const commonMessages = {
     customTitle: { id: 'common.label.customTitle', defaultMessage: '{customTitle}' },
     category: { id: 'common.label.category', defaultMessage: '分類' },
     adMaterial: { id: 'common.label.adMaterial', defaultMessage: '廣告素材' },
+    memberNote: { id: 'common.label.memberNote', defaultMessage: '最後聯繫紀錄' },
     tag: { id: 'common.label.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.label.startedAt', defaultMessage: '開始時間' },
     endedAt: { id: 'common.label.endedAt', defaultMessage: '結束時間' },
@@ -708,9 +709,14 @@ export const promotionMessages = {
       id: 'promotion.text.sentUsedCount',
       defaultMessage: '總量{total} / 發送{exchanged}',
     },
-    codeUsedMessage: { id: 'promotion.text.codeUsedMessage', defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款' },
-    deleteCodeMessage: { id: 'promotion.text.deleteCodeMessage', defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。' },
-
+    codeUsedMessage: {
+      id: 'promotion.text.codeUsedMessage',
+      defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款',
+    },
+    deleteCodeMessage: {
+      id: 'promotion.text.deleteCodeMessage',
+      defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。',
+    },
   }),
   status: defineMessages({
     notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
@@ -1484,7 +1490,8 @@ export const salesMessages = defineMessages({
   rejected: { id: 'sales.label.rejected', defaultMessage: '已拒絕' },
   star: { id: 'sales.label.star', defaultMessage: '星等' },
   status: { id: 'sales.label.status', defaultMessage: '狀態' },
-  studentName: { id: 'sales.label.studentName', defaultMessage: '學員姓名' },
+  memberNickName: { id: 'sales.label.memberNickName', defaultMessage: '名稱' },
+  memberFullName: { id: 'sales.label.memberFullName', defaultMessage: '本名' },
   tel: { id: 'sales.label.tel', defaultMessage: '電話' },
   paidPrice: { id: 'sales.label.paidPrice', defaultMessage: '已付金額' },
   createdAt: { id: 'sales.label.createdAt', defaultMessage: '建立日期' },
