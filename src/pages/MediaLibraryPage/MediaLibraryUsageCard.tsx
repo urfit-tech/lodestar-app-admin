@@ -18,7 +18,7 @@ const StyledTextColor = styled.span`
 type VideoFlowInfoProps = {
   info: {
     title: string
-    remainingTime: number
+    remainingTime?: number
     totalMinutes: number
     maxDuration?: number
     unit: string
@@ -34,7 +34,7 @@ const VideoFlowInfo: React.FC<VideoFlowInfoProps> = ({ info }) => {
   return (
     <>
       {info.title} :{' '}
-      {info.remainingTime < 0 ? (
+      {info.remainingTime && info.remainingTime < 0 ? (
         <StyledTextColor>{info.totalMinutes}</StyledTextColor>
       ) : (
         <span>{info.totalMinutes}</span>
@@ -113,7 +113,7 @@ const MediaLibraryUsageCard: React.VFC = () => {
           <VideoFlowInfo
             info={{
               title: formatMessage(pageMessages.MediaLibraryPage.maxVideoDuration),
-              remainingTime: maxVideoDuration - totalVideoDurationMinutes,
+              remainingTime: maxVideoDuration && maxVideoDuration - totalVideoDurationMinutes,
               totalMinutes: totalVideoDurationMinutes,
               maxDuration: maxVideoDuration,
               unit: maxVideoDurationUnit,
@@ -125,7 +125,7 @@ const MediaLibraryUsageCard: React.VFC = () => {
           <VideoFlowInfo
             info={{
               title: formatMessage(pageMessages.MediaLibraryPage.maxVideoWatch),
-              remainingTime: maxVideoWatch - totalWatchedSecondsMinutes,
+              remainingTime: maxVideoWatch && maxVideoWatch - totalWatchedSecondsMinutes,
               totalMinutes: totalWatchedSecondsMinutes,
               maxDuration: maxVideoWatch,
               unit: maxVideoWatchUnit,

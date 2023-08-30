@@ -111,7 +111,11 @@ export const DefaultLayoutHeader: React.FC<{
   const { enabledModules, id: appId, endedAt: appEndedAt, options: appOptions } = useApp()
   const { appPlan, appPlanLoading } = useAppPlan()
   const { currentLocale, setCurrentLocale } = useContext(LocaleContext)
-  const { totalVideoDuration, totalWatchedSeconds } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
+  const {
+    totalVideoDuration,
+    totalWatchedSeconds,
+    loading: appUsageLoading,
+  } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
   const [updateAppOptions] = useMutation<hasura.UPDATE_APP_OPTIONS, hasura.UPDATE_APP_OPTIONSVariables>(
     UPDATE_APP_OPTIONS,
   )
@@ -119,11 +123,13 @@ export const DefaultLayoutHeader: React.FC<{
   const isSiteExpiringSoon = dayjs(appEndedAt).diff(dayjs(), 'day') <= 20
   const isSiteExpired = dayjs().diff(appEndedAt, 'second') >= 0
   const isVideoDurationExceedsUsage =
+    appPlan.options.maxVideoDuration &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalVideoDuration / 60) : totalVideoDuration) >
-    appPlan.options.maxVideoDuration
+      appPlan.options.maxVideoDuration
   const isWatchedSecondsExceedsUsage =
+    appPlan.options.maxVideoWatch &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalWatchedSeconds / 60) : totalWatchedSeconds) >
-    appPlan.options.maxVideoWatch
+      appPlan.options.maxVideoWatch
   const closeSiteAt = isSiteExpired
     ? dayjs()
     : appOptions?.close_site_at
@@ -223,6 +229,8 @@ export const DefaultLayoutHeader: React.FC<{
         </div>
       </StyledLayoutHeader>
       {currentUserRole === 'app-owner' &&
+      !appPlanLoading &&
+      !appUsageLoading &&
       (isSiteExpiringSoon || isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage) ? (
         <StyledWarningBar>
           <p>

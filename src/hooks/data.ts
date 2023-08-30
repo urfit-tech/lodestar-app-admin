@@ -1350,7 +1350,7 @@ export const useTransformProductToString = (productType: MetaProductType) => {
 export const useAppUsage = (dateRange: RangeValue<Moment>) => {
   const startedAt = dateRange?.[0] || moment().subtract(1, 'day')
   const endedAt = dateRange?.[1] || moment()
-  const { data } = useQuery<hasura.GET_APP_USAGE, hasura.GET_APP_USAGEVariables>(
+  const { data, loading } = useQuery<hasura.GET_APP_USAGE, hasura.GET_APP_USAGEVariables>(
     gql`
       query GET_APP_USAGE($startedDateHour: String!, $endedDateHour: String!) {
         app_usage(where: { date_hour: { _gte: $startedDateHour, _lte: $endedDateHour } }) {
@@ -1390,10 +1390,12 @@ export const useAppUsage = (dateRange: RangeValue<Moment>) => {
       watchedSeconds: Number(usage?.watched_seconds) || 0,
     }
   })
+
   return {
     totalVideoDuration: max(ticks.map(tick => tick.videoDuration)) || 0,
     totalWatchedSeconds: sum(data?.app_usage.map(v => v.watched_seconds || 0) || []),
     ticks,
+    loading,
   }
 }
 
@@ -1424,26 +1426,26 @@ export const useAppPlan = () => {
     id?: string
     name?: string
     options: {
-      maxVideoDuration: number
+      maxVideoDuration?: number
       maxVideoDurationUnit: string
-      maxOther: number
+      maxOther?: number
       maxOtherUnit: string
-      maxVideoWatch: number
+      maxVideoWatch?: number
       maxVideoWatchUnit: string
-      maxSms: number
+      maxSms?: number
       maxSmsUnit: string
     }
   } = {
     id: data?.app_plan_by_pk?.id,
     name: data?.app_plan_by_pk?.name,
     options: {
-      maxVideoDuration: storage?.max_video_duration || 0,
+      maxVideoDuration: storage?.max_video_duration,
       maxVideoDurationUnit: storage?.max_video_duration_unit || 'minute',
-      maxOther: storage?.max_other || 0,
+      maxOther: storage?.max_other,
       maxOtherUnit: storage?.max_other_unit || 'GB',
-      maxVideoWatch: streaming?.max_video_watch || 0,
+      maxVideoWatch: streaming?.max_video_watch,
       maxVideoWatchUnit: streaming?.max_video_watch_unit || 'minute',
-      maxSms: usage?.max_sms || 0,
+      maxSms: usage?.max_sms,
       maxSmsUnit: usage?.max_sms_unit || 'letter',
     },
   }
