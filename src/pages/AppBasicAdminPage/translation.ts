@@ -2,81 +2,85 @@ import { defineMessages } from 'react-intl'
 
 const AppBasicAdminPageMessages = {
   '*': defineMessages({}),
-  AppHeaderNavModal: defineMessages({
+  AppNavModal: defineMessages({
     subNav: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.subNav',
+      id: 'AppBasicAdminPageMessages.AppNavModal.subNav',
       defaultMessage: '子選單',
     },
     addNav: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.addNav',
+      id: 'AppBasicAdminPageMessages.AppNavModal.addNav',
       defaultMessage: '新增選單',
     },
     addSubNav: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.addSubNav',
+      id: 'AppBasicAdminPageMessages.AppNavModal.addSubNav',
       defaultMessage: '新增子選單',
     },
     editNav: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.editNav',
+      id: 'AppBasicAdminPageMessages.AppNavModal.editNav',
       defaultMessage: '編輯選單',
     },
     editSubNav: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.editSubNav',
+      id: 'AppBasicAdminPageMessages.AppNavModal.editSubNav',
       defaultMessage: '編輯子選單',
     },
     untitledNav: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.untitledNav',
+      id: 'AppBasicAdminPageMessages.AppNavModal.untitledNav',
       defaultMessage: '未命名的選單',
     },
     untitledSubNav: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.untitledSubNav',
+      id: 'AppBasicAdminPageMessages.AppNavModal.untitledSubNav',
       defaultMessage: '未命名的子選單',
     },
     navLabel: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.navLabel',
+      id: 'AppBasicAdminPageMessages.AppNavModal.navLabel',
       defaultMessage: '選單名稱',
     },
     navLabelIsRequired: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.navLabelIsRequired',
+      id: 'AppBasicAdminPageMessages.AppNavModal.navLabelIsRequired',
       defaultMessage: '選單名稱為必填',
     },
     navHref: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.navHref',
+      id: 'AppBasicAdminPageMessages.AppNavModal.navHref',
       defaultMessage: '選單名稱為必填',
     },
     openInSamePage: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.openInSamePage',
+      id: 'AppBasicAdminPageMessages.AppNavModal.openInSamePage',
       defaultMessage: '同頁開啟',
     },
     openInNewTab: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.openInNewTab',
+      id: 'AppBasicAdminPageMessages.AppNavModal.openInNewTab',
       defaultMessage: '另開分頁',
     },
     navHrefIsRequired: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.navHrefIsRequired',
+      id: 'AppBasicAdminPageMessages.AppNavModal.navHrefIsRequired',
       defaultMessage: '選單連結為必填',
     },
     pleaseFillInTheHref: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.pleaseFillInTheHref',
+      id: 'AppBasicAdminPageMessages.AppNavModal.pleaseFillInTheHref',
       defaultMessage: '請填入連結',
     },
+    locale: {
+      id: 'AppBasicAdminPageMessages.AppNavModal.locale',
+      defaultMessage: '顯示語系',
+    },
     zhTw: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.zhTw',
+      id: 'AppBasicAdminPageMessages.AppNavModal.zhTw',
       defaultMessage: '繁體中文',
     },
     zhCn: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.zhCn',
+      id: 'AppBasicAdminPageMessages.AppNavModal.zhCn',
       defaultMessage: '简体中文',
     },
     enUs: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.enUs',
+      id: 'AppBasicAdminPageMessages.AppNavModal.enUs',
       defaultMessage: 'English',
     },
     vi: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.vi',
+      id: 'AppBasicAdminPageMessages.AppNavModal.vi',
       defaultMessage: 'Tiếng việt',
     },
     navTag: {
-      id: 'AppBasicAdminPageMessages.AppHeaderNavModal.navTag',
+      id: 'AppBasicAdminPageMessages.AppNavModal.navTag',
       defaultMessage: '標籤',
     },
   }),

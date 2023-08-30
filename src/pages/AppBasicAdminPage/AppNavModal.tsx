@@ -34,6 +34,7 @@ type ModalProps = {
   editId?: string
   hasSubMenu?: boolean
   block: 'header' | 'footer' | 'social_media'
+  type: 'addNav' | 'editNav' | 'addSubNav' | 'editSubNav'
   navOptions?: {
     id?: string
     position?: number
@@ -48,7 +49,7 @@ type ModalProps = {
   onRefetch?: () => void
 }
 
-const AppHeaderNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu, block, navOptions, onRefetch }) => {
+const AppNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu, block, type, navOptions, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
@@ -92,25 +93,25 @@ const AppHeaderNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu,
       renderTrigger={({ setVisible }) => (
         <Button
           className="p-0"
-          icon={editId ? <EditOutlined /> : <PlusOutlined />}
+          icon={type === 'editNav' || type === 'editSubNav' ? <EditOutlined /> : <PlusOutlined />}
           type="link"
           onClick={() => setVisible(true)}
         >
-          {parentId && !editId
-            ? formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.subNav)
-            : !editId
-            ? formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.addNav)
+          {type === 'addSubNav'
+            ? formatMessage(AppBasicAdminPageMessages.AppNavModal.subNav)
+            : type === 'addNav'
+            ? formatMessage(AppBasicAdminPageMessages.AppNavModal.addNav)
             : ''}
         </Button>
       )}
       title={
-        parentId
-          ? editId
-            ? formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.editSubNav)
-            : formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.addSubNav)
-          : editId
-          ? formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.editNav)
-          : formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.addNav)
+        type === 'addNav'
+          ? formatMessage(AppBasicAdminPageMessages.AppNavModal.addNav)
+          : type === 'editNav'
+          ? formatMessage(AppBasicAdminPageMessages.AppNavModal.editNav)
+          : type === 'addSubNav'
+          ? formatMessage(AppBasicAdminPageMessages.AppNavModal.addSubNav)
+          : formatMessage(AppBasicAdminPageMessages.AppNavModal.editSubNav)
       }
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -131,9 +132,11 @@ const AppHeaderNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu,
         initialValues={{
           label: navOptions?.label
             ? navOptions?.label
-            : parentId
-            ? formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.untitledSubNav)
-            : formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.untitledNav),
+            : block === 'social_media'
+            ? 'facebook'
+            : type === 'addNav'
+            ? formatMessage(AppBasicAdminPageMessages.AppNavModal.untitledNav)
+            : formatMessage(AppBasicAdminPageMessages.AppNavModal.untitledSubNav),
           external: navOptions?.external || 'false',
           href: navOptions?.href || '',
           locale: navOptions?.locale || 'zh-tw',
@@ -141,71 +144,69 @@ const AppHeaderNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu,
         }}
       >
         <Form.Item
-          label={
-            <StyledFormLabel>{formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.navLabel)}</StyledFormLabel>
-          }
+          label={<StyledFormLabel>{formatMessage(AppBasicAdminPageMessages.AppNavModal.navLabel)}</StyledFormLabel>}
           name="label"
-          rules={[
-            { required: true, message: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.navLabelIsRequired) },
-          ]}
+          rules={[{ required: true, message: formatMessage(AppBasicAdminPageMessages.AppNavModal.navLabelIsRequired) }]}
         >
-          <Input />
+          {block === 'social_media' ? (
+            <Select
+              options={[
+                { value: 'facebook', label: 'facebook' },
+                { value: 'line', label: 'line' },
+                { value: 'instagram', label: 'instagram' },
+                { value: 'youtube', label: 'youtube' },
+                { value: 'group', label: 'group' },
+              ]}
+            />
+          ) : (
+            <Input />
+          )}
         </Form.Item>
         {!hasSubMenu ? (
           <Form.Item
-            label={
-              <StyledFormLabel>{formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.navHref)}</StyledFormLabel>
-            }
+            label={<StyledFormLabel>{formatMessage(AppBasicAdminPageMessages.AppNavModal.navHref)}</StyledFormLabel>}
           >
             <Input.Group compact>
               <Form.Item className="col-3 mb-2" name="external">
                 <Select
-                  onChange={() => {}}
                   options={[
                     {
                       value: 'false',
-                      label: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.openInSamePage),
+                      label: formatMessage(AppBasicAdminPageMessages.AppNavModal.openInSamePage),
                     },
-                    { value: 'true', label: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.openInNewTab) },
+                    { value: 'true', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.openInNewTab) },
                   ]}
                 />
               </Form.Item>
-              <Form.Item
-                className="col-9 mb-2"
-                name="href"
-                rules={[
-                  {
-                    required: true,
-                    message: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.navHrefIsRequired),
-                  },
-                ]}
-              >
-                <Input placeholder={formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.pleaseFillInTheHref)} />
+              <Form.Item className="col-9 mb-2" name="href">
+                <Input placeholder={formatMessage(AppBasicAdminPageMessages.AppNavModal.pleaseFillInTheHref)} />
               </Form.Item>
             </Input.Group>
           </Form.Item>
         ) : null}
 
         <Input.Group compact>
-          <Form.Item className="col-6" name="locale" label={<StyledFormLabel>顯示語系</StyledFormLabel>}>
+          <Form.Item
+            className="col-6"
+            name="locale"
+            label={<StyledFormLabel>{formatMessage(AppBasicAdminPageMessages.AppNavModal.locale)}</StyledFormLabel>}
+          >
             <Select
               disabled={parentId ? true : false}
               onChange={() => {}}
               options={[
-                { value: 'zh-tw', label: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.zhTw) },
-                { value: 'zh-cn', label: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.zhCn) },
-                { value: 'en-us', label: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.enUs) },
-                { value: 'vi', label: formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.vi) },
+                { value: 'zh-tw', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.zhTw) },
+                { value: 'zh-cn', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.zhCn) },
+                { value: 'en-us', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.enUs) },
+                { value: 'vi', label: formatMessage(AppBasicAdminPageMessages.AppNavModal.vi) },
               ]}
             />
           </Form.Item>
-          {hasSubMenu !== undefined ? (
+          {hasSubMenu !== undefined && block === 'header' ? (
             <Form.Item
               className="col-6"
               name="tag"
-              label={
-                <StyledFormLabel>{formatMessage(AppBasicAdminPageMessages.AppHeaderNavModal.navTag)}</StyledFormLabel>
-              }
+              label={<StyledFormLabel>{formatMessage(AppBasicAdminPageMessages.AppNavModal.navTag)}</StyledFormLabel>}
             >
               <Input />
             </Form.Item>
@@ -252,4 +253,4 @@ const UPSERT_APP_NAV = gql`
   }
 `
 
-export default AppHeaderNavModal
+export default AppNavModal

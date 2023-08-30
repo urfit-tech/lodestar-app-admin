@@ -13,7 +13,7 @@ import DraggableItem from '../../components/common/DraggableItem'
 import * as hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import AppHeaderNavModal from './AppHeaderNavModal'
+import AppNavModal from './AppNavModal'
 import AppBasicAdminPageMessages from './translation'
 
 type ItemProps = AppNavProps
@@ -160,7 +160,7 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
     <AdminCard {...cardProps} className={loading ? 'mask' : ''}>
       {!appNavListLoading &&
         blocks.map(block => (
-          <div id={block} className="mb-5">
+          <div id={block} className="mb-5" key={block}>
             <StyledBlockTitle className="mb-3">
               {block === 'header'
                 ? formatMessage(AppBasicAdminPageMessages.AppNavAdminCard.headerTitle)
@@ -172,13 +172,12 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
               className="mb-4"
               handle=".draggable-main-item"
               ghostClass="hover-background"
-              list={navs?.filter(nav => nav.block === block)?.filter(nav => !nav.parentId) || []}
+              list={navs?.filter(nav => nav.block === block && !nav.parentId) || []}
               onUpdate={() => (isSortingMainMenuRef.current = true)}
               setList={updatedList => updateMainMenuOrder(updatedList)}
             >
               {navs
-                ?.filter(nav => nav.block === block)
-                ?.filter(nav => !nav.parentId)
+                ?.filter(nav => nav.block === block && !nav.parentId)
                 ?.map(nav => {
                   return (
                     <StyledDraggableMainItem handlerClassName="draggable-main-item" dataId={nav.id} key={nav.id}>
@@ -191,9 +190,10 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                         </div>
                         <StyledMainMenuActionBlock>
                           {block === 'header' ? (
-                            <AppHeaderNavModal
+                            <AppNavModal
                               block={block}
                               parentId={nav.id}
+                              type="addSubNav"
                               onRefetch={() => handleRefetch(block)}
                               navOptions={{ locale: nav.locale, position: (navs?.length || 0) + 1 }}
                             />
@@ -206,8 +206,9 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                               }}
                             />
                           </StyledDeleteBlock>
-                          <AppHeaderNavModal
+                          <AppNavModal
                             block={nav.block}
+                            type="editNav"
                             editId={nav.id}
                             navOptions={{
                               ...nav,
@@ -248,9 +249,10 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                                         }}
                                       />
                                     </StyledDeleteBlock>
-                                    <AppHeaderNavModal
+                                    <AppNavModal
                                       parentId={subNav?.parentId}
                                       editId={subNav.id}
+                                      type="editSubNav"
                                       block={block}
                                       navOptions={{
                                         label: subNav.label,
@@ -273,9 +275,10 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                   )
                 })}
             </ReactSortable>
-            <AppHeaderNavModal
+            <AppNavModal
               hasSubMenu={false}
               block={block}
+              type="addNav"
               navOptions={{ position: (navs?.length || 0) + 1 }}
               onRefetch={() => handleRefetch(block)}
             />
