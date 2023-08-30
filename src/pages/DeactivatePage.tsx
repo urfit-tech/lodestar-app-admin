@@ -68,7 +68,7 @@ const DeactivatePage = () => {
     return <Skeleton active />
   }
 
-  if (!appOptions?.close_site_at || dayjs(appOptions?.close_site_at).diff(dayjs(), 'day') >= 0) {
+  if (!appOptions?.close_site_at || dayjs(appOptions?.close_site_at).diff(dayjs(), 'second') > 0) {
     return <Redirect to="/" />
   }
 
