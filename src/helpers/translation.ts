@@ -96,6 +96,7 @@ export const commonMessages = {
     podcastProgram: { id: 'common.label.podcastProgram', defaultMessage: '廣播' },
     podcastAlbum: { id: 'common.label.podcastAlbum', defaultMessage: '專輯' },
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
+    selectOrganizer: { id: 'common.label.selectOrganizer', defaultMessage: '選擇主辦方' },
     selectAuthor: { id: 'common.label.selectAuthor', defaultMessage: '選擇作者' },
     goToLogin: { id: 'common.label.goToLogin', defaultMessage: '前往登入' },
     optional: { id: 'common.label.optional', defaultMessage: '非必填' },
@@ -208,6 +209,7 @@ export const commonMessages = {
     countdown: { id: 'common.label.countdown', defaultMessage: '優惠倒數' },
     assign: { id: 'common.label.assign', defaultMessage: '指派' },
     instructor: { id: 'common.label.instructor', defaultMessage: '老師' },
+    organizer: { id: 'common.label.organizer', defaultMessage: '主辦方' },
     star: { id: 'common.label.star', defaultMessage: '星等' },
     price: { id: 'common.label.price', defaultMessage: '售價' },
     purchase: { id: 'common.label.purchase', defaultMessage: '購買' },
@@ -708,9 +710,14 @@ export const promotionMessages = {
       id: 'promotion.text.sentUsedCount',
       defaultMessage: '總量{total} / 發送{exchanged}',
     },
-    codeUsedMessage: { id: 'promotion.text.codeUsedMessage', defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款' },
-    deleteCodeMessage: { id: 'promotion.text.deleteCodeMessage', defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。' },
-
+    codeUsedMessage: {
+      id: 'promotion.text.codeUsedMessage',
+      defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款',
+    },
+    deleteCodeMessage: {
+      id: 'promotion.text.deleteCodeMessage',
+      defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。',
+    },
   }),
   status: defineMessages({
     notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
