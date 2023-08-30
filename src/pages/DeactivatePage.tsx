@@ -58,11 +58,13 @@ const DeactivatePage = () => {
   const { totalVideoDuration, totalWatchedSeconds } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
   const isSiteContractExpired = dayjs(appEndedAt).diff(dayjs(), 'day') <= 0
   const isVideoDurationExceedsUsage =
+    appPlan.options.maxVideoDuration &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalVideoDuration / 60) : totalVideoDuration) >
-    appPlan.options.maxVideoDuration
+      appPlan.options.maxVideoDuration
   const isWatchedSecondsExceedsUsage =
+    appPlan.options.maxVideoWatch &&
     (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalWatchedSeconds / 60) : totalWatchedSeconds) >
-    appPlan.options.maxVideoWatch
+      appPlan.options.maxVideoWatch
 
   if (loading || appPlanLoading) {
     return <Skeleton active />
