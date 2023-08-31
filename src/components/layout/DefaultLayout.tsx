@@ -2,6 +2,7 @@ import { DownOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Divider, Dropdown, Layout, Menu } from 'antd'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-element/src/contexts/AuthContext'
 import moment from 'moment'
@@ -12,7 +13,7 @@ import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
 import LocaleContext, { SUPPORTED_LOCALES } from '../../contexts/LocaleContext'
 import hasura from '../../hasura'
-import { useAppUsage } from '../../hooks/data'
+import { useAppPlan, useAppUsage } from '../../hooks/data'
 import defaultSettings from '../../settings'
 import AttendButton from '../attend/AttendButton'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
@@ -21,7 +22,6 @@ import MemberProfileButton from '../common/MemberProfileButton'
 import { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
 import layoutMessages from './translation'
-import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
 
@@ -96,7 +96,6 @@ const DefaultLayout: React.FC<{
           <StyledContainer noFooter={noFooter} centeredBox={centeredBox}>
             {centeredBox ? <CenteredBox>{children}</CenteredBox> : children}
           </StyledContainer>
-
           {!noFooter && <Footer />}
         </StyledLayoutContent>
       </StyledLayout>
@@ -110,16 +109,30 @@ export const DefaultLayoutHeader: React.FC<{
   const { formatMessage } = useIntl()
   const { currentMemberId, permissions, currentUserRole } = useAuth()
   const { enabledModules, id: appId, endedAt: appEndedAt, options: appOptions } = useApp()
+  const { appPlan, appPlanLoading } = useAppPlan()
   const { currentLocale, setCurrentLocale } = useContext(LocaleContext)
-  const { totalVideoDuration, totalWatchedSeconds } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
+  const {
+    totalVideoDuration,
+    totalWatchedSeconds,
+    loading: appUsageLoading,
+  } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
   const [updateAppOptions] = useMutation<hasura.UPDATE_APP_OPTIONS, hasura.UPDATE_APP_OPTIONSVariables>(
     UPDATE_APP_OPTIONS,
   )
 
   const isSiteExpiringSoon = dayjs(appEndedAt).diff(dayjs(), 'day') <= 20
-  const isVideoDurationExceedsUsage = Math.round(totalVideoDuration / 60) > appOptions.video_duration
-  const isWatchedSecondsExceedsUsage = totalWatchedSeconds > appOptions.video_duration
-  const closeSiteAt = appOptions.close_site_at
+  const isSiteExpired = dayjs().diff(appEndedAt, 'second') >= 0
+  const isVideoDurationExceedsUsage =
+    appPlan.options.maxVideoDuration &&
+    (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalVideoDuration / 60) : totalVideoDuration) >
+      appPlan.options.maxVideoDuration
+  const isWatchedSecondsExceedsUsage =
+    appPlan.options.maxVideoWatch &&
+    (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalWatchedSeconds / 60) : totalWatchedSeconds) >
+      appPlan.options.maxVideoWatch
+  const closeSiteAt = isSiteExpired
+    ? dayjs()
+    : appOptions?.close_site_at
     ? dayjs(appOptions.close_site_at)
     : dayjs().add(15, 'days').diff(dayjs(appEndedAt)) < 0
     ? dayjs().add(15, 'days').endOf('day')
@@ -128,7 +141,9 @@ export const DefaultLayoutHeader: React.FC<{
   useEffect(() => {
     if (
       currentUserRole === 'app-owner' &&
+      !appPlanLoading &&
       ((!isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage) ||
+        isSiteExpired ||
         isSiteExpiringSoon ||
         isVideoDurationExceedsUsage ||
         isWatchedSecondsExceedsUsage)
@@ -137,16 +152,18 @@ export const DefaultLayoutHeader: React.FC<{
         variables: {
           appId: appId,
           options: {
-            ...appOptions,
             close_site_at:
-              !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
+              !isSiteExpired && !isSiteExpiringSoon && !isVideoDurationExceedsUsage && !isWatchedSecondsExceedsUsage
                 ? undefined
                 : closeSiteAt.utc().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
           },
         },
       })
+      if (isSiteExpired) {
+        window.location.reload()
+      }
     }
-  }, [currentUserRole, appOptions, totalVideoDuration, totalWatchedSeconds])
+  }, [currentUserRole, appPlanLoading, appOptions, totalVideoDuration, totalWatchedSeconds])
 
   let Logo: string | undefined
   try {
@@ -212,6 +229,8 @@ export const DefaultLayoutHeader: React.FC<{
         </div>
       </StyledLayoutHeader>
       {currentUserRole === 'app-owner' &&
+      !appPlanLoading &&
+      !appUsageLoading &&
       (isSiteExpiringSoon || isVideoDurationExceedsUsage || isWatchedSecondsExceedsUsage) ? (
         <StyledWarningBar>
           <p>

@@ -1,14 +1,17 @@
 import { Skeleton } from 'antd'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Redirect } from 'react-router'
 import styled from 'styled-components'
-import { useAppUsage } from '../hooks/data'
+import { useAppPlan, useAppUsage } from '../hooks/data'
 import { ErrorBrowserIcon } from '../images/icon'
 import pageMessages from './translation'
+
+dayjs.extend(utc)
 
 const StyledLayout = styled.div`
   display: flex;
@@ -51,16 +54,23 @@ const StyledDeactivateDescription = styled.div`
 const DeactivatePage = () => {
   const { formatMessage } = useIntl()
   const { loading, options: appOptions, endedAt: appEndedAt } = useApp()
+  const { appPlan, appPlanLoading } = useAppPlan()
   const { totalVideoDuration, totalWatchedSeconds } = useAppUsage([moment().startOf('M'), moment().endOf('M')])
   const isSiteContractExpired = dayjs(appEndedAt).diff(dayjs(), 'day') <= 0
-  const isVideoDurationExceedsUsage = Math.round(totalVideoDuration / 60) > appOptions.video_duration
-  const isWatchedSecondsExceedsUsage = totalWatchedSeconds > appOptions.video_duration
+  const isVideoDurationExceedsUsage =
+    appPlan.options.maxVideoDuration &&
+    (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalVideoDuration / 60) : totalVideoDuration) >
+      appPlan.options.maxVideoDuration
+  const isWatchedSecondsExceedsUsage =
+    appPlan.options.maxVideoWatch &&
+    (appPlan.options.maxVideoDurationUnit === 'minute' ? Math.round(totalWatchedSeconds / 60) : totalWatchedSeconds) >
+      appPlan.options.maxVideoWatch
 
-  if (loading) {
+  if (loading || appPlanLoading) {
     return <Skeleton active />
   }
 
-  if (!appOptions.close_site_at || dayjs(appOptions.close_site_at).diff(dayjs(), 'day') >= 0) {
+  if (!appOptions?.close_site_at || dayjs(appOptions?.close_site_at).diff(dayjs(), 'second') > 0) {
     return <Redirect to="/" />
   }
 

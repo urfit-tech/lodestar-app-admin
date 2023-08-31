@@ -1,8 +1,8 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { gql } from '@apollo/client'
+import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -63,6 +63,7 @@ type AppointmentPlanProps = {
   title: string
   duration: number
   listPrice: number
+  currencyId: string
   enrollments: number
   isPublished: boolean
 }
@@ -72,6 +73,7 @@ const AppointmentPlanCollectionTable: React.FC<{
   withAppointmentButton?: Boolean
 }> = ({ condition, withAppointmentButton }) => {
   const { formatMessage } = useIntl()
+  const { settings } = useApp()
   const { loadingAppointmentPlans, appointmentPlans, refetchAppointmentPlans } = useAppointmentPlansAdmin(condition)
 
   const [searchName, setSearchName] = useState<string | null>(null)
@@ -137,7 +139,9 @@ const AppointmentPlanCollectionTable: React.FC<{
     {
       dataIndex: 'listPrice',
       title: formatMessage(messages.price),
-      render: (text, record, index) => <StyledPlanPrice>{currencyFormatter(text)}</StyledPlanPrice>,
+      render: (text, record, index) => (
+        <StyledPlanPrice>{currencyFormatter(text, record.currencyId, settings['coin.unit'])}</StyledPlanPrice>
+      ),
       sorter: (a, b) => b.listPrice - a.listPrice,
     },
     // {
@@ -209,6 +213,7 @@ const useAppointmentPlansAdmin = (condition: hasura.GET_APPOINTMENT_PLAN_COLLECT
           title
           duration
           price
+          currency_id
           published_at
         }
       }
@@ -231,6 +236,7 @@ const useAppointmentPlansAdmin = (condition: hasura.GET_APPOINTMENT_PLAN_COLLECT
       title: appointmentPlan.title || '',
       duration: appointmentPlan.duration,
       listPrice: appointmentPlan.price,
+      currencyId: appointmentPlan.currency_id,
       enrollments: 0,
       // enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate?.count || 0,
       isPublished: !!appointmentPlan.published_at,
