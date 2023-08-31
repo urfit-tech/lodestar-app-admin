@@ -1,4 +1,3 @@
-import { EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation } from '@apollo/client'
 import { Button, Form, Input, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -29,7 +28,7 @@ const StyledFormLabel = styled.label`
   color: var(--gray-darker);
 `
 
-type ModalProps = {
+export type AppNavModalProps = {
   parentId?: string | null
   editId?: string
   hasSubMenu?: boolean
@@ -47,9 +46,19 @@ type ModalProps = {
     parentId?: string | null
   }
   onRefetch?: () => void
+  onCancel?: () => void
 }
 
-const AppNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu, block, type, navOptions, onRefetch }) => {
+const AppNavModal: React.FC<AppNavModalProps> = ({
+  parentId,
+  editId,
+  hasSubMenu,
+  block,
+  type,
+  navOptions,
+  onRefetch,
+  onCancel,
+}) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const [form] = useForm<FieldProps>()
@@ -90,20 +99,6 @@ const AppNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu, block
 
   return (
     <AdminModal
-      renderTrigger={({ setVisible }) => (
-        <Button
-          className="p-0"
-          icon={type === 'editNav' || type === 'editSubNav' ? <EditOutlined /> : <PlusOutlined />}
-          type="link"
-          onClick={() => setVisible(true)}
-        >
-          {type === 'addSubNav'
-            ? formatMessage(AppBasicAdminPageMessages.AppNavModal.subNav)
-            : type === 'addNav'
-            ? formatMessage(AppBasicAdminPageMessages.AppNavModal.addNav)
-            : ''}
-        </Button>
-      )}
       title={
         type === 'addNav'
           ? formatMessage(AppBasicAdminPageMessages.AppNavModal.addNav)
@@ -114,9 +109,16 @@ const AppNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu, block
           : formatMessage(AppBasicAdminPageMessages.AppNavModal.editSubNav)
       }
       footer={null}
+      visible
       renderFooter={({ setVisible }) => (
         <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
+          <Button
+            className="mr-2"
+            onClick={() => {
+              setVisible(false)
+              onCancel?.()
+            }}
+          >
             {formatMessage(commonMessages['ui'].cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
@@ -124,6 +126,7 @@ const AppNavModal: React.FC<ModalProps> = ({ parentId, editId, hasSubMenu, block
           </Button>
         </>
       )}
+      onCancel={onCancel}
     >
       <Form
         form={form}

@@ -10,7 +10,7 @@
   "AppBasicAdminPageMessages.AppNavModal.editSubNav": "編輯子選單",
   "AppBasicAdminPageMessages.AppNavModal.enUs": "English",
   "AppBasicAdminPageMessages.AppNavModal.locale": "顯示語系",
-  "AppBasicAdminPageMessages.AppNavModal.navHref": "選單名稱為必填",
+  "AppBasicAdminPageMessages.AppNavModal.navHref": "選單連結",
   "AppBasicAdminPageMessages.AppNavModal.navHrefIsRequired": "選單連結為必填",
   "AppBasicAdminPageMessages.AppNavModal.navLabel": "選單名稱",
   "AppBasicAdminPageMessages.AppNavModal.navLabelIsRequired": "選單名稱為必填",

@@ -1,6 +1,6 @@
-import { DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { gql, useMutation, useQuery } from '@apollo/client'
-import { message } from 'antd'
+import { Button, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useApp } from 'lodestar-app-element/src/contexts/AppContext'
 import { AppNavProps, NavProps } from 'lodestar-app-element/src/types/app'
@@ -13,7 +13,7 @@ import DraggableItem from '../../components/common/DraggableItem'
 import * as hasura from '../../hasura'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import AppNavModal from './AppNavModal'
+import AppNavModal, { AppNavModalProps } from './AppNavModal'
 import AppBasicAdminPageMessages from './translation'
 
 type ItemProps = AppNavProps
@@ -84,6 +84,7 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
   const isSortingMainMenuRef = useRef(false)
   const isSortingSubMenuRef = useRef(false)
   const [loading, setLoading] = useState(false)
+  const [appNavModalProps, setAppNavModalProps] = useState<AppNavModalProps | null>(null)
 
   const handleMenuSort: (newAppNavs: ItemProps[]) => void = newAppNavs => {
     setLoading(true)
@@ -135,12 +136,16 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
     handleMenuSort(updatedList)
   }
 
-  const handleDelete = (appNavId: string) => {
+  const handleDelete = (block: 'header' | 'footer' | 'social_media', appNavId: string) => {
     deleteAppNav({ variables: { appNavId: appNavId } })
       .then(() => {
         refetchAppNavList()
           .then(() => {
-            message.success(formatMessage(AppBasicAdminPageMessages.AppNavAdminCard.deleteAppNavSuccessfully))
+            setTimeout(() => {
+              const access = document.getElementById(block)
+              access?.scrollIntoView(true)
+              message.success(formatMessage(AppBasicAdminPageMessages.AppNavAdminCard.deleteAppNavSuccessfully))
+            }, 0)
           })
           .catch(handleError)
       })
@@ -148,6 +153,7 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
   }
 
   const handleRefetch = (block: 'header' | 'footer' | 'social_media') => {
+    setAppNavModalProps(null)
     refetchAppNavList().then(() => {
       setTimeout(() => {
         const access = document.getElementById(block)
@@ -189,33 +195,49 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                           </StyledAppNavHref>
                         </div>
                         <StyledMainMenuActionBlock>
-                          {block === 'header' ? (
-                            <AppNavModal
-                              block={block}
-                              parentId={nav.id}
-                              type="addSubNav"
-                              onRefetch={() => handleRefetch(block)}
-                              navOptions={{ locale: nav.locale, position: (navs?.length || 0) + 1 }}
-                            />
-                          ) : null}
+                          <Button
+                            className="p-0"
+                            icon={<PlusOutlined />}
+                            type="link"
+                            onClick={() =>
+                              setAppNavModalProps({
+                                block: block,
+                                type: 'addSubNav',
+                                parentId: nav.id,
+                                navOptions: {
+                                  locale: nav.locale,
+                                  position: (navs?.length || 0) + 1,
+                                },
+                              })
+                            }
+                          >
+                            {formatMessage(AppBasicAdminPageMessages.AppNavModal.subNav)}
+                          </Button>
                           <StyledDeleteBlock>
                             <DeleteOutlined
                               key="delete"
                               onClick={() => {
-                                window.confirm(formatMessage(commonMessages.text.deleteAppNav)) && handleDelete(nav.id)
+                                window.confirm(formatMessage(commonMessages.text.deleteAppNav)) &&
+                                  handleDelete(block, nav.id)
                               }}
                             />
                           </StyledDeleteBlock>
-                          <AppNavModal
-                            block={nav.block}
-                            type="editNav"
-                            editId={nav.id}
-                            navOptions={{
-                              ...nav,
-                              external: nav.external.toString(),
-                            }}
-                            hasSubMenu={nav.subNavs.length > 0}
-                            onRefetch={() => handleRefetch(block)}
+                          <Button
+                            className="p-0"
+                            icon={<EditOutlined />}
+                            type="link"
+                            onClick={() =>
+                              setAppNavModalProps({
+                                block: nav.block,
+                                type: 'editNav',
+                                editId: nav.id,
+                                navOptions: {
+                                  ...nav,
+                                  external: nav.external.toString(),
+                                },
+                                hasSubMenu: nav.subNavs.length > 0,
+                              })
+                            }
                           />
                         </StyledMainMenuActionBlock>
                       </StyleMainMenuBlock>
@@ -245,24 +267,30 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                                         key="delete"
                                         onClick={() => {
                                           window.confirm(formatMessage(commonMessages.text.deleteAppNav)) &&
-                                            handleDelete(subNav.id)
+                                            handleDelete(block, subNav.id)
                                         }}
                                       />
                                     </StyledDeleteBlock>
-                                    <AppNavModal
-                                      parentId={subNav?.parentId}
-                                      editId={subNav.id}
-                                      type="editSubNav"
-                                      block={block}
-                                      navOptions={{
-                                        label: subNav.label,
-                                        external: subNav.external.toString(),
-                                        href: subNav.href,
-                                        locale: subNav.locale,
-                                        tag: subNav.tag,
-                                        position: subNav.position,
-                                      }}
-                                      onRefetch={() => handleRefetch(block)}
+                                    <Button
+                                      className="p-0"
+                                      icon={<EditOutlined />}
+                                      type="link"
+                                      onClick={() =>
+                                        setAppNavModalProps({
+                                          block: block,
+                                          type: 'editSubNav',
+                                          parentId: nav.id,
+                                          editId: subNav.id,
+                                          navOptions: {
+                                            label: subNav.label,
+                                            external: subNav.external.toString(),
+                                            href: subNav.href,
+                                            locale: subNav.locale,
+                                            tag: subNav.tag,
+                                            position: subNav.position,
+                                          },
+                                        })
+                                      }
                                     />
                                   </StyledMainMenuActionBlock>
                                 </StyleSubMenuBlock>
@@ -275,15 +303,37 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                   )
                 })}
             </ReactSortable>
-            <AppNavModal
-              hasSubMenu={false}
-              block={block}
-              type="addNav"
-              navOptions={{ position: (navs?.length || 0) + 1 }}
-              onRefetch={() => handleRefetch(block)}
-            />
+            <Button
+              className="p-0"
+              icon={<PlusOutlined />}
+              type="link"
+              onClick={() =>
+                setAppNavModalProps({
+                  block: block,
+                  type: 'addNav',
+                  hasSubMenu: false,
+                  navOptions: { position: (navs?.length || 0) + 1 },
+                })
+              }
+            >
+              {formatMessage(AppBasicAdminPageMessages.AppNavModal.addNav)}
+            </Button>
           </div>
         ))}
+      {appNavModalProps ? (
+        <AppNavModal
+          parentId={appNavModalProps.parentId}
+          editId={appNavModalProps.editId}
+          hasSubMenu={appNavModalProps.hasSubMenu}
+          block={appNavModalProps.block}
+          type={appNavModalProps.type}
+          navOptions={appNavModalProps.navOptions}
+          onRefetch={() => {
+            handleRefetch(appNavModalProps.block)
+          }}
+          onCancel={() => setAppNavModalProps(null)}
+        />
+      ) : null}
     </AdminCard>
   )
 }

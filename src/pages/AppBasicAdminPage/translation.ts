@@ -41,7 +41,7 @@ const AppBasicAdminPageMessages = {
     },
     navHref: {
       id: 'AppBasicAdminPageMessages.AppNavModal.navHref',
-      defaultMessage: '選單名稱為必填',
+      defaultMessage: '選單連結',
     },
     openInSamePage: {
       id: 'AppBasicAdminPageMessages.AppNavModal.openInSamePage',
