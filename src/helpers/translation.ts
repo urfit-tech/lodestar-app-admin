@@ -608,9 +608,12 @@ export const appointmentMessages = {
     contactPhone: { id: 'appointment.label.contactPhone', defaultMessage: '聯絡手機' },
     startedAt: { id: 'appointment.label.startedAt', defaultMessage: '起始時間' },
     periodType: { id: 'appointment.label.periodType', defaultMessage: '重複週期' },
+    reschedule: { id: 'appointment.label.reschedule', defaultMessage: '更換時段' },
     reservationPlan: { id: 'appointment.label.reservationPlan', defaultMessage: '提前預約' },
     reservationAmount: { id: 'appointment.label.reservationAmount', defaultMessage: '時間長度' },
     reservationType: { id: 'appointment.label.reservationType', defaultMessage: '時間單位' },
+    rescheduleAmount: { id: 'appointment.label.rescheduleAmount', defaultMessage: '時間長度' },
+    rescheduleType: { id: 'appointment.label.rescheduleType', defaultMessage: '時間單位' },
     creator: { id: 'appointment.label.creator', defaultMessage: '講師' },
     member: { id: 'appointment.label.member', defaultMessage: '學生' },
     meetingLink: { id: 'appointment.label.meetingLink', defaultMessage: 'Meeting Link' },
@@ -622,6 +625,8 @@ export const appointmentMessages = {
     maximumCapacity: { id: 'appointment.label.maximumCapacity', defaultMessage: 'Maximum Capacity' },
     unlimited: { id: 'appointment.label.unlimited', defaultMessage: 'unlimited' },
     limited: { id: 'appointment.label.limited', defaultMessage: 'limited' },
+    isReschedule: { id: 'appointment.label.isReschedule', defaultMessage: '可更換' },
+    unReschedule: { id: 'appointment.label.unReschedule', defaultMessage: '不可更換' },
   }),
   status: defineMessages({
     aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
@@ -708,9 +713,14 @@ export const promotionMessages = {
       id: 'promotion.text.sentUsedCount',
       defaultMessage: '總量{total} / 發送{exchanged}',
     },
-    codeUsedMessage: { id: 'promotion.text.codeUsedMessage', defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款' },
-    deleteCodeMessage: { id: 'promotion.text.deleteCodeMessage', defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。' },
-
+    codeUsedMessage: {
+      id: 'promotion.text.codeUsedMessage',
+      defaultMessage: '此代碼 {voucherCode} 已被使用，如需註銷請確認該筆訂單狀態為已退款',
+    },
+    deleteCodeMessage: {
+      id: 'promotion.text.deleteCodeMessage',
+      defaultMessage: '確定要註銷此代碼 {voucherCode} 嗎？註銷後將移除此代碼使用權。',
+    },
   }),
   status: defineMessages({
     notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
