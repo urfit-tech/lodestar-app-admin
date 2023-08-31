@@ -10,6 +10,8 @@ export const salesLeadDeliveryPageMessages = {
     field: { id: 'page.salesLeadDeliveryPage.field', defaultMessage: '領域' },
     starRangeIsNull: { id: 'page.salesLeadDeliveryPage.starRangeIsNull', defaultMessage: '沒有星等的人' },
     starRange: { id: 'page.salesLeadDeliveryPage.starRange', defaultMessage: '星等' },
+    notCalled: { id: 'page.salesLeadDeliveryPage.notCalled', defaultMessage: '無撥打紀錄' },
+    notAnswered: { id: 'page.salesLeadDeliveryPage.notAnswered', defaultMessage: '無接通紀錄' },
     marketingActivity: { id: 'page.salesLeadDeliveryPage.marketingActivity', defaultMessage: '行銷活動' },
     adMaterials: { id: 'page.salesLeadDeliveryPage.adMaterials', defaultMessage: '廣告素材' },
     leadLevel: { id: 'page.salesLeadDeliveryPage.leadLevel', defaultMessage: '名單分級' },

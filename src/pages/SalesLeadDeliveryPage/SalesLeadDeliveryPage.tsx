@@ -149,7 +149,9 @@ const FilterSection: React.FC<{
   onNext?: (filter: Filter) => void
 }> = ({ filter, onNext }) => {
   const { formatMessage } = useIntl()
-  const [starRangeIsNull, setStarRangeIsNull] = useState(false)
+  const [starRangeIsNull, setStarRangeIsNull] = useState(filter.starRangeIsNull)
+  const [notCalled, setNotCalled] = useState(filter.notCalled)
+  const [notAnswered, setNotAnswered] = useState(filter.notAnswered)
   const [starRange, setStarRange] = useState<[number, number]>([-999, 999])
   const { loadingProperties, properties } = useProperty()
   const { currentMemberId } = useAuth()
@@ -170,6 +172,7 @@ const FilterSection: React.FC<{
       margin-bottom: 24px;
     }
   `
+
   return (
     <Form<Filter>
       layout="horizontal"
@@ -232,6 +235,43 @@ const FilterSection: React.FC<{
           </Form.Item>
         </Input.Group>
       </Form.Item>
+
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
+        name="createdAtRange"
+      >
+        <DatePicker.RangePicker allowClear />
+      </Form.Item>
+
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.notCalled)}
+        name="notCalled"
+        valuePropName="checked"
+      >
+        <Checkbox onChange={e => setNotCalled(e.target.checked)} />
+      </Form.Item>
+
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}
+        name="lastCalledRange"
+      >
+        <DatePicker.RangePicker allowClear disabled={notCalled} />
+      </Form.Item>
+
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.notAnswered)}
+        name="notAnswered"
+        valuePropName="checked"
+      >
+        <Checkbox onChange={e => setNotAnswered(e.target.checked)} />
+      </Form.Item>
+      <Form.Item
+        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
+        name="lastAnsweredRange"
+      >
+        <DatePicker.RangePicker allowClear disabled={notAnswered} />
+      </Form.Item>
+
       <Form.Item
         name="completedLead"
         label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.completedLead)}
@@ -293,7 +333,7 @@ const FilterSection: React.FC<{
         <Spin />
       ) : (
         properties.map(property => (
-          <PropertiesItem label={property.name}>
+          <PropertiesItem label={property.name} key={property.id}>
             {property?.placeholder?.includes('/') ? (
               <Form.Item name={property.name} style={{ width: '100%', margin: '0px' }}>
                 <Select>
@@ -321,24 +361,7 @@ const FilterSection: React.FC<{
           </PropertiesItem>
         ))
       )}
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.createdAtRange)}
-        name="createdAtRange"
-      >
-        <DatePicker.RangePicker allowClear />
-      </Form.Item>
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastCalledRange)}
-        name="lastCalledRange"
-      >
-        <DatePicker.RangePicker allowClear />
-      </Form.Item>
-      <Form.Item
-        label={formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.lastAnsweredRange)}
-        name="lastAnsweredRange"
-      >
-        <DatePicker.RangePicker allowClear />
-      </Form.Item>
+
       <Form.Item wrapperCol={{ offset: 6 }}>
         <Button type="primary" htmlType="submit">
           {formatMessage(salesLeadDeliveryPageMessages.salesLeadDeliveryPage.nextStep)}
@@ -387,13 +410,21 @@ const ConfirmSection: React.FC<{
           _gte: filter.starRange[0],
           _lte: filter.starRange[1],
         },
-    last_member_note_called: filter.lastCalledRange
+    last_member_note_called: filter.notCalled
+      ? {
+          _is_null: true,
+        }
+      : filter.lastCalledRange
       ? {
           _gte: moment(filter.lastCalledRange[0]).startOf('day'),
           _lte: moment(filter.lastCalledRange[1]).endOf('day'),
         }
       : undefined,
-    last_member_note_answered: filter.lastAnsweredRange
+    last_member_note_answered: filter.notAnswered
+      ? {
+          _is_null: true,
+        }
+      : filter.lastAnsweredRange
       ? {
           _gte: moment(filter.lastAnsweredRange[0]).startOf('day'),
           _lte: moment(filter.lastAnsweredRange[1]).endOf('day'),

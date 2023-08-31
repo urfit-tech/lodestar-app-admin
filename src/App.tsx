@@ -1,12 +1,10 @@
-import Icon, { BarChartOutlined } from '@ant-design/icons'
+import Icon from '@ant-design/icons'
 import { Menu } from 'antd'
 import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
 import Application from './Application'
 import { StyledMenu } from './components/admin/AdminMenu'
-import { ReactComponent as PhoneIcon } from './images/icon/phone.svg'
-import { ReactComponent as UserCopyIcon } from './images/icon/user-copy.svg'
 import AdvertisingAudiencePage from './pages/AdvertisingAudiencePage'
 import ChaileaseLookupPage from './pages/ChaileaseLookupPage/index'
 import CustomScriptsPage from './pages/CustomScriptsPage'
@@ -29,60 +27,60 @@ const App: React.FC<{
         renderAdminMenu: ({ settings, role, permissions, menuItems, onClick, enabledModules }) => {
           const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
-            {
-              permissionIsAllowed:
-                !!enabledModules.member_contract_manager &&
-                (permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL),
-              key: 'member_contract_collection',
-              icon: () => <UserCopyIcon />,
-              name: '合約資料管理',
-            },
-            {
-              permissionIsAllowed: !!enabledModules.sales_call && !!permissions.SALES_CALL_ADMIN,
-              key: 'sales_call_admin',
-              icon: () => <PhoneIcon />,
-              name: '業務查詢',
-              subMenuItems: [
-                {
-                  permissionIsAllowed: true,
-                  key: 'sales_status',
-                  name: '即時戰況查詢',
-                },
-                {
-                  permissionIsAllowed: true,
-                  key: 'chailease_lookup',
-                  name: `${settings['name']}報名表查詢`,
-                },
-              ],
-            },
-            {
-              permissionIsAllowed: !!enabledModules.analytics && !!permissions.ANALYSIS_ADMIN,
-              key: 'analytics',
-              icon: () => <BarChartOutlined style={{ margin: 0 }} />,
-              name: '數據分析',
-              subMenuItems: [
-                {
-                  permissionIsAllowed: true,
-                  key: 'analytics_sales_materials',
-                  name: '素材表現',
-                },
-                {
-                  permissionIsAllowed: true,
-                  key: 'analytics_sales_member_categories',
-                  name: '業務表現',
-                },
-                {
-                  permissionIsAllowed: true,
-                  key: 'analytics_sales_activeness',
-                  name: '活動量',
-                },
-                {
-                  permissionIsAllowed: true,
-                  key: 'analytics_advertising_audience',
-                  name: '廣告受眾',
-                },
-              ],
-            },
+            // {
+            //   permissionIsAllowed:
+            //     !!enabledModules.member_contract_manager &&
+            //     (permissions.CONTRACT_VALUE_VIEW_ADMIN || permissions.CONTRACT_VALUE_VIEW_NORMAL),
+            //   key: 'member_contract_collection',
+            //   icon: () => <UserCopyIcon />,
+            //   name: '合約資料管理',
+            // },
+            // {
+            //   permissionIsAllowed: !!enabledModules.sales_call && !!permissions.SALES_CALL_ADMIN,
+            //   key: 'sales_call_admin',
+            //   icon: () => <PhoneIcon />,
+            //   name: '業務查詢',
+            //   subMenuItems: [
+            //     {
+            //       permissionIsAllowed: true,
+            //       key: 'sales_status',
+            //       name: '即時戰況查詢',
+            //     },
+            //     {
+            //       permissionIsAllowed: true,
+            //       key: 'chailease_lookup',
+            //       name: `${settings['name']}報名表查詢`,
+            //     },
+            //   ],
+            // },
+            // {
+            //   permissionIsAllowed: !!enabledModules.analytics && !!permissions.ANALYSIS_ADMIN,
+            //   key: 'analytics',
+            //   icon: () => <BarChartOutlined style={{ margin: 0 }} />,
+            //   name: '數據分析',
+            //   subMenuItems: [
+            //     {
+            //       permissionIsAllowed: true,
+            //       key: 'analytics_sales_materials',
+            //       name: '素材表現',
+            //     },
+            //     {
+            //       permissionIsAllowed: true,
+            //       key: 'analytics_sales_member_categories',
+            //       name: '業務表現',
+            //     },
+            //     {
+            //       permissionIsAllowed: true,
+            //       key: 'analytics_sales_activeness',
+            //       name: '活動量',
+            //     },
+            //     {
+            //       permissionIsAllowed: true,
+            //       key: 'analytics_advertising_audience',
+            //       name: '廣告受眾',
+            //     },
+            //   ],
+            // },
             ...menuItems.slice(14),
           ]
           return (
