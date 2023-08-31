@@ -21,6 +21,9 @@ import MemberProfileButton from '../common/MemberProfileButton'
 import { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
 import layoutMessages from './translation'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 const StyledLayout = styled(Layout)`
   &.bg-white {
