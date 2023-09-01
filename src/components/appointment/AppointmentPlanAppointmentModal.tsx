@@ -285,7 +285,7 @@ const AppointmentPlanAppointmentModal: React.FC<
               <StyledPlanTitle className="d-flex align-items-center justify-content-between">
                 <div>{appointmentPlanAdmin.title}</div>
                 <PriceLabel
-                  listPrice={appointmentPlanAdmin.listPrice}
+                  listPrice={appointmentPlanAdmin.price}
                   currencyId={appointmentPlanAdmin.currencyId}
                   coinUnit={settings['coin_unit']}
                 />
