@@ -195,24 +195,26 @@ const AppNavAdminCard: React.VFC<AppNavAdminCardProps> = ({ ...cardProps }) => {
                           </StyledAppNavHref>
                         </div>
                         <StyledMainMenuActionBlock>
-                          <Button
-                            className="p-0"
-                            icon={<PlusOutlined />}
-                            type="link"
-                            onClick={() =>
-                              setAppNavModalProps({
-                                block: block,
-                                type: 'addSubNav',
-                                parentId: nav.id,
-                                navOptions: {
-                                  locale: nav.locale,
-                                  position: (navs?.length || 0) + 1,
-                                },
-                              })
-                            }
-                          >
-                            {formatMessage(AppBasicAdminPageMessages.AppNavModal.subNav)}
-                          </Button>
+                          {block === 'header' ? (
+                            <Button
+                              className="p-0"
+                              icon={<PlusOutlined />}
+                              type="link"
+                              onClick={() =>
+                                setAppNavModalProps({
+                                  block: block,
+                                  type: 'addSubNav',
+                                  parentId: nav.id,
+                                  navOptions: {
+                                    locale: nav.locale,
+                                    position: (navs?.length || 0) + 1,
+                                  },
+                                })
+                              }
+                            >
+                              {formatMessage(AppBasicAdminPageMessages.AppNavModal.subNav)}
+                            </Button>
+                          ) : null}
                           <StyledDeleteBlock>
                             <DeleteOutlined
                               key="delete"
